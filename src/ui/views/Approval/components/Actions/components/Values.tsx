@@ -40,10 +40,10 @@ const USDValue = ({ value }: { value: number | string }) => {
   return <Text>{formatUsdValue(value)}</Text>;
 };
 
-const TimeSpan = ({ value }) => {
+const TimeSpan = ({ value }: { value: number | null }) => {
   const timeSpan = useMemo(() => {
     const bornAt = value;
-
+    if (!bornAt) return '-';
     const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
     if (d > 0) {
       return `${d} Day${d > 1 ? 's' : ''} ago`;

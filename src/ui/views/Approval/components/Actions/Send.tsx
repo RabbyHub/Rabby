@@ -9,10 +9,10 @@ import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
-import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import ViewMore from './components/ViewMore';
 
 const Wrapper = styled.div`
   .header {
@@ -41,69 +41,13 @@ const Send = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const {
-    userData,
-    rules,
-    processedRules,
-    transferWhitelist,
-    transferWhiteEnable,
-  } = useRabbySelector((s) => ({
+  const { rules, processedRules } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
     transferWhitelist: s.whitelist.whitelist,
     transferWhiteEnable: s.whitelist.enabled,
   }));
-
-  const receiverInWhitelist = useMemo(() => {
-    return userData.addressWhitelist.includes(actionData.to.toLowerCase());
-  }, [userData, actionData]);
-  const receiverInBlacklist = useMemo(() => {
-    return userData.addressBlacklist.includes(actionData.to.toLowerCase());
-  }, [userData, actionData]);
-
-  const receiverType = useMemo(() => {
-    if (requireData.contract) {
-      return 'Contract';
-    }
-    if (requireData.eoa) {
-      return 'EOA';
-    }
-    if (requireData.cex) {
-      return 'EOA';
-    }
-  }, [requireData]);
-
-  const contractOnCurrentChain = useMemo(() => {
-    if (!requireData.contract || !requireData.contract[chain.serverId])
-      return null;
-    return requireData.contract[chain.serverId];
-  }, [requireData, chain]);
-
-  const timeSpan = useMemo(() => {
-    let bornAt = 0;
-    if (requireData.contract) {
-      if (contractOnCurrentChain) {
-        bornAt = contractOnCurrentChain.create_at;
-      } else {
-        return '-';
-      }
-    }
-    if (requireData.cex) bornAt = requireData.cex.bornAt;
-    if (requireData.eoa) bornAt = requireData.eoa.bornAt;
-    if (!bornAt) return '-';
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -154,50 +98,69 @@ const Send = ({
             </ul>
           </Row>
         </Col>
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={actionData.to}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">send to</div>
-      </div>
-      <Table>
-        {requireData.cex && (
-          <Col>
-            <Row isTitle>CEX</Row>
-            <Row>
-              <LogoWithText
-                logo={requireData.cex.logo}
-                text={requireData.cex.name}
-                logoRadius="100%"
-              />
-              {(!requireData.cex.isDeposit ||
-                !requireData.cex.supportToken) && (
-                <ul className="desc-list">
-                  {!requireData.cex.isDeposit && (
+        <Col>
+          <Row isTitle>Send to</Row>
+          <Row>
+            <div>
+              <Values.Address address={actionData.to} chain={chain} />
+              <ul className="desc-list">
+                <li>
+                  <Values.AddressMemo address={actionData.to} />
+                </li>
+                {requireData.name && <li>{requireData.name}</li>}
+                {engineResultMap['1016'] && (
+                  <li>
+                    Token address
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1016')
+                          ? 'proceed'
+                          : engineResultMap['1016'].level
+                      }
+                      onClick={() => handleClickRule('1016')}
+                    />
+                  </li>
+                )}
+                {engineResultMap['1019'] && (
+                  <li>
+                    Contract address not on this chain
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1019')
+                          ? 'proceed'
+                          : engineResultMap['1019'].level
+                      }
+                      onClick={() => handleClickRule('1019')}
+                    />
+                  </li>
+                )}
+                {requireData.cex && (
+                  <>
                     <li>
-                      Non top up address
-                      {engineResultMap['1021'] && (
-                        <SecurityLevelTagNoText
-                          level={
-                            processedRules.includes('1021')
-                              ? 'proceed'
-                              : engineResultMap['1021'].level
-                          }
-                          onClick={() => handleClickRule('1021')}
-                        />
-                      )}
+                      <LogoWithText
+                        logo={requireData.cex.logo}
+                        text={requireData.cex.name}
+                      />
                     </li>
-                  )}
-                  {!requireData.cex.supportToken && (
-                    <li>
-                      {ellipsisTokenSymbol(actionData.token.symbol)} not
-                      supported
-                      {engineResultMap['1020'] && (
+                    {engineResultMap['1021'] && (
+                      <li>
+                        Not top up address{' '}
+                        {engineResultMap['1021'] && (
+                          <SecurityLevelTagNoText
+                            level={
+                              processedRules.includes('1021')
+                                ? 'proceed'
+                                : engineResultMap['1021'].level
+                            }
+                            onClick={() => handleClickRule('1021')}
+                          />
+                        )}
+                      </li>
+                    )}
+                    {engineResultMap['1020'] && (
+                      <li>
+                        {ellipsisTokenSymbol(actionData.token.symbol)} not
+                        supported
                         <SecurityLevelTagNoText
                           level={
                             processedRules.includes('1020')
@@ -206,145 +169,38 @@ const Send = ({
                           }
                           onClick={() => handleClickRule('1020')}
                         />
-                      )}
-                    </li>
-                  )}
-                </ul>
-              )}
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Type</Row>
-          <Row>
-            {receiverType}
-            {contractOnCurrentChain && (
-              <ul className="desc-list">
-                {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
-                {requireData.name && <li>{requireData.name}</li>}
-                {requireData.isTokenContract && (
-                  <li>
-                    Recipient address is a token contract address
-                    {engineResultMap['1016'] && (
-                      <SecurityLevelTagNoText
-                        level={
-                          processedRules.includes('1016')
-                            ? 'proceed'
-                            : engineResultMap['1016'].level
-                        }
-                        onClick={() => handleClickRule('1016')}
-                      />
+                      </li>
                     )}
+                  </>
+                )}
+                {engineResultMap['1018'] && (
+                  <li>
+                    Never transacted before
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1018')
+                          ? 'proceed'
+                          : engineResultMap['1018'].level
+                      }
+                      onClick={() => handleClickRule('1018')}
+                    />
+                  </li>
+                )}
+                {engineResultMap['1033'] && (
+                  <li>
+                    On my send whitelist
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1033')
+                          ? 'proceed'
+                          : engineResultMap['1033'].level
+                      }
+                      onClick={() => handleClickRule('1033')}
+                    />
                   </li>
                 )}
               </ul>
-            )}
-            {engineResultMap['1019'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1019')
-                    ? 'proceed'
-                    : engineResultMap['1019'].level
-                }
-                onClick={() => handleClickRule('1019')}
-              />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>
-            {requireData.contract ? 'Deployed' : 'First on-chain'}
-          </Row>
-          <Row>
-            {timeSpan}
-            {engineResultMap['1017'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1017')
-                    ? 'proceed'
-                    : engineResultMap['1017'].level
-                }
-                onClick={() => handleClickRule('1017')}
-              />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Balance</Row>
-          <Row>{formatUsdValue(requireData.usd_value)}</Row>
-        </Col>
-        <Col>
-          <Row isTitle>Transacted before</Row>
-          <Row>
-            <Values.Boolean value={requireData.hasTransfer} />
-            {engineResultMap['1018'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1018')
-                    ? 'proceed'
-                    : engineResultMap['1018'].level
-                }
-                onClick={() => handleClickRule('1018')}
-              />
-            )}
-          </Row>
-        </Col>
-        {transferWhiteEnable && (
-          <Col>
-            <Row isTitle>Whitelist</Row>
-            <Row>
-              {transferWhitelist.includes(actionData.to.toLowerCase())
-                ? 'On my whitelist'
-                : 'Not on my whitelist'}
-              {engineResultMap['1033'] && (
-                <SecurityLevelTagNoText
-                  level={
-                    processedRules.includes('1033')
-                      ? 'proceed'
-                      : engineResultMap['1033'].level
-                  }
-                  onClick={() => handleClickRule('1033')}
-                />
-              )}
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={actionData.to} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onWhitelist={receiverInWhitelist}
-              onBlacklist={receiverInBlacklist}
-              address={actionData.to}
-              chain={chain}
-              onChange={() => dispatch.securityEngine.init()}
-            />
-            {engineResultMap['1031'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1031')
-                    ? 'proceed'
-                    : engineResultMap['1031'].level
-                }
-                onClick={() => handleClickRule('1031')}
-              />
-            )}
-            {engineResultMap['1032'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1032')
-                    ? 'proceed'
-                    : engineResultMap['1032'].level
-                }
-                onClick={() => handleClickRule('1032')}
-              />
-            )}
+            </div>
           </Row>
         </Col>
       </Table>
