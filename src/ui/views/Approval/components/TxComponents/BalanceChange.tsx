@@ -171,24 +171,19 @@ const BalanceChange = ({
   return (
     <div className="token-balance-change">
       <div className="token-balance-change-content">
-        <div className="token-balance-change-content-header">
-          Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
-        </div>
         <Table>
+          <Col>
+            <Row>
+              <span className="text-14 text-gray-common font-normal">
+                Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
+              </span>
+            </Row>
+          </Col>
           {!hasChange && isSuccess && (
             <Col>
               <Row>
                 <span className="text-14 text-gray-common font-normal">
                   No balance change
-                </span>
-              </Row>
-            </Col>
-          )}
-          {hasChange && isSuccess && (
-            <Col>
-              <Row>
-                <span className="text-14 text-gray-common font-normal">
-                  Est. balance change
                 </span>
               </Row>
             </Col>

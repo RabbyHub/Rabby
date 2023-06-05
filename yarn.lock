@@ -1384,10 +1384,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-security-engine@1.0.16-alpha4":
-  version "1.0.16-alpha4"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.16-alpha4.tgz#a69e712c317a86c27bfcddcd12afc70d938bef3e"
-  integrity sha512-kymxw1SmWlOawnPhoac5D9X6CnFWJUtal70zAuGwZyCE1wk/fHuLFVHhP1DIfzgw//1OWhsknxZ6GPNJkXA3Mg==
+"@debank/rabby-security-engine@1.0.16-alpha5":
+  version "1.0.16-alpha5"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.16-alpha5.tgz#6fcebd62c22a59aa7bb55623c7870df863ac4429"
+  integrity sha512-iprRAaHKTZugB24hNPoQwV0E423Rp9nMjRjQ6hrTAjax+b4ltvLnFDPwbsBUOt0EiCrbBBOzMoCz8O8KdsQTpQ==
   dependencies:
     "@debank/common" "^0.2.31"
     "@debank/rabby-api" "^0.5.25"
