@@ -72,7 +72,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         return (
           <div className="text-orange">
             <div>Connected but unable to sign.</div>
-            <div className="whitespace-nowrap mt-12">
+            <div className="whitespace-nowrap mt-8">
               Please switch to the correct address in mobile wallet
             </div>
           </div>
@@ -81,7 +81,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         return (
           <div className="text-orange">
             <div>Connected but unable to sign.</div>
-            <div className="mt-12">
+            <div className="mt-8">
               Please switch to {chain?.name} in mobile wallet
             </div>
           </div>
@@ -94,9 +94,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         );
 
       default:
-        return (
-          <div className="text-gray-subTitle">Connected and ready to sign</div>
-        );
+        return <div className="text-black">Connected and ready to sign</div>;
     }
   };
 

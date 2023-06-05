@@ -5,13 +5,18 @@ import { Tooltip } from 'antd';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 
 const TableWrapper = styled.div`
-  background: #fafbff;
   border: 1px solid #ededed;
   border-radius: 8px;
 `;
 
-const Table = ({ children }: { children: ReactNode }) => {
-  return <TableWrapper>{children}</TableWrapper>;
+const Table = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  return <TableWrapper className={className}>{children}</TableWrapper>;
 };
 
 const ColWrapper = styled.div`
@@ -25,7 +30,7 @@ const ColWrapper = styled.div`
 `;
 
 const Col = ({ children }: { children: ReactNode }) => {
-  return <ColWrapper>{children}</ColWrapper>;
+  return <ColWrapper className="col">{children}</ColWrapper>;
 };
 
 const RowWrapper = styled.div`
@@ -47,7 +52,7 @@ const RowWrapper = styled.div`
     line-height: 14px;
     color: #666666;
     border-right: 1px solid #ededed;
-    width: 125px;
+    width: 120px;
     flex-shrink: 0;
   }
   .desc-list {
@@ -95,6 +100,7 @@ const Row = ({
   return (
     <RowWrapper
       className={clsx(
+        'row',
         {
           title: isTitle,
           flex: !!tip,

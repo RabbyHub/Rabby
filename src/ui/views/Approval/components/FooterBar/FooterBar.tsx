@@ -31,9 +31,9 @@ const Wrapper = styled.section`
     font-size: 13px;
     line-height: 15px;
     color: #666;
-    padding-bottom: 15px;
+    padding-bottom: 12px;
     position: relative;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     .origin {
@@ -87,6 +87,7 @@ const Wrapper = styled.section`
     }
   }
   &.has-shadow {
+    box-shadow: none;
     &::before {
       content: '';
       pointer-events: none;

@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
-import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
+import ViewMore from './components/ViewMore';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
@@ -32,7 +32,6 @@ const Wrapper = styled.div`
     width: 13px;
   }
 `;
-
 const Swap = ({
   data,
   requireData,
@@ -54,8 +53,7 @@ const Swap = ({
     receiver,
   } = data!;
 
-  const { userData, rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
+  const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
@@ -68,27 +66,6 @@ const Swap = ({
     });
     return map;
   }, [engineResults]);
-
-  const receiverInWhitelist = useMemo(() => {
-    return userData.addressWhitelist.includes(receiver.toLowerCase());
-  }, [userData, receiver]);
-  const receiverInBlacklist = useMemo(() => {
-    return userData.addressBlacklist.includes(receiver.toLowerCase());
-  }, [userData, receiver]);
-
-  const contractInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, requireData.id) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const contractInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, requireData.id);
-    });
-  }, [userData, requireData, chain]);
 
   const hasReceiver = useMemo(() => {
     return !isSameAddress(receiver, requireData.sender);
@@ -180,11 +157,12 @@ const Swap = ({
                 )}{' '}
                 @{formatUsdValue(receiveToken.price)}
               </li>
-              {usdValueDiff !== null && usdValuePercentage !== null && (
-                <li>
-                  Value diff <Values.Percentage value={usdValuePercentage} /> (
-                  {formatUsdValue(usdValueDiff)})
-                  {engineResultMap['1012'] && (
+              {usdValueDiff !== null &&
+                usdValuePercentage !== null &&
+                engineResultMap['1012'] && (
+                  <li>
+                    Value diff <Values.Percentage value={usdValuePercentage} />{' '}
+                    ({formatUsdValue(usdValueDiff)})
                     <SecurityLevelTagNoText
                       level={
                         processedRules.includes('1012')
@@ -193,9 +171,8 @@ const Swap = ({
                       }
                       onClick={() => handleClickRule('1012')}
                     />
-                  )}
-                </li>
-              )}
+                  </li>
+                )}
             </ul>
           </Row>
         </Col>
@@ -220,32 +197,28 @@ const Swap = ({
                 )}{' '}
                 @{formatUsdValue(minReceive.price)}
               </li>
+              <li>
+                Slippage tolerance{' '}
+                {hasReceiver ? (
+                  '-'
+                ) : (
+                  <Values.Percentage value={slippageTolerance} />
+                )}
+                {engineResultMap['1011'] && (
+                  <SecurityLevelTagNoText
+                    level={
+                      processedRules.includes('1011')
+                        ? 'proceed'
+                        : engineResultMap['1011'].level
+                    }
+                    onClick={() => handleClickRule('1011')}
+                  />
+                )}
+              </li>
             </ul>
           </Row>
         </Col>
-        <Col>
-          <Row isTitle>Slippage tolerance</Row>
-          <Row>
-            <div>
-              {hasReceiver ? (
-                '-'
-              ) : (
-                <Values.Percentage value={slippageTolerance} />
-              )}
-            </div>
-            {engineResultMap['1011'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1011')
-                    ? 'proceed'
-                    : engineResultMap['1011'].level
-                }
-                onClick={() => handleClickRule('1011')}
-              />
-            )}
-          </Row>
-        </Col>
-        {hasReceiver && (
+        {engineResultMap['1069'] && (
           <Col>
             <Row isTitle>Receiver</Row>
             <Row>
@@ -253,118 +226,46 @@ const Swap = ({
               <ul className="desc-list">
                 <li>
                   not your current address{' '}
-                  {engineResultMap['1010'] && (
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1010')
-                          ? 'proceed'
-                          : engineResultMap['1010'].level
-                      }
-                      onClick={() => handleClickRule('1010')}
-                    />
-                  )}
-                </li>
-                <li className="flex">
-                  <AddressMemo address={receiver} />
-                </li>
-                <li>
-                  <Values.AddressMark
-                    onWhitelist={receiverInWhitelist}
-                    onBlacklist={receiverInBlacklist}
-                    address={receiver}
-                    chain={chain}
-                    onChange={() => dispatch.securityEngine.init()}
+                  <SecurityLevelTagNoText
+                    level={
+                      processedRules.includes('1069')
+                        ? 'proceed'
+                        : engineResultMap['1069'].level
+                    }
+                    onClick={() => handleClickRule('1069')}
                   />
-                  {engineResultMap['1066'] && (
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1066')
-                          ? 'proceed'
-                          : engineResultMap['1066'].level
-                      }
-                      onClick={() => handleClickRule('1066')}
-                    />
-                  )}
                 </li>
               </ul>
             </Row>
           </Col>
         )}
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={requireData.id}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">contract</div>
-      </div>
-      <Table>
         <Col>
-          <Row isTitle>Protocol</Row>
+          <Row isTitle>Interact contract</Row>
           <Row>
-            <Values.Protocol value={requireData.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Deployed</Row>
-          <Row>
-            <Values.TimeSpan value={requireData.bornAt} />
-          </Row>
-        </Col>
-        {requireData.rank && (
-          <Col>
-            <Row isTitle>Popularity</Row>
-            <Row>
-              <div className="flex">
-                No.{requireData.rank} on {chain.name}
-              </div>
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>{requireData.hasInteraction ? 'Yes' : 'No'}</Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={requireData.id} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onWhitelist={contractInWhitelist}
-              onBlacklist={contractInBlacklist}
-              address={requireData.id}
-              chain={chain}
-              isContract
-              onChange={() => dispatch.securityEngine.init()}
-            />
-            {engineResultMap['1014'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1014')
-                    ? 'proceed'
-                    : engineResultMap['1014'].level
-                }
-                onClick={() => handleClickRule('1014')}
-              />
-            )}
-            {engineResultMap['1015'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1015')
-                    ? 'proceed'
-                    : engineResultMap['1015'].level
-                }
-                onClick={() => handleClickRule('1015')}
-              />
-            )}
+            <div>
+              <Values.Address address={requireData.id} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              {requireData.protocol && (
+                <li>
+                  <Values.Protocol value={requireData.protocol} />
+                </li>
+              )}
+              <li>
+                <ViewMore
+                  actionType="swap"
+                  type="contract"
+                  data={{
+                    hasInteraction: requireData.hasInteraction,
+                    bornAt: requireData.bornAt,
+                    protocol: requireData.protocol,
+                    rank: requireData.rank,
+                    address: requireData.id,
+                    chain,
+                  }}
+                />
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>

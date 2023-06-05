@@ -37,14 +37,6 @@ export interface ReceiveTokenItem extends TokenItem {
   min_raw_amount: string;
 }
 
-export interface ActionData {
-  swap?: {
-    payToken: TokenItem;
-    receiveToken: ReceiveTokenItem;
-    receiver: string;
-  };
-}
-
 export interface ParsedActionData {
   swap?: {
     payToken: TokenItem;

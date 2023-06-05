@@ -1684,7 +1684,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
-        setFooterShowShadow(avaliableHeight >= scrollInfo.y);
+        setFooterShowShadow(avaliableHeight > scrollInfo.y);
       }
     }
   }, [scrollInfo, scrollRefSize]);

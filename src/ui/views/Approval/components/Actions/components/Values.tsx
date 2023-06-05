@@ -279,7 +279,7 @@ const Address = ({
   };
   return (
     <AddressWrapper className="value-address">
-      <span title="address">{ellipsis(address)}</span>
+      <span title={address}>{ellipsis(address)}</span>
       <img
         onClick={handleClickContractId}
         src={IconExternal}

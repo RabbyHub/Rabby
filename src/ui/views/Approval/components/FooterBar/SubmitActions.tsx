@@ -72,7 +72,7 @@ export const SubmitActions: React.FC<Props> = ({
               disabled={disabledProcess}
               type="primary"
               className={clsx(
-                'w-[244px] h-[48px] rounded-[8px]',
+                'w-[246px] h-[48px] rounded-[8px]',
                 'disabled:opacity-40 disabled:bg-blue-light',
                 'before:content-none'
               )}
