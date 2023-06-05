@@ -44,7 +44,7 @@ const SecurityLevelTagNoText = ({
       return SecurityEngineLevel.closed;
     }
     return SecurityEngineLevel[level];
-  }, [level]);
+  }, [level, enable]);
 
   return (
     <Wrapper

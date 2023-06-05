@@ -27,11 +27,15 @@ const LogoWithText = ({
   text,
   icon,
   logoRadius = '',
+  logoSize = 16,
+  textStyle = {},
 }: {
   logo?: string;
   text: string;
   icon?: ReactNode;
   logoRadius?: string;
+  logoSize?: number;
+  textStyle?: React.CSSProperties;
 }) => {
   return (
     <Wrapper>
@@ -40,9 +44,13 @@ const LogoWithText = ({
         className="logo"
         style={{
           borderRadius: logoRadius,
+          width: `${logoSize}px`,
+          height: `${logoSize}px`,
         }}
       />
-      <div className="text">{text}</div>
+      <div className="text" style={textStyle}>
+        {text}
+      </div>
       {icon || null}
     </Wrapper>
   );

@@ -248,6 +248,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     return list;
   }, [engineResults]);
 
+  const resultsWithoutDisable = useMemo(() => {
+    return engineResults.filter((item) => item.enable);
+  }, [engineResults]);
+
   const connectBtnStatus = useMemo(() => {
     let disabled = false;
     let text = '';
@@ -258,7 +262,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let needProcessCount = 0;
     let cancelBtnText = 'Cancel';
     let level: Level = Level.SAFE;
-    engineResults.forEach((result) => {
+    resultsWithoutDisable.forEach((result) => {
       if (result.level === Level.SAFE) {
         safeCount++;
       } else if (result.level === Level.FORBIDDEN) {
@@ -304,15 +308,15 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       cancelBtnText,
       level,
     };
-  }, [engineResults, processedRules]);
+  }, [resultsWithoutDisable, processedRules]);
 
   const hasForbidden = useMemo(() => {
-    return engineResults.some((item) => item.level === Level.FORBIDDEN);
-  }, [engineResults]);
+    return resultsWithoutDisable.some((item) => item.level === Level.FORBIDDEN);
+  }, [resultsWithoutDisable]);
 
   const hasSafe = useMemo(() => {
-    return engineResults.some((item) => item.level === Level.SAFE);
-  }, [engineResults]);
+    return resultsWithoutDisable.some((item) => item.level === Level.SAFE);
+  }, [resultsWithoutDisable]);
 
   const isInBlacklist = useMemo(() => {
     return userData.originBlacklist.includes(origin.toLowerCase());

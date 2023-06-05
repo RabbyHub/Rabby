@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 import { Chain } from 'background/service/openapi';
-import { ContractDesc } from '@debank/rabby-api/dist/types';
+import { ContractDesc, TokenItem } from '@debank/rabby-api/dist/types';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
+import LogoWithText from '../LogoWithText';
+import { ellipsisTokenSymbol } from '@/ui/utils/token';
 
 interface ReceiverData {
   address: string;
@@ -25,6 +27,7 @@ interface ReceiverData {
   isTokenContract: boolean;
   name: string | null;
   onTransferWhitelist: boolean;
+  token?: TokenItem;
 }
 
 export interface Props {
@@ -52,6 +55,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     if (!data.contract || !data.contract[data.chain.serverId]) return null;
     return data.contract[data.chain.serverId];
   }, [data]);
+  console.log('contractOnCurrentChain', contractOnCurrentChain);
 
   const bornAt = useMemo(() => {
     if (data.contract) {
@@ -80,9 +84,57 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         </Col>
         <Col>
           <Row>Type</Row>
-          <Row>{receiverType}</Row>
+          <Row>
+            <div>
+              {receiverType}
+              {((data.contract && !contractOnCurrentChain) ||
+                data.name ||
+                contractOnCurrentChain?.multisig) && (
+                <ul className="desc-list">
+                  {contractOnCurrentChain &&
+                    contractOnCurrentChain.multisig && (
+                      <li>MultiSig: {contractOnCurrentChain.multisig.name}</li>
+                    )}
+                  {data.contract && !contractOnCurrentChain && (
+                    <li>Not on this chain</li>
+                  )}
+                  {data.name && <li>{data.name}</li>}
+                </ul>
+              )}
+            </div>
+          </Row>
         </Col>
-
+        {data.cex && (
+          <Col>
+            <Row>CEX Address</Row>
+            <Row>
+              <div>
+                <LogoWithText logo={data.cex.logo} text={data.cex.name} />
+                {(!data.cex.isDeposit || !data.cex.supportToken) && (
+                  <ul className="desc-list">
+                    {!data.cex.isDeposit && <li>Not top up address</li>}
+                    {!data.cex.supportToken && (
+                      <li>
+                        {data.token
+                          ? ellipsisTokenSymbol(data.token.symbol)
+                          : 'token'}{' '}
+                        not supported
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            </Row>
+          </Col>
+        )}
+        {data.isTokenContract && (
+          <Col>
+            <Row>Token Address</Row>
+            <Row>
+              <Values.Boolean value={data.isTokenContract} />
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row>{data.contract ? 'Deployed' : 'First on-chain'}</Row>
           <Row>
@@ -90,7 +142,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Balance</Row>
+          <Row>Address Balance</Row>
           <Row>
             <Values.USDValue value={data.usd_value} />
           </Row>
@@ -99,6 +151,14 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           <Row>Transacted before</Row>
           <Row>
             <Values.Boolean value={data.hasTransfer} />
+          </Row>
+        </Col>
+        <Col>
+          <Row>Send whitelist</Row>
+          <Row>
+            {data.onTransferWhitelist
+              ? 'On my send whitelist'
+              : 'Not on my send whitelist '}
           </Row>
         </Col>
       </Table>

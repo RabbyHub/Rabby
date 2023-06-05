@@ -6,13 +6,12 @@ import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, SendRequireData } from './utils';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import LogoWithText from './components/LogoWithText';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
+import { SecurityListItem } from './components/SecurityListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -41,13 +40,6 @@ const Send = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-    transferWhitelist: s.whitelist.whitelist,
-    transferWhiteEnable: s.whitelist.enabled,
-  }));
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -56,18 +48,6 @@ const Send = ({
     });
     return map;
   }, [engineResults]);
-
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -108,97 +88,74 @@ const Send = ({
                   <Values.AddressMemo address={actionData.to} />
                 </li>
                 {requireData.name && <li>{requireData.name}</li>}
-                {engineResultMap['1016'] && (
-                  <li>
-                    Token address
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1016')
-                          ? 'proceed'
-                          : engineResultMap['1016'].level
-                      }
-                      onClick={() => handleClickRule('1016')}
-                    />
-                  </li>
-                )}
-                {engineResultMap['1019'] && (
-                  <li>
-                    Contract address not on this chain
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1019')
-                          ? 'proceed'
-                          : engineResultMap['1019'].level
-                      }
-                      onClick={() => handleClickRule('1019')}
-                    />
-                  </li>
-                )}
+                <SecurityListItem
+                  engineResult={engineResultMap['1016']}
+                  dangerText="Token address"
+                  id="1016"
+                />
+                <SecurityListItem
+                  engineResult={engineResultMap['1019']}
+                  dangerText="Contract address not on this chain"
+                  id="1019"
+                />
                 {requireData.cex && (
                   <>
                     <li>
                       <LogoWithText
                         logo={requireData.cex.logo}
                         text={requireData.cex.name}
+                        logoSize={14}
+                        textStyle={{
+                          fontSize: '13px',
+                          lineHeight: '15px',
+                          color: '#999999',
+                          fontWeight: 'normal',
+                        }}
                       />
                     </li>
-                    {engineResultMap['1021'] && (
-                      <li>
-                        Not top up address{' '}
-                        {engineResultMap['1021'] && (
-                          <SecurityLevelTagNoText
-                            level={
-                              processedRules.includes('1021')
-                                ? 'proceed'
-                                : engineResultMap['1021'].level
-                            }
-                            onClick={() => handleClickRule('1021')}
-                          />
-                        )}
-                      </li>
-                    )}
-                    {engineResultMap['1020'] && (
-                      <li>
-                        {ellipsisTokenSymbol(actionData.token.symbol)} not
-                        supported
-                        <SecurityLevelTagNoText
-                          level={
-                            processedRules.includes('1020')
-                              ? 'proceed'
-                              : engineResultMap['1020'].level
-                          }
-                          onClick={() => handleClickRule('1020')}
-                        />
-                      </li>
-                    )}
+                    <SecurityListItem
+                      engineResult={engineResultMap['1021']}
+                      dangerText="Not top up address"
+                      id="1021"
+                    />
+                    <SecurityListItem
+                      engineResult={engineResultMap['1020']}
+                      dangerText={`${ellipsisTokenSymbol(
+                        actionData.token.symbol
+                      )} not
+                      supported`}
+                      id="1020"
+                    />
                   </>
                 )}
-                {engineResultMap['1018'] && (
-                  <li>
-                    Never transacted before
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1018')
-                          ? 'proceed'
-                          : engineResultMap['1018'].level
-                      }
-                      onClick={() => handleClickRule('1018')}
-                    />
-                  </li>
-                )}
-                {engineResultMap['1033'] && (
-                  <li>
-                    On my send whitelist
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1033')
-                          ? 'proceed'
-                          : engineResultMap['1033'].level
-                      }
-                      onClick={() => handleClickRule('1033')}
-                    />
-                  </li>
-                )}
+                <SecurityListItem
+                  engineResult={engineResultMap['1018']}
+                  warningText="Never transacted before"
+                  id="1018"
+                />
+                <SecurityListItem
+                  engineResult={engineResultMap['1033']}
+                  safeText="On my send whitelist"
+                  id="1033"
+                />
+                <li>
+                  <ViewMore
+                    type="receiver"
+                    data={{
+                      token: actionData.token,
+                      address: actionData.to,
+                      chain,
+                      eoa: requireData.eoa,
+                      cex: requireData.cex,
+                      contract: requireData.contract,
+                      usd_value: requireData.usd_value,
+                      hasTransfer: requireData.hasTransfer,
+                      isTokenContract: requireData.isTokenContract,
+                      name: requireData.name,
+                      onTransferWhitelist: !!engineResultMap['1033'],
+                    }}
+                  />
+                </li>
               </ul>
             </div>
           </Row>
