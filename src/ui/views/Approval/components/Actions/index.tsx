@@ -1,4 +1,3 @@
-import { Tooltip } from 'antd';
 import { Result } from '@debank/rabby-security-engine';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
@@ -35,6 +34,7 @@ import {
 } from './utils';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const SignTitle = styled.div`
   display: flex;
@@ -135,15 +135,15 @@ const Actions = ({
   return (
     <>
       <SignTitle>
-        <div className="left">
+        <div className="left relative">
           Sign {chain.name} Transaction
           {isSpeedUp && (
-            <Tooltip
-              overlayClassName="rectangle"
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
               title="This accelerated transaction and the original transaction, only one of which will eventually be completed"
             >
               <img src={IconSpeedUp} className="icon icon-speedup" />
-            </Tooltip>
+            </TooltipWithMagnetArrow>
           )}
         </div>
         <div
