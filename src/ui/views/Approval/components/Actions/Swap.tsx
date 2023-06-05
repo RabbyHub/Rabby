@@ -84,6 +84,8 @@ const Swap = ({
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     dispatch.securityEngine.init();
   }, []);
 
@@ -253,7 +255,6 @@ const Swap = ({
               )}
               <li>
                 <ViewMore
-                  actionType="swap"
                   type="contract"
                   data={{
                     hasInteraction: requireData.hasInteraction,
