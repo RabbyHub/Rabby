@@ -243,9 +243,23 @@ const Swap = ({
               <Values.Address address={requireData.id} chain={chain} />
             </div>
             <ul className="desc-list">
+              <li>
+                {requireData.hasInteraction
+                  ? 'Interacted before'
+                  : 'Never interacted before'}
+              </li>
               {requireData.protocol && (
                 <li>
-                  <Values.Protocol value={requireData.protocol} />
+                  <Values.Protocol
+                    value={requireData.protocol}
+                    logoSize={14}
+                    textStyle={{
+                      fontSize: '13px',
+                      lineHeight: '15px',
+                      color: '#999999',
+                      fontWeight: 'normal',
+                    }}
+                  />
                 </li>
               )}
               <li>

@@ -14,12 +14,19 @@ import {
   NFTSpenderPopup,
   NFTSpenderPopupProps,
 } from './ViewMorePopup/NFTSpenderPopup';
+import { NFTPopupProps, NFTPopup } from './ViewMorePopup/NFTPopup';
+import {
+  CollectionPopup,
+  CollectionPopupProps,
+} from './ViewMorePopup/CollectionPopup';
 
 type Props =
   | SpenderPopupProps
   | ContractPopupProps
   | ReceiverPopupProps
-  | NFTSpenderPopupProps;
+  | NFTSpenderPopupProps
+  | NFTPopupProps
+  | CollectionPopupProps;
 
 const PopupContainer = styled.div`
   .title {
@@ -60,6 +67,10 @@ const ViewMore = (props: Props) => {
         return 480;
       case 'receiver':
         return 400;
+      case 'nft':
+        return 220;
+      case 'collection':
+        return 150;
       default:
         return 400;
     }
@@ -81,6 +92,8 @@ const ViewMore = (props: Props) => {
           {props.type === 'spender' && <SpenderPopup data={props.data} />}
           {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
           {props.type === 'nftSpender' && <NFTSpenderPopup data={props.data} />}
+          {props.type === 'nft' && <NFTPopup data={props.data} />}
+          {props.type === 'collection' && <CollectionPopup data={props.data} />}
         </PopupContainer>
       </Popup>
     </>

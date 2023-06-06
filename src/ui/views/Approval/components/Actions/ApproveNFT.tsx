@@ -120,7 +120,7 @@ const ApproveNFT = ({
               <SecurityListItem
                 id="1048"
                 engineResult={engineResultMap['1048']}
-                warningText="Never Interacted before"
+                warningText="Never interacted before"
               />
 
               <SecurityListItem

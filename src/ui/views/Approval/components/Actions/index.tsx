@@ -166,11 +166,12 @@ const Actions = ({
           <div className="left">{actionName}</div>
           <div className="right">
             {data.contractCall ? (
-              <span className="flex items-center">
+              <span className="flex items-center relative">
                 Unknown action type{' '}
                 <TooltipWithMagnetArrow
-                  overlayClassName="rectangle"
+                  overlayClassName="rectangle w-[max-content]"
                   title="This signature can't be decoded by Rabby, but it doesn't imply any risk"
+                  placement="top"
                 >
                   <IconQuestionMark className="icon icon-tip" />
                 </TooltipWithMagnetArrow>

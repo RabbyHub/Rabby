@@ -184,8 +184,12 @@ const AddressMark = ({
 
 const Protocol = ({
   value,
+  logoSize,
+  textStyle,
 }: {
   value?: { name: string; logo_url: string } | null;
+  logoSize?: number;
+  textStyle?: React.CSSProperties;
 }) => {
   return (
     <>
@@ -194,6 +198,8 @@ const Protocol = ({
           logo={value.logo_url}
           text={value.name}
           logoRadius="100%"
+          logoSize={logoSize}
+          textStyle={textStyle}
         />
       ) : (
         '-'

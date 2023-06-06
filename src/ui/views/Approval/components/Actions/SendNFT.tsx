@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, SendNFTRequireData } from './utils';
-import { formatAmount } from 'ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -79,31 +78,16 @@ const SendNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              {actionData?.nft?.collection && (
-                <li>
-                  <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    {actionData?.nft?.collection?.name}
-                  </div>
-                </li>
-              )}
-              <li>
-                Floor price{' '}
-                {actionData?.nft?.collection?.floor_price ? (
-                  <>
-                    {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    ETH
-                  </>
-                ) : (
-                  '-'
-                )}
-              </li>
               {actionData?.nft?.amount > 1 && (
                 <li>Amount: {actionData?.nft?.amount}</li>
               )}
               <li>
-                <Values.Address
-                  address={actionData.nft.contract_id}
-                  chain={chain}
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft: actionData.nft,
+                    chain,
+                  }}
                 />
               </li>
             </ul>
@@ -188,16 +172,6 @@ const SendNFT = ({
           </Row>
         </Col>
       </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={actionData.to}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">send to</div>
-      </div>
     </Wrapper>
   );
 };

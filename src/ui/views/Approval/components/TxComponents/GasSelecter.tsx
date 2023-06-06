@@ -178,10 +178,10 @@ const ErrorsWrapper = styled.div`
   .item {
     display: flex;
     font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
+    font-size: 14px;
+    line-height: 16px;
     color: #333333;
-    margin-bottom: 4px;
+    margin-bottom: 10px;
     &:nth-last-child(1) {
       margin-bottom: 0;
     }

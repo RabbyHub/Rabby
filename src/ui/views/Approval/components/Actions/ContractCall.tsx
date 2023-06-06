@@ -77,6 +77,11 @@ const ContractCall = ({
                 </li>
               )}
               <li>
+                {requireData.hasInteraction
+                  ? 'Interacted before'
+                  : 'Never interacted before'}
+              </li>
+              <li>
                 <ViewMore
                   type="contract"
                   data={{

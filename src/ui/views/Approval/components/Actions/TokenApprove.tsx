@@ -262,7 +262,7 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1025"
                 engineResult={engineResultMap['1025']}
-                warningText="Never Interacted before"
+                warningText="Never interacted before"
               />
 
               <SecurityListItem

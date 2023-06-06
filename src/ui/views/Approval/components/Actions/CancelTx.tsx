@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import { sortBy } from 'lodash';
+import { maxBy } from 'lodash';
 import {
   ParsedActionData,
   CancelTxRequireData,
@@ -63,9 +63,18 @@ const Wrapper = styled.div`
   }
 `;
 
+const GasPriceTip = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: #333333;
+  margin-top: 15px;
+`;
+
 const CancelTx = ({
   data,
   requireData,
+  raw,
 }: {
   data: ParsedActionData['cancelTx'];
   requireData: CancelTxRequireData;
@@ -80,47 +89,63 @@ const CancelTx = ({
     dispatch.securityEngine.init();
   }, []);
 
-  const pendingTxs = useMemo(() => {
-    const txs: { type: string; gasPrice: number }[] = [];
-    // TODO FIXME
+  const pendingTx = useMemo(() => {
+    let tx: { type: string; gasPrice: number } | null = null;
     requireData.pendingTxs.forEach((group) => {
       let type = 'Unknown';
       if (group.action) {
         const data = group.action.actionData;
         type = getActionTypeText(data);
       }
-      group.txs.forEach((tx) => {
-        if ((tx.rawTx as any).isCancel) {
-          txs.push({
-            type: 'Cancel Pending Transaction',
-            gasPrice: Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0),
-          });
+      const target = maxBy(group.txs, (item) =>
+        Number(item.rawTx.gasPrice || item.rawTx.maxFeePerGas || 0)
+      );
+      if (target) {
+        const res = {
+          type,
+          gasPrice: Number(
+            target.rawTx.gasPrice || target.rawTx.maxFeePerGas || 0
+          ),
+        };
+        if (tx && res.gasPrice > tx.gasPrice) {
+          tx = res;
         } else {
-          txs.push({
-            type,
-            gasPrice: Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0),
-          });
+          tx = res;
         }
-      });
+      }
     });
-    return sortBy(txs, 'gasPrice').reverse();
+    return tx as { type: string; gasPrice: number } | null;
   }, [requireData]);
+
+  const canCancel = useMemo(() => {
+    if (!pendingTx) return true;
+    const currentGasPrice = Number(raw.gasPrice || raw.maxFeePerGas || 0);
+    return currentGasPrice > pendingTx.gasPrice;
+  }, [raw, pendingTx]);
 
   return (
     <Wrapper>
       {requireData.pendingTxs.length > 0 && (
-        <div className="container">
-          <div className="internal-transaction">
-            Pending transactions with nonce # {Number(data?.nonce)}
-            <div className="bg"></div>
-          </div>
-          {pendingTxs.map((tx) => (
-            <div className="tx-item flex justify-between">
-              <span>{tx.type}</span>
-              <span>{tx.gasPrice / 1e9} Gwei</span>
+        <>
+          <div className="container">
+            <div className="internal-transaction">
+              Transaction to be canceled
+              <div className="bg"></div>
             </div>
-          ))}
-        </div>
+            {pendingTx && (
+              <div className="tx-item flex justify-between">
+                <span>{pendingTx.type}</span>
+                <span>{pendingTx.gasPrice / 1e9} Gwei</span>
+              </div>
+            )}
+          </div>
+          {pendingTx && !canCancel && (
+            <GasPriceTip>
+              Set gas price more than {pendingTx.gasPrice / 1e9} Gwei to cancel
+              the pending transaction
+            </GasPriceTip>
+          )}
+        </>
       )}
     </Wrapper>
   );

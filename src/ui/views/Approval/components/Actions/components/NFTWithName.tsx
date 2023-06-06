@@ -35,7 +35,13 @@ const Wrapper = styled.div`
   }
 `;
 
-const NFTWithName = ({ nft }: { nft: NFTItem }) => {
+const NFTWithName = ({
+  nft,
+  textStyle,
+}: {
+  nft: NFTItem;
+  textStyle?: React.CSSProperties;
+}) => {
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
     <>
@@ -47,7 +53,9 @@ const NFTWithName = ({ nft }: { nft: NFTItem }) => {
           content={nft?.content}
           type={nft?.content_type}
         />
-        <div className="name">{nft?.name || '-'}</div>
+        <div className="name" style={textStyle}>
+          {nft?.name || '-'}
+        </div>
       </Wrapper>
       {focusingNFT && (
         <ModalPreviewNFTItem
