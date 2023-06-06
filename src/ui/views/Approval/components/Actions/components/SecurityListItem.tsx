@@ -32,7 +32,7 @@ export const SecurityListItem: React.FC<Props> = ({
   }
 
   return (
-    <li>
+    <li className="text-13 leading-[15px]">
       <span>
         {engineResult.level === Level.DANGER && dangerText}
         {engineResult.level === Level.WARNING && warningText}

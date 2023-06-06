@@ -63,7 +63,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>Revoke from</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -86,6 +86,7 @@ const TokenApprove = ({
                     ...requireData,
                     spender: actionData.spender,
                     chain,
+                    isRevoke: true,
                   }}
                 />
               </li>

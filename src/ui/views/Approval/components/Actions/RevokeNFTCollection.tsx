@@ -94,7 +94,7 @@ const RevokeNFTCollection = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>Revoke from</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -112,11 +112,12 @@ const RevokeNFTCollection = ({
 
               <li>
                 <ViewMore
-                  type="nftSpender"
+                  type="spender"
                   data={{
                     ...requireData,
                     spender: actionData.spender,
                     chain,
+                    isRevoke: true,
                   }}
                 />
               </li>

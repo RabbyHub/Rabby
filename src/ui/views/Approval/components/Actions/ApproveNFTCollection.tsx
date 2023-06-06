@@ -107,7 +107,7 @@ const ApproveNFTCollection = ({
         </Col>
 
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>Approve to</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -149,7 +149,7 @@ const ApproveNFTCollection = ({
 
               <li>
                 <ViewMore
-                  type="nftSpender"
+                  type="spender"
                   data={{
                     ...requireData,
                     spender: actionData.spender,

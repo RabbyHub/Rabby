@@ -42,6 +42,10 @@ const PopupContainer = styled.div`
   }
   .view-more-table {
     .row {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+
       &:nth-child(1) {
         max-width: 140px;
         border-right: 1px solid #ededed;
