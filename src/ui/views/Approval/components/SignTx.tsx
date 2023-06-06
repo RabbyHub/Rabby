@@ -1158,7 +1158,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         tx.from,
         account,
         params,
-        safeInfo.version
+        safeInfo.version,
+        chain.network
       );
     }
     const typedData = await wallet.gnosisGenerateTypedData();

@@ -22,7 +22,7 @@ const ImportGnosisAddress = () => {
   const [form] = useForm();
   const { data: chainList, runAsync, error, loading } = useRequest(
     async (address: string) => {
-      const res = await wallet.getGnosisChainList(address);
+      const res = await wallet.fetchGnosisChainList(address);
       if (!res.length) {
         throw new Error('该地址没有部署在任何链上，不支持添加');
       }

@@ -3,7 +3,7 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isNil } from 'lodash';
+import { groupBy, isNil, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -1130,7 +1130,7 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
-  getGnosisChainList = (address: string) => {
+  fetchGnosisChainList = (address: string) => {
     if (!isAddress(address)) {
       return Promise.reject(new Error('Invalid address'));
     }
@@ -1148,6 +1148,22 @@ export class WalletController extends BaseController {
     ).then((res) => res.filter((item) => item) as Chain[]);
   };
 
+  syncGnosisNetworks = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      return;
+    }
+    Object.entries(keyring.networkIdsMap).forEach(
+      async ([address, networks]) => {
+        const chainList = await this.fetchGnosisChainList(address);
+        keyring.setNetworkIds(
+          address,
+          uniq((networks || []).concat(chainList.map((chain) => chain.network)))
+        );
+      }
+    );
+  };
+
   clearGnosisTransaction = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction || keyring.safeInstance) {
@@ -1156,9 +1172,21 @@ export class WalletController extends BaseController {
     }
   };
 
+  /**
+   * @deprecated
+   */
   getGnosisNetworkId = (address: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     const networkId = keyring.networkIdMap[address.toLowerCase()];
+    if (networkId === undefined) {
+      throw new Error(`Address ${address} is not in keyring"`);
+    }
+    return networkId;
+  };
+
+  getGnosisNetworkIds = (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const networkId = keyring.networkIdsMap[address.toLowerCase()];
     if (networkId === undefined) {
       throw new Error(`Address ${address} is not in keyring"`);
     }
@@ -1191,18 +1219,21 @@ export class WalletController extends BaseController {
     safeAddress: string,
     account: Account,
     tx,
-    version: string
+    version: string,
+    networkId: string
   ) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       buildinProvider.currentProvider.currentAccount = account.address;
       buildinProvider.currentProvider.currentAccountType = account.type;
       buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+      buildinProvider.currentProvider.chainId = networkId;
       await keyring.buildTransaction(
         safeAddress,
         tx,
         new ethers.providers.Web3Provider(buildinProvider.currentProvider),
-        version
+        version,
+        networkId
       );
     } else {
       throw new Error('No Gnosis keyring found');
@@ -1215,6 +1246,46 @@ export class WalletController extends BaseController {
       throw new Error('No transaction in Gnosis keyring found');
     }
     return keyring.postTransaction();
+  };
+
+  getGnosisAllPendingTxs = async (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error('No Gnosis keyring found');
+    }
+    const networks = keyring.networkIdsMap[address];
+    if (!networks || !networks.length) {
+      return null;
+    }
+    const results = await Promise.all(
+      networks.map(async (networkId) => {
+        try {
+          const { results } = await Safe.getPendingTransactions(
+            address,
+            networkId
+          );
+          return {
+            networkId,
+            txs: results,
+          };
+        } catch (e) {
+          console.error(e);
+          return {
+            networkId,
+            txs: [],
+          };
+        }
+      })
+    );
+
+    const total = results.reduce((t, item) => {
+      return t + item.txs.length;
+    }, 0);
+
+    return {
+      total,
+      results,
+    };
   };
 
   getGnosisOwners = async (

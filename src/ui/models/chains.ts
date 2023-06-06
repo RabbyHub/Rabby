@@ -15,15 +15,14 @@ type IState = {
 
   gnosisPendingCount: number;
 
-  safeInfo: SafeInfo | null;
-
-  gnosisNetworkId: string;
+  gnosisNetworkIds: string[];
 };
 
 export const chains = createModel<RootModel>()({
   name: 'chains',
   state: <IState>{
     currentConnection: null,
+    gnosisNetworkIds: [] as string[],
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -35,5 +34,27 @@ export const chains = createModel<RootModel>()({
         { ...state }
       );
     },
+  },
+  selectors(slice) {
+    return {
+      isCurrentAccountGnosis() {
+        return (rootState: RabbyRootState) => {
+          return (
+            rootState.account.currentAccount?.type === KEYRING_CLASS.GNOSIS
+          );
+        };
+      },
+      isShowGnosisWrongChainAlert() {
+        return slice((state) => {
+          if (!state.currentConnection) {
+            return false;
+          }
+
+          const chain = CHAINS[state.currentConnection.chain];
+
+          return !state.gnosisNetworkIds.includes(chain.network);
+        });
+      },
+    };
   },
 });

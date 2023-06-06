@@ -39,6 +39,7 @@ import IconTagYou from 'ui/assets/tag-you.svg';
 import IconInformation from 'ui/assets/information.svg';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { LoadingOutlined } from '@ant-design/icons';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -333,7 +334,8 @@ const GnosisTransactionItem = ({
       account.address,
       tmpBuildAccount,
       params,
-      safeInfo.version
+      safeInfo.version,
+      networkId
     );
     await wallet.setGnosisTransactionHash(data.safeTxHash);
     await Promise.all(
@@ -416,16 +418,11 @@ const GnosisTransactionItem = ({
   );
 };
 
-export const GnosisTransactionQueueList = (props: {
-  chain: CHAINS_ENUM;
-  safeInfo?: SafeInfo | null;
-  txs: SafeTransactionItem[];
-  loading?: boolean;
-}) => {
-  console.log(props);
-  const { chain, safeInfo, txs, loading } = props;
-  const wallet = useWallet();
+export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
+  const { chain } = props;
   const networkId = CHAINS[chain].network;
+  const wallet = useWallet();
+  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
   const [transactionsGroup, setTransactionsGroup] = useState<
     Record<string, SafeTransactionItem[]>
@@ -439,26 +436,17 @@ export const GnosisTransactionQueueList = (props: {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadFaild, setIsLoadFaild] = useState(false);
 
-  const { loadings, data: safeData } = useRabbySelector((state) => state.safe);
-
-  const dispatch = useRabbyDispatch();
-  console.log(loadings, safeData, props, isLoading);
-
-  const init = async (
-    safeInfo: SafeInfo | undefined | null,
-    txs: SafeTransactionItem[],
-    networkId: string
-  ) => {
-    if (!safeInfo) {
-      return;
-    }
+  const init = async () => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
+      const [info, txs] = await Promise.all([
+        Safe.getSafeInfo(account.address, networkId),
+        Safe.getPendingTransactions(account.address, networkId),
+      ]);
       const txHashValidation: boolean[] = [];
-      for (let i = 0; i < txs.length; i++) {
-        const safeTx = txs[i];
+      for (let i = 0; i < txs.results.length; i++) {
+        const safeTx = txs.results[i];
         const tx: SafeTransactionDataPartial = {
-          chainId: Number(networkId),
           data: safeTx.data || '0x',
           gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
           gasToken: safeTx.gasToken,
@@ -474,13 +462,25 @@ export const GnosisTransactionQueueList = (props: {
           safeTx.safe,
           account,
           tx,
-          safeInfo.version
+          info.version,
+          networkId
         );
         const hash = await wallet.getGnosisTransactionHash();
         txHashValidation.push(hash === safeTx.safeTxHash);
       }
-
-      const transactions = txs
+      const owners = await wallet.getGnosisOwners(
+        account,
+        account.address,
+        info.version,
+        networkId
+      );
+      const comparedOwners = crossCompareOwners(info.owners, owners);
+      setIsLoading(false);
+      setSafeInfo({
+        ...info,
+        owners: comparedOwners,
+      });
+      const transactions = txs.results
         .filter((safeTx, index) => {
           if (!txHashValidation[index]) return false;
           const tx: SafeTransactionDataPartial = {
@@ -502,11 +502,11 @@ export const GnosisTransactionQueueList = (props: {
               confirm.signature,
               confirm.owner,
               confirm.signatureType,
-              safeInfo.version,
-              safeInfo.address,
+              info.version,
+              info.address,
               tx,
               Number(networkId),
-              safeInfo.owners
+              comparedOwners
             )
           );
         })
@@ -516,9 +516,7 @@ export const GnosisTransactionQueueList = (props: {
             : 1;
         });
       setTransactionsGroup(groupBy(transactions, 'nonce'));
-      setIsLoading(false);
     } catch (e) {
-      console.log(e);
       setIsLoading(false);
       setIsLoadFaild(true);
     }
@@ -539,7 +537,6 @@ export const GnosisTransactionQueueList = (props: {
     try {
       setIsSubmitting(true);
       const params = {
-        chainId: Number(networkId),
         from: toChecksumAddress(data.safe),
         to: data.to,
         data: data.data || '0x',
@@ -553,7 +550,8 @@ export const GnosisTransactionQueueList = (props: {
         currentAccount.address,
         account,
         params,
-        safeInfo?.version
+        safeInfo?.version,
+        networkId
       );
       await Promise.all(
         data.confirmations.map((confirm) => {
@@ -577,9 +575,8 @@ export const GnosisTransactionQueueList = (props: {
   };
 
   useEffect(() => {
-    console.log('???', networkId);
-    init(safeInfo, txs, networkId);
-  }, [safeInfo, txs, networkId]);
+    init();
+  }, []);
 
   return (
     <div className="queue-list">
@@ -618,11 +615,11 @@ export const GnosisTransactionQueueList = (props: {
         )
       ) : (
         <div className="tx-history__empty">
-          {isLoading || loading ? (
+          {isLoading ? (
             <>
-              <SvgIconLoading className="icon icon-loading" fill="#707280" />
-              <p className="text-14 text-gray-content mt-24">
-                {t('Loading data')}
+              <LoadingOutlined className="text-24 text-gray-content" />
+              <p className="text-14 text-gray-content mt-12">
+                {t('Loading pending transactions')}
               </p>
             </>
           ) : isLoadFaild ? (
@@ -638,7 +635,7 @@ export const GnosisTransactionQueueList = (props: {
           ) : (
             <>
               <img className="no-data" src="./images/nodata-tx.png" />
-              <p className="text-14 text-gray-content mt-12">
+              <p className="text-14 text-gray-content mt-8">
                 {t('No pending transactions')}
               </p>
             </>
@@ -652,6 +649,7 @@ export const GnosisTransactionQueueList = (props: {
         title={t('You can submit this transaction using any address')}
         onCancel={handleCancel}
         isLoading={isSubmitting}
+        networkId={networkId}
       />
     </div>
   );

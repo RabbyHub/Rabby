@@ -31,6 +31,30 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { GnosisTransactionQueueList } from './GnosisTransactionQueueList';
 import './style.less';
+import { sortBy } from 'lodash';
+import { useRequest } from 'ahooks';
+
+const getTabs = (
+  networks: string[],
+  pendingMap: Record<string, SafeTransactionItem[]>
+) => {
+  const res = networks?.map((networkId) => {
+    const chain = Object.values(CHAINS).find(
+      (chain) => chain.network === networkId
+    );
+    if (!chain) {
+      return;
+    }
+    const pendingTxs = pendingMap[chain?.network] || [];
+    return {
+      title: `${chain?.name} (${pendingTxs.length})`,
+      key: chain.enum,
+      chain,
+      count: pendingTxs.length || 0,
+    };
+  });
+  return sortBy(res, 'count').reverse();
+};
 
 const GnosisTransactionQueue = () => {
   const wallet = useWallet();
@@ -49,55 +73,56 @@ const GnosisTransactionQueue = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadFaild, setIsLoadFaild] = useState(false);
 
-  const { loadings, data: safeData, networks } = useRabbySelector(
-    (state) => state.safe
+  const { gnosisNetworkIds } = useRabbySelector((state) => state.chains);
+
+  const [networks, setNetworks] = useState(gnosisNetworkIds);
+  const [tabs, setTabs] = useState(getTabs(networks, {}));
+  const [activeKey, setActiveKey] = useState<CHAINS_ENUM | null>(
+    tabs[0]?.key || null
   );
 
-  const dispatch = useRabbyDispatch();
-  console.log(loadings, safeData);
-
-  const [activeKey, setActiveKey] = useState<CHAINS_ENUM | null>();
-
-  const tabs = useMemo(() => {
-    return networks?.map((networkId) => {
-      const chain = Object.values(CHAINS).find(
-        (chain) => chain.network === networkId
-      );
-      if (!chain) {
-        return;
+  useRequest(
+    async () => {
+      const account = (await wallet.syncGetCurrentAccount())!;
+      if (account?.address && account?.type === KEYRING_CLASS.GNOSIS) {
+        return wallet.getGnosisNetworkIds(account?.address);
       }
-      const loading = loadings[chain?.enum];
-      const pendingTxs = safeData[chain?.enum]?.pendingTxs || [];
-      return {
-        title: `${chain?.name} ${loading ? '' : `(${pendingTxs.length})`}`,
-        key: chain.enum,
-        chain,
-      };
-    });
-  }, [networks, loadings, safeData]);
+    },
+    {
+      refreshDeps: [],
 
-  useEffect(() => {
-    dispatch.safe.getAllChainsSafeData();
-  }, []);
-
-  useEffect(() => {
-    if (networks?.length) {
-      setActiveKey(tabs?.[0]?.key);
+      onSuccess(res) {
+        if (res) {
+          setNetworks(res);
+        }
+      },
     }
-  }, [networks]);
+  );
 
-  const activeData = useMemo(() => {
-    if (!activeKey) {
-      return;
+  useRequest(
+    async () => {
+      const account = (await wallet.syncGetCurrentAccount())!;
+      if (account?.address && account?.type === KEYRING_CLASS.GNOSIS) {
+        return wallet.getGnosisAllPendingTxs(account?.address);
+      }
+    },
+    {
+      refreshDeps: [],
+      onSuccess(res) {
+        if (res) {
+          const t = getTabs(
+            networks,
+            res.results.reduce((res, item) => {
+              res[item.networkId] = item.txs;
+              return res;
+            }, {} as Record<string, SafeTransactionItem[]>)
+          );
+          setTabs(t);
+          setActiveKey(t[0]?.key || null);
+        }
+      },
     }
-    const data = safeData[activeKey];
-    return {
-      chain: activeKey,
-      txs: data?.pendingTxs || [],
-      safeInfo: data?.safeInfo,
-      loading: loadings[activeKey],
-    };
-  }, [activeKey, safeData, loadings]);
+  );
 
   return (
     <div className="queue">
@@ -112,7 +137,7 @@ const GnosisTransactionQueue = () => {
                   activeKey === tab?.key && 'is-active'
                 )}
                 onClick={() => {
-                  setActiveKey(tab?.key);
+                  setActiveKey(tab?.key || null);
                 }}
                 key={tab?.key}
               >
@@ -122,8 +147,8 @@ const GnosisTransactionQueue = () => {
           })}
         </div>
       </div>
-      {activeData && !activeData.loading && (
-        <GnosisTransactionQueueList {...activeData} />
+      {activeKey && (
+        <GnosisTransactionQueueList chain={activeKey} key={activeKey} />
       )}
     </div>
   );

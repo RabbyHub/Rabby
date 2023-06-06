@@ -62,7 +62,7 @@ const GnonisSafeInfo = ({
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const { value: safeInfo, error, loading } = useAsync(async () => {
-    const networks = await wallet.getGnosisNetworkId(address);
+    const networks = await wallet.getGnosisNetworkIds(address);
     const res = await Promise.all(
       networks.map(async (networkId) => {
         const info = await Safe.getSafeInfo(address, networkId);

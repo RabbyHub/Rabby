@@ -70,7 +70,7 @@ export const safe = createModel<RootModel>()({
     },
   },
 
-  selectors(slice, createSelector) {
+  selectors(slice) {
     return {
       isCurrentAccountGnosis() {
         return (rootState: RabbyRootState) => {
@@ -91,21 +91,7 @@ export const safe = createModel<RootModel>()({
           return !state.networks.includes(chain.network);
         };
       },
-      // isShowGnosisWrongChainAlert() {
-      //   return createSelector(
-      //     slice,
-      //     (rootState) => rootState.chains,
-      //     (state, chains) => {
-      //       const chainEnum = chains.currentConnection?.chain;
-      //       if (!chainEnum) {
-      //         return false;
-      //       }
 
-      //       const chain = CHAINS[chainEnum];
-      //       return !state.networks.includes(chain.network);
-      //     }
-      //   );
-      // },
       gnosisPendingCount() {
         return slice((state) =>
           Object.values(state?.data || {}).reduce((total, item) => {
@@ -122,7 +108,7 @@ export const safe = createModel<RootModel>()({
       if (!currentAccount) {
         return;
       }
-      const networks = await store?.app.wallet.getGnosisNetworkId(
+      const networks = await store?.app.wallet.getGnosisNetworkIds(
         currentAccount.address
       );
       dispatch.safe.setField({

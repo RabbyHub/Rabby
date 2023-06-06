@@ -69,6 +69,7 @@ import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
+import { useRequest } from 'ahooks';
 
 const GnosisAdminItem = ({
   accounts,
@@ -168,8 +169,10 @@ const Dashboard = () => {
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const [startAnimate, setStartAnimate] = useState(false);
-  const isGnosis = useRabbyGetter((s) => s.safe.isCurrentAccountGnosis);
-  const gnosisPendingCount = useRabbyGetter((s) => s.safe.gnosisPendingCount);
+  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
+  const gnosisPendingCount = useRabbySelector(
+    (s) => s.chains.gnosisPendingCount
+  );
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
 
@@ -193,16 +196,60 @@ const Dashboard = () => {
     getCurrentAccount();
   }, []);
 
+  useRequest(
+    async () => {
+      if (
+        currentAccount?.address &&
+        currentAccount?.type === KEYRING_TYPE.GnosisKeyring
+      ) {
+        return wallet.getGnosisNetworkIds(currentAccount.address);
+      }
+    },
+    {
+      refreshDeps: [currentAccount?.address, currentAccount?.type],
+      onBefore() {
+        dispatch.chains.setField({
+          gnosisNetworkIds: [],
+        });
+      },
+      onSuccess(res) {
+        if (res) {
+          dispatch.chains.setField({
+            gnosisNetworkIds: res,
+          });
+        }
+      },
+    }
+  );
+
+  useRequest(
+    async () => {
+      if (
+        currentAccount?.address &&
+        currentAccount?.type === KEYRING_TYPE.GnosisKeyring
+      ) {
+        return wallet.getGnosisAllPendingTxs(currentAccount.address);
+      }
+    },
+    {
+      refreshDeps: [currentAccount?.address, currentAccount?.type],
+      onBefore() {
+        dispatch.chains.setField({
+          gnosisPendingCount: 0,
+        });
+      },
+      onSuccess(res) {
+        console.log(res);
+        dispatch.chains.setField({
+          gnosisPendingCount: res?.total || 0,
+        });
+      },
+    }
+  );
+
   useEffect(() => {
     if (currentAccount) {
-      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-        dispatch.safe.setField({
-          data: {},
-          loadings: {},
-          networks: [],
-        });
-        dispatch.safe.getAllChainsSafeData();
-      } else {
+      if (currentAccount.type !== KEYRING_TYPE.GnosisKeyring) {
         dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
 
@@ -566,7 +613,7 @@ const Dashboard = () => {
     }
   }, [showNFT]);
   const showGnosisWrongChainAlert = useRabbyGetter(
-    (s) => s.safe.isShowGnosisWrongChainAlert
+    (s) => s.chains.isShowGnosisWrongChainAlert
   );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
