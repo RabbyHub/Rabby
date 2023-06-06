@@ -6,6 +6,7 @@ import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
+import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 const NFTBalanceChange = ({
   data,
@@ -204,7 +205,8 @@ const BalanceChange = ({
           )}
           {data.error && (
             <Col>
-              <Row className="text-14 font-medium">
+              <Row className="text-14 font-medium flex">
+                <img src={IconAlert} className="w-[15px] mr-6" />
                 {data.error.msg} #{data.error.code}
               </Row>
             </Col>

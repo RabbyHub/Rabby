@@ -15,6 +15,7 @@ import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -182,6 +183,11 @@ const ErrorsWrapper = styled.div`
     line-height: 16px;
     color: #333333;
     margin-bottom: 10px;
+    align-items: flex-start;
+    .icon-alert {
+      width: 15px;
+      margin-right: 8px;
+    }
     &:nth-last-child(1) {
       margin-bottom: 0;
     }
@@ -624,6 +630,7 @@ const GasSelector = ({
           <ErrorsWrapper>
             {errors.map((error) => (
               <div className="item" key={error.code}>
+                <img src={IconAlert} className="icon icon-alert" />
                 {error.msg} #{error.code}
               </div>
             ))}
