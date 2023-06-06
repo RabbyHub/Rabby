@@ -20,6 +20,7 @@ import {
   RevokeTokenApproveAction,
   WrapTokenAction,
   UnWrapTokenAction,
+  PushMultiSigAction,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -94,6 +95,7 @@ export interface ParsedActionData {
   cancelTx?: {
     nonce: string;
   };
+  pushMultiSig?: PushMultiSigAction;
 }
 
 const calcSlippageTolerance = (base: string, actual: string) => {
@@ -252,6 +254,11 @@ export const parseAction = (
       },
     };
   }
+  if (data?.type === 'push_multisig') {
+    return {
+      pushMultiSig: data.data as PushMultiSigAction,
+    };
+  }
   return {
     contractCall: {},
   };
@@ -377,6 +384,11 @@ export interface CancelTxRequireData {
   pendingTxs: TransactionGroup[];
 }
 
+export interface PushMultiSigRequireData {
+  contract: Record<string, ContractDesc> | null;
+  id: string;
+}
+
 export type ActionRequireData =
   | SwapRequireData
   | ApproveTokenRequireData
@@ -388,6 +400,7 @@ export type ActionRequireData =
   | ContractCallRequireData
   | CancelTxRequireData
   | WrapTokenRequireData
+  | PushMultiSigRequireData
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -840,6 +853,19 @@ export const fetchActionRequiredData = async ({
       spender: actionData.revokeNFTCollection.spender,
     });
   }
+  if (actionData.pushMultiSig) {
+    const result: PushMultiSigRequireData = {
+      contract: null,
+      id: actionData.pushMultiSig.multisig_id,
+    };
+    const { desc } = await wallet.openapi.addrDesc(
+      actionData.pushMultiSig.multisig_id
+    );
+    if (desc.contract) {
+      result.contract = desc.contract;
+    }
+    return result;
+  }
   if (actionData.contractCall && contractCall) {
     const result: ContractCallRequireData = {
       contract: null,
@@ -1118,6 +1144,9 @@ export const getActionTypeText = (data: ParsedActionData) => {
   }
   if (data.cancelTx) {
     return 'Cancel Pending Transaction';
+  }
+  if (data.pushMultiSig) {
+    return 'Submit Multisign Transaction';
   }
   if (data.contractCall) {
     return 'Contract Call';

@@ -123,7 +123,7 @@ const SendNFT = ({
                         textStyle={{
                           fontSize: '13px',
                           lineHeight: '15px',
-                          color: '#999999',
+                          color: '#4B4D59',
                           fontWeight: 'normal',
                         }}
                       />

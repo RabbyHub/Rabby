@@ -145,9 +145,15 @@ const BalanceChange = ({
     return (
       <div className="token-balance-change">
         <div className="token-balance-change-content">
-          <div className="token-balance-change-content-header">
-            Unsupported Transaction Simulation
-          </div>
+          <Table>
+            <Col>
+              <Row>
+                <span className="text-14 text-gray-subTitle font-normal">
+                  Transaction Simulation Not Supported
+                </span>
+              </Row>
+            </Col>
+          </Table>
         </div>
       </div>
     );
@@ -157,13 +163,17 @@ const BalanceChange = ({
     return (
       <div className="token-balance-change">
         <div className="token-balance-change-content">
-          <div className="token-balance-change-content-header">
-            Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
-          </div>
           <Table>
             <Col>
               <Row>
-                <span className="text-14 text-gray-common font-normal">
+                <span className="text-14 text-gray-subTitle font-normal">
+                  Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
+                </span>
+              </Row>
+            </Col>
+            <Col>
+              <Row>
+                <span className="text-14 text-gray-subTitle font-normal">
                   Fail to fetch balance change
                 </span>
               </Row>
@@ -180,7 +190,7 @@ const BalanceChange = ({
         <Table>
           <Col>
             <Row>
-              <span className="text-14 text-gray-common font-normal">
+              <span className="text-14 text-gray-subTitle font-normal">
                 Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
               </span>
             </Row>
@@ -188,18 +198,14 @@ const BalanceChange = ({
           {!hasChange && isSuccess && (
             <Col>
               <Row>
-                <span className="text-14 text-gray-common font-normal">
-                  No balance change
-                </span>
+                <span className="text-15 font-medium">No balance change</span>
               </Row>
             </Col>
           )}
           {data.error && (
             <Col>
-              <Row>
-                <span className="text-14 text-gray-common font-normal">
-                  {data.error.msg} #{data.error.code}
-                </span>
+              <Row className="text-14 font-medium">
+                {data.error.msg} #{data.error.code}
               </Row>
             </Col>
           )}

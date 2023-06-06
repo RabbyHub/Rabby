@@ -8,7 +8,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
-import { maxBy, set } from 'lodash';
+import { maxBy } from 'lodash';
 import {
   Chain,
   ExplainTxResponse,
@@ -38,7 +38,7 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import { useScroll, useMeasure } from 'react-use';
+import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
@@ -840,11 +840,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const securityLevel = useMemo(() => {
-    if (engineResults.some((result) => result.level === Level.FORBIDDEN))
+    const enableResults = engineResults.filter((result) => result.enable);
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
       return Level.FORBIDDEN;
-    if (engineResults.some((result) => result.level === Level.DANGER))
+    if (enableResults.some((result) => result.level === Level.DANGER))
       return Level.DANGER;
-    if (engineResults.some((result) => result.level === Level.WARNING))
+    if (enableResults.some((result) => result.level === Level.WARNING))
       return Level.WARNING;
     return undefined;
   }, [engineResults]);
@@ -1617,13 +1618,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
-    const hasForbidden = engineResults.find(
+    const enableResults = engineResults.filter((item) => item.enable);
+    const hasForbidden = enableResults.find(
       (result) => result.level === Level.FORBIDDEN
     );
-    const hasSafe = !!engineResults.find(
+    const hasSafe = !!enableResults.find(
       (result) => result.level === Level.SAFE
     );
-    const needProcess = engineResults.filter(
+    const needProcess = enableResults.filter(
       (result) =>
         (result.level === Level.DANGER || result.level === Level.WARNING) &&
         !processedRules.includes(result.id)
@@ -1813,6 +1815,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
               securityCheckStatus === 'loading' ||
               !canProcess ||
+              !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult
             }
           />

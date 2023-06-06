@@ -18,6 +18,7 @@ import TokenApprove from './TokenApprove';
 import RevokeTokenApprove from './RevokeTokenApprove';
 import WrapToken from './WrapToken';
 import UnWrapToken from './UnWrapToken';
+import PushMultiSig from './PushMultiSig';
 import {
   ActionRequireData,
   ApproveNFTRequireData,
@@ -25,6 +26,7 @@ import {
   CancelTxRequireData,
   ContractCallRequireData,
   ParsedActionData,
+  PushMultiSigRequireData,
   RevokeNFTRequireData,
   RevokeTokenApproveRequireData,
   SendRequireData,
@@ -285,6 +287,13 @@ const Actions = ({
             />
           )}
           {data?.deployContract && <DeployContract />}
+          {data?.pushMultiSig && (
+            <PushMultiSig
+              data={data.pushMultiSig}
+              requireData={requireData as PushMultiSigRequireData}
+              chain={chain}
+            />
+          )}
           {data.contractCall && (
             <ContractCall
               data={data.contractCall}

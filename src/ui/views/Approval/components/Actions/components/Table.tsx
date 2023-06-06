@@ -50,15 +50,15 @@ const RowWrapper = styled.div`
   &.title {
     font-size: 12px;
     line-height: 14px;
-    color: #666666;
+    color: #333333;
     border-right: 1px solid #ededed;
     width: 120px;
     flex-shrink: 0;
   }
   .desc-list {
-    font-size: 12px;
-    line-height: 14px;
-    color: #999999;
+    font-size: 13px;
+    line-height: 15px;
+    color: #4b4d59;
     margin: 0;
     font-weight: 400;
     li {
