@@ -248,7 +248,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>Interact contract</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />

@@ -1,16 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
-import AddressMemo from './components/AddressMemo';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
+import { ProtocolListItem } from './components/ProtocolListItem';
+import ViewMore from './components/ViewMore';
 
 const Wrapper = styled.div`
   .header {
@@ -45,41 +44,6 @@ const TokenApprove = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const { userData } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
-
-  const spenderInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, actionData.spender) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const spenderInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, actionData.spender);
-    });
-  }, [userData, requireData, chain]);
-
-  const timeSpan = useMemo(() => {
-    const bornAt = requireData.bornAt;
-
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -98,72 +62,34 @@ const TokenApprove = ({
             />
           </Row>
         </Col>
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={actionData.spender}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">revoke from</div>
-      </div>
-      <Table>
         <Col>
-          <Row isTitle>Protocol</Row>
+          <Row isTitle>Interact contract</Row>
           <Row>
-            <Values.Protocol value={requireData.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Type</Row>
-          <Row>{requireData.isEOA ? 'EOA' : 'Contract'}</Row>
-        </Col>
-        <Col>
-          <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
-          <Row>{timeSpan}</Row>
-        </Col>
-        <Col>
-          <Row
-            isTitle
-            tip="The total risk exposure approved to this spender address"
-          >
-            Risk exposure
-          </Row>
-          <Row>
-            <Values.USDValue value={requireData.riskExposure} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Popularity</Row>
-          <Row>
-            {requireData.rank ? `No.${requireData.rank} on ${chain.name}` : '-'}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>
-            <Values.Boolean value={requireData.hasInteraction} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={actionData.spender} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onWhitelist={spenderInWhitelist}
-              onBlacklist={spenderInBlacklist}
-              address={actionData.spender}
-              chain={chain}
-              isContract
-              onChange={() => dispatch.securityEngine.init()}
-            />
+            <div>
+              <Values.Address address={actionData.spender} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              <ProtocolListItem protocol={requireData.protocol} />
+
+              <li>
+                <span>
+                  {requireData.hasInteraction
+                    ? 'Interacted before'
+                    : 'Never Interacted before'}
+                </span>
+              </li>
+
+              <li>
+                <ViewMore
+                  type="spender"
+                  data={{
+                    ...requireData,
+                    spender: actionData.spender,
+                    chain,
+                  }}
+                />
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>

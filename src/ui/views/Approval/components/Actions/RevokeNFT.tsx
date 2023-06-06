@@ -1,16 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress } from '@/ui/utils';
+import { formatAmount } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
-import AddressMemo from './components/AddressMemo';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
+import { ProtocolListItem } from './components/ProtocolListItem';
+import ViewMore from './components/ViewMore';
 
 const Wrapper = styled.div`
   .header {
@@ -63,36 +62,6 @@ const RevokeNFT = ({
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
 
-  const spenderInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, actionData.spender) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const spenderInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, actionData.spender);
-    });
-  }, [userData, requireData, chain]);
-
-  const timeSpan = useMemo(() => {
-    const bornAt = requireData.bornAt;
-
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -132,76 +101,34 @@ const RevokeNFT = ({
             </ul>
           </Row>
         </Col>
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={actionData.spender}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">revoke from</div>
-      </div>
-      <Table>
         <Col>
-          <Row isTitle>Protocol</Row>
+          <Row isTitle>Interact contract</Row>
           <Row>
-            <Values.Protocol value={requireData.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Type</Row>
-          <Row>{requireData.isEOA ? 'EOA' : 'Contract'}</Row>
-        </Col>
-        <Col>
-          <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
-          <Row>{timeSpan}</Row>
-        </Col>
-        {requireData.riskExposure !== null && (
-          <Col>
-            <Row
-              isTitle
-              tip="The USD value of the top NFT that has approved to this spender address"
-            >
-              Risk exposure
-            </Row>
-            <Row>
-              <Values.Text>
-                {formatUsdValue(requireData.riskExposure)}
-              </Values.Text>
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Popularity</Row>
-          <Row>
-            {requireData.rank ? `No.${requireData.rank} on ${chain.name}` : '-'}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>
-            <Values.Boolean value={requireData.hasInteraction} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={actionData.spender} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              address={actionData.spender}
-              chain={chain}
-              onWhitelist={spenderInWhitelist}
-              onBlacklist={spenderInBlacklist}
-              onChange={() => dispatch.securityEngine.init()}
-              isContract
-            />
+            <div>
+              <Values.Address address={actionData.spender} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              <ProtocolListItem protocol={requireData.protocol} />
+
+              <li>
+                <span>
+                  {requireData.hasInteraction
+                    ? 'Interacted before'
+                    : 'Never Interacted before'}
+                </span>
+              </li>
+
+              <li>
+                <ViewMore
+                  type="nftSpender"
+                  data={{
+                    ...requireData,
+                    spender: actionData.spender,
+                    chain,
+                  }}
+                />
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>

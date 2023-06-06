@@ -10,6 +10,7 @@ import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 import { SecurityListItem } from './components/SecurityListItem';
 import ViewMore from './components/ViewMore';
+import { ProtocolListItem } from './components/ProtocolListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -105,12 +106,14 @@ const ApproveNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>Interact contract</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
             </div>
             <ul className="desc-list">
+              <ProtocolListItem protocol={requireData.protocol} />
+
               <SecurityListItem
                 id="1043"
                 engineResult={engineResultMap['1043']}
@@ -120,7 +123,8 @@ const ApproveNFT = ({
               <SecurityListItem
                 id="1048"
                 engineResult={engineResultMap['1048']}
-                warningText="Never interacted before"
+                warningText="Never Interacted before"
+                defaultText="Interacted before"
               />
 
               <SecurityListItem
