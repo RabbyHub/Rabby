@@ -4,7 +4,7 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount } from 'ui/utils/number';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';

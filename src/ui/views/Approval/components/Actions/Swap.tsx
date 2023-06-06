@@ -14,6 +14,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
+import { ProtocolListItem } from './components/ProtocolListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -243,25 +244,12 @@ const Swap = ({
               <Values.Address address={requireData.id} chain={chain} />
             </div>
             <ul className="desc-list">
+              <ProtocolListItem protocol={requireData.protocol} />
               <li>
                 {requireData.hasInteraction
                   ? 'Interacted before'
                   : 'Never interacted before'}
               </li>
-              {requireData.protocol && (
-                <li>
-                  <Values.Protocol
-                    value={requireData.protocol}
-                    logoSize={14}
-                    textStyle={{
-                      fontSize: '13px',
-                      lineHeight: '15px',
-                      color: '#999999',
-                      fontWeight: 'normal',
-                    }}
-                  />
-                </li>
-              )}
               <li>
                 <ViewMore
                   type="contract"
