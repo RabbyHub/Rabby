@@ -2,11 +2,17 @@ import React from 'react';
 import SecurityLevelTagNoText from '../../SecurityEngine/SecurityLevelTagNoText';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Result } from '@debank/rabby-security-engine';
+import styled from 'styled-components';
 
 export interface Props {
   id: string;
   engineResult: Result;
 }
+
+const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)`
+  padding: 2px 4px;
+  margin-top: -9px;
+`;
 
 export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
   const dispatch = useRabbyDispatch();
@@ -30,7 +36,7 @@ export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
   if (!engineResult) return null;
 
   return (
-    <SecurityLevelTagNoText
+    <SecurityLevelTagNoTextStyled
       enable={engineResult.enable}
       level={processedRules.includes(id) ? 'proceed' : engineResult.level}
       onClick={() => handleClickRule(id)}

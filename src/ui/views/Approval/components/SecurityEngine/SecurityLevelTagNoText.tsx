@@ -149,23 +149,29 @@ const SecurityLevelTag = ({
   translucent,
   onClick,
   right = '-6px',
+  className,
 }: {
   enable: boolean;
   level: Level | 'proceed';
   translucent?: boolean;
   onClick?(): void;
   right?: string;
+  className?: string;
 }) => {
   const [isHovering, hoverProps] = useHover();
 
   return (
     <SecurityLevelTagWrapper
-      className={clsx(enable ? level : '', {
-        'cursor-pointer': onClick,
-        translucent,
-        showText: isHovering,
-        closed: !enable,
-      })}
+      className={clsx(
+        enable ? level : '',
+        {
+          'cursor-pointer': onClick,
+          translucent,
+          showText: isHovering,
+          closed: !enable,
+        },
+        className
+      )}
       style={{
         right,
       }}
