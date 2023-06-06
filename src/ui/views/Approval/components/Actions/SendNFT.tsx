@@ -147,7 +147,7 @@ const SendNFT = ({
                 />
                 <SecurityListItem
                   engineResult={engineResultMap['1042']}
-                  safeText="On my send whitelist"
+                  safeText="On my whitelist"
                   id="1042"
                 />
                 <li>

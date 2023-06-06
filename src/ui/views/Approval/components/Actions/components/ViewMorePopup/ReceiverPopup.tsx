@@ -83,7 +83,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Type</Row>
+          <Row>Address type</Row>
           <Row>
             <div>
               {receiverType}
@@ -142,7 +142,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Address Balance</Row>
+          <Row>Address balance</Row>
           <Row>
             <Values.USDValue value={data.usd_value} />
           </Row>
@@ -154,11 +154,11 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Send whitelist</Row>
+          <Row>Whitelist</Row>
           <Row>
             {data.onTransferWhitelist
-              ? 'On my send whitelist'
-              : 'Not on my send whitelist '}
+              ? 'On my whitelist'
+              : 'Not on my whitelist '}
           </Row>
         </Col>
       </Table>

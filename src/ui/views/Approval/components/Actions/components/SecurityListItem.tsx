@@ -6,9 +6,9 @@ import { SecurityListItemTag } from './SecurityListItemTag';
 export interface Props {
   id: string;
   engineResult: Result;
-  dangerText?: string;
-  warningText?: string;
-  safeText?: string;
+  dangerText?: string | React.ReactNode;
+  warningText?: string | React.ReactNode;
+  safeText?: string | React.ReactNode;
   defaultText?: string;
 }
 

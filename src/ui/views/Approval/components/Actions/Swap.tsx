@@ -169,12 +169,18 @@ const Swap = ({
               <SecurityListItem
                 engineResult={engineResultMap['1012']}
                 id="1012"
-                dangerText={`Value diff <Values.Percentage value=${usdValuePercentage} /> (${formatUsdValue(
-                  usdValueDiff || ''
-                )})`}
-                warningText={`Value diff <Values.Percentage value=${usdValuePercentage} /> (${formatUsdValue(
-                  usdValueDiff || ''
-                )})`}
+                dangerText={
+                  <>
+                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
+                    ({formatUsdValue(usdValueDiff || '')})
+                  </>
+                }
+                warningText={
+                  <>
+                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
+                    ({formatUsdValue(usdValueDiff || '')})
+                  </>
+                }
               />
             </ul>
           </Row>
@@ -231,7 +237,7 @@ const Swap = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1069']}
                   id="1069"
-                  dangerText="not your current address"
+                  dangerText="Not your current address"
                 />
               </ul>
             </Row>

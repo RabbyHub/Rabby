@@ -74,7 +74,7 @@ const ViewMore = (props: Props) => {
       case 'nft':
         return 220;
       case 'collection':
-        return 150;
+        return 180;
       default:
         return 400;
     }

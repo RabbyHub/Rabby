@@ -9,6 +9,7 @@ import {
   getActionTypeText,
 } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
+import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 const Wrapper = styled.div`
   .container {
@@ -28,7 +29,7 @@ const Wrapper = styled.div`
       font-size: 12px;
       line-height: 12px;
       top: -7px;
-      left: 12px;
+      left: 10px;
       .bg {
         position: absolute;
         bottom: 0;
@@ -64,6 +65,9 @@ const Wrapper = styled.div`
 `;
 
 const GasPriceTip = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24px;
   font-weight: 500;
   font-size: 14px;
   line-height: 16px;
@@ -141,6 +145,7 @@ const CancelTx = ({
           </div>
           {pendingTx && !canCancel && (
             <GasPriceTip>
+              <img src={IconAlert} className="w-[15px] mr-10" />
               Set gas price more than {pendingTx.gasPrice / 1e9} Gwei to cancel
               the pending transaction
             </GasPriceTip>

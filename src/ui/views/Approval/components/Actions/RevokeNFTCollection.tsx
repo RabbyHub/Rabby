@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
-import { formatAmount } from 'ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
@@ -69,25 +68,12 @@ const RevokeNFTCollection = ({
             {actionData?.collection?.name}
             <ul className="desc-list">
               <li>
-                <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                  {actionData?.collection.name || '-'}
-                </div>
-              </li>
-              <li>
-                Floor price{' '}
-                {actionData?.collection?.floor_price ? (
-                  <>
-                    {formatAmount(actionData?.collection?.floor_price)}
-                    ETH
-                  </>
-                ) : (
-                  '-'
-                )}
-              </li>
-              <li>
-                <Values.Address
-                  address={actionData.collection.id}
-                  chain={chain}
+                <ViewMore
+                  type="collection"
+                  data={{
+                    collection: actionData.collection,
+                    chain,
+                  }}
                 />
               </li>
             </ul>

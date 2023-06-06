@@ -64,14 +64,6 @@ const NFTBalanceChange = ({
                   }
                 />
               </div>
-              <ul className="desc-list">
-                <li>
-                  Floor price{' '}
-                  {item.collection?.floor_price
-                    ? `${formatAmount(item.collection.floor_price)} ETH`
-                    : '-'}
-                </li>
-              </ul>
             </div>
           ))}
         </Row>
@@ -97,14 +89,6 @@ const NFTBalanceChange = ({
                   }
                 />
               </div>
-              <ul className="desc-list">
-                <li>
-                  Floor price{' '}
-                  {item.collection?.floor_price
-                    ? `${formatAmount(item.collection?.floor_price)} ETH`
-                    : '-'}
-                </li>
-              </ul>
             </div>
           ))}
         </Row>

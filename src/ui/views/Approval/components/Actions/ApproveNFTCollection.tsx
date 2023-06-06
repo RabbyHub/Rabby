@@ -80,26 +80,12 @@ const ApproveNFTCollection = ({
             {actionData?.collection?.name || '-'}
             <ul className="desc-list">
               <li>
-                <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                  {actionData?.collection?.name}
-                </div>
-              </li>
-              <li>
-                Floor price{' '}
-                {actionData?.collection?.floor_price ? (
-                  <>
-                    {formatAmount(actionData?.collection?.floor_price)}
-                    ETH
-                  </>
-                ) : (
-                  '-'
-                )}
-              </li>
-              <li>
-                <NameAndAddress
-                  address={actionData?.collection?.id}
-                  chainEnum={chain?.enum}
-                  openExternal
+                <ViewMore
+                  type="collection"
+                  data={{
+                    collection: actionData.collection,
+                    chain,
+                  }}
                 />
               </li>
             </ul>

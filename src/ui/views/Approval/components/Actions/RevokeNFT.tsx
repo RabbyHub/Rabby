@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
-import { formatAmount } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
@@ -74,28 +73,13 @@ const RevokeNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              {actionData?.nft?.collection && (
-                <li>
-                  <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    {actionData?.nft?.collection?.name}
-                  </div>
-                </li>
-              )}
               <li>
-                Floor price{' '}
-                {actionData?.nft?.collection?.floor_price ? (
-                  <>
-                    {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    ETH
-                  </>
-                ) : (
-                  '-'
-                )}
-              </li>
-              <li>
-                <Values.Address
-                  address={actionData.nft.contract_id}
-                  chain={chain}
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft: actionData.nft,
+                    chain,
+                  }}
                 />
               </li>
             </ul>

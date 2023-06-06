@@ -78,28 +78,13 @@ const ApproveNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              {actionData?.nft?.collection && (
-                <li>
-                  <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                    {actionData?.nft?.collection?.name}
-                  </div>
-                </li>
-              )}
               <li>
-                Floor price{' '}
-                {actionData?.nft?.collection?.floor_price ? (
-                  <>
-                    {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    ETH
-                  </>
-                ) : (
-                  '-'
-                )}
-              </li>
-              <li>
-                <Values.Address
-                  address={actionData.nft.contract_id}
-                  chain={chain}
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft: actionData.nft,
+                    chain,
+                  }}
                 />
               </li>
             </ul>

@@ -135,7 +135,7 @@ const Send = ({
                 />
                 <SecurityListItem
                   engineResult={engineResultMap['1033']}
-                  safeText="On my send whitelist"
+                  safeText="On my whitelist"
                   id="1033"
                 />
                 <li>
