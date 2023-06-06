@@ -133,7 +133,7 @@ export const TxTypeComponent = ({
   isSpeedUp: boolean;
   engineResults: Result[];
 }) => {
-  if (!isReady) return <Loading chainEnum={chain.enum} />;
+  if (!isReady) return <Loading />;
   if (actionData && actionRequireData) {
     // if (actionData) {
     return (
