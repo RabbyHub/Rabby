@@ -405,6 +405,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         />
 
         <FooterBar
+          origin={params.session.origin}
+          originLogo={params.session.icon}
           gnosisAccount={isGnosis ? params.account : undefined}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}

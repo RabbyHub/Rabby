@@ -29,16 +29,7 @@ const Approval: React.FC<{
       return null;
     }
     setApproval(approval);
-    if (
-      approval.data.origin ||
-      approval.data.params?.origin ||
-      approval.data.params?.session?.origin
-    ) {
-      document.title =
-        approval.data.origin ||
-        approval.data.params?.origin ||
-        approval.data.params!.session.origin;
-    }
+    document.title = 'Rabby Wallet Notification';
     const account = await wallet.getCurrentAccount();
     if (!account) {
       rejectApproval();

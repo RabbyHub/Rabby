@@ -502,6 +502,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onChange={handleForceProcessChange}
         />
         <FooterBar
+          origin={params.session.origin}
+          originLogo={params.session.icon}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
           onSubmit={() => handleAllow(forceProcess)}
