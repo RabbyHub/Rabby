@@ -55,7 +55,6 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     if (!data.contract || !data.contract[data.chain.serverId]) return null;
     return data.contract[data.chain.serverId];
   }, [data]);
-  console.log('contractOnCurrentChain', contractOnCurrentChain);
 
   const bornAt = useMemo(() => {
     if (data.contract) {

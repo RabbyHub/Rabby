@@ -7,6 +7,7 @@ import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
+import { ProtocolListItem } from './components/ProtocolListItem';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -71,11 +72,7 @@ const ContractCall = ({
               <Values.Address address={requireData.id} chain={chain} />
             </div>
             <ul className="desc-list">
-              {requireData.protocol && (
-                <li>
-                  <Values.Protocol value={requireData.protocol} />
-                </li>
-              )}
+              <ProtocolListItem protocol={requireData.protocol} />
               <li>
                 {requireData.hasInteraction
                   ? 'Interacted before'
@@ -97,12 +94,10 @@ const ContractCall = ({
             </ul>
           </Row>
         </Col>
-        {requireData.call.func && (
-          <Col>
-            <Row isTitle>Operation</Row>
-            <Row>{requireData.call.func}</Row>
-          </Col>
-        )}
+        <Col>
+          <Row isTitle>Operation</Row>
+          <Row>{requireData.call.func || '-'}</Row>
+        </Col>
       </Table>
     </Wrapper>
   );

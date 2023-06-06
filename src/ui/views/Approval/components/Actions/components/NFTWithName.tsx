@@ -25,8 +25,8 @@ const Wrapper = styled.div`
   }
   .name {
     font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 15px;
+    line-height: 18px;
     color: #333333;
     flex: 1;
     overflow: hidden;

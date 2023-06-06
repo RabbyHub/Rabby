@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import clsx from 'clsx';
 import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
@@ -237,7 +238,11 @@ const TokenApprove = ({
               <li>
                 My balance{' '}
                 <span
-                  className="underline cursor-pointer"
+                  className={clsx(
+                    new BigNumber(approveAmount).gt(tokenBalance)
+                      ? 'underline cursor-pointer'
+                      : ''
+                  )}
                   onClick={handleClickTokenBalance}
                 >
                   {formatAmount(tokenBalance)}

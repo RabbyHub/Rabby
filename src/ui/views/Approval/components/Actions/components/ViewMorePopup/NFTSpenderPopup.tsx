@@ -75,12 +75,14 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
-        <Col>
-          <Row>Flagged by Rabby</Row>
-          <Row>
-            <Values.Boolean value={!!data.isDanger} />
-          </Row>
-        </Col>
+        {data.isDanger && (
+          <Col>
+            <Row>Flagged by Rabby</Row>
+            <Row>
+              <Values.Boolean value={!!data.isDanger} />
+            </Row>
+          </Col>
+        )}
       </Table>
     </div>
   );

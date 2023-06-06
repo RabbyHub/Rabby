@@ -135,7 +135,6 @@ export const TxTypeComponent = ({
 }) => {
   if (!isReady) return <Loading />;
   if (actionData && actionRequireData) {
-    // if (actionData) {
     return (
       <Actions
         data={actionData}
@@ -1691,7 +1690,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
-        setFooterShowShadow(avaliableHeight > scrollInfo.y);
+        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
       }
     }
   }, [scrollInfo, scrollRefSize]);

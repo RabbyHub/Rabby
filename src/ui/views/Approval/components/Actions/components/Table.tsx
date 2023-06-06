@@ -37,8 +37,8 @@ const RowWrapper = styled.div`
   position: relative;
   padding: 13px 10px;
   font-weight: 500;
-  font-size: 13px;
-  line-height: 15px;
+  font-size: 15px;
+  line-height: 18px;
   color: #333333;
   &:not(.title) {
     flex: 1;
@@ -48,8 +48,8 @@ const RowWrapper = styled.div`
     padding-right: 0;
   }
   &.title {
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 15px;
+    line-height: 18px;
     color: #333333;
     border-right: 1px solid #ededed;
     width: 120px;

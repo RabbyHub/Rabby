@@ -50,9 +50,6 @@ const Loading = () => {
           <Table>
             <RowLoading itemCount={1} />
             <RowLoading itemCount={2} />
-            <RowLoading itemCount={1} />
-            <RowLoading itemCount={0} />
-            <RowLoading itemCount={3} />
           </Table>
 
           <Table>
@@ -61,7 +58,6 @@ const Loading = () => {
                 <Skeleton.Input active className="w-[125px] h-[15px] rounded" />
               </Row>
             </Col>
-            <RowLoading itemCount={0} />
             <RowLoading itemCount={0} />
           </Table>
         </div>

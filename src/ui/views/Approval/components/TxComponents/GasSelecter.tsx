@@ -583,12 +583,12 @@ const GasSelector = ({
                 <div className="gas-selector-card-error">
                   Fail to fetch gas cost
                 </div>
-                {version === 'v2' && gas.error ? (
+                {/* {version === 'v2' && gas.error ? (
                   <div className="gas-selector-card-error-desc">
                     {gas.error.msg}{' '}
                     <span className="number">#{gas.error.code}</span>
                   </div>
-                ) : null}
+                ) : null} */}
               </>
             ) : (
               <div className="gas-selector-card-content-item">

@@ -45,6 +45,7 @@ const PopupContainer = styled.div`
       min-height: 48px;
       display: flex;
       align-items: center;
+      font-size: 15px;
 
       &:nth-child(1) {
         max-width: 140px;
@@ -65,14 +66,14 @@ const ViewMore = (props: Props) => {
   const height = React.useMemo(() => {
     switch (props.type) {
       case 'contract':
-        return 304;
+        return 330;
       case 'spender':
       case 'nftSpender':
         return 480;
       case 'receiver':
         return 400;
       case 'nft':
-        return 220;
+        return 230;
       case 'collection':
         return 180;
       default:

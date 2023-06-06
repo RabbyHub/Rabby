@@ -51,10 +51,11 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT in</Row>
         <Row>
           {receiveNftList.map((item) => (
-            <div className="mb-0 last:mb-0">
+            <div className="mb-0 last:mb-0" key={`${item.id}-${item.inner_id}`}>
               <div className="flex">
                 <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  + {item.amount} {item.name}
+                  + {item.amount}{' '}
+                  {item.collection ? item.collection.name : item.name}
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
@@ -76,10 +77,14 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT out</Row>
         <Row>
           {sendNftList.map((item) => (
-            <div className="mb-10 last:mb-0">
+            <div
+              className="mb-10 last:mb-0"
+              key={`${item.id}-${item.inner_id}`}
+            >
               <div className="flex">
                 <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  - {item.amount} {item.name}
+                  - {item.amount}{' '}
+                  {item.collection ? item.collection.name : item.name}
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
@@ -200,7 +205,7 @@ const BalanceChange = ({
               <Row isTitle>Token out</Row>
               <Row>
                 {sendTokenList.map((token) => (
-                  <div className="mb-8 last:mb-0">
+                  <div className="mb-8 last:mb-0" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
                       text={`- ${formatAmount(token.amount)} ${token.symbol}`}
@@ -225,7 +230,7 @@ const BalanceChange = ({
               <Row isTitle>Token in</Row>
               <Row>
                 {receiveTokenList.map((token) => (
-                  <div className="mb-8 last:mb-0">
+                  <div className="mb-8 last:mb-0" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
                       text={`+ ${formatAmount(token.amount)} ${token.symbol}`}

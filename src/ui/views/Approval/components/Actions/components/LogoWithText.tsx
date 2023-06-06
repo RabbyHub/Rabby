@@ -12,8 +12,8 @@ const Wrapper = styled.div`
   }
   .text {
     font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
+    font-size: 15px;
+    line-height: 18px;
     color: #333333;
     margin-right: 4px;
     overflow: hidden;
