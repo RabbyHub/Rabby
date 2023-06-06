@@ -517,6 +517,7 @@ export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
         });
       setTransactionsGroup(groupBy(transactions, 'nonce'));
     } catch (e) {
+      console.error(e);
       setIsLoading(false);
       setIsLoadFaild(true);
     }
