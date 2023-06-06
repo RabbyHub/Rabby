@@ -16,6 +16,7 @@ import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
+import { ProtocolListItem } from './components/ProtocolListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -253,6 +254,8 @@ const TokenApprove = ({
               <Values.Address address={actionData.spender} chain={chain} />
             </div>
             <ul className="desc-list">
+              <ProtocolListItem protocol={requireData.protocol} />
+
               <SecurityListItem
                 id="1022"
                 engineResult={engineResultMap['1022']}
@@ -263,6 +266,7 @@ const TokenApprove = ({
                 id="1025"
                 engineResult={engineResultMap['1025']}
                 warningText="Never Interacted before"
+                defaultText="Interacted before"
               />
 
               <SecurityListItem
