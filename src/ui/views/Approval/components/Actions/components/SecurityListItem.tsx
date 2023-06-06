@@ -9,6 +9,7 @@ export interface Props {
   dangerText?: string;
   warningText?: string;
   safeText?: string;
+  defaultText?: string;
 }
 
 export const SecurityListItem: React.FC<Props> = ({
@@ -17,12 +18,13 @@ export const SecurityListItem: React.FC<Props> = ({
   dangerText,
   warningText,
   safeText,
+  defaultText,
 }) => {
   if (!engineResult) {
-    if (safeText) {
+    if (defaultText) {
       return (
         <li>
-          <span>{safeText}</span>
+          <span>{defaultText}</span>
         </li>
       );
     }
