@@ -1,41 +1,72 @@
 import React from 'react';
 import { Skeleton } from 'antd';
-import { Trans } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
-import LoadingBalanceChange from './LoadingBalanceChange';
+import { ActionWrapper, SignTitle } from '../Actions';
+import { Col, Row, Table } from '../Actions/components/Table';
 
-interface SignProps {
-  chainEnum: CHAINS_ENUM;
-}
-
-const Loading = ({ chainEnum }: SignProps) => {
-  const chain = CHAINS[chainEnum];
-
+const RowLoading: React.FC<{
+  itemCount?: number;
+}> = ({ itemCount = 1 }) => {
   return (
-    <div className="sign">
-      <p className="section-title">
-        <Trans
-          i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
-        />
-      </p>
-      <div className="action-card">
-        <div className="common-detail-block mb-0 px-[16px] pt-[16px] pb-[20px]">
-          <div className="flex items-center gap-[12px]">
-            <Skeleton.Avatar active style={{ width: 40, height: 40 }} />
-            <div>
-              <div>
-                <Skeleton.Input active style={{ width: 90, height: 17 }} />
-              </div>
-              <div>
-                <Skeleton.Input active style={{ width: 70, height: 15 }} />
-              </div>
-            </div>
+    <Col>
+      <Row isTitle>
+        <Skeleton.Input active className="w-[60px] h-[15px] rounded" />
+      </Row>
+      <Row className="space-y-[8px]">
+        <div className="space-x-[4px]">
+          <Skeleton.Avatar active className="w-[16px] h-[16px]" />
+          <Skeleton.Input active className="w-[113px] h-[15px] rounded" />
+        </div>
+        {Array.from({ length: itemCount }).map((_, index) => (
+          <div key={index}>
+            <Skeleton.Input active className="w-[113px] h-[15px] rounded" />
+          </div>
+        ))}
+      </Row>
+    </Col>
+  );
+};
+
+const Loading = () => {
+  return (
+    <>
+      <SignTitle>
+        <div className="left relative">
+          <Skeleton.Input active className="w-[220px] h-[22px] rounded" />
+        </div>
+        <div className="float-right view-raw">
+          <Skeleton.Input active className="w-[73px] h-[22px] rounded" />
+        </div>
+      </SignTitle>
+      <ActionWrapper>
+        <div className="action-header">
+          <div className="left">
+            <Skeleton.Input active className="w-[60px] h-[22px] rounded" />
+          </div>
+          <div className="right">
+            <Skeleton.Input active className="w-[70px] h-[22px] rounded" />
           </div>
         </div>
-        <LoadingBalanceChange />
-      </div>
-    </div>
+        <div className="container space-y-[13px]">
+          <Table>
+            <RowLoading itemCount={1} />
+            <RowLoading itemCount={2} />
+            <RowLoading itemCount={1} />
+            <RowLoading itemCount={0} />
+            <RowLoading itemCount={3} />
+          </Table>
+
+          <Table>
+            <Col>
+              <Row>
+                <Skeleton.Input active className="w-[125px] h-[15px] rounded" />
+              </Row>
+            </Col>
+            <RowLoading itemCount={0} />
+            <RowLoading itemCount={0} />
+          </Table>
+        </div>
+      </ActionWrapper>
+    </>
   );
 };
 

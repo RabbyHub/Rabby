@@ -39,7 +39,7 @@ import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
-const SignTitle = styled.div`
+export const SignTitle = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
@@ -62,7 +62,7 @@ const SignTitle = styled.div`
   }
 `;
 
-const ActionWrapper = styled.div`
+export const ActionWrapper = styled.div`
   background-color: #fff;
   border-radius: 8px;
   .action-header {
