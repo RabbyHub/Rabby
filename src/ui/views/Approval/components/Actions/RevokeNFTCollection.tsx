@@ -112,7 +112,7 @@ const RevokeNFTCollection = ({
 
               <li>
                 <ViewMore
-                  type="spender"
+                  type="nftSpender"
                   data={{
                     ...requireData,
                     spender: actionData.spender,

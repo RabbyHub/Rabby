@@ -149,7 +149,7 @@ const ApproveNFTCollection = ({
 
               <li>
                 <ViewMore
-                  type="spender"
+                  type="nftSpender"
                   data={{
                     ...requireData,
                     spender: actionData.spender,
