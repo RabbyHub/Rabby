@@ -40,6 +40,8 @@ import IconInformation from 'ui/assets/information.svg';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
+import { useAccount } from '@/ui/store-hooks';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -418,11 +420,15 @@ const GnosisTransactionItem = ({
   );
 };
 
-export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
-  const { chain } = props;
+export const GnosisTransactionQueueList = (props: {
+  chain: CHAINS_ENUM;
+  pendingTxs?: SafeTransactionItem[];
+  loading?: boolean;
+}) => {
+  const { chain, pendingTxs, loading } = props;
   const networkId = CHAINS[chain].network;
   const wallet = useWallet();
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
+  // const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
   const [transactionsGroup, setTransactionsGroup] = useState<
     Record<string, SafeTransactionItem[]>
@@ -435,39 +441,43 @@ export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadFaild, setIsLoadFaild] = useState(false);
+  const [account] = useAccount();
 
-  const init = async () => {
+  const { data: safeInfo } = useGnosisSafeInfo({
+    address: account?.address,
+    networkId,
+  });
+
+  const init = async (txs: SafeTransactionItem[], info: SafeInfo) => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
-      const [info, txs] = await Promise.all([
-        Safe.getSafeInfo(account.address, networkId),
-        Safe.getPendingTransactions(account.address, networkId),
-      ]);
-      const txHashValidation: boolean[] = [];
-      for (let i = 0; i < txs.results.length; i++) {
-        const safeTx = txs.results[i];
-        const tx: SafeTransactionDataPartial = {
-          data: safeTx.data || '0x',
-          gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
-          gasToken: safeTx.gasToken,
-          refundReceiver: safeTx.refundReceiver,
-          to: safeTx.to,
-          value: numberToHex(safeTx.value),
-          safeTxGas: safeTx.safeTxGas,
-          nonce: safeTx.nonce,
-          operation: safeTx.operation,
-          baseGas: safeTx.baseGas,
-        };
-        await wallet.buildGnosisTransaction(
-          safeTx.safe,
-          account,
-          tx,
-          info.version,
-          networkId
-        );
-        const hash = await wallet.getGnosisTransactionHash();
-        txHashValidation.push(hash === safeTx.safeTxHash);
-      }
+
+      const txHashValidation = await Promise.all(
+        txs.map(async (safeTx) => {
+          const tx: SafeTransactionDataPartial = {
+            data: safeTx.data || '0x',
+            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasToken: safeTx.gasToken,
+            refundReceiver: safeTx.refundReceiver,
+            to: safeTx.to,
+            value: numberToHex(safeTx.value),
+            safeTxGas: safeTx.safeTxGas,
+            nonce: safeTx.nonce,
+            operation: safeTx.operation,
+            baseGas: safeTx.baseGas,
+          };
+          return wallet.validateGnosisTransaction(
+            {
+              account: account,
+              tx,
+              version: info.version,
+              networkId,
+            },
+            safeTx.safeTxHash
+          );
+        })
+      );
+
       const owners = await wallet.getGnosisOwners(
         account,
         account.address,
@@ -476,11 +486,8 @@ export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
       );
       const comparedOwners = crossCompareOwners(info.owners, owners);
       setIsLoading(false);
-      setSafeInfo({
-        ...info,
-        owners: comparedOwners,
-      });
-      const transactions = txs.results
+
+      const transactions = txs
         .filter((safeTx, index) => {
           if (!txHashValidation[index]) return false;
           const tx: SafeTransactionDataPartial = {
@@ -576,8 +583,10 @@ export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    if (pendingTxs && safeInfo) {
+      init(pendingTxs || [], safeInfo);
+    }
+  }, [pendingTxs, safeInfo]);
 
   return (
     <div className="queue-list">
@@ -616,7 +625,7 @@ export const GnosisTransactionQueueList = (props: { chain: CHAINS_ENUM }) => {
         )
       ) : (
         <div className="tx-history__empty">
-          {isLoading ? (
+          {isLoading || loading ? (
             <>
               <LoadingOutlined className="text-24 text-gray-content" />
               <p className="text-14 text-gray-content mt-12">

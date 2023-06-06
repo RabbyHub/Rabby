@@ -1132,7 +1132,7 @@ export class WalletController extends BaseController {
 
   fetchGnosisChainList = (address: string) => {
     if (!isAddress(address)) {
-      return Promise.reject(new Error('Invalid address'));
+      return Promise.reject(new Error('Not a valid address'));
     }
     return Promise.all(
       GNOSIS_SUPPORT_CHAINS.map((chainEnum) => {
@@ -1234,6 +1234,43 @@ export class WalletController extends BaseController {
         new ethers.providers.Web3Provider(buildinProvider.currentProvider),
         version,
         networkId
+      );
+    } else {
+      throw new Error('No Gnosis keyring found');
+    }
+  };
+
+  validateGnosisTransaction = async (
+    {
+      account,
+      tx,
+      version,
+      networkId,
+    }: {
+      account: Account;
+      tx;
+      version: string;
+      networkId: string;
+    },
+    hash: string
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring) {
+      buildinProvider.currentProvider.currentAccount = account.address;
+      buildinProvider.currentProvider.currentAccountType = account.type;
+      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+      buildinProvider.currentProvider.chainId = networkId;
+      return keyring.validateTransaction(
+        {
+          address: account.address,
+          transaction: tx,
+          provider: new ethers.providers.Web3Provider(
+            buildinProvider.currentProvider
+          ),
+          version,
+          networkId,
+        },
+        hash
       );
     } else {
       throw new Error('No Gnosis keyring found');

@@ -486,6 +486,48 @@ class GnosisKeyring extends EventEmitter {
     return safeTransaction;
   }
 
+  async validateTransaction(
+    {
+      address,
+      transaction,
+      provider,
+      version,
+      networkId,
+    }: {
+      address: string;
+      transaction: SafeTransactionDataPartial;
+      provider;
+      version: string;
+      networkId: string;
+    },
+    hash: string
+  ) {
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+    const tx = {
+      data: transaction.data,
+      from: address,
+      to: this._normalize(transaction.to),
+      value: this._normalize(transaction.value) || '0x0', // prevent 0x
+      safeTxGas: transaction.safeTxGas,
+      nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
+      baseGas: transaction.baseGas,
+      operation: transaction.operation,
+    };
+    const safe = new Safe(checksumAddress, version, provider, networkId);
+    const safeTransaction = await safe.buildTransaction(tx);
+    const currentTransactionHash = await safe.getTransactionHash(
+      safeTransaction
+    );
+    return currentTransactionHash === hash;
+  }
+
   async signTransaction(
     address: string,
     transaction,

@@ -70,6 +70,8 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
 import { useRequest } from 'ahooks';
+import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
+import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 
 const GnosisAdminItem = ({
   accounts,
@@ -196,17 +198,15 @@ const Dashboard = () => {
     getCurrentAccount();
   }, []);
 
-  useRequest(
-    async () => {
-      if (
+  useGnosisNetworks(
+    {
+      address:
         currentAccount?.address &&
         currentAccount?.type === KEYRING_TYPE.GnosisKeyring
-      ) {
-        return wallet.getGnosisNetworkIds(currentAccount.address);
-      }
+          ? currentAccount.address
+          : '',
     },
     {
-      refreshDeps: [currentAccount?.address, currentAccount?.type],
       onBefore() {
         dispatch.chains.setField({
           gnosisNetworkIds: [],
@@ -222,17 +222,15 @@ const Dashboard = () => {
     }
   );
 
-  useRequest(
-    async () => {
-      if (
+  useGnosisPendingTxs(
+    {
+      address:
         currentAccount?.address &&
         currentAccount?.type === KEYRING_TYPE.GnosisKeyring
-      ) {
-        return wallet.getGnosisAllPendingTxs(currentAccount.address);
-      }
+          ? currentAccount.address
+          : '',
     },
     {
-      refreshDeps: [currentAccount?.address, currentAccount?.type],
       onBefore() {
         dispatch.chains.setField({
           gnosisPendingCount: 0,

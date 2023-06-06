@@ -24,7 +24,7 @@ const ImportGnosisAddress = () => {
     async (address: string) => {
       const res = await wallet.fetchGnosisChainList(address);
       if (!res.length) {
-        throw new Error('该地址没有部署在任何链上，不支持添加');
+        throw new Error('This address is not a valid safe address');
       }
       return res;
     },
@@ -119,7 +119,7 @@ const ImportGnosisAddress = () => {
           </Form>
           {loading ? (
             <div className="loading">
-              <LoadingOutlined /> 正在查询部署链, 请稍后
+              <LoadingOutlined /> Searching the deployed chain of this address
             </div>
           ) : (
             <>

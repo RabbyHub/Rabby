@@ -33,6 +33,9 @@ import { GnosisTransactionQueueList } from './GnosisTransactionQueueList';
 import './style.less';
 import { sortBy } from 'lodash';
 import { useRequest } from 'ahooks';
+import { useAccount } from '@/ui/store-hooks';
+import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
+import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 
 const getTabs = (
   networks: string[],
@@ -51,6 +54,7 @@ const getTabs = (
       key: chain.enum,
       chain,
       count: pendingTxs.length || 0,
+      txs: pendingTxs,
     };
   });
   return sortBy(res, 'count').reverse();
@@ -75,54 +79,33 @@ const GnosisTransactionQueue = () => {
 
   const { gnosisNetworkIds } = useRabbySelector((state) => state.chains);
 
-  const [networks, setNetworks] = useState(gnosisNetworkIds);
-  const [tabs, setTabs] = useState(getTabs(networks, {}));
+  const [account] = useAccount();
+  const { data: networks } = useGnosisNetworks({ address: account?.address });
+  const { data: pendingTxs } = useGnosisPendingTxs({
+    address: account?.address,
+  });
+
+  const tabs = useMemo(() => {
+    return getTabs(
+      networks || [],
+      (pendingTxs?.results || []).reduce((res, item) => {
+        res[item.networkId] = item.txs;
+        return res;
+      }, {} as Record<string, SafeTransactionItem[]>)
+    );
+  }, [networks, pendingTxs]);
+
   const [activeKey, setActiveKey] = useState<CHAINS_ENUM | null>(
     tabs[0]?.key || null
   );
 
-  useRequest(
-    async () => {
-      const account = (await wallet.syncGetCurrentAccount())!;
-      if (account?.address && account?.type === KEYRING_CLASS.GNOSIS) {
-        return wallet.getGnosisNetworkIds(account?.address);
-      }
-    },
-    {
-      refreshDeps: [],
+  const activeData = useMemo(() => {
+    return tabs.find((item) => item?.chain?.enum === activeKey);
+  }, [tabs, activeKey]);
 
-      onSuccess(res) {
-        if (res) {
-          setNetworks(res);
-        }
-      },
-    }
-  );
-
-  useRequest(
-    async () => {
-      const account = (await wallet.syncGetCurrentAccount())!;
-      if (account?.address && account?.type === KEYRING_CLASS.GNOSIS) {
-        return wallet.getGnosisAllPendingTxs(account?.address);
-      }
-    },
-    {
-      refreshDeps: [],
-      onSuccess(res) {
-        if (res) {
-          const t = getTabs(
-            networks,
-            res.results.reduce((res, item) => {
-              res[item.networkId] = item.txs;
-              return res;
-            }, {} as Record<string, SafeTransactionItem[]>)
-          );
-          setTabs(t);
-          setActiveKey(t[0]?.key || null);
-        }
-      },
-    }
-  );
+  useEffect(() => {
+    setActiveKey(tabs[0]?.key || null);
+  }, [tabs]);
 
   return (
     <div className="queue">
@@ -148,7 +131,11 @@ const GnosisTransactionQueue = () => {
         </div>
       </div>
       {activeKey && (
-        <GnosisTransactionQueueList chain={activeKey} key={activeKey} />
+        <GnosisTransactionQueueList
+          pendingTxs={activeData?.txs}
+          chain={activeKey}
+          key={activeKey}
+        />
       )}
     </div>
   );
