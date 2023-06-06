@@ -10,10 +10,6 @@ import {
   ReceiverPopup,
   ReceiverPopupProps,
 } from './ViewMorePopup/ReceiverPopup';
-import {
-  NFTSpenderPopup,
-  NFTSpenderPopupProps,
-} from './ViewMorePopup/NFTSpenderPopup';
 import { NFTPopupProps, NFTPopup } from './ViewMorePopup/NFTPopup';
 import {
   CollectionPopup,
@@ -24,7 +20,6 @@ type Props =
   | SpenderPopupProps
   | ContractPopupProps
   | ReceiverPopupProps
-  | NFTSpenderPopupProps
   | NFTPopupProps
   | CollectionPopupProps;
 
@@ -42,6 +37,10 @@ const PopupContainer = styled.div`
   }
   .view-more-table {
     .row {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+
       &:nth-child(1) {
         max-width: 140px;
         border-right: 1px solid #ededed;
@@ -63,7 +62,6 @@ const ViewMore = (props: Props) => {
       case 'contract':
         return 304;
       case 'spender':
-      case 'nftSpender':
         return 480;
       case 'receiver':
         return 400;
@@ -91,7 +89,6 @@ const ViewMore = (props: Props) => {
           {props.type === 'contract' && <ContractPopup data={props.data} />}
           {props.type === 'spender' && <SpenderPopup data={props.data} />}
           {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
-          {props.type === 'nftSpender' && <NFTSpenderPopup data={props.data} />}
           {props.type === 'nft' && <NFTPopup data={props.data} />}
           {props.type === 'collection' && <CollectionPopup data={props.data} />}
         </PopupContainer>

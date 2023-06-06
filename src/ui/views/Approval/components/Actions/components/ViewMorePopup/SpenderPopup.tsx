@@ -16,6 +16,7 @@ interface SpenderData {
   riskExposure: number;
   isEOA: boolean;
   isDanger: boolean | null;
+  isRevoke?: boolean;
 }
 
 export interface Props {
@@ -30,7 +31,8 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        Approve to <Values.Address address={data.spender} chain={data.chain} />
+        {data.isRevoke ? 'Revoke from' : 'Approve to'}{' '}
+        <Values.Address address={data.spender} chain={data.chain} />
       </div>
       <Table className="view-more-table">
         <Col>
