@@ -29,6 +29,7 @@ const LogoWithText = ({
   logoRadius = '',
   logoSize = 16,
   textStyle = {},
+  className,
 }: {
   logo?: string;
   text: string;
@@ -36,9 +37,10 @@ const LogoWithText = ({
   logoRadius?: string;
   logoSize?: number;
   textStyle?: React.CSSProperties;
+  className?: string;
 }) => {
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <img
         src={logo || IconUnknown}
         className="logo"

@@ -18,7 +18,16 @@ export const SecurityListItem: React.FC<Props> = ({
   warningText,
   safeText,
 }) => {
-  if (!engineResult) return null;
+  if (!engineResult) {
+    if (safeText) {
+      return (
+        <li>
+          <span>{safeText}</span>
+        </li>
+      );
+    }
+    return null;
+  }
 
   return (
     <li>
