@@ -109,7 +109,7 @@ const ContractCall = ({
                     : 'Operation is not decoded'
                 }
               >
-                <img src={IconQuestionMark} className="w-10 ml-6" />
+                <img src={IconQuestionMark} className="w-12 ml-6" />
               </TooltipWithMagnetArrow>
             </div>
           </Row>

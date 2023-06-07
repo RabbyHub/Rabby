@@ -1172,7 +1172,7 @@ export const getActionTypeText = (data: ParsedActionData) => {
     return 'Cancel Pending Transaction';
   }
   if (data.pushMultiSig) {
-    return 'Submit Multisign Transaction';
+    return 'Submit Multisig Transaction';
   }
   if (data.contractCall) {
     return 'Contract Call';

@@ -50,7 +50,7 @@ export const SignTitle = styled.div`
     color: #333333;
     .icon-speedup {
       width: 10px;
-      margin-left: 6px;
+      margin-right: 6px;
       cursor: pointer;
     }
   }
@@ -146,7 +146,6 @@ const Actions = ({
     <>
       <SignTitle>
         <div className="left relative">
-          Sign {chain.name} Transaction
           {isSpeedUp && (
             <TooltipWithMagnetArrow
               overlayClassName="rectangle w-[max-content]"
@@ -155,6 +154,7 @@ const Actions = ({
               <img src={IconSpeedUp} className="icon icon-speedup" />
             </TooltipWithMagnetArrow>
           )}
+          Sign {chain.name} Transaction
         </div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"

@@ -839,7 +839,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const securityLevel = useMemo(() => {
-    const enableResults = engineResults.filter((result) => result.enable);
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
     if (enableResults.some((result) => result.level === Level.FORBIDDEN))
       return Level.FORBIDDEN;
     if (enableResults.some((result) => result.level === Level.DANGER))
@@ -847,7 +849,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (enableResults.some((result) => result.level === Level.WARNING))
       return Level.WARNING;
     return undefined;
-  }, [engineResults]);
+  }, [engineResults, currentTx]);
 
   const gasExplainResponse = useExplainGas({
     gasUsed,

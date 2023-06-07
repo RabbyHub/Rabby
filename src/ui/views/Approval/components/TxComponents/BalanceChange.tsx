@@ -53,7 +53,10 @@ const NFTBalanceChange = ({
           {receiveNftList.map((item) => (
             <div className="mb-0 last:mb-0" key={`${item.id}-${item.inner_id}`}>
               <div className="flex">
-                <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                <span
+                  className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
+                  title={item.collection ? item.collection.name : item.name}
+                >
                   + {item.amount}{' '}
                   {item.collection ? item.collection.name : item.name}
                 </span>
@@ -82,7 +85,10 @@ const NFTBalanceChange = ({
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex">
-                <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                <span
+                  className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
+                  title={item.collection ? item.collection.name : item.name}
+                >
                   - {item.amount}{' '}
                   {item.collection ? item.collection.name : item.name}
                 </span>

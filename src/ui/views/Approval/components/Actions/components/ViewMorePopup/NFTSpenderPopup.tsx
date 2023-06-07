@@ -60,7 +60,11 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
             Risk exposure
           </Row>
           <Row>
-            <Values.USDValue value={data.riskExposure} />
+            {data.riskExposure === null ? (
+              '-'
+            ) : (
+              <Values.USDValue value={data.riskExposure} />
+            )}
           </Row>
         </Col>
         <Col>

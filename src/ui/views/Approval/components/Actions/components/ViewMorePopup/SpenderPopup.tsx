@@ -32,7 +32,11 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         {data.isRevoke ? 'Revoke from' : 'Approve to'}{' '}
-        <Values.Address address={data.spender} chain={data.chain} />
+        <Values.Address
+          address={data.spender}
+          chain={data.chain}
+          iconWidth="14px"
+        />
       </div>
       <Table className="view-more-table">
         <Col>
@@ -56,7 +60,11 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
             Risk exposure
           </Row>
           <Row>
-            <Values.USDValue value={data.riskExposure} />
+            {data.riskExposure === null ? (
+              '-'
+            ) : (
+              <Values.USDValue value={data.riskExposure} />
+            )}
           </Row>
         </Col>
         <Col>
