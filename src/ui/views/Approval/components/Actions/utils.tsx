@@ -6,6 +6,7 @@ import {
   SwapAction,
   SendAction,
   ContractDesc,
+  AddrDescResponse,
   ApproveAction,
   UsedChain,
   NFTItem,
@@ -97,6 +98,19 @@ export interface ParsedActionData {
   };
   pushMultiSig?: PushMultiSigAction;
 }
+
+const getProtocol = (
+  protocolMap: AddrDescResponse['desc']['protocol'],
+  chainId: string
+) => {
+  if (!protocolMap) return null;
+  if (protocolMap[chainId]) return protocolMap[chainId];
+  const protocols = Object.values(protocolMap);
+  if (protocols.length > 0) {
+    return protocols[0];
+  }
+  return null;
+};
 
 const calcSlippageTolerance = (base: string, actual: string) => {
   const baseBn = new BigNumber(base);
@@ -310,6 +324,7 @@ export interface SendRequireData {
   usedChains: UsedChain[];
   name: string | null;
   onTransferWhitelist: boolean;
+  whitelistEnable: boolean;
 }
 
 export interface SendNFTRequireData extends SendRequireData {
@@ -458,9 +473,7 @@ const fetchNFTApproveRequiredData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    if (desc.protocol?.[chainId]) {
-      result.protocol = desc.protocol[chainId];
-    }
+    result.protocol = getProtocol(desc.protocol, chainId);
     result.isDanger = desc.is_danger;
   });
   queue.add(async () => {
@@ -536,9 +549,7 @@ const fetchTokenApproveRequireData = async ({
       result.bornAt = desc.born_at;
     }
     result.isDanger = desc.is_danger;
-    if (desc.protocol?.[chainId]) {
-      result.protocol = desc.protocol[chainId];
-    }
+    result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
     const hasInteraction = await wallet.openapi.hasInteraction(
@@ -592,9 +603,7 @@ export const fetchActionRequiredData = async ({
       } else {
         result.bornAt = desc.born_at;
       }
-      if (desc.protocol && desc.protocol[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
+      result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
@@ -627,9 +636,7 @@ export const fetchActionRequiredData = async ({
       } else {
         result.bornAt = desc.born_at;
       }
-      if (desc.protocol && desc.protocol[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
+      result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
@@ -654,6 +661,7 @@ export const fetchActionRequiredData = async ({
       isTokenContract: false,
       name: null,
       onTransferWhitelist: false,
+      whitelistEnable: false,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -714,6 +722,8 @@ export const fetchActionRequiredData = async ({
       result.usedChains = usedChainList;
     });
     const whitelist = await wallet.getWhitelist();
+    const whitelistEnable = await wallet.isWhitelistEnabled();
+    result.whitelistEnable = whitelistEnable;
     result.onTransferWhitelist = whitelist.includes(
       actionData.send.to.toLowerCase()
     );
@@ -771,6 +781,7 @@ export const fetchActionRequiredData = async ({
       isTokenContract: false,
       name: null,
       onTransferWhitelist: false,
+      whitelistEnable: false,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -827,6 +838,8 @@ export const fetchActionRequiredData = async ({
       result.usedChains = usedChainList;
     });
     const whitelist = await wallet.getWhitelist();
+    const whitelistEnable = await wallet.isWhitelistEnabled();
+    result.whitelistEnable = whitelistEnable;
     result.onTransferWhitelist = whitelist.includes(
       actionData.sendNFT.to.toLowerCase()
     );
@@ -903,9 +916,7 @@ export const fetchActionRequiredData = async ({
           result.bornAt = desc.contract[chainId].create_at;
         }
       }
-      if (desc.protocol && desc.protocol[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
+      result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
@@ -978,7 +989,9 @@ export const formatSecurityEngineCtx = ({
         chainId,
         usedChainList: data.usedChains.map((item) => item.id),
         isTokenContract: data.isTokenContract,
-        onTransferWhitelist: data.onTransferWhitelist,
+        onTransferWhitelist: data.whitelistEnable
+          ? data.onTransferWhitelist
+          : false,
       },
     };
   }
@@ -1003,7 +1016,9 @@ export const formatSecurityEngineCtx = ({
         hasTransfer: data.hasTransfer,
         chainId,
         usedChainList: data.usedChains.map((item) => item.id),
-        onTransferWhitelist: data.onTransferWhitelist,
+        onTransferWhitelist: data.whitelistEnable
+          ? data.onTransferWhitelist
+          : false,
       },
     };
   }

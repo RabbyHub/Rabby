@@ -146,8 +146,8 @@ const CancelTx = ({
           {pendingTx && !canCancel && (
             <GasPriceTip>
               <img src={IconAlert} className="w-[15px] mr-10" />
-              Set gas price more than {pendingTx.gasPrice / 1e9} Gwei to cancel
-              the pending transaction
+              Set current gas price more than {pendingTx.gasPrice / 1e9} Gwei to
+              cancel the pending transaction
             </GasPriceTip>
           )}
         </>

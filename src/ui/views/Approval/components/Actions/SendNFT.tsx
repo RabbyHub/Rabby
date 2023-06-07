@@ -135,7 +135,7 @@ const SendNFT = ({
                     />
                     <SecurityListItem
                       engineResult={engineResultMap['1038']}
-                      dangerText={'token not supported'}
+                      dangerText={'NFT not supported'}
                       id="1038"
                     />
                   </>
@@ -163,7 +163,7 @@ const SendNFT = ({
                       hasTransfer: requireData.hasTransfer,
                       isTokenContract: requireData.isTokenContract,
                       name: requireData.name,
-                      onTransferWhitelist: !!engineResultMap['1042'],
+                      onTransferWhitelist: requireData.onTransferWhitelist,
                     }}
                   />
                 </li>

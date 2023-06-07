@@ -9,9 +9,7 @@ const DeployContract = () => {
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle className="w-[90px]">
-            Description
-          </Row>
+          <Row isTitle>Description</Row>
           <Row>You are deploying a smart contract</Row>
         </Col>
       </Table>

@@ -69,7 +69,7 @@ const ViewMore = (props: Props) => {
         return 330;
       case 'spender':
       case 'nftSpender':
-        return 480;
+        return 425;
       case 'receiver':
         return 400;
       case 'nft':

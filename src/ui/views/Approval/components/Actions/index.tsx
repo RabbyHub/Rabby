@@ -83,6 +83,7 @@ export const ActionWrapper = styled.div`
       font-size: 14px;
       line-height: 16px;
       .icon-tip {
+        margin-top: 1px;
         margin-left: 4px;
         path {
           stroke: #fff;

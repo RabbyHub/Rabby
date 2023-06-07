@@ -110,7 +110,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         </Col>
         {data.cex && (
           <Col>
-            <Row>CEX Address</Row>
+            <Row>CEX address</Row>
             <Row>
               <div>
                 <LogoWithText logo={data.cex.logo} text={data.cex.name} />
@@ -121,7 +121,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
                       <li>
                         {data.token
                           ? ellipsisTokenSymbol(data.token.symbol)
-                          : 'token'}{' '}
+                          : 'NFT'}{' '}
                         not supported
                       </li>
                     )}
@@ -133,14 +133,14 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         )}
         {data.isTokenContract && (
           <Col>
-            <Row>Token Address</Row>
+            <Row>Token address</Row>
             <Row>
               <Values.Boolean value={data.isTokenContract} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row>{data.contract ? 'Deployed' : 'First on-chain'}</Row>
+          <Row>{data.contract ? 'Deployed time' : 'First on-chain'}</Row>
           <Row>
             <Values.TimeSpan value={bornAt} />
           </Row>

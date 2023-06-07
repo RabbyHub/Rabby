@@ -48,7 +48,7 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Deployed</Row>
+          <Row>Deployed time</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>

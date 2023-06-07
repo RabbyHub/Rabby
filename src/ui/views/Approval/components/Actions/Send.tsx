@@ -152,7 +152,7 @@ const Send = ({
                       hasTransfer: requireData.hasTransfer,
                       isTokenContract: requireData.isTokenContract,
                       name: requireData.name,
-                      onTransferWhitelist: !!engineResultMap['1033'],
+                      onTransferWhitelist: requireData.onTransferWhitelist,
                     }}
                   />
                 </li>

@@ -276,8 +276,8 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1023"
                 engineResult={engineResultMap['1023']}
-                dangerText="Risk exposure <= $10,000"
-                warningText="Risk exposure <= $100,000"
+                dangerText="Risk exposure ≤ $10,000"
+                warningText="Risk exposure ≤ $100,000"
               />
 
               <SecurityListItem

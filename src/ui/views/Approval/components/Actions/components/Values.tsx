@@ -46,15 +46,15 @@ const TimeSpan = ({ value }: { value: number | null }) => {
     if (!bornAt) return '-';
     const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
     if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
+      return `${d} day${d > 1 ? 's' : ''} ago`;
     }
     if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
+      return `${h} hour${h > 1 ? 's' : ''} ago`;
     }
     if (m > 1) {
-      return `${m} Minutes ago`;
+      return `${m} minutes ago`;
     }
-    return '1 Minute ago';
+    return '1 minute ago';
   }, [value]);
   return <>{timeSpan}</>;
 };

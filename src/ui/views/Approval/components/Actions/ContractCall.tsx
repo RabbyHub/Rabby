@@ -8,6 +8,8 @@ import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ProtocolListItem } from './components/ProtocolListItem';
+import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -96,7 +98,21 @@ const ContractCall = ({
         </Col>
         <Col>
           <Row isTitle>Operation</Row>
-          <Row>{requireData.call.func || '-'}</Row>
+          <Row>
+            <div className="relative flex items-center">
+              {requireData.call.func || '-'}
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content]"
+                title={
+                  requireData.call.func
+                    ? 'Operation is decoded from ABI'
+                    : 'Operation is not decoded'
+                }
+              >
+                <img src={IconQuestionMark} className="w-10 ml-6" />
+              </TooltipWithMagnetArrow>
+            </div>
+          </Row>
         </Col>
       </Table>
     </Wrapper>

@@ -42,11 +42,11 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Type</Row>
+          <Row>Address type</Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row>{data.isEOA ? 'First on-chain' : 'Deployed'}</Row>
+          <Row>{data.isEOA ? 'First on-chain' : 'Deployed time'}</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
