@@ -321,7 +321,7 @@ const RuleDrawer = ({
       case 'enum':
         return ruleConfig.valueDefine.display[value as string];
       case 'percent':
-        return `${Math.floor(value as number)}%`;
+        return `${(value as number).toFixed(2)}%`;
       case 'int':
         return Math.floor(value as number);
       case 'float':

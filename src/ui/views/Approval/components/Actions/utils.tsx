@@ -104,7 +104,16 @@ const calcSlippageTolerance = (base: string, actual: string) => {
   if (baseBn.eq(0) && actualBn.eq(0)) return 0;
   if (baseBn.eq(0)) return 1;
   if (actualBn.eq(0)) return -1;
-  return actualBn.minus(baseBn).div(baseBn).toNumber();
+  return baseBn.minus(actualBn).div(baseBn).toNumber();
+};
+
+const calcUSDValueChange = (pay: string, receive: string) => {
+  const payBn = new BigNumber(pay);
+  const receiveBn = new BigNumber(receive);
+  if (payBn.eq(0) && receiveBn.eq(0)) return 0;
+  if (payBn.eq(0)) return 1;
+  if (receiveBn.eq(0)) return -1;
+  return receiveBn.minus(payBn).div(payBn).toNumber();
 };
 
 export const parseAction = (
@@ -125,8 +134,8 @@ export const parseAction = (
       ? actualReceiveToken.amount
       : 0;
     const slippageTolerance = calcSlippageTolerance(
-      receiveToken.min_raw_amount || '0',
-      actualReceiveToken ? actualReceiveToken.raw_amount || '0' : '0'
+      actualReceiveToken ? actualReceiveToken.raw_amount || '0' : '0',
+      receiveToken.min_raw_amount || '0'
     );
     const receiveTokenUsdValue = new BigNumber(receiveTokenAmount).times(
       receiveToken.price
@@ -140,7 +149,7 @@ export const parseAction = (
       : receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
     const usdValuePercentage = hasReceiver
       ? null
-      : calcSlippageTolerance(
+      : calcUSDValueChange(
           payTokenUsdValue.toFixed(),
           receiveTokenUsdValue.toFixed()
         );
@@ -189,9 +198,10 @@ export const parseAction = (
   if (data?.type === 'wrap_token') {
     const { pay_token, receive_token } = data.data as WrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
-      receive_token.min_raw_amount || '0',
-      pay_token.raw_amount || '0'
+      pay_token.raw_amount || '0',
+      receive_token.min_raw_amount || '0'
     );
+    console.log('slippageTolerance', slippageTolerance);
     return {
       wrapToken: {
         payToken: pay_token,
@@ -203,8 +213,8 @@ export const parseAction = (
   if (data?.type === 'unwrap_token') {
     const { pay_token, receive_token } = data.data as UnWrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
-      receive_token.min_raw_amount || '0',
-      pay_token.raw_amount || '0'
+      pay_token.raw_amount || '0',
+      receive_token.min_raw_amount || '0'
     );
     return {
       unWrapToken: {
