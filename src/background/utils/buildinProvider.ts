@@ -81,7 +81,7 @@ export class EthereumProvider extends EventEmitter {
     };
     const mapMethod = underline2Camelcase(method);
     const currentAccount = preferenceService.getCurrentAccount()!;
-    let networkId = this.chainId || CHAINS[CHAINS_ENUM.ETH].id.toString();
+    const networkId = this.chainId || CHAINS[CHAINS_ENUM.ETH].id.toString();
 
     const chain = Object.values(CHAINS).find(
       (item) => item.id.toString() === networkId
