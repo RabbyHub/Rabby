@@ -38,7 +38,6 @@ import { SeedPhraseBar } from './SeedPhraseBar';
 import clsx from 'clsx';
 import { Chain } from '@debank/common';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { safe } from '@/ui/models/safe';
 
 const GnonisSafeInfo = ({
   address,
