@@ -81,7 +81,7 @@ const GnosisTransactionQueue = () => {
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
-  const { data: pendingTxs } = useGnosisPendingTxs({
+  const { data: pendingTxs, loading } = useGnosisPendingTxs({
     address: account?.address,
   });
 
@@ -105,7 +105,7 @@ const GnosisTransactionQueue = () => {
 
   useEffect(() => {
     setActiveKey(tabs[0]?.key || null);
-  }, [tabs]);
+  }, [tabs[0]?.key]);
 
   return (
     <div className="queue">
@@ -135,6 +135,7 @@ const GnosisTransactionQueue = () => {
           pendingTxs={activeData?.txs}
           chain={activeKey}
           key={activeKey}
+          loading={loading}
         />
       )}
     </div>

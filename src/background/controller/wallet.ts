@@ -1337,9 +1337,7 @@ export class WalletController extends BaseController {
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
     buildinProvider.currentProvider.chainId = networkId;
-    // buildinProvider.currentProvider.chainId = this.getGnosisNetworkId(
-    //   safeAddress
-    // );
+
     const owners = await keyring.getOwners(
       safeAddress,
       version,

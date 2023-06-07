@@ -44,8 +44,6 @@ const AccountItem = ({
   const wallet = useWallet();
 
   const init = async (networkId) => {
-    // const currentAccount = (await wallet.getCurrentAccount())!;
-    // const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const name = (await wallet.getAlianName(account.address))!;
     const chain = Object.values(CHAINS).find(
       (item) => item.id.toString() === networkId + ''

@@ -9,6 +9,7 @@ import { SvgIconOffline } from 'ui/assets';
 import IconChainMore from 'ui/assets/chain-more.svg';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
+import { Chain } from '@debank/common';
 
 const BalanceView = ({
   currentAccount,
@@ -36,22 +37,25 @@ const BalanceView = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [isGnosis, setIsGnosis] = useState(false);
-  const [gnosisNetwork, setGnosisNetwork] = useState(CHAINS[CHAINS_ENUM.ETH]);
+  const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
 
   const handleIsGnosisChange = async () => {
     if (!currentAccount) return;
-    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-    const network = Object.values(CHAINS).find(
-      (chain) => chain.id === Number(networkId)
-    );
-    if (network) {
-      setGnosisNetwork(network);
-    }
+    const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
+    const chains = networkIds
+      .map((networkId) => {
+        return Object.values(CHAINS).find(
+          (chain) => chain.id === Number(networkId)
+        );
+      })
+      .filter((v) => !!v);
+    setGnosisNetworks(chains as Chain[]);
   };
 
   useEffect(() => {
     if (currentAccount) {
       setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
+      console.log('isGnosis', isGnosis);
     }
   }, [currentAccount]);
 
@@ -62,17 +66,34 @@ const BalanceView = ({
   }, [isGnosis, currentAccount]);
   const displayChainList = () => {
     if (isGnosis) {
-      return (
-        <>
-          <img
-            src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
-            className="icon icon-chain opacity-60"
-          />
-          <span className="ml-2 text-white opacity-40">
-            On {gnosisNetwork.name}
-          </span>
-        </>
-      );
+      if (gnosisNetworks.length === 1) {
+        const gnosisNetwork = gnosisNetworks[0];
+        return (
+          <>
+            <img
+              src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
+              className="icon icon-chain opacity-60"
+            />
+            <span className="ml-2 text-white opacity-40">
+              On {gnosisNetwork.name}
+            </span>
+          </>
+        );
+      } else {
+        return (
+          <>
+            {gnosisNetworks.map((gnosisNetwork) => {
+              return (
+                <img
+                  key={gnosisNetwork.id}
+                  src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
+                  className="icon icon-chain opacity-60"
+                />
+              );
+            })}
+          </>
+        );
+      }
     }
     const result = chainBalances
       .sort((a, b) => b.usd_value - a.usd_value)

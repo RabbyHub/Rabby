@@ -1432,11 +1432,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
-      const networkIds = await wallet.getGnosisNetworkId(
+      const networkIds = await wallet.getGnosisNetworkIds(
         currentAccount.address
       );
 
-      if (!networkIds.includes(String(chainId || CHAINS[site!.chain].id))) {
+      if (
+        !networkIds.includes((chainId || CHAINS[site!.chain].id).toString())
+      ) {
         setCanProcess(false);
         setCantProcessReason(
           <div className="flex items-center gap-6">

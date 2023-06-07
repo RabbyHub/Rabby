@@ -16,7 +16,6 @@ import { chains } from './chains';
 import { whitelist } from './whitelist';
 import { swap } from './swap';
 import { customRPC } from './customRPC';
-import { safe } from './safe';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -35,7 +34,6 @@ export interface RootModel extends Models<RootModel> {
   whitelist: typeof whitelist;
   swap: typeof swap;
   customRPC: typeof customRPC;
-  safe: typeof safe;
 }
 
 export const models: RootModel = {
@@ -55,5 +53,4 @@ export const models: RootModel = {
   whitelist,
   swap,
   customRPC,
-  safe,
 };
