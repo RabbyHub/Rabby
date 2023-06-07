@@ -350,7 +350,6 @@ class GnosisKeyring extends EventEmitter {
     }
     const sig = new EthSignSignature(address, signature);
     this.currentTransaction.addSignature(sig);
-    console.log(this.currentTransaction);
   }
 
   async getOwners(address: string, version: string, provider) {

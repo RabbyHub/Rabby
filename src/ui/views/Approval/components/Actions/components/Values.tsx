@@ -222,7 +222,7 @@ const TokenLabel = ({
           overlayClassName="rectangle w-[max-content]"
           title="This is a scam token marked by Rabby"
         >
-          <img src={IconFake} className="icon icon-fake" />
+          <img src={IconFake} className="icon icon-fake w-12" />
         </TooltipWithMagnetArrow>
       )}
       {isScam && (
@@ -230,7 +230,7 @@ const TokenLabel = ({
           overlayClassName="rectangle w-[max-content]"
           title="This is potentially a low-quality and scam token based on Rabby's detection"
         >
-          <img src={IconScam} className="icon icon-scam" />
+          <img src={IconScam} className="icon icon-scam w-14" />
         </TooltipWithMagnetArrow>
       )}
     </div>

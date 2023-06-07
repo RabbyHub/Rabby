@@ -91,7 +91,7 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          // this.rejectApproval();
         }
       }
     });

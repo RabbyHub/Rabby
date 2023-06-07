@@ -74,8 +74,7 @@ const RowWrapper = styled.div`
         height: 3px;
         background-color: #999;
         border-radius: 100%;
-        top: 50%;
-        margin-top: -1.5px;
+        top: 6px;
       }
       &:nth-child(1) {
         margin-top: 8px;

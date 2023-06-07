@@ -55,8 +55,8 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
     const levelThreshold = threshold[level];
     switch (rule.valueDefine.type) {
       case 'boolean':
-        if (value === true) return 'True';
-        return 'False';
+        if (value === true) return 'Yes';
+        return 'No';
       case 'percent':
       case 'float':
       case 'int': {
@@ -100,7 +100,7 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
         } else {
           arr.push('∞');
         }
-        return arr.join(' and ');
+        return arr.join(' ; ');
       }
       case 'enum':
         return (levelThreshold as string[])

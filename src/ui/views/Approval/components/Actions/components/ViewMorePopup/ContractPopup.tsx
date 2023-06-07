@@ -28,7 +28,11 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         Interact contract{' '}
-        <Values.Address address={data.address} chain={data.chain} />
+        <Values.Address
+          address={data.address}
+          chain={data.chain}
+          iconWidth="14px"
+        />
       </div>
       <Table className="view-more-table">
         <Col>

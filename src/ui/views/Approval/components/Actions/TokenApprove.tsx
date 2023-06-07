@@ -84,7 +84,6 @@ const ApproveAmountModal = ({
   }, [customAmount]);
 
   useEffect(() => {
-    console.log('visible', inputRef.current);
     if (visible) {
       setTimeout(() => {
         inputRef.current?.focus();

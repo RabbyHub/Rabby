@@ -23,6 +23,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 
 const Wrapper = styled.section`
   padding: 20px;
+  padding-top: 12px;
   box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 16px 16px 0px 0px;
   position: relative;
@@ -43,6 +44,8 @@ const Wrapper = styled.section`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 15px;
+      line-height: 18px;
     }
     .right {
       font-size: 12px;
@@ -86,24 +89,21 @@ const Wrapper = styled.section`
       transform: translateX(-50%);
     }
   }
-  &.has-shadow {
-    box-shadow: none;
-    &::before {
-      content: '';
-      pointer-events: none;
-      position: absolute;
-      top: -85px;
-      height: 85px;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(
-        180deg,
-        rgba(217, 217, 217, 0) 10.74%,
-        rgba(175, 175, 175, 0.168147) 41.66%,
-        rgba(130, 130, 130, 0.35) 83.44%
-      );
-    }
-  }
+`;
+
+const Shadow = styled.div`
+  pointer-events: none;
+  position: absolute;
+  top: -85px;
+  height: 85px;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(217, 217, 217, 0) 10.74%,
+    rgba(175, 175, 175, 0.168147) 41.66%,
+    rgba(130, 130, 130, 0.35) 83.44%
+  );
 `;
 
 const SecurityLevelTipColor = {
@@ -158,50 +158,53 @@ export const FooterBar: React.FC<Props> = ({
   }
 
   return (
-    <Wrapper
-      className={clsx('bg-white', {
-        'has-shadow': hasShadow,
-      })}
-    >
-      {origin && (
-        <div className="request-origin">
-          {originLogo && !(origin === INTERNAL_REQUEST_ORIGIN) && (
-            <FallbackSiteLogo
-              url={originLogo}
-              origin={origin}
-              width="20px"
-              height="20px"
-            />
-          )}
-          <span className="origin">{displayOirigin}</span>
-          <span className="right">Request from</span>
-        </div>
-      )}
-      <AccountInfo chain={props.chain} account={account} />
-      <ActionGroup account={account} {...props} />
-      {securityLevel && hasUnProcessSecurityResult && (
-        <div
-          className="security-level-tip"
-          style={{
-            color: SecurityLevelTipColor[securityLevel].bg,
-            backgroundColor: SecurityLevelTipColor[securityLevel].bg,
-          }}
-        >
-          <img
-            src={SecurityLevelTipColor[securityLevel].icon}
-            className="icon icon-level"
-          />
-          <span
+    <div className="relative">
+      {hasShadow && <Shadow />}
+      <Wrapper
+        className={clsx('bg-white', {
+          'has-shadow': hasShadow,
+        })}
+      >
+        {origin && (
+          <div className="request-origin">
+            {originLogo && !(origin === INTERNAL_REQUEST_ORIGIN) && (
+              <FallbackSiteLogo
+                url={originLogo}
+                origin={origin}
+                width="20px"
+                height="20px"
+              />
+            )}
+            <span className="origin">{displayOirigin}</span>
+            <span className="right">Request from</span>
+          </div>
+        )}
+        <AccountInfo chain={props.chain} account={account} />
+        <ActionGroup account={account} {...props} />
+        {securityLevel && hasUnProcessSecurityResult && (
+          <div
+            className="security-level-tip"
             style={{
-              color: SecurityLevelTipColor[securityLevel].text,
+              color: SecurityLevelTipColor[securityLevel].bg,
+              backgroundColor: SecurityLevelTipColor[securityLevel].bg,
             }}
           >
-            {securityLevel === Level.FORBIDDEN
-              ? 'Found forbidden risks. Unable to sign'
-              : 'Please process the alert before signing'}
-          </span>
-        </div>
-      )}
-    </Wrapper>
+            <img
+              src={SecurityLevelTipColor[securityLevel].icon}
+              className="icon icon-level"
+            />
+            <span
+              style={{
+                color: SecurityLevelTipColor[securityLevel].text,
+              }}
+            >
+              {securityLevel === Level.FORBIDDEN
+                ? 'Found forbidden risks. Unable to sign'
+                : 'Please process the alert before signing'}
+            </span>
+          </div>
+        )}
+      </Wrapper>
+    </div>
   );
 };

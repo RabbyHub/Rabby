@@ -60,7 +60,7 @@ const NFTBalanceChange = ({
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
                   isScam={
-                    !item.collection?.is_verified === false &&
+                    item.collection?.is_verified !== false &&
                     !!item.collection?.is_suspicious
                   }
                 />
@@ -89,7 +89,7 @@ const NFTBalanceChange = ({
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
                   isScam={
-                    !item.collection?.is_verified === false &&
+                    item.collection?.is_verified !== false &&
                     !!item.collection?.is_suspicious
                   }
                 />
@@ -210,12 +210,12 @@ const BalanceChange = ({
                       logo={token.logo_url}
                       text={`- ${formatAmount(token.amount)} ${token.symbol}`}
                       key={token.id}
+                      logoRadius="100%"
                       icon={
                         <Values.TokenLabel
                           isFake={token.is_verified === false}
                           isScam={
-                            !token.is_verified === false &&
-                            !!token.is_suspicious
+                            token.is_verified !== false && !!token.is_suspicious
                           }
                         />
                       }
@@ -235,12 +235,12 @@ const BalanceChange = ({
                       logo={token.logo_url}
                       text={`+ ${formatAmount(token.amount)} ${token.symbol}`}
                       key={token.id}
+                      logoRadius="100%"
                       icon={
                         <Values.TokenLabel
                           isFake={token.is_verified === false}
                           isScam={
-                            !token.is_verified === false &&
-                            !!token.is_suspicious
+                            token.is_verified !== false && !!token.is_suspicious
                           }
                         />
                       }

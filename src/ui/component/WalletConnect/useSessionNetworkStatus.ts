@@ -18,7 +18,6 @@ export const useSessionNetworkStatus = (
       address: string;
       brandName: string;
     }) => {
-      console.log(data);
       if (
         isSameAddress(data.address, account?.address ?? '') &&
         data.brandName === account?.brandName

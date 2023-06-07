@@ -128,7 +128,7 @@ const Swap = ({
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}
                     isScam={
-                      !receiveToken.is_verified === false &&
+                      receiveToken.is_verified !== false &&
                       !!receiveToken.is_suspicious
                     }
                   />

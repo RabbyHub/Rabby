@@ -71,7 +71,10 @@ const RuleResult = ({
 }) => {
   const handleClick = () => {
     if (!rule.result) return;
-    onSelect(rule);
+    onSelect({
+      ...rule,
+      id: rule.result.id,
+    });
   };
 
   const translucent = useMemo(() => {
@@ -179,7 +182,7 @@ const RuleResult = ({
       )}
       {rule.result && ignored && (
         <SecurityLevelTag
-          enable
+          enable={rule.result.enable}
           level="proceed"
           onClick={handleClick}
           right="-12px"

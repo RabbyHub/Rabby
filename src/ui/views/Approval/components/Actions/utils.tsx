@@ -30,7 +30,7 @@ import BigNumber from 'bignumber.js';
 import { useState, useCallback, useEffect } from 'react';
 import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
-import { CHAINS } from 'consts';
+import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 
 export interface ReceiveTokenItem extends TokenItem {
@@ -179,7 +179,6 @@ export const parseAction = (
   }
   if (data?.type === 'revoke_token') {
     const { spender, token } = data.data as RevokeTokenApproveAction;
-    console.log(data);
     return {
       revokeToken: {
         spender,
@@ -694,6 +693,9 @@ export const fetchActionRequiredData = async ({
         result.isTokenContract = is_token;
       }
       result.name = desc.name;
+      if (ALIAS_ADDRESS[actionData.send!.to.toLowerCase()]) {
+        result.name = ALIAS_ADDRESS[actionData.send!.to.toLowerCase()];
+      }
     });
     queue.add(async () => {
       const usedChainList = await wallet.openapi.addrUsedChainList(
@@ -931,7 +933,6 @@ export const formatSecurityEngineCtx = ({
     const receiveTokenIsScam = receiveTokenIsFake
       ? false
       : !!receiveToken.is_suspicious;
-
     return {
       swap: {
         receiveTokenIsScam,

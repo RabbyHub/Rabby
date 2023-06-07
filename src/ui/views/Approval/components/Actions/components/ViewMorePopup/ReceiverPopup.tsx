@@ -72,7 +72,12 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        Send to <Values.Address address={data.address} chain={data.chain} />
+        Send to{' '}
+        <Values.Address
+          address={data.address}
+          chain={data.chain}
+          iconWidth="14px"
+        />
       </div>
       <Table className="view-more-table">
         <Col>

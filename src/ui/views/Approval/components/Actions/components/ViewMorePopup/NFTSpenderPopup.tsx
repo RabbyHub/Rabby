@@ -32,7 +32,11 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         {data.isRevoke ? 'Revoke from' : 'Approve to'}{' '}
-        <Values.Address address={data.spender} chain={data.chain} />
+        <Values.Address
+          address={data.spender}
+          chain={data.chain}
+          iconWidth="14px"
+        />
       </div>
       <Table className="view-more-table">
         <Col>
