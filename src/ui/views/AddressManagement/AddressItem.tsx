@@ -50,6 +50,8 @@ export interface AddressItemProps {
   isCurrentAccount?: boolean;
   isUpdatingBalance?: boolean;
   children?: React.ReactNode;
+  // forceFastDelete?: boolean;
+  onDelete?: () => void;
 }
 
 const AddressItem = memo(
@@ -67,6 +69,7 @@ const AddressItem = memo(
     isCurrentAccount = false,
     isUpdatingBalance,
     children,
+    onDelete,
   }: AddressItemProps) => {
     const { t } = useTranslation();
     const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
@@ -102,8 +105,11 @@ const AddressItem = memo(
 
     const canFastDeleteAccount = useMemo(
       // not seed phrase ,not privacy secret
-      () => ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
-      [type]
+      () =>
+        onDelete
+          ? true
+          : ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
+      [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
       e.stopPropagation();
@@ -118,6 +124,8 @@ const AddressItem = memo(
           content: t('Deleted'),
           duration: 0.5,
         });
+      } else if (onDelete) {
+        onDelete();
       }
     };
 

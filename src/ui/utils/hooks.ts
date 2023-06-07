@@ -295,6 +295,8 @@ export const useAccountInfo = (type: string, address: string) => {
   const mnemonicAccounts = useRabbySelector((state) => state.account);
   const fetchLedgerAccount = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
+      console.log('res', res);
+
       setAccount({
         ...res,
         hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
