@@ -215,7 +215,6 @@ export const parseAction = (
       pay_token.raw_amount || '0',
       receive_token.min_raw_amount || '0'
     );
-    console.log('slippageTolerance', slippageTolerance);
     return {
       wrapToken: {
         payToken: pay_token,
