@@ -4,38 +4,28 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { CHAINS_LIST } from '@debank/common';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Button, Skeleton, Tooltip, message } from 'antd';
+import { Skeleton, message } from 'antd';
 import {
   SecurityCheckDecision,
   SecurityCheckResponse,
 } from 'background/service/openapi';
-import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from 'ui/utils';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
-import SecurityCheckCard from './SecurityCheckCard';
+import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
-import { SignTypedDataExplain } from './SignTypedDataExplain';
 import ViewRawModal from './TxComponents/ViewRawModal';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
+import { parseAction } from './TypedDataActions/utils';
+
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -124,51 +114,21 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   ] = useState<SecurityCheckDecision>(
     isSignTypedDataV1 ? 'pending' : 'loading'
   );
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
-  const [explain, setExplain] = useState('');
 
-  const { value: explainTypedDataRes, loading, error } = useAsync(async () => {
+  const { value: typedDataActionData, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
       const currentAccount = isGnosis
         ? account
         : await wallet.getCurrentAccount();
 
-      return await wallet.openapi.explainTypedData(
-        currentAccount!.address,
-        session.origin,
-        signTypedData
-      );
+      return await wallet.openapi.parseTypedData({
+        typedData: signTypedData,
+        address: currentAccount!.address,
+        origin: session.origin,
+      });
     }
     return;
   }, [data, isSignTypedDataV1, signTypedData]);
-
-  const { value: checkResult } = useAsync(async () => {
-    if (!isSignTypedDataV1 && signTypedData) {
-      setSecurityCheckStatus('loading');
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
-      const check = await wallet.openapi.checkTypedData(
-        currentAccount!.address,
-        session.origin,
-        signTypedData
-      );
-      return check;
-    }
-
-    return;
-  }, [data, isSignTypedDataV1, signTypedData]);
-
-  useEffect(() => {
-    if (checkResult) {
-      setSecurityCheckStatus(checkResult.decision);
-      setSecurityCheckDetail(checkResult);
-      setForceProcess(checkResult.decision !== 'forbidden');
-    }
-  }, [checkResult]);
 
   if (error) {
     console.error('error', error);
@@ -249,29 +209,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         ...extra,
       });
     }
-  };
-
-  const handleSecurityCheck = async () => {
-    setSecurityCheckStatus('loading');
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
-
-    const dataStr = JSON.stringify(data);
-    const check = await wallet.openapi.checkText(
-      currentAccount!.address,
-      session.origin,
-      dataStr
-    );
-    const serverExplain = await wallet.openapi.explainText(
-      session.origin,
-      currentAccount!.address,
-      dataStr
-    );
-    setExplain(serverExplain.comment);
-    setSecurityCheckStatus(check.decision);
-    setSecurityCheckDetail(check);
-    setForceProcess(check.decision !== 'forbidden');
   };
 
   const handleCancel = () => {
@@ -383,6 +320,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   useEffect(() => {
+    if (!loading && typedDataActionData) {
+      parseAction(typedDataActionData, signTypedData);
+    }
+  }, [loading, typedDataActionData, signTypedData]);
+
+  useEffect(() => {
     init();
     checkWachMode();
     report('createSignText');
@@ -440,7 +383,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             }}
           />
         )}
-        <SignTypedDataExplain
+        {/* <SignTypedDataExplain
           data={explainTypedDataRes}
           chain={chain}
           message={
@@ -483,16 +426,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               )}
             </div>
           }
-        />
-
-        <div className="section-title mt-[20px]">Pre-sign check</div>
-        <SecurityCheckCard
-          isReady={true}
-          loading={securityCheckStatus === 'loading'}
-          data={securityCheckDetail}
-          status={securityCheckStatus}
-          onCheck={isSignTypedDataV1 ? handleSecurityCheck : undefined}
-        ></SecurityCheckCard>
+        /> */}
       </div>
 
       <footer className="approval-text__footer">

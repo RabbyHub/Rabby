@@ -99,7 +99,7 @@ export interface ParsedActionData {
   pushMultiSig?: PushMultiSigAction;
 }
 
-const getProtocol = (
+export const getProtocol = (
   protocolMap: AddrDescResponse['desc']['protocol'],
   chainId: string
 ) => {
@@ -426,7 +426,7 @@ export type ActionRequireData =
   | PushMultiSigRequireData
   | null;
 
-const waitQueueFinished = (q: PQueue) => {
+export const waitQueueFinished = (q: PQueue) => {
   return new Promise((resolve) => {
     q.on('empty', () => {
       if (q.pending <= 0) resolve(null);
