@@ -98,7 +98,7 @@ export const ReconnectView: React.FC = () => {
 
   return (
     <div className="watchaddress">
-      {currentAccount && (
+      {currentAccount && visible && (
         <Scan
           uri={qrCodeContent}
           bridgeURL={bridgeURL}
