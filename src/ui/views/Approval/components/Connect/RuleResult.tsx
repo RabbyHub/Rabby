@@ -71,7 +71,10 @@ const RuleResult = ({
 }) => {
   const handleClick = () => {
     if (!rule.result) return;
-    onSelect(rule);
+    onSelect({
+      ...rule,
+      id: rule.result.id,
+    });
   };
 
   const translucent = useMemo(() => {
@@ -82,7 +85,7 @@ const RuleResult = ({
       return hasForbidden;
     } else if (
       rule.result.level === Level.ERROR ||
-      rule.result.level === Level.CLOSED ||
+      !rule.result.enable ||
       ignored
     ) {
       return false;
@@ -160,16 +163,30 @@ const RuleResult = ({
           </div>
         )}
       </div>
-      {rule.result && !ignored && (
+      {rule.result && !ignored && rule.result.enable && (
         <SecurityLevelTag
+          enable
           level={rule.result.level}
           onClick={handleClick}
           translucent={translucent}
           right="-12px"
         />
       )}
+      {rule.result && !rule.result.enable && (
+        <SecurityLevelTag
+          enable={false}
+          level="proceed"
+          onClick={handleClick}
+          right="-12px"
+        />
+      )}
       {rule.result && ignored && (
-        <SecurityLevelTag level="proceed" onClick={handleClick} right="-12px" />
+        <SecurityLevelTag
+          enable={rule.result.enable}
+          level="proceed"
+          onClick={handleClick}
+          right="-12px"
+        />
       )}
     </RuleResultWrapper>
   );
