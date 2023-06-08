@@ -16,7 +16,6 @@ export const useGnosisSafeInfo = (
     async () => {
       if (address && networkId) {
         const safeInfo = await Safe.getSafeInfo(address, networkId);
-        // todo
         const owners = await wallet.getGnosisOwners(
           {
             address,

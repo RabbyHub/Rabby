@@ -472,10 +472,7 @@ class GnosisKeyring extends EventEmitter {
       baseGas: transaction.baseGas,
       operation: transaction.operation,
     };
-    // todo: get networkId
-    // const networkId = (transaction as any)?.chainId?.toString();
-    // const safeInfo =
-    //   _safeInfo || (await Safe.getSafeInfo(checksumAddress, networkId));
+
     const safe = new Safe(checksumAddress, version, provider, networkId);
     this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);

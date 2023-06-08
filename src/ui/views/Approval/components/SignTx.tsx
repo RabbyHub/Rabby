@@ -1452,7 +1452,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
-    // todo
     const networkId = String(chainId);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
     const pendingTxs = await Safe.getPendingTransactions(
