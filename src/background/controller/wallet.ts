@@ -1824,8 +1824,18 @@ export class WalletController extends BaseController {
     );
   };
 
-  removeAddress = async (address: string, type: string, brand?: string) => {
-    await keyringService.removeAccount(address, type, brand);
+  removeAddress = async (
+    address: string,
+    type: string,
+    brand?: string,
+    removeEmptyKeyrings?: boolean
+  ) => {
+    await keyringService.removeAccount(
+      address,
+      type,
+      brand,
+      removeEmptyKeyrings
+    );
     if (!(await keyringService.hasAddress(address))) {
       contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
@@ -1870,6 +1880,40 @@ export class WalletController extends BaseController {
         })
       );
     });
+  };
+
+  removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
+    keyringService.removeKeyringByPublicKey(publicKey);
+  };
+
+  getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
+    const targetKeyring = keyringService.keyrings?.find((item) => {
+      if (
+        item.type === KEYRING_CLASS.MNEMONIC &&
+        item.mnemonic &&
+        item.publicKey === publicKey
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    return targetKeyring;
+  };
+
+  getMnemonicFromPublicKey = (publicKey: string) => {
+    const targetKeyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+
+    return targetKeyring?.mnemonic;
+  };
+
+  getMnemonicKeyRingIdFromPublicKey = (publicKey: string) => {
+    const targetKeyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    let keyringId;
+    if (targetKeyring) {
+      keyringId = this.updateKeyringInStash(targetKeyring);
+    }
+    return keyringId;
   };
 
   getMnemonicByAddress = (address: string) => {

@@ -36,7 +36,7 @@
     "@ngraveio/bc-ur": "^1.1.6",
     "@onekeyfe/connect": "^8.7.7-extended",
     "@rabby-wallet/eth-gnosis-keyring": "^0.0.1",
-    "@rabby-wallet/eth-hd-keyring": "^3.6.11",
+    "@rabby-wallet/eth-hd-keyring": "^3.6.12",
     "@rabby-wallet/eth-lattice-keyring": "^1.0.4",
     "@rabby-wallet/eth-simple-keyring": "^4.2.1",
     "@rabby-wallet/eth-trezor-keyring": "^2.2.0",

@@ -113,6 +113,10 @@ const AddressItem = memo(
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
       e.stopPropagation();
+      if (onDelete) {
+        await onDelete();
+        return;
+      }
       if (canFastDeleteAccount) {
         await dispatch.addressManagement.removeAddress([
           address,
@@ -124,8 +128,6 @@ const AddressItem = memo(
           content: t('Deleted'),
           duration: 0.5,
         });
-      } else if (onDelete) {
-        onDelete();
       }
     };
 
