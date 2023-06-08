@@ -238,7 +238,6 @@ const Dashboard = () => {
         });
       },
       onSuccess(res) {
-        console.log(res);
         dispatch.chains.setField({
           gnosisPendingCount: res?.total || 0,
         });

@@ -91,7 +91,6 @@ const GnonisSafeInfo = ({
       })
     );
     setActiveData(res[0]);
-    console.log(res);
     return res;
   }, [address]);
 
@@ -117,8 +116,6 @@ const GnonisSafeInfo = ({
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
     };
   }, [accountsList, highlightedAddresses]);
-
-  console.log('safe', loading, safeInfo);
 
   if (loading) {
     return (

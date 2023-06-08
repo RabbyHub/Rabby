@@ -55,7 +55,6 @@ const BalanceView = ({
   useEffect(() => {
     if (currentAccount) {
       setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
-      console.log('isGnosis', isGnosis);
     }
   }, [currentAccount]);
 
