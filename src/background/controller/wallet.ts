@@ -1449,6 +1449,10 @@ export class WalletController extends BaseController {
           params: data,
         });
       });
+      keyring.on('error', (error) => {
+        console.error(error);
+        Sentry.captureException(error);
+      });
     }
     return {
       uri,
