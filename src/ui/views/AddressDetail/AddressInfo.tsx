@@ -38,6 +38,7 @@ import { SeedPhraseBar } from './SeedPhraseBar';
 import clsx from 'clsx';
 import { Chain } from '@debank/common';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { sortBy } from 'lodash';
 
 const GnonisSafeInfo = ({
   address,
@@ -90,8 +91,11 @@ const GnonisSafeInfo = ({
         };
       })
     );
-    setActiveData(res[0]);
-    return res;
+    const list = sortBy(res, (item) => {
+      return -(item?.data?.owners?.length || 0);
+    });
+    setActiveData(list[0]);
+    return list;
   }, [address]);
 
   const { sortedAccountsList } = React.useMemo(() => {
@@ -183,7 +187,7 @@ const GnonisSafeInfo = ({
       </>
     );
   }
-  return <div>????</div>;
+  return null;
 };
 
 type Props = {

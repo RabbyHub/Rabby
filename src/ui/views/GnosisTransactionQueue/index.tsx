@@ -36,48 +36,41 @@ import { useRequest } from 'ahooks';
 import { useAccount } from '@/ui/store-hooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
+import moment from 'moment';
 
 const getTabs = (
   networks: string[],
   pendingMap: Record<string, SafeTransactionItem[]>
 ) => {
-  const res = networks?.map((networkId) => {
-    const chain = Object.values(CHAINS).find(
-      (chain) => chain.network === networkId
-    );
-    if (!chain) {
-      return;
+  const res = networks
+    ?.map((networkId) => {
+      const chain = Object.values(CHAINS).find(
+        (chain) => chain.network === networkId
+      );
+      if (!chain) {
+        return;
+      }
+      const pendingTxs = pendingMap[chain?.network] || [];
+      return {
+        title: `${chain?.name} (${pendingTxs.length})`,
+        key: chain.enum,
+        chain,
+        count: pendingTxs.length || 0,
+        txs: pendingTxs,
+      };
+    })
+    .filter((item) => !!item);
+  return sortBy(
+    res,
+    (item) => -(item?.count || 0),
+    (item) => {
+      return -moment(item?.txs?.[0]?.submissionDate || 0).valueOf();
     }
-    const pendingTxs = pendingMap[chain?.network] || [];
-    return {
-      title: `${chain?.name} (${pendingTxs.length})`,
-      key: chain.enum,
-      chain,
-      count: pendingTxs.length || 0,
-      txs: pendingTxs,
-    };
-  });
-  return sortBy(res, 'count').reverse();
+  );
 };
 
 const GnosisTransactionQueue = () => {
-  const wallet = useWallet();
-  const [networkId, setNetworkId] = useState('1');
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
-  const [transactionsGroup, setTransactionsGroup] = useState<
-    Record<string, SafeTransactionItem[]>
-  >({});
-  const [submitDrawerVisible, setSubmitDrawerVisible] = useState(false);
-  const [
-    submitTransaction,
-    setSubmitTransaction,
-  ] = useState<SafeTransactionItem | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadFaild, setIsLoadFaild] = useState(false);
-
-  const { gnosisNetworkIds } = useRabbySelector((state) => state.chains);
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
