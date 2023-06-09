@@ -56,7 +56,7 @@ const TokenDetail = ({
   const tokenSupportSwap = useMemo(() => {
     if (shouldSelectDex || !token.is_core) return false;
     const tokenChain = getChain(token?.chain)?.enum;
-    return !!tokenChain && supportChains.includes(tokenChain);
+    return !!tokenChain && supportChains.includes(tokenChain as any);
   }, [supportChains, token, shouldSelectDex]);
 
   const ref = useRef<HTMLDivElement | null>(null);
