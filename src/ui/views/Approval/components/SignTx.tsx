@@ -1453,7 +1453,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = String(chainId);
-    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    let safeInfo: SafeInfo | null = null;
+    try {
+      safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    } catch (e) {
+      console.error(e);
+      throw new Error(
+        `Current safe address is not supported on ${chain.name} chain`
+      );
+    }
     const pendingTxs = await Safe.getPendingTransactions(
       currentAccount.address,
       networkId
