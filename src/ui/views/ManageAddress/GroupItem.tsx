@@ -38,12 +38,6 @@ export const GroupItem = ({
     [type, brandName, brandIcon]
   );
 
-  console.log('type, brandName, brandIcon', {
-    address,
-    type,
-    brandName,
-    brandIcon,
-  });
   return (
     <div
       onClick={onChange}
