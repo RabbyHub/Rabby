@@ -162,6 +162,9 @@ const RuleResult = ({
             <img src={IconEdit} className="ml-6 icon icon-edit" />
           </div>
         )}
+        {rule.id === '1070' && rule.result && (
+          <div>{rule.result.value ? 'Yes' : 'No'}</div>
+        )}
       </div>
       {rule.result && !ignored && rule.result.enable && (
         <SecurityLevelTag
