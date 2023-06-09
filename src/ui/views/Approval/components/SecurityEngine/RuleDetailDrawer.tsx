@@ -55,8 +55,9 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
     const levelThreshold = threshold[level];
     switch (rule.valueDefine.type) {
       case 'boolean':
-        if (value === true) return 'True';
-        return 'False';
+        if (value === true) return 'Yes';
+        return 'No';
+      case 'percent':
       case 'float':
       case 'int': {
         const { max: valueMax, min: valueMin } = rule.valueDefine;
@@ -72,10 +73,14 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
             if (min === valueMax) {
               arr.push(min.toString());
             } else {
-              arr.push(`≥${min}`);
+              arr.push(
+                `≥${min}${rule.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`>${min}`);
+            arr.push(
+              `>${min}${rule.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         }
         if (max !== null) {
@@ -83,15 +88,19 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
             if (max === valueMin) {
               arr.push(max.toString());
             } else {
-              arr.push(`≤${max}`);
+              arr.push(
+                `≤${max}${rule.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`<${max}`);
+            arr.push(
+              `<${max}${rule.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         } else {
           arr.push('∞');
         }
-        return arr.join(' and ');
+        return arr.join(' ; ');
       }
       case 'enum':
         return (levelThreshold as string[])

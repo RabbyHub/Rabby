@@ -887,6 +887,10 @@ export class KeyringService extends EventEmitter {
           params: data,
         });
       });
+      keyring.on('error', (error) => {
+        console.error(error);
+        Sentry.captureException(error);
+      });
     }
     if (keyring.type === KEYRING_CLASS.GNOSIS) {
       (keyring as GnosisKeyring).on(TransactionBuiltEvent, (data) => {

@@ -31,15 +31,20 @@ const Wrapper = styled.div`
 `;
 
 const SecurityLevelTagNoText = ({
+  enable,
   level,
   showText,
 }: {
+  enable: boolean;
   level: Level | 'proceed';
   showText: boolean;
 }) => {
   const currentLevel = useMemo(() => {
+    if (!enable) {
+      return SecurityEngineLevel.closed;
+    }
     return SecurityEngineLevel[level];
-  }, [level]);
+  }, [level, enable]);
 
   return (
     <Wrapper
@@ -58,6 +63,7 @@ const SecurityLevelTagWrapper = styled.div`
   position: absolute;
   top: 50%;
   margin-top: -12px;
+  right: -6px;
   padding: 4px;
   border-radius: 3px;
   transition: all 0.3s;
@@ -138,32 +144,45 @@ const SecurityLevelTagWrapper = styled.div`
 `;
 
 const SecurityLevelTag = ({
+  enable,
   level,
   translucent,
   onClick,
   right = '-6px',
+  className,
 }: {
+  enable: boolean;
   level: Level | 'proceed';
   translucent?: boolean;
   onClick?(): void;
   right?: string;
+  className?: string;
 }) => {
   const [isHovering, hoverProps] = useHover();
 
   return (
     <SecurityLevelTagWrapper
-      className={clsx(level, {
-        'cursor-pointer': onClick,
-        // translucent,
-        showText: isHovering,
-      })}
+      className={clsx(
+        enable ? level : '',
+        {
+          'cursor-pointer': onClick,
+          translucent,
+          showText: isHovering,
+          closed: !enable,
+        },
+        className
+      )}
       style={{
         right,
       }}
       onClick={onClick}
       {...hoverProps}
     >
-      <SecurityLevelTagNoText level={level} showText={isHovering} />
+      <SecurityLevelTagNoText
+        enable={enable}
+        level={level}
+        showText={isHovering}
+      />
       <IconArrowRight className="icon-arrow-right" />
     </SecurityLevelTagWrapper>
   );

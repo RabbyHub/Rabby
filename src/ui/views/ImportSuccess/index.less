@@ -1,27 +1,27 @@
 .success-import {
- overflow-y: auto;
- 
- .address-info {
+  overflow-y: auto;
+
+  .address-info {
     height: 100%;
- }
+  }
 
- .address-viewer-text.subtitle {
+  .address-viewer-text.subtitle {
     font-size: 13px;
-    color: #4B4D59;
- }
+    color: #4b4d59;
+  }
 
- .brand-name {
+  .brand-name {
     font-size: 16px;
-    color: #13141A;
+    color: #13141a;
     margin-bottom: 10px;
     height: 40px;
     align-items: center;
     font-weight: 500;
- }
+  }
 
- .address-info .ant-input {
+  .address-info .ant-input {
     height: 40px;
-    background: #F5F6FA;
+    background: #f5f6fa;
     border-radius: 2px;
     border: none;
     font-weight: inherit;
@@ -29,8 +29,42 @@
     padding-left: 6px;
     padding-right: 6px;
     width: 260px;
- }
+  }
+
+  .chain-list-container {
+    margin-top: 20px;
+    .desc {
+      text-align: left;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 15px;
+      color: #4b4d59;
+      margin-bottom: 12px;
+    }
+    .chain-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 12px;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        color: #13141a;
+
+        .chain-logo {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
 }
 .success-import::-webkit-scrollbar {
-    display: none;
+  display: none;
 }

@@ -33,7 +33,8 @@ export const ApproveToken: React.FC<Props> = ({
   const { t } = useTranslation();
   const tokenAmount = new BigNumber(detail.token_amount).toFixed();
   const totalTokenPrice = new BigNumber(
-    ((detail.token.raw_amount || 0) / Math.pow(10, detail.token.decimals)) *
+    (Number(detail.token.raw_amount || '0') /
+      Math.pow(10, detail.token.decimals)) *
       detail.token.price
   ).toFixed(2);
 

@@ -10,6 +10,42 @@
   .page-header {
     z-index: 1;
   }
+
+  .tabs {
+    display: flex;
+    gap: 20px 10px;
+    flex-wrap: wrap;
+    &-container {
+      background-color: #f5f6fa;
+      position: sticky;
+      top: 72px;
+      padding-bottom: 20px;
+      z-index: 10;
+    }
+
+    &-item {
+      padding: 4px 0;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 14px;
+      color: #4b4d59;
+      position: relative;
+      cursor: pointer;
+
+      &.is-active {
+        color: #8697ff;
+        &::after {
+          position: absolute;
+          content: '';
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #8697ff;
+        }
+      }
+    }
+  }
   .queue-item {
     background-color: #fff;
     border-radius: 6px;
@@ -183,8 +219,8 @@
     padding-top: 0;
     transform: translateY(-40px);
     .no-data {
-      width: 160px;
-      height: 160px;
+      width: 100px;
+      height: 100px;
       margin-top: 0;
     }
     .load-faild {

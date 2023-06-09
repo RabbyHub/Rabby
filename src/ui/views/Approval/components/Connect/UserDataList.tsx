@@ -94,7 +94,7 @@ const UserDataList = ({
       return hasForbidden;
     } else if (
       ruleResult.level === Level.ERROR ||
-      ruleResult.level === Level.CLOSED ||
+      !ruleResult.enable ||
       ignored
     ) {
       return !hasForbidden;

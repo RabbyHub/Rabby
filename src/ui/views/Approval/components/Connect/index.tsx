@@ -19,6 +19,7 @@ import RuleResult from './RuleResult';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
+import PQueue from 'p-queue';
 
 interface ConnectProps {
   params: any;
@@ -157,6 +158,11 @@ const RuleDesc = [
     desc: 'Flagged by ScamSniffer',
     fixed: false,
   },
+  {
+    id: '1070',
+    desc: 'Verified by Rabby',
+    fixed: false,
+  },
 ];
 
 const SecurityLevelTipColor = {
@@ -248,6 +254,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     return list;
   }, [engineResults]);
 
+  const resultsWithoutDisable = useMemo(() => {
+    return engineResults.filter((item) => item.enable);
+  }, [engineResults]);
+
   const connectBtnStatus = useMemo(() => {
     let disabled = false;
     let text = '';
@@ -258,14 +268,14 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let needProcessCount = 0;
     let cancelBtnText = 'Cancel';
     let level: Level = Level.SAFE;
-    engineResults.forEach((result) => {
+    resultsWithoutDisable.forEach((result) => {
       if (result.level === Level.SAFE) {
         safeCount++;
       } else if (result.level === Level.FORBIDDEN) {
         forbiddenCount++;
       } else if (
         result.level !== Level.ERROR &&
-        result.level !== Level.CLOSED &&
+        result.enable &&
         !processedRules.includes(result.id)
       ) {
         needProcessCount++;
@@ -304,15 +314,15 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       cancelBtnText,
       level,
     };
-  }, [engineResults, processedRules]);
+  }, [resultsWithoutDisable, processedRules]);
 
   const hasForbidden = useMemo(() => {
-    return engineResults.some((item) => item.level === Level.FORBIDDEN);
-  }, [engineResults]);
+    return resultsWithoutDisable.some((item) => item.level === Level.FORBIDDEN);
+  }, [resultsWithoutDisable]);
 
   const hasSafe = useMemo(() => {
-    return engineResults.some((item) => item.level === Level.SAFE);
-  }, [engineResults]);
+    return resultsWithoutDisable.some((item) => item.level === Level.SAFE);
+  }, [resultsWithoutDisable]);
 
   const isInBlacklist = useMemo(() => {
     return userData.originBlacklist.includes(origin.toLowerCase());
@@ -430,25 +440,57 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     const site = await wallet.getSite(origin);
-    let level: 'very_low' | 'low' | 'medium' | 'high';
+    let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
-    try {
-      const result = await wallet.openapi.getOriginPopularityLevel(origin);
-      setOriginPopularLevel(result.level);
-      level = result.level;
-    } catch (e) {
-      setOriginPopularLevel('low');
-      level = 'low';
-    }
-    try {
-      const {
-        collect_list,
-      } = await wallet.openapi.getOriginThirdPartyCollectList(origin);
-      setCollectList(collect_list);
-      collectList = collect_list;
-    } catch (e) {
-      setCollectList([]);
-    }
+    let defaultChain = CHAINS_ENUM.ETH;
+    const queue = new PQueue();
+    const waitQueueFinished = (q: PQueue) => {
+      return new Promise((resolve) => {
+        q.on('empty', () => {
+          if (q.pending <= 0) resolve(null);
+        });
+      });
+    };
+    queue.add(async () => {
+      try {
+        const result = await wallet.openapi.getOriginPopularityLevel(origin);
+        level = result.level;
+      } catch (e) {
+        level = 'low';
+      }
+    });
+    queue.add(async () => {
+      try {
+        const {
+          collect_list,
+        } = await wallet.openapi.getOriginThirdPartyCollectList(origin);
+        collectList = collect_list;
+      } catch (e) {
+        collectList = [];
+      }
+    });
+    queue.add(async () => {
+      try {
+        const recommendChains = await wallet.openapi.getRecommendChains(
+          account!.address,
+          origin
+        );
+        let targetChain: Chain | undefined;
+        for (let i = 0; i < recommendChains.length; i++) {
+          targetChain = Object.values(CHAINS).find(
+            (c) => c.serverId === recommendChains[i].id
+          );
+          if (targetChain) break;
+        }
+        defaultChain = targetChain ? targetChain.enum : CHAINS_ENUM.ETH;
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    await waitQueueFinished(queue);
+    setOriginPopularLevel(level);
+    setCollectList(collectList);
+    setDefaultChain(defaultChain);
 
     const ctx: ContextActionData = {
       origin: {
@@ -464,23 +506,6 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       setDefaultChain(site.chain);
       setIsLoading(false);
       return;
-    }
-    try {
-      const recommendChains = await wallet.openapi.getRecommendChains(
-        account!.address,
-        origin
-      );
-      setIsLoading(false);
-      let targetChain: Chain | undefined;
-      for (let i = 0; i < recommendChains.length; i++) {
-        targetChain = Object.values(CHAINS).find(
-          (c) => c.serverId === recommendChains[i].id
-        );
-        if (targetChain) break;
-      }
-      setDefaultChain(targetChain ? targetChain.enum : CHAINS_ENUM.ETH);
-    } catch (e) {
-      console.log(e);
     }
     setIsLoading(false);
   };
