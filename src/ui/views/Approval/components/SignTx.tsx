@@ -1452,8 +1452,25 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
-    const networkId = String(chainId);
-    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    const networkId = '' + chainId;
+    let safeInfo: SafeInfo | null = null;
+    try {
+      safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    } catch (e) {
+      let networkIds: string[] = [];
+      try {
+        networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
+      } catch (e) {
+        console.error(e);
+      }
+      if (!networkIds.includes(networkId)) {
+        throw new Error(
+          `Current safe address is not supported on ${chain.name} chain`
+        );
+      } else {
+        throw e;
+      }
+    }
     const pendingTxs = await Safe.getPendingTransactions(
       currentAccount.address,
       networkId
