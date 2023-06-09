@@ -1,5 +1,5 @@
 import { Button, Form, Input, message, Popover } from 'antd';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, NameAndAddress, PageHeader, Popup } from 'ui/component';
 import {
@@ -16,7 +16,13 @@ import IconPen from 'ui/assets/editpen.svg';
 import './style.less';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import {
+  CHAINS,
+  CHAINS_ENUM,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from '@/constant';
 import { useLocation } from 'react-router-dom';
 import { connectStore, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import IconTagYou from 'ui/assets/tag-you.svg';
@@ -29,59 +35,68 @@ import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar'
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import { SeedPhraseBar } from './SeedPhraseBar';
+import clsx from 'clsx';
+import { Chain } from '@debank/common';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { sortBy } from 'lodash';
 
-type Props = {
+const GnonisSafeInfo = ({
+  address,
+  type,
+  brandName,
+}: {
   address: string;
   type: string;
   brandName: string;
-  source: string;
-};
-
-const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
+}) => {
   const wallet = useWallet();
-  const { t } = useTranslation();
-
-  const [alias, setAlias] = useAlias(address);
-  const [balance] = useBalance(address);
-  const [form] = useForm();
-  const inputRef = useRef<Input>(null);
-  const accountInfo = useAccountInfo(type, address);
-
+  const [activeData, setActiveData] = useState<
+    | {
+        chain?: Chain;
+        data: SafeInfo;
+      }
+    | undefined
+  >(undefined);
   const { accountsList, highlightedAddresses } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
-  const isGnosis = type === KEYRING_CLASS.GNOSIS;
+  const { value: safeInfo, error, loading } = useAsync(async () => {
+    const networks = await wallet.getGnosisNetworkIds(address);
+    const res = await Promise.all(
+      networks.map(async (networkId) => {
+        const info = await Safe.getSafeInfo(address, networkId);
 
-  const {
-    value: safeInfo,
-    error,
-    loading: gnosisLoading,
-  } = useAsync(async () => {
-    if (isGnosis) {
-      const network = await wallet.getGnosisNetworkId(address);
-
-      const info = await Safe.getSafeInfo(address, network);
-
-      const owners = await wallet.getGnosisOwners(
-        {
-          type,
+        const owners = await wallet.getGnosisOwners(
+          {
+            type,
+            address,
+            brandName,
+          },
           address,
-          brandName,
-        },
-        address,
-        info.version
-      );
+          info.version,
+          networkId
+        );
 
-      const comparedOwners = crossCompareOwners(owners, info.owners);
+        const comparedOwners = crossCompareOwners(owners, info.owners);
 
-      return {
-        ...info,
-        owners: comparedOwners,
-      };
-    }
-    return;
-  }, [isGnosis]);
+        return {
+          chain: Object.values(CHAINS).find(
+            (chain) => chain.network === networkId
+          ),
+          data: {
+            ...info,
+            owners: comparedOwners,
+          },
+        };
+      })
+    );
+    const list = sortBy(res, (item) => {
+      return -(item?.data?.owners?.length || 0);
+    });
+    setActiveData(list[0]);
+    return list;
+  }, [address]);
 
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
@@ -105,6 +120,94 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
     };
   }, [accountsList, highlightedAddresses]);
+
+  if (loading) {
+    return (
+      <div className="rabby-list-item">
+        <div className="rabby-list-item-content ">
+          <SvgIconLoading
+            className="animate-spin w-[20px] h-[20px]"
+            fill="#707280"
+            viewBox="0 0 36 36"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (safeInfo) {
+    return (
+      <>
+        <div className="rabby-list-item no-hover">
+          <div className="rabby-list-item-content border-0">
+            <div className="rabby-list-item-label">
+              Admins
+              <div className="tabs-container">
+                <div className="tabs">
+                  {safeInfo?.map((item) => {
+                    return (
+                      <div
+                        className={clsx(
+                          'tabs-item',
+                          activeData?.chain?.enum === item?.chain?.enum &&
+                            'is-active'
+                        )}
+                        onClick={() => {
+                          setActiveData(item);
+                        }}
+                        key={item?.chain?.enum}
+                      >
+                        <div className="tabs-item-title">
+                          {item?.chain?.name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="rabby-list-item-desc text-gray-subTitle">
+                Any transaction requires{' '}
+                <span className="text-gray-title text-14">
+                  {activeData?.data?.threshold}/
+                  {activeData?.data?.owners.length}
+                </span>{' '}
+                confirmations
+              </div>
+            </div>
+            <div className="rabby-list-item-extra flex gap-[4px]"></div>
+          </div>
+        </div>
+        {activeData?.data?.owners.map((owner, index) => (
+          <GnosisAdminItem
+            address={owner}
+            accounts={sortedAccountsList.map((e) => e.address)}
+            key={index}
+          />
+        ))}
+      </>
+    );
+  }
+  return null;
+};
+
+type Props = {
+  address: string;
+  type: string;
+  brandName: string;
+  source: string;
+};
+
+const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
+  const wallet = useWallet();
+  const { t } = useTranslation();
+
+  const [alias, setAlias] = useAlias(address);
+  const [balance] = useBalance(address);
+  const [form] = useForm();
+  const inputRef = useRef<Input>(null);
+  const accountInfo = useAccountInfo(type, address);
+
+  const isGnosis = type === KEYRING_CLASS.GNOSIS;
 
   const handleEditMemo = () => {
     form.setFieldsValue({
@@ -282,42 +385,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
           </div>
         </div>
       )}
-      {gnosisLoading && (
-        <div className="rabby-list-item">
-          <div className="rabby-list-item-content ">
-            <SvgIconLoading
-              className="animate-spin w-[20px] h-[20px]"
-              fill="#707280"
-              viewBox="0 0 36 36"
-            />
-          </div>
-        </div>
-      )}
-      {isGnosis && safeInfo ? (
-        <>
-          <div className="rabby-list-item">
-            <div className="rabby-list-item-content">
-              <div className="rabby-list-item-label">
-                Admins
-                <div className="rabby-list-item-desc text-gray-subTitle">
-                  Any transaction requires{' '}
-                  <span className="text-gray-title text-14">
-                    {safeInfo.threshold}/{safeInfo.owners.length}
-                  </span>{' '}
-                  confirmations
-                </div>
-              </div>
-              <div className="rabby-list-item-extra flex gap-[4px]"></div>
-            </div>
-          </div>
-          {safeInfo.owners.map((owner, index) => (
-            <GnosisAdminItem
-              address={owner}
-              accounts={sortedAccountsList.map((e) => e.address)}
-              key={index}
-            />
-          ))}
-        </>
+
+      {isGnosis ? (
+        <GnonisSafeInfo address={address} type={type} brandName={brandName} />
       ) : null}
     </div>
   );

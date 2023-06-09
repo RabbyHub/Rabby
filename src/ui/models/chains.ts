@@ -15,21 +15,14 @@ type IState = {
 
   gnosisPendingCount: number;
 
-  safeInfo: SafeInfo | null;
-
-  gnosisNetworkId: string;
+  gnosisNetworkIds: string[];
 };
 
 export const chains = createModel<RootModel>()({
   name: 'chains',
   state: <IState>{
     currentConnection: null,
-
-    gnosisPendingCount: 0,
-
-    safeInfo: null,
-
-    gnosisNetworkId: '1',
+    gnosisNetworkIds: [] as string[],
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -42,7 +35,6 @@ export const chains = createModel<RootModel>()({
       );
     },
   },
-
   selectors(slice) {
     return {
       isCurrentAccountGnosis() {
@@ -60,38 +52,9 @@ export const chains = createModel<RootModel>()({
 
           const chain = CHAINS[state.currentConnection.chain];
 
-          return chain.id.toString() !== state.gnosisNetworkId;
+          return !state.gnosisNetworkIds.includes(chain.network);
         });
       },
     };
   },
-
-  effects: (dispatch) => ({
-    async getGnosisPendingCountAsync(_?, store?) {
-      if (!store.account.currentAccount) return;
-      const currentAccount = store.account.currentAccount;
-
-      const network = await store.app.wallet.getGnosisNetworkId(
-        currentAccount.address
-      );
-      dispatch.chains.setField({ gnosisNetworkId: network });
-      const [info, txs] = await Promise.all([
-        Safe.getSafeInfo(currentAccount.address, network),
-        Safe.getPendingTransactions(currentAccount.address, network),
-      ]);
-      const owners = await store.app.wallet.getGnosisOwners(
-        currentAccount,
-        currentAccount.address,
-        info.version
-      );
-      const comparedOwners = crossCompareOwners(owners, info.owners);
-      dispatch.chains.setField({
-        safeInfo: {
-          ...info,
-          owners: comparedOwners,
-        },
-        gnosisPendingCount: txs.results.length,
-      });
-    },
-  }),
 });

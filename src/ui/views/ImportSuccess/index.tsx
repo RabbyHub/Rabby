@@ -16,6 +16,7 @@ import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
 import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { Chain } from '@debank/common';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -29,6 +30,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     showImportIcon?: boolean;
     isMnemonics?: boolean;
     importedLength?: number;
+    supportChainList?: Chain[];
   }>();
   const dispatch = useRabbyDispatch();
   const addressItems = useRef(new Array(state.accounts.length));
@@ -188,6 +190,24 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 }}
               />
             ))}
+            {!!state?.supportChainList?.length && (
+              <div className="chain-list-container">
+                <div className="desc">
+                  This address was found deployed on{' '}
+                  {state?.supportChainList?.length} chains
+                </div>
+                <div className="chain-list">
+                  {state?.supportChainList?.map((chain) => {
+                    return (
+                      <div className="chain-list-item" key={chain.id}>
+                        <img src={chain.logo} alt="" className="chain-logo" />
+                        {chain.name}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
