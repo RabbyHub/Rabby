@@ -190,14 +190,14 @@ const AddressItem = memo(
             )}
             onClick={enableSwitch ? onSwitchCurrentAccount : onClick}
           >
-            {canFastDeleteAccount && (
+            {/* {canFastDeleteAccount && (
               <div className="absolute hidden group-hover:flex w-[20px] left-[-20px] h-full top-0  justify-center items-center">
                 <IconDeleteAddress
                   className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
                   onClick={deleteAccount}
                 />
               </div>
-            )}
+            )} */}
             <div
               className={clsx(
                 'rabby-address-item-left',

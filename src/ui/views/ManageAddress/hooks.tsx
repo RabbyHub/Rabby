@@ -5,7 +5,7 @@ import { useWallet } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { groupBy, omit } from 'lodash';
 import { nanoid } from 'nanoid';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
@@ -21,6 +21,7 @@ export type TypeKeyringGroup = {
   type: string;
   brandName?: string;
   publicKey?: string;
+  hdPathBasePublicKey?: string;
 };
 
 export const getWalletTypeName = (s: string) => {
@@ -40,6 +41,7 @@ export const getTypeGroup = (arr: DisplayedAccount[]) => {
     type: arr?.[0].type,
     brandName: arr?.[0]?.brandName,
     publicKey: arr?.[0]?.publicKey,
+    hdPathBasePublicKey: arr?.[0]?.hdPathBasePublicKey,
   } as TypeKeyringGroup;
 };
 
@@ -54,7 +56,8 @@ export const useWalletTypeData = () => {
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
-  console.log('accountsList', accountsList);
+  const sortedRef = useRef(false);
+  const sortIdList = useRef<string[]>([]);
 
   const [sortedAccountsList, watchSortedAccountsList] = useMemo(() => {
     const restAccounts = [...accountsList];
@@ -104,32 +107,31 @@ export const useWalletTypeData = () => {
         ...getTypeGroup(item),
         name:
           getWalletTypeName(item[0].brandName) +
-          (arr.length ? ` ${index + 1}` : ''),
+          (arr.length > 1 ? ` ${index + 1}` : ''),
       })
     ) as TypeKeyringGroup[];
 
-    const hdKeyringGroups = await wallet.getAllClassAccounts();
-
-    console.log('getAllClassAccounts', hdKeyringGroups);
+    const allClassAccounts = await wallet.getAllClassAccounts();
 
     const emptyHdKeyringList: TypeKeyringGroup[] = [];
-    hdKeyringGroups?.forEach((item, index, arr) => {
-      if (
-        item.accounts.length === 0 &&
-        item.type === KEYRING_TYPE['HdKeyring']
-      ) {
+    allClassAccounts
+      ?.filter(
+        (item) =>
+          item.accounts.length === 0 && item.type === KEYRING_TYPE['HdKeyring']
+      )
+      .forEach((item, index, arr) => {
         emptyHdKeyringList.push({
           list: [] as DisplayedAccount[],
           name:
             getWalletTypeName(item.keyring.type) +
-            (arr.length + notEmptyHdKeyringList.length
+            (arr.length + notEmptyHdKeyringList.length > 1
               ? ` ${notEmptyHdKeyringList.length + index + 1}`
               : ''),
           type: item.type,
+          brandName: item.type,
           publicKey: item.publicKey,
         });
-      }
-    });
+      });
 
     const hdKeyRingList = [
       ...notEmptyHdKeyringList,
@@ -151,8 +153,6 @@ export const useWalletTypeData = () => {
         }
       })
     );
-
-    console.log('hdKeyringGroup', hdKeyringGroup);
 
     const ledgersGroup = groupBy(ledgerAccounts, (a) => a.hdPathBasePublicKey);
 
@@ -191,7 +191,25 @@ export const useWalletTypeData = () => {
       ]);
     }
 
-    return v.flat();
+    const list = v.flat();
+
+    if (list.length && sortedRef.current === false) {
+      sortedRef.current = true;
+      sortIdList.current = list.map(
+        (e) => e.type + e.brandName + e.hdPathBasePublicKey + e.publicKey
+      );
+    }
+
+    const result = list.reduce((pre, cur) => {
+      pre[
+        cur.type + cur.brandName + cur.hdPathBasePublicKey + cur.publicKey
+      ] = cur;
+      return pre;
+    }, {} as Record<string, typeof list[number]>);
+
+    sortIdList.current = sortIdList.current.filter((e) => !!result[e]);
+
+    return [result, sortIdList.current] as const;
   }, [sortedAccountsList, watchSortedAccountsList, wallet]);
 
   return {
@@ -210,12 +228,12 @@ export const useBackUp = () => {
       await AuthenticationModalPromise({
         confirmText: 'Confirm',
         cancelText: 'Cancel',
-        title: `Backup Seed Phrase`,
+        title: 'Backup Seed Phrase',
 
         async onFinished() {
           const data = await wallet.getMnemonicFromPublicKey(publicKey);
           history.push({
-            pathname: `/settings/address-backup/mneonics`,
+            pathname: '/settings/address-backup/mneonics',
             state: {
               data: data,
               goBack: true,
