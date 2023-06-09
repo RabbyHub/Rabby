@@ -27,7 +27,8 @@ function mergeRules(rules: RuleConfig[], userConfig: UserRuleConfig[]) {
     if (target) {
       return {
         ...rule,
-        ...target,
+        enable: target.enable,
+        customThreshold: target.customThreshold,
       };
     }
     return rule;
@@ -47,6 +48,10 @@ class SecurityEngineService {
     userData: {
       originBlacklist: [],
       originWhitelist: [],
+      contractBlacklist: [],
+      contractWhitelist: [],
+      addressBlacklist: [],
+      addressWhitelist: [],
     },
     rules: [],
   };
@@ -62,12 +67,41 @@ class SecurityEngineService {
         userData: {
           originBlacklist: [],
           originWhitelist: [],
+          contractBlacklist: [],
+          contractWhitelist: [],
+          addressBlacklist: [],
+          addressWhitelist: [],
         },
         rules: getRuleConfigFromRules(defaultRules),
       },
     });
     this.rules = mergeRules(defaultRules, storage.rules);
     this.store = storage || this.store;
+    this.store.rules = this.rules;
+    if (!this.store.userData.contractBlacklist) {
+      this.store.userData = {
+        ...this.store.userData,
+        contractBlacklist: [],
+      };
+    }
+    if (!this.store.userData.contractWhitelist) {
+      this.store.userData = {
+        ...this.store.userData,
+        contractWhitelist: [],
+      };
+    }
+    if (!this.store.userData.addressBlacklist) {
+      this.store.userData = {
+        ...this.store.userData,
+        addressBlacklist: [],
+      };
+    }
+    if (!this.store.userData.addressWhitelist) {
+      this.store.userData = {
+        ...this.store.userData,
+        addressWhitelist: [],
+      };
+    }
     this.engine = new Engine(this.rules, openapiService);
   };
 

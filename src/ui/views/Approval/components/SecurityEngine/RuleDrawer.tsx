@@ -20,10 +20,9 @@ import IconDisable from 'ui/assets/sign/security-engine/disable-big.svg';
 const RuleDrawerWrapper = styled.div`
   border-radius: 8px;
   padding: 16px;
-  height: 330px;
+  height: 300px;
   overflow: auto;
   position: relative;
-  margin-top: 22px;
   margin-bottom: 20px;
   .value-desc {
     font-weight: 500;
@@ -33,13 +32,14 @@ const RuleDrawerWrapper = styled.div`
     padding-bottom: 16px;
     border-bottom: 1px solid rgba(19, 20, 26, 0.1);
     margin-bottom: 14px;
-    .icon-level {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      width: 24px;
-      height: 24px;
-      opacity: 0.1;
+    display: flex;
+    .desc-title {
+      font-size: 13px;
+      line-height: 15px;
+      color: #4b4d59;
+      margin-right: 6px;
+      font-weight: normal;
+      margin-top: 1px;
     }
   }
   .threshold {
@@ -48,8 +48,9 @@ const RuleDrawerWrapper = styled.div`
     color: #4b4d59;
     p {
       font-size: 13px;
-      line-height: 18px;
+      line-height: 15px;
       color: #4b4d59;
+      margin-bottom: 8px;
     }
     .value {
       color: #13141a;
@@ -76,6 +77,11 @@ const RuleDrawerWrapper = styled.div`
         font-size: 15px;
         line-height: 18px;
         color: #13141a;
+      }
+      .current-value {
+        font-size: 12px;
+        line-height: 14px;
+        color: #707280;
       }
     }
   }
@@ -310,12 +316,16 @@ const RuleDrawer = ({
     const { value, ruleConfig } = selectRule;
     switch (ruleConfig.valueDefine.type) {
       case 'boolean':
-        if (value === true) return 'True';
-        return 'False';
+        if (value === true) return 'Yes';
+        return 'No';
       case 'enum':
         return ruleConfig.valueDefine.display[value as string];
+      case 'percent':
+        return `${(value as number).toFixed(2)}%`;
       case 'int':
+        return Math.floor(value as number);
       case 'float':
+        return (value as number).toFixed(2);
       default:
         return value;
     }
@@ -324,7 +334,7 @@ const RuleDrawer = ({
   const displayThreshold = useMemo(() => {
     if (!selectRule) return '';
     const { level, ruleConfig, value } = selectRule;
-    if (!level || level === Level.CLOSED || level === Level.ERROR) return '';
+    if (!level || !ruleConfig.enable || level === Level.ERROR) return '';
     const threshold = {
       ...ruleConfig.defaultThreshold,
       ...ruleConfig.customThreshold,
@@ -332,9 +342,10 @@ const RuleDrawer = ({
     const levelThreshold = threshold[level];
     switch (ruleConfig.valueDefine.type) {
       case 'boolean':
-        if (value === true) return 'True';
-        return 'False';
+        if (value === true) return 'Yes';
+        return 'No';
       case 'float':
+      case 'percent':
       case 'int': {
         const { max: valueMax, min: valueMin } = ruleConfig.valueDefine;
         const {
@@ -349,10 +360,14 @@ const RuleDrawer = ({
             if (min === valueMax) {
               arr.push(min.toString());
             } else {
-              arr.push(`≥${min}`);
+              arr.push(
+                `≥${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`>${min}`);
+            arr.push(
+              `>${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         }
         if (max !== null) {
@@ -360,15 +375,19 @@ const RuleDrawer = ({
             if (max === valueMin) {
               arr.push(max.toString());
             } else {
-              arr.push(`≤${max}`);
+              arr.push(
+                `≤${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`<${max}`);
+            arr.push(
+              `<${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         } else {
           arr.push('∞');
         }
-        return arr.join(' and ');
+        return arr.join(' ; ');
       }
       case 'enum':
         return (levelThreshold as string[])
@@ -487,20 +506,11 @@ const RuleDrawer = ({
           className={clsx(selectRule.ignored ? 'proceed' : selectRule.level)}
         >
           <div className="value-desc">
+            <span className="desc-title">Description:</span>
             {selectRule.ruleConfig.valueDescription}
-            {currentLevel && (
-              <img
-                src={SecurityEngineLevel[currentLevel].icon}
-                className="icon-level"
-              />
-            )}
           </div>
           <div className="threshold">
-            <p>
-              Current value: <span className="value">{displayValue}</span>
-              <br />
-              The risk level triggered by current value:
-            </p>
+            <p>Alert triggered reason:</p>
             <div className="rule-threshold">
               {currentLevel && (
                 <img
@@ -513,9 +523,14 @@ const RuleDrawer = ({
                   {SecurityEngineLevel[selectRule.level].text}:
                 </span>
               )}
-              <span className="threshold-text">
-                when the value is {displayThreshold}
-              </span>
+              <div>
+                <div className="threshold-text">
+                  when the value is {displayThreshold}
+                </div>
+                <div className="current-value">
+                  Current Value is {displayValue}
+                </div>
+              </div>
             </div>
             {selectRule.level !== 'safe' && (
               <div className="rule-threshold-footer">
@@ -529,7 +544,7 @@ const RuleDrawer = ({
                       checked={selectRule.ignored || accepted}
                       onChange={(val) => setAccepted(val)}
                     >
-                      I understand and confirm no risks
+                      I understand and accept responsibility for any loss
                     </Checkbox>
                   </div>
                 )}
@@ -562,13 +577,19 @@ const RuleDrawer = ({
   };
 
   return (
-    <Popup visible={visible} onClose={handleClose} height="510" closable>
+    <Popup
+      visible={visible}
+      onClose={handleClose}
+      height="510"
+      closable
+      title="Rule Detail"
+    >
       {selectRule && (
         <>
           {content()}
           <RuleFooter>
             <div className="item">
-              <div className="left">Enable security rule</div>
+              <div className="left">Enable the rule</div>
               <div className="right">
                 <Switch
                   checked={

@@ -11,6 +11,10 @@ export const useSecurityEngine = (nonce = 0) => {
   const [userData, setUserData] = useState<UserData>({
     originBlacklist: [],
     originWhitelist: [],
+    addressBlacklist: [],
+    addressWhitelist: [],
+    contractBlacklist: [],
+    contractWhitelist: [],
   });
   const [rules, setRules] = useState<RuleConfig[]>([]);
 

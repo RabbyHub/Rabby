@@ -1360,10 +1360,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.5.25":
-  version "0.5.25"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.25.tgz#b283a8701c7773206237490224e4ff32eefe7aa4"
-  integrity sha512-G0tHBqYEfs1A7tLjDenoBUnWINW50A9jzMBOYo+tqc9RGpQKjQSe5p8hROftCMhcwUIQIUuqVbkg9o/w+84o2A==
+"@debank/rabby-api@^0.5.34":
+  version "0.5.34"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.34.tgz#508a558331383c334a40ab7bafcdc47cb7139c11"
+  integrity sha512-MMDLt9w1iJuXYamKoabTHZ86O8MhU4pspVDUrYMEoVuu+pVhLYvyvDiECBmNXNHgWly9yGF90Nr9akP556pMVw==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"
@@ -1372,25 +1372,13 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-api@^0.5.28":
-  version "0.5.28"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.28.tgz#a911527c5184a1180d68d1503a0c20443db73b53"
-  integrity sha512-JUrT2jp95tT1NxiTrcan5gSdCtUmhFLJsq7cUrPcNoysgl+U7vSe2S3BqdJVElg1N+TnhcXRecpEX7KH9lsFKw==
-  dependencies:
-    "@debank/isomorphic" "^0.3.1"
-    axios "^0.27.2"
-    axios-rate-limit "^1.3.0"
-    eth-rpc-errors "^4.0.3"
-    lodash "^4.17.21"
-    qss "^2.0.3"
-
-"@debank/rabby-security-engine@^1.0.15":
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.15.tgz#df1fdad944a8e6841efa019952271bca815c9c06"
-  integrity sha512-wf5NQ3EvoL/G9iXHWPaYE5zZ951liNsdIi06ZuQX7crF44a2sCj4F+AfPyZ0vP87z05UUv/hDNUja53OmhUrjQ==
+"@debank/rabby-security-engine@^1.0.19":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.19.tgz#d6ca3da6459b0626aa7bd960844df80bd31ee730"
+  integrity sha512-bW93b7DNVYIpSayZiyo/d7EFHHNGWzzKEIRl+287GK4sVLqyXRQ0cer5vEIexw5VjmRmJFxO1H6LYQQpCtuDnA==
   dependencies:
     "@debank/common" "^0.2.31"
-    "@debank/rabby-api" "^0.5.25"
+    "@debank/rabby-api" "^0.5.34"
 
 "@debank/wc-browser-utils@^1.8.7":
   version "1.8.7"

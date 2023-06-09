@@ -826,7 +826,7 @@ export const SecurityEngineLevel = {
     icon: IconError,
     text: 'Security engine failed',
   },
-  [Level.CLOSED]: {
+  closed: {
     color: '#B4BDCC',
     icon: IconClosed,
     text: 'Closed',
