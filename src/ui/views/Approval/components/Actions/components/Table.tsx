@@ -54,6 +54,9 @@ const RowWrapper = styled.div`
     border-right: 1px solid #ededed;
     width: 120px;
     flex-shrink: 0;
+    .icon-tip {
+      display: inline;
+    }
   }
   .desc-list {
     font-size: 13px;
@@ -102,7 +105,6 @@ const Row = ({
         'row',
         {
           title: isTitle,
-          flex: !!tip,
         },
         className
       )}
@@ -113,7 +115,7 @@ const Row = ({
           title={tip}
           overlayClassName="rectangle w-[max-content] max-w-[244px]"
         >
-          <img src={IconQuestionMark} className="icon ml-6" />
+          <img src={IconQuestionMark} className="icon icon-tip ml-6" />
         </TooltipWithMagnetArrow>
       )}
     </RowWrapper>

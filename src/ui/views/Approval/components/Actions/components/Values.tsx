@@ -40,11 +40,17 @@ const USDValue = ({ value }: { value: number | string }) => {
   return <Text>{formatUsdValue(value)}</Text>;
 };
 
-const TimeSpan = ({ value }: { value: number | null }) => {
+const TimeSpan = ({
+  value,
+  to = Date.now(),
+}: {
+  value: number | null;
+  to?: number;
+}) => {
   const timeSpan = useMemo(() => {
-    const bornAt = value;
-    if (!bornAt) return '-';
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
+    const from = value;
+    if (!from) return '-';
+    const { d, h, m } = getTimeSpan(Math.floor(to / 1000) - from);
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''} ago`;
     }
@@ -55,7 +61,31 @@ const TimeSpan = ({ value }: { value: number | null }) => {
       return `${m} minutes ago`;
     }
     return '1 minute ago';
-  }, [value]);
+  }, [value, to]);
+  return <>{timeSpan}</>;
+};
+
+const TimeSpanFuture = ({
+  from = Math.floor(Date.now() / 1000),
+  to,
+}: {
+  from?: number;
+  to: number;
+}) => {
+  const timeSpan = useMemo(() => {
+    if (!to) return '-';
+    const { d, h, m } = getTimeSpan(to - from);
+    if (d > 0) {
+      return `${d} day${d > 1 ? 's' : ''}`;
+    }
+    if (h > 0) {
+      return `${h} hour${h > 1 ? 's' : ''}`;
+    }
+    if (m > 1) {
+      return `${m} minutes`;
+    }
+    return '1 minute';
+  }, [from, to]);
   return <>{timeSpan}</>;
 };
 
@@ -321,6 +351,7 @@ export {
   AddressMark,
   USDValue,
   TimeSpan,
+  TimeSpanFuture,
   Protocol,
   TokenLabel,
   Address,

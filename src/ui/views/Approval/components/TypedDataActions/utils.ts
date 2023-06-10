@@ -4,24 +4,58 @@ import {
   SellNFTOrderAction,
   SignMultiSigActions,
   ContractDesc,
+  BuyNFTOrderAction,
+  PermitAction,
+  Permit2Action,
+  TokenItem,
+  SwapTokenOrderAction,
 } from '@debank/rabby-api/dist/types';
+import BigNumber from 'bignumber.js';
 import { WalletControllerType, isSameAddress } from '@/ui/utils';
-import { waitQueueFinished, getProtocol } from '../Actions/utils';
+import {
+  waitQueueFinished,
+  getProtocol,
+  calcSlippageTolerance,
+  calcUSDValueChange,
+} from '../Actions/utils';
 import { CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
+
+interface PermitActionData extends PermitAction {
+  expire_at: number | undefined;
+}
+
+interface Permit2ActionData extends Permit2Action {
+  sig_expire_at: number | undefined;
+}
 
 export interface TypedDataActionData {
   chainId?: string;
   contractId?: string;
+  sender: string;
   sellNFT?: SellNFTOrderAction;
   signMultiSig?: SignMultiSigActions;
+  buyNFT?: BuyNFTOrderAction;
+  permit?: PermitActionData;
+  permit2?: Permit2ActionData;
+  swapTokenOrder?: {
+    payToken: TokenItem;
+    receiveToken: TokenItem;
+    receiver: string;
+    usdValueDiff: string | null;
+    usdValuePercentage: number | null;
+  };
+  contractCall?: object;
 }
 
 export const parseAction = (
   data: ParseTypedDataResponse,
-  typedData: null | Record<string, any>
+  typedData: null | Record<string, any>,
+  sender: string
 ): TypedDataActionData => {
-  const result: TypedDataActionData = {};
+  const result: TypedDataActionData = {
+    sender,
+  };
   if (typedData?.domain) {
     if (typedData.domain.verifyingContract) {
       result.contractId = typedData.domain.verifyingContract;
@@ -30,22 +64,72 @@ export const parseAction = (
       result.chainId = typedData.domain.chainId;
     }
   }
-  switch (data.action.type) {
+  switch (data.action?.type) {
     case 'sell_nft_order': {
       const actionData = data.action.data as SellNFTOrderAction;
       result.sellNFT = actionData;
-      break;
+      return result;
+    }
+    case 'buy_nft_order': {
+      const actionData = data.action.data as BuyNFTOrderAction;
+      result.buyNFT = actionData;
+      return result;
+    }
+    case 'permit1_approve_token': {
+      const actionData = data.action.data as PermitAction;
+      result.permit = {
+        ...actionData,
+        expire_at: data.action.expire_at,
+      };
+      return result;
+    }
+    case 'permit2_approve_token': {
+      const actionData = data.action.data as Permit2Action;
+      result.permit2 = {
+        ...actionData,
+        sig_expire_at: data.action.expire_at,
+      };
+      return result;
     }
     case 'sign_multisig': {
       const actionData = data.action.data as SignMultiSigActions;
       result.signMultiSig = actionData;
-      break;
+      return result;
     }
+    case 'swap_token_order': {
+      const actionData = data.action.data as SwapTokenOrderAction;
+      const receiveTokenUsdValue = new BigNumber(
+        actionData.receive_token.raw_amount || '0'
+      ).times(actionData.receive_token.price);
+      const payTokenUsdValue = new BigNumber(
+        actionData.pay_token.raw_amount || '0'
+      ).times(actionData.pay_token.price);
+      const usdValueDiff = receiveTokenUsdValue
+        .minus(payTokenUsdValue)
+        .toFixed();
+      const usdValuePercentage = calcUSDValueChange(
+        payTokenUsdValue.toFixed(),
+        receiveTokenUsdValue.toFixed()
+      );
+      result.swapTokenOrder = {
+        payToken: actionData.pay_token,
+        receiveToken: actionData.receive_token,
+        receiver: actionData.receiver,
+        usdValueDiff,
+        usdValuePercentage,
+      };
+      return result;
+    }
+    default:
+      break;
+  }
+  if (result.chainId && result.contractId) {
+    result.contractCall = {};
   }
   return result;
 };
 
-interface ContractRequireData {
+export interface ContractRequireData {
   id: string;
   protocol: {
     name: string;
@@ -95,12 +179,105 @@ const fetchContractRequireData = async (
   return result;
 };
 
-interface MultiSigRequireData {
+export interface ApproveTokenRequireData {
+  isEOA: boolean;
+  contract: Record<string, ContractDesc> | null;
+  riskExposure: number;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+  } | null;
+  isDanger: boolean | null;
+  token: TokenItem;
+}
+
+const fetchTokenApproveRequireData = async ({
+  spender,
+  token,
+  wallet,
+  address,
+  chainId,
+}: {
+  spender: string;
+  token: TokenItem;
+  address: string;
+  chainId: string;
+  wallet: WalletControllerType;
+}) => {
+  const queue = new PQueue();
+  const result: ApproveTokenRequireData = {
+    isEOA: false,
+    contract: null,
+    riskExposure: 0,
+    rank: null,
+    hasInteraction: false,
+    bornAt: 0,
+    protocol: null,
+    isDanger: false,
+    token: {
+      ...token,
+      amount: 0,
+      raw_amount_hex_str: '0x0',
+    },
+  };
+  queue.add(async () => {
+    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    result.rank = credit.rank_at;
+  });
+  queue.add(async () => {
+    const { usd_value } = await wallet.openapi.tokenApproveExposure(
+      spender,
+      chainId
+    );
+    result.riskExposure = usd_value;
+  });
+  queue.add(async () => {
+    const t = await wallet.openapi.getToken(address, chainId, token.id);
+    result.token = t;
+  });
+  queue.add(async () => {
+    const { desc } = await wallet.openapi.addrDesc(spender);
+    if (desc.contract && desc.contract[chainId]) {
+      result.bornAt = desc.contract[chainId].create_at;
+    }
+    if (!desc.contract?.[chainId]) {
+      result.isEOA = true;
+      result.bornAt = desc.born_at;
+    }
+    result.isDanger = desc.is_danger;
+    result.protocol = getProtocol(desc.protocol, chainId);
+  });
+  queue.add(async () => {
+    const hasInteraction = await wallet.openapi.hasInteraction(
+      address,
+      chainId,
+      spender
+    );
+    result.hasInteraction = hasInteraction.has_interaction;
+  });
+  await waitQueueFinished(queue);
+  return result;
+};
+
+export interface MultiSigRequireData {
   id: string;
   contract: Record<string, ContractDesc> | null;
 }
 
-type TypedDataRequireData = ContractRequireData | MultiSigRequireData | null;
+export interface SwapTokenOrderRequireData extends ContractRequireData {
+  sender: string;
+}
+
+export type TypedDataRequireData =
+  | SwapTokenOrderRequireData
+  | ContractRequireData
+  | MultiSigRequireData
+  | ApproveTokenRequireData
+  | null;
 
 export const fetchRequireData = async (
   actionData: TypedDataActionData,
@@ -124,6 +301,17 @@ export const fetchRequireData = async (
       return contractRequireData;
     }
   }
+  if (actionData.buyNFT) {
+    if (chain && actionData.contractId) {
+      const contractRequireData = await fetchContractRequireData(
+        actionData.contractId,
+        chain.serverId,
+        sender,
+        wallet
+      );
+      return contractRequireData;
+    }
+  }
   if (actionData.signMultiSig) {
     const result: MultiSigRequireData = {
       contract: null,
@@ -136,5 +324,59 @@ export const fetchRequireData = async (
       result.contract = desc.contract;
     }
   }
+  if (actionData.swapTokenOrder) {
+    if (chain && actionData.contractId) {
+      const contractRequireData = await fetchContractRequireData(
+        actionData.contractId,
+        chain.serverId,
+        sender,
+        wallet
+      );
+      return contractRequireData;
+    }
+  }
+  if (actionData.permit || actionData.permit2) {
+    const data = (actionData.permit || actionData.permit2)!;
+    if (chain && actionData.contractId) {
+      const tokenApproveRequireData = await fetchTokenApproveRequireData({
+        spender: data.spender,
+        token: data.token,
+        address: sender,
+        chainId: chain.serverId,
+        wallet,
+      });
+      return tokenApproveRequireData;
+    }
+  }
+  if (chain && actionData.contractId) {
+    return await fetchContractRequireData(
+      actionData.contractId,
+      chain.serverId,
+      sender,
+      wallet
+    );
+  }
   return null;
+};
+
+export const getActionTypeText = (data: TypedDataActionData) => {
+  if (data.permit) {
+    return 'Permit Token Approval';
+  }
+  if (data.permit2) {
+    return 'Permit2 Token Approval';
+  }
+  if (data.swapTokenOrder) {
+    return 'Token order';
+  }
+  if (data.buyNFT || data.sellNFT) {
+    return 'NFT Order';
+  }
+  if (data.signMultiSig) {
+    return 'Confirm transaction';
+  }
+  if (data.contractCall) {
+    return 'Contract call';
+  }
+  return '';
 };

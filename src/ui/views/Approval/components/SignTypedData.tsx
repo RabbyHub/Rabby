@@ -5,10 +5,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { CHAINS_LIST } from '@debank/common';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { Skeleton, message } from 'antd';
-import {
-  SecurityCheckDecision,
-  SecurityCheckResponse,
-} from 'background/service/openapi';
+import { SecurityCheckDecision } from 'background/service/openapi';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +21,13 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
-import { parseAction } from './TypedDataActions/utils';
+import Actions from './TypedDataActions';
+import {
+  parseAction,
+  fetchRequireData,
+  TypedDataRequireData,
+  TypedDataActionData,
+} from './TypedDataActions/utils';
 
 interface SignTypedDataProps {
   method: string;
@@ -42,12 +45,19 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
-  const [submitText, setSubmitText] = useState('Proceed');
+  const [
+    actionRequireData,
+    setActionRequireData,
+  ] = useState<TypedDataRequireData>(null);
+  const [
+    parsedActionData,
+    setParsedActionData,
+  ] = useState<TypedDataActionData | null>(null);
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -148,25 +158,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     ) {
       setIsWatch(true);
       setCantProcessReason(
-        // <div className="flex items-center gap-6">
-        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-        //   <div>
-        //     Unable to sign because the current address is a Watch-only Address
-        //     from Contacts. You can{' '}
-        //     <a
-        //       href=""
-        //       className="underline"
-        //       onClick={async (e) => {
-        //         e.preventDefault();
-        //         await rejectApproval('User rejected the request.', true);
-        //         openInternalPageInTab('no-address');
-        //       }}
-        //     >
-        //       import it
-        //     </a>{' '}
-        //     fully or use another address.
-        //   </div>
-        // </div>
         <div>You can only use imported addresses to sign</div>
       );
     }
@@ -253,7 +244,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         });
       } else {
         try {
-          setIsLoading(true);
           let result = await wallet.signTypedData(
             params.account.type,
             params.account.address,
@@ -273,11 +263,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             await wallet.gnosisAddSignature(params.account.address, result);
             await wallet.postGnosisTransaction();
           }
-          setIsLoading(false);
           resolveApproval(result, false, true);
         } catch (e) {
           message.error(e.message);
-          setIsLoading(false);
           report('completeSignText', {
             success: false,
           });
@@ -319,11 +307,33 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
 
-  useEffect(() => {
-    if (!loading && typedDataActionData) {
-      parseAction(typedDataActionData, signTypedData);
+  const getRequireData = async (data: TypedDataActionData) => {
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
+    if (currentAccount) {
+      const requireData = await fetchRequireData(
+        data,
+        currentAccount.address,
+        wallet
+      );
+      setActionRequireData(requireData);
     }
-  }, [loading, typedDataActionData, signTypedData]);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
+    if (!loading) {
+      if (typedDataActionData) {
+        const parsed = parseAction(typedDataActionData, signTypedData, sender);
+        setParsedActionData(parsed);
+        getRequireData(parsed);
+      } else {
+        setIsLoading(false);
+      }
+    }
+  }, [loading, typedDataActionData, signTypedData, params, isSignTypedDataV1]);
 
   useEffect(() => {
     init();
@@ -331,50 +341,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     report('createSignText');
   }, []);
 
-  const handleViewRawClick = () => {
-    ViewRawModal.open({
-      raw: isSignTypedDataV1 ? data[0] : signTypedData || data[1],
-    });
-  };
-
-  useEffect(() => {
-    (async () => {
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
-      if (
-        currentAccount &&
-        [
-          KEYRING_CLASS.MNEMONIC,
-          KEYRING_CLASS.PRIVATE_KEY,
-          KEYRING_CLASS.WATCH,
-        ].includes(currentAccount.type)
-      ) {
-        setSubmitText('Sign');
-      } else {
-        setSubmitText('Proceed');
-      }
-    })();
-  }, [securityCheckStatus]);
-
   return (
     <>
-      <div
-        className="approval-text"
-        style={{
-          paddingBottom: '210px',
-        }}
-      >
-        <p className="section-title">
-          Sign {chain ? chain.name : ''} Typed Message
-          <span
-            className="float-right text-12 cursor-pointer flex items-center view-raw text-gray-content"
-            onClick={handleViewRawClick}
-          >
-            {t('View Raw')} <img src={IconArrowRight} />
-          </span>
-        </p>
-        {loading && (
+      <div className="approval-text">
+        {isLoading && (
           <Skeleton.Input
             active
             style={{
@@ -383,50 +353,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             }}
           />
         )}
-        {/* <SignTypedDataExplain
-          data={explainTypedDataRes}
-          chain={chain}
-          message={
-            <div
-              className={clsx(
-                'text-detail-wrapper',
-                loading && 'hidden',
-                !isSignTypedDataV1 && 'pb-0',
-                'h-full'
-              )}
-            >
-              <div
-                className={clsx(
-                  'text-detail text-15 leading-[16px] font-medium',
-                  'h-full'
-                )}
-                style={{
-                  fontFamily: 'Roboto Mono',
-                  color: '#13141A',
-                }}
-              >
-                {parsedMessage}
-              </div>
-              {explain && (
-                <p className="text-explain">
-                  {explain}
-                  <Tooltip
-                    placement="topRight"
-                    overlayClassName="text-explain-tooltip"
-                    title={t(
-                      'This summary information is provide by DeBank OpenAPI'
-                    )}
-                  >
-                    <img
-                      src={IconQuestionMark}
-                      className="icon icon-question-mark"
-                    />
-                  </Tooltip>
-                </p>
-              )}
-            </div>
-          }
-        /> */}
+        {!isLoading && (
+          <Actions
+            data={parsedActionData}
+            requireData={actionRequireData}
+            chain={chain}
+            engineResults={[]}
+            raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
+          />
+        )}
       </div>
 
       <footer className="approval-text__footer">
@@ -444,10 +379,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
           disabledProcess={
-            loading ||
+            isLoading ||
             (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
             !forceProcess ||
-            securityCheckStatus === 'loading' ||
             isWatch
           }
         />

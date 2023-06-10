@@ -112,7 +112,7 @@ export const getProtocol = (
   return null;
 };
 
-const calcSlippageTolerance = (base: string, actual: string) => {
+export const calcSlippageTolerance = (base: string, actual: string) => {
   const baseBn = new BigNumber(base);
   const actualBn = new BigNumber(actual);
   if (baseBn.eq(0) && actualBn.eq(0)) return 0;
@@ -121,7 +121,7 @@ const calcSlippageTolerance = (base: string, actual: string) => {
   return baseBn.minus(actualBn).div(baseBn).toNumber();
 };
 
-const calcUSDValueChange = (pay: string, receive: string) => {
+export const calcUSDValueChange = (pay: string, receive: string) => {
   const payBn = new BigNumber(pay);
   const receiveBn = new BigNumber(receive);
   if (payBn.eq(0) && receiveBn.eq(0)) return 0;
