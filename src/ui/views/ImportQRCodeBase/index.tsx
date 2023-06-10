@@ -8,7 +8,7 @@ import { StrayPageWithButton } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import './style.less';
-
+import * as Sentry from '@sentry/browser';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
@@ -29,6 +29,11 @@ const ImportQRCodeBase = () => {
   const { state } = useLocation<{
     brand: string;
   }>();
+
+  if (!state?.brand) {
+    history.goBack();
+    return null;
+  }
 
   const brandInfo: Valueof<typeof WALLET_BRAND_CONTENT> =
     WALLET_BRAND_CONTENT[state.brand] || WALLET_BRAND_CONTENT.Keystone;
@@ -52,6 +57,9 @@ const ImportQRCodeBase = () => {
             result.cbor.toString('hex')
           );
         } else {
+          Sentry.captureException(
+            new Error('QRCodeError ' + JSON.stringify(result))
+          );
           setErrorMessage(
             t(
               'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
@@ -69,6 +77,7 @@ const ImportQRCodeBase = () => {
         });
       }
     } catch (e) {
+      Sentry.captureException(`QRCodeError ${e.message}`);
       setScan(false);
       setErrorMessage(
         t(

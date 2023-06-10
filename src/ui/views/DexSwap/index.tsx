@@ -287,7 +287,7 @@ export const SwapByDex = () => {
         userAddress,
         slippage: Number(slippage),
         feeRate: Number(feeRate) || 0,
-        chain: chain,
+        chain: chain as any,
         gasPrice: gasMarket?.[1]?.price,
       });
 
