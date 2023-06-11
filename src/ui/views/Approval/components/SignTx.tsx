@@ -1842,7 +1842,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-              securityCheckStatus === 'loading' ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult

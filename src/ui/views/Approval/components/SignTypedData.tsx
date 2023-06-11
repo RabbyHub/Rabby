@@ -1,33 +1,38 @@
+import React, { ReactNode, useEffect, useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAsync } from 'react-use';
+import { CHAINS_LIST } from '@debank/common';
+import { Result } from '@debank/rabby-security-engine';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { Skeleton, message } from 'antd';
+import { useScroll } from 'react-use';
+import { useSize } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { CHAINS_LIST } from '@debank/common';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Skeleton, message } from 'antd';
 import { SecurityCheckDecision } from 'background/service/openapi';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAsync } from 'react-use';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import SecurityCheck from './SecurityCheck';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
-import ViewRawModal from './TxComponents/ViewRawModal';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
+import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
 import {
   parseAction,
   fetchRequireData,
   TypedDataRequireData,
   TypedDataActionData,
+  formatSecurityEngineCtx,
 } from './TypedDataActions/utils';
+import { Level } from '@debank/rabby-security-engine/dist/rules';
 
 interface SignTypedDataProps {
   method: string;
@@ -45,11 +50,23 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRefSize = useSize(scrollRef);
+  const scrollInfo = useScroll(scrollRef);
   const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
+  const [footerShowShadow, setFooterShowShadow] = useState(false);
+  const { executeEngine } = useSecurityEngine();
+  const [engineResults, setEngineResults] = useState<Result[]>([]);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
+  const dispatch = useRabbyDispatch();
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+    userData: s.securityEngine.userData,
+    rules: s.securityEngine.rules,
+    currentTx: s.securityEngine.currentTx,
+  }));
   const [
     actionRequireData,
     setActionRequireData,
@@ -63,6 +80,40 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
+  const securityLevel = useMemo(() => {
+    console.log('engineResults', engineResults);
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (enableResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (enableResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults, currentTx]);
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const enableResults = engineResults.filter((item) => item.enable);
+    const hasForbidden = enableResults.find(
+      (result) => result.level === Level.FORBIDDEN
+    );
+    const hasSafe = !!enableResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = enableResults.filter(
+      (result) =>
+        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        !processedRules.includes(result.id)
+    );
+    if (hasForbidden) return true;
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
 
   const { data, session, method, isGnosis, account } = params;
   let parsedMessage = '';
@@ -318,9 +369,54 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         wallet
       );
       setActionRequireData(requireData);
+      const ctx = formatSecurityEngineCtx({
+        actionData: data,
+        requireData,
+      });
+      console.log('ctx', ctx);
+      const result = await executeEngine(ctx);
+      setEngineResults(result);
     }
     setIsLoading(false);
   };
+
+  const executeSecurityEngine = async () => {
+    const ctx = formatSecurityEngineCtx({
+      actionData: parsedActionData!,
+      requireData: actionRequireData,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+  };
+
+  const handleIgnoreRule = (id: string) => {
+    dispatch.securityEngine.processRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    dispatch.securityEngine.unProcessRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    if (currentTx.processedRules.includes(id)) {
+      dispatch.securityEngine.unProcessRule(id);
+    }
+    await wallet.ruleEnableStatusChange(id, value);
+    dispatch.securityEngine.init();
+  };
+
+  const handleRuleDrawerClose = (update: boolean) => {
+    if (update) {
+      executeSecurityEngine();
+    }
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  useEffect(() => {
+    executeSecurityEngine();
+  }, [rules]);
 
   useEffect(() => {
     const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
@@ -334,6 +430,18 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       }
     }
   }, [loading, typedDataActionData, signTypedData, params, isSignTypedDataV1]);
+
+  useEffect(() => {
+    if (scrollRef.current && scrollInfo && scrollRefSize) {
+      const avaliableHeight =
+        scrollRef.current.scrollHeight - scrollRefSize.height;
+      if (avaliableHeight <= 0) {
+        setFooterShowShadow(false);
+      } else {
+        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+      }
+    }
+  }, [scrollInfo, scrollRefSize]);
 
   useEffect(() => {
     init();
@@ -358,8 +466,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             data={parsedActionData}
             requireData={actionRequireData}
             chain={chain}
-            engineResults={[]}
+            engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
+            message={parsedMessage}
           />
         )}
       </div>
@@ -371,10 +480,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onChange={handleForceProcessChange}
         />
         <FooterBar
+          hasShadow={footerShowShadow}
           origin={params.session.origin}
           originLogo={params.session.icon}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
+          securityLevel={securityLevel}
+          hasUnProcessSecurityResult={hasUnProcessSecurityResult}
           onSubmit={() => handleAllow(forceProcess)}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
@@ -382,10 +494,19 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             isLoading ||
             (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
             !forceProcess ||
-            isWatch
+            isWatch ||
+            hasUnProcessSecurityResult
           }
         />
       </footer>
+      <RuleDrawer
+        selectRule={currentTx.ruleDrawer.selectRule}
+        visible={currentTx.ruleDrawer.visible}
+        onIgnore={handleIgnoreRule}
+        onUndo={handleUndoIgnore}
+        onRuleEnableStatusChange={handleRuleEnableStatusChange}
+        onClose={handleRuleDrawerClose}
+      />
     </>
   );
 };

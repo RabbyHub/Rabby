@@ -173,12 +173,14 @@ const Actions = ({
   chain,
   engineResults,
   raw,
+  message,
 }: {
   data: TypedDataActionData | null;
   requireData: TypedDataRequireData;
   chain?: Chain;
   engineResults: Result[];
-  raw: Record<string, string | number>;
+  raw: Record<string, any>;
+  message: string;
 }) => {
   const actionName = useMemo(() => {
     if (!data) return '';
@@ -304,7 +306,7 @@ const Actions = ({
         })}
       >
         <div className="title">Message</div>
-        <div className="content">{JSON.stringify(raw, null, 4)}</div>
+        <div className="content">{message}</div>
       </MessageWrapper>
     </>
   );

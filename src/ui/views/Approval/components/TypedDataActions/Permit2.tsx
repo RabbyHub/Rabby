@@ -129,34 +129,34 @@ const Permit2 = ({
               <ProtocolListItem protocol={requireData.protocol} />
 
               <SecurityListItem
-                id="1022"
-                engineResult={engineResultMap['1022']}
+                id="1071"
+                engineResult={engineResultMap['1071']}
                 dangerText="EOA address"
               />
 
               <SecurityListItem
-                id="1025"
-                engineResult={engineResultMap['1025']}
+                id="1074"
+                engineResult={engineResultMap['1074']}
                 warningText="Never interacted before"
                 defaultText="Interacted before"
               />
 
               <SecurityListItem
-                id="1023"
-                engineResult={engineResultMap['1023']}
+                id="1072"
+                engineResult={engineResultMap['1072']}
                 dangerText="Risk exposure ≤ $10,000"
                 warningText="Risk exposure ≤ $100,000"
               />
 
               <SecurityListItem
-                id="1024"
-                engineResult={engineResultMap['1024']}
+                id="1073"
+                engineResult={engineResultMap['1073']}
                 warningText="Deployed time < 3 days"
               />
 
               <SecurityListItem
-                id="1029"
-                engineResult={engineResultMap['1029']}
+                id="1075"
+                engineResult={engineResultMap['1075']}
                 dangerText="Flagged by Rabby"
               />
 

@@ -14,6 +14,7 @@ import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 
 const Wrapper = styled.div`
   .header {
@@ -132,28 +133,28 @@ const Permit = ({
                   />
                 }
               />
-              {/* {engineResultMap['1008'] && (
+              {engineResultMap['1090'] && (
                 <SecurityLevelTagNoText
-                  enable={engineResultMap['1008'].enable}
+                  enable={engineResultMap['1090'].enable}
                   level={
-                    processedRules.includes('1008')
+                    processedRules.includes('1090')
                       ? 'proceed'
-                      : engineResultMap['1008'].level
+                      : engineResultMap['1090'].level
                   }
-                  onClick={() => handleClickRule('1008')}
+                  onClick={() => handleClickRule('1090')}
                 />
               )}
-              {engineResultMap['1009'] && (
+              {engineResultMap['1091'] && (
                 <SecurityLevelTagNoText
-                  enable={engineResultMap['1009'].enable}
+                  enable={engineResultMap['1091'].enable}
                   level={
-                    processedRules.includes('1009')
+                    processedRules.includes('1091')
                       ? 'proceed'
-                      : engineResultMap['1009'].level
+                      : engineResultMap['1091'].level
                   }
-                  onClick={() => handleClickRule('1009')}
+                  onClick={() => handleClickRule('1091')}
                 />
-              )} */}
+              )}
             </div>
             <ul className="desc-list">
               <li>
@@ -165,8 +166,8 @@ const Permit = ({
                 @{formatUsdValue(receiveToken.price)}
               </li>
               <SecurityListItem
-                engineResult={engineResultMap['1012']}
-                id="1012"
+                engineResult={engineResultMap['1095']}
+                id="1095"
                 dangerText={
                   <>
                     Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
@@ -183,15 +184,15 @@ const Permit = ({
             </ul>
           </Row>
         </Col>
-        {engineResultMap['1069'] && (
+        {engineResultMap['1094'] && (
           <Col>
             <Row isTitle>Receiver</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
-                  engineResult={engineResultMap['1069']}
-                  id="1069"
+                  engineResult={engineResultMap['1094']}
+                  id="1094"
                   dangerText="Not your current address"
                 />
               </ul>

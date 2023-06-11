@@ -6,7 +6,7 @@ import { Result } from '@debank/rabby-security-engine';
 import { ContractRequireData, TypedDataActionData } from './utils';
 import { isSameAddress } from 'ui/utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import NFTWithName from '../Actions/components/NFTWithName';
 import * as Values from '../Actions/components/Values';
@@ -15,6 +15,7 @@ import ViewMore from '../Actions/components/ViewMore';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { ellipsisTokenSymbol } from '@/ui/utils/token';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 
 const Wrapper = styled.div`
   .header {
@@ -49,7 +50,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const ApproveNFT = ({
+const BuyNFT = ({
   data,
   requireData,
   chain,
@@ -64,6 +65,10 @@ const ApproveNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
     engineResults.forEach((item) => {
@@ -75,6 +80,18 @@ const ApproveNFT = ({
   const hasReceiver = useMemo(() => {
     return !isSameAddress(actionData.receiver, sender);
   }, [actionData, sender]);
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -108,7 +125,34 @@ const ApproveNFT = ({
         <Col>
           <Row isTitle>Receive NFT</Row>
           <Row>
-            <NFTWithName nft={actionData.receive_nft}></NFTWithName>
+            <div className="relative">
+              <NFTWithName
+                nft={actionData.receive_nft}
+                showTokenLabel
+              ></NFTWithName>
+              {engineResultMap['1086'] && (
+                <SecurityLevelTagNoText
+                  enable={engineResultMap['1086'].enable}
+                  level={
+                    processedRules.includes('1086')
+                      ? 'proceed'
+                      : engineResultMap['1086'].level
+                  }
+                  onClick={() => handleClickRule('1086')}
+                />
+              )}
+            </div>
+            {engineResultMap['1087'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1087'].enable}
+                level={
+                  processedRules.includes('1087')
+                    ? 'proceed'
+                    : engineResultMap['1087'].level
+                }
+                onClick={() => handleClickRule('1087')}
+              />
+            )}
             <ul className="desc-list">
               <li>
                 <ViewMore
@@ -139,8 +183,8 @@ const ApproveNFT = ({
               <Values.Address address={actionData.receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
-                  id="1052"
-                  engineResult={engineResultMap['1052']}
+                  id="1085"
+                  engineResult={engineResultMap['1085']}
                   dangerText="not your current address"
                 />
               </ul>
@@ -206,4 +250,4 @@ const ApproveNFT = ({
   );
 };
 
-export default ApproveNFT;
+export default BuyNFT;

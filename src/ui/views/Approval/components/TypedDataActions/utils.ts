@@ -10,8 +10,9 @@ import {
   TokenItem,
   SwapTokenOrderAction,
 } from '@debank/rabby-api/dist/types';
+import { ContextActionData } from '@debank/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
-import { WalletControllerType, isSameAddress } from '@/ui/utils';
+import { WalletControllerType, getTimeSpan, isSameAddress } from '@/ui/utils';
 import {
   waitQueueFinished,
   getProtocol,
@@ -42,8 +43,8 @@ export interface TypedDataActionData {
     payToken: TokenItem;
     receiveToken: TokenItem;
     receiver: string;
-    usdValueDiff: string | null;
-    usdValuePercentage: number | null;
+    usdValueDiff: string;
+    usdValuePercentage: number;
   };
   contractCall?: object;
 }
@@ -100,10 +101,14 @@ export const parseAction = (
       const actionData = data.action.data as SwapTokenOrderAction;
       const receiveTokenUsdValue = new BigNumber(
         actionData.receive_token.raw_amount || '0'
-      ).times(actionData.receive_token.price);
+      )
+        .div(10 ** actionData.receive_token.decimals)
+        .times(actionData.receive_token.price);
       const payTokenUsdValue = new BigNumber(
         actionData.pay_token.raw_amount || '0'
-      ).times(actionData.pay_token.price);
+      )
+        .div(10 ** actionData.pay_token.decimals)
+        .times(actionData.pay_token.price);
       const usdValueDiff = receiveTokenUsdValue
         .minus(payTokenUsdValue)
         .toFixed();
@@ -379,4 +384,87 @@ export const getActionTypeText = (data: TypedDataActionData) => {
     return 'Contract call';
   }
   return '';
+};
+
+export const formatSecurityEngineCtx = ({
+  actionData,
+  requireData,
+}: {
+  actionData: TypedDataActionData;
+  requireData: TypedDataRequireData;
+}): ContextActionData => {
+  if (actionData?.permit) {
+    const data = requireData as ApproveTokenRequireData;
+    return {
+      permit: {
+        spender: actionData.permit.spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData?.permit2) {
+    const data = requireData as ApproveTokenRequireData;
+    return {
+      permit2: {
+        spender: actionData.permit2.spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData?.buyNFT) {
+    const receiveNFTIsFake =
+      actionData.buyNFT.receive_nft.collection?.is_verified === false;
+    const receiveNFTIsScam = receiveNFTIsFake
+      ? false
+      : !!actionData.buyNFT.receive_nft.collection?.is_suspicious;
+    return {
+      buyNFT: {
+        from: actionData.sender,
+        receiver: actionData.buyNFT.receiver,
+        receiveNFTIsFake,
+        receiveNFTIsScam,
+      },
+    };
+  }
+  if (actionData?.sellNFT) {
+    const receiveTokenIsFake =
+      actionData.sellNFT.receive_token.is_verified === false;
+    const receiveTokenIsScam = receiveTokenIsFake
+      ? false
+      : !!actionData.sellNFT.receive_token.is_suspicious;
+    return {
+      sellNFT: {
+        specificBuyer: actionData.sellNFT.takers[0],
+        from: actionData.sender,
+        receiver: actionData.sellNFT.receiver,
+        receiveTokenIsFake,
+        receiveTokenIsScam,
+      },
+    };
+  }
+  if (actionData?.swapTokenOrder) {
+    const receiveTokenIsFake =
+      actionData.swapTokenOrder.receiveToken.is_verified === false;
+    const receiveTokenIsScam = receiveTokenIsFake
+      ? false
+      : !!actionData.swapTokenOrder.receiveToken.is_suspicious;
+    return {
+      swapTokenOrder: {
+        receiveTokenIsFake,
+        receiveTokenIsScam,
+        receiver: actionData.swapTokenOrder.receiver,
+        from: actionData.sender,
+        usdValuePercentage: actionData.swapTokenOrder.usdValuePercentage,
+      },
+    };
+  }
+  return {};
 };

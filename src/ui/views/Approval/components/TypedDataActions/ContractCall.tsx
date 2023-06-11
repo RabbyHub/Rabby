@@ -61,7 +61,6 @@ const ContractCall = ({
   const dispatch = useRabbyDispatch();
 
   const operation = useMemo(() => {
-    console.log(raw);
     if (raw.primaryType) {
       return raw.primaryType as string;
     }

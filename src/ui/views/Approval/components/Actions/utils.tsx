@@ -85,11 +85,13 @@ export interface ParsedActionData {
     payToken: TokenItem;
     receiveToken: ReceiveTokenItem;
     slippageTolerance: number;
+    receiver: string;
   };
   unWrapToken?: {
     payToken: TokenItem;
     receiveToken: ReceiveTokenItem;
     slippageTolerance: number;
+    receiver: string;
   };
   deployContract?: Record<string, never>;
   contractCall?: object;
@@ -210,7 +212,7 @@ export const parseAction = (
     };
   }
   if (data?.type === 'wrap_token') {
-    const { pay_token, receive_token } = data.data as WrapTokenAction;
+    const { pay_token, receive_token, receiver } = data.data as WrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
       pay_token.raw_amount || '0',
       receive_token.min_raw_amount || '0'
@@ -220,11 +222,16 @@ export const parseAction = (
         payToken: pay_token,
         receiveToken: receive_token,
         slippageTolerance,
+        receiver,
       },
     };
   }
   if (data?.type === 'unwrap_token') {
-    const { pay_token, receive_token } = data.data as UnWrapTokenAction;
+    const {
+      pay_token,
+      receive_token,
+      receiver,
+    } = data.data as UnWrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
       pay_token.raw_amount || '0',
       receive_token.min_raw_amount || '0'
@@ -234,6 +241,7 @@ export const parseAction = (
         payToken: pay_token,
         receiveToken: receive_token,
         slippageTolerance,
+        receiver,
       },
     };
   }
@@ -371,6 +379,7 @@ export interface WrapTokenRequireData {
   bornAt: number;
   hasInteraction: boolean;
   rank: number | null;
+  sender: string;
 }
 
 export interface ContractCallRequireData {
@@ -623,6 +632,7 @@ export const fetchActionRequiredData = async ({
       bornAt: 0,
       hasInteraction: false,
       rank: null,
+      sender: address,
     };
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
@@ -1067,11 +1077,13 @@ export const formatSecurityEngineCtx = ({
     };
   }
   if (actionData.wrapToken) {
-    const { slippageTolerance } = actionData.wrapToken;
+    const { slippageTolerance, receiver } = actionData.wrapToken;
     const data = requireData as WrapTokenRequireData;
     return {
       wrapToken: {
         slippageTolerance,
+        receiver,
+        from: data.sender,
       },
       contractCall: {
         id: data.id,
@@ -1080,11 +1092,13 @@ export const formatSecurityEngineCtx = ({
     };
   }
   if (actionData.unWrapToken) {
-    const { slippageTolerance } = actionData.unWrapToken;
+    const { slippageTolerance, receiver } = actionData.unWrapToken;
     const data = requireData as WrapTokenRequireData;
     return {
       unwrapToken: {
         slippageTolerance,
+        receiver,
+        from: data.sender,
       },
       contractCall: {
         id: data.id,
