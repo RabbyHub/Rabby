@@ -1,22 +1,21 @@
 import React from 'react';
 import { Skeleton } from 'antd';
 import { Trans } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import LoadingBalanceChange from './LoadingBalanceChange';
+import { findChainByEnum } from '@/utils/chain';
 
 interface SignProps {
   chainEnum: CHAINS_ENUM;
 }
 
 const Loading = ({ chainEnum }: SignProps) => {
-  const chain = CHAINS[chainEnum];
-
   return (
     <div className="sign">
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
       </p>
       <div className="action-card">

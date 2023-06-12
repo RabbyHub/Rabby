@@ -6,6 +6,7 @@ import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { ExplainListNFT } from './ExplainListNFT';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ListNFTProps {
   data: ExplainTxResponse;
@@ -16,7 +17,6 @@ interface ListNFTProps {
 
 const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
   const detail = data.type_list_nft!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -31,7 +31,7 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"
@@ -45,7 +45,7 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
         <div className="common-detail-block h-0 p-0 min-h-0">
           {isSpeedUp && <SpeedUpCorner />}
         </div>
-        <ExplainListNFT detail={detail} chainEnum={chain.enum} />
+        <ExplainListNFT detail={detail} chainEnum={chainEnum} />
       </div>
     </div>
   );

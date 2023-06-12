@@ -9,6 +9,7 @@ import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+import { findChainByEnum } from '@/utils/chain';
 
 interface SignProps {
   data: ExplainTxResponse;
@@ -20,7 +21,6 @@ interface SignProps {
 
 const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
   const detail = data.type_call!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -41,7 +41,7 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

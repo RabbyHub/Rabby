@@ -14,6 +14,7 @@ import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { findChainByEnum } from '@/utils/chain';
 
 interface SendNFTProps {
   data: ExplainTxResponse;
@@ -24,7 +25,6 @@ interface SendNFTProps {
 
 const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
   const detail = data.type_nft_send!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -36,9 +36,12 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
 
   const handleClickContractId = () => {
     if (!detail.nft?.contract_id) return;
-    const chain = CHAINS[chainEnum];
+    const chainItem = findChainByEnum(chainEnum);
     openInTab(
-      chain.scanLink.replace(/tx\/_s_/, `address/${detail.nft?.contract_id}`),
+      chainItem?.scanLink.replace(
+        /tx\/_s_/,
+        `address/${detail.nft?.contract_id}`
+      ),
       false
     );
   };
@@ -55,7 +58,7 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

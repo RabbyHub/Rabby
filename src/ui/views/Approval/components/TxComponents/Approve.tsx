@@ -15,6 +15,7 @@ import ViewRawModal from './ViewRawModal';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { ApproveToken } from './ApproveToken';
 import BalanceChange from './BalanceChange';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ApproveProps {
   data: ExplainTxResponse;
@@ -130,7 +131,6 @@ const Approve = ({
 }: ApproveProps) => {
   const wallet = useWallet();
   const detail = data.type_token_approval!;
-  const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
@@ -207,7 +207,7 @@ const Approve = ({
       <div className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

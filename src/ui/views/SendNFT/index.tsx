@@ -60,7 +60,6 @@ const SendNFT = () => {
         )?.enum
       : undefined
   );
-  const chainName = CHAINS[chain as string]?.name;
 
   const amountInputEl = useRef<any>(null);
 
@@ -183,7 +182,7 @@ const SendNFT = () => {
         category: 'Send',
         action: 'createTx',
         label: [
-          chainName,
+          findChainByEnum(chain)?.name,
           getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           'nft',

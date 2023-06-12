@@ -53,7 +53,9 @@ export const chains = createModel<RootModel>()({
 
           const chainItem = findChainByEnum(state.currentConnection.chain);
 
-          return !!chainItem && !state.gnosisNetworkIds.includes(chainItem.network);
+          return (
+            !!chainItem && !state.gnosisNetworkIds.includes(chainItem.network)
+          );
         });
       },
     };

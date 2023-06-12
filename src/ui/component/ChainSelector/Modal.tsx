@@ -30,9 +30,8 @@ const useSetup = () => {
   const [search, setSearch] = useState('');
   const pinned = useRabbySelector(
     (state) =>
-      state.preference.pinnedChain?.filter((item) =>
-        findChainByEnum(item)
-      ) || []
+      state.preference.pinnedChain?.filter((item) => findChainByEnum(item)) ||
+      []
   );
   const dispatch = useRabbyDispatch();
 

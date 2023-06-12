@@ -15,6 +15,7 @@ import ViewRawModal from './ViewRawModal';
 import IconExternal from 'ui/assets/open-external-gray.svg';
 import { openInTab } from '@/ui/utils';
 import { Copy } from '@/ui/component';
+import { findChainByEnum } from '@/utils/chain';
 
 interface CancelNFTProps {
   data: ExplainTxResponse;
@@ -25,7 +26,6 @@ interface CancelNFTProps {
 
 const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
   const detail = data.type_cancel_single_nft_approval!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -44,8 +44,8 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
   const bfInfo = useBalanceChange(data);
 
   const handleClickContractId = (id: string) => {
-    const chain = CHAINS[chainEnum];
-    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
+    const chainItem = findChainByEnum(chainEnum);
+    openInTab(chainItem?.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
   };
 
   return (
@@ -58,7 +58,7 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

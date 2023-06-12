@@ -186,7 +186,7 @@ export const GasTopUp = () => {
       const lastChain = await wallet.getLastSelectedGasTopUpChain(
         account.address
       );
-      if (lastChain && CHAINS[lastChain]) {
+      if (lastChain && findChainByEnum(lastChain)) {
         setChain(lastChain);
       }
     };

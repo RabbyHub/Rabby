@@ -11,6 +11,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { findChainByEnum } from '@/utils/chain';
 
 export interface Props {
   isSpeedUp?: boolean;
@@ -76,9 +77,9 @@ export const ApproveToken: React.FC<Props> = ({
 
   const handleClickSpender = () => {
     if (!chainEnum) return;
-    const chain = CHAINS[chainEnum];
+    const chainItem = findChainByEnum(chainEnum);
     openInTab(
-      chain.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
+      chainItem?.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
       false
     );
   };

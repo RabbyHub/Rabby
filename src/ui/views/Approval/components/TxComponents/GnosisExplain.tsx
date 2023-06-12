@@ -4,6 +4,7 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import { NameAndAddress } from 'ui/component/index';
 import { TxTypeComponent } from '../SignTx';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
+import { findChainByEnum } from '@/utils/chain';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;
@@ -13,11 +14,11 @@ interface GnosisExplainProps {
 }
 
 const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
-  const chain = CHAINS[chainEnum];
-
   const handleChange = () => {
     // NOTHING
   };
+
+  const chainItem = findChainByEnum(chainEnum);
 
   return (
     <div className="block-field px-16 pb-20">
@@ -34,15 +35,18 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
             noNameClass="no-name"
           />
         </div>
-        <TxTypeComponent
-          txDetail={data}
-          chain={chain}
-          isReady
-          raw={raw}
-          isSpeedUp={false}
-          tx={tx}
-          onChange={handleChange}
-        />
+        {chainItem && (
+          <TxTypeComponent
+            txDetail={data}
+            // TODO: confirm it
+            chain={chainItem}
+            isReady
+            raw={raw}
+            isSpeedUp={false}
+            tx={tx}
+            onChange={handleChange}
+          />
+        )}
       </div>
     </div>
   );

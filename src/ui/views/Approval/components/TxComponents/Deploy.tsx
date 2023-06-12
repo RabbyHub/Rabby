@@ -9,6 +9,7 @@ import IconDeployContract from 'ui/assets/deploy-contract.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import { findChainByEnum } from '@/utils/chain';
 
 const Deploy = ({
   chainEnum,
@@ -22,7 +23,6 @@ const Deploy = ({
   raw: Record<string, string | number>;
 }) => {
   const { t } = useTranslation();
-  const chain = CHAINS[chainEnum];
 
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -43,7 +43,7 @@ const Deploy = ({
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

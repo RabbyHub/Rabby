@@ -15,6 +15,7 @@ import ViewRawModal from './ViewRawModal';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 import { Copy } from '@/ui/component';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ApproveNFTProps {
   data: ExplainTxResponse;
@@ -25,12 +26,11 @@ interface ApproveNFTProps {
 
 const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
   const detail = data.type_single_nft_approval!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleClickContractId = (id: string) => {
-    const chain = CHAINS[chainEnum];
-    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
+    const chainItem = findChainByEnum(chainEnum);
+    openInTab(chainItem?.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
   };
 
   const handleViewRawClick = () => {
@@ -58,7 +58,7 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

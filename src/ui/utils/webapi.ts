@@ -20,7 +20,10 @@ export const getCurrentConnectSite = async (
   );
 };
 
-export const openInTab = async (url, needClose = true): Promise<Tabs.Tab> => {
+export const openInTab = async (
+  url?: string,
+  needClose = true
+): Promise<Tabs.Tab> => {
   const tab = await browser.tabs.create({
     active: true,
     url,

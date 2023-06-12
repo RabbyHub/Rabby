@@ -9,6 +9,7 @@ import IconCancelTx from 'ui/assets/cancel-tx.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import { findChainByEnum } from '@/utils/chain';
 
 const CancelTx = ({
   chainEnum,
@@ -23,7 +24,6 @@ const CancelTx = ({
   isSpeedUp: boolean;
   raw: Record<string, string | number>;
 }) => {
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -45,7 +45,7 @@ const CancelTx = ({
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

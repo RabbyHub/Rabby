@@ -288,8 +288,6 @@ const NFTBalanceChange = ({
     };
   }, [data]);
 
-  const chain = CHAINS[chainEnum];
-
   if (type === 'receive' && hasReceives) {
     return (
       <NFCBalanceChangeWrapper className="nft-balance-change">

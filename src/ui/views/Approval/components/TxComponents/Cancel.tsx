@@ -12,6 +12,7 @@ import ViewRawModal from './ViewRawModal';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { findChainByEnum } from '@/utils/chain';
 
 interface CancelProps {
   data: ExplainTxResponse;
@@ -22,13 +23,12 @@ interface CancelProps {
 
 const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
   const detail = data.type_cancel_token_approval!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleClickSpender = () => {
-    const chain = CHAINS[chainEnum];
+    const chainItem = findChainByEnum(chainEnum);
     openInTab(
-      chain.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
+      chainItem?.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
       false
     );
   };
@@ -58,7 +58,7 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"

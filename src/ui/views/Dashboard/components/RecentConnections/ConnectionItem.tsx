@@ -8,6 +8,7 @@ import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ConnectionItemProps {
   className?: string;
@@ -30,6 +31,7 @@ export const Item = memo(
       }: ConnectionItemProps & Record<string, any>,
       ref: React.ForwardedRef<any>
     ) => {
+      const chainItem = findChainByEnum(item.chain);
       return (
         <div
           className={clsx('item', className)}
@@ -59,8 +61,8 @@ export const Item = memo(
             />
             <img
               className="connect-chain"
-              src={CHAINS[item.chain]?.logo}
-              alt={CHAINS[item.chain]?.name}
+              src={chainItem?.logo}
+              alt={chainItem?.name}
             />
           </div>
           <span className="item-content">{item.origin}</span>

@@ -13,6 +13,7 @@ import ViewRawModal from './ViewRawModal';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 import { Copy } from '@/ui/component';
+import { findChainByEnum } from '@/utils/chain';
 
 interface CancelNFTCollectionProps {
   data: ExplainTxResponse;
@@ -28,7 +29,6 @@ const CancelNFTCollection = ({
   raw,
 }: CancelNFTCollectionProps) => {
   const detail = data.type_cancel_nft_collection_approval!;
-  const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -47,8 +47,8 @@ const CancelNFTCollection = ({
   const bfInfo = useBalanceChange(data);
 
   const handleClickContractId = (id: string) => {
-    const chain = CHAINS[chainEnum];
-    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
+    const chainItem = findChainByEnum(chainEnum);
+    openInTab(chainItem?.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
   };
 
   return (
@@ -61,7 +61,7 @@ const CancelNFTCollection = ({
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ name: chain.name }}
+          values={{ name: findChainByEnum(chainEnum)?.name || '' }}
         />
         <span
           className="float-right text-12 cursor-pointer flex items-center view-raw"
