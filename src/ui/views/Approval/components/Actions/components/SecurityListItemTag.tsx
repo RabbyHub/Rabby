@@ -10,7 +10,6 @@ export interface Props {
 }
 
 const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)`
-  padding: 2px 4px;
   margin-top: -9px;
 `;
 
