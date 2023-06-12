@@ -41,6 +41,7 @@ class RPCService {
     this.store = storage || this.store;
 
     {
+      // remove unsupported chain
       let changed = false;
       Object.keys({ ...this.store.customRPC }).forEach((chainEnum) => {
         if (!findChainByEnum(chainEnum)) {

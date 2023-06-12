@@ -1,7 +1,7 @@
 import { Chain } from '@debank/common';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 
-// const ALL_CHAINS = Object.values(CHAINS);
+const ALL_CHAINS = Object.values(CHAINS);
 
 /**
  * @description safe find chain, if not found, return fallback(if provided) or null
@@ -43,4 +43,11 @@ export function ensureChainHashValid<
 
 export function ensureChainListValid<T extends CHAINS_ENUM[]>(list: T) {
   return list.filter((chainEnum) => findChainByEnum(chainEnum));
+}
+
+/**
+ * @description safe find chain, if not found, return fallback(if provided) or null
+ */
+export function findChainByID(chainId: Chain['id']): Chain | null {
+  return ALL_CHAINS.find((chain) => chain.id === chainId) || null;
 }

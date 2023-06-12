@@ -6,6 +6,8 @@ import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
+import { findChainByID } from '@/utils/chain';
+import { makeTransactionId } from '@/utils/transaction';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -47,12 +49,16 @@ interface TxHistoryStore {
   transactions: {
     [key: string]: Record<string, TransactionGroup>;
   };
+  deprecatedTransactions: {
+    [key: string]: Record<string, TransactionHistoryItem>;
+  };
 }
 
 class TxHistory {
   store!: TxHistoryStore;
 
   private _signingTxList: TransactionSigningItem[] = [];
+  private _booted = false;
 
   addSigningTx(tx: Tx) {
     const id = nanoid();
@@ -104,9 +110,60 @@ class TxHistory {
       name: 'txHistory',
       template: {
         transactions: {},
+        deprecatedTransactions: {},
       },
     });
     if (!this.store.transactions) this.store.transactions = {};
+    if (!this.store.deprecatedTransactions)
+      this.store.deprecatedTransactions = {};
+  }
+
+  filterOutTxDataOnBootstrap() {
+    const deprecatedTxs = ({
+      ...this.store.deprecatedTransactions,
+    } as any) as typeof this.store.transactions;
+    const pendingTxIdsToRemove: string[] = [];
+
+    if (!this._booted) {
+      this._booted = true;
+
+      Object.entries({ ...this.store.transactions }).forEach(
+        ([gid, txGroup]) => {
+          const dtxGroup = {
+            ...deprecatedTxs[gid],
+          } as typeof txGroup;
+          let changed = false;
+          Object.entries(txGroup).forEach(([tid, item]) => {
+            if (!findChainByID(item.chainId)) {
+              changed = true;
+              dtxGroup[tid] = item;
+              delete txGroup[tid];
+            }
+          });
+          if (changed) deprecatedTxs[gid] = dtxGroup;
+        }
+      );
+
+      this.store.deprecatedTransactions = deprecatedTxs as any;
+    } else {
+      console.warn('txHistory has already been booted');
+    }
+
+    Object.entries(deprecatedTxs).forEach(([gid, txGroup]) => {
+      Object.values(txGroup).forEach((txData) => {
+        const siteChain = txData.txs.find((item) => item.site?.chain)?.site
+          ?.chain;
+        if (!siteChain) return;
+        pendingTxIdsToRemove.push(
+          makeTransactionId(gid, txData.nonce, siteChain)
+        );
+      });
+    });
+
+    return {
+      deprecatedTransactions: deprecatedTxs,
+      pendingTxIdsToRemove,
+    };
   }
 
   getPendingCount(address: string) {
