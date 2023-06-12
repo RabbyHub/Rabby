@@ -12,6 +12,8 @@ import { obj2query } from '@/ui/utils/url';
 
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import { message } from 'antd';
+import IconSuccess from 'ui/assets/success.svg';
 
 export const AccountList = ({
   list,
@@ -39,11 +41,22 @@ export const AccountList = ({
     );
 
     const onDelete = React.useMemo(() => {
-      if (
-        [KEYRING_TYPE['HdKeyring'], KEYRING_TYPE['SimpleKeyring']].includes(
-          account.type
-        )
-      ) {
+      if (account.type === KEYRING_TYPE['HdKeyring']) {
+        return async () => {
+          await dispatch.addressManagement.removeAddress([
+            account.address,
+            account.type,
+            account.brandName,
+            false,
+          ]);
+          message.success({
+            icon: <img src={IconSuccess} className="icon icon-success" />,
+            content: 'Deleted',
+            duration: 0.5,
+          });
+        };
+      }
+      if (account.type === KEYRING_TYPE['SimpleKeyring']) {
         return () => {
           handleOpenDeleteModal([account], false);
         };
