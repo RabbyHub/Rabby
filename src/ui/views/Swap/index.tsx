@@ -24,6 +24,7 @@ import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-do
 import { useAsync, useCss } from 'react-use';
 import stats from '@/stats';
 import { useRbiSource } from '@/ui/utils/ga-event';
+import { findChainByEnum } from '@/utils/chain';
 
 const ReservedGas = 0;
 
@@ -192,11 +193,14 @@ const Swap = () => {
     state?.receiveToken || undefined
   );
 
-  const payTokenIsNativeToken =
-    payToken.id === CHAINS[chain].nativeTokenAddress;
+  const chainItem = useMemo(() => findChainByEnum(chain, { fallback: true })!, [
+    chain,
+  ]);
+
+  const payTokenIsNativeToken = payToken.id === chainItem.nativeTokenAddress;
 
   const receiveTokenIsNativeToken =
-    !!receiveToken && receiveToken.id === CHAINS[chain].nativeTokenAddress;
+    !!receiveToken && receiveToken.id === chainItem.nativeTokenAddress;
 
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
@@ -405,7 +409,7 @@ const Swap = () => {
       );
       const needLoadToken: TokenItem = lastTimeToken || payToken;
 
-      if (needLoadToken.chain !== CHAINS[chain].serverId) {
+      if (needLoadToken.chain !== chainItem.serverId) {
         const target = Object.values(CHAINS).find(
           (item) => item.serverId === needLoadToken.chain
         )!;
@@ -420,15 +424,15 @@ const Swap = () => {
   };
 
   const gotoTokenEtherscan = () => {
-    const scanLink = CHAINS[chain].scanLink;
+    const scanLink = chainItem.scanLink;
     openInTab(`${scanLink.replace('/tx/_s_', '')}/token/${receiveToken?.id}`);
   };
 
   const scanHostName = useMemo(() => {
-    const scanLink = CHAINS[chain].scanLink;
+    const scanLink = chainItem.scanLink;
     const url = new URL(scanLink);
     return url.hostname;
-  }, [chain]);
+  }, [chainItem]);
 
   const rbiSource = useRbiSource();
 
@@ -569,7 +573,7 @@ const Swap = () => {
               className="px-12 py-0 h-60 flex items-center"
               token={payToken}
               onTokenChange={handleCurrentTokenChange}
-              chainId={CHAINS[chain].serverId}
+              chainId={chainItem.serverId}
               amountFocus={autoFocusAmount}
               inlinePrize
               value={amountInput}
@@ -620,7 +624,7 @@ const Swap = () => {
           <TokenSelect
             token={receiveToken}
             onTokenChange={handleSwapTokenChange}
-            chainId={CHAINS[chain].serverId}
+            chainId={chainItem.serverId}
             excludeTokens={[payToken.id]}
             type="swapTo"
             placeholder={t('Search by Name Address')}
@@ -661,7 +665,7 @@ const Swap = () => {
               setOpenAdvancedSetting((b) => {
                 if (!b) {
                   stats.report('swapAdvancedSettingOn', {
-                    chainId: CHAINS[chain].serverId,
+                    chainId: chainItem.serverId,
                   });
                 }
                 return !b;

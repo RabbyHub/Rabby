@@ -420,12 +420,17 @@ const GnosisTransactionItem = ({
   );
 };
 
+/**
+ * @description chain is expected always useful
+ * @param props
+ * @returns
+ */
 export const GnosisTransactionQueueList = (props: {
-  chain: CHAINS_ENUM;
+  usefulChain: CHAINS_ENUM;
   pendingTxs?: SafeTransactionItem[];
   loading?: boolean;
 }) => {
-  const { chain, pendingTxs, loading } = props;
+  const { usefulChain: chain, pendingTxs, loading } = props;
   const networkId = CHAINS[chain].network;
   const wallet = useWallet();
   // const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);

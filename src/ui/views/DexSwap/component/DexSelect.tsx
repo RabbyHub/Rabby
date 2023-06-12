@@ -1,6 +1,7 @@
 import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
-import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
+import { DEX_SUPPORT_CHAINS } from '@/constant/dex-swap';
 import { Button, Drawer } from 'antd';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';

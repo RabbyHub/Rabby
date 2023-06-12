@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { useHover, useWallet } from 'ui/utils';
 import { SvgIconArrowDown } from 'ui/assets';
 import Modal from './Modal';
@@ -7,6 +7,7 @@ import ChainIcon from '../ChainIcon';
 
 import './style.less';
 import clsx from 'clsx';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -79,7 +80,7 @@ const ChainSelector = ({
             showCustomRPCToolTip
           />
         </div>
-        {CHAINS[value]?.name}
+        {findChainByEnum(value)?.name}
         <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
       </div>
       <Modal

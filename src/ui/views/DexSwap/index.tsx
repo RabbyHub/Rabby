@@ -19,10 +19,10 @@ import ButtonMax from 'ui/assets/send-token/max.svg';
 import clsx from 'clsx';
 import {
   DEX_ENUM,
-  DEX_SPENDER_WHITELIST,
   getQuote,
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
+import { DEX_SPENDER_WHITELIST } from '@/constant/dex-swap';
 
 import { ReactComponent as IconLoading } from '@/ui/assets/swap/loading.svg';
 import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
@@ -44,11 +44,15 @@ import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
+import { findChainByEnum } from '@/utils/chain';
 
 const { confirm } = Modal;
 
 const getChainDefaultToken = (chain: CHAINS_ENUM) => {
-  const chainInfo = CHAINS[chain];
+  const chainInfo = findChainByEnum(chain);
+
+  if (!chainInfo) return undefined;
+
   return {
     id: chainInfo.nativeTokenAddress,
     decimals: chainInfo.nativeTokenDecimals,
@@ -162,13 +166,21 @@ export const SwapByDex = () => {
 
   const [chain, setChain] = useState(oChain);
 
+  const { chainItem, usefulChain } = useMemo(() => {
+    const item = findChainByEnum(chain);
+    return {
+      usefulChain: item ? chain : undefined,
+      chainItem: item,
+    };
+  }, [chain]);
+
   const [payAmount, setAmount] = useState('');
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
   const [slippage, setSlippage] = useState('0.5');
   const [gasLevel, setGasLevel] = useState<GasLevel>(defaultGasFee);
 
   const [payToken, setPayToken] = useState<TokenItem | undefined>(() =>
-    getChainDefaultToken(chain)
+    !chainItem ? undefined : getChainDefaultToken(chain)
   );
   const [receiveToken, setReceiveToken] = useState<TokenItem | undefined>(
     undefined
@@ -181,25 +193,30 @@ export const SwapByDex = () => {
       );
       if (target) {
         setChain(target?.enum);
-        setPayToken({
-          ...getChainDefaultToken(target?.enum),
-          id: searchObj.payTokenId,
-        });
+        const newVal = getChainDefaultToken(target?.enum);
+        setPayToken(
+          !newVal
+            ? undefined
+            : {
+                ...newVal,
+                id: searchObj.payTokenId,
+              }
+        );
       }
     }
   }, [searchObj?.chain, searchObj?.payTokenId]);
 
   const payTokenIsNativeToken = useMemo(
-    () => payToken?.id === CHAINS[chain].nativeTokenAddress,
-    [payToken?.id, chain]
+    () => chainItem && payToken?.id === chainItem?.nativeTokenAddress,
+    [payToken?.id, chainItem]
   );
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
       const wrapTokens = [
         WrapTokenAddressMap[chain],
-        CHAINS[chain].nativeTokenAddress,
-      ];
+        chainItem?.nativeTokenAddress,
+      ] as const;
       const res =
         !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
         !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
@@ -213,7 +230,7 @@ export const SwapByDex = () => {
     }
     setDexId(oDexId);
     return [false, ''];
-  }, [payToken?.id, receiveToken?.id, chain]);
+  }, [payToken?.id, receiveToken?.id, chain, chainItem]);
 
   const [logo, name] = useMemo(() => {
     if (oDexId) {
@@ -223,37 +240,37 @@ export const SwapByDex = () => {
   }, [oDexId]);
 
   const { value: gasMarket } = useAsync(() => {
-    return wallet.openapi.gasMarket(CHAINS[chain].serverId);
-  }, [chain]);
+    return wallet.openapi.gasMarket(chainItem?.serverId || '');
+  }, [chainItem]);
 
   const {
     value: nativeToken,
     loading: nativeTokenLoading,
   } = useAsync(async () => {
-    if (chain) {
+    if (chainItem) {
       const t = await wallet.openapi.getToken(
         userAddress,
-        CHAINS[chain].serverId,
-        CHAINS[chain].nativeTokenAddress
+        chainItem.serverId,
+        chainItem.nativeTokenAddress
       );
 
       return t;
     }
     return;
-  }, [chain]);
+  }, [chainItem]);
 
   const { loading: payTokenLoading } = useAsync(async () => {
-    if (payToken?.id && chain && payToken?.time_at === 0) {
+    if (payToken?.id && chainItem && payToken?.time_at === 0) {
       const t = await wallet.openapi.getToken(
         userAddress,
-        CHAINS[chain].serverId,
+        chainItem.serverId,
         payToken?.id
       );
       setPayToken(t);
       return;
     }
     return;
-  }, [chain, payToken?.id, payToken?.time_at, refreshId]);
+  }, [chainItem, payToken?.id, payToken?.time_at, refreshId]);
 
   const [{ value: quoteInfo, loading }, fetchQuote] = useAsyncFn(async () => {
     if (
@@ -775,7 +792,7 @@ export const SwapByDex = () => {
                 value={payAmount}
                 token={payToken}
                 onTokenChange={setPayToken}
-                chainId={CHAINS[chain].serverId}
+                chainId={chainItem?.serverId || ''}
                 type={'swapFrom'}
                 placeholder={'Search by Name / Address'}
                 onChange={setAmount}
@@ -837,7 +854,7 @@ export const SwapByDex = () => {
               <TokenSelect
                 token={receiveToken}
                 onTokenChange={setReceiveToken}
-                chainId={CHAINS[chain].serverId}
+                chainId={chainItem?.serverId || ''}
                 type={'swapTo'}
                 placeholder={'Search by Name / Address'}
                 excludeTokens={payToken?.id ? [payToken?.id] : undefined}
@@ -895,9 +912,9 @@ export const SwapByDex = () => {
                 symbol={receiveToken?.symbol}
               />
 
-              {nativeToken && (
+              {nativeToken && chainItem && (
                 <GasSelector
-                  chainId={CHAINS[chain].id}
+                  chainId={chainItem.id}
                   onChange={function (gas: GasLevel): void {
                     setGasLevel(gas);
                   }}

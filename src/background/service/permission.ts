@@ -2,6 +2,7 @@ import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
+import { findChainByEnum } from '@/utils/chain';
 
 export interface ConnectedSite {
   origin: string;
@@ -33,14 +34,24 @@ class PermissionService {
     this.store = storage || this.store;
 
     this.lruCache = new LRU();
+
+    let filtered = false;
     const cache: ReadonlyArray<LRU.Entry<string, ConnectedSite>> = (
       this.store.dumpCache || []
-    ).map((item) => ({
-      k: item.k,
-      v: item.v,
-      e: 0,
-    }));
+    )
+      .filter((item) => {
+        const found = item?.v?.chain && findChainByEnum(item.v.chain);
+        if (!filtered && !found) filtered = true;
+        return found;
+      })
+      .map((item) => ({
+        k: item.k,
+        v: item.v,
+        e: 0,
+      }));
     this.lruCache.load(cache);
+
+    if (filtered) this.sync();
   };
 
   sync = () => {
@@ -54,8 +65,18 @@ class PermissionService {
     return this.lruCache.peek(key);
   };
 
+  private _getSite = (origin: string) => {
+    const siteItem = this.lruCache?.get(origin);
+
+    if (!siteItem) return siteItem;
+
+    const chainItem = findChainByEnum(siteItem.chain);
+
+    return chainItem ? siteItem : undefined;
+  };
+
   getSite = (origin: string) => {
-    return this.lruCache?.get(origin);
+    return this._getSite(origin);
   };
 
   setSite = (site: ConnectedSite) => {
@@ -100,8 +121,12 @@ class PermissionService {
     if (!this.lruCache || !this.lruCache.has(origin)) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return;
 
+    if (value.chain && !findChainByEnum(value.chain)) {
+      return;
+    }
+
     if (partialUpdate) {
-      const _value = this.lruCache.get(origin);
+      const _value = this._getSite(origin);
       this.lruCache.set(origin, { ..._value, ...value } as ConnectedSite);
     } else {
       this.lruCache.set(origin, value as ConnectedSite);
@@ -114,7 +139,7 @@ class PermissionService {
     if (!this.lruCache) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return true;
 
-    const site = this.lruCache.get(origin);
+    const site = this._getSite(origin);
     return site && site.isConnected;
   };
 
@@ -165,7 +190,7 @@ class PermissionService {
   };
 
   getConnectedSite = (key: string) => {
-    const site = this.lruCache?.get(key);
+    const site = this._getSite(key);
     if (site && site.isConnected) {
       return site;
     }

@@ -1,6 +1,7 @@
 import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import axios from 'axios';
+import { findChainByEnum } from '@/utils/chain';
 
 export interface RPCItem {
   url: string;
@@ -38,6 +39,20 @@ class RPCService {
       },
     });
     this.store = storage || this.store;
+
+    {
+      let changed = false;
+      Object.keys({ ...this.store.customRPC }).forEach((chainEnum) => {
+        if (!findChainByEnum(chainEnum)) {
+          changed = true;
+          delete this.store.customRPC[chainEnum];
+        }
+      });
+
+      if (changed) {
+        this.store.customRPC = { ...this.store.customRPC };
+      }
+    }
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {

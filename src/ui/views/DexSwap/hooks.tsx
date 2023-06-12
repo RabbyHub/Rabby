@@ -3,11 +3,10 @@ import { isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from '@debank/rabby-api/dist/types';
 import {
-  DEX_ENUM,
   DEX_ROUTER_WHITELIST,
   DEX_SPENDER_WHITELIST,
-  WrapTokenAddressMap,
-} from '@rabby-wallet/rabby-swap';
+} from '@/constant/dex-swap';
+import { DEX_ENUM, WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import {
   decodeCalldata,
   DecodeCalldataResult,
@@ -16,6 +15,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
+import { findChainByEnum } from '@/utils/chain';
 
 export type ValidateTokenParam = {
   id: string;
@@ -34,19 +34,21 @@ export const useVerifyRouterAndSpender = (
 ) => {
   const data = useMemo(() => {
     if (dexId === DEX_ENUM.WRAPTOKEN) {
-      return [true, true];
+      return [true, true] as const;
     }
     if (!dexId || !router || !spender) {
-      return [true, true];
+      return [true, true] as const;
     }
     const routerWhitelist = DEX_ROUTER_WHITELIST[dexId][chain];
     const spenderWhitelist = DEX_SPENDER_WHITELIST[dexId][chain];
     return [
-      isSameAddress(routerWhitelist, router),
-      payTokenId && isSameAddress(payTokenId, CHAINS[chain].nativeTokenAddress) // When payToken is native token, no need to approve so no need to verify spender
+      !!routerWhitelist && isSameAddress(routerWhitelist, router),
+      payTokenId &&
+      CHAINS[chain] &&
+      isSameAddress(payTokenId, CHAINS[chain].nativeTokenAddress) // When payToken is native token, no need to approve so no need to verify spender
         ? true
         : isSameAddress(spenderWhitelist, spender),
-    ];
+    ] as const;
   }, [dexId, router, spender]);
   return data;
 };
@@ -103,6 +105,8 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
   p: VerifySdkParams<T>
 ) => {
   const { chain, dexId, slippage, data, payToken } = p;
+  const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
+
   const [routerPass, spenderPass] = useVerifyRouterAndSpender(
     chain,
     dexId,
@@ -114,7 +118,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
   const callDataPass = useVerifyCalldata(
     dexId,
     new BigNumber(slippage).div(100).toFixed(),
-    data?.tx ? { ...data?.tx, chainId: CHAINS[chain].id } : undefined,
+    data?.tx && chainItem ? { ...data?.tx, chainId: chainItem.id } : undefined,
     data
   );
 
@@ -163,10 +167,19 @@ export const useGasAmount = <T extends ValidateTokenParam>(
     loading: totalGasUsedLoading,
     error,
   } = useAsync(async () => {
-    if (chain && payAmount && data && payToken && dexId && gasMarket) {
+    const chainItem = chain ? findChainByEnum(chain) : null;
+    if (
+      chain &&
+      chainItem &&
+      payAmount &&
+      data &&
+      payToken &&
+      dexId &&
+      gasMarket
+    ) {
       const nonce = await wallet.getRecommendNonce({
         from: data.tx.from,
-        chainId: CHAINS[chain].id,
+        chainId: chainItem.id,
       });
 
       let gasPrice = gasLevel.price;
@@ -187,7 +200,7 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         const tokenApproveParams = await wallet.generateApproveTokenTx({
           from: userAddress,
           to: payToken!.id,
-          chainId: CHAINS[chain].id,
+          chainId: chainItem.id,
           spender: DEX_SPENDER_WHITELIST[dexId][chain],
           amount: amount,
         });
@@ -225,13 +238,13 @@ export const useGasAmount = <T extends ValidateTokenParam>(
           return [true, false];
 
         if (
-          payToken?.id === CHAINS[chain].nativeTokenAddress ||
+          payToken?.id === chainItem.nativeTokenAddress ||
           isSwapWrapToken(payToken.id, receiveToken.id, chain)
         ) {
           return [true, false];
         }
         const allowance = await wallet.getERC20Allowance(
-          CHAINS[chain].serverId,
+          chainItem.serverId,
           payToken!.id,
           DEX_SPENDER_WHITELIST[dexId][chain]
         );
@@ -272,7 +285,7 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         tx: {
           ...data.tx,
           nonce: nextNonce,
-          chainId: CHAINS[chain].id,
+          chainId: chainItem.id,
           value: `0x${new BigNumber(data.tx.value).toString(16)}`,
           gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
           gas: '0x0',
@@ -308,8 +321,8 @@ function isSwapWrapToken(
 ) {
   const wrapTokens = [
     WrapTokenAddressMap[chain],
-    CHAINS[chain].nativeTokenAddress,
-  ];
+    findChainByEnum(chain)?.nativeTokenAddress,
+  ] as const;
   return (
     !!wrapTokens.find((token) => isSameAddress(payTokenId, token)) &&
     !!wrapTokens.find((token) => isSameAddress(receiveId, token))

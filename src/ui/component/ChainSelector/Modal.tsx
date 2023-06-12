@@ -11,6 +11,7 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
+import { findChainByEnum } from '@/utils/chain';
 interface ChainSelectorModalProps {
   visible: boolean;
   value?: CHAINS_ENUM;
@@ -29,10 +30,13 @@ const useSetup = () => {
   const [search, setSearch] = useState('');
   const pinned = useRabbySelector(
     (state) =>
-      state.preference.pinnedChain?.filter((item) => CHAINS[item]) || []
+      state.preference.pinnedChain?.filter((item) =>
+        findChainByEnum(item)
+      ) || []
   );
   const dispatch = useRabbyDispatch();
 
+  // we have ensured all chain enum is valid above
   const _pinnedList = pinned.map((chain) => CHAINS[chain]);
   const _all = Object.values(CHAINS).sort((a, b) =>
     a.name.localeCompare(b.name)

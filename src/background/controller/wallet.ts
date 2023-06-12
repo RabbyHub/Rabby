@@ -80,6 +80,7 @@ import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
+import { findChainByEnum } from '@/utils/chain';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -368,7 +369,7 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const chainObj = CHAINS[chain];
+    const chainObj = findChainByEnum(chain);
     if (!chainObj) throw new Error(`Can not find chain ${chain}`);
     try {
       if (shouldTwoStepApprove) {
@@ -1020,19 +1021,24 @@ export class WalletController extends BaseController {
     }
   };
   setSite = (data: ConnectedSite) => {
+    const chainItem = findChainByEnum(data.chain);
+    if (!chainItem) {
+      throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
+    }
+
     permissionService.setSite(data);
     if (data.isConnected) {
       // rabby:chainChanged event must be sent before chainChanged event
       sessionService.broadcastEvent(
         'rabby:chainChanged',
-        CHAINS[data.chain],
+        chainItem,
         data.origin
       );
       sessionService.broadcastEvent(
         'chainChanged',
         {
-          chain: CHAINS[data.chain].hex,
-          networkVersion: CHAINS[data.chain].network,
+          chain: chainItem.hex,
+          networkVersion: chainItem.network,
         },
         data.origin
       );
@@ -1060,18 +1066,22 @@ export class WalletController extends BaseController {
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
+    const chainItem = findChainByEnum(data.chain);
+
+    if (!chainItem) {
+      throw new Error(
+        `[wallet::updateConnectSite] Chain ${data.chain} is not supported`
+      );
+    }
+
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      CHAINS[data.chain],
-      data.origin
-    );
+    sessionService.broadcastEvent('rabby:chainChanged', chainItem, data.origin);
     sessionService.broadcastEvent(
       'chainChanged',
       {
-        chain: CHAINS[data.chain].hex,
-        networkVersion: CHAINS[data.chain].network,
+        chain: chainItem.hex,
+        networkVersion: chainItem.network,
       },
       data.origin
     );

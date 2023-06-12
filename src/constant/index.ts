@@ -59,6 +59,7 @@ import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
 import LogoUniswap from 'ui/assets/walletlogo/uniswap.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
+import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -629,7 +630,7 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
 };
 
-export const GASPRICE_RANGE = {
+export const GASPRICE_RANGE = ensureChainHashValid({
   [CHAINS_ENUM.ETH]: [0, 10000],
   [CHAINS_ENUM.BOBA]: [0, 1000],
   [CHAINS_ENUM.OP]: [0, 1000],
@@ -637,6 +638,7 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.AURORA]: [0, 1000],
   [CHAINS_ENUM.BSC]: [0, 1000],
   [CHAINS_ENUM.AVAX]: [0, 4000],
+  // @ts-ignore
   [CHAINS_ENUM.POLYGON]: [0, 250000],
   [CHAINS_ENUM.FTM]: [0, 360000],
   [CHAINS_ENUM.GNOSIS]: [0, 500000],
@@ -647,7 +649,7 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.CRO]: [0, 100000],
   [CHAINS_ENUM.BTT]: [0, 20000000000],
   [CHAINS_ENUM.METIS]: [0, 3000],
-};
+});
 
 export const HDPaths = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: [
@@ -863,16 +865,17 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [WALLET_BRAND_TYPES.TRUSTWALLET]: WALLET_BRAND_CONTENT.TRUSTWALLET.name,
 };
 
-export const GNOSIS_SUPPORT_CHAINS = [
+export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ETH,
   CHAINS_ENUM.BSC,
+  // @ts-ignore
   CHAINS_ENUM.POLYGON,
   CHAINS_ENUM.GNOSIS,
   CHAINS_ENUM.AVAX,
   CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
-];
+]);
 
 export const WALLET_SORT_SCORE = [
   //mobile

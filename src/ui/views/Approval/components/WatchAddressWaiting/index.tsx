@@ -15,6 +15,7 @@ import Scan from './Scan';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -152,7 +153,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
-              chainId: CHAINS[chain].serverId,
+              chainId: findChainByEnum(chain)?.serverId || '',
               category: KEYRING_CATEGORY_MAP[account.type],
               success: true,
               preExecSuccess: explain
@@ -182,7 +183,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
-              chainId: CHAINS[chain].serverId,
+              chainId: findChainByEnum(chain)?.serverId || '',
               category: KEYRING_CATEGORY_MAP[account.type],
               success: false,
               preExecSuccess: explain
@@ -221,7 +222,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
               wallet.reportStats('signTransaction', {
                 type: account.brandName,
-                chainId: CHAINS[chain].serverId,
+                chainId: findChainByEnum(chain)?.serverId || '',
                 category: KEYRING_CATEGORY_MAP[account.type],
                 preExecSuccess: explain
                   ? explain?.calcSuccess && explain?.pre_exec.success

@@ -49,6 +49,7 @@ import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
+import { findChainByEnum } from '@/utils/chain';
 
 const reportSignText = (params: {
   method: string;
@@ -124,9 +125,10 @@ const signTypedDataVlidation = ({
   const currentChain = permissionService.getConnectedSite(session.origin)
     ?.chain;
   if (jsonData.domain.chainId) {
+    const chainItem = findChainByEnum(currentChain);
     if (
       !currentChain ||
-      Number(jsonData.domain.chainId) !== CHAINS[currentChain].id
+      (chainItem && Number(jsonData.domain.chainId) !== chainItem.id)
     ) {
       throw ethErrors.rpc.invalidParams(
         'chainId should be same as current chainId'
@@ -272,7 +274,7 @@ class ProviderController extends BaseController {
     const origin = session.origin;
     const site = permissionService.getWithoutUpdate(origin);
 
-    return CHAINS[site?.chain || CHAINS_ENUM.ETH].hex;
+    return findChainByEnum(site?.chain, { fallback: CHAINS_ENUM.ETH })!.hex;
   };
 
   @Reflect.metadata('APPROVAL', [
@@ -397,6 +399,8 @@ class ProviderController extends BaseController {
 
     const { explain: cacheExplain, rawTx } = approvingTx;
 
+    const chainItem = findChainByEnum(chain);
+
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,
@@ -408,7 +412,7 @@ class ProviderController extends BaseController {
         signedTransactionSuccess = true;
         stats.report('signedTransaction', {
           type: currentAccount.brandName,
-          chainId: CHAINS[chain].serverId,
+          chainId: chainItem?.serverId || '',
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
           preExecSuccess: cacheExplain
@@ -434,7 +438,7 @@ class ProviderController extends BaseController {
 
         stats.report('submitTransaction', {
           type: currentAccount.brandName,
-          chainId: CHAINS[chain].serverId,
+          chainId: chainItem?.serverId || '',
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
           preExecSuccess: cacheExplain
@@ -505,7 +509,7 @@ class ProviderController extends BaseController {
       signedTransactionSuccess = true;
       stats.report('signedTransaction', {
         type: currentAccount.brandName,
-        chainId: CHAINS[chain].serverId,
+        chainId: chainItem?.serverId || '',
         category: KEYRING_CATEGORY_MAP[currentAccount.type],
         success: true,
         preExecSuccess: cacheExplain
@@ -537,7 +541,11 @@ class ProviderController extends BaseController {
             [rawTx]
           );
           try {
-            openapiService.traceTx(hash, traceId || '', CHAINS[chain].serverId);
+            openapiService.traceTx(
+              hash,
+              traceId || '',
+              chainItem?.serverId || ''
+            );
           } catch (e) {
             // DO nothing
           }
@@ -569,7 +577,7 @@ class ProviderController extends BaseController {
 
         stats.report('submitTransaction', {
           type: currentAccount.brandName,
-          chainId: CHAINS[chain].serverId,
+          chainId: chainItem?.serverId || '',
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
           preExecSuccess: cacheExplain
@@ -611,7 +619,7 @@ class ProviderController extends BaseController {
       if (!signedTransactionSuccess) {
         stats.report('signedTransaction', {
           type: currentAccount.brandName,
-          chainId: CHAINS[chain].serverId,
+          chainId: chainItem?.serverId || '',
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
           preExecSuccess: cacheExplain

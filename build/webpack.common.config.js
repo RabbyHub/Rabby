@@ -178,9 +178,9 @@ const config = {
     ],
   },
   plugins: [
-    new ESLintWebpackPlugin({
-      extensions: ['ts', 'tsx', 'js', 'jsx'],
-    }),
+    // new ESLintWebpackPlugin({
+    //   extensions: ['ts', 'tsx', 'js', 'jsx'],
+    // }),
     // new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
@@ -223,6 +223,11 @@ const config = {
     alias: {
       moment: require.resolve('dayjs'),
       // '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
+      ...process.platform === 'win32' && isEnvDevelopment && {
+        // for debug some npm dep in windows
+        'react': require.resolve('react'),
+        // '@debank/common': path.resolve(__dirname, '../node_modules/@debank/common'),
+      }
     },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {

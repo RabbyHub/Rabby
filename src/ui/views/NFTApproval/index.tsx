@@ -19,6 +19,7 @@ import NFTList from './components/NFTList';
 import PopupSearch from './components/PopupSearch';
 import './style.less';
 import { getAmountText } from './utils';
+import { findChainByEnum } from '@/utils/chain';
 const { TabPane } = Tabs;
 
 const NFTApproval = () => {
@@ -67,7 +68,7 @@ const NFTApproval = () => {
     try {
       const data = await wallet.openapi.userNFTAuthorizedList(
         account.address,
-        CHAINS[chain]?.serverId
+        findChainByEnum(chain)?.serverId || ''
       );
       setData(data);
       setLoading(false);

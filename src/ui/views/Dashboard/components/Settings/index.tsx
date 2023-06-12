@@ -202,12 +202,12 @@ const ResetAccountModal = ({
       <div>
         <p className="reset-account-content mb-16">
           {t(
-            `This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain. `
+            'This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain. '
           )}
         </p>
         <p className="reset-account-content">
           {t(
-            `This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.`
+            'This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.'
           )}
         </p>
         <div className="flex justify-center mt-24 popup-footer">

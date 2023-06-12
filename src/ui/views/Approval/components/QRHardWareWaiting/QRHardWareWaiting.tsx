@@ -15,6 +15,7 @@ import { useHistory } from 'react-router-dom';
 import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
+import { findChainByEnum } from '@/utils/chain';
 
 enum QRHARDWARE_STATUS {
   SYNC,
@@ -147,7 +148,7 @@ const QRHardWareWaiting = ({ params }) => {
 
           stats.report('signTransaction', {
             type: account.brandName,
-            chainId: CHAINS[chain].serverId,
+            chainId: findChainByEnum(chain)?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
             preExecSuccess: explain
               ? explain?.calcSuccess && explain?.pre_exec.success

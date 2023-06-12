@@ -18,7 +18,7 @@ import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 import { useRabbySelector } from '@/ui/store';
-import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { DEX_SUPPORT_CHAINS } from '@/constant/dex-swap';
 import { CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
 

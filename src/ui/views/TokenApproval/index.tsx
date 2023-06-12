@@ -20,6 +20,7 @@ import { Loading } from './components/Loading';
 import PopupApprovalCard from './components/PopupApprovalCard';
 import PopupSearch from './components/PopupSearch';
 import './style.less';
+import { findChainByEnum } from '@/utils/chain';
 
 const TokenApproval = () => {
   const wallet = useWallet();
@@ -73,9 +74,10 @@ const TokenApproval = () => {
 
     setLoading(true);
     try {
+      const chainItem = findChainByEnum(chain);
       const list = await wallet.openapi.tokenAuthorizedList(
         account.address,
-        CHAINS[chain]?.serverId
+        chainItem!.serverId
       );
       setList(list);
       setLoading(false);
