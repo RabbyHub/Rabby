@@ -22,6 +22,9 @@ import {
   WrapTokenAction,
   UnWrapTokenAction,
   PushMultiSigAction,
+  CrossTokenAction,
+  CrossSwapAction,
+  RevokePermit2Action,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -44,10 +47,28 @@ export interface ParsedActionData {
     payToken: TokenItem;
     receiveToken: ReceiveTokenItem;
     minReceive: TokenItem;
-    slippageTolerance: number;
+    slippageTolerance: number | null;
     receiver: string;
     usdValueDiff: string | null;
     usdValuePercentage: number | null;
+    balanceChange: {
+      support: boolean;
+      success: boolean;
+    };
+  };
+  crossToken?: {
+    payToken: TokenItem;
+    receiveToken: ReceiveTokenItem;
+    receiver: string;
+    usdValueDiff: string;
+    usdValuePercentage: number;
+  };
+  crossSwapToken?: {
+    payToken: TokenItem;
+    receiveToken: ReceiveTokenItem;
+    receiver: string;
+    usdValueDiff: string;
+    usdValuePercentage: number;
   };
   send?: {
     to: string;
@@ -78,6 +99,10 @@ export interface ParsedActionData {
     collection: NFTCollection;
   };
   revokeToken?: {
+    spender: string;
+    token: TokenItem;
+  };
+  revokePermit2?: {
     spender: string;
     token: TokenItem;
   };
@@ -135,7 +160,8 @@ export const calcUSDValueChange = (pay: string, receive: string) => {
 export const parseAction = (
   data: ParseTxResponse['action'],
   balanceChange: ExplainTxResponse['balance_change'],
-  tx: Tx
+  tx: Tx,
+  preExecVersion: 'v0' | 'v1' | 'v2'
 ): ParsedActionData => {
   if (data?.type === 'swap_token') {
     const {
@@ -143,16 +169,21 @@ export const parseAction = (
       receive_token: receiveToken,
       receiver,
     } = data.data as SwapAction;
+    const balanceChangeSuccess = balanceChange.success;
+    const supportBalanceChange = preExecVersion !== 'v0';
     const actualReceiveToken = balanceChange.receive_token_list.find((token) =>
       isSameAddress(token.id, receiveToken.id)
     );
     const receiveTokenAmount = actualReceiveToken
       ? actualReceiveToken.amount
       : 0;
-    const slippageTolerance = calcSlippageTolerance(
-      actualReceiveToken ? actualReceiveToken.raw_amount || '0' : '0',
-      receiveToken.min_raw_amount || '0'
-    );
+    const slippageTolerance =
+      balanceChangeSuccess && supportBalanceChange
+        ? calcSlippageTolerance(
+            actualReceiveToken ? actualReceiveToken.raw_amount || '0' : '0',
+            receiveToken.min_raw_amount || '0'
+          )
+        : null;
     const receiveTokenUsdValue = new BigNumber(receiveTokenAmount).times(
       receiveToken.price
     );
@@ -160,15 +191,17 @@ export const parseAction = (
       payToken.price
     );
     const hasReceiver = !isSameAddress(receiver, tx.from);
-    const usdValueDiff = hasReceiver
-      ? null
-      : receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
-    const usdValuePercentage = hasReceiver
-      ? null
-      : calcUSDValueChange(
-          payTokenUsdValue.toFixed(),
-          receiveTokenUsdValue.toFixed()
-        );
+    const usdValueDiff =
+      hasReceiver || !balanceChangeSuccess || !supportBalanceChange
+        ? null
+        : receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
+    const usdValuePercentage =
+      hasReceiver || !balanceChangeSuccess || !supportBalanceChange
+        ? null
+        : calcUSDValueChange(
+            payTokenUsdValue.toFixed(),
+            receiveTokenUsdValue.toFixed()
+          );
     const minReceive = {
       ...receiveToken,
       amount: receiveToken.min_amount || 0,
@@ -182,6 +215,65 @@ export const parseAction = (
         },
         minReceive,
         slippageTolerance,
+        receiver,
+        usdValueDiff,
+        usdValuePercentage,
+        balanceChange: {
+          success: balanceChangeSuccess,
+          support: supportBalanceChange,
+        },
+      },
+    };
+  }
+  if (data?.type === 'cross_token') {
+    const {
+      pay_token: payToken,
+      receive_token: receiveToken,
+      receiver,
+    } = data.data as CrossTokenAction;
+    const receiveTokenUsdValue = new BigNumber(receiveToken.min_amount).times(
+      receiveToken.price
+    );
+    const payTokenUsdValue = new BigNumber(payToken.amount).times(
+      payToken.price
+    );
+    const usdValueDiff = receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
+    const usdValuePercentage = calcUSDValueChange(
+      payTokenUsdValue.toFixed(),
+      receiveTokenUsdValue.toFixed()
+    );
+    return {
+      crossToken: {
+        payToken,
+        receiveToken,
+        receiver,
+        usdValueDiff,
+        usdValuePercentage,
+      },
+    };
+  }
+  if (data?.type === 'cross_swap_token') {
+    const {
+      pay_token: payToken,
+      receive_token: receiveToken,
+      receiver,
+    } = data.data as CrossSwapAction;
+    const receiveTokenUsdValue = new BigNumber(receiveToken.min_raw_amount)
+      .div(receiveToken.decimals)
+      .times(receiveToken.price);
+    const payTokenUsdValue = new BigNumber(payToken.amount).times(
+      payToken.price
+    );
+    const usdValueDiff = receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
+    const usdValuePercentage = calcUSDValueChange(
+      payTokenUsdValue.toFixed(),
+      receiveTokenUsdValue.toFixed()
+    );
+
+    return {
+      crossSwapToken: {
+        payToken,
+        receiveToken,
         receiver,
         usdValueDiff,
         usdValuePercentage,
@@ -206,6 +298,15 @@ export const parseAction = (
     const { spender, token } = data.data as RevokeTokenApproveAction;
     return {
       revokeToken: {
+        spender,
+        token,
+      },
+    };
+  }
+  if (data?.type === 'permit2_revoke_token') {
+    const { spender, token } = data.data as RevokePermit2Action;
+    return {
+      revokePermit2: {
         spender,
         token,
       },
@@ -590,7 +691,7 @@ export const fetchActionRequiredData = async ({
     return {};
   }
   const queue = new PQueue();
-  if (actionData.swap) {
+  if (actionData.swap || actionData.crossToken || actionData.crossSwapToken) {
     const id = tx.to;
     const result: SwapRequireData = {
       id,
@@ -741,6 +842,16 @@ export const fetchActionRequiredData = async ({
   }
   if (actionData.approveToken) {
     const { token, spender } = actionData.approveToken;
+    return await fetchTokenApproveRequireData({
+      wallet,
+      chainId,
+      address,
+      token,
+      spender,
+    });
+  }
+  if (actionData.revokePermit2) {
+    const { token, spender } = actionData.revokePermit2;
     return await fetchTokenApproveRequireData({
       wallet,
       chainId,
@@ -976,6 +1087,54 @@ export const formatSecurityEngineCtx = ({
       },
     };
   }
+  if (actionData.crossToken) {
+    const data = requireData as SwapRequireData;
+    const {
+      receiver,
+      receiveToken,
+      usdValuePercentage,
+      usdValueDiff,
+    } = actionData.crossToken;
+    const { sender } = data;
+    const receiveTokenIsFake = receiveToken.is_verified === false;
+    const receiveTokenIsScam = receiveTokenIsFake
+      ? false
+      : !!receiveToken.is_suspicious;
+    return {
+      crossToken: {
+        receiveTokenIsScam,
+        receiveTokenIsFake,
+        receiver,
+        from: sender,
+        usdValuePercentage,
+        usdValueChange: Number(usdValueDiff),
+      },
+    };
+  }
+  if (actionData.crossSwapToken) {
+    const data = requireData as SwapRequireData;
+    const {
+      receiver,
+      receiveToken,
+      usdValuePercentage,
+      usdValueDiff,
+    } = actionData.crossSwapToken;
+    const { sender } = data;
+    const receiveTokenIsFake = receiveToken.is_verified === false;
+    const receiveTokenIsScam = receiveTokenIsFake
+      ? false
+      : !!receiveToken.is_suspicious;
+    return {
+      crossSwapToken: {
+        receiveTokenIsScam,
+        receiveTokenIsFake,
+        receiver,
+        from: sender,
+        usdValuePercentage,
+        usdValueChange: Number(usdValueDiff),
+      },
+    };
+  }
   if (actionData.send) {
     const data = requireData as SendRequireData;
     const { to } = actionData.send;
@@ -1148,6 +1307,12 @@ export const getActionTypeText = (data: ParsedActionData) => {
   if (data.swap) {
     return 'Swap Token';
   }
+  if (data.crossToken) {
+    return 'Cross Chain';
+  }
+  if (data.crossSwapToken) {
+    return 'Swap Token and Cross Chain';
+  }
   if (data.wrapToken) {
     return 'Wrap Token';
   }
@@ -1189,6 +1354,9 @@ export const getActionTypeText = (data: ParsedActionData) => {
   }
   if (data.contractCall) {
     return 'Contract Call';
+  }
+  if (data.revokePermit2) {
+    return 'Revoke Permit2 Token Approval';
   }
   return 'Unknown';
 };

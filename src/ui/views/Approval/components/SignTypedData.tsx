@@ -11,10 +11,8 @@ import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { SecurityCheckDecision } from 'background/service/openapi';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import SecurityCheck from './SecurityCheck';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
 import { Account } from '@/background/service/preference';
@@ -79,9 +77,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
-  const [forceProcess, setForceProcess] = useState(true);
   const securityLevel = useMemo(() => {
-    console.log('engineResults', engineResults);
     const enableResults = engineResults.filter((result) => {
       return result.enable && !currentTx.processedRules.includes(result.id);
     });
@@ -169,13 +165,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
 
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>(
-    isSignTypedDataV1 ? 'pending' : 'loading'
-  );
-
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
       const currentAccount = isGnosis
@@ -194,10 +183,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   if (error) {
     console.error('error', error);
   }
-
-  const handleForceProcessChange = (checked: boolean) => {
-    setForceProcess(checked);
-  };
 
   const checkWachMode = async () => {
     const currentAccount = isGnosis
@@ -260,14 +245,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const { activeApprovalPopup } = useCommonPopupView();
 
-  const handleAllow = async (doubleCheck = false) => {
-    if (
-      !doubleCheck &&
-      securityCheckStatus !== 'pass' &&
-      securityCheckStatus !== 'pending'
-    ) {
-      return;
-    }
+  const handleAllow = async () => {
     if (activeApprovalPopup()) {
       return;
     }
@@ -373,7 +351,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         actionData: data,
         requireData,
       });
-      console.log('ctx', ctx);
       const result = await executeEngine(ctx);
       setEngineResults(result);
     }
@@ -474,11 +451,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       </div>
 
       <footer className="approval-text__footer">
-        <SecurityCheck
-          status={securityCheckStatus}
-          value={forceProcess}
-          onChange={handleForceProcessChange}
-        />
         <FooterBar
           hasShadow={footerShowShadow}
           origin={params.session.origin}
@@ -487,13 +459,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onCancel={handleCancel}
           securityLevel={securityLevel}
           hasUnProcessSecurityResult={hasUnProcessSecurityResult}
-          onSubmit={() => handleAllow(forceProcess)}
+          onSubmit={() => handleAllow()}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
           disabledProcess={
             isLoading ||
             (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-            !forceProcess ||
             isWatch ||
             hasUnProcessSecurityResult
           }

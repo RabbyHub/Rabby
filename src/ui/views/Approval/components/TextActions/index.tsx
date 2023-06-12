@@ -1,29 +1,16 @@
 import { Result } from '@debank/rabby-security-engine';
-import { Chain } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import ViewRawModal from '../TxComponents/ViewRawModal';
-import {
-  ApproveTokenRequireData,
-  ContractRequireData,
-  MultiSigRequireData,
-  SwapTokenOrderRequireData,
-  TypedDataActionData,
-  TypedDataRequireData,
-  getActionTypeText,
-} from './utils';
+import { Tabs } from 'antd';
+import { TextActionData, getActionTypeText } from './utils';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
-import BuyNFT from './BuyNFT';
-import SellNFT from './SellNFT';
-import Permit from './Permit';
-import Permit2 from './Permit2';
-import ContractCall from './ContractCall';
-import SwapTokenOrder from './SwapTokenOrder';
-import SignMultisig from './SignMultisig';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import CreateKey from './CreateKey';
+import VerifyAddress from './VerifyAddress';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import clsx from 'clsx';
+import { Popup } from 'ui/component';
+
+const { TabPane } = Tabs;
 
 export const SignTitle = styled.div`
   display: flex;
@@ -169,17 +156,13 @@ const MessageWrapper = styled.div`
 
 const Actions = ({
   data,
-  requireData,
-  chain,
   engineResults,
   raw,
   message,
 }: {
-  data: TypedDataActionData | null;
-  requireData: TypedDataRequireData;
-  chain?: Chain;
+  data: TextActionData | null;
   engineResults: Result[];
-  raw: Record<string, any>;
+  raw: string;
   message: string;
 }) => {
   const actionName = useMemo(() => {
@@ -188,17 +171,26 @@ const Actions = ({
   }, [data]);
 
   const handleViewRawClick = () => {
-    ViewRawModal.open({
-      raw,
+    Popup.info({
+      closable: true,
+      height: 720,
+      content: (
+        <Tabs defaultActiveKey="raw">
+          {raw && (
+            <TabPane tab="DATA" key="raw">
+              {raw}
+            </TabPane>
+          )}
+        </Tabs>
+      ),
+      className: 'view-raw-detail',
     });
   };
 
   return (
     <>
       <SignTitle>
-        <div className="left relative">
-          Sign{chain ? ` ${chain.name}` : ''} Typed Data
-        </div>
+        <div className="left relative">Sign Text</div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
@@ -211,81 +203,16 @@ const Actions = ({
         <ActionWrapper>
           <div className="action-header">
             <div className="left">{actionName}</div>
-            <div className="right">
-              {data.contractCall ? (
-                <span className="flex items-center relative">
-                  Unknown action type{' '}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    title="This signature can't be decoded by Rabby, but it doesn't imply any risk"
-                    placement="top"
-                  >
-                    <IconQuestionMark className="icon icon-tip" />
-                  </TooltipWithMagnetArrow>
-                </span>
-              ) : (
-                'action type'
-              )}
-            </div>
+            <div className="right">action type</div>
           </div>
           <div className="container">
-            {data.permit && chain && (
-              <Permit
-                data={data.permit}
-                requireData={requireData as ApproveTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
+            {data.createKey && (
+              <CreateKey data={data.createKey} engineResults={engineResults} />
             )}
-            {data.permit2 && chain && (
-              <Permit2
-                data={data.permit2}
-                requireData={requireData as ApproveTokenRequireData}
-                chain={chain}
+            {data.verifyAddress && (
+              <VerifyAddress
+                data={data.verifyAddress}
                 engineResults={engineResults}
-              />
-            )}
-            {data.swapTokenOrder && chain && (
-              <SwapTokenOrder
-                data={data.swapTokenOrder}
-                requireData={requireData as SwapTokenOrderRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.buyNFT && chain && (
-              <BuyNFT
-                data={data.buyNFT}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.sellNFT && chain && (
-              <SellNFT
-                data={data.sellNFT}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.signMultiSig && (
-              <SignMultisig
-                data={data.signMultiSig}
-                requireData={requireData as MultiSigRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.contractCall && chain && (
-              <ContractCall
-                data={data.permit}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                raw={raw}
               />
             )}
           </div>

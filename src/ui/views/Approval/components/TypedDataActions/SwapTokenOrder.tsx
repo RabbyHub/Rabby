@@ -5,7 +5,6 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { SwapTokenOrderRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { isSameAddress } from '@/ui/utils';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -67,10 +66,6 @@ const Permit = ({
     });
     return map;
   }, [engineResults]);
-
-  const hasReceiver = useMemo(() => {
-    return !isSameAddress(receiver, requireData.sender);
-  }, [requireData, receiver]);
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);

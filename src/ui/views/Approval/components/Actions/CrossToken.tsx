@@ -40,7 +40,7 @@ const Swap = ({
   chain,
   engineResults,
 }: {
-  data: ParsedActionData['swap'];
+  data: ParsedActionData['crossToken'];
   requireData: SwapRequireData;
   chain: Chain;
   engineResults: Result[];
@@ -48,12 +48,9 @@ const Swap = ({
   const {
     payToken,
     receiveToken,
-    slippageTolerance,
     usdValueDiff,
     usdValuePercentage,
-    minReceive,
     receiver,
-    balanceChange,
   } = data!;
 
   const { rules, processedRules } = useRabbySelector((s) => ({
@@ -69,10 +66,6 @@ const Swap = ({
     });
     return map;
   }, [engineResults]);
-
-  const hasReceiver = useMemo(() => {
-    return !isSameAddress(receiver, requireData.sender);
-  }, [requireData, receiver]);
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
@@ -107,6 +100,9 @@ const Swap = ({
             />
             <ul className="desc-list">
               <li>
+                <Values.DisplayChain chainServerId={payToken.chain} />
+              </li>
+              <li>
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
                 )}{' '}
@@ -122,13 +118,9 @@ const Swap = ({
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
-                text={
-                  balanceChange.success && balanceChange.support
-                    ? `${formatAmount(
-                        receiveToken.amount
-                      )} ${ellipsisTokenSymbol(receiveToken.symbol)}`
-                    : 'Fail to load'
-                }
+                text={`${formatAmount(
+                  receiveToken.min_amount
+                )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}
@@ -139,125 +131,69 @@ const Swap = ({
                   />
                 }
               />
-              {engineResultMap['1008'] && (
+              {engineResultMap['1097'] && (
                 <SecurityLevelTagNoText
-                  enable={engineResultMap['1008'].enable}
+                  enable={engineResultMap['1097'].enable}
                   level={
-                    processedRules.includes('1008')
+                    processedRules.includes('1097')
                       ? 'proceed'
-                      : engineResultMap['1008'].level
+                      : engineResultMap['1097'].level
                   }
-                  onClick={() => handleClickRule('1008')}
+                  onClick={() => handleClickRule('1097')}
                 />
               )}
-              {engineResultMap['1009'] && (
+              {engineResultMap['1098'] && (
                 <SecurityLevelTagNoText
-                  enable={engineResultMap['1009'].enable}
+                  enable={engineResultMap['1098'].enable}
                   level={
-                    processedRules.includes('1009')
+                    processedRules.includes('1098')
                       ? 'proceed'
-                      : engineResultMap['1009'].level
+                      : engineResultMap['1098'].level
                   }
-                  onClick={() => handleClickRule('1009')}
+                  onClick={() => handleClickRule('1098')}
                 />
               )}
             </div>
             <ul className="desc-list">
-              {balanceChange.success && balanceChange.support && (
-                <>
-                  <li>
-                    {formatUsdValue(
-                      new BigNumber(receiveToken.amount)
-                        .times(receiveToken.price)
-                        .toFixed()
-                    )}{' '}
-                    @{formatUsdValue(receiveToken.price)}
-                  </li>
-                  <SecurityListItem
-                    engineResult={engineResultMap['1012']}
-                    id="1012"
-                    dangerText={
-                      <>
-                        Value diff{' '}
-                        <Values.Percentage value={usdValuePercentage!} /> (
-                        {formatUsdValue(usdValueDiff || '')})
-                      </>
-                    }
-                    warningText={
-                      <>
-                        Value diff{' '}
-                        <Values.Percentage value={usdValuePercentage!} /> (
-                        {formatUsdValue(usdValueDiff || '')})
-                      </>
-                    }
-                  />
-                </>
-              )}
-              {balanceChange.support && !balanceChange.success && (
-                <li>Transaction simulation failed</li>
-              )}
-              {!balanceChange.support && (
-                <li>Transaction simulation not supported on this chain</li>
-              )}
-            </ul>
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Minimum Received</Row>
-          <Row>
-            <div>
-              <LogoWithText
-                logo={minReceive.logo_url}
-                logoRadius="100%"
-                text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-                  minReceive.symbol
-                )}`}
-              />
-            </div>
-            <ul className="desc-list">
+              <li>
+                <Values.DisplayChain chainServerId={receiveToken.chain} />
+              </li>
               <li>
                 {formatUsdValue(
-                  new BigNumber(minReceive.amount)
-                    .times(minReceive.price)
+                  new BigNumber(receiveToken.min_amount)
+                    .times(receiveToken.price)
                     .toFixed()
                 )}{' '}
-                @{formatUsdValue(minReceive.price)}
+                @{formatUsdValue(receiveToken.price)}
               </li>
-              <li>
-                {slippageTolerance === null &&
-                  'Slippage tolerance fail to load'}
-                {slippageTolerance !== null &&
-                  `Slippage tolerance ${
-                    hasReceiver ? (
-                      '-'
-                    ) : (
-                      <Values.Percentage value={slippageTolerance} />
-                    )
-                  }`}
-                {engineResultMap['1011'] && (
-                  <SecurityLevelTagNoText
-                    enable={engineResultMap['1011'].enable}
-                    level={
-                      processedRules.includes('1011')
-                        ? 'proceed'
-                        : engineResultMap['1011'].level
-                    }
-                    onClick={() => handleClickRule('1011')}
-                  />
-                )}
-              </li>
+              <SecurityListItem
+                engineResult={engineResultMap['1105']}
+                id="1105"
+                dangerText={
+                  <>
+                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
+                    ({formatUsdValue(usdValueDiff || '')})
+                  </>
+                }
+                warningText={
+                  <>
+                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
+                    ({formatUsdValue(usdValueDiff || '')})
+                  </>
+                }
+              />
             </ul>
           </Row>
         </Col>
-        {engineResultMap['1069'] && (
+        {engineResultMap['1103'] && (
           <Col>
             <Row isTitle>Receiver</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
-                  engineResult={engineResultMap['1069']}
-                  id="1069"
+                  engineResult={engineResultMap['1103']}
+                  id="1103"
                   dangerText="Not your current address"
                 />
               </ul>

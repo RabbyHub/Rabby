@@ -32,7 +32,7 @@ const LogoWithText = ({
   className,
 }: {
   logo?: string;
-  text: string;
+  text: string | ReactNode;
   icon?: ReactNode;
   logoRadius?: string;
   logoSize?: number;

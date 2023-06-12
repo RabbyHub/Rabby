@@ -7,6 +7,7 @@ import { Chain } from 'background/service/openapi';
 import { MultiSigRequireData } from './utils';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { Result } from '@debank/rabby-security-engine';
+import { CHAINS } from 'consts';
 
 const Wrapper = styled.div``;
 
@@ -17,15 +18,31 @@ const PushMultiSig = ({
 }: {
   data: SignMultiSigActions;
   requireData: MultiSigRequireData;
-  chain: Chain;
+  chain?: Chain;
   engineResults: Result[];
 }) => {
   const multiSigInfo = useMemo(() => {
-    const contract = requireData.contract?.[chain.serverId];
-    if (contract) {
-      return contract.multisig;
+    console.log(requireData, chain);
+    if (!chain) {
+      for (const key in requireData?.contract) {
+        const contract = requireData.contract[key];
+        const c = Object.values(CHAINS).find((item) => item.serverId === key);
+        if (contract.multisig && c) {
+          return {
+            ...contract.multisig,
+            chain: c,
+          };
+        }
+      }
+    } else {
+      const contract = requireData.contract?.[chain.serverId];
+      if (contract) {
+        return { ...contract.multisig, chain };
+      }
     }
   }, [requireData, chain]);
+
+  console.log('multiSigInfo', multiSigInfo);
 
   return (
     <Wrapper>
@@ -34,7 +51,10 @@ const PushMultiSig = ({
           <Row isTitle>Multisig address</Row>
           <Row>
             <div>
-              <Values.Address address={data.multisig_id} chain={chain} />
+              <Values.Address
+                address={data.multisig_id}
+                chain={multiSigInfo?.chain}
+              />
               <ul className="desc-list">
                 <li>
                   <Values.AddressMemo address={data.multisig_id} />

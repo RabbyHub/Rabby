@@ -9,7 +9,10 @@ import styled from 'styled-components';
 import { Chain } from '@debank/common';
 import { SecurityEngineLevel } from 'consts';
 import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Result } from '@debank/rabby-security-engine';
 import { FallbackSiteLogo } from '@/ui/component';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -19,6 +22,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
   hasShadow?: boolean;
+  engineResults?: Result[];
 }
 
 const Wrapper = styled.section`
@@ -37,6 +41,7 @@ const Wrapper = styled.section`
     margin-bottom: 12px;
     display: flex;
     align-items: center;
+    position: relative;
     .origin {
       color: #333;
       flex: 1;
@@ -51,6 +56,9 @@ const Wrapper = styled.section`
       font-size: 12px;
       line-height: 14px;
       color: #707280;
+    }
+    .security-level-tag {
+      margin-top: -15px;
     }
     &::after {
       content: '';
@@ -129,12 +137,14 @@ export const FooterBar: React.FC<Props> = ({
   originLogo,
   gnosisAccount,
   securityLevel,
+  engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
 
   const displayOirigin = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
@@ -143,10 +153,37 @@ export const FooterBar: React.FC<Props> = ({
     return origin;
   }, [origin]);
 
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    console.log('rule', rule);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
   const init = async () => {
     const currentAccount =
       gnosisAccount || (await wallet.syncGetCurrentAccount());
     if (currentAccount) setAccount(currentAccount);
+    dispatch.securityEngine.init();
   };
 
   React.useEffect(() => {
@@ -177,6 +214,31 @@ export const FooterBar: React.FC<Props> = ({
             )}
             <span className="origin">{displayOirigin}</span>
             <span className="right">Request from</span>
+            {engineResultMap['1088'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1088'].enable}
+                level={
+                  processedRules.includes('1088')
+                    ? 'proceed'
+                    : engineResultMap['1088'].level
+                }
+                onClick={() => handleClickRule('1088')}
+                right="0px"
+                className="security-level-tag"
+              />
+            )}
+            {engineResultMap['1089'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1089'].enable}
+                level={
+                  processedRules.includes('1089')
+                    ? 'proceed'
+                    : engineResultMap['1089'].level
+                }
+                onClick={() => handleClickRule('1089')}
+                className="security-level-tag"
+              />
+            )}
           </div>
         )}
         <AccountInfo chain={props.chain} account={account} />

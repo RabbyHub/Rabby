@@ -5,6 +5,7 @@ import ClipboardJS from 'clipboard';
 import { Chain } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
+import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
@@ -284,10 +285,11 @@ const Address = ({
   iconWidth = '12px',
 }: {
   address: string;
-  chain: Chain;
+  chain?: Chain;
   iconWidth?: string;
 }) => {
   const handleClickContractId = () => {
+    if (!chain) return;
     openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
   };
   const handleCopyContractAddress = () => {
@@ -317,13 +319,15 @@ const Address = ({
   return (
     <AddressWrapper className="value-address">
       <span title={address}>{ellipsis(address)}</span>
-      <img
-        onClick={handleClickContractId}
-        src={IconExternal}
-        width={iconWidth}
-        height={iconWidth}
-        className="ml-6 cursor-pointer"
-      />
+      {chain && (
+        <img
+          onClick={handleClickContractId}
+          src={IconExternal}
+          width={iconWidth}
+          height={iconWidth}
+          className="ml-6 cursor-pointer"
+        />
+      )}
       <img
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
@@ -343,6 +347,20 @@ const Text = ({ children }: { children: ReactNode }) => {
   );
 };
 
+const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
+  const chain = useMemo(() => {
+    return Object.values(CHAINS).find(
+      (item) => item.serverId === chainServerId
+    );
+  }, [chainServerId]);
+  if (!chain) return null;
+  return (
+    <span className="flex items-center">
+      on {chain.name} chain <img src={chain.logo} className="ml-4 w-14 h-14" />
+    </span>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -356,4 +374,5 @@ export {
   TokenLabel,
   Address,
   Text,
+  DisplayChain,
 };

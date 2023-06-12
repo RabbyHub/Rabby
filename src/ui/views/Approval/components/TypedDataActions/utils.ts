@@ -12,11 +12,10 @@ import {
 } from '@debank/rabby-api/dist/types';
 import { ContextActionData } from '@debank/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
-import { WalletControllerType, getTimeSpan, isSameAddress } from '@/ui/utils';
+import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
   waitQueueFinished,
   getProtocol,
-  calcSlippageTolerance,
   calcUSDValueChange,
 } from '../Actions/utils';
 import { CHAINS } from 'consts';
@@ -328,6 +327,7 @@ export const fetchRequireData = async (
     if (desc.contract) {
       result.contract = desc.contract;
     }
+    return result;
   }
   if (actionData.swapTokenOrder) {
     if (chain && actionData.contractId) {
