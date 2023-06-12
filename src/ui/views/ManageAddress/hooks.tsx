@@ -5,13 +5,14 @@ import { useWallet } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { groupBy, omit } from 'lodash';
 import { nanoid } from 'nanoid';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 
 export type DisplayedAccount = IDisplayedAccountWithBalance & {
   hdPathBasePublicKey?: string;
+  hdPathType?: string;
 };
 
 export type TypeKeyringGroup = {
@@ -22,6 +23,7 @@ export type TypeKeyringGroup = {
   brandName?: string;
   publicKey?: string;
   hdPathBasePublicKey?: string;
+  hdPathType?: string;
 };
 
 export const getWalletTypeName = (s: string) => {
@@ -42,6 +44,7 @@ export const getTypeGroup = (arr: DisplayedAccount[]) => {
     brandName: arr?.[0]?.brandName,
     publicKey: arr?.[0]?.publicKey,
     hdPathBasePublicKey: arr?.[0]?.hdPathBasePublicKey,
+    hdPathType: arr?.[0]?.hdPathType,
   } as TypeKeyringGroup;
 };
 
@@ -147,7 +150,11 @@ export const useWalletTypeData = () => {
             null,
             e.address
           );
-          return { ...e, hdPathBasePublicKey: res.hdPathBasePublicKey };
+          return {
+            ...e,
+            hdPathBasePublicKey: res.hdPathBasePublicKey,
+            hdPathType: res.hdPathType,
+          };
         } catch (error) {
           return { ...e, hdPathBasePublicKey: nanoid() };
         }
@@ -162,7 +169,7 @@ export const useWalletTypeData = () => {
         ...getTypeGroup(item),
         name:
           getWalletTypeName(item[0].brandName) +
-          (arr.length ? ` ${index + 1}` : ''),
+          (arr.length > 1 ? ` ${index + 1}` : ''),
       })) as TypeKeyringGroup[];
 
     const v = (Object.values({
@@ -224,7 +231,7 @@ export const useBackUp = () => {
   const history = useHistory();
 
   const handleBackup = useCallback(
-    async (publicKey: string) => {
+    async (publicKey: string, index) => {
       await AuthenticationModalPromise({
         confirmText: 'Confirm',
         cancelText: 'Cancel',
@@ -232,6 +239,9 @@ export const useBackUp = () => {
 
         async onFinished() {
           const data = await wallet.getMnemonicFromPublicKey(publicKey);
+          history.replace({
+            search: `?index=${index}`,
+          });
           history.push({
             pathname: '/settings/address-backup/mneonics',
             state: {

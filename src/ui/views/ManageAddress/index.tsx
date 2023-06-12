@@ -4,12 +4,12 @@ import { useRabbyDispatch } from '@/ui/store';
 import React, { useCallback, useState } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { ReactComponent as IconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
-import { ReactComponent as IconDelete } from '@/ui/assets/address/delete.svg';
+import { ReactComponent as IconDelete } from '@/ui/assets/address/delete-current-color.svg';
 import { ReactComponent as IconPlus } from '@/ui/assets/address/plus.svg';
 
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { AddressDeleteModal } from './AddressDeleteModal';
 import { Button, message } from 'antd';
@@ -18,6 +18,7 @@ import { GroupItem } from './GroupItem';
 import { useBackUp, useWalletTypeData } from './hooks';
 import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
+import { LedgerHDPathTypeLabel } from '@/utils/ledger';
 
 const ManageAddress = () => {
   const history = useHistory();
@@ -26,7 +27,12 @@ const ManageAddress = () => {
 
   const dispatch = useRabbyDispatch();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const location = useLocation();
+
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return Number(searchParams.get('index') || 0);
+  });
 
   const { accountGroup, highlightedAddresses } = useWalletTypeData();
 
@@ -36,6 +42,9 @@ const ManageAddress = () => {
 
   const isSeedPhrase =
     TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'];
+
+  const isLedger =
+    TypedWalletObj?.[activeIndex]?.type === KEYRING_CLASS.HARDWARE.LEDGER;
 
   const backup = useBackUp();
 
@@ -215,7 +224,7 @@ const ManageAddress = () => {
   return (
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
       <div className="h-full flex flex-col">
-        <div className="px-20">
+        <div className="px-20 mb-8">
           <PageHeader className="pt-[24px]">Manage Address</PageHeader>
           <div className="rounded-[6px] bg-white flex flex-wrap p-[3px]">
             {typedWalletIdList?.map((id, i) => {
@@ -239,7 +248,7 @@ const ManageAddress = () => {
             })}
           </div>
           {TypedWalletObj?.[activeIndex] ? (
-            <div className="flex items-center justify-between mt-20 mb-8">
+            <div className="flex items-center justify-between mt-20 ">
               <div>{TypedWalletObj?.[activeIndex]?.name}</div>
               <div className="flex items-center gap-16">
                 {isSeedPhrase && (
@@ -247,13 +256,16 @@ const ManageAddress = () => {
                     className="cursor-pointer"
                     onClick={() => {
                       if (TypedWalletObj?.[activeIndex]?.publicKey) {
-                        backup(TypedWalletObj[activeIndex].publicKey!);
+                        backup(
+                          TypedWalletObj[activeIndex].publicKey!,
+                          currentIndex
+                        );
                       }
                     }}
                   />
                 )}
                 <IconDelete
-                  className="cursor-pointer"
+                  className="cursor-pointer text-gray-content hover:text-red-forbidden"
                   onClick={() => {
                     if (
                       TypedWalletObj?.[activeIndex]?.type ===
@@ -268,6 +280,13 @@ const ManageAddress = () => {
               </div>
             </div>
           ) : null}
+
+          {!!isLedger && !!TypedWalletObj?.[activeIndex]?.hdPathType && (
+            <div className="text-gray-content text-12 mb-4">
+              HD path:{' '}
+              {LedgerHDPathTypeLabel[TypedWalletObj[activeIndex].hdPathType!]}
+            </div>
+          )}
         </div>
 
         <AccountList

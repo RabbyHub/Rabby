@@ -30,19 +30,17 @@ export const SeedPhraseDeleteModal = ({
       height={224}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col ">
         {list.map((item) => {
           return (
             <Field
               key={item.title}
               leftIcon={null}
-              rightIcon={
-                <img src={IconArrowRight} className="icon icon-arrow-right" />
-              }
+              rightIcon={<img src={IconArrowRight} className="w-16 h-16" />}
               onClick={() => {
                 onSubmit(item.deleteSeedPhrase);
               }}
-              className="bg-gray-bg2"
+              className="bg-gray-bg2 border border-transparent hover:border-blue-light hover:bg-blue-light hover:bg-opacity-20"
             >
               {item.title}
             </Field>
