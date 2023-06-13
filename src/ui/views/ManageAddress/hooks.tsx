@@ -102,8 +102,6 @@ const getWalletScore = (s: TypeKeyringGroup[]) => {
   return sortScore[s?.[0]?.brandName || s?.[0]?.type] || DEFAULT_SCORE;
 };
 
-console.log('sortScore', sortScore);
-
 export const useWalletTypeData = () => {
   const wallet = useWallet();
   const {
