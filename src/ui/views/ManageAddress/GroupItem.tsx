@@ -1,4 +1,4 @@
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import clsx from 'clsx';
@@ -49,7 +49,13 @@ export const GroupItem = ({
       )}
     >
       <div className="relative flex items-center justify-center">
-        <img src={addressTypeIcon} className="rounded-full w-24 h-24" />
+        <img
+          src={addressTypeIcon}
+          className={clsx(
+            'w-24 h-24',
+            type !== KEYRING_CLASS.MNEMONIC && 'rounded-full'
+          )}
+        />
         <div className="absolute -top-6 -right-6 text-12 text-gray-content bg-gray-divider border-white h-14 px-[4px] border-width-[0.5px] rounded-[90px]">
           {count}
         </div>
