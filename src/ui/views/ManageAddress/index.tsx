@@ -307,7 +307,7 @@ const ManageAddress = () => {
 
           {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
           !TypedWalletObj?.[activeIndex]?.list.length ? (
-            <div className="flex-1 flex flex-col items-center justify-around">
+            <div className="flex-1 flex flex-col items-center justify-center gap-[70px] min-h-[430px]">
               <Empty
                 desc={
                   <div className="text-gray-content text-14 max-w-[352px] mt-12">
@@ -319,7 +319,7 @@ const ManageAddress = () => {
               <div>
                 <Button
                   type="primary"
-                  className="flex items-center gap-4"
+                  className="w-[140px] h-[36px] rounder-[4px] flex items-center justify-center gap-4 text-13 font-medium"
                   icon={<IconPlus />}
                   onClick={handleAddSeedPhraseAddress}
                 >
@@ -352,6 +352,7 @@ const ManageAddress = () => {
             setSeedPhraseDeleteOpen(false);
           }}
           onSubmit={handleOpenDeleteSeedPhraseModal}
+          emptyAddress={TypedWalletObj?.[activeIndex]?.list.length === 0}
         />
       </div>
     </div>
