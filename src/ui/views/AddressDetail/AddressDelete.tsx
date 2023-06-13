@@ -32,7 +32,12 @@ export const AddressDelete = ({
   const history = useHistory();
 
   const handleDeleteAddress = async () => {
-    await wallet.removeAddress(address, type, brandName);
+    await wallet.removeAddress(
+      address,
+      type,
+      brandName,
+      type === KEYRING_TYPE.HdKeyring ? false : true
+    );
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('Deleted'),
