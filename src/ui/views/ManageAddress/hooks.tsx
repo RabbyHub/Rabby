@@ -3,6 +3,7 @@ import {
   KEYRING_TYPE,
   WALLET_BRAND_CATEGORY,
   WALLET_BRAND_CONTENT,
+  WALLET_BRAND_TYPES,
   WALLET_SORT_SCORE,
 } from '@/constant';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
@@ -39,6 +40,11 @@ export const getWalletTypeName = (s: string) => {
   if (s === KEYRING_TYPE['HdKeyring']) {
     return 'Seed Phrase';
   }
+
+  if (WALLET_BRAND_CONTENT[s]) {
+    return WALLET_BRAND_CONTENT[s].name;
+  }
+
   return s;
 };
 
@@ -65,8 +71,8 @@ const wallets = groupBy(brandWallet, 'category');
 
 const sortMapping = {
   [WALLET_BRAND_CATEGORY.HARDWARE]: 10 ** 2,
-  [WALLET_BRAND_CATEGORY.INSTITUTIONAL]: 10 ** 4,
-  [WALLET_BRAND_CATEGORY.MOBILE]: 10 ** 6,
+  [WALLET_BRAND_CATEGORY.MOBILE]: 10 ** 4,
+  [WALLET_BRAND_CATEGORY.INSTITUTIONAL]: 10 ** 6,
 };
 
 const DEFAULT_SCORE = 10 ** 8;
@@ -83,8 +89,20 @@ const sortScore = [
   {
     [KEYRING_CLASS.MNEMONIC]: 1,
     [KEYRING_CLASS.PRIVATE_KEY]: 2,
+    [KEYRING_CLASS.HARDWARE.LEDGER]: 3,
+    [KEYRING_CLASS.HARDWARE.TREZOR]: 4,
+    [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 5,
+    [KEYRING_CLASS.HARDWARE.ONEKEY]: 6,
+    [KEYRING_CLASS.HARDWARE.KEYSTONE]: 7,
+    [KEYRING_CLASS.HARDWARE.BITBOX02]: 8,
   }
 );
+
+const getWalletScore = (s: TypeKeyringGroup[]) => {
+  return sortScore[s?.[0]?.brandName || s?.[0]?.type] || DEFAULT_SCORE;
+};
+
+console.log('sortScore', sortScore);
 
 export const useWalletTypeData = () => {
   const wallet = useWallet();
@@ -206,11 +224,9 @@ export const useWalletTypeData = () => {
 
     v.push(hdKeyRingList, ledgerList);
 
-    v.sort(
-      (a, b) =>
-        (sortScore[a[0]?.brandName || a[0].type] ?? DEFAULT_SCORE) -
-        (sortScore[b[0]?.brandName || b[0].type] ?? DEFAULT_SCORE)
-    );
+    v.sort((a, b) => getWalletScore(a) - getWalletScore(b));
+
+    console.log('v', v);
 
     if (watchSortedAccountsList.length) {
       v.push([
@@ -226,6 +242,7 @@ export const useWalletTypeData = () => {
 
     if (list.length && sortedRef.current === false) {
       sortedRef.current = true;
+      console.log('list', list);
       sortIdList.current = list.map(
         (e) => e.type + e.brandName + e.hdPathBasePublicKey + e.publicKey
       );
@@ -239,7 +256,7 @@ export const useWalletTypeData = () => {
     }, {} as Record<string, typeof list[number]>);
 
     sortIdList.current = sortIdList.current.filter((e) => !!result[e]);
-
+    console.log('sortIdList', list);
     return [result, sortIdList.current] as const;
   }, [sortedAccountsList, watchSortedAccountsList, wallet]);
 
