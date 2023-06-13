@@ -15,10 +15,11 @@ import clsx from 'clsx';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/new-address.svg';
 import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
 import { ReactComponent as IconLoading } from '@/ui/assets/address/loading.svg';
+import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
+
 import { groupBy } from 'lodash';
-import styled from 'styled-components';
 import { KEYRING_CLASS } from '@/constant';
-import { Button, Tooltip, message } from 'antd';
+import { Tooltip } from 'antd';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
@@ -130,6 +131,10 @@ const AddressManagement = () => {
     history.push('/add-address');
   };
 
+  const gotoManageAddress = () => {
+    history.push('/settings/address');
+  };
+
   const switchAccount = async (account: typeof sortedAccountsList[number]) => {
     await dispatch.account.changeAccountAsync(account);
     history.push('/dashboard');
@@ -209,6 +214,13 @@ const AddressManagement = () => {
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
         {enableSwitch ? 'Current Address' : t('Address Management')}
+        <div className="absolute top-24 right-[42px]">
+          <IconAddAddress
+            viewBox="0 0 20 20"
+            className={clsx('text-gray-title w-[20px] h-[20px] cursor-pointer')}
+            onClick={gotoAddAddress}
+          />
+        </div>
         <Tooltip
           title="Update balance data"
           overlayClassName="rectangle"
@@ -278,7 +290,16 @@ const AddressManagement = () => {
               )}
             </AddressItem>
           </div>
-          <SwitchTips>Switch Address</SwitchTips>
+          <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
+            <div>Switch Address</div>
+            <div
+              className="flex items-center cursor-pointer"
+              onClick={gotoManageAddress}
+            >
+              <span>Manage Address</span>
+              <IconRight />
+            </div>
+          </div>
         </>
       )}
       {noAccount ? (
@@ -299,44 +320,8 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <div className="footer">
-        <Button type="primary" onClick={gotoAddAddress}>
-          <IconAddAddress />
-          New Address
-        </Button>
-      </div>
     </div>
   );
 };
-
-const SwitchTips = styled.div`
-  width: 211px;
-  height: 14px;
-  position: relative;
-  margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 12px;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
-  text-align: center;
-  color: #b4bdcc;
-  &::before,
-  &::after {
-    content: '';
-    width: 52px;
-    height: 0px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    border-bottom: 1px solid #e5e9ef;
-  }
-  &::before {
-    left: 0;
-  }
-  &::after {
-    right: 0;
-  }
-`;
 
 export default AddressManagement;

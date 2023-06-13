@@ -1192,12 +1192,13 @@ class LedgerBridgeKeyring extends EventEmitter {
   getAccountInfo(address: string) {
     const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
     if (detail) {
-      const { hdPath, hdPathType } = detail;
+      const { hdPath, hdPathType, hdPathBasePublicKey } = detail;
       return {
         address,
         index: this.getIndexFromPath(hdPath, hdPathType) + 1,
         balance: null,
         hdPathType,
+        hdPathBasePublicKey,
       };
     }
   }
