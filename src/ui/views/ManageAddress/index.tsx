@@ -307,7 +307,7 @@ const ManageAddress = () => {
 
           {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
           !TypedWalletObj?.[activeIndex]?.list.length ? (
-            <div className="flex-1 flex flex-col items-center justify-center gap-[70px] min-h-[430px]">
+            <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
               <Empty
                 desc={
                   <div className="text-gray-content text-14 max-w-[352px] mt-12">
