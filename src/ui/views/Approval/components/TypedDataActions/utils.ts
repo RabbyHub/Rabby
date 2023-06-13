@@ -9,6 +9,8 @@ import {
   Permit2Action,
   TokenItem,
   SwapTokenOrderAction,
+  CreateKeyAction,
+  VerifyAddressAction,
 } from '@debank/rabby-api/dist/types';
 import { ContextActionData } from '@debank/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
@@ -45,6 +47,8 @@ export interface TypedDataActionData {
     usdValueDiff: string;
     usdValuePercentage: number;
   };
+  createKey?: CreateKeyAction;
+  verifyAddress?: VerifyAddressAction;
   contractCall?: object;
 }
 
@@ -124,6 +128,12 @@ export const parseAction = (
       };
       return result;
     }
+    case 'create_key':
+      result.createKey = data.action.data as CreateKeyAction;
+      return result;
+    case 'verify_address':
+      result.verifyAddress = data.action.data as VerifyAddressAction;
+      return result;
     default:
       break;
   }
@@ -380,6 +390,12 @@ export const getActionTypeText = (data: TypedDataActionData) => {
   if (data.signMultiSig) {
     return 'Confirm transaction';
   }
+  if (data.createKey) {
+    return 'Create Key';
+  }
+  if (data.verifyAddress) {
+    return 'Verify Address';
+  }
   if (data.contractCall) {
     return 'Contract call';
   }
@@ -463,6 +479,22 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.swapTokenOrder.receiver,
         from: actionData.sender,
         usdValuePercentage: actionData.swapTokenOrder.usdValuePercentage,
+      },
+    };
+  }
+  if (actionData?.createKey) {
+    return {
+      createKey: {
+        allowOrigins: actionData.createKey.allow_origins,
+        origin,
+      },
+    };
+  }
+  if (actionData?.verifyAddress) {
+    return {
+      verifyAddress: {
+        allowOrigins: actionData.verifyAddress.allow_origins,
+        origin,
       },
     };
   }

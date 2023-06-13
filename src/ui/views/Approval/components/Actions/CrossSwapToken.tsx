@@ -11,7 +11,6 @@ import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
@@ -66,10 +65,6 @@ const CrossSwapToken = ({
     });
     return map;
   }, [engineResults]);
-
-  const hasReceiver = useMemo(() => {
-    return !isSameAddress(receiver, requireData.sender);
-  }, [requireData, receiver]);
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
@@ -164,7 +159,7 @@ const CrossSwapToken = ({
               </li>
               <li>
                 {formatUsdValue(
-                  new BigNumber(receiveToken.amount)
+                  new BigNumber(receiveToken.min_amount)
                     .times(receiveToken.price)
                     .toFixed()
                 )}{' '}

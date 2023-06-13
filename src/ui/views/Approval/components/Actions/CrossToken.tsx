@@ -112,7 +112,7 @@ const Swap = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive Token</Row>
+          <Row isTitle>Minimum receive</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText

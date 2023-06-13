@@ -20,6 +20,8 @@ import Permit2 from './Permit2';
 import ContractCall from './ContractCall';
 import SwapTokenOrder from './SwapTokenOrder';
 import SignMultisig from './SignMultisig';
+import CreateKey from '../TextActions/CreateKey';
+import VerifyAddress from '../TextActions/VerifyAddress';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
@@ -276,6 +278,15 @@ const Actions = ({
                 data={data.signMultiSig}
                 requireData={requireData as MultiSigRequireData}
                 chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.createKey && (
+              <CreateKey data={data.createKey} engineResults={engineResults} />
+            )}
+            {data.verifyAddress && (
+              <VerifyAddress
+                data={data.verifyAddress}
                 engineResults={engineResults}
               />
             )}
