@@ -249,7 +249,9 @@ const ManageAddress = () => {
           </div>
           {TypedWalletObj?.[activeIndex] ? (
             <div className="flex items-center justify-between mt-20 ">
-              <div>{TypedWalletObj?.[activeIndex]?.name}</div>
+              <div className="text-20 font-medium">
+                {TypedWalletObj?.[activeIndex]?.name}
+              </div>
               <div className="flex items-center gap-16">
                 {isSeedPhrase && (
                   <IconShowSeedPhrase
