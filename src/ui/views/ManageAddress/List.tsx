@@ -19,6 +19,7 @@ export const AccountList = ({
   list,
   highlightedAddresses = [],
   handleOpenDeleteModal,
+  setIndex,
 }: {
   list?: DisplayedAccount[];
   highlightedAddresses?: IHighlightedAddress[];
@@ -26,6 +27,7 @@ export const AccountList = ({
     list: IDisplayedAccountWithBalance[],
     deleteGroup?: boolean
   ) => void;
+  setIndex: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const history = useHistory();
 
@@ -41,29 +43,28 @@ export const AccountList = ({
     );
 
     const onDelete = React.useMemo(() => {
-      if (account.type === KEYRING_TYPE['HdKeyring']) {
-        return async () => {
-          await dispatch.addressManagement.removeAddress([
-            account.address,
-            account.type,
-            account.brandName,
-            false,
-          ]);
-          message.success({
-            icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: 'Deleted',
-            duration: 0.5,
-          });
-        };
-      }
       if (account.type === KEYRING_TYPE['SimpleKeyring']) {
         return () => {
           handleOpenDeleteModal([account], false);
         };
       }
-
-      return undefined;
-    }, [account, KEYRING_TYPE['HdKeyring']]);
+      return async () => {
+        await dispatch.addressManagement.removeAddress([
+          account.address,
+          account.type,
+          account.brandName,
+          account.type !== KEYRING_TYPE['HdKeyring'],
+        ]);
+        if (data.length === 1 && account.type !== KEYRING_TYPE['HdKeyring']) {
+          setIndex((e) => e - 1);
+        }
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: 'Deleted',
+          duration: 0.5,
+        });
+      };
+    }, [account, KEYRING_TYPE['HdKeyring'], data.length, setIndex]);
 
     return (
       <div className="address-wrap px-[20px]" style={style}>

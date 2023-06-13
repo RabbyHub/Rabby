@@ -226,8 +226,6 @@ export const useWalletTypeData = () => {
 
     v.sort((a, b) => getWalletScore(a) - getWalletScore(b));
 
-    console.log('v', v);
-
     if (watchSortedAccountsList.length) {
       v.push([
         {
@@ -242,7 +240,6 @@ export const useWalletTypeData = () => {
 
     if (list.length && sortedRef.current === false) {
       sortedRef.current = true;
-      console.log('list', list);
       sortIdList.current = list.map(
         (e) => e.type + e.brandName + e.hdPathBasePublicKey + e.publicKey
       );
@@ -256,7 +253,6 @@ export const useWalletTypeData = () => {
     }, {} as Record<string, typeof list[number]>);
 
     sortIdList.current = sortIdList.current.filter((e) => !!result[e]);
-    console.log('sortIdList', list);
     return [result, sortIdList.current] as const;
   }, [sortedAccountsList, watchSortedAccountsList, wallet]);
 

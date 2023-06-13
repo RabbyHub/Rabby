@@ -228,7 +228,7 @@ const ManageAddress = () => {
           <PageHeader className="pt-[24px]">Manage Address</PageHeader>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 flex flex-col overflow-y-auto">
           <div className="px-20 mb-8">
             <div className="rounded-[6px] bg-white flex flex-wrap p-[3px]">
               {typedWalletIdList?.map((id, i) => {
@@ -302,9 +302,10 @@ const ManageAddress = () => {
             handleOpenDeleteModal={handleOpenDeleteModal}
             list={TypedWalletObj?.[activeIndex]?.list}
             highlightedAddresses={highlightedAddresses}
+            setIndex={setCurrentIndex}
           />
 
-          {TypedWalletObj?.[activeIndex].type === KEYRING_TYPE['HdKeyring'] &&
+          {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
           !TypedWalletObj?.[activeIndex]?.list.length ? (
             <div className="flex-1 flex flex-col items-center justify-around">
               <Empty
