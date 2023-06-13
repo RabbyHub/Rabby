@@ -127,7 +127,12 @@ export const AccountList: React.FC<Props> = ({
         });
       } else {
         await createTask(() =>
-          wallet.removeAddress(account.address, keyring, undefined, keyring !== KEYRING_CLASS.MNEMONIC)
+          wallet.removeAddress(
+            account.address,
+            keyring,
+            undefined,
+            keyring !== KEYRING_CLASS.MNEMONIC
+          )
         );
         removeCurrentAccount(account.address);
         message.success({
