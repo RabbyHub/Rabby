@@ -19,7 +19,7 @@ export const AccountList = ({
   list,
   highlightedAddresses = [],
   handleOpenDeleteModal,
-  setIndex,
+  updateIndex,
 }: {
   list?: DisplayedAccount[];
   highlightedAddresses?: IHighlightedAddress[];
@@ -27,7 +27,7 @@ export const AccountList = ({
     list: IDisplayedAccountWithBalance[],
     deleteGroup?: boolean
   ) => void;
-  setIndex: React.Dispatch<React.SetStateAction<number>>;
+  updateIndex: (b: boolean) => void;
 }) => {
   const history = useHistory();
 
@@ -56,7 +56,9 @@ export const AccountList = ({
           account.type !== KEYRING_TYPE['HdKeyring'],
         ]);
         if (data.length === 1 && account.type !== KEYRING_TYPE['HdKeyring']) {
-          setIndex((e) => e - 1);
+          updateIndex(
+            data.length === 1 && account.type !== KEYRING_TYPE['HdKeyring']
+          );
         }
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
@@ -64,7 +66,7 @@ export const AccountList = ({
           duration: 0.5,
         });
       };
-    }, [account, KEYRING_TYPE['HdKeyring'], data.length, setIndex]);
+    }, [account, KEYRING_TYPE['HdKeyring'], data.length, updateIndex]);
 
     return (
       <div className="address-wrap px-[20px]" style={style}>

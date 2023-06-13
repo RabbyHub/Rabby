@@ -302,7 +302,7 @@ const ManageAddress = () => {
             handleOpenDeleteModal={handleOpenDeleteModal}
             list={TypedWalletObj?.[activeIndex]?.list}
             highlightedAddresses={highlightedAddresses}
-            setIndex={setCurrentIndex}
+            updateIndex={updateInfoAndSetCurrentIndex}
           />
 
           {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
