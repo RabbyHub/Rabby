@@ -66,7 +66,7 @@ export const AccountList = ({
     }, [account, KEYRING_TYPE['HdKeyring']]);
 
     return (
-      <div className="address-wrap-with-padding px-[20px]" style={style}>
+      <div className="address-wrap px-[20px]" style={style}>
         <AddressItem
           balance={account.balance}
           address={account.address}
@@ -114,15 +114,10 @@ export const AccountList = ({
     return null;
   }
   return (
-    <VList
-      height={450}
-      width="100%"
-      itemData={list}
-      itemCount={list.length}
-      itemSize={() => 64}
-      className="w-auto"
-    >
-      {Row}
-    </VList>
+    <div>
+      {list.map((item, index) => (
+        <Row data={list} index={index} key={item.address} />
+      ))}
+    </div>
   );
 };

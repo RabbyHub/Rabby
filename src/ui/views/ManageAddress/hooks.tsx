@@ -1,4 +1,10 @@
-import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import {
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  WALLET_BRAND_CATEGORY,
+  WALLET_BRAND_CONTENT,
+  WALLET_SORT_SCORE,
+} from '@/constant';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
@@ -47,6 +53,38 @@ export const getTypeGroup = (arr: DisplayedAccount[]) => {
     hdPathType: arr?.[0]?.hdPathType,
   } as TypeKeyringGroup;
 };
+
+const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
+
+const brandWallet = Object.values(WALLET_BRAND_CONTENT)
+  .filter((e) => !e.hidden)
+  .filter(Boolean)
+  .sort((a, b) => getSortNum(a.brand) - getSortNum(b.brand));
+
+const wallets = groupBy(brandWallet, 'category');
+
+const sortMapping = {
+  [WALLET_BRAND_CATEGORY.HARDWARE]: 10 ** 2,
+  [WALLET_BRAND_CATEGORY.INSTITUTIONAL]: 10 ** 4,
+  [WALLET_BRAND_CATEGORY.MOBILE]: 10 ** 6,
+};
+
+const DEFAULT_SCORE = 10 ** 8;
+
+const sortScore = [
+  ...wallets[WALLET_BRAND_CATEGORY.HARDWARE],
+  ...wallets[WALLET_BRAND_CATEGORY.INSTITUTIONAL],
+  ...wallets[WALLET_BRAND_CATEGORY.MOBILE],
+].reduce(
+  (pre, cur, index) => {
+    pre[cur.brand] = sortMapping[cur.category] + index;
+    return pre;
+  },
+  {
+    [KEYRING_CLASS.MNEMONIC]: 1,
+    [KEYRING_CLASS.PRIVATE_KEY]: 2,
+  }
+);
 
 export const useWalletTypeData = () => {
   const wallet = useWallet();
@@ -105,13 +143,8 @@ export const useWalletTypeData = () => {
       (a) => a.publicKey
     );
 
-    const notEmptyHdKeyringList = Object.values(hdKeyringGroup).map(
-      (item, index, arr) => ({
-        ...getTypeGroup(item),
-        name:
-          getWalletTypeName(item[0].brandName) +
-          (arr.length > 1 ? ` ${index + 1}` : ''),
-      })
+    const notEmptyHdKeyringList = Object.values(hdKeyringGroup).map((item) =>
+      getTypeGroup(item)
     ) as TypeKeyringGroup[];
 
     const allClassAccounts = await wallet.getAllClassAccounts();
@@ -122,14 +155,10 @@ export const useWalletTypeData = () => {
         (item) =>
           item.accounts.length === 0 && item.type === KEYRING_TYPE['HdKeyring']
       )
-      .forEach((item, index, arr) => {
+      .forEach((item) => {
         emptyHdKeyringList.push({
           list: [] as DisplayedAccount[],
-          name:
-            getWalletTypeName(item.keyring.type) +
-            (arr.length + notEmptyHdKeyringList.length > 1
-              ? ` ${notEmptyHdKeyringList.length + index + 1}`
-              : ''),
+          name: getWalletTypeName(item.keyring.type),
           type: item.type,
           brandName: item.type,
           publicKey: item.publicKey,
@@ -165,12 +194,7 @@ export const useWalletTypeData = () => {
 
     const ledgerList = Object.values(ledgersGroup)
       .sort((a, b) => b.length - a.length)
-      .map((item, index, arr) => ({
-        ...getTypeGroup(item),
-        name:
-          getWalletTypeName(item[0].brandName) +
-          (arr.length > 1 ? ` ${index + 1}` : ''),
-      })) as TypeKeyringGroup[];
+      .map((item) => getTypeGroup(item)) as TypeKeyringGroup[];
 
     const v = (Object.values({
       ...omit(walletGroup, [
@@ -184,8 +208,8 @@ export const useWalletTypeData = () => {
 
     v.sort(
       (a, b) =>
-        b.reduce((pre, e) => pre + e.list.length, 0) -
-        a.reduce((pre, e) => pre + e.list.length, 0)
+        (sortScore[a[0]?.brandName || a[0].type] ?? DEFAULT_SCORE) -
+        (sortScore[b[0]?.brandName || b[0].type] ?? DEFAULT_SCORE)
     );
 
     if (watchSortedAccountsList.length) {
