@@ -203,6 +203,7 @@ const AddressManagement = () => {
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.LEDGER;
   const isGridPlus =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
+  const hasStatusBar = isWalletConnect || isLedger || isGridPlus;
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
@@ -286,7 +287,7 @@ const AddressManagement = () => {
         <>
           <div className={'address-group-list management'}>
             <VList
-              height={isWalletConnect ? 450 : 500}
+              height={hasStatusBar ? 450 : 500}
               width="100%"
               itemData={accountList}
               itemCount={accountList.length}

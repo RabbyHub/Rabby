@@ -22,15 +22,22 @@ interface AccountSelectDrawerProps {
   title: string;
   visible: boolean;
   isLoading?: boolean;
+  networkId: string;
 }
 
 interface AccountItemProps {
   account: Account;
   checked: boolean;
   onSelect(account: Account): void;
+  networkId: string;
 }
 
-const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
+const AccountItem = ({
+  account,
+  onSelect,
+  checked,
+  networkId,
+}: AccountItemProps) => {
   const [alianName, setAlianName] = useState('');
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | string>(
     null
@@ -38,9 +45,7 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
   const [nativeTokenSymbol, setNativeTokenSymbol] = useState('ETH');
   const wallet = useWallet();
 
-  const init = async () => {
-    const currentAccount = (await wallet.getCurrentAccount())!;
-    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+  const init = async (networkId) => {
     const name = (await wallet.getAlianName(account.address))!;
     const chain = Object.values(CHAINS).find(
       (item) => item.id.toString() === networkId + ''
@@ -58,8 +63,8 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    init(networkId);
+  }, [networkId]);
 
   const brandIcon = useWalletConnectIcon(account);
 
@@ -107,6 +112,7 @@ const AccountSelectDrawer = ({
   onCancel,
   visible,
   isLoading = false,
+  networkId,
 }: AccountSelectDrawerProps) => {
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -153,6 +159,7 @@ const AccountSelectDrawer = ({
           <AccountItem
             account={account}
             onSelect={handleSelectAccount}
+            networkId={networkId}
             checked={
               checkedAccount
                 ? isSameAddress(account.address, checkedAccount.address) &&

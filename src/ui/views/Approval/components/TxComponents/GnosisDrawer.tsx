@@ -136,6 +136,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
         (await onConfirm(checkedAccount, signatures.length <= 0));
       setIsLoading(false);
     } catch (e) {
+      console.error(e);
       setIsLoading(false);
     }
   };
@@ -160,6 +161,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
       <div className="list">
         {ownerAccounts.map((owner) => (
           <AddressItem
+            key={owner.address}
             account={owner}
             signed={
               !!signatures.find((sig) =>

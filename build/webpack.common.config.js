@@ -222,6 +222,7 @@ const config = {
   resolve: {
     alias: {
       moment: require.resolve('dayjs'),
+      // '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
     },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {

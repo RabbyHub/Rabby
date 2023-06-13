@@ -4,6 +4,36 @@
   .page();
   height: 100vh;
 
+  .tabs {
+    display: flex;
+    gap: 16px 10px;
+    flex-wrap: wrap;
+    padding-bottom: 8px;
+
+    &-item {
+      padding: 4px 0;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: #4b4d59;
+      position: relative;
+      cursor: pointer;
+
+      &.is-active {
+        color: #8697ff;
+        &::after {
+          position: absolute;
+          content: '';
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #8697ff;
+        }
+      }
+    }
+  }
+
   &-qrcode-popover {
     width: 160px;
     height: 160px;
@@ -23,7 +53,7 @@
       border-radius: 6px;
       border: 1px solid transparent;
 
-      &:hover {
+      &:not(.no-hover):hover {
         background-color: rgba(134, 151, 255, 0.2);
         border-color: #8697ff;
       }
@@ -62,7 +92,7 @@
       }
       &-content {
         padding: 12px 16px 12px 0;
-        
+
         display: flex;
         min-height: 56px;
         align-items: center;

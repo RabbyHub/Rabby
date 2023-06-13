@@ -1,6 +1,83 @@
 .import-gnosis {
   overflow: auto;
   background-color: #f5f6fa;
+  .header {
+    background-color: #8697ff;
+  }
+  .ant-form-item-explain {
+    display: none !important;
+  }
+  .error {
+    margin-top: 12px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: #ec5151;
+  }
+  .loading {
+    margin-top: 20px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: @color-body;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .chain-list-container {
+    margin-top: 20px;
+    .desc {
+      text-align: left;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 15px;
+      color: #4b4d59;
+      margin-bottom: 12px;
+    }
+    .chain-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 12px;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        color: #13141a;
+
+        .chain-logo {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .footer {
+    background-color: #fff;
+    border-top: 0.5px solid #e5e9ef;
+    text-align: center;
+
+    .ant-btn {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+
+      &:disabled {
+        background: #8998ff;
+        opacity: 0.4;
+        border-radius: 6px;
+        &::before {
+          display: none;
+        }
+      }
+    }
+  }
   .field {
     max-width: 100%;
   }
