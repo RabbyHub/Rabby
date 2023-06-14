@@ -36,29 +36,29 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row>Protocol</Row>
+          <Row className="bg-[#F6F8FF]">Protocol</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row>Interacted before</Row>
+          <Row className="bg-[#F6F8FF]">Interacted before</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row>Deployed time</Row>
+          <Row className="bg-[#F6F8FF]">Deployed time</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row>Popularity</Row>
+          <Row className="bg-[#F6F8FF]">Popularity</Row>
           <Row>{data.rank ? `No.${data.rank} on ${data.chain.name}` : '-'}</Row>
         </Col>
         <Col>
-          <Row>Address note</Row>
+          <Row className="bg-[#F6F8FF]">Address note</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>

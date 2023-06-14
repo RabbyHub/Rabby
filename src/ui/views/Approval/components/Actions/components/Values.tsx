@@ -30,7 +30,11 @@ const TokenAmountWrapper = styled.div`
   overflow: hidden;
 `;
 const TokenAmount = ({ value }: { value: string | number }) => {
-  return <TokenAmountWrapper>{formatAmount(value)}</TokenAmountWrapper>;
+  return (
+    <TokenAmountWrapper title={String(value)}>
+      {formatAmount(value)}
+    </TokenAmountWrapper>
+  );
 };
 
 const Percentage = ({ value }: { value: number }) => {
@@ -356,7 +360,7 @@ const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   if (!chain) return null;
   return (
     <span className="flex items-center">
-      on {chain.name} chain <img src={chain.logo} className="ml-4 w-14 h-14" />
+      on {chain.name} <img src={chain.logo} className="ml-4 w-14 h-14" />
     </span>
   );
 };

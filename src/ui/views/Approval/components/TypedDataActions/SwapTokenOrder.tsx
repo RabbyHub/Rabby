@@ -51,6 +51,7 @@ const Permit = ({
     usdValueDiff,
     usdValuePercentage,
     receiver,
+    expireAt,
   } = data!;
 
   const { rules, processedRules } = useRabbySelector((s) => ({
@@ -89,7 +90,7 @@ const Permit = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay Token</Row>
+          <Row isTitle>Pay token</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -100,16 +101,16 @@ const Permit = ({
             />
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}{' '}
-                @{formatUsdValue(payToken.price)}
+                )}
               </li>
             </ul>
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive Token</Row>
+          <Row isTitle>Minimum receive</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText
@@ -153,12 +154,12 @@ const Permit = ({
             </div>
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(receiveToken.amount)
                     .times(receiveToken.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(receiveToken.price)}
+                )}
               </li>
               <SecurityListItem
                 engineResult={engineResultMap['1095']}
@@ -179,6 +180,14 @@ const Permit = ({
             </ul>
           </Row>
         </Col>
+        {expireAt && (
+          <Col>
+            <Row isTitle>Expire time</Row>
+            <Row>
+              <Values.TimeSpanFuture to={expireAt} />
+            </Row>
+          </Col>
+        )}
         {engineResultMap['1094'] && (
           <Col>
             <Row isTitle>Receiver</Row>
@@ -195,7 +204,7 @@ const Permit = ({
           </Col>
         )}
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>List on</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />

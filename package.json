@@ -17,7 +17,7 @@
   "dependencies": {
     "@debank/common": "^0.2.39",
     "@debank/festats": "1.0.0",
-    "@debank/rabby-api": "^0.5.35",
+    "@debank/rabby-api": "^0.5.36",
     "@debank/rabby-security-engine": "^1.0.20",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",

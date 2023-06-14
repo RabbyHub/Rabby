@@ -54,6 +54,7 @@ const RowWrapper = styled.div`
     border-right: 1px solid #ededed;
     width: 120px;
     flex-shrink: 0;
+    background-color: #f6f8ff;
     .icon-tip {
       display: inline;
     }

@@ -68,12 +68,12 @@ const Send = ({
             />
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(actionData.token.price)
                     .times(actionData.token.amount)
                     .toFixed()
-                )}{' '}
-                @ {formatUsdValue(actionData.token.price)}
+                )}
               </li>
             </ul>
           </Row>

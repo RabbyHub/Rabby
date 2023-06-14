@@ -1,6 +1,7 @@
 import { Account } from 'background/service/preference';
 import React, { ReactNode, useEffect, useState, useRef, useMemo } from 'react';
 import { useScroll, useAsync } from 'react-use';
+import { Skeleton } from 'antd';
 import { useSize } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@debank/rabby-security-engine';
@@ -294,6 +295,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   return (
     <>
       <div className="approval-text">
+        {isLoading && (
+          <Skeleton.Input
+            active
+            style={{
+              width: 358,
+              height: 400,
+            }}
+          />
+        )}
         {!isLoading && (
           <Actions
             data={parsedActionData}

@@ -9,9 +9,7 @@ export interface Props {
   engineResult: Result;
 }
 
-const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)`
-  margin-top: -9px;
-`;
+const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)``;
 
 export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
   const dispatch = useRabbyDispatch();

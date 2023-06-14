@@ -46,6 +46,7 @@ export interface TypedDataActionData {
     receiver: string;
     usdValueDiff: string;
     usdValuePercentage: number;
+    expireAt: number | null;
   };
   createKey?: CreateKeyAction;
   verifyAddress?: VerifyAddressAction;
@@ -125,6 +126,7 @@ export const parseAction = (
         receiver: actionData.receiver,
         usdValueDiff,
         usdValuePercentage,
+        expireAt: actionData.expire_at,
       };
       return result;
     }
@@ -382,13 +384,13 @@ export const getActionTypeText = (data: TypedDataActionData) => {
     return 'Permit2 Token Approval';
   }
   if (data.swapTokenOrder) {
-    return 'Token order';
+    return 'Token Order';
   }
   if (data.buyNFT || data.sellNFT) {
     return 'NFT Order';
   }
   if (data.signMultiSig) {
-    return 'Confirm transaction';
+    return 'Confirm Transaction';
   }
   if (data.createKey) {
     return 'Create Key';
@@ -397,7 +399,7 @@ export const getActionTypeText = (data: TypedDataActionData) => {
     return 'Verify Address';
   }
   if (data.contractCall) {
-    return 'Contract call';
+    return 'Contract Call';
   }
   return '';
 };

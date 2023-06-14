@@ -96,7 +96,10 @@ const Permit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle tip="Signature expire time">
+          <Row
+            isTitle
+            tip="The duration for this signature to be valid on-chain"
+          >
             Signature expire time
           </Row>
           <Row>
@@ -108,9 +111,7 @@ const Permit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle tip="Signature expire time">
-            Approval expire time
-          </Row>
+          <Row isTitle>Approval expire time</Row>
           <Row>
             {actionData.expire_at ? (
               <Values.TimeSpanFuture to={actionData.expire_at} />

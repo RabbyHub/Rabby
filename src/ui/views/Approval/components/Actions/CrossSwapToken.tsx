@@ -88,7 +88,7 @@ const CrossSwapToken = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay Token</Row>
+          <Row isTitle>Pay token</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -102,10 +102,10 @@ const CrossSwapToken = ({
                 <Values.DisplayChain chainServerId={payToken.chain} />
               </li>
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}{' '}
-                @{formatUsdValue(payToken.price)}
+                )}
               </li>
             </ul>
           </Row>
@@ -158,12 +158,12 @@ const CrossSwapToken = ({
                 <Values.DisplayChain chainServerId={receiveToken.chain} />
               </li>
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(receiveToken.min_amount)
                     .times(receiveToken.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(receiveToken.price)}
+                )}
               </li>
               <SecurityListItem
                 engineResult={engineResultMap['1104']}

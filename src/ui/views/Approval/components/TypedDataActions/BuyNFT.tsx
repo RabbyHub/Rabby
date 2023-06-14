@@ -112,12 +112,12 @@ const BuyNFT = ({
             />
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(actionData.pay_token.amount)
                     .times(actionData.pay_token.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(actionData.pay_token.price)}
+                )}
               </li>
             </ul>
           </Row>
@@ -167,7 +167,7 @@ const BuyNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Expire Time</Row>
+          <Row isTitle>Expire time</Row>
           <Row>
             {actionData.expire_at ? (
               <Values.TimeSpanFuture to={Number(actionData.expire_at)} />

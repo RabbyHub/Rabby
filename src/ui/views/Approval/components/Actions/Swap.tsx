@@ -96,7 +96,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay Token</Row>
+          <Row isTitle>Pay token</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -107,10 +107,10 @@ const Swap = ({
             />
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}{' '}
-                @{formatUsdValue(payToken.price)}
+                )}
               </li>
             </ul>
           </Row>
@@ -166,12 +166,12 @@ const Swap = ({
               {balanceChange.success && balanceChange.support && (
                 <>
                   <li>
+                    ≈
                     {formatUsdValue(
                       new BigNumber(receiveToken.amount)
                         .times(receiveToken.price)
                         .toFixed()
-                    )}{' '}
-                    @{formatUsdValue(receiveToken.price)}
+                    )}
                   </li>
                   <SecurityListItem
                     engineResult={engineResultMap['1012']}
@@ -203,7 +203,7 @@ const Swap = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Minimum Received</Row>
+          <Row isTitle>Minimum Receive</Row>
           <Row>
             <div>
               <LogoWithText
@@ -216,24 +216,26 @@ const Swap = ({
             </div>
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(minReceive.amount)
                     .times(minReceive.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(minReceive.price)}
+                )}
               </li>
               <li>
                 {slippageTolerance === null &&
                   'Slippage tolerance fail to load'}
-                {slippageTolerance !== null &&
-                  `Slippage tolerance ${
-                    hasReceiver ? (
+                {slippageTolerance !== null && (
+                  <>
+                    Slippage tolerance{' '}
+                    {hasReceiver ? (
                       '-'
                     ) : (
                       <Values.Percentage value={slippageTolerance} />
-                    )
-                  }`}
+                    )}
+                  </>
+                )}
                 {engineResultMap['1011'] && (
                   <SecurityLevelTagNoText
                     enable={engineResultMap['1011'].enable}

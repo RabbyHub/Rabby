@@ -22,7 +22,6 @@ const PushMultiSig = ({
   engineResults: Result[];
 }) => {
   const multiSigInfo = useMemo(() => {
-    console.log(requireData, chain);
     if (!chain) {
       for (const key in requireData?.contract) {
         const contract = requireData.contract[key];

@@ -11,7 +11,6 @@ import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
@@ -89,7 +88,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay Token</Row>
+          <Row isTitle>Pay token</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -103,10 +102,10 @@ const Swap = ({
                 <Values.DisplayChain chainServerId={payToken.chain} />
               </li>
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}{' '}
-                @{formatUsdValue(payToken.price)}
+                )}
               </li>
             </ul>
           </Row>
@@ -159,12 +158,12 @@ const Swap = ({
                 <Values.DisplayChain chainServerId={receiveToken.chain} />
               </li>
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(receiveToken.min_amount)
                     .times(receiveToken.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(receiveToken.price)}
+                )}
               </li>
               <SecurityListItem
                 engineResult={engineResultMap['1105']}

@@ -140,12 +140,13 @@ const MessageWrapper = styled.div`
     background: #ebedf7;
     border: 1px solid rgba(225, 227, 234, 0.9);
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 16px;
     font-weight: 500;
-    color: #848080;
+    color: #4b4d59;
     height: 220px;
     overflow-y: auto;
+    font-family: 'Roboto Mono';
   }
   &.no-action {
     .content {

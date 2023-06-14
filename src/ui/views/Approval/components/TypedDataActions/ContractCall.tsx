@@ -112,7 +112,7 @@ const ContractCall = ({
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   operation
-                    ? 'Operation is decoded from data'
+                    ? 'Operation is decoded from message'
                     : 'Operation is not decoded'
                 }
               >

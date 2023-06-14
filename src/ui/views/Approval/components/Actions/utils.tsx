@@ -259,11 +259,11 @@ export const parseAction = (
       receiver,
     } = data.data as CrossSwapAction;
     const receiveTokenUsdValue = new BigNumber(receiveToken.min_raw_amount)
-      .div(receiveToken.decimals)
+      .div(10 ** receiveToken.decimals)
       .times(receiveToken.price);
-    const payTokenUsdValue = new BigNumber(payToken.amount).times(
-      payToken.price
-    );
+    const payTokenUsdValue = new BigNumber(payToken.raw_amount || '0')
+      .div(10 ** payToken.decimals)
+      .times(payToken.price);
     const usdValueDiff = receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
     const usdValuePercentage = calcUSDValueChange(
       payTokenUsdValue.toFixed(),
@@ -803,15 +803,12 @@ export const fetchActionRequiredData = async ({
       }
       result.usd_value = desc.usd_value;
       if (result.cex) {
-        const { cex_list } = await wallet.openapi.depositCexList(
+        const { support } = await wallet.openapi.depositCexSupport(
           actionData.send!.token.id,
-          chainId
+          actionData.send!.token.chain,
+          result.cex.id
         );
-        if (cex_list.some((cex) => cex.id === result.cex!.id)) {
-          result.cex.supportToken = true;
-        } else {
-          result.cex.supportToken = false;
-        }
+        result.cex.supportToken = support;
       }
       if (result.contract) {
         const { is_token } = await wallet.openapi.isTokenContract(
@@ -933,15 +930,12 @@ export const fetchActionRequiredData = async ({
       }
       result.usd_value = desc.usd_value;
       if (result.cex) {
-        const { cex_list } = await wallet.openapi.depositCexList(
+        const { support } = await wallet.openapi.depositCexSupport(
           actionData.sendNFT!.nft.contract_id,
-          chainId
+          chainId,
+          result.cex.id
         );
-        if (cex_list.some((cex) => cex.id === result.cex!.id)) {
-          result.cex.supportToken = true;
-        } else {
-          result.cex.supportToken = false;
-        }
+        result.cex.supportToken = support;
       }
       if (result.contract) {
         const { is_token } = await wallet.openapi.isTokenContract(

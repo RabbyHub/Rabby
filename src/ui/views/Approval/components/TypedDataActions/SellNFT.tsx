@@ -160,18 +160,18 @@ const ApproveNFT = ({
             )}
             <ul className="desc-list">
               <li>
+                ≈
                 {formatUsdValue(
                   new BigNumber(actionData.receive_token.amount)
                     .times(actionData.receive_token.price)
                     .toFixed()
-                )}{' '}
-                @{formatUsdValue(actionData.receive_token.price)}
+                )}
               </li>
             </ul>
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Expire Time</Row>
+          <Row isTitle>Expire time</Row>
           <Row>
             {actionData.expire_at ? (
               <Values.TimeSpanFuture to={Number(actionData.expire_at)} />
