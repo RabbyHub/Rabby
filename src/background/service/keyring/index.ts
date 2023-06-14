@@ -85,6 +85,7 @@ export interface DisplayedKeryring {
   }[];
   keyring: DisplayKeyring;
   byImport?: boolean;
+  publicKey?: string;
 }
 
 export class KeyringService extends EventEmitter {
@@ -550,14 +551,20 @@ export class KeyringService extends EventEmitter {
    * @param {string} address - The address of the account to remove.
    * @returns {Promise<void>} A Promise that resolves if the operation was successful.
    */
-  removeAccount(address: string, type: string, brand?: string): Promise<any> {
+  removeAccount(
+    address: string,
+    type: string,
+    brand?: string,
+    removeEmptyKeyrings = true
+  ): Promise<any> {
     return this.getKeyringForAccount(address, type)
-      .then((keyring) => {
+      .then(async (keyring) => {
         // Not all the keyrings support this, so we have to check
         if (typeof keyring.removeAccount === 'function') {
           keyring.removeAccount(address, brand);
           this.emit('removedAccount', address);
-          return keyring.getAccounts();
+          const currentKeyring = keyring;
+          return [await keyring.getAccounts(), currentKeyring];
         }
         return Promise.reject(
           new Error(
@@ -565,14 +572,33 @@ export class KeyringService extends EventEmitter {
           )
         );
       })
-      .then((accounts) => {
+      .then(([accounts, currentKeyring]) => {
         // Check if this was the last/only account
-        if (accounts.length === 0) {
-          return this.removeEmptyKeyrings();
+        if (accounts.length === 0 && removeEmptyKeyrings) {
+          this.keyrings = this.keyrings.filter(
+            (item) => item !== currentKeyring
+          );
+
+          // return this.removeEmptyKeyrings();
         }
         return undefined;
       })
       .then(this.persistAllKeyrings.bind(this))
+      .then(this._updateMemStoreKeyrings.bind(this))
+      .then(this.fullUpdate.bind(this))
+      .catch((e) => {
+        return Promise.reject(e);
+      });
+  }
+
+  removeKeyringByPublicKey(publicKey: string) {
+    this.keyrings = this.keyrings.filter((item) => {
+      if (item.publicKey) {
+        return item.publicKey !== publicKey;
+      }
+      return true;
+    });
+    return this.persistAllKeyrings()
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .catch((e) => {
@@ -1047,6 +1073,7 @@ export class KeyringService extends EventEmitter {
             ),
         keyring,
         byImport: keyring.byImport,
+        publicKey: keyring.publicKey,
       };
     });
   }

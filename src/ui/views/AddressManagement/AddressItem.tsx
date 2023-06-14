@@ -50,6 +50,8 @@ export interface AddressItemProps {
   isCurrentAccount?: boolean;
   isUpdatingBalance?: boolean;
   children?: React.ReactNode;
+  // forceFastDelete?: boolean;
+  onDelete?: () => void;
 }
 
 const AddressItem = memo(
@@ -67,6 +69,7 @@ const AddressItem = memo(
     isCurrentAccount = false,
     isUpdatingBalance,
     children,
+    onDelete,
   }: AddressItemProps) => {
     const { t } = useTranslation();
     const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
@@ -102,11 +105,18 @@ const AddressItem = memo(
 
     const canFastDeleteAccount = useMemo(
       // not seed phrase ,not privacy secret
-      () => ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
-      [type]
+      () =>
+        onDelete
+          ? true
+          : ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
+      [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
       e.stopPropagation();
+      if (onDelete) {
+        await onDelete();
+        return;
+      }
       if (canFastDeleteAccount) {
         await dispatch.addressManagement.removeAddress([
           address,
@@ -180,14 +190,14 @@ const AddressItem = memo(
             )}
             onClick={enableSwitch ? onSwitchCurrentAccount : onClick}
           >
-            {canFastDeleteAccount && (
+            {/* {canFastDeleteAccount && (
               <div className="absolute hidden group-hover:flex w-[20px] left-[-20px] h-full top-0  justify-center items-center">
                 <IconDeleteAddress
                   className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
                   onClick={deleteAccount}
                 />
               </div>
-            )}
+            )} */}
             <div
               className={clsx(
                 'rabby-address-item-left',
