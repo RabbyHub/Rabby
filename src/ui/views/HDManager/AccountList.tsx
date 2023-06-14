@@ -126,18 +126,14 @@ export const AccountList: React.FC<Props> = ({
           content: 'The address is added to Rabby',
         });
       } else {
-        if (
-          currentAccountsRef.current.length <= 1 &&
-          keyring === KEYRING_CLASS.MNEMONIC
-        ) {
-          message.error({
-            content:
-              'The last address cannot be deleted from the current page. Please go to Address Management to delete it',
-            duration: 5,
-          });
-          return;
-        }
-        await createTask(() => wallet.removeAddress(account.address, keyring));
+        await createTask(() =>
+          wallet.removeAddress(
+            account.address,
+            keyring,
+            undefined,
+            keyring !== KEYRING_CLASS.MNEMONIC
+          )
+        );
         removeCurrentAccount(account.address);
         message.success({
           content: 'The address is removed from Rabby',

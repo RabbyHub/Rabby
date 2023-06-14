@@ -20,6 +20,7 @@ import {
   BRAND_WALLET_CONNECT_TYPE,
   WALLET_BRAND_TYPES,
   IWalletBrandContent,
+  WALLET_SORT_SCORE,
 } from 'consts';
 
 import clsx from 'clsx';
@@ -28,39 +29,7 @@ import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
 
-const walletSortObj = [
-  //mobile
-  WALLET_BRAND_TYPES.METAMASK,
-  WALLET_BRAND_TYPES.TRUSTWALLET,
-  WALLET_BRAND_TYPES.TP,
-  WALLET_BRAND_TYPES.IMTOKEN,
-  WALLET_BRAND_TYPES.MATHWALLET,
-  WALLET_BRAND_TYPES.Rainbow,
-  WALLET_BRAND_TYPES.Bitkeep,
-  WALLET_BRAND_TYPES.Zerion,
-  // WALLET_BRAND_TYPES.Uniswap,
-  WALLET_BRAND_TYPES.WALLETCONNECT,
-  //hard wallet
-  WALLET_BRAND_TYPES.LEDGER,
-  WALLET_BRAND_TYPES.TREZOR,
-  WALLET_BRAND_TYPES.GRIDPLUS,
-  WALLET_BRAND_TYPES.ONEKEY,
-  WALLET_BRAND_TYPES.KEYSTONE,
-  WALLET_BRAND_TYPES.BITBOX02,
-  WALLET_BRAND_TYPES.COOLWALLET,
-  WALLET_BRAND_TYPES.AIRGAP,
-  //institutional
-  WALLET_BRAND_TYPES.GNOSIS,
-  WALLET_BRAND_TYPES.FIREBLOCKS,
-  WALLET_BRAND_TYPES.AMBER,
-  WALLET_BRAND_TYPES.COBO,
-  WALLET_BRAND_TYPES.JADE,
-].reduce((pre, now, i) => {
-  pre[now] = i + 1;
-  return pre;
-}, {} as { [k: string]: number });
-
-const getSortNum = (s: string) => walletSortObj[s] || 999999;
+const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
 const AddAddressOptions = () => {
   const history = useHistory();

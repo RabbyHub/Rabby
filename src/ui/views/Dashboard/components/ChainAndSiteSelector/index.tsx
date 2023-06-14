@@ -274,7 +274,7 @@ export default ({
     },
     address: {
       icon: IconAddresses,
-      content: 'Addresses',
+      content: 'Manage Address',
       onClick: () => {
         history.push('/settings/address');
       },
