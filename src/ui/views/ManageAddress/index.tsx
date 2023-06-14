@@ -224,127 +224,137 @@ const ManageAddress = () => {
   return (
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
       <div className="h-full flex flex-col">
-        <div className="px-20 mb-8">
+        <div className="px-20">
           <PageHeader className="pt-[24px]">Manage Address</PageHeader>
-          <div className="rounded-[6px] bg-white flex flex-wrap p-[3px]">
-            {typedWalletIdList?.map((id, i) => {
-              const item = TypedWalletObj?.[id];
-              const list = item?.list;
-              if (!item) {
-                return null;
-              }
-              return (
-                <GroupItem
-                  item={list?.[0]}
-                  active={i === currentIndex}
-                  count={list?.length || 0}
-                  onChange={() => {
-                    setCurrentIndex(i);
-                  }}
-                  type={item?.type}
-                  brandName={item?.brandName}
-                />
-              );
-            })}
-          </div>
-          {TypedWalletObj?.[activeIndex] ? (
-            <div className="flex items-center justify-between mt-20 ">
-              <div className="text-[17px] font-medium">
-                {TypedWalletObj?.[activeIndex]?.name}
-              </div>
-              <div className="flex items-center gap-16">
-                {isSeedPhrase && (
-                  <IconShowSeedPhrase
-                    className="cursor-pointer"
+        </div>
+
+        <div className="flex-1 flex flex-col overflow-y-auto">
+          <div className="px-20 mb-8">
+            <div className="rounded-[6px] bg-white flex flex-wrap p-[3px]">
+              {typedWalletIdList?.map((id, i) => {
+                const item = TypedWalletObj?.[id];
+                const list = item?.list;
+                if (!item) {
+                  return null;
+                }
+                return (
+                  <GroupItem
+                    item={list?.[0]}
+                    active={i === currentIndex}
+                    count={list?.length || 0}
+                    onChange={() => {
+                      setCurrentIndex(i);
+                    }}
+                    type={item?.type}
+                    brandName={item?.brandName}
+                  />
+                );
+              })}
+            </div>
+
+            {TypedWalletObj?.[activeIndex] ? (
+              <div className="flex items-center justify-between mt-20 ">
+                <div className="text-[17px] font-medium">
+                  {TypedWalletObj?.[activeIndex]?.name}
+                </div>
+                <div className="flex items-center gap-16">
+                  {isSeedPhrase && (
+                    <IconShowSeedPhrase
+                      className="cursor-pointer"
+                      onClick={() => {
+                        if (TypedWalletObj?.[activeIndex]?.publicKey) {
+                          backup(
+                            TypedWalletObj[activeIndex].publicKey!,
+                            currentIndex
+                          );
+                        }
+                      }}
+                    />
+                  )}
+                  <IconDelete
+                    className="cursor-pointer text-gray-content hover:text-red-forbidden"
                     onClick={() => {
-                      if (TypedWalletObj?.[activeIndex]?.publicKey) {
-                        backup(
-                          TypedWalletObj[activeIndex].publicKey!,
-                          currentIndex
-                        );
+                      if (
+                        TypedWalletObj?.[activeIndex]?.type ===
+                        KEYRING_TYPE['HdKeyring']
+                      ) {
+                        setSeedPhraseDeleteOpen(true);
+                        return;
                       }
+                      handleOpenDeleteModal(
+                        TypedWalletObj?.[activeIndex]?.list
+                      );
                     }}
                   />
-                )}
-                <IconDelete
-                  className="cursor-pointer text-gray-content hover:text-red-forbidden"
-                  onClick={() => {
-                    if (
-                      TypedWalletObj?.[activeIndex]?.type ===
-                      KEYRING_TYPE['HdKeyring']
-                    ) {
-                      setSeedPhraseDeleteOpen(true);
-                      return;
-                    }
-                    handleOpenDeleteModal(TypedWalletObj?.[activeIndex]?.list);
-                  }}
-                />
+                </div>
+              </div>
+            ) : null}
+
+            {!!isLedger && !!TypedWalletObj?.[activeIndex]?.hdPathType && (
+              <div className="text-gray-content text-12 mb-4">
+                HD path:{' '}
+                {LedgerHDPathTypeLabel[TypedWalletObj[activeIndex].hdPathType!]}
+              </div>
+            )}
+          </div>
+
+          <AccountList
+            handleOpenDeleteModal={handleOpenDeleteModal}
+            list={TypedWalletObj?.[activeIndex]?.list}
+            highlightedAddresses={highlightedAddresses}
+            updateIndex={updateInfoAndSetCurrentIndex}
+          />
+
+          {TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'] &&
+          !TypedWalletObj?.[activeIndex]?.list.length ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
+              <Empty
+                desc={
+                  <div className="text-gray-content text-14 max-w-[352px] mt-12">
+                    Your seed phrase is not deleted. You can choose to delete
+                    the seed phrase or add address again{' '}
+                  </div>
+                }
+              />
+              <div>
+                <Button
+                  type="primary"
+                  className="w-[140px] h-[36px] rounder-[4px] flex items-center justify-center gap-4 text-13 font-medium"
+                  icon={<IconPlus />}
+                  onClick={handleAddSeedPhraseAddress}
+                >
+                  Add address
+                </Button>
+                <div
+                  className="mt-20 cursor-pointer underline text-gray-content text-14 text-center"
+                  onClick={handleDeleteEmptySeedPhrase}
+                >
+                  Delete seed phrase
+                </div>
               </div>
             </div>
           ) : null}
 
-          {!!isLedger && !!TypedWalletObj?.[activeIndex]?.hdPathType && (
-            <div className="text-gray-content text-12 mb-4">
-              HD path:{' '}
-              {LedgerHDPathTypeLabel[TypedWalletObj[activeIndex].hdPathType!]}
-            </div>
-          )}
+          {TypedWalletObj && deleteList.length ? (
+            <AddressDeleteModal
+              visible={open}
+              onClose={() => setOpen(false)}
+              onSubmit={handleConfirmDeleteAddress}
+              item={deleteList[0]}
+              count={deleteList.length || 0}
+            />
+          ) : null}
         </div>
 
-        <AccountList
-          handleOpenDeleteModal={handleOpenDeleteModal}
-          list={TypedWalletObj?.[activeIndex]?.list}
-          highlightedAddresses={highlightedAddresses}
+        <SeedPhraseDeleteModal
+          visible={seedPhraseDeleteOpen}
+          onClose={function (): void {
+            setSeedPhraseDeleteOpen(false);
+          }}
+          onSubmit={handleOpenDeleteSeedPhraseModal}
+          emptyAddress={TypedWalletObj?.[activeIndex]?.list.length === 0}
         />
-
-        {TypedWalletObj?.[activeIndex].type === KEYRING_TYPE['HdKeyring'] &&
-        !TypedWalletObj?.[activeIndex]?.list.length ? (
-          <div className="flex-1 flex flex-col items-center justify-around">
-            <Empty
-              desc={
-                <div className="text-gray-content text-14 max-w-[352px] mt-12">
-                  Your seed phrase is not deleted. You can choose to delete the
-                  seed phrase or add address again{' '}
-                </div>
-              }
-            />
-            <div>
-              <Button
-                type="primary"
-                className="flex items-center gap-4"
-                icon={<IconPlus />}
-                onClick={handleAddSeedPhraseAddress}
-              >
-                Add address
-              </Button>
-              <div
-                className="mt-20 cursor-pointer underline text-gray-content text-14 text-center"
-                onClick={handleDeleteEmptySeedPhrase}
-              >
-                Delete seed phrase
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        {TypedWalletObj && deleteList.length ? (
-          <AddressDeleteModal
-            visible={open}
-            onClose={() => setOpen(false)}
-            onSubmit={handleConfirmDeleteAddress}
-            item={deleteList[0]}
-            count={deleteList.length || 0}
-          />
-        ) : null}
       </div>
-
-      <SeedPhraseDeleteModal
-        visible={seedPhraseDeleteOpen}
-        onClose={function (): void {
-          setSeedPhraseDeleteOpen(false);
-        }}
-        onSubmit={handleOpenDeleteSeedPhraseModal}
-      />
     </div>
   );
 };
