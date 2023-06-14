@@ -120,44 +120,46 @@ const ApproveNFT = ({
         <Col>
           <Row isTitle>Receive token</Row>
           <Row>
-            <LogoWithText
-              logo={actionData.receive_token.logo_url}
-              text={`${formatAmount(
-                actionData.receive_token.amount
-              )} ${ellipsisTokenSymbol(actionData.receive_token.symbol)}`}
-              logoRadius="100%"
-              icon={
-                <Values.TokenLabel
-                  isFake={actionData.receive_token.is_verified === false}
-                  isScam={
-                    actionData.receive_token.is_verified !== false &&
-                    !!actionData.receive_token.is_suspicious
+            <div className="relative">
+              <LogoWithText
+                logo={actionData.receive_token.logo_url}
+                text={`${formatAmount(
+                  actionData.receive_token.amount
+                )} ${ellipsisTokenSymbol(actionData.receive_token.symbol)}`}
+                logoRadius="100%"
+                icon={
+                  <Values.TokenLabel
+                    isFake={actionData.receive_token.is_verified === false}
+                    isScam={
+                      actionData.receive_token.is_verified !== false &&
+                      !!actionData.receive_token.is_suspicious
+                    }
+                  />
+                }
+              />
+              {engineResultMap['1083'] && (
+                <SecurityLevelTagNoText
+                  enable={engineResultMap['1083'].enable}
+                  level={
+                    processedRules.includes('1083')
+                      ? 'proceed'
+                      : engineResultMap['1083'].level
                   }
+                  onClick={() => handleClickRule('1083')}
                 />
-              }
-            />
-            {engineResultMap['1083'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1083'].enable}
-                level={
-                  processedRules.includes('1083')
-                    ? 'proceed'
-                    : engineResultMap['1083'].level
-                }
-                onClick={() => handleClickRule('1083')}
-              />
-            )}
-            {engineResultMap['1084'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1084'].enable}
-                level={
-                  processedRules.includes('1084')
-                    ? 'proceed'
-                    : engineResultMap['1084'].level
-                }
-                onClick={() => handleClickRule('1084')}
-              />
-            )}
+              )}
+              {engineResultMap['1084'] && (
+                <SecurityLevelTagNoText
+                  enable={engineResultMap['1084'].enable}
+                  level={
+                    processedRules.includes('1084')
+                      ? 'proceed'
+                      : engineResultMap['1084'].level
+                  }
+                  onClick={() => handleClickRule('1084')}
+                />
+              )}
+            </div>
             <ul className="desc-list">
               <li>
                 ≈

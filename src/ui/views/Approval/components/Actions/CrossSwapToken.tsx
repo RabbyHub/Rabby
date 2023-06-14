@@ -99,13 +99,13 @@ const CrossSwapToken = ({
             />
             <ul className="desc-list">
               <li>
-                <Values.DisplayChain chainServerId={payToken.chain} />
-              </li>
-              <li>
                 ≈
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
                 )}
+              </li>
+              <li>
+                <Values.DisplayChain chainServerId={payToken.chain} />
               </li>
             </ul>
           </Row>
@@ -155,15 +155,15 @@ const CrossSwapToken = ({
             </div>
             <ul className="desc-list">
               <li>
-                <Values.DisplayChain chainServerId={receiveToken.chain} />
-              </li>
-              <li>
                 ≈
                 {formatUsdValue(
                   new BigNumber(receiveToken.min_amount)
                     .times(receiveToken.price)
                     .toFixed()
                 )}
+              </li>
+              <li>
+                <Values.DisplayChain chainServerId={receiveToken.chain} />
               </li>
               <SecurityListItem
                 engineResult={engineResultMap['1104']}

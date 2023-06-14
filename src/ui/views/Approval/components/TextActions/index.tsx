@@ -144,7 +144,7 @@ const MessageWrapper = styled.div`
     line-height: 16px;
     font-weight: 500;
     color: #4b4d59;
-    height: 220px;
+    height: 320px;
     overflow-y: auto;
     font-family: 'Roboto Mono';
   }
