@@ -7,6 +7,8 @@ import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import BigNumber from 'bignumber.js';
+import { formatUsdValue } from 'ui/utils/number';
 
 const NFTBalanceChange = ({
   data,
@@ -214,7 +216,14 @@ const BalanceChange = ({
                   <div className="mb-8 last:mb-0" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
-                      text={`- ${formatAmount(token.amount)} ${token.symbol}`}
+                      text={
+                        <>
+                          <span className="text-red-forbidden">
+                            - {formatAmount(token.amount)}
+                          </span>{' '}
+                          {token.symbol}
+                        </>
+                      }
                       key={token.id}
                       logoRadius="100%"
                       icon={
@@ -226,6 +235,16 @@ const BalanceChange = ({
                         />
                       }
                     />
+                    <ul className="desc-list">
+                      <li>
+                        ≈{' '}
+                        {formatUsdValue(
+                          new BigNumber(token.amount)
+                            .times(token.price)
+                            .toFixed()
+                        )}
+                      </li>
+                    </ul>
                   </div>
                 ))}
               </Row>
@@ -239,7 +258,14 @@ const BalanceChange = ({
                   <div className="mb-8 last:mb-0" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
-                      text={`+ ${formatAmount(token.amount)} ${token.symbol}`}
+                      text={
+                        <>
+                          <span className="text-green">
+                            + {formatAmount(token.amount)}
+                          </span>{' '}
+                          {token.symbol}
+                        </>
+                      }
                       key={token.id}
                       logoRadius="100%"
                       icon={
@@ -251,6 +277,16 @@ const BalanceChange = ({
                         />
                       }
                     />
+                    <ul className="desc-list">
+                      <li>
+                        ≈{' '}
+                        {formatUsdValue(
+                          new BigNumber(token.amount)
+                            .times(token.price)
+                            .toFixed()
+                        )}
+                      </li>
+                    </ul>
                   </div>
                 ))}
               </Row>

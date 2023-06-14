@@ -11,6 +11,7 @@ import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { SecurityListItem } from './components/SecurityListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -42,7 +43,7 @@ const UnWrapToken = ({
   chain: Chain;
   engineResults: Result[];
 }) => {
-  const { payToken, receiveToken } = data!;
+  const { payToken, receiveToken, receiver } = data!;
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -113,6 +114,21 @@ const UnWrapToken = ({
             )}
           </Row>
         </Col>
+        {engineResultMap['1093'] && (
+          <Col>
+            <Row isTitle>Receiver</Row>
+            <Row>
+              <Values.Address address={receiver} chain={chain} />
+              <ul className="desc-list">
+                <SecurityListItem
+                  engineResult={engineResultMap['1093']}
+                  id="1093"
+                  dangerText="Not your current address"
+                />
+              </ul>
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row isTitle>Interact contract</Row>
           <Row>

@@ -81,13 +81,13 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row>Address note</Row>
+          <Row className="bg-[#F6F8FF]">Address note</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row>Address type</Row>
+          <Row className="bg-[#F6F8FF]">Address type</Row>
           <Row>
             <div>
               {receiverType}
@@ -110,7 +110,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         </Col>
         {data.cex && (
           <Col>
-            <Row>CEX address</Row>
+            <Row className="bg-[#F6F8FF]">CEX address</Row>
             <Row>
               <div>
                 <LogoWithText logo={data.cex.logo} text={data.cex.name} />
@@ -133,32 +133,34 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         )}
         {data.isTokenContract && (
           <Col>
-            <Row>Token address</Row>
+            <Row className="bg-[#F6F8FF]">Token address</Row>
             <Row>
               <Values.Boolean value={data.isTokenContract} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row>{data.contract ? 'Deployed time' : 'First on-chain'}</Row>
+          <Row className="bg-[#F6F8FF]">
+            {data.contract ? 'Deployed time' : 'First on-chain'}
+          </Row>
           <Row>
             <Values.TimeSpan value={bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row>Address balance</Row>
+          <Row className="bg-[#F6F8FF]">Address balance</Row>
           <Row>
             <Values.USDValue value={data.usd_value} />
           </Row>
         </Col>
         <Col>
-          <Row>Transacted before</Row>
+          <Row className="bg-[#F6F8FF]">Transacted before</Row>
           <Row>
             <Values.Boolean value={data.hasTransfer} />
           </Row>
         </Col>
         <Col>
-          <Row>Whitelist</Row>
+          <Row className="bg-[#F6F8FF]">Whitelist</Row>
           <Row>
             {data.onTransferWhitelist
               ? 'On my whitelist'

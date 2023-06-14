@@ -40,23 +40,28 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row>Protocol</Row>
+          <Row className="bg-[#F6F8FF]">Protocol</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row>Address type</Row>
+          <Row className="bg-[#F6F8FF]">Address type</Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row>{data.isEOA ? 'First on-chain' : 'Deployed time'}</Row>
+          <Row className="bg-[#F6F8FF]">
+            {data.isEOA ? 'First on-chain' : 'Deployed time'}
+          </Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row tip="The USD value of the top NFT that has approved to this spender address">
+          <Row
+            tip="The USD value of the top NFT that has approved to this spender address"
+            className="bg-[#F6F8FF]"
+          >
             Risk exposure
           </Row>
           <Row>
@@ -68,24 +73,24 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Popularity</Row>
+          <Row className="bg-[#F6F8FF]">Popularity</Row>
           <Row>{data.rank ? `No.${data.rank} on ${data.chain.name}` : '-'}</Row>
         </Col>
         <Col>
-          <Row>Interacted before</Row>
+          <Row className="bg-[#F6F8FF]">Interacted before</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row>Address note</Row>
+          <Row className="bg-[#F6F8FF]">Address note</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         {data.isDanger && (
           <Col>
-            <Row>Flagged by Rabby</Row>
+            <Row className="bg-[#F6F8FF]">Flagged by Rabby</Row>
             <Row>
               <Values.Boolean value={!!data.isDanger} />
             </Row>

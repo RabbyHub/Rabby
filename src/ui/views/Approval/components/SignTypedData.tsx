@@ -1,41 +1,37 @@
+import React, { ReactNode, useEffect, useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAsync } from 'react-use';
+import { CHAINS_LIST } from '@debank/common';
+import { Result } from '@debank/rabby-security-engine';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { Skeleton, message } from 'antd';
+import { useScroll } from 'react-use';
+import { useSize } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { CHAINS_LIST } from '@debank/common';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Button, Skeleton, Tooltip, message } from 'antd';
-import {
-  SecurityCheckDecision,
-  SecurityCheckResponse,
-} from 'background/service/openapi';
-import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAsync } from 'react-use';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from 'ui/utils';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import ProcessTooltip from './ProcessTooltip';
-import SecurityCheck from './SecurityCheck';
-import SecurityCheckCard from './SecurityCheckCard';
+import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
-import { SignTypedDataExplain } from './SignTypedDataExplain';
-import ViewRawModal from './TxComponents/ViewRawModal';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
+import RuleDrawer from './SecurityEngine/RuleDrawer';
+import Actions from './TypedDataActions';
+import {
+  parseAction,
+  fetchRequireData,
+  TypedDataRequireData,
+  TypedDataActionData,
+  formatSecurityEngineCtx,
+} from './TypedDataActions/utils';
+import { Level } from '@debank/rabby-security-engine/dist/rules';
+
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -52,17 +48,68 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRefSize = useSize(scrollRef);
+  const scrollInfo = useScroll(scrollRef);
+  const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
+  const [footerShowShadow, setFooterShowShadow] = useState(false);
+  const { executeEngine } = useSecurityEngine();
+  const [engineResults, setEngineResults] = useState<Result[]>([]);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
-  const [submitText, setSubmitText] = useState('Proceed');
+  const dispatch = useRabbyDispatch();
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+    userData: s.securityEngine.userData,
+    rules: s.securityEngine.rules,
+    currentTx: s.securityEngine.currentTx,
+  }));
+  const [
+    actionRequireData,
+    setActionRequireData,
+  ] = useState<TypedDataRequireData>(null);
+  const [
+    parsedActionData,
+    setParsedActionData,
+  ] = useState<TypedDataActionData | null>(null);
   const [
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
-  const [forceProcess, setForceProcess] = useState(true);
+  const securityLevel = useMemo(() => {
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (enableResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (enableResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults, currentTx]);
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const enableResults = engineResults.filter((item) => item.enable);
+    const hasForbidden = enableResults.find(
+      (result) => result.level === Level.FORBIDDEN
+    );
+    const hasSafe = !!enableResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = enableResults.filter(
+      (result) =>
+        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        !processedRules.includes(result.id)
+    );
+    if (hasForbidden) return true;
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
 
   const { data, session, method, isGnosis, account } = params;
   let parsedMessage = '';
@@ -118,65 +165,24 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
 
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>(
-    isSignTypedDataV1 ? 'pending' : 'loading'
-  );
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
-  const [explain, setExplain] = useState('');
-
-  const { value: explainTypedDataRes, loading, error } = useAsync(async () => {
+  const { value: typedDataActionData, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
       const currentAccount = isGnosis
         ? account
         : await wallet.getCurrentAccount();
 
-      return await wallet.openapi.explainTypedData(
-        currentAccount!.address,
-        session.origin,
-        signTypedData
-      );
+      return await wallet.openapi.parseTypedData({
+        typedData: signTypedData,
+        address: currentAccount!.address,
+        origin: session.origin,
+      });
     }
     return;
   }, [data, isSignTypedDataV1, signTypedData]);
-
-  const { value: checkResult } = useAsync(async () => {
-    if (!isSignTypedDataV1 && signTypedData) {
-      setSecurityCheckStatus('loading');
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
-      const check = await wallet.openapi.checkTypedData(
-        currentAccount!.address,
-        session.origin,
-        signTypedData
-      );
-      return check;
-    }
-
-    return;
-  }, [data, isSignTypedDataV1, signTypedData]);
-
-  useEffect(() => {
-    if (checkResult) {
-      setSecurityCheckStatus(checkResult.decision);
-      setSecurityCheckDetail(checkResult);
-      setForceProcess(checkResult.decision !== 'forbidden');
-    }
-  }, [checkResult]);
 
   if (error) {
     console.error('error', error);
   }
-
-  const handleForceProcessChange = (checked: boolean) => {
-    setForceProcess(checked);
-  };
 
   const checkWachMode = async () => {
     const currentAccount = isGnosis
@@ -188,25 +194,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     ) {
       setIsWatch(true);
       setCantProcessReason(
-        // <div className="flex items-center gap-6">
-        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-        //   <div>
-        //     Unable to sign because the current address is a Watch-only Address
-        //     from Contacts. You can{' '}
-        //     <a
-        //       href=""
-        //       className="underline"
-        //       onClick={async (e) => {
-        //         e.preventDefault();
-        //         await rejectApproval('User rejected the request.', true);
-        //         openInternalPageInTab('no-address');
-        //       }}
-        //     >
-        //       import it
-        //     </a>{' '}
-        //     fully or use another address.
-        //   </div>
-        // </div>
         <div>You can only use imported addresses to sign</div>
       );
     }
@@ -251,29 +238,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   };
 
-  const handleSecurityCheck = async () => {
-    setSecurityCheckStatus('loading');
-    const currentAccount = isGnosis
-      ? account
-      : await wallet.getCurrentAccount();
-
-    const dataStr = JSON.stringify(data);
-    const check = await wallet.openapi.checkText(
-      currentAccount!.address,
-      session.origin,
-      dataStr
-    );
-    const serverExplain = await wallet.openapi.explainText(
-      session.origin,
-      currentAccount!.address,
-      dataStr
-    );
-    setExplain(serverExplain.comment);
-    setSecurityCheckStatus(check.decision);
-    setSecurityCheckDetail(check);
-    setForceProcess(check.decision !== 'forbidden');
-  };
-
   const handleCancel = () => {
     report('cancelSignText');
     rejectApproval('User rejected the request.');
@@ -281,14 +245,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const { activeApprovalPopup } = useCommonPopupView();
 
-  const handleAllow = async (doubleCheck = false) => {
-    if (
-      !doubleCheck &&
-      securityCheckStatus !== 'pass' &&
-      securityCheckStatus !== 'pending'
-    ) {
-      return;
-    }
+  const handleAllow = async () => {
     if (activeApprovalPopup()) {
       return;
     }
@@ -316,7 +273,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         });
       } else {
         try {
-          setIsLoading(true);
           let result = await wallet.signTypedData(
             params.account.type,
             params.account.address,
@@ -336,11 +292,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             await wallet.gnosisAddSignature(params.account.address, result);
             await wallet.postGnosisTransaction();
           }
-          setIsLoading(false);
           resolveApproval(result, false, true);
         } catch (e) {
           message.error(e.message);
-          setIsLoading(false);
           report('completeSignText', {
             success: false,
           });
@@ -382,56 +336,100 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
 
+  const getRequireData = async (data: TypedDataActionData) => {
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
+    if (currentAccount) {
+      const requireData = await fetchRequireData(
+        data,
+        currentAccount.address,
+        wallet
+      );
+      setActionRequireData(requireData);
+      const ctx = formatSecurityEngineCtx({
+        actionData: data,
+        requireData,
+      });
+      const result = await executeEngine(ctx);
+      setEngineResults(result);
+    }
+    setIsLoading(false);
+  };
+
+  const executeSecurityEngine = async () => {
+    const ctx = formatSecurityEngineCtx({
+      actionData: parsedActionData!,
+      requireData: actionRequireData,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+  };
+
+  const handleIgnoreRule = (id: string) => {
+    dispatch.securityEngine.processRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    dispatch.securityEngine.unProcessRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    if (currentTx.processedRules.includes(id)) {
+      dispatch.securityEngine.unProcessRule(id);
+    }
+    await wallet.ruleEnableStatusChange(id, value);
+    dispatch.securityEngine.init();
+  };
+
+  const handleRuleDrawerClose = (update: boolean) => {
+    if (update) {
+      executeSecurityEngine();
+    }
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  useEffect(() => {
+    executeSecurityEngine();
+  }, [rules]);
+
+  useEffect(() => {
+    const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
+    if (!loading) {
+      if (typedDataActionData) {
+        const parsed = parseAction(typedDataActionData, signTypedData, sender);
+        setParsedActionData(parsed);
+        getRequireData(parsed);
+      } else {
+        setIsLoading(false);
+      }
+    }
+  }, [loading, typedDataActionData, signTypedData, params, isSignTypedDataV1]);
+
+  useEffect(() => {
+    if (scrollRef.current && scrollInfo && scrollRefSize) {
+      const avaliableHeight =
+        scrollRef.current.scrollHeight - scrollRefSize.height;
+      if (avaliableHeight <= 0) {
+        setFooterShowShadow(false);
+      } else {
+        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+      }
+    }
+  }, [scrollInfo, scrollRefSize]);
+
   useEffect(() => {
     init();
     checkWachMode();
     report('createSignText');
   }, []);
 
-  const handleViewRawClick = () => {
-    ViewRawModal.open({
-      raw: isSignTypedDataV1 ? data[0] : signTypedData || data[1],
-    });
-  };
-
-  useEffect(() => {
-    (async () => {
-      const currentAccount = isGnosis
-        ? account
-        : await wallet.getCurrentAccount();
-      if (
-        currentAccount &&
-        [
-          KEYRING_CLASS.MNEMONIC,
-          KEYRING_CLASS.PRIVATE_KEY,
-          KEYRING_CLASS.WATCH,
-        ].includes(currentAccount.type)
-      ) {
-        setSubmitText('Sign');
-      } else {
-        setSubmitText('Proceed');
-      }
-    })();
-  }, [securityCheckStatus]);
-
   return (
     <>
-      <div
-        className="approval-text"
-        style={{
-          paddingBottom: '210px',
-        }}
-      >
-        <p className="section-title">
-          Sign {chain ? chain.name : ''} Typed Message
-          <span
-            className="float-right text-12 cursor-pointer flex items-center view-raw text-gray-content"
-            onClick={handleViewRawClick}
-          >
-            {t('View Raw')} <img src={IconArrowRight} />
-          </span>
-        </p>
-        {loading && (
+      <div className="approval-text">
+        {isLoading && (
           <Skeleton.Input
             active
             style={{
@@ -440,84 +438,46 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             }}
           />
         )}
-        <SignTypedDataExplain
-          data={explainTypedDataRes}
-          chain={chain}
-          message={
-            <div
-              className={clsx(
-                'text-detail-wrapper',
-                loading && 'hidden',
-                !isSignTypedDataV1 && 'pb-0',
-                'h-full'
-              )}
-            >
-              <div
-                className={clsx(
-                  'text-detail text-15 leading-[16px] font-medium',
-                  'h-full'
-                )}
-                style={{
-                  fontFamily: 'Roboto Mono',
-                  color: '#13141A',
-                }}
-              >
-                {parsedMessage}
-              </div>
-              {explain && (
-                <p className="text-explain">
-                  {explain}
-                  <Tooltip
-                    placement="topRight"
-                    overlayClassName="text-explain-tooltip"
-                    title={t(
-                      'This summary information is provide by DeBank OpenAPI'
-                    )}
-                  >
-                    <img
-                      src={IconQuestionMark}
-                      className="icon icon-question-mark"
-                    />
-                  </Tooltip>
-                </p>
-              )}
-            </div>
-          }
-        />
-
-        <div className="section-title mt-[20px]">Pre-sign check</div>
-        <SecurityCheckCard
-          isReady={true}
-          loading={securityCheckStatus === 'loading'}
-          data={securityCheckDetail}
-          status={securityCheckStatus}
-          onCheck={isSignTypedDataV1 ? handleSecurityCheck : undefined}
-        ></SecurityCheckCard>
+        {!isLoading && (
+          <Actions
+            data={parsedActionData}
+            requireData={actionRequireData}
+            chain={chain}
+            engineResults={engineResults}
+            raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
+            message={parsedMessage}
+          />
+        )}
       </div>
 
       <footer className="approval-text__footer">
-        <SecurityCheck
-          status={securityCheckStatus}
-          value={forceProcess}
-          onChange={handleForceProcessChange}
-        />
         <FooterBar
+          hasShadow={footerShowShadow}
           origin={params.session.origin}
           originLogo={params.session.icon}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
-          onSubmit={() => handleAllow(forceProcess)}
+          securityLevel={securityLevel}
+          hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+          onSubmit={() => handleAllow()}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
           disabledProcess={
-            loading ||
+            isLoading ||
             (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-            !forceProcess ||
-            securityCheckStatus === 'loading' ||
-            isWatch
+            isWatch ||
+            hasUnProcessSecurityResult
           }
         />
       </footer>
+      <RuleDrawer
+        selectRule={currentTx.ruleDrawer.selectRule}
+        visible={currentTx.ruleDrawer.visible}
+        onIgnore={handleIgnoreRule}
+        onUndo={handleUndoIgnore}
+        onRuleEnableStatusChange={handleRuleEnableStatusChange}
+        onClose={handleRuleDrawerClose}
+      />
     </>
   );
 };

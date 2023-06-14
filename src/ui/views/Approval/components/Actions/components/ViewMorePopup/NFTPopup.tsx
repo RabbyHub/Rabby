@@ -34,11 +34,11 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row>Collection</Row>
+          <Row className="bg-[#F6F8FF]">Collection</Row>
           <Row>{data.nft.collection ? data.nft.collection.name : '-'}</Row>
         </Col>
         <Col>
-          <Row>Floor price</Row>
+          <Row className="bg-[#F6F8FF]">Floor price</Row>
           <Row>
             {data.nft?.collection?.floor_price
               ? `${formatAmount(data?.nft?.collection?.floor_price)} ETH`
@@ -46,7 +46,7 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Contract address</Row>
+          <Row className="bg-[#F6F8FF]">Contract address</Row>
           <Row>
             <Values.Address address={data.nft.contract_id} chain={data.chain} />
           </Row>

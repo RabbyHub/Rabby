@@ -57,7 +57,6 @@ import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
-import LogoUniswap from 'ui/assets/walletlogo/uniswap.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 
 export { CHAINS, CHAINS_ENUM };

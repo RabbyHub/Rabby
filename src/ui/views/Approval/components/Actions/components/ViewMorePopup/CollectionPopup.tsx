@@ -48,7 +48,7 @@ export const CollectionPopup: React.FC<Props> = ({ data }) => {
       </Title>
       <Table className="view-more-table">
         <Col>
-          <Row>Floor price</Row>
+          <Row className="bg-[#F6F8FF]">Floor price</Row>
           <Row>
             {data.collection.floor_price !== null
               ? `${formatAmount(data.collection.floor_price)} ETH`
@@ -56,7 +56,7 @@ export const CollectionPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>Contract address</Row>
+          <Row className="bg-[#F6F8FF]">Contract address</Row>
           <Row>
             <Values.Address address={data.collection.id} chain={data.chain} />
           </Row>

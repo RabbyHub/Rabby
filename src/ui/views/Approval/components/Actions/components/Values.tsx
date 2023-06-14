@@ -5,6 +5,7 @@ import ClipboardJS from 'clipboard';
 import { Chain } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
+import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
@@ -29,7 +30,11 @@ const TokenAmountWrapper = styled.div`
   overflow: hidden;
 `;
 const TokenAmount = ({ value }: { value: string | number }) => {
-  return <TokenAmountWrapper>{formatAmount(value)}</TokenAmountWrapper>;
+  return (
+    <TokenAmountWrapper title={String(value)}>
+      {formatAmount(value)}
+    </TokenAmountWrapper>
+  );
 };
 
 const Percentage = ({ value }: { value: number }) => {
@@ -40,11 +45,17 @@ const USDValue = ({ value }: { value: number | string }) => {
   return <Text>{formatUsdValue(value)}</Text>;
 };
 
-const TimeSpan = ({ value }: { value: number | null }) => {
+const TimeSpan = ({
+  value,
+  to = Date.now(),
+}: {
+  value: number | null;
+  to?: number;
+}) => {
   const timeSpan = useMemo(() => {
-    const bornAt = value;
-    if (!bornAt) return '-';
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
+    const from = value;
+    if (!from) return '-';
+    const { d, h, m } = getTimeSpan(Math.floor(to / 1000) - from);
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''} ago`;
     }
@@ -55,7 +66,31 @@ const TimeSpan = ({ value }: { value: number | null }) => {
       return `${m} minutes ago`;
     }
     return '1 minute ago';
-  }, [value]);
+  }, [value, to]);
+  return <>{timeSpan}</>;
+};
+
+const TimeSpanFuture = ({
+  from = Math.floor(Date.now() / 1000),
+  to,
+}: {
+  from?: number;
+  to: number;
+}) => {
+  const timeSpan = useMemo(() => {
+    if (!to) return '-';
+    const { d, h, m } = getTimeSpan(to - from);
+    if (d > 0) {
+      return `${d} day${d > 1 ? 's' : ''}`;
+    }
+    if (h > 0) {
+      return `${h} hour${h > 1 ? 's' : ''}`;
+    }
+    if (m > 1) {
+      return `${m} minutes`;
+    }
+    return '1 minute';
+  }, [from, to]);
   return <>{timeSpan}</>;
 };
 
@@ -254,10 +289,11 @@ const Address = ({
   iconWidth = '12px',
 }: {
   address: string;
-  chain: Chain;
+  chain?: Chain;
   iconWidth?: string;
 }) => {
   const handleClickContractId = () => {
+    if (!chain) return;
     openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
   };
   const handleCopyContractAddress = () => {
@@ -287,13 +323,15 @@ const Address = ({
   return (
     <AddressWrapper className="value-address">
       <span title={address}>{ellipsis(address)}</span>
-      <img
-        onClick={handleClickContractId}
-        src={IconExternal}
-        width={iconWidth}
-        height={iconWidth}
-        className="ml-6 cursor-pointer"
-      />
+      {chain && (
+        <img
+          onClick={handleClickContractId}
+          src={IconExternal}
+          width={iconWidth}
+          height={iconWidth}
+          className="ml-6 cursor-pointer"
+        />
+      )}
       <img
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
@@ -313,6 +351,20 @@ const Text = ({ children }: { children: ReactNode }) => {
   );
 };
 
+const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
+  const chain = useMemo(() => {
+    return Object.values(CHAINS).find(
+      (item) => item.serverId === chainServerId
+    );
+  }, [chainServerId]);
+  if (!chain) return null;
+  return (
+    <span className="flex items-center">
+      on {chain.name} <img src={chain.logo} className="ml-4 w-14 h-14" />
+    </span>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -321,8 +373,10 @@ export {
   AddressMark,
   USDValue,
   TimeSpan,
+  TimeSpanFuture,
   Protocol,
   TokenLabel,
   Address,
   Text,
+  DisplayChain,
 };

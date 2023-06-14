@@ -19,6 +19,9 @@ import RevokeTokenApprove from './RevokeTokenApprove';
 import WrapToken from './WrapToken';
 import UnWrapToken from './UnWrapToken';
 import PushMultiSig from './PushMultiSig';
+import CrossToken from './CrossToken';
+import CrossSwapToken from './CrossSwapToken';
+import RevokePermit2 from './RevokePermit2';
 import {
   ActionRequireData,
   ApproveNFTRequireData,
@@ -193,6 +196,22 @@ const Actions = ({
               engineResults={engineResults}
             />
           )}
+          {data.crossToken && (
+            <CrossToken
+              data={data.crossToken}
+              requireData={requireData as SwapRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data.crossSwapToken && (
+            <CrossSwapToken
+              data={data.crossSwapToken}
+              requireData={requireData as SwapRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
           {data.wrapToken && (
             <WrapToken
               data={data.wrapToken}
@@ -230,6 +249,16 @@ const Actions = ({
           {data.revokeToken && (
             <RevokeTokenApprove
               data={data.revokeToken}
+              requireData={requireData as RevokeTokenApproveRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            />
+          )}
+          {data.revokePermit2 && (
+            <RevokePermit2
+              data={data.revokePermit2}
               requireData={requireData as RevokeTokenApproveRequireData}
               chain={chain}
               engineResults={engineResults}

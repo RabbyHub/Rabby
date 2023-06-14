@@ -1041,12 +1041,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       origin: origin || '',
       addr: address,
     });
-    const parsed = parseAction(actionData.action, res.balance_change, {
-      ...tx,
-      gas: '0x0',
-      nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-      value: tx.value || '0x0',
-    });
+    console.log('res', res);
+    const parsed = parseAction(
+      actionData.action,
+      res.balance_change,
+      {
+        ...tx,
+        gas: '0x0',
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
+      },
+      res.pre_exec_version
+    );
     const requiredData = await fetchActionRequiredData({
       actionData: parsed,
       contractCall: actionData.contract_call,
@@ -1842,7 +1848,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-              securityCheckStatus === 'loading' ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult

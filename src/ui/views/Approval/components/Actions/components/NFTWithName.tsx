@@ -2,8 +2,10 @@ import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NFTItem, TransferingNFTItem } from '@debank/rabby-api/dist/types';
 import React, { ReactNode } from 'react';
+import { ellipsisTokenSymbol } from 'ui/utils/token';
 import styled from 'styled-components';
-import IconUnknown from 'ui/assets/token-default.svg';
+import { TokenLabel } from './Values';
+import clsx from 'clsx';
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,19 +30,22 @@ const Wrapper = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: #333333;
-    flex: 1;
+    flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
   }
 `;
 
 const NFTWithName = ({
   nft,
   textStyle,
+  showTokenLabel = false,
 }: {
   nft: NFTItem;
   textStyle?: React.CSSProperties;
+  showTokenLabel?: boolean;
 }) => {
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
@@ -53,9 +58,29 @@ const NFTWithName = ({
           content={nft?.content}
           type={nft?.content_type}
         />
-        <div className="name" style={textStyle}>
-          {nft?.name || '-'}
+        <div
+          style={textStyle}
+          className={clsx('name', {
+            'flex-1': !showTokenLabel,
+          })}
+          title={nft?.name || '-'}
+        >
+          {showTokenLabel
+            ? ellipsisTokenSymbol(nft?.name || '-', 15)
+            : nft?.name || '-'}
         </div>
+        {showTokenLabel && (
+          <div className="ml-4">
+            <TokenLabel
+              isFake={nft.collection?.is_verified === false}
+              isScam={
+                nft.collection?.is_verified === false
+                  ? false
+                  : !!nft.collection?.is_suspicious
+              }
+            />
+          </div>
+        )}
       </Wrapper>
       {focusingNFT && (
         <ModalPreviewNFTItem
