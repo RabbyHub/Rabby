@@ -1360,10 +1360,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.5.25":
-  version "0.5.32"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.32.tgz#30ddef99c09d8ac14d42525c0cb791093a8ae029"
-  integrity sha512-wlddfFr+82n1jWdnz8ITOEbiscjpDtYdBdy+rdKIayoOXMO6kc81gfb9rPAwZXT5WbbQ1Qqr/yp30My9yPnfPA==
+"@debank/rabby-api@^0.5.34", "@debank/rabby-api@^0.5.35":
+  version "0.5.35"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.35.tgz#70c3221be0173d62be3583ec7694f88d40227e3a"
+  integrity sha512-ey9ou0qvWo+gHhYBy5WSUyEPcUiEBjqx3laTJf/W7gpOiTHtKxRHhI/Yex18vNIycD/KB1cd2I4dt8fwLkPl6A==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"
@@ -1372,25 +1372,13 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-api@^0.5.33":
-  version "0.5.33"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.33.tgz#081d6e7d4c346fc86bb979c3b751b593950f1621"
-  integrity sha512-czzOEaWuEQ5dntcQYFLW7zNukaXSciWbSPGJq+ex2oPAcnEl5lWjuzPsF3mnAAJKkf1MjX57MSbvfCr6hsZ/QA==
-  dependencies:
-    "@debank/isomorphic" "^0.3.1"
-    axios "^0.27.2"
-    axios-rate-limit "^1.3.0"
-    eth-rpc-errors "^4.0.3"
-    lodash "^4.17.21"
-    qss "^2.0.3"
-
-"@debank/rabby-security-engine@^1.0.18":
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.18.tgz#1522bd328258d192d72e56babf5294728b67d151"
-  integrity sha512-KLVvTlKY3oZvAFnosA0tQwUmB9w0iMr5l7ggNVbuidei7i8sK+Vr1q2k0u7/1JOziirit2jTtJ8nlKEbAeeRvQ==
+"@debank/rabby-security-engine@^1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.20.tgz#b48f3ea72687a52f56cc2ac70566813d23a1c9d1"
+  integrity sha512-S7/VHsLKK7h1KNqCHu+bP6eNWseal0ju9ZYX0SIzVRbfeTTkzv2VJCMkoR1ofV0Oieh/jHuADxW15zBTdU51eg==
   dependencies:
     "@debank/common" "^0.2.31"
-    "@debank/rabby-api" "^0.5.25"
+    "@debank/rabby-api" "^0.5.34"
 
 "@debank/wc-browser-utils@^1.8.7":
   version "1.8.7"
