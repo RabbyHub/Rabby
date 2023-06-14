@@ -41,7 +41,7 @@ export const preference = createModel<RootModel>()({
 
   reducers: {
     setField(state, payload: Partial<typeof state>) {
-      return Object.keys(payload).reduce(
+      return Object.keys(payload || {}).reduce(
         (accu, key) => {
           accu[key] = payload[key];
           return accu;
