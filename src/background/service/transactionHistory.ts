@@ -1,5 +1,6 @@
 import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
+import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
@@ -47,18 +48,18 @@ export interface TransactionGroup {
 
 interface TxHistoryStore {
   transactions: {
-    [key: string]: Record<string, TransactionGroup>;
-  };
-  deprecatedTransactions: {
-    [key: string]: Record<string, TransactionHistoryItem>;
+    [addr: string]: Record<string, TransactionGroup>;
   };
 }
 
 class TxHistory {
+  /**
+   * @description notice, always set store.transactions by calling `_setStoreTransaction`
+   */
   store!: TxHistoryStore;
 
   private _signingTxList: TransactionSigningItem[] = [];
-  private _booted = false;
+  private _availableTxs: TxHistory['store']['transactions'] = {};
 
   addSigningTx(tx: Tx) {
     const id = nanoid();
@@ -110,57 +111,62 @@ class TxHistory {
       name: 'txHistory',
       template: {
         transactions: {},
-        deprecatedTransactions: {},
       },
     });
     if (!this.store.transactions) this.store.transactions = {};
-    if (!this.store.deprecatedTransactions)
-      this.store.deprecatedTransactions = {};
+
+    this._populateAvailableTxs();
+  }
+
+  private _populateAvailableTxs() {
+    const { actualTxs } = this.filterOutTxDataOnBootstrap();
+    this._availableTxs = actualTxs;
+
+    // // leave here for test robust
+    // this._availableTxs = this.store.transactions;
+  }
+
+  private _setStoreTransaction(input: typeof this.store.transactions) {
+    this.store.transactions = input;
+
+    this._populateAvailableTxs();
   }
 
   filterOutTxDataOnBootstrap() {
-    const deprecatedTxs = ({
-      ...this.store.deprecatedTransactions,
-    } as any) as typeof this.store.transactions;
+    const deprecatedTxs = ({} as any) as typeof this.store.transactions;
+    const actualTxs = cloneDeep({ ...this.store.transactions });
     const pendingTxIdsToRemove: string[] = [];
 
-    if (!this._booted) {
-      this._booted = true;
+    Object.entries({ ...actualTxs }).forEach(
+      ([addr, txGroup]) => {
+        const dtxGroup = {
+          ...deprecatedTxs[addr],
+        } as typeof txGroup;
+        let changed = false;
+        Object.entries(txGroup).forEach(([tid, item]) => {
+          if (!findChainByID(item.chainId)) {
+            changed = true;
+            dtxGroup[tid] = item;
+            delete txGroup[tid];
+          }
+        });
+        if (changed) deprecatedTxs[addr] = dtxGroup;
+      }
+    );
 
-      Object.entries({ ...this.store.transactions }).forEach(
-        ([gid, txGroup]) => {
-          const dtxGroup = {
-            ...deprecatedTxs[gid],
-          } as typeof txGroup;
-          let changed = false;
-          Object.entries(txGroup).forEach(([tid, item]) => {
-            if (!findChainByID(item.chainId)) {
-              changed = true;
-              dtxGroup[tid] = item;
-              delete txGroup[tid];
-            }
-          });
-          if (changed) deprecatedTxs[gid] = dtxGroup;
-        }
-      );
-
-      this.store.deprecatedTransactions = deprecatedTxs as any;
-    } else {
-      console.warn('txHistory has already been booted');
-    }
-
-    Object.entries(deprecatedTxs).forEach(([gid, txGroup]) => {
+    Object.entries(deprecatedTxs).forEach(([addr, txGroup]) => {
       Object.values(txGroup).forEach((txData) => {
         const siteChain = txData.txs.find((item) => item.site?.chain)?.site
           ?.chain;
         if (!siteChain) return;
         pendingTxIdsToRemove.push(
-          makeTransactionId(gid, txData.nonce, siteChain)
+          makeTransactionId(addr, txData.nonce, siteChain)
         );
       });
     });
 
     return {
+      actualTxs,
       deprecatedTransactions: deprecatedTxs,
       pendingTxIdsToRemove,
     };
@@ -169,7 +175,7 @@ class TxHistory {
   getPendingCount(address: string) {
     const normalizedAddress = address.toLowerCase();
     return Object.values(
-      this.store.transactions[normalizedAddress] || {}
+      this._availableTxs[normalizedAddress] || {}
     ).filter((item) => item.isPending && !item.isSubmitFailed).length;
   }
 
@@ -205,15 +211,15 @@ class TxHistory {
     if (this.store.transactions[from][key]) {
       const group = this.store.transactions[from][key];
       group.txs.push(tx);
-      this.store.transactions = {
+      this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
           ...this.store.transactions[from],
           [key]: group,
         },
-      };
+      });
     } else {
-      this.store.transactions = {
+      this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
           ...this.store.transactions[from],
@@ -228,7 +234,7 @@ class TxHistory {
             isSubmitFailed: true,
           },
         },
-      };
+      });
     }
   }
 
@@ -267,15 +273,15 @@ class TxHistory {
       if (group.isSubmitFailed) {
         group.isSubmitFailed = false;
       }
-      this.store.transactions = {
+      this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
           ...this.store.transactions[from],
           [key]: group,
         },
-      };
+      });
     } else {
-      this.store.transactions = {
+      this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
           ...this.store.transactions[from],
@@ -290,7 +296,7 @@ class TxHistory {
             $ctx,
           },
         },
-      };
+      });
     }
 
     // this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
@@ -305,13 +311,13 @@ class TxHistory {
     if (!this.store.transactions[from] || !target) return;
     const index = target.txs.findIndex((t) => t.hash === tx.hash);
     target.txs[index] = tx;
-    this.store.transactions = {
+    this._setStoreTransaction({
       ...this.store.transactions,
       [from]: {
         ...this.store.transactions[from],
         [key]: target,
       },
-    };
+    });
   }
 
   async reloadTx(
@@ -419,8 +425,9 @@ class TxHistory {
 
   getList(address: string) {
     const list = Object.values(
-      this.store.transactions[address.toLowerCase()] || {}
+      this._availableTxs[address.toLowerCase()] || {}
     );
+    
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
@@ -431,6 +438,7 @@ class TxHistory {
         completeds.push(list[i]);
       }
     }
+
     return {
       pendings: pendings.sort((a, b) => {
         if (a.chainId === b.chainId) {
@@ -476,13 +484,13 @@ class TxHistory {
         target.txs[index].gasUsed = gasUsed;
       }
     }
-    this.store.transactions = {
+    this._setStoreTransaction({
       ...this.store.transactions,
       [normalizedAddress]: {
         ...this.store.transactions[normalizedAddress],
         [key]: target,
       },
-    };
+    });
     const chain = Object.values(CHAINS).find(
       (item) => item.id === Number(target.chainId)
     );
@@ -548,17 +556,18 @@ class TxHistory {
     //     delete copyExplain[k];
     //   }
     // }
-    this.store.transactions = {
+    this._setStoreTransaction({
       ...this.store.transactions,
       [normalizedAddress]: copyHistory,
-    };
+    });
+    this._populateAvailableTxs();
     // this.store.cacheExplain = copyExplain;
   }
 
   clearPendingTransactions(address: string) {
     const transactions = this.store.transactions[address.toLowerCase()];
     if (!transactions) return;
-    this.store.transactions = {
+    this._setStoreTransaction({
       ...this.store.transactions,
       [address.toLowerCase()]: Object.values(transactions)
         .filter((transaction) => !transaction.isPending)
@@ -568,7 +577,7 @@ class TxHistory {
             [`${current.chainId}-${current.nonce}`]: current,
           };
         }, {}),
-    };
+    });
   }
 
   getPendingTxByHash(hash: string) {

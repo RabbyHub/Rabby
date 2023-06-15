@@ -95,13 +95,6 @@ async function restoreAppState() {
   await RPCService.init();
   await securityEngineService.init();
 
-  const {
-    pendingTxIdsToRemove,
-  } = transactionHistoryService.filterOutTxDataOnBootstrap();
-  pendingTxIdsToRemove?.forEach((pendingTxId) => {
-    transactionWatchService._removeTx(pendingTxId);
-  });
-
   rpcCache.start();
 
   appStoreLoaded = true;
