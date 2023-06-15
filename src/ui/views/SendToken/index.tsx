@@ -160,7 +160,7 @@ const SendToken = () => {
     !isLoading &&
     (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const isNativeToken =
-    !!chainItem && currentToken.id === chainItem.nativeTokenAddress;
+    !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
   const fetchGasList = async () => {
     const list: GasLevel[] = await wallet.openapi.gasMarket(
@@ -580,7 +580,7 @@ const SendToken = () => {
     address: string
   ) => {
     const t = await wallet.openapi.getToken(address, chainId, id);
-    setCurrentToken(t);
+    if (t) setCurrentToken(t);
     setIsLoading(false);
   };
 
