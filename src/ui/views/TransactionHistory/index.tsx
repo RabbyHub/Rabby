@@ -32,6 +32,7 @@ import { SvgIconOpenExternal } from 'ui/assets';
 import './style.less';
 import { Account } from '@/background/service/preference';
 import interval from 'interval-promise';
+import { findChainByID } from '@/utils/chain';
 
 const TransactionExplain = ({
   isFailed,
@@ -697,7 +698,7 @@ const TransactionHistory = () => {
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (
-            <TransactionItem
+            !findChainByID(item?.chainId) ? null : <TransactionItem
               item={item}
               key={`${item.chainId}-${item.nonce}`}
               canCancel={
@@ -714,7 +715,7 @@ const TransactionHistory = () => {
       {completeList.length > 0 && (
         <div className="tx-history__completed">
           {completeList.map((item) => (
-            <TransactionItem
+            !findChainByID(item?.chainId) ? null : <TransactionItem
               item={item}
               key={`${item.chainId}-${item.nonce}`}
               canCancel={false}
