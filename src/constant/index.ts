@@ -638,7 +638,6 @@ export const GASPRICE_RANGE = ensureChainHashValid({
   [CHAINS_ENUM.AURORA]: [0, 1000],
   [CHAINS_ENUM.BSC]: [0, 1000],
   [CHAINS_ENUM.AVAX]: [0, 4000],
-  // @ts-expect-error in test, polygon is expected removed
   [CHAINS_ENUM.POLYGON]: [0, 250000],
   [CHAINS_ENUM.FTM]: [0, 360000],
   [CHAINS_ENUM.GNOSIS]: [0, 500000],
@@ -772,7 +771,7 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
   sbch: ['sbch'],
   sdn: ['sdn'],
   sgb: ['sgb'],
-  swm: ['swm'],
+  // swm: ['swm'],
   tlos: ['tlos'],
   wan: ['wan'],
   xdai: ['xdai'],
@@ -868,7 +867,6 @@ export const BRAND_ALIAN_TYPE_TEXT = {
 export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ETH,
   CHAINS_ENUM.BSC,
-  // @ts-expect-error in test, polygon is expected removed
   CHAINS_ENUM.POLYGON,
   CHAINS_ENUM.GNOSIS,
   CHAINS_ENUM.AVAX,
