@@ -3,7 +3,7 @@ import {
   RuleConfig,
   Level,
   UserData,
-} from '@debank/rabby-security-engine/dist/rules';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { RootModel } from '.';
 
 interface State {

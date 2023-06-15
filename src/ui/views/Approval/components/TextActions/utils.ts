@@ -3,7 +3,7 @@ import {
   CreateKeyAction,
   VerifyAddressAction,
 } from '@debank/rabby-api/dist/types';
-import { ContextActionData } from '@debank/rabby-security-engine/dist/rules';
+import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 
 export interface TextActionData {
   sender: string;

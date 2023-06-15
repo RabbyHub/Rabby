@@ -6,7 +6,7 @@ import * as Values from '../Actions/components/Values';
 import { Chain } from 'background/service/openapi';
 import { MultiSigRequireData } from './utils';
 import LogoWithText from '../Actions/components/LogoWithText';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { CHAINS } from 'consts';
 
 const Wrapper = styled.div``;

@@ -3,7 +3,7 @@ import {
   NumberDefine,
   EnumDefine,
   Level,
-} from '@debank/rabby-security-engine/dist/rules';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import React, { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { sortBy } from 'lodash';

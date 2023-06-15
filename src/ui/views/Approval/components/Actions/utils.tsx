@@ -29,7 +29,7 @@ import {
 import {
   ContextActionData,
   UserData,
-} from '@debank/rabby-security-engine/dist/rules';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
 import { useState, useCallback, useEffect } from 'react';
 import PQueue from 'p-queue';

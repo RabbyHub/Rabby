@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';

@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo } from 'react';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { SecurityEngineLevel } from 'consts';

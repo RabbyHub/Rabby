@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractRequireData, TypedDataActionData } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';

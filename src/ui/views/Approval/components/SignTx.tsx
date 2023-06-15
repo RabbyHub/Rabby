@@ -20,7 +20,7 @@ import {
 import { Account, ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   CHAINS,
   CHAINS_ENUM,
@@ -67,7 +67,7 @@ import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
