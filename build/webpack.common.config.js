@@ -178,9 +178,9 @@ const config = {
     ],
   },
   plugins: [
-    // new ESLintWebpackPlugin({
-    //   extensions: ['ts', 'tsx', 'js', 'jsx'],
-    // }),
+    new ESLintWebpackPlugin({
+      extensions: ['ts', 'tsx', 'js', 'jsx'],
+    }),
     // new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
