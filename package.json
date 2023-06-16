@@ -102,6 +102,7 @@
     "react-router-dom": "^5.2.0",
     "react-use": "^17.2.4",
     "react-window": "^1.8.6",
+    "recharts": "^2.7.1",
     "redux": "^4.2.0",
     "reflect-metadata": "^0.1.13",
     "remark-gfm": "^3.0.1",

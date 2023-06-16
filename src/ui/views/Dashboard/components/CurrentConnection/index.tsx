@@ -6,12 +6,11 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import { ChainSelector, FallbackSiteLogo } from 'ui/component';
+import { FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconMetamaskBadge from 'ui/assets/dashboard/icon-metamask-badge.svg';
 import { useRequest } from 'ahooks';
 
@@ -127,7 +126,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   );
 
   return (
-    <div className={clsx('current-connection-block')}>
+    <div className={clsx('current-connection-block h-[56px]')}>
       {site ? (
         site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
           Content
@@ -149,20 +148,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           <div className="site-content">No Dapp found, refresh web page</div>
         </div>
       )}
-      <ChainSelector
-        className={clsx(!site && 'disabled')}
-        value={site?.chain || CHAINS_ENUM.ETH}
-        onChange={handleChangeDefaultChain}
-        showModal={visible}
-        onAfterOpen={() => {
-          matomoRequestEvent({
-            category: 'Front Page Click',
-            action: 'Click',
-            label: 'Change Chain',
-          });
-        }}
-        showRPCStatus
-      />
     </div>
   );
 });

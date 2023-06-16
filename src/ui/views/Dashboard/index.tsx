@@ -716,8 +716,6 @@ const Dashboard = () => {
           )}
           <BalanceView
             currentAccount={currentAccount}
-            showChain={showChain}
-            startAnimate={startAnimate}
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}
             onClick={() => {
               if (!showToken && !showAssets && !showNFT) {
@@ -764,7 +762,7 @@ const Dashboard = () => {
             pendingTxCount > 0 &&
             !showChain && <PendingTxs pendingTxCount={pendingTxCount} />
           )}
-          <div className={clsx('listContainer', showChain && 'mt-10')}>
+          {/* <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
               className={clsx('token', showToken && 'showToken')}
               onClick={() => {
@@ -856,7 +854,7 @@ const Dashboard = () => {
                 />
               </div>
             )}
-          </div>
+          </div> */}
           <TokenList
             tokens={tokens}
             searchTokens={searchTokens}

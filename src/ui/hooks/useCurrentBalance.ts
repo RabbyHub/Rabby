@@ -5,7 +5,7 @@ import type { ChainWithBalance } from 'background/service/openapi';
 
 import { CHAINS } from 'consts';
 
-interface DisplayChainWithWhiteLogo extends ChainWithBalance {
+export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
 }

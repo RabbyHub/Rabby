@@ -381,55 +381,6 @@ export default ({
             );
           })}
         </div>
-        <div className="price-viewer">
-          <div className="eth-price">
-            {tokenLoading ? (
-              <Skeleton.Avatar size={20} active shape="circle" />
-            ) : (
-              <img src={tokenLogo} className="w-[20px] h-[20px] rounded-full" />
-            )}
-            {currentPriceLoading ? (
-              <Skeleton.Button active={true} />
-            ) : (
-              <>
-                <div className="gasprice">
-                  {currentPrice !== null
-                    ? currentPrice < 0.01
-                      ? '<$0.01'
-                      : `$${splitNumberByStep(currentPrice.toFixed(2))}`
-                    : '-'}
-                </div>
-                {percentage !== null && (
-                  <div
-                    className={
-                      percentage > 0
-                        ? 'positive'
-                        : percentage === 0
-                        ? 'even'
-                        : 'depositive'
-                    }
-                  >
-                    {percentage >= 0 && '+'}
-                    {percentage?.toFixed(2)}%
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-          <div className="gas-container">
-            <img src={IconGas} className="w-[16px] h-[16px]" />
-            {gasPriceLoading ? (
-              <Skeleton.Button active={true} />
-            ) : (
-              <>
-                <div className="gasprice">{`${splitNumberByStep(
-                  gasPrice
-                )}`}</div>
-                <div className="gwei">Gwei</div>
-              </>
-            )}
-          </div>
-        </div>
       </div>
       <CurrentConnection
         onChainChange={(chain) => {
