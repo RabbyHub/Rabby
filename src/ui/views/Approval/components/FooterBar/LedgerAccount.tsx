@@ -28,10 +28,7 @@ export const LedgerAccount: React.FC = () => {
             <div className="text-red-forbidden">Ledger is not connected</div>
             <div
               onClick={onClickConnect}
-              className={clsx(
-                'underline cursor-pointer',
-                'text-12 font-medium text-gray-subTitle'
-              )}
+              className={clsx('underline cursor-pointer', 'text-13 text-black')}
             >
               Connect
             </div>
@@ -39,7 +36,7 @@ export const LedgerAccount: React.FC = () => {
         );
 
       default:
-        return <div className="text-gray-subTitle">Ledger is connected</div>;
+        return <div className="text-black">Ledger is connected</div>;
     }
   };
 

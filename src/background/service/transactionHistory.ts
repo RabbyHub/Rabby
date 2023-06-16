@@ -6,6 +6,10 @@ import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
+import {
+  ActionRequireData,
+  ParsedActionData,
+} from '@/ui/views/Approval/components/Actions/utils';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -24,6 +28,10 @@ export interface TransactionSigningItem {
     ExplainTxResponse,
     { approvalId: string; calcSuccess: boolean }
   >;
+  action?: {
+    actionData: ParsedActionData;
+    requiredData: ActionRequireData;
+  };
   id: string;
   isSubmitted?: boolean;
 }
@@ -38,6 +46,10 @@ export interface TransactionGroup {
     ExplainTxResponse,
     { approvalId: string; calcSuccess: boolean }
   >;
+  action?: {
+    actionData: ParsedActionData;
+    requiredData: ActionRequireData;
+  };
   isFailed: boolean;
   isSubmitFailed?: boolean;
   $ctx?: any;
@@ -82,6 +94,10 @@ class TxHistory {
     data: {
       explain?: Partial<TransactionSigningItem['explain']>;
       rawTx?: Partial<TransactionSigningItem['rawTx']>;
+      action?: {
+        actionData: ParsedActionData;
+        requiredData: ActionRequireData;
+      };
       isSubmitted?: boolean;
     }
   ) {
@@ -95,6 +111,9 @@ class TxHistory {
         ...target.explain,
         ...data.explain,
       } as TransactionSigningItem['explain'];
+      if (data.action) {
+        target.action = data.action;
+      }
       target.isSubmitted = data.isSubmitted;
     }
   }
@@ -114,6 +133,16 @@ class TxHistory {
     return Object.values(
       this.store.transactions[normalizedAddress] || {}
     ).filter((item) => item.isPending && !item.isSubmitFailed).length;
+  }
+
+  getPendingTxsByNonce(address: string, chainId: number, nonce: number) {
+    const normalizedAddress = address.toLowerCase();
+    const pendingTxs = Object.values(
+      this.store.transactions[normalizedAddress] || {}
+    ).filter((item) => item.isPending && !item.isSubmitFailed);
+    return pendingTxs.filter(
+      (item) => item.nonce === nonce && item.chainId === chainId
+    );
   }
 
   addSubmitFailedTransaction(
@@ -178,6 +207,7 @@ class TxHistory {
   addTx(
     tx: TransactionHistoryItem,
     explain: TransactionGroup['explain'],
+    actionData: TransactionGroup['action'],
     origin: string,
     $ctx?: any
   ) {
@@ -228,7 +258,8 @@ class TxHistory {
             txs: [tx],
             createdAt: tx.createdAt,
             isPending: true,
-            explain: explain,
+            explain,
+            action: actionData,
             isFailed: false,
             $ctx,
           },

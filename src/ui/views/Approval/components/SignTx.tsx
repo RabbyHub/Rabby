@@ -20,6 +20,7 @@ import {
 import { Account, ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   CHAINS,
   CHAINS_ENUM,
@@ -34,9 +35,11 @@ import {
   MINIMUM_GAS_LIMIT,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
+import { useScroll } from 'react-use';
+import { useSize } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -44,31 +47,27 @@ import {
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import SecurityCheck from './SecurityCheck';
 import { WaitingSignComponent } from './SignText';
-import Approve from './TxComponents/Approve';
-import ApproveNFT from './TxComponents/ApproveNFT';
-import ApproveNFTCollection from './TxComponents/ApproveNFTCollection';
-import Cancel from './TxComponents/Cancel';
-import CancelNFT from './TxComponents/CancelNFT';
-import CancelNFTCollection from './TxComponents/CancelNFTCollection';
-import CancelTx from './TxComponents/CancelTx';
-import Deploy from './TxComponents/Deploy';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import Send from './TxComponents/Send';
-import SendNFT from './TxComponents/sendNFT';
-import Sign from './TxComponents/Sign';
-import ListNFT from './TxComponents/ListNFT';
-import PreCheckCard from './PreCheckCard';
-import SecurityCheckCard from './SecurityCheckCard';
-import ProcessTooltip from './ProcessTooltip';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
+import {
+  ParsedActionData,
+  parseAction,
+  fetchActionRequiredData,
+  ActionRequireData,
+  formatSecurityEngineCtx,
+} from '../components/Actions/utils';
+import Actions from './Actions';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import RuleDrawer from './SecurityEngine/RuleDrawer';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -114,137 +113,41 @@ const normalizeTxParams = (tx) => {
 };
 
 export const TxTypeComponent = ({
-  txDetail,
+  actionRequireData,
+  actionData,
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
   raw,
   onChange,
-  tx,
   isSpeedUp,
+  engineResults,
+  txDetail,
 }: {
-  txDetail: ExplainTxResponse;
-  chain: Chain | undefined;
+  actionRequireData: ActionRequireData;
+  actionData: ParsedActionData;
+  chain: Chain;
   isReady: boolean;
+  txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
-  tx: Tx;
   isSpeedUp: boolean;
+  engineResults: Result[];
 }) => {
-  if (!isReady) return <Loading chainEnum={chain.enum} />;
-
-  if (txDetail.type_deploy_contract)
+  if (!isReady) return <Loading />;
+  if (actionData && actionRequireData) {
     return (
-      <Deploy
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
+      <Actions
+        data={actionData}
+        requireData={actionRequireData}
+        chain={chain}
+        engineResults={engineResults}
+        txDetail={txDetail}
         raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_tx)
-    return (
-      <CancelTx
-        data={txDetail}
-        chainEnum={chain.enum}
-        tx={tx}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_single_nft_approval)
-    return (
-      <CancelNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_nft_collection_approval)
-    return (
-      <CancelNFTCollection
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_token_approval)
-    return (
-      <Cancel
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_single_nft_approval)
-    return (
-      <ApproveNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_nft_collection_approval)
-    return (
-      <ApproveNFTCollection
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_nft_send)
-    return (
-      <SendNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_token_approval)
-    return (
-      <Approve
-        data={txDetail}
-        chainEnum={chain.enum}
         onChange={onChange}
-        tx={tx}
         isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_send)
-    return (
-      <Send
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_list_nft) {
-    return (
-      <ListNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
       />
     );
   }
-  if (txDetail.type_call)
-    return (
-      <Sign
-        data={txDetail}
-        raw={raw}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        tx={tx}
-      />
-    );
   return <></>;
 };
 
@@ -749,6 +652,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       contract_protocol_name: '',
     },
   });
+  const [actionData, setActionData] = useState<ParsedActionData>({});
+  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
+    null
+  );
   const [submitText, setSubmitText] = useState('Proceed');
   const [checkText, setCheckText] = useState('Sign');
   const { t } = useTranslation();
@@ -804,13 +711,23 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRefSize = useSize(scrollRef);
+  const scrollInfo = useScroll(scrollRef);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+    userData: s.securityEngine.userData,
+    rules: s.securityEngine.rules,
+    currentTx: s.securityEngine.currentTx,
+  }));
+  const [footerShowShadow, setFooterShowShadow] = useState(false);
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
@@ -919,6 +836,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  const { executeEngine } = useSecurityEngine();
+  const [engineResults, setEngineResults] = useState<Result[]>([]);
+  const securityLevel = useMemo(() => {
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (enableResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (enableResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults, currentTx]);
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -1097,7 +1028,53 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         block,
       });
     }
-
+    const actionData = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
+        // todo
+        to: tx.to || '',
+      },
+      origin: origin || '',
+      addr: address,
+    });
+    console.log('res', res);
+    const parsed = parseAction(
+      actionData.action,
+      res.balance_change,
+      {
+        ...tx,
+        gas: '0x0',
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
+      },
+      res.pre_exec_version
+    );
+    const requiredData = await fetchActionRequiredData({
+      actionData: parsed,
+      contractCall: actionData.contract_call,
+      chainId: chain.serverId,
+      address,
+      wallet,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
+      },
+    });
+    const ctx = formatSecurityEngineCtx({
+      actionData: parsed,
+      requireData: requiredData,
+      chainId: chain.serverId,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+    setActionData(parsed);
+    setActionRequireData(requiredData);
     setTxDetail(res);
 
     setPreprocessSuccess(res.pre_exec.success);
@@ -1112,6 +1089,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           ...res,
           approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
+        },
+        action: {
+          actionData: parsed,
+          requiredData,
         },
       }));
 
@@ -1242,17 +1223,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
         },
+        action: {
+          actionData,
+          requiredData: actionRequireData,
+        },
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      // await wallet.addTxExplainCache({
-      //   address: currentAccount.address,
-      //   chainId,
-      //   nonce: Number(realNonce || tx.nonce),
-      //   explain: txDetail!,
-      //   approvalId: approval.id,
-      //   calcSuccess: !(checkErrors.length > 0),
-      // });
       resolveApproval({
         ...transaction,
         isSend,
@@ -1375,10 +1352,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setGnosisDrawerVisble(false);
   };
 
-  const handleForceProcessChange = (checked: boolean) => {
-    setForceProcess(checked);
-  };
-
   const handleTxChange = (obj: Record<string, any>) => {
     setTx({
       ...tx,
@@ -1409,25 +1382,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
-        // <div className="flex items-center gap-6">
-        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-        //   <div>
-        //     You can't sign with a watch-only address from contacts. To sign,
-        //     you'll need to{' '}
-        //     <a
-        //       href=""
-        //       className="underline"
-        //       onClick={async (e) => {
-        //         e.preventDefault();
-        //         await rejectApproval('User rejected the request.', true);
-        //         openInternalPageInTab('no-address');
-        //       }}
-        //     >
-        //       import it
-        //     </a>{' '}
-        //     fully or use a different address.
-        //   </div>
-        // </div>
         <div>You can only use imported addresses to sign</div>
       );
     }
@@ -1506,7 +1460,33 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleIgnoreRule = (id: string) => {
+    dispatch.securityEngine.processRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    dispatch.securityEngine.unProcessRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    if (currentTx.processedRules.includes(id)) {
+      dispatch.securityEngine.unProcessRule(id);
+    }
+    await wallet.ruleEnableStatusChange(id, value);
+    dispatch.securityEngine.init();
+  };
+
+  const handleRuleDrawerClose = (update: boolean) => {
+    if (update) {
+      executeSecurityEngine();
+    }
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
   const init = async () => {
+    dispatch.securityEngine.resetCurrentTx();
     try {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
@@ -1661,9 +1641,49 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const executeSecurityEngine = async () => {
+    const ctx = formatSecurityEngineCtx({
+      actionData: actionData,
+      requireData: actionRequireData,
+      chainId: chain.serverId,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+  };
+
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const enableResults = engineResults.filter((item) => item.enable);
+    const hasForbidden = enableResults.find(
+      (result) => result.level === Level.FORBIDDEN
+    );
+    const hasSafe = !!enableResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = enableResults.filter(
+      (result) =>
+        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        !processedRules.includes(result.id)
+    );
+    if (hasForbidden) return true;
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
+
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      if (scrollRef.current && scrollRef.current.scrollTop > 0) {
+        scrollRef.current && (scrollRef.current.scrollTop = 0);
+      }
+    }
+  }, [isReady]);
 
   useEffect(() => {
     if (isGnosisAccount) {
@@ -1695,38 +1715,47 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     })();
   }, [securityCheckStatus]);
 
-  const approvalTxStyle: Record<string, string> = {};
-  if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
-    approvalTxStyle.paddingBottom = '230px';
-  }
-  approvalTxStyle.paddingBottom = '210px';
+  useEffect(() => {
+    executeSecurityEngine();
+  }, [userData, rules]);
+
+  useEffect(() => {
+    if (scrollRef.current && scrollInfo && scrollRefSize) {
+      const avaliableHeight =
+        scrollRef.current.scrollHeight - scrollRefSize.height;
+      if (avaliableHeight <= 0) {
+        setFooterShowShadow(false);
+      } else {
+        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+      }
+    }
+  }, [scrollInfo, scrollRefSize]);
+
   return (
     <>
       <div
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
         })}
-        style={approvalTxStyle}
+        ref={scrollRef}
       >
         {txDetail && (
           <>
             {txDetail && (
               <TxTypeComponent
                 isReady={isReady}
-                txDetail={txDetail}
+                actionData={actionData}
+                actionRequireData={actionRequireData}
                 chain={chain}
+                txDetail={txDetail}
                 raw={{
                   ...tx,
                   nonce: realNonce || tx.nonce,
                   gas: gasLimit!,
                 }}
                 onChange={handleTxChange}
-                tx={{
-                  ...tx,
-                  nonce: realNonce || tx.nonce,
-                  gas: gasLimit,
-                }}
                 isSpeedUp={isSpeedUp}
+                engineResults={engineResults}
               />
             )}
             <GasSelector
@@ -1764,67 +1793,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               is1559={support1559}
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
-            />
-            <div className="section-title">Pre-sign check</div>
-            <PreCheckCard
-              isReady={isReady}
-              loading={!isReady}
-              version={txDetail.pre_exec_version}
-              data={txDetail.pre_exec}
               errors={checkErrors}
-            ></PreCheckCard>
-            <SecurityCheckCard
-              isReady={isReady}
-              loading={!securityCheckDetail}
-              data={securityCheckDetail}
-            ></SecurityCheckCard>
-
-            <footer className="connect-footer pb-[20px]">
-              {txDetail && (
-                <>
-                  {/* {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-                    <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-                  )}*/}
-                  {canProcess ? (
-                    <SecurityCheck
-                      status={securityCheckStatus}
-                      value={forceProcess}
-                      onChange={handleForceProcessChange}
-                    />
-                  ) : (
-                    <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
-                  )}
-
-                  <FooterBar
-                    gnosisAccount={isGnosis ? account : undefined}
-                    chain={chain}
-                    onCancel={handleCancel}
-                    onSubmit={() => handleAllow(forceProcess)}
-                    enableTooltip={
-                      !canProcess ||
-                      !!checkErrors.find((item) => item.level === 'forbidden')
-                    }
-                    tooltipContent={
-                      checkErrors.find((item) => item.level === 'forbidden')
-                        ? checkErrors.find(
-                            (item) => item.level === 'forbidden'
-                          )!.msg
-                        : cantProcessReason
-                    }
-                    disabledProcess={
-                      !isReady ||
-                      (selectedGas ? selectedGas.price < 0 : true) ||
-                      (isGnosisAccount ? !safeInfo : false) ||
-                      (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                      !forceProcess ||
-                      securityCheckStatus === 'loading' ||
-                      !canProcess ||
-                      !!checkErrors.find((item) => item.level === 'forbidden')
-                    }
-                  />
-                </>
-              )}
-            </footer>
+            />
           </>
         )}
         {isGnosisAccount && safeInfo && (
@@ -1843,7 +1813,48 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             />
           </Drawer>
         )}
+        <RuleDrawer
+          selectRule={currentTx.ruleDrawer.selectRule}
+          visible={currentTx.ruleDrawer.visible}
+          onIgnore={handleIgnoreRule}
+          onUndo={handleUndoIgnore}
+          onRuleEnableStatusChange={handleRuleEnableStatusChange}
+          onClose={handleRuleDrawerClose}
+        />
       </div>
+      {txDetail && (
+        <>
+          <FooterBar
+            hasShadow={footerShowShadow}
+            origin={origin}
+            originLogo={params.session.icon}
+            hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+            securityLevel={securityLevel}
+            gnosisAccount={isGnosis ? account : undefined}
+            chain={chain}
+            onCancel={handleCancel}
+            onSubmit={() => handleAllow(forceProcess)}
+            enableTooltip={
+              !canProcess ||
+              !!checkErrors.find((item) => item.level === 'forbidden')
+            }
+            tooltipContent={
+              checkErrors.find((item) => item.level === 'forbidden')
+                ? checkErrors.find((item) => item.level === 'forbidden')!.msg
+                : cantProcessReason
+            }
+            disabledProcess={
+              !isReady ||
+              (selectedGas ? selectedGas.price < 0 : true) ||
+              (isGnosisAccount ? !safeInfo : false) ||
+              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+              !canProcess ||
+              !!checkErrors.find((item) => item.level === 'forbidden') ||
+              hasUnProcessSecurityResult
+            }
+          />
+        </>
+      )}
     </>
   );
 };

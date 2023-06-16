@@ -16,14 +16,10 @@ export const GridPlusAccount: React.FC = () => {
         <div className="text-red-forbidden">GridPlus is not connected</div>
         <div
           onClick={onClickConnect}
-          className={clsx(
-            'cursor-pointer',
-            'text-12 font-medium text-gray-subTitle',
-            {
-              'opacity-60': connectLoading,
-              underline: !connectLoading,
-            }
-          )}
+          className={clsx('cursor-pointer', 'text-13 text-black', {
+            'opacity-60': connectLoading,
+            underline: !connectLoading,
+          })}
         >
           {connectLoading ? 'Connecting...' : 'Connect'}
         </div>

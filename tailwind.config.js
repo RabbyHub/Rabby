@@ -39,6 +39,7 @@ module.exports = {
         to: '#796BFD',
         light: '#8697FF',
         DEFAULT: '#796BFD',
+        purple: '#5F75FF',
       },
       black: '#707280',
       green: '#27C193',
@@ -60,6 +61,7 @@ module.exports = {
         subTitle: '#4B4D59',
         title: '#13141A',
         light: '#707880',
+        common: '#666666',
       },
     },
     fontSize: {

@@ -11,7 +11,6 @@ export const useApprovalPopup = () => {
   };
 
   const enablePopup = (type: string) => {
-    console.log('type', type);
     if (type) {
       return true;
     }

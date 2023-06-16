@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import SecurityLevel from '../SecurityEngine/SecurityLevel';
 import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
 
 const SecurityLevelTagWrapper = styled.div`
