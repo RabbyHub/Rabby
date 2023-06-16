@@ -15,7 +15,7 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@debank/common": "0.2.42-rabby.0",
+    "@debank/common": "^0.3.0",
     "@debank/festats": "1.0.0",
     "@debank/rabby-api": "^0.5.36",
     "@dnd-kit/core": "^5.0.1",
