@@ -9,6 +9,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import { Popup } from 'ui/component';
 import { ellipsisOverflowedText, useWallet } from 'ui/utils';
+import { getTokenSymbol } from 'ui/utils/token';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import ViewRawModal from './ViewRawModal';
@@ -74,8 +75,8 @@ const ApproveAmountModal = ({
           onChange={(e) => handleChange(e.target.value)}
           bordered={false}
           addonAfter={
-            <span title={token.symbol}>
-              {ellipsisOverflowedText(token.symbol, 4)}
+            <span title={getTokenSymbol(token)}>
+              {ellipsisOverflowedText(getTokenSymbol(token), 4)}
             </span>
           }
           autoFocus

@@ -4,6 +4,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
 import { useWallet } from 'ui/utils';
+import { getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
@@ -208,7 +209,7 @@ const TokenSelect = ({
                 hideConer
                 hideChainIcon={hideChainIcon}
               />
-              <Text title={token.symbol}>{token.symbol}</Text>
+              <Text title={getTokenSymbol(token)}>{getTokenSymbol(token)}</Text>
               <SvgIconArrowDownTriangle className="ml-[3px]" />
             </TokenWrapper>
           ) : (
