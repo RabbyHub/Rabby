@@ -1384,14 +1384,6 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-security-engine@^1.0.20":
-  version "1.0.20"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.20.tgz#b48f3ea72687a52f56cc2ac70566813d23a1c9d1"
-  integrity sha512-S7/VHsLKK7h1KNqCHu+bP6eNWseal0ju9ZYX0SIzVRbfeTTkzv2VJCMkoR1ofV0Oieh/jHuADxW15zBTdU51eg==
-  dependencies:
-    "@debank/common" "^0.2.31"
-    "@debank/rabby-api" "^0.5.34"
-
 "@debank/wc-browser-utils@^1.8.7":
   version "1.8.7"
   resolved "https://registry.yarnpkg.com/@debank/wc-browser-utils/-/wc-browser-utils-1.8.7.tgz#6d972e9102062fd2d7c9ee743d07f9513d3e4d11"
@@ -3660,6 +3652,14 @@
     lodash "^4.17.21"
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
+
+"@rabby-wallet/rabby-security-engine@^1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.0.20.tgz#f3ffad679c5a729a00dab955e72f802f9dfc9944"
+  integrity sha512-3uaTa0MV9qCmsK0SOoKu55zz7KrqSBcNS8Uhs3ye0jLErj5sZloYedJjCXR8MIPGtQov41VjNCogCikL057z2Q==
+  dependencies:
+    "@debank/common" "^0.2.31"
+    "@debank/rabby-api" "^0.5.34"
 
 "@rabby-wallet/rabby-swap@^0.0.17":
   version "0.0.17"

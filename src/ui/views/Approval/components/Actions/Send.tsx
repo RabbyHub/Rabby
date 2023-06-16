@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, SendRequireData } from './utils';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';

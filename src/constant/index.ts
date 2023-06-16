@@ -1,5 +1,5 @@
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';

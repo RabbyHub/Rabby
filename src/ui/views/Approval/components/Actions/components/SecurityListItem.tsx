@@ -1,5 +1,5 @@
-import { Result } from '@debank/rabby-security-engine';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import React from 'react';
 import { SecurityListItemTag } from './SecurityListItemTag';
 

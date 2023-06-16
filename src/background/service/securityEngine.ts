@@ -5,8 +5,8 @@ import {
   Threshold,
   ContextActionData,
   ContractAddress,
-} from '@debank/rabby-security-engine/dist/rules';
-import Engine from '@debank/rabby-security-engine';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import Engine from '@rabby-wallet/rabby-security-engine';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import openapiService from './openapi';
 

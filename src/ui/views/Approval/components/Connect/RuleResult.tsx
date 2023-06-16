@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Tooltip } from 'antd';
-import { Result } from '@debank/rabby-security-engine';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import SecurityLevelTag from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';

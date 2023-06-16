@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { Chain, TokenItem } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { ellipsisOverflowedText } from '@/ui/utils';
