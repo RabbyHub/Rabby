@@ -1,5 +1,5 @@
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';
@@ -57,7 +57,6 @@ import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
-import LogoUniswap from 'ui/assets/walletlogo/uniswap.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 
 export { CHAINS, CHAINS_ENUM };

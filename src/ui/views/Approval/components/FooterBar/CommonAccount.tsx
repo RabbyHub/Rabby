@@ -33,14 +33,12 @@ export const CommonAccount: React.FC<Props> = ({
   return (
     <section>
       <div className={clsx('space-x-6 flex items-start', 'relative')}>
-        <div className="relative mt-[-3px]">
+        <div className="relative">
           <img src={icon} className="w-[20px] h-[20px]" />
           {customSignal}
           {signal && <Signal isBadge color={bgColor} />}
         </div>
-        <div className="text-12 font-medium w-full text-gray-subTitle">
-          {tip}
-        </div>
+        <div className="text-13 w-full text-black">{tip}</div>
         {children}
       </div>
       {footer}

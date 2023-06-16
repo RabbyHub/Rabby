@@ -42,8 +42,8 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
   return (
     <div
       className={clsx(
-        'bg-[#EFF1FC] rounded-[8px]',
-        'py-[14px] px-[16px]',
+        'bg-[#F6F8FF] rounded-[8px]',
+        'py-[12px] px-[12px] mb-[12px]',
         'space-y-10'
       )}
     >
@@ -52,7 +52,7 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           <Tooltip title={nickname}>
             <div
               className={clsx(
-                'text-gray-title text-[17px] font-medium',
+                'text-gray-subTitle text-[15px]',
                 'max-w-[170px] overflow-ellipsis whitespace-nowrap overflow-hidden',
                 'leading-[20px]'
               )}
@@ -63,11 +63,11 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-gray-subTitle mt-[4px]')}
+            className={clsx('text-13 text-black mt-[4px]')}
           />
         </div>
         <div
-          className="text-13 font-medium text-gray-title mt-[4px]"
+          className="text-13 font-medium text-black mt-[4px]"
           title={displayBalance}
         >
           ${displayBalance}

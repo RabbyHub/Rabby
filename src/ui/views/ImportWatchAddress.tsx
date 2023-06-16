@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
-import WalletConnect from '@debank/wc-client';
+import WalletConnect from '@rabby-wallet/wc-client';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';

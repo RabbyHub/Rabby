@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { SecurityEngineLevel } from 'consts';
 import styled from 'styled-components';
 

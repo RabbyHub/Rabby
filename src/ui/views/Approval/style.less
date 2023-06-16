@@ -196,6 +196,10 @@
     flex: 1;
     overflow: auto;
     background-color: @color-bg;
+    .view-raw {
+      line-height: 16px !important;
+      color: @color-comment-1;
+    }
     .text-detail-wrapper {
       padding-bottom: 40px;
       margin: 0 auto;
@@ -428,23 +432,9 @@
           }
         }
       }
-
-      .token-balance-change + .nft-bc,
-      .nft-bc,
-      .token-balance-change {
-        border-top: 1px solid @color-border;
-      }
-
-      .token-balance-change.no-change-detected,
-      .nft-bc.no-change-detected {
-        margin-bottom: 0;
-
-        .section-title {
-          margin-bottom: 0;
-        }
-      }
     }
 
+    overflow-y: auto;
     .action-card {
       border-radius: 6px;
       background-color: #fff;
@@ -654,25 +644,24 @@
   }
 
   .approval-tx {
-    padding: 20px;
-    padding-bottom: 130px;
+    padding: 15px 18px;
     display: flex;
     flex-direction: column;
     background: @color-bg;
     flex: 1;
 
-    .ant-skeleton.ant-skeleton-active {
-      .ant-skeleton-avatar,
-      .ant-skeleton-input {
-        background: linear-gradient(
-          90deg,
-          #f5f6fa 25%,
-          rgba(190, 190, 190, 0.24) 37%,
-          #f5f6fa 63%
-        );
-        background-size: 400% 100%;
-      }
-    }
+    // .ant-skeleton.ant-skeleton-active {
+    //   .ant-skeleton-avatar,
+    //   .ant-skeleton-input {
+    //     background: linear-gradient(
+    //       90deg,
+    //       #f5f6fa 25%,
+    //       rgba(190, 190, 190, 0.24) 37%,
+    //       #f5f6fa 63%
+    //     );
+    //     background-size: 400% 100%;
+    //   }
+    // }
     .action-buttons {
       gap: 16px;
     }
@@ -685,9 +674,6 @@
     .view-raw {
       line-height: 16px !important;
       color: @color-comment-1;
-    }
-    &.pre-process-failed {
-      padding-bottom: 200px;
     }
 
     .section-block {
@@ -750,14 +736,6 @@
         margin: 4px 0 0 0;
         color: @color-comment-1;
         font-size: 12px;
-      }
-    }
-    .type-list-nft {
-      .token-balance-change.no-change-detected .section-title {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 16px;
-        color: @color-body;
       }
     }
     .cancel-tx {
@@ -887,12 +865,6 @@
       }
     }
     .sign {
-      .token-balance-change.no-change-detected {
-        margin-bottom: 0;
-        .section-title {
-          margin-bottom: 0;
-        }
-      }
       .common-detail-block {
         // padding: 21px 16px;
         // margin-bottom: 20px;
@@ -977,9 +949,6 @@
               font-size: 15px;
             }
           }
-          .token-balance-change {
-            margin-bottom: 0;
-          }
           .view-raw {
             display: none !important;
           }
@@ -1006,27 +975,18 @@
       }
     }
 
-    .token-balance-change + .nft-bc,
-    .nft-bc + .token-balance-change {
-      margin-top: 20px;
-    }
 
     .token-balance-change {
-      padding: 16px;
+      margin-top: 14px;
       .token-balance-change-content {
         &-header {
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 19px;
+          color: #131419;
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-          color: @color-body;
-
-          .token-change-total {
-            font-weight: 500;
-            font-size: 13px;
-            line-height: 15px;
-            color: @color-body;
-          }
+          margin-bottom: 15px;
         }
         .token-change-list {
           margin: 0;
@@ -1323,11 +1283,10 @@
 }
 
 .gas-selector {
-  margin-top: 8px;
+  margin-top: 15px;
   background: #fff;
   border-radius: 6px;
   display: flex;
-  margin-bottom: 20px;
   padding: 16px;
   flex-direction: column;
 
@@ -1336,8 +1295,7 @@
     align-items: center;
 
     &-content {
-      margin-left: 60px;
-      margin-right: auto;
+      margin-right: 4px;
       flex: 1;
       &-item {
         display: flex;
@@ -1364,9 +1322,10 @@
     }
 
     &-title {
-      font-size: 14px;
-      line-height: 16px;
-      color: @color-body;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 19px;
+      color: #333333;
     }
     &-gas {
       font-weight: 500;

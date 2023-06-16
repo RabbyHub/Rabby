@@ -15,6 +15,7 @@ import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -55,6 +56,11 @@ interface GasSelectorProps {
   }>;
   isGnosisAccount?: boolean;
   manuallyChangeGasLimit: boolean;
+  errors: {
+    code: number;
+    msg: string;
+    level?: 'warn' | 'danger' | 'forbidden';
+  }[];
 }
 
 const useExplainGas = ({
@@ -166,6 +172,28 @@ const ManuallySetGasLimitAlert = styled.div`
   color: #707280;
 `;
 
+const ErrorsWrapper = styled.div`
+  border-top: 1px solid #ededed;
+  padding-top: 14px;
+  margin-top: 14px;
+  .item {
+    display: flex;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+    margin-bottom: 10px;
+    align-items: flex-start;
+    .icon-alert {
+      width: 15px;
+      margin-right: 8px;
+    }
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+  }
+`;
+
 const GasSelector = ({
   gasLimit,
   gas,
@@ -185,6 +213,7 @@ const GasSelector = ({
   gasCalcMethod,
   isGnosisAccount,
   manuallyChangeGasLimit,
+  errors,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -546,7 +575,7 @@ const GasSelector = ({
           )}
         >
           <div className="gas-selector-card-title">Gas</div>
-          <div className="gas-selector-card-content ml-[27px]">
+          <div className="gas-selector-card-content ml-4">
             {isGnosisAccount ? (
               <div className="font-semibold">No gas required</div>
             ) : gas.error || !gas.success ? (
@@ -554,23 +583,23 @@ const GasSelector = ({
                 <div className="gas-selector-card-error">
                   Fail to fetch gas cost
                 </div>
-                {version === 'v2' && gas.error ? (
+                {/* {version === 'v2' && gas.error ? (
                   <div className="gas-selector-card-error-desc">
                     {gas.error.msg}{' '}
                     <span className="number">#{gas.error.code}</span>
                   </div>
-                ) : null}
+                ) : null} */}
               </>
             ) : (
               <div className="gas-selector-card-content-item">
                 <div className="gas-selector-card-amount">
-                  <span className="text-gray-title font-medium text-15">
+                  <span className="text-blue-purple font-medium text-15">
                     {formatTokenAmount(
                       new BigNumber(gas.gasCostAmount).toString(10)
                     )}{' '}
                     {chain.nativeTokenSymbol}
                   </span>
-                  &nbsp;&nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
                 </div>
               </div>
             )}
@@ -596,6 +625,16 @@ const GasSelector = ({
           <ManuallySetGasLimitAlert>
             You have manually set the Gas limit to {Number(gasLimit)}
           </ManuallySetGasLimitAlert>
+        )}
+        {errors.length > 0 && (
+          <ErrorsWrapper>
+            {errors.map((error) => (
+              <div className="item" key={error.code}>
+                <img src={IconAlert} className="icon icon-alert" />
+                {error.msg} #{error.code}
+              </div>
+            ))}
+          </ErrorsWrapper>
         )}
       </div>
       <Popup

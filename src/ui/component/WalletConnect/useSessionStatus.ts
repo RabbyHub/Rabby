@@ -37,7 +37,6 @@ export const useSessionStatus = (
       realBrandName?: string;
       status: Status;
     }) => {
-      console.log('session status', data);
       let updated: Status | undefined;
       if (
         !account?.address &&
