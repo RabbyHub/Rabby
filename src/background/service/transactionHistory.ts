@@ -137,22 +137,20 @@ class TxHistory {
     const actualTxs = cloneDeep({ ...this.store.transactions });
     const pendingTxIdsToRemove: string[] = [];
 
-    Object.entries({ ...actualTxs }).forEach(
-      ([addr, txGroup]) => {
-        const dtxGroup = {
-          ...deprecatedTxs[addr],
-        } as typeof txGroup;
-        let changed = false;
-        Object.entries(txGroup).forEach(([tid, item]) => {
-          if (!findChainByID(item.chainId)) {
-            changed = true;
-            dtxGroup[tid] = item;
-            delete txGroup[tid];
-          }
-        });
-        if (changed) deprecatedTxs[addr] = dtxGroup;
-      }
-    );
+    Object.entries({ ...actualTxs }).forEach(([addr, txGroup]) => {
+      const dtxGroup = {
+        ...deprecatedTxs[addr],
+      } as typeof txGroup;
+      let changed = false;
+      Object.entries(txGroup).forEach(([tid, item]) => {
+        if (!findChainByID(item.chainId)) {
+          changed = true;
+          dtxGroup[tid] = item;
+          delete txGroup[tid];
+        }
+      });
+      if (changed) deprecatedTxs[addr] = dtxGroup;
+    });
 
     Object.entries(deprecatedTxs).forEach(([addr, txGroup]) => {
       Object.values(txGroup).forEach((txData) => {
@@ -174,9 +172,9 @@ class TxHistory {
 
   getPendingCount(address: string) {
     const normalizedAddress = address.toLowerCase();
-    return Object.values(
-      this._availableTxs[normalizedAddress] || {}
-    ).filter((item) => item.isPending && !item.isSubmitFailed).length;
+    return Object.values(this._availableTxs[normalizedAddress] || {}).filter(
+      (item) => item.isPending && !item.isSubmitFailed
+    ).length;
   }
 
   addSubmitFailedTransaction(
@@ -424,10 +422,8 @@ class TxHistory {
   }
 
   getList(address: string) {
-    const list = Object.values(
-      this._availableTxs[address.toLowerCase()] || {}
-    );
-    
+    const list = Object.values(this._availableTxs[address.toLowerCase()] || {});
+
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };

@@ -49,5 +49,7 @@ export function ensureChainListValid<T extends CHAINS_ENUM[]>(list: T) {
  * @description safe find chain
  */
 export function findChainByID(chainId: Chain['id']): Chain | null {
-  return !chainId ? null : (ALL_CHAINS.find((chain) => chain.id === chainId) || null);
+  return !chainId
+    ? null
+    : ALL_CHAINS.find((chain) => chain.id === chainId) || null;
 }
