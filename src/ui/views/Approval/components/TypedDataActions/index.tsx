@@ -1,4 +1,4 @@
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';

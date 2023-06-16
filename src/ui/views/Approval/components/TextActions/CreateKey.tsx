@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { CreateKeyAction } from '@debank/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
-import { Result } from '@debank/rabby-security-engine';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 
 const Wrapper = styled.div``;
 

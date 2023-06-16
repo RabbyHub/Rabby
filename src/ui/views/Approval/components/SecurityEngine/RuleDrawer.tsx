@@ -6,7 +6,7 @@ import {
   Level,
   NumberDefine,
   EnumDefine,
-} from '@debank/rabby-security-engine/dist/rules';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import { sortBy } from 'lodash';
 import { SecurityEngineLevel, SecurityEngineLevelOrder } from 'consts';
