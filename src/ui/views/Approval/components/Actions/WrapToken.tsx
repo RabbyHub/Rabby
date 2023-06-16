@@ -6,7 +6,7 @@ import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
 import { formatAmount } from 'ui/utils/number';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import ViewMore from './components/ViewMore';
@@ -84,7 +84,7 @@ const WrapToken = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -97,7 +97,7 @@ const WrapToken = ({
               logo={receiveToken.logo_url}
               text={`${formatAmount(
                 receiveToken.min_amount
-              )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+              )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
               logoRadius="100%"
             />
             {engineResultMap['1061'] && (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CHAINS } from 'consts';
+import { getTokenSymbol } from 'ui/utils/token';
 import { TokenItem } from 'background/service/openapi';
 import IconUnknown from 'ui/assets/token-default.svg';
 import './style.less';
@@ -32,7 +33,7 @@ const TokenWithChain = ({
       <img
         className={clsx('token-symbol', noRound && 'no-round')}
         src={token.logo_url || IconUnknown}
-        alt={token.symbol}
+        alt={getTokenSymbol(token)}
         style={{ width, height, minWidth: width }}
       />
       {!hideChainIcon && (!hideConer || chain?.id) && (

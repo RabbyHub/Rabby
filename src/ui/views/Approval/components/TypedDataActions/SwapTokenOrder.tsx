@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { SwapTokenOrderRequireData, TypedDataActionData } from './utils';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -95,7 +95,7 @@ const Permit = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -118,7 +118,7 @@ const Permit = ({
                 logoRadius="100%"
                 text={`${formatAmount(
                   receiveToken.amount
-                )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+                )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}

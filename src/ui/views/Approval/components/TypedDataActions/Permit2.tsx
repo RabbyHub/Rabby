@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, TypedDataActionData } from './utils';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { formatAmount } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -76,7 +76,7 @@ const Permit2 = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(actionData.token.symbol)}
+              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               logoRadius="100%"
             />
           </Row>
@@ -90,7 +90,7 @@ const Permit2 = ({
             <ul className="desc-list">
               <li>
                 My balance <span>{formatAmount(tokenBalance)}</span>{' '}
-                {ellipsisTokenSymbol(actionData.token.symbol)}
+                {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               </li>
             </ul>
           </Row>

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { TokenItem } from 'background/service/openapi';
 import LessPalette from '@/ui/style/var-defs';
 import { formatTokenAmount } from '@/ui/utils/number';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const GasReservedDiv = styled.div`
   font-weight: 400;
@@ -38,7 +39,7 @@ const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
       <TokenAmount title={amount} onClick={onClickAmount}>
         {formatTokenAmount(amount, 4)}
       </TokenAmount>
-      {token.symbol} for gas cost
+      {getTokenSymbol(token)} for gas cost
     </GasReservedDiv>
   );
 };

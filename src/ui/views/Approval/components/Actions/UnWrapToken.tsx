@@ -6,7 +6,7 @@ import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
 import { formatAmount } from 'ui/utils/number';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
@@ -85,7 +85,7 @@ const UnWrapToken = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -98,7 +98,7 @@ const UnWrapToken = ({
               logo={receiveToken.logo_url}
               text={`${formatAmount(
                 receiveToken.min_amount
-              )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+              )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
               logoRadius="100%"
             />
             {engineResultMap['1062'] && (

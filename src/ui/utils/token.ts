@@ -131,7 +131,9 @@ export const getTokenName = async (
   }
 };
 
-export const getTokenSymbol = (token: TokenItem) => {
+export const getTokenSymbol = (token?: TokenItem) => {
+  if (!token) return '';
+
   return token.display_symbol || token.symbol || token.optimized_symbol || '';
 };
 

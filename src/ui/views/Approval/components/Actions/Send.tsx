@@ -5,7 +5,7 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, SendRequireData } from './utils';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
@@ -63,7 +63,7 @@ const Send = ({
               logo={actionData.token.logo_url}
               text={`${formatTokenAmount(
                 actionData.token.amount || 0
-              )} ${ellipsisTokenSymbol(actionData.token.symbol)}`}
+              )} ${ellipsisTokenSymbol(getTokenSymbol(actionData.token))}`}
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -121,7 +121,7 @@ const Send = ({
                     <SecurityListItem
                       engineResult={engineResultMap['1020']}
                       dangerText={`${ellipsisTokenSymbol(
-                        actionData.token.symbol
+                        getTokenSymbol(actionData.token)
                       )} not
                       supported`}
                       id="1020"

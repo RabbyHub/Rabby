@@ -1,6 +1,7 @@
 import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import React from 'react';
 import { NameAndAddress } from '..';
+import { getTokenSymbol } from 'ui/utils/token';
 import { TxAvatar } from './TxAvatar';
 
 type TxInterAddressExplainProps = {
@@ -40,7 +41,7 @@ export const TxInterAddressExplain = ({
     interAddressExplain = (
       <div className="tx-explain-title">
         Approve {amount < 1e9 ? amount.toFixed(4) : 'infinite'}{' '}
-        {`${approveToken.symbol || approveToken.display_symbol} for `}
+        {`${getTokenSymbol(approveToken)} for `}
         {projectName}
       </div>
     );
