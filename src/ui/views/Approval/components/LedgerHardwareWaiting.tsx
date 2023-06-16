@@ -26,6 +26,7 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
+import * as Sentry from '@sentry/browser';
 
 interface ApprovalParams {
   address: string;
@@ -163,6 +164,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             }
           }
         } catch (e) {
+          Sentry.captureException(e);
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
           return;
         }
@@ -182,6 +184,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           approvalId: approval.id,
         });
       } else {
+        Sentry.captureException(
+          new Error('Ledger sign error: ' + JSON.stringify(data))
+        );
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
       }
     });
