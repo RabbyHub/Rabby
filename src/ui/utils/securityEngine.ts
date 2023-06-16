@@ -3,7 +3,7 @@ import {
   UserData,
   ContextActionData,
   RuleConfig,
-} from '@debank/rabby-security-engine/dist/rules';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { useWallet } from './';
 
 export const useSecurityEngine = (nonce = 0) => {

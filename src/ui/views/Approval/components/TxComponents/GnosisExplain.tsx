@@ -1,10 +1,8 @@
 import React from 'react';
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { NameAndAddress } from 'ui/component/index';
-import { TxTypeComponent } from '../SignTx';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { findChainByEnum } from '@/utils/chain';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;
@@ -17,8 +15,6 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
   const handleChange = () => {
     // NOTHING
   };
-
-  const chainItem = findChainByEnum(chainEnum);
 
   return (
     <div className="block-field px-16 pb-20">
@@ -35,18 +31,15 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
             noNameClass="no-name"
           />
         </div>
-        {chainItem && (
-          <TxTypeComponent
-            txDetail={data}
-            // TODO: confirm it
-            chain={chainItem}
-            isReady
-            raw={raw}
-            isSpeedUp={false}
-            tx={tx}
-            onChange={handleChange}
-          />
-        )}
+        {/* <TxTypeComponent
+          txDetail={data}
+          chain={chainItem}
+          isReady
+          raw={raw}
+          isSpeedUp={false}
+          tx={tx}
+          onChange={handleChange}
+        /> */}
       </div>
     </div>
   );

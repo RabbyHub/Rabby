@@ -397,7 +397,7 @@ class ProviderController extends BaseController {
       isSubmitted: true,
     });
 
-    const { explain: cacheExplain, rawTx } = approvingTx;
+    const { explain: cacheExplain, rawTx, action } = approvingTx;
 
     const chainItem = findChainByEnum(chain);
 
@@ -466,6 +466,7 @@ class ProviderController extends BaseController {
             failed: false,
           },
           cacheExplain,
+          action,
           origin,
           options?.data?.$ctx
         );

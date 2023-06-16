@@ -4,12 +4,13 @@ import {
   RuleConfig,
   Threshold,
   ContextActionData,
-} from '@debank/rabby-security-engine/dist/rules';
-import Engine from '@debank/rabby-security-engine';
-import { createPersistStore } from 'background/utils';
+  ContractAddress,
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import Engine from '@rabby-wallet/rabby-security-engine';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import openapiService from './openapi';
 
-interface SecurityEngineStore {
+export interface SecurityEngineStore {
   userData: UserData;
   rules: UserRuleConfig[];
 }
@@ -102,7 +103,8 @@ class SecurityEngineService {
         addressWhitelist: [],
       };
     }
-    this.engine = new Engine(this.rules, openapiService);
+    // todo
+    this.engine = new Engine(this.rules, openapiService as any);
   };
 
   execute = async (actionData: ContextActionData) => {
@@ -157,6 +159,166 @@ class SecurityEngineService {
 
   getOriginBlacklist = () => {
     return this.store.userData.originBlacklist;
+  };
+
+  addContractBlacklist = (contract: ContractAddress) => {
+    if (
+      this.store.userData.contractBlacklist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: [
+        ...this.store.userData.contractBlacklist,
+        {
+          ...contract,
+          address: contract.address.toLowerCase(),
+        },
+      ],
+    };
+  };
+
+  addContractWhitelist = (contract: ContractAddress) => {
+    if (
+      this.store.userData.contractWhitelist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractWhitelist: [
+        ...this.store.userData.contractWhitelist,
+        {
+          ...contract,
+          address: contract.address.toLowerCase(),
+        },
+      ],
+    };
+  };
+
+  removeContractWhitelist = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractWhitelist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      contractWhitelist: this.store.userData.contractWhitelist.filter(
+        (item) => {
+          return !(
+            isSameAddress(item.address, contract.address) &&
+            item.chainId === contract.chainId
+          );
+        }
+      ),
+    };
+  };
+
+  removeContractBlacklistFromAllChains = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractBlacklist.find((item) =>
+        isSameAddress(contract.address, item.address)
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: this.store.userData.contractBlacklist.filter(
+        (item) => {
+          return !isSameAddress(item.address, contract.address);
+        }
+      ),
+    };
+  };
+
+  removeContractBlacklist = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractBlacklist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: this.store.userData.contractBlacklist.filter(
+        (item) => {
+          return !(
+            isSameAddress(item.address, contract.address) &&
+            item.chainId === contract.chainId
+          );
+        }
+      ),
+    };
+  };
+
+  addAddressWhitelist = (address: string) => {
+    if (this.store.userData.addressWhitelist.includes(address)) return;
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressWhitelist: [
+        ...this.store.userData.addressWhitelist,
+        address.toLowerCase(),
+      ],
+    };
+  };
+
+  removeAddressWhitelist = (address: string) => {
+    if (!this.store.userData.addressWhitelist.includes(address.toLowerCase())) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressWhitelist: this.store.userData.addressWhitelist.filter((item) => {
+        return item.toLowerCase() !== address.toLowerCase();
+      }),
+    };
+  };
+
+  addAddressBlacklist = (address: string) => {
+    if (this.store.userData.addressBlacklist.includes(address)) return;
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressBlacklist: [
+        ...this.store.userData.addressBlacklist,
+        address.toLowerCase(),
+      ],
+    };
+  };
+
+  removeAddressBlacklist = (address: string) => {
+    if (!this.store.userData.addressBlacklist.includes(address.toLowerCase())) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressBlacklist: this.store.userData.addressBlacklist.filter((item) => {
+        return item.toLowerCase() !== address.toLowerCase();
+      }),
+    };
   };
 
   addOriginBlacklist = (origin: string) => {

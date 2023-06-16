@@ -12,8 +12,8 @@ import {
   ContextActionData,
   RuleConfig,
   Level,
-} from '@debank/rabby-security-engine/dist/rules';
-import { Result } from '@debank/rabby-security-engine';
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleResult from './RuleResult';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';

@@ -498,7 +498,7 @@ const TransactionItem = ({
           <span>{isPending ? null : sinceTime(item.createdAt / 1000)}</span>
           {!item.isSubmitFailed && (
             <span>
-              {chain.name} #{item.nonce}
+              {chain?.name} #{item.nonce}
             </span>
           )}
         </div>

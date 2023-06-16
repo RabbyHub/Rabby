@@ -206,3 +206,10 @@ export const getTokenName = async (
     }
   }
 };
+
+export const ellipsisTokenSymbol = (text: string, length = 6) => {
+  if (text?.length <= length) return text;
+
+  const regexp = new RegExp(`^(.{${length}})(.*)$`);
+  return text?.replace(regexp, '$1...');
+};

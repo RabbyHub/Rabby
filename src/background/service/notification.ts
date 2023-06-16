@@ -192,9 +192,6 @@ class NotificationService extends Events {
   requestApproval = async (data, winProps?): Promise<any> => {
     const currentAccount = preferenceService.getCurrentAccount();
     const reportExplain = (signingTxId?: string) => {
-      // const explain = transactionHistoryService.getExplainCacheByApprovalId(
-      //   approvalId
-      // );
       const signingTx = signingTxId
         ? transactionHistoryService.getSigningTx(signingTxId)
         : null;
