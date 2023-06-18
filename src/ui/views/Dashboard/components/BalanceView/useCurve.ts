@@ -82,10 +82,16 @@ export const useCurve = (
   }, [data, realtimeNetWorth]);
   const wallet = useWallet();
 
-  const fetch = async (addr: string) => {
-    const curve = await wallet.openapi.getNetCurve(addr);
+  const fetch = async (addr: string, force = false) => {
+    const curve = await wallet.getNetCurve(addr, force);
     setData(curve);
     setIsLoading(false);
+  };
+
+  const refresh = () => {
+    if (!address) return;
+    setIsLoading(true);
+    fetch(address, true);
   };
 
   useEffect(() => {
@@ -98,5 +104,9 @@ export const useCurve = (
     fetch(address);
   }, [address, nonce]);
 
-  return isLoading ? undefined : select;
+  return {
+    result: isLoading ? undefined : select,
+    isLoading,
+    refresh,
+  };
 };

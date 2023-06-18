@@ -37,8 +37,8 @@ const CurveWrapper = styled.div`
 
 const CurveGlobalStyle = createGlobalStyle`
   :root {
-    --color-curve-green: rgb(60, 239, 78);
-    --color-curve-red: rgb(255, 110, 110);
+    --color-curve-green: #3cef4e;
+    --color-curve-red: #ff6e6e;
   }
 `;
 
@@ -78,7 +78,7 @@ export const CurveThumbnail = ({
       >
         <defs>
           <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-20%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="-10%" stopColor={color} stopOpacity={0.4} />
             <stop offset="110%" stopColor={color} stopOpacity={0.2} />
           </linearGradient>
         </defs>
@@ -100,8 +100,10 @@ export const CurveThumbnail = ({
           type="linear"
           dataKey="value"
           stroke={isHover ? color : 'none'}
+          strokeOpacity={0.8}
           fill="url(#curveThumbnail)"
           animationDuration={0}
+          fillOpacity={0.8}
         />
       </AreaChart>
     </CurveWrapper>

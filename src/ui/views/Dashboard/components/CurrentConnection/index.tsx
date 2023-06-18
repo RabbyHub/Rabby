@@ -6,13 +6,14 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import { FallbackSiteLogo } from 'ui/component';
+import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
 import IconMetamaskBadge from 'ui/assets/dashboard/icon-metamask-badge.svg';
 import { useRequest } from 'ahooks';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -126,7 +127,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   );
 
   return (
-    <div className={clsx('current-connection-block h-[56px]')}>
+    <div className={clsx('current-connection-block h-[55px]')}>
       {site ? (
         site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
           Content
@@ -145,9 +146,25 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       ) : (
         <div className="site is-empty">
           <img src={IconDapps} className="site-icon" alt="" />
-          <div className="site-content">No Dapp found, refresh web page</div>
+          <div className="site-content">No Dapp found</div>
         </div>
       )}
+      <ChainSelector
+        className={clsx(!site && 'disabled', {
+          'mr-[20px]': hasOtherProvider,
+        })}
+        value={site?.chain || CHAINS_ENUM.ETH}
+        onChange={handleChangeDefaultChain}
+        showModal={visible}
+        onAfterOpen={() => {
+          matomoRequestEvent({
+            category: 'Front Page Click',
+            action: 'Click',
+            label: 'Change Chain',
+          });
+        }}
+        showRPCStatus
+      />
     </div>
   );
 });

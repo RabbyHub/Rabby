@@ -54,7 +54,7 @@ export default function useCurrentBalance(
     },
   });
 
-  const getCurrentBalance = async () => {
+  const getCurrentBalance = async (force = false) => {
     if (!account || noNeedBalance) return;
     setBalanceLoading(true);
     const cacheData = await wallet.getAddressCacheBalance(account);
@@ -63,15 +63,19 @@ export default function useCurrentBalance(
       setBalance(cacheData.total_usd_value);
       if (update) {
         setBalanceLoading(true);
-        getAddressBalance(account.toLowerCase());
+        getAddressBalance(account.toLowerCase(), force);
       } else {
         setBalanceLoading(false);
       }
     } else {
-      getAddressBalance(account.toLowerCase());
+      getAddressBalance(account.toLowerCase(), force);
       setBalanceLoading(false);
       setBalanceFromCache(false);
     }
+  };
+
+  const refresh = () => {
+    getCurrentBalance(true);
   };
 
   useEffect(() => {
@@ -98,5 +102,6 @@ export default function useCurrentBalance(
     success,
     balanceLoading,
     balanceFromCache,
+    refresh,
   ] as const;
 }

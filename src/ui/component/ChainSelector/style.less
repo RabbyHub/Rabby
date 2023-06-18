@@ -1,43 +1,32 @@
 @import '../../style/var.less';
 
 .chain-selector {
-  height: 48px;
+  height: 32px;
   cursor: pointer;
   display: flex;
   align-items: center;
   flex-shrink: 0;
   -webkit-user-select: none;
   background: rgba(134, 151, 255, 0.12);
-  border: 1px solid rgba(134, 151, 255, 0.4);
-  box-shadow: 0px 2px 12px rgba(134, 151, 255, 0.12);
-  border-radius: 5px;
-  padding: 4px 0 4px 12px;
+  border: 1px solid #E5E9EF;
+  border-radius: 6px;
+  padding: 8px 4px 8px 8px;
   font-weight: 500;
   .chain-logo {
-    width: 28px;
-    height: 28px;
-    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
   }
-  .icon-arrow-down {
-    fill: #8697ff;
-    width: 12px;
-    height: 12px;
-    margin: 0 10px 0 12px;
-    transition: transform 0.3s;
-    transform: rotate(0);
-  }
-  &.active {
-    .icon-arrow-down {
-      transform: rotate(180deg);
-    }
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
   }
 }
 
 .hover {
-  background: rgba(134, 151, 255, 0.5);
-  border: 1px solid rgba(134, 151, 255, 0.4);
-  box-shadow: 0px 2px 12px rgba(134, 151, 255, 0.12);
-  border-radius: 5px;
+  background: rgba(134, 151, 255, 0.1);
+  border: 1px solid rgba(134, 151, 255, 0.5);
 }
 .chain-selector-options {
   width: 100%;

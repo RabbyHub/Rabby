@@ -82,6 +82,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
+import { cached } from '../utils/cache';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -954,14 +955,28 @@ export class WalletController extends BaseController {
     }
   };
 
-  getAddressBalance = async (address: string) => {
+  private getTotalBalanceCached = cached(async (address) => {
     const data = await openapiService.getTotalBalance(address);
     preferenceService.updateAddressBalance(address, data);
     return data;
+    // 3 mins
+  });
+
+  getAddressBalance = async (address: string, force = false) => {
+    return this.getTotalBalanceCached([address], address, force);
   };
+
   getAddressCacheBalance = (address: string | undefined) => {
     if (!address) return null;
     return preferenceService.getAddressBalance(address);
+  };
+
+  private getNetCurveCached = cached(async (address) => {
+    return openapiService.getNetCurve(address);
+  });
+
+  getNetCurve = (address, force = false) => {
+    return this.getNetCurveCached([address], address, force);
   };
 
   setHasOtherProvider = (val: boolean) =>
