@@ -130,7 +130,7 @@ const Send = ({
                 )}
                 <SecurityListItem
                   engineResult={engineResultMap['1018']}
-                  warningText="Never transacted before"
+                  warningText={<Values.Transacted value={false} />}
                   id="1018"
                 />
                 <SecurityListItem

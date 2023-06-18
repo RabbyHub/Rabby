@@ -9,7 +9,7 @@ export interface Props {
   dangerText?: string | React.ReactNode;
   warningText?: string | React.ReactNode;
   safeText?: string | React.ReactNode;
-  defaultText?: string;
+  defaultText?: string | React.ReactNode;
 }
 
 export const SecurityListItem: React.FC<Props> = ({
