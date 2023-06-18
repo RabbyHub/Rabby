@@ -15,10 +15,11 @@ import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
+import IconNFT from 'ui/assets/dashboard/nft.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
+import { getCurrentConnectSite, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
@@ -282,6 +283,13 @@ export default ({
         history.push('/settings/address');
       },
     },
+    nft: {
+      icon: IconNFT,
+      content: 'NFT',
+      onClick: () => {
+        history.push('/nft');
+      },
+    },
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -291,12 +299,12 @@ export default ({
       'swap',
       'send',
       'receive',
-      'gasTopUp',
+      'nft',
       // 'queue',
       'transactions',
-      'dapps',
+      'gasTopUp',
       'security',
-      'address',
+      'dapps',
       'settings',
     ];
   } else {
@@ -304,11 +312,11 @@ export default ({
       'swap',
       'send',
       'receive',
-      'gasTopUp',
+      'nft',
       'transactions',
-      'dapps',
+      'gasTopUp',
       'security',
-      'address',
+      'dapps',
       'settings',
     ];
   }

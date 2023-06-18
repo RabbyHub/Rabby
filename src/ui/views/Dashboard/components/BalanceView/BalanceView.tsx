@@ -42,8 +42,10 @@ const BalanceView = ({
   const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
+  const [startRefresh, setStartRefresh] = useState(false);
 
   const onRefresh = () => {
+    setStartRefresh(true);
     refreshBalance();
     refreshCurve();
   };
@@ -83,6 +85,12 @@ const BalanceView = ({
     }
   }, [isHover]);
 
+  useEffect(() => {
+    if (!balanceLoading && !curveLoading) {
+      setStartRefresh(false);
+    }
+  }, [balanceLoading, curveLoading]);
+
   const currentBalance = curvePoint?.value || balance;
   const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
   const currentChangePercent =
@@ -99,7 +107,8 @@ const BalanceView = ({
             className={clsx('amount-number leading-[38px]')}
             onClick={onRefresh}
           >
-            {balanceLoading ||
+            {startRefresh ||
+            (balanceLoading && !balanceFromCache) ||
             currentBalance === null ||
             (balanceFromCache && currentBalance === 0) ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
@@ -157,7 +166,7 @@ const BalanceView = ({
               currentHover ? 'mx-[9.5px] pt-[7.5px]' : 'mx-20 pt-4'
             )}
           >
-            {balanceLoading ? (
+            {startRefresh || currentBalance === null ? (
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
               </>
