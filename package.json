@@ -80,6 +80,7 @@
     "events": "^3.3.0",
     "hdkey": "0.8.0",
     "human-standard-token-abi": "^2.0.0",
+    "immer": "^9.0.14",
     "interval-promise": "^1.4.0",
     "koa-compose": "^4.1.0",
     "lodash": "^4.17.21",

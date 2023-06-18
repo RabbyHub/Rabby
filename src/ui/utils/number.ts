@@ -119,3 +119,19 @@ export const formatAmount = (amount: string | number, decimals = 4) => {
   }
   return formatNumber(amount, decimals);
 };
+
+export const calcPercent = (
+  pre?: number,
+  next?: number,
+  precision = 2,
+  needSign = true
+) => {
+  const delta = (next || 0) - (pre || 0);
+  const percent = pre
+    ? ((delta / pre) * 100).toFixed(precision)
+    : next
+    ? '100.00'
+    : '0.00';
+
+  return `${needSign && delta >= 0 ? '+' : ''}${percent}%`;
+};

@@ -24,9 +24,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { FixedSizeList } from 'react-window';
-import { SvgIconLoading } from 'ui/assets';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconAddToken from 'ui/assets/addtoken.png';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
@@ -73,6 +71,7 @@ import { useRequest } from 'ahooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import { useQueryProjects } from 'ui/utils/portfolio';
 
 const GnosisAdminItem = ({
   accounts,
@@ -188,6 +187,17 @@ const Dashboard = () => {
     }
   };
 
+  // const {
+  //   // isTokensLoading,
+  //   isPortfoliosLoading,
+  //   portfolios,
+  //   // tokens,
+  //   // hasTokens,
+  //   hasPortfolios,
+  //   // grossNetWorth,
+  //   // tokenNetWorth,
+  // } = useQueryProjects(currentAccount?.address, false);
+  // console.log('portfolios', portfolios);
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
