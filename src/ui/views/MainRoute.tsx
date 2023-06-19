@@ -52,7 +52,6 @@ import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
-import { SwapByDex } from './DexSwap';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { PreferMetamaskDapps } from './PreferMetamaskDapps';
 import { CommonPopup } from './CommonPopup';
@@ -242,9 +241,6 @@ const Main = () => {
         <PrivateRoute exact path="/receive">
           <Receive />
         </PrivateRoute>
-        <PrivateRoute exact path="/swap">
-          <Swap />
-        </PrivateRoute>
 
         <PrivateRoute exact path="/gas-top-up">
           <GasTopUp />
@@ -263,7 +259,7 @@ const Main = () => {
         </PrivateRoute>
 
         <PrivateRoute exact path="/dex-swap">
-          <SwapByDex />
+          <Swap />
         </PrivateRoute>
         <PrivateRoute exact path="/custom-rpc">
           <CustomRPC />

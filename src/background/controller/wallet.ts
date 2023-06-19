@@ -363,7 +363,7 @@ export class WalletController extends BaseController {
       spender: string;
       pay_token_id: string;
       unlimited: boolean;
-      gasPrice: number;
+      gasPrice?: number;
       shouldTwoStepApprove: boolean;
     },
     $ctx?: any
@@ -430,7 +430,9 @@ export class WalletController extends BaseController {
             data: quote.tx.data || '0x',
             value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
             chainId: chainObj.id,
-            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
+            gasPrice: gasPrice
+              ? `0x${new BigNumber(gasPrice).toString(16)}`
+              : undefined,
             isSwap: true,
           },
         ],
@@ -1007,6 +1009,10 @@ export class WalletController extends BaseController {
   setSwapDexId = swapService.setSelectedDex;
   getUnlimitedAllowance = swapService.getUnlimitedAllowance;
   setUnlimitedAllowance = swapService.setUnlimitedAllowance;
+  setSwapView = swapService.setSwapView;
+  setSwapTrade = swapService.setSwapTrade;
+  getSwapViewList = swapService.getSwapViewList;
+  getSwapTradeList = swapService.getSwapTradeList;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;

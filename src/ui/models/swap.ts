@@ -13,6 +13,8 @@ export const swap = createModel<RootModel>()({
     selectedChain: CHAINS_ENUM.ETH,
     gasPriceCache: {},
     unlimitedAllowance: false,
+    viewList: {},
+    tradeList: {},
   } as Partial<SwapServiceStore>,
 
   reducers: {
@@ -83,6 +85,44 @@ export const swap = createModel<RootModel>()({
       this.setField({
         unlimitedAllowance,
       });
+    },
+
+    async getSwapViewList(_?, store?) {
+      const viewList = await store.app.wallet.getSwapViewList();
+      this.setField({
+        viewList,
+      });
+      return viewList;
+    },
+
+    async getSwapTradeList(_?, store?) {
+      const tradeList = await store.app.wallet.getSwapTradeList();
+      this.setField({
+        tradeList,
+      });
+      return tradeList;
+    },
+
+    async setSwapView(
+      unlimitedAllowance: Parameters<typeof store.app.wallet.setSwapView>,
+      store
+    ) {
+      await store.app.wallet.setSwapView(
+        unlimitedAllowance[0],
+        unlimitedAllowance[1]
+      );
+      this.getSwapViewList();
+    },
+
+    async setSwapTrade(
+      unlimitedAllowance: Parameters<typeof store.app.wallet.setSwapTrade>,
+      store
+    ) {
+      await store.app.wallet.setSwapTrade(
+        unlimitedAllowance[0],
+        unlimitedAllowance[1]
+      );
+      this.getSwapTradeList();
     },
   }),
 });

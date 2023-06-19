@@ -254,6 +254,10 @@ export const useWalletTypeData = () => {
     return [result, sortIdList.current] as const;
   }, [sortedAccountsList, watchSortedAccountsList, wallet]);
 
+  if (error) {
+    console.error('manage address', error);
+  }
+
   return {
     accountGroup: value,
     loading: loading || loadingAccounts,
