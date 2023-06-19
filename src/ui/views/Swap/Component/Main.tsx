@@ -164,6 +164,7 @@ export const Main = () => {
     payToken,
     isWrapToken,
     DexDisplayName,
+    expired,
   ]);
 
   const wallet = useWallet();
