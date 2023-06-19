@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Spin } from 'ui/component';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { splitNumberByStep, useWallet } from 'ui/utils';
+import { splitNumberByStep, useCommonPopupView, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from 'ui/assets';
 import clsx from 'clsx';
@@ -13,11 +13,7 @@ import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 
-const BalanceView = ({
-  currentAccount,
-  accountBalanceUpdateNonce = 0,
-  onClick,
-}) => {
+const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [
     balance,
     chainBalances,
@@ -67,6 +63,15 @@ const BalanceView = ({
     setCurvePoint(data);
   };
 
+  const { activePopup, setData } = useCommonPopupView();
+  const onClickViewAssets = () => {
+    setData({
+      chainBalances,
+      balance,
+    });
+    activePopup('AssetList');
+  };
+
   useEffect(() => {
     if (currentAccount) {
       setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
@@ -97,7 +102,7 @@ const BalanceView = ({
     curvePoint?.changePercent || curveData?.changePercent;
   const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
   const currentChangeValue = curvePoint?.change || curveData?.change;
-  const currentHover = isHover && !balanceLoading;
+  const currentHover = isHover;
 
   return (
     <div onMouseLeave={() => setHover(false)} className={clsx('assets flex')}>
@@ -146,9 +151,11 @@ const BalanceView = ({
           </div>
         </div>
         <div
+          onClick={onClickViewAssets}
           onMouseMove={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className={clsx(
+            'mt-10',
             currentHover &&
               'bg-[#00000033] card border-[#FFFFFF33] border-[0.5px] mx-10 mb-10',
             'rounded-[4px] relative cursor-pointer'
@@ -163,7 +170,7 @@ const BalanceView = ({
           <div
             className={clsx(
               'extra flex',
-              currentHover ? 'mx-[9.5px] pt-[7.5px]' : 'mx-20 pt-4'
+              currentHover ? 'mx-[9.5px] pt-[7.5px]' : 'mx-20 pt-8'
             )}
           >
             {startRefresh || currentBalance === null ? (

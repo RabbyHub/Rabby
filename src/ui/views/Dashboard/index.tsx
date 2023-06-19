@@ -728,38 +728,38 @@ const Dashboard = () => {
           <BalanceView
             currentAccount={currentAccount}
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}
-            onClick={() => {
-              if (!showToken && !showAssets && !showNFT) {
-                matomoRequestEvent({
-                  category: 'ViewAssets',
-                  action: 'openTotal',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                  ].join('|'),
-                });
-                displayTokenList();
-              } else {
-                matomoRequestEvent({
-                  category: 'ViewAssets',
-                  action: 'closeTotal',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                  ].join('|'),
-                });
-                setStartSearch(false);
-                setShowToken(false);
-                setShowAssets(false);
-                setShowChain(false);
-                setShowNFT(false);
-                setTokenAnimate('fadeOut');
-                setDefiAnimate('fadeOut');
-                setNFTAnimate('fadeOut');
-                setConnectionAnimation('fadeInBottom');
-                setTopAnimate('fadeInTop');
-              }
-            }}
+            // onClick={() => {
+            //   if (!showToken && !showAssets && !showNFT) {
+            //     matomoRequestEvent({
+            //       category: 'ViewAssets',
+            //       action: 'openTotal',
+            //       label: [
+            //         getKRCategoryByType(currentAccount?.type),
+            //         currentAccount?.brandName,
+            //       ].join('|'),
+            //     });
+            //     displayTokenList();
+            //   } else {
+            //     matomoRequestEvent({
+            //       category: 'ViewAssets',
+            //       action: 'closeTotal',
+            //       label: [
+            //         getKRCategoryByType(currentAccount?.type),
+            //         currentAccount?.brandName,
+            //       ].join('|'),
+            //     });
+            //     setStartSearch(false);
+            //     setShowToken(false);
+            //     setShowAssets(false);
+            //     setShowChain(false);
+            //     setShowNFT(false);
+            //     setTokenAnimate('fadeOut');
+            //     setDefiAnimate('fadeOut');
+            //     setNFTAnimate('fadeOut');
+            //     setConnectionAnimation('fadeInBottom');
+            //     setTopAnimate('fadeInTop');
+            //   }
+            // }}
           />
           {isGnosis ? (
             <Queue

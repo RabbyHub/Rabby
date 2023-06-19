@@ -41,6 +41,7 @@ const useCommonPopupViewState = () => {
     brandName: string;
     realBrandName?: string;
   }>();
+  const [data, setData] = useState<any>();
 
   const activePopup = (name: CommonPopupComponentName) => {
     setComponentName(name);
@@ -75,6 +76,8 @@ const useCommonPopupViewState = () => {
     account,
     setAccount,
     activeApprovalPopup,
+    data,
+    setData,
   };
 };
 
