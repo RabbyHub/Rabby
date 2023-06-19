@@ -5,7 +5,7 @@ import { ChainItem, ChainItemType } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 
 export const ChainList = () => {
-  const { data } = useCommonPopupView();
+  const { data, visible } = useCommonPopupView();
   const chainList = data.chainBalances as DisplayChainWithWhiteLogo[];
   const balance = data.balance as number;
   const [currentChainList, setCurrentChainList] = React.useState<
@@ -24,6 +24,12 @@ export const ChainList = () => {
     setCurrentChainList(list.filter((item) => item.percent >= 1));
     setMoreChainList(list.filter((item) => item.percent < 1));
   }, [chainList]);
+
+  React.useEffect(() => {
+    if (!visible) {
+      setShowMore(false);
+    }
+  }, [visible]);
 
   return (
     <div

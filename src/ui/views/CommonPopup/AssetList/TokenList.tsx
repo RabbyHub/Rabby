@@ -3,11 +3,10 @@ import { TBody, THeadCell, THeader, Table } from './components/Table';
 import { TokenItem, Props as TokenItemProps } from './TokenItem';
 
 export interface Props {
-  list: TokenItemProps['item'][];
+  list?: TokenItemProps['item'][];
 }
 
 export const TokenList: React.FC<Props> = ({ list }) => {
-  console.log(list);
   return (
     <div>
       <Table>
@@ -17,7 +16,7 @@ export const TokenList: React.FC<Props> = ({ list }) => {
           <THeadCell className="w-1/4 text-right">USD Value</THeadCell>
         </THeader>
         <TBody>
-          {list.map((item) => {
+          {list?.map((item) => {
             return <TokenItem key={`${item.chain}-${item.id}`} item={item} />;
           })}
         </TBody>

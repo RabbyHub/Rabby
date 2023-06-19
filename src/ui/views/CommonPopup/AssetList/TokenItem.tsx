@@ -1,16 +1,16 @@
 import React from 'react';
 import { TCell, TRow } from './components/Table';
 import { splitNumberByStep } from '@/ui/utils';
-import { TokenItem as TokenItemType } from '@debank/rabby-api/dist/types';
-import { CHAINS } from '@debank/common';
+import { CHAINS_LIST } from '@debank/common';
 import BigNumber from 'bignumber.js';
+import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 
 export interface Props {
-  item: TokenItemType;
+  item: AbstractPortfolioToken;
 }
 
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
-  const chain = Object.values(CHAINS).find((c) => c.serverId === item.chain);
+  const chain = CHAINS_LIST.find((c) => c.serverId === item.chain);
 
   return (
     <TCell className="py-8 flex gap-12">

@@ -187,18 +187,6 @@ const Dashboard = () => {
     }
   };
 
-  const {
-    isTokensLoading,
-    isPortfoliosLoading,
-    portfolios,
-    tokens: tokenList,
-    hasTokens,
-    hasPortfolios,
-    grossNetWorth,
-    tokenNetWorth,
-  } = useQueryProjects(currentAccount?.address, false);
-  console.log('portfolios', portfolios);
-  console.log('tokenList', tokenList);
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
