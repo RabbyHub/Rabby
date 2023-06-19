@@ -212,9 +212,7 @@ const Permit = ({
             <ul className="desc-list">
               <ProtocolListItem protocol={requireData.protocol} />
               <li>
-                {requireData.hasInteraction
-                  ? 'Interacted before'
-                  : 'Never interacted before'}
+                <Values.Interacted value={requireData.hasInteraction} />
               </li>
               <li>
                 <ViewMore
