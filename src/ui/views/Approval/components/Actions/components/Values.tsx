@@ -18,6 +18,8 @@ import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
 import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconExternal from 'ui/assets/icon-share.svg';
+import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
+import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const Boolean = ({ value }: { value: boolean }) => {
@@ -365,6 +367,40 @@ const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   );
 };
 
+const Interacted = ({ value }: { value: boolean }) => {
+  return (
+    <span className="flex">
+      {value ? (
+        <>
+          <img src={IconInteracted} className="mr-4 w-14" /> Interacted before
+        </>
+      ) : (
+        <>
+          <img src={IconNotInteracted} className="mr-4 w-14" /> Never interacted
+          before
+        </>
+      )}
+    </span>
+  );
+};
+
+const Transacted = ({ value }: { value: boolean }) => {
+  return (
+    <span className="flex">
+      {value ? (
+        <>
+          <img src={IconInteracted} className="mr-4 w-14" /> Transacted before
+        </>
+      ) : (
+        <>
+          <img src={IconNotInteracted} className="mr-4 w-14" /> Never transacted
+          before
+        </>
+      )}
+    </span>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -379,4 +415,6 @@ export {
   Address,
   Text,
   DisplayChain,
+  Interacted,
+  Transacted,
 };

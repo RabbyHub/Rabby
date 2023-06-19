@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
@@ -55,12 +55,6 @@ const RevokeNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const { userData } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -93,15 +87,6 @@ const RevokeNFT = ({
             </div>
             <ul className="desc-list">
               <ProtocolListItem protocol={requireData.protocol} />
-
-              <li>
-                <span>
-                  {requireData.hasInteraction
-                    ? 'Interacted before'
-                    : 'Never Interacted before'}
-                </span>
-              </li>
-
               <li>
                 <ViewMore
                   type="nftSpender"

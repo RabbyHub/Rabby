@@ -142,9 +142,7 @@ const UnWrapToken = ({
                 </li>
               )}
               <li>
-                {requireData.hasInteraction
-                  ? 'Interacted before'
-                  : 'Never interacted before'}
+                <Values.Interacted value={requireData.hasInteraction} />
               </li>
               <li>
                 <ViewMore

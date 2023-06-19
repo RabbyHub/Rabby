@@ -70,15 +70,6 @@ const TokenApprove = ({
             </div>
             <ul className="desc-list">
               <ProtocolListItem protocol={requireData.protocol} />
-
-              <li>
-                <span>
-                  {requireData.hasInteraction
-                    ? 'Interacted before'
-                    : 'Never Interacted before'}
-                </span>
-              </li>
-
               <li>
                 <ViewMore
                   type="spender"

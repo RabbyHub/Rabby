@@ -142,7 +142,7 @@ const SendNFT = ({
                 )}
                 <SecurityListItem
                   engineResult={engineResultMap['1036']}
-                  warningText="Never transacted before"
+                  warningText={<Values.Transacted value={false} />}
                   id="1036"
                 />
                 <SecurityListItem

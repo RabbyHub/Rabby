@@ -72,14 +72,6 @@ const RevokePermit2 = ({
               <ProtocolListItem protocol={requireData.protocol} />
 
               <li>
-                <span>
-                  {requireData.hasInteraction
-                    ? 'Interacted before'
-                    : 'Never Interacted before'}
-                </span>
-              </li>
-
-              <li>
                 <ViewMore
                   type="spender"
                   data={{
