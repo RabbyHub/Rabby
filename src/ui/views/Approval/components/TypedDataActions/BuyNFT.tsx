@@ -239,6 +239,7 @@ const BuyNFT = ({
                     ...requireData,
                     address: requireData.id,
                     chain,
+                    title: 'List on',
                   }}
                 />
               </li>

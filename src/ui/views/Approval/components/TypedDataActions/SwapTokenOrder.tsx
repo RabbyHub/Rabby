@@ -224,6 +224,7 @@ const Permit = ({
                     rank: requireData.rank,
                     address: requireData.id,
                     chain,
+                    title: 'List on',
                   }}
                 />
               </li>
