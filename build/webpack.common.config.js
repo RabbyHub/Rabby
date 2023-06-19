@@ -222,12 +222,7 @@ const config = {
   resolve: {
     alias: {
       moment: require.resolve('dayjs'),
-      // '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
-      ...process.platform === 'win32' && isEnvDevelopment && {
-        // for debug some npm dep in windows
-        'react': require.resolve('react'),
-        // '@debank/common': path.resolve(__dirname, '../node_modules/@debank/common'),
-      }
+      '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
     },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {
