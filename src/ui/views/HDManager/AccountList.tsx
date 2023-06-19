@@ -5,7 +5,7 @@ import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
 import { MAX_ACCOUNT_COUNT } from './AdvancedSettings';
 import { AccountListSkeleton } from './AccountListSkeleton';
-import { UsedChain } from '@debank/rabby-api/dist/types';
+import { UsedChain } from '@rabby-wallet/rabby-api/dist/types';
 import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
 import dayjs from 'dayjs';
 import { ReactComponent as ArrowSVG } from 'ui/assets/ledger/arrow.svg';

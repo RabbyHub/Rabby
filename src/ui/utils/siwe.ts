@@ -1,4 +1,4 @@
-import { SecurityCheckResponse } from '@debank/rabby-api/dist/types';
+import { SecurityCheckResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { ParsedMessage } from '@spruceid/siwe-parser';
 import { isSameAddress } from '.';
 

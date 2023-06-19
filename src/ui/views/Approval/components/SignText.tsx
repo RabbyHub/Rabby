@@ -22,7 +22,7 @@ import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import Actions from './TextActions';
-import { ParseTextResponse } from '@debank/rabby-api/dist/types';
+import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 
 interface SignTextProps {
   data: string[];

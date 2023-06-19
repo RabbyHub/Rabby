@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { VerifyAddressAction } from '@debank/rabby-api/dist/types';
+import { VerifyAddressAction } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import { Result } from '@rabby-wallet/rabby-security-engine';

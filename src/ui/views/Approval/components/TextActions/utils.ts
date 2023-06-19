@@ -2,7 +2,7 @@ import {
   ParseTextResponse,
   CreateKeyAction,
   VerifyAddressAction,
-} from '@debank/rabby-api/dist/types';
+} from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 
 export interface TextActionData {

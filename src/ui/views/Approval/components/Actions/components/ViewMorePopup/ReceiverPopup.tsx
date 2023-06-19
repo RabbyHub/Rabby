@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Chain } from 'background/service/openapi';
-import { ContractDesc, TokenItem } from '@debank/rabby-api/dist/types';
+import { ContractDesc, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import LogoWithText from '../LogoWithText';

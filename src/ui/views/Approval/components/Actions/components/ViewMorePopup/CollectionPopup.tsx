@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
-import { CollectionWithFloorPrice } from '@debank/rabby-api/dist/types';
+import { CollectionWithFloorPrice } from '@rabby-wallet/rabby-api/dist/types';
 import { formatAmount } from '@/ui/utils/number';
 import styled from 'styled-components';
 

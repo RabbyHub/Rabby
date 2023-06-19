@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { SignMultiSigActions } from '@debank/rabby-api/dist/types';
+import { SignMultiSigActions } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import { Chain } from 'background/service/openapi';

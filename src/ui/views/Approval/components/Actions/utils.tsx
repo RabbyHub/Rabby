@@ -25,7 +25,7 @@ import {
   CrossTokenAction,
   CrossSwapAction,
   RevokePermit2Action,
-} from '@debank/rabby-api/dist/types';
+} from '@rabby-wallet/rabby-api/dist/types';
 import {
   ContextActionData,
   UserData,

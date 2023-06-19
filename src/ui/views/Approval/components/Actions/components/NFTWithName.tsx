@@ -1,6 +1,6 @@
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import { NFTItem, TransferingNFTItem } from '@debank/rabby-api/dist/types';
+import { NFTItem, TransferingNFTItem } from '@rabby-wallet/rabby-api/dist/types';
 import React, { ReactNode } from 'react';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import styled from 'styled-components';
