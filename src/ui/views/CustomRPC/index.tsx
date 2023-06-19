@@ -13,6 +13,7 @@ import IconEdit from 'ui/assets/custom-rpc/edit.svg';
 import IconDelete from 'ui/assets/custom-rpc/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+import { findChainByEnum } from '@/utils/chain';
 
 const RPCItemWrapper = styled.div`
   background: #ffffff;
@@ -105,8 +106,8 @@ const RPCItemComp = ({
 }) => {
   const dispatch = useRabbyDispatch();
 
-  const chain = useMemo(() => {
-    return CHAINS[item.id];
+  const chainItem = useMemo(() => {
+    return findChainByEnum(item.id);
   }, [item]);
 
   const handleEdit = () => {
@@ -164,7 +165,7 @@ const RPCItemComp = ({
         nonce={item.nonce}
       />
       <div className="right">
-        <p>{chain.name}</p>
+        <p>{chainItem?.name || ''}</p>
         <p title={item.rpc.url}>{item.rpc.url}</p>
       </div>
       <div className="operation">

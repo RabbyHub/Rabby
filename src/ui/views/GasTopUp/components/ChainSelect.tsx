@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import Modal from '@/ui/component/ChainSelector/Modal';
 import { CHAINS, CHAINS_ENUM } from '@/constant';
+import { findChainByEnum } from '@/utils/chain';
 
 export const ChainWrapper = styled.div`
   background: ${LessPalette['@color-bg']};
@@ -63,12 +64,18 @@ export const ChainSelect = ({
     onChange && onChange(value);
     setShowSelectorModal(false);
   };
+
+  const chainItem = findChainByEnum(value);
+
   return (
     <>
       <ChainWrapper onClick={handleClickSelector}>
         <div className="flex items-center justify-center">
-          <img className="icon ml-[4px] mr-[12px]" src={CHAINS[value].logo} />
-          <span className="text">{CHAINS[value].name}</span>
+          <img
+            className="icon ml-[4px] mr-[12px]"
+            src={chainItem?.logo || ''}
+          />
+          <span className="text">{chainItem?.name || ''}</span>
         </div>
         {!readonly && <SvgIconArrowDownTriangle width={24} height={24} />}
       </ChainWrapper>

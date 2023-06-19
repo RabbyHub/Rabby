@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { ALIAS_ADDRESS, CHAINS, CHAINS_ENUM } from '@/constant';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { findChainByEnum } from '@/utils/chain';
 
 interface NameAndAddressProps {
   className?: string;
@@ -70,8 +71,11 @@ const NameAndAddress = ({
 
   const handleClickContractId = () => {
     if (!chainEnum) return;
-    const chain = CHAINS[chainEnum];
-    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
+    const chainItem = findChainByEnum(chainEnum);
+    openInTab(
+      chainItem?.scanLink.replace(/tx\/_s_/, `address/${address}`),
+      false
+    );
   };
 
   useEffect(() => {

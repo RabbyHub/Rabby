@@ -17,6 +17,7 @@ import {
   MINIMUM_GAS_LIMIT,
 } from '@/constant';
 import stats from '@/stats';
+import { findChainByEnum } from '@/utils/chain';
 import { getTokenSymbol } from '@/ui/utils/token';
 
 const GasList = [20, 50, 100];
@@ -35,6 +36,7 @@ export const GasTopUp = () => {
   const [token, setToken] = useState<TokenItem | undefined>();
 
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+  const chainItem = useMemo(() => findChainByEnum(chain)!, [chain]);
 
   const [index, setIndex] = useState(0);
 
@@ -44,17 +46,17 @@ export const GasTopUp = () => {
     error: gasTokenError,
   } = useAsync(async () => {
     const account = await wallet.getCurrentAccount();
-    const chainId = CHAINS[chain].serverId;
-    const tokenId = CHAINS[chain].nativeTokenAddress;
+    const chainId = chainItem.serverId;
+    const tokenId = chainItem.nativeTokenAddress;
     return await wallet.openapi.getToken(account!.address, chainId, tokenId);
-  }, [chain]);
+  }, [chainItem]);
 
   const {
     value: instantGas,
     loading: gasLoading,
     error: instantGasError,
   } = useAsync(async () => {
-    const list = await wallet.openapi.gasMarket(CHAINS[chain].serverId);
+    const list = await wallet.openapi.gasMarket(chainItem.serverId);
     let instant = list[0];
     for (let i = 1; i < list.length; i++) {
       if (list[i].price > instant.price) {
@@ -62,7 +64,7 @@ export const GasTopUp = () => {
       }
     }
     return instant;
-  }, [chain, wallet]);
+  }, [chainItem, wallet]);
 
   const {
     value: chainUsdBalance,
@@ -70,11 +72,11 @@ export const GasTopUp = () => {
     error: chainUsdBalanceError,
   } = useAsync(async () => {
     const data = await wallet.openapi.getGasStationChainBalance(
-      CHAINS[chain].serverId,
+      chainItem.serverId,
       GAS_TOP_UP_ADDRESS
     );
     return data.usd_value;
-  }, [chain, wallet]);
+  }, [chainItem, wallet]);
 
   const {
     value: tokenList = [],
@@ -93,11 +95,11 @@ export const GasTopUp = () => {
     return sortedTokens.filter(
       (e) =>
         !(
-          e.chain === CHAINS[chain].serverId &&
-          e.id === CHAINS[chain].nativeTokenAddress
+          e.chain === chainItem.serverId &&
+          e.id === chainItem.nativeTokenAddress
         )
     );
-  }, [chain]);
+  }, [chainItem]);
 
   const {
     value: gasStationSupportedTokenMap = {},
@@ -185,7 +187,7 @@ export const GasTopUp = () => {
       const lastChain = await wallet.getLastSelectedGasTopUpChain(
         account.address
       );
-      if (lastChain && CHAINS[lastChain]) {
+      if (lastChain && findChainByEnum(lastChain)) {
         setChain(lastChain);
       }
     };
@@ -273,7 +275,7 @@ export const GasTopUp = () => {
         paymentTokenSymbol: token.symbol,
         fromUsdValue: prices[index][0],
         to: GAS_TOP_UP_ADDRESS,
-        toChainId: CHAINS[chain].serverId,
+        toChainId: chainItem.serverId,
         rawAmount: sendValue,
         chainServerId: token.chain,
         tokenId: token.id,

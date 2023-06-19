@@ -7,6 +7,8 @@ import {
   contextMenuService,
 } from 'background/service';
 import providerController from './controller';
+import { findChainByEnum } from '@/utils/chain';
+import { appIsDev } from '@/utils/env';
 
 const networkIdMap: {
   [key: string]: string;
@@ -37,8 +39,25 @@ const getProviderState = async (req) => {
     networkVersion = await providerController.netVersion(req);
     networkIdMap[chainEnum] = networkVersion;
   }
+
+  // TODO: should we throw error here?
+  let chainItem = findChainByEnum(chainEnum);
+
+  if (!chainItem) {
+    if (appIsDev) {
+      throw new Error(
+        `[internalMethod::getProviderState] chain ${chainEnum} not found`
+      );
+    } else {
+      console.warn(
+        `[internalMethod::getProviderState] chain ${chainEnum} not found`
+      );
+      chainItem = CHAINS.ETH;
+    }
+  }
+
   return {
-    chainId: CHAINS[chainEnum].hex,
+    chainId: chainItem.hex,
     isUnlocked,
     accounts: isUnlocked ? await providerController.ethAccounts(req) : [],
     networkVersion,

@@ -37,6 +37,7 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import IconExternal from 'ui/assets/icon-share.svg';
+import { findChainByEnum } from '@/utils/chain';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -59,7 +60,6 @@ const SendNFT = () => {
         )?.enum
       : undefined
   );
-  const chainName = CHAINS[chain as string]?.name;
 
   const amountInputEl = useRef<any>(null);
 
@@ -120,7 +120,9 @@ const SendNFT = () => {
     (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const handleClickContractId = () => {
     if (!chain || !nftItem) return;
-    const targetChain = CHAINS[chain];
+    const targetChain = findChainByEnum(chain);
+    if (!targetChain) return;
+
     openInTab(
       targetChain.scanLink.replace(/tx\/_s_/, `address/${nftItem.contract_id}`),
       false
@@ -180,7 +182,7 @@ const SendNFT = () => {
         category: 'Send',
         action: 'createTx',
         label: [
-          chainName,
+          findChainByEnum(chain)?.name,
           getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           'nft',

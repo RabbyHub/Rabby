@@ -1329,20 +1329,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@0.2.42-rabby.0":
-  version "0.2.42-rabby.0"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.42-rabby.0.tgz#ee2d869287881da3e632dda504775994245e6c59"
-  integrity sha512-b8g717rmw1wWxryVvfMBbkWoROQMk4S47ovsHoSFJy9r8nj+i6fzZSam/1nkXTgo3PWzQTGA5QF7RzFu1N+/8g==
-
-"@debank/common@^0.2.28":
-  version "0.2.37"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.37.tgz#e1e9eb56643c22cfda7afcceca329b1de1537a61"
-  integrity sha512-gsxpSPaWyPEhHSYEuRhN2G/m2k99pOIgucqlU/PMXWcB06nR0WW5v7TPvSvkIPf749rlUrO/v0OBHM4ZS99rAw==
-
-"@debank/common@^0.2.31":
-  version "0.2.33"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.33.tgz#e3ed9bce272beb47886af15edb000d1496032eb1"
-  integrity sha512-6nPvxPazsmHIbpqtKjlbysKagt8EEMYTraez/n1wprfIxviJ/qDyt/gey9HNo1BKeyc5+bDgYTzqR7yh4ljjgA==
+"@debank/common@^0.2.28", "@debank/common@^0.2.31", "@debank/common@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
+  integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -4113,7 +4103,7 @@
     bigi "^1.4.0"
     bip66 "^1.1.0"
     bitcoin-ops "^1.3.0"
-    blake2b "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
+    blake2b "https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac"
     bs58check "^2.0.0"
     create-hash "^1.1.0"
     create-hmac "^1.1.3"
@@ -4138,7 +4128,7 @@
     bigi "^1.4.0"
     bip66 "^1.1.0"
     bitcoin-ops "^1.3.0"
-    blake2b "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
+    blake2b "https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac"
     bs58check "^2.0.0"
     create-hash "^1.1.0"
     create-hmac "^1.1.3"
@@ -5960,7 +5950,7 @@ blake-hash@^2.0.0:
   dependencies:
     nanoassert "^1.0.0"
 
-"blake2b@https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36":
+"blake2b@https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac", "blake2b@https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36":
   version "2.1.3"
   resolved "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
   dependencies:

@@ -94,6 +94,7 @@ async function restoreAppState() {
   await swapService.init();
   await RPCService.init();
   await securityEngineService.init();
+
   rpcCache.start();
 
   appStoreLoaded = true;

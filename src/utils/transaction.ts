@@ -83,3 +83,16 @@ export const calcMaxPriorityFee = (
     return target.price;
   }
 };
+
+export function makeTransactionId(
+  fromAddr: string,
+  nonce: number | string,
+  chainEnum: string
+) {
+  if (typeof nonce === 'number') {
+    nonce = `0x${nonce.toString(16)}`;
+  } else if (typeof nonce === 'string') {
+    nonce = nonce.startsWith('0x') ? nonce : `0x${nonce}`;
+  }
+  return `${fromAddr}_${nonce}_${chainEnum}`;
+}

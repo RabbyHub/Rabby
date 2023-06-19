@@ -37,6 +37,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import moment from 'moment';
+import { findChainByEnum } from '@/utils/chain';
 
 const getTabs = (
   networks: string[],
@@ -123,10 +124,10 @@ const GnosisTransactionQueue = () => {
           })}
         </div>
       </div>
-      {activeKey && (
+      {activeKey && findChainByEnum(activeKey) && (
         <GnosisTransactionQueueList
           pendingTxs={activeData?.txs}
-          chain={activeKey}
+          usefulChain={activeKey}
           key={activeKey}
           loading={loading}
         />

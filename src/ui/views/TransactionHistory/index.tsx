@@ -32,6 +32,7 @@ import { SvgIconOpenExternal } from 'ui/assets';
 import './style.less';
 import { Account } from '@/background/service/preference';
 import interval from 'interval-promise';
+import { findChainByID } from '@/utils/chain';
 import { getTokenSymbol } from '@/ui/utils/token';
 
 const TransactionExplain = ({
@@ -701,30 +702,34 @@ const TransactionHistory = () => {
     <div className="tx-history">
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
-          {pendingList.map((item) => (
-            <TransactionItem
-              item={item}
-              key={`${item.chainId}-${item.nonce}`}
-              canCancel={
-                minBy(
-                  pendingList.filter((i) => i.chainId === item.chainId),
-                  (i) => i.nonce
-                )?.nonce === item.nonce
-              }
-              onComplete={() => handleTxComplete()}
-            />
-          ))}
+          {pendingList.map((item) =>
+            !findChainByID(item?.chainId) ? null : (
+              <TransactionItem
+                item={item}
+                key={`${item.chainId}-${item.nonce}`}
+                canCancel={
+                  minBy(
+                    pendingList.filter((i) => i.chainId === item.chainId),
+                    (i) => i.nonce
+                  )?.nonce === item.nonce
+                }
+                onComplete={() => handleTxComplete()}
+              />
+            )
+          )}
         </div>
       )}
       {completeList.length > 0 && (
         <div className="tx-history__completed">
-          {completeList.map((item) => (
-            <TransactionItem
-              item={item}
-              key={`${item.chainId}-${item.nonce}`}
-              canCancel={false}
-            />
-          ))}
+          {completeList.map((item) =>
+            !findChainByID(item?.chainId) ? null : (
+              <TransactionItem
+                item={item}
+                key={`${item.chainId}-${item.nonce}`}
+                canCancel={false}
+              />
+            )
+          )}
         </div>
       )}
       {completeList.length <= 0 && pendingList.length <= 0 && (

@@ -8,6 +8,7 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Popup, PageHeader } from 'ui/component';
 import { isValidateUrl } from 'ui/utils/url';
 import { RPCItem } from '@/background/service/rpc';
+import { findChainByEnum } from '@/utils/chain';
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -61,9 +62,7 @@ const EditRPCModal = ({
   onConfirm(url: string): void;
 }) => {
   const wallet = useWallet();
-  const chainInfo = useMemo(() => {
-    return CHAINS[chain];
-  }, [chain]);
+  const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const [rpcUrl, setRpcUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
   const [isValidating, setIsValidating] = useState(false);
@@ -81,12 +80,14 @@ const EditRPCModal = ({
   };
 
   const rpcValidation = async () => {
+    if (!chainItem) return;
+
     if (!isValidateUrl(rpcUrl)) {
       return;
     }
     try {
       setIsValidating(true);
-      const isValid = await wallet.validateRPC(rpcUrl, chainInfo.id);
+      const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
       setIsValidating(false);
       if (!isValid) {
         setRpcErrorMsg('Invalid Chain ID');
@@ -138,10 +139,10 @@ const EditRPCModal = ({
         <div className="text-center">
           <img
             className="w-[56px] h-[56px] mx-auto mb-12"
-            src={chainInfo.logo}
+            src={chainItem?.logo || ''}
           />
           <div className="mb-8 text-20 text-gray-title leading-none">
-            {chainInfo.name}
+            {chainItem?.name}
           </div>
           <div className="mb-8 text-14 text-gray-title text-left">RPC URL</div>
         </div>

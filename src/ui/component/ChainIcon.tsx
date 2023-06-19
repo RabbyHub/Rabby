@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
+import { findChainByEnum } from '@/utils/chain';
 
 const ChainIconWrapper = styled.div`
   position: relative;
@@ -109,7 +110,7 @@ const CustomRPCTooltipContent = ({
 
 const ChainIcon = ({
   chain,
-  customRPC,
+  customRPC: _customRPC,
   size = 'normal',
   showCustomRPCToolTip = false,
   nonce,
@@ -118,7 +119,7 @@ const ChainIcon = ({
   const [customRPCAvaliable, setCustomRPCAvaliable] = useState(true);
   const [customRPCVlidated, setCustomRPCValidated] = useState(false);
   const chainRef = useRef(chain);
-  const rpcRef = useRef(customRPC);
+  const rpcRef = useRef(_customRPC);
 
   const pingCustomRPC = async (c: CHAINS_ENUM, rpc: string | undefined) => {
     setCustomRPCValidated(false);
@@ -144,9 +145,17 @@ const ChainIcon = ({
 
   useEffect(() => {
     chainRef.current = chain;
-    rpcRef.current = customRPC;
-    pingCustomRPC(chain, customRPC);
-  }, [chain, customRPC, nonce]);
+    rpcRef.current = _customRPC;
+    pingCustomRPC(chain, _customRPC);
+  }, [chain, _customRPC, nonce]);
+
+  const { chainItem, customRPC } = React.useMemo(() => {
+    const item = findChainByEnum(chain);
+    return {
+      chainItem: item,
+      customRPC: item ? _customRPC : undefined,
+    };
+  }, [chain, _customRPC]);
 
   return (
     <Tooltip
@@ -162,7 +171,7 @@ const ChainIcon = ({
       }
     >
       <ChainIconWrapper className="chain-icon-comp">
-        <ChainIconEle className={clsx(size)} src={CHAINS[chain].logo} />
+        <ChainIconEle className={clsx(size)} src={chainItem?.logo || ''} />
         {customRPC &&
           customRPCVlidated &&
           (customRPCAvaliable ? (

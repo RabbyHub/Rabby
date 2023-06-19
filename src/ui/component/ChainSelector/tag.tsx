@@ -6,8 +6,9 @@ import Modal from './Modal';
 import './style.less';
 import { SelectChainListProps } from './components/SelectChainList';
 import { useRabbySelector } from '@/ui/store';
-import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { DEX_SUPPORT_CHAINS } from '@/constant/dex-swap';
 import { ReactComponent as SvgIconSwapArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
+import { findChainByEnum } from '@/utils/chain';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -50,7 +51,7 @@ const ChainSelector = ({
       <div className="chain-tag-selector" onClick={handleClickSelector}>
         On{' '}
         <span className="chain-tag-selector__name flex-1">
-          {CHAINS[value].name}
+          {findChainByEnum(value)?.name || ''}
         </span>
         {!readonly && (
           <SvgIconArrowDownTriangle className="icon icon-arrow-down" />
@@ -103,6 +104,10 @@ ChainSelectorProps) => {
   }
   const supportChains = DEX_SUPPORT_CHAINS[dexId];
 
+  const chainItem = React.useMemo(() => {
+    return findChainByEnum(value);
+  }, [value]);
+
   return (
     <>
       <div
@@ -110,11 +115,11 @@ ChainSelectorProps) => {
         onClick={handleClickSelector}
       >
         <img
-          src={CHAINS[value].logo}
+          src={chainItem?.logo || ''}
           className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden"
         />
         <span className="text-13 font-medium text-gray-title">
-          {CHAINS[value].name}
+          {chainItem?.name || ''}
         </span>
         {!readonly && <SvgIconSwapArrowDownTriangle className="ml-4 pt-1" />}
       </div>
