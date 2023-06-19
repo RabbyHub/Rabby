@@ -124,12 +124,11 @@ export const getMissedTokenPrice = async (
   }
 
   return Promise.all(
-    []
-    // tokens.map(([chain, missed]) =>
-    //   getTokenHistoryPrice(chain, [...missed], timeAt, wallet)
-    //     .then((dict) => [chain, dict] as const)
-    //     .catch(() => [chain] as const)
-    // )
+    tokens.map(([chain, missed]) =>
+      getTokenHistoryPrice(chain, [...missed], timeAt, wallet)
+        .then((dict) => [chain, dict] as const)
+        .catch(() => [chain] as const)
+    )
   ).then((dicts) => {
     return dicts.reduce((m, n) => {
       if (n[1]) {

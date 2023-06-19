@@ -17,8 +17,7 @@ export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType
 ) => {
-  // listToken
-  return wallet.openapi.listToken(user_id);
+  return wallet.openapi.listToken(user_id, undefined, true);
 };
 
 export const batchQueryHistoryTokens = async (
@@ -31,8 +30,6 @@ export const batchQueryHistoryTokens = async (
     timeAt: time_at,
   });
 };
-
-console.log('DisplayedProject', DisplayedProject);
 
 export const walletProject = new DisplayedProject({
   id: 'Wallet',
