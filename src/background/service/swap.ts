@@ -121,7 +121,10 @@ class SwapService {
     if (!this.store.viewList) {
       this.store.viewList = {} as SwapServiceStore['viewList'];
     }
-    this.store.viewList[id] = bool;
+    this.store.viewList = {
+      ...this.store.tradeList,
+      [id]: bool,
+    };
   };
 
   getSwapTradeList = () => {
@@ -132,7 +135,10 @@ class SwapService {
     if (!this.store.tradeList) {
       this.store.tradeList = {} as SwapServiceStore['tradeList'];
     }
-    this.store.tradeList[dexId] = bool;
+    this.store.tradeList = {
+      ...this.store.tradeList,
+      [dexId]: bool,
+    };
   };
 }
 

@@ -92,6 +92,7 @@ export const swap = createModel<RootModel>()({
       this.setField({
         viewList,
       });
+      return viewList;
     },
 
     async getSwapTradeList(_?, store?) {
@@ -99,6 +100,7 @@ export const swap = createModel<RootModel>()({
       this.setField({
         tradeList,
       });
+      return tradeList;
     },
 
     async setSwapView(

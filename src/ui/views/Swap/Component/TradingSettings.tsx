@@ -97,7 +97,6 @@ export const TradingSettings = ({
                       if (checked) {
                         setId(item.id);
                         setOpen(true);
-                        console.log('checked', checked);
                       } else {
                         setSwapTrade([item.id, checked]);
                       }
