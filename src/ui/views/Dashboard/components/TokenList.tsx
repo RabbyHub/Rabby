@@ -18,6 +18,7 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import { AddressViewer, Empty, TokenWithChain } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
 import { TokenDetailPopup } from './TokenDetailPopup';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const Row = (props) => {
   const {
@@ -89,7 +90,7 @@ const Row = (props) => {
               className={'text-12 text-white opacity-80'}
             />
           ) : (
-            token.symbol
+            getTokenSymbol(token)
           )}
         </div>
       </div>

@@ -4,7 +4,7 @@ import { ContractDesc, TokenItem } from '@debank/rabby-api/dist/types';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import LogoWithText from '../LogoWithText';
-import { ellipsisTokenSymbol } from '@/ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 
 interface ReceiverData {
   address: string;
@@ -120,7 +120,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
                     {!data.cex.supportToken && (
                       <li>
                         {data.token
-                          ? ellipsisTokenSymbol(data.token.symbol)
+                          ? ellipsisTokenSymbol(getTokenSymbol(data.token))
                           : 'NFT'}{' '}
                         not supported
                       </li>

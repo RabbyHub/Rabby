@@ -18,6 +18,7 @@ import {
 } from '@/constant';
 import stats from '@/stats';
 import { findChainByEnum } from '@/utils/chain';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const GasList = [20, 50, 100];
 
@@ -484,7 +485,7 @@ const GasBox = ({
                 'text-blue-light'
             )}
           >
-            ≈ {item[1]} {gasToken?.symbol}
+            ≈ {item[1]} {getTokenSymbol(gasToken)}
           </div>
         )}
       </div>

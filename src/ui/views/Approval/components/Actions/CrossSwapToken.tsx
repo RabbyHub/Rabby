@@ -8,7 +8,7 @@ import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -93,7 +93,7 @@ const CrossSwapToken = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -119,7 +119,7 @@ const CrossSwapToken = ({
                 logoRadius="100%"
                 text={`${formatAmount(
                   receiveToken.min_amount
-                )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+                )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}

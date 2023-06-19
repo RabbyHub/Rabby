@@ -45,6 +45,7 @@ import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { findChainByEnum } from '@/utils/chain';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const { confirm } = Modal;
 
@@ -224,8 +225,8 @@ export const SwapByDex = () => {
       return [
         res,
         isSameAddress(payToken?.id, WrapTokenAddressMap[chain])
-          ? payToken.symbol
-          : receiveToken.symbol,
+          ? getTokenSymbol(payToken)
+          : getTokenSymbol(receiveToken),
       ];
     }
     setDexId(oDexId);
@@ -909,7 +910,7 @@ export const SwapByDex = () => {
                         .toFixed(2)
                     : ''
                 }
-                symbol={receiveToken?.symbol}
+                symbol={getTokenSymbol(receiveToken)}
               />
 
               {nativeToken && chainItem && (
@@ -990,7 +991,7 @@ export const SwapByDex = () => {
           {loading
             ? 'Fetching offer'
             : !tokenApproved
-            ? `Approve ${payToken?.symbol}`
+            ? `Approve ${getTokenSymbol(payToken)}`
             : 'Swap'}
         </Button>
       </FooterWrapper>

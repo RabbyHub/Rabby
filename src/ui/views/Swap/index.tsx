@@ -9,10 +9,11 @@ import { Account } from 'background/service/preference';
 import { openInTab, useWallet } from 'ui/utils';
 import { obj2query, query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
+import { getTokenSymbol } from 'ui/utils/token';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { TokenItem } from 'background/service/openapi';
-import { getTokenSymbol, Modal, PageHeader } from 'ui/component';
+import { Modal, PageHeader } from 'ui/component';
 // import * as Sentry from '@sentry/browser';
 
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/swap/arrow-down.svg';

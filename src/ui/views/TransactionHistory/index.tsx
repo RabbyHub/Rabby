@@ -33,6 +33,7 @@ import './style.less';
 import { Account } from '@/background/service/preference';
 import interval from 'interval-promise';
 import { findChainByID } from '@/utils/chain';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const TransactionExplain = ({
   isFailed,
@@ -319,7 +320,9 @@ const TransactionItem = ({
   const gasUSDValue = gasTokenCount
     ? (item.explain.native_token.price * gasTokenCount).toFixed(2)
     : 0;
-  const gasTokenSymbol = hasTokenPrice ? item.explain.native_token.symbol : '';
+  const gasTokenSymbol = hasTokenPrice
+    ? getTokenSymbol(item.explain.native_token)
+    : '';
 
   const loadTxData = async () => {
     if (gasTokenCount) return;
@@ -588,7 +591,9 @@ const TransactionItem = ({
                       )} ${gasTokenSymbol} ($${gasUSDValue})`
                     : txQueues[completedTx!.hash]
                     ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
-                      ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
+                      ` ${getTokenSymbol(
+                        txQueues[completedTx!.hash].token
+                      )} ($${(
                         txQueues[completedTx!.hash].tokenCount! *
                         (txQueues[completedTx!.hash].token?.price || 1)
                       ).toFixed(2)})`

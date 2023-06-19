@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { ellipsisOverflowedText } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
@@ -99,8 +99,8 @@ const ApproveAmountModal = ({
           onChange={(e) => handleChange(e.target.value)}
           bordered={false}
           addonAfter={
-            <span title={token.symbol}>
-              {ellipsisTokenSymbol(token.symbol, 4)}
+            <span title={getTokenSymbol(token)}>
+              {ellipsisTokenSymbol(getTokenSymbol(token), 4)}
             </span>
           }
           ref={inputRef}
@@ -216,7 +216,7 @@ const TokenApprove = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(actionData.token.symbol)}
+              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               logoRadius="100%"
             />
           </Row>
@@ -246,7 +246,7 @@ const TokenApprove = ({
                 >
                   {formatAmount(tokenBalance)}
                 </span>{' '}
-                {ellipsisTokenSymbol(actionData.token.symbol)}
+                {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               </li>
             </ul>
           </Row>

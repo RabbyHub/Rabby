@@ -14,7 +14,7 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import ViewMore from '../Actions/components/ViewMore';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
-import { ellipsisTokenSymbol } from '@/ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 
 const Wrapper = styled.div`
@@ -125,7 +125,9 @@ const ApproveNFT = ({
                 logo={actionData.receive_token.logo_url}
                 text={`${formatAmount(
                   actionData.receive_token.amount
-                )} ${ellipsisTokenSymbol(actionData.receive_token.symbol)}`}
+                )} ${ellipsisTokenSymbol(
+                  getTokenSymbol(actionData.receive_token)
+                )}`}
                 logoRadius="100%"
                 icon={
                   <Values.TokenLabel
