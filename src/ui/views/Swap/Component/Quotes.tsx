@@ -266,6 +266,9 @@ export const QuoteList = (props: QuotesProps) => {
       closable
       destroyOnClose
       className="isConnectView"
+      bodyStyle={{
+        paddingBottom: 0,
+      }}
     >
       <Quotes {...props} />
     </Popup>

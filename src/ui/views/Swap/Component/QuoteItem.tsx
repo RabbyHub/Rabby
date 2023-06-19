@@ -481,7 +481,7 @@ export const DexQuoteItem = (
   return (
     <ItemWrapper
       onMouseEnter={() => {
-        if (disabledTrade && !inSufficient && quote) {
+        if (disabledTrade && !inSufficient && quote && preExecResult) {
           setDisabledTradeTipsOpen(true);
         }
       }}

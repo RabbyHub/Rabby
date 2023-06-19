@@ -65,6 +65,9 @@ const Wrapper = styled.section`
     &:placeholder-shown {
       color: #707280;
     }
+    .ant-input {
+      border-radius: 0;
+    }
   }
 
   .warning {

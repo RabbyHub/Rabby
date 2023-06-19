@@ -142,7 +142,7 @@ export const Main = () => {
 
   const btnText = useMemo(() => {
     if (slippageChanged) {
-      return 'slippageChanged';
+      return 'Slippage adjusted. Refresh quote.';
     }
     if (expired) {
       return 'Price expired. Refresh quote.';
