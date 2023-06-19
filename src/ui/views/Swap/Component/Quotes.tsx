@@ -205,7 +205,7 @@ export const Quotes = ({
             <DexQuoteItem
               inSufficient={inSufficient}
               preExecResult={params.preExecResult}
-              quote={data}
+              quote={(data as unknown) as any}
               name={name}
               isBestQuote={idx === 0}
               bestAmount={`${bestAmount}`}
@@ -231,7 +231,7 @@ export const Quotes = ({
           return (
             <CexQuoteItem
               name={name}
-              data={data}
+              data={(data as unknown) as any}
               bestAmount={`${bestAmount}`}
               isBestQuote={idx === 0}
               isLoading={params.loading}

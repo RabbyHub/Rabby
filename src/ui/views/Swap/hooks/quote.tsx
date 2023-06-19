@@ -1,10 +1,5 @@
 import { CEX, DEX, ETH_USDT_CONTRACT, SWAP_FEE_ADDRESS } from '@/constant';
-import {
-  WalletController,
-  formatUsdValue,
-  isSameAddress,
-  useWallet,
-} from '@/ui/utils';
+import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import {
   CEXQuote,
@@ -338,7 +333,7 @@ export const useQuoteMethods = () => {
           status: data ? 'success' : 'fail',
         });
 
-        let preExecResult = null;
+        let preExecResult;
         if (data) {
           try {
             preExecResult = await pRetry(
