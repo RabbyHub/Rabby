@@ -150,7 +150,7 @@ export const Main = () => {
     }
 
     if (activeProvider?.shouldApproveToken) {
-      return `Approve ${getTokenSymbol(receiveToken)}`;
+      return `Approve ${getTokenSymbol(payToken)}`;
     }
     if (activeProvider?.name) {
       return `Swap via ${isWrapToken ? 'Wrap Contract' : DexDisplayName}`;
