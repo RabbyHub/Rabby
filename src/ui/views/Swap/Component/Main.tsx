@@ -22,12 +22,12 @@ import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
 import { DEX } from '@/constant';
 
-const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-12');
+const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
   background: #f5f6fa;
   border-radius: 6px;
-  height: 48px;
+  height: 46px;
   font-weight: 500;
   font-size: 18px;
   color: #ffffff;
@@ -153,7 +153,7 @@ export const Main = () => {
     if (!receiveToken || !payToken) {
       return 'Select token';
     }
-    return 'Select offer';
+    return 'Get quotes';
   }, [
     slippageChanged,
     activeProvider?.name,
@@ -222,7 +222,7 @@ export const Main = () => {
   return (
     <div
       className={clsx(
-        'h-[calc(100%-72px)] overflow-auto',
+        'flex-1 overflow-auto',
         isWrapToken
           ? ''
           : activeProvider?.shouldApproveToken
@@ -254,7 +254,7 @@ export const Main = () => {
             tokenRender={(p) => <TokenRender {...p} />}
           />
           <IconSwapArrow
-            className="text-gray-content text-opacity-20 hover:text-opacity-100 cursor-pointer"
+            className="text-gray-content text-opacity-60 hover:text-opacity-100 cursor-pointer"
             onClick={exchangeToken}
           />
           <TokenSelect

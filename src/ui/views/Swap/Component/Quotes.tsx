@@ -217,9 +217,7 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
-      <div className="text-gray-content text-13 font-medium mt-32 mb-8">
-        Rates from CEX
-      </div>
+      <div className="text-gray-light text-12 mt-32 mb-8">Rates from CEX</div>
 
       <CexListWrapper>
         {sortedList.map((params, idx) => {
@@ -238,7 +236,7 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
-      <div className="mt-12 text-gray-content text-[13px] ">
+      <div className="mt-12 text-gray-light text-12 ">
         Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
         {tradeCount} can trade.{' '}
         <span

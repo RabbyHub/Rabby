@@ -10,7 +10,7 @@ export const Header = () => {
   return (
     <>
       <PageHeader
-        className="mx-[20px]"
+        className="mx-[20px] pt-[20px] mb-[16px]"
         forceShowBack
         rightSlot={
           <IconSwapSettings

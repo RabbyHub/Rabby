@@ -7,7 +7,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import { Tooltip, message } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo, useCallback, useState } from 'react';
-import { useDebounce } from 'react-use';
+import { useCss, useDebounce } from 'react-use';
 import styled from 'styled-components';
 import { QuoteLogo } from './QuoteLogo';
 import BigNumber from 'bignumber.js';
@@ -69,7 +69,7 @@ const ItemWrapper = styled.div`
       height: 100%;
       transform: translateY(0);
       opacity: 1;
-      transition: opacity 0.35s, transform 0.35s;
+      /* transition: opacity 0.35s, transform 0.35s; */
     }
   }
 
@@ -490,8 +490,7 @@ export const DexQuoteItem = (
         <div className="flex items-center">
           <div
             className={clsx(
-              'flex items-center gap-2 w-[108px] text-gray-title text-opacity-80',
-              isWrapTokensWap && 'mr-[42px]'
+              'flex items-center gap-2 w-[108px] max-w-[108px] text-gray-title text-opacity-80'
             )}
           >
             <span
@@ -523,12 +522,7 @@ export const DexQuoteItem = (
 
         {!disabled && (
           <div className="flex items-center text-12 text-gray-content">
-            <div
-              className={clsx(
-                'flex items-center gap-2 w-[108px]',
-                isWrapTokensWap && 'mr-[42px]'
-              )}
-            >
+            <div className={clsx('flex items-center gap-2 w-[108px]')}>
               {!inSufficient && (
                 <>
                   <img src={ImgGas} className="w-14 h-14 relative top-[-1px]" />
@@ -555,7 +549,7 @@ export const DexQuoteItem = (
         <span>
           This exchange is not enabled to trade by you.
           <span
-            className="underline-transparent underline cursor-pointer"
+            className="underline-transparent underline cursor-pointer ml-4"
             onClick={(e) => {
               e.stopPropagation();
               openSwapSettings(true);
@@ -680,16 +674,29 @@ export function WarningOrChecked({
 }: {
   quoteWarning?: [string, string];
 }) {
+  const tooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: '254px',
+    },
+  });
   return (
     <Tooltip
       overlayClassName={clsx(
         'rectangle',
-        quoteWarning ? 'max-w-[344px]' : 'max-w-[600px]'
+        'max-w-[360px]',
+
+        quoteWarning ? 'left-[20px]' : '',
+        quoteWarning && tooltipsClassName
       )}
       title={
         quoteWarning
           ? getQuoteLessWarning(quoteWarning)
           : 'By transaction simulation, the quote is valid'
+      }
+      arrowContent={
+        <div className="ant-tooltip-arrow">
+          <span className="ant-tooltip-arrow-content">1</span>
+        </div>
       }
     >
       <img

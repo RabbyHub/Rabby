@@ -19,8 +19,7 @@ import clsx from 'clsx';
 import { SkeletonInputProps } from 'antd/lib/skeleton/Input';
 import React from 'react';
 import { ellipsisOverflowedText, formatAmount } from '@/ui/utils';
-import { QuoteProvider, useQuoteVisible, useSetQuoteVisible } from '../hooks';
-import { QuoteLogo } from './QuoteLogo';
+import { QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { DEX } from '@/constant';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
@@ -33,10 +32,11 @@ export const WarningOrChecked = ({
 }) => {
   return (
     <Tooltip
-      overlayClassName={clsx(
-        'rectangle',
-        quoteWarning ? 'max-w-[344px]' : 'max-w-[600px]'
-      )}
+      align={{
+        offset: [10, 0],
+      }}
+      placement={'topRight'}
+      overlayClassName={clsx('rectangle', 'max-w-[360px]')}
       title={
         quoteWarning
           ? getQuoteLessWarning(quoteWarning)
@@ -156,6 +156,11 @@ const ReceiveWrapper = styled.div`
 
     background: #e4e8ff;
     border-radius: 4px;
+    border: 1px solid transparent;
+    &:hover {
+      background: #d4daff;
+      border: 1px solid rgba(134, 151, 255, 0.5);
+    }
   }
 `;
 
@@ -283,7 +288,11 @@ export const ReceiveDetails = (
           )
         </span>
         <Tooltip
-          overlayClassName="rectangle max-w-[600px]"
+          align={{
+            offset: [10, 0],
+          }}
+          placement={'topRight'}
+          overlayClassName="rectangle max-w-[360px]"
           title={
             <div className="flex flex-col gap-4 py-[5px] text-13">
               <div>
@@ -343,7 +352,7 @@ export const ReceiveDetails = (
           </SkeletonChildren>
         </div>
       </div>
-      {activeProvider && receiveToken ? (
+      {DEX[activeProvider.name] && receiveToken ? (
         <div
           className="quote-provider"
           onClick={() => {
@@ -355,7 +364,7 @@ export const ReceiveDetails = (
             src={
               isWrapToken
                 ? receiveToken?.logo_url
-                : DEX[activeProvider.name].logo
+                : DEX?.[activeProvider?.name]?.logo
             }
           />
           <span className="ml-4 mr-6 ">

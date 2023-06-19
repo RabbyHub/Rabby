@@ -12,7 +12,7 @@ const Swap = () => {
     <SettingVisibleProvider>
       <RefreshIdProvider>
         <QuoteVisibleProvider>
-          <div className="px-0 overflow-hidden bg-gray-bg h-full relative">
+          <div className="px-0 overflow-hidden bg-gray-bg h-full relative flex flex-col">
             <Header />
             <Main />
           </div>

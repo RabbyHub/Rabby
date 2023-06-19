@@ -47,7 +47,7 @@ export const TradingSettings = ({
     >
       <div>
         <div className="flex items-center text-gray-content text-12 pb-8 px-12">
-          <div className="w-[182px]">Exchanges</div>
+          <div className="w-[188px]">Exchanges</div>
           <div className="w-[66px]">View quotes</div>
           <div className="ml-auto">Trade</div>
         </div>
@@ -59,10 +59,10 @@ export const TradingSettings = ({
                 className="flex items-center h-[48px] bg-gray-bg rounded-[6px] p-12"
                 key={item.name}
               >
-                <div className="flex items-center gap-8 w-[182px]">
+                <div className="flex items-center gap-8 w-[188px]">
                   <img
                     src={item.logo}
-                    className="w-[30px] h-[30px] mr-[12px]"
+                    className="w-[24px] h-[24px] mr-[8px] rounded-full"
                   />
                   <span className="text-15 text-gray-title font-medium ">
                     {item.name}
@@ -70,7 +70,7 @@ export const TradingSettings = ({
                   <span
                     className={clsx(
                       'text-12 text-gray-content rounded-[2px] px-[4px] py-[1px]',
-                      'border border-solid border-gray-comment'
+                      'border-[0.5px] border-solid border-gray-comment'
                     )}
                   >
                     {item?.chains ? 'Dex' : 'Cex'}
@@ -154,7 +154,7 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
           type="primary"
           block
           disabled={!checked}
-          className="h-[40px] w-[182px] text-13 font-medium mx-auto"
+          className="h-[40px] w-[188px] text-13 font-medium mx-auto"
           onClick={onConfirm}
         >
           Confirm

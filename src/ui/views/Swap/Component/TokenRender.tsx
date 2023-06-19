@@ -5,7 +5,7 @@ import { ReactComponent as IconRcArrowDownTriangle } from '@/ui/assets/swap/arro
 import { TokenItem } from '@debank/rabby-api/dist/types';
 const TokenRenderWrapper = styled.div`
   width: 150px;
-  height: 48px;
+  height: 46px;
   background: #f5f6fa;
   border-radius: 4px;
   display: flex;
@@ -44,8 +44,8 @@ const TokenRenderWrapper = styled.div`
     margin-left: auto;
     font-size: 12px;
     opacity: 0.8;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 `;
 export const TokenRender = ({
@@ -69,12 +69,12 @@ export const TokenRender = ({
           <span className="text" title={token.symbol}>
             {token.symbol}
           </span>
-          <IconRcArrowDownTriangle className="arrow" />
+          <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
         </div>
       ) : (
         <div className="select">
           <span>Select Token</span>
-          <IconRcArrowDownTriangle className="arrow" />
+          <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
         </div>
       )}
     </TokenRenderWrapper>
