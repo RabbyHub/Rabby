@@ -159,12 +159,11 @@ export const Main = () => {
     return 'Get quotes';
   }, [
     slippageChanged,
-    activeProvider?.name,
-    receiveToken,
+    activeProvider,
+    expired,
     payToken,
     isWrapToken,
     DexDisplayName,
-    expired,
   ]);
 
   const wallet = useWallet();
