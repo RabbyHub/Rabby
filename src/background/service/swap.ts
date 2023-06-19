@@ -2,12 +2,17 @@ import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { GasCache, ChainGas } from './preference';
+import { CEX, DEX } from '@/constant';
+
+type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
 export type SwapServiceStore = {
   gasPriceCache: GasCache;
   selectedDex: DEX_ENUM | null;
   selectedChain: CHAINS_ENUM;
   unlimitedAllowance: boolean;
+  viewList: Record<ViewKey, boolean>;
+  tradeList: Record<ViewKey, boolean>;
 };
 
 class SwapService {
@@ -16,6 +21,8 @@ class SwapService {
     selectedChain: CHAINS_ENUM.ETH,
     selectedDex: null,
     unlimitedAllowance: false,
+    viewList: {} as SwapServiceStore['viewList'],
+    tradeList: {} as SwapServiceStore['tradeList'],
   };
 
   init = async () => {
@@ -26,6 +33,8 @@ class SwapService {
         selectedChain: CHAINS_ENUM.ETH,
         selectedDex: null,
         unlimitedAllowance: false,
+        viewList: {} as SwapServiceStore['viewList'],
+        tradeList: {} as SwapServiceStore['tradeList'],
       },
     });
     if (storage) {
@@ -102,6 +111,28 @@ class SwapService {
 
   setUnlimitedAllowance = (bool: boolean) => {
     this.store.unlimitedAllowance = bool;
+  };
+
+  getSwapViewList = () => {
+    return this.store.viewList;
+  };
+
+  setSwapView = (id: ViewKey, bool: boolean) => {
+    if (!this.store.viewList) {
+      this.store.viewList = {} as SwapServiceStore['viewList'];
+    }
+    this.store.viewList[id] = bool;
+  };
+
+  getSwapTradeList = () => {
+    return this.store.tradeList;
+  };
+
+  setSwapTrade = (dexId: ViewKey, bool: boolean) => {
+    if (!this.store.tradeList) {
+      this.store.tradeList = {} as SwapServiceStore['tradeList'];
+    }
+    this.store.tradeList[dexId] = bool;
   };
 }
 

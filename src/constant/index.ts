@@ -59,6 +59,14 @@ import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
+import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+
+import LogoParaswap from 'ui/assets/swap/paraswap.png';
+import Logo0X from 'ui/assets/swap/0xswap.png';
+import LogoOpenOcean from 'ui/assets/swap/openocean.png';
+import LogoBinance from 'ui/assets/swap/binance.png';
+import LogoCoinbase from 'ui/assets/swap/coinbase.png';
+import LogoOkx from 'ui/assets/swap/okx.png';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -905,3 +913,59 @@ export const WALLET_SORT_SCORE = [
   pre[now] = i + 1;
   return pre;
 }, {} as { [k: string]: number });
+
+export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
+
+export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+
+export const DEX = {
+  [DEX_ENUM.ZEROXAPI]: {
+    id: DEX_ENUM.ZEROXAPI,
+    logo: Logo0X,
+    name: '0x',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPI],
+  },
+  [DEX_ENUM.PARASWAP]: {
+    id: DEX_ENUM.PARASWAP,
+    logo: LogoParaswap,
+    name: 'ParaSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
+  },
+  [DEX_ENUM.OPENOCEAN]: {
+    id: DEX_ENUM.OPENOCEAN,
+    logo: LogoOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+};
+
+export const DEX_WITH_WRAP = {
+  ...DEX,
+  [DEX_ENUM.WRAPTOKEN]: {
+    logo: 'rabby-internal://assets/icons/common/token-default.svg',
+    name: 'Wrap Contract',
+    chains: DEX_SUPPORT_CHAINS.WrapToken,
+  },
+};
+
+export const CEX = {
+  binance: {
+    id: 'binance',
+    name: 'Binance',
+    logo: LogoBinance,
+  },
+  coinbase: {
+    id: 'coinbase',
+    name: 'Coinbase',
+    logo: LogoCoinbase,
+  },
+  okex: {
+    id: 'okex',
+    name: 'OKX',
+    logo: LogoOkx,
+  },
+};
+
+export const SWAP_SUPPORT_CHAINS = Array.from(
+  new Set(Object.values(DEX_SUPPORT_CHAINS).flat())
+);

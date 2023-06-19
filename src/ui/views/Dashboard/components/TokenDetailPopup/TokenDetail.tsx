@@ -18,10 +18,10 @@ import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 import { useRabbySelector } from '@/ui/store';
-import { DEX_SUPPORT_CHAINS } from '@/constant/dex-swap';
 import { CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -45,20 +45,13 @@ const TokenDetail = ({
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const oDexId = useRabbySelector((state) => state.swap.selectedDex);
-
-  const shouldSelectDex = useMemo(() => !oDexId, [oDexId]);
-
-  const supportChains = useMemo(
-    () => (oDexId ? DEX_SUPPORT_CHAINS[oDexId] || [] : []),
-    [oDexId]
-  );
+  const shouldSelectDex = false;
 
   const tokenSupportSwap = useMemo(() => {
     if (shouldSelectDex || !token.is_core) return false;
     const tokenChain = getChain(token?.chain)?.enum;
-    return !!tokenChain && supportChains.includes(tokenChain as any);
-  }, [supportChains, token, shouldSelectDex]);
+    return !!tokenChain && SWAP_SUPPORT_CHAINS.includes(tokenChain as any);
+  }, [token, shouldSelectDex]);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -271,7 +264,7 @@ const TokenDetail = ({
             title={
               shouldSelectDex
                 ? 'Please select the dex in swap first'
-                : t('The token on this chain is not supported on current dex')
+                : t('The token on this chain is not supported')
             }
             visible={tokenSupportSwap ? false : undefined}
           >
