@@ -110,8 +110,8 @@ const ApproveNFTCollection = ({
               <SecurityListItem
                 id="1056"
                 engineResult={engineResultMap['1056']}
-                warningText="Never Interacted before"
-                defaultText="Interacted before"
+                warningText={<Values.Interacted value={false} />}
+                defaultText={<Values.Interacted value />}
               />
 
               <SecurityListItem
