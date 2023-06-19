@@ -10,6 +10,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
 } from '@debank/rabby-api/dist/types';
+import { DisplayedProject } from './project';
 import { AbstractPortfolioToken } from './types';
 import { getMissedTokenPrice } from './utils';
 import {
@@ -19,8 +20,7 @@ import {
   setWalletTokens,
   queryTokensCache,
   sortWalletTokens,
-} from '../token';
-import { DisplayedProject } from './project';
+} from './tokenUtils';
 
 // export const tokenChangeLoadingAtom = atom(false);
 
