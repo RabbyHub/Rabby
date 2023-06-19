@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as IconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import { TokenItem } from '@debank/rabby-api/dist/types';
+import { getTokenSymbol } from '@/ui/utils/token';
 const TokenRenderWrapper = styled.div`
   width: 150px;
   height: 46px;
@@ -66,8 +67,8 @@ export const TokenRender = ({
             hideConer
             hideChainIcon
           />
-          <span className="text" title={token.symbol}>
-            {token.symbol}
+          <span className="text" title={getTokenSymbol(token)}>
+            {getTokenSymbol(token)}
           </span>
           <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
         </div>
