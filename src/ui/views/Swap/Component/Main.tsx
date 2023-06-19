@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
 import { DEX } from '@/constant';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -146,6 +147,10 @@ export const Main = () => {
     }
     if (activeProvider && expired) {
       return 'Price expired. Refresh quote.';
+    }
+
+    if (activeProvider?.shouldApproveToken) {
+      return `Approve ${getTokenSymbol(receiveToken)}`;
     }
     if (activeProvider?.name) {
       return `Swap via ${isWrapToken ? 'Wrap Contract' : DexDisplayName}`;

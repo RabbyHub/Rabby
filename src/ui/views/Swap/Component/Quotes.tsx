@@ -18,6 +18,10 @@ import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
 const CexListWrapper = styled.div`
   border: 1px solid #e5e9ef;
   border-radius: 6px;
+  &:empty {
+    display: none;
+  }
+
   & > div:not(:last-child) {
     position: relative;
     &:not(:last-child):before {
@@ -135,9 +139,9 @@ export const Quotes = ({
 
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
 
-  const cexLength = useMemo(() => sortedList.filter((e) => !e.isDex).length, [
-    sortedList,
-  ]);
+  const noCex = useMemo(() => {
+    return Object.keys(CEX).every((e) => swapViewList?.[e] === false);
+  }, [swapViewList]);
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
@@ -221,30 +225,28 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
-      {cexLength ? (
-        <>
-          <div className="text-gray-light text-12 mt-32 mb-8">
-            Rates from CEX
-          </div>
-          <CexListWrapper>
-            {sortedList.map((params, idx) => {
-              const { name, data, isDex } = params;
-              if (isDex) return null;
-              return (
-                <CexQuoteItem
-                  name={name}
-                  data={(data as unknown) as any}
-                  bestAmount={`${bestAmount}`}
-                  isBestQuote={idx === 0}
-                  isLoading={params.loading}
-                  inSufficient={inSufficient}
-                />
-              );
-            })}
-            <QuoteListLoading fetchedList={fetchedList} isCex />
-          </CexListWrapper>
-        </>
-      ) : null}
+
+      {!noCex && (
+        <div className="text-gray-light text-12 mt-32 mb-8">Rates from CEX</div>
+      )}
+
+      <CexListWrapper>
+        {sortedList.map((params, idx) => {
+          const { name, data, isDex } = params;
+          if (isDex) return null;
+          return (
+            <CexQuoteItem
+              name={name}
+              data={(data as unknown) as any}
+              bestAmount={`${bestAmount}`}
+              isBestQuote={idx === 0}
+              isLoading={params.loading}
+              inSufficient={inSufficient}
+            />
+          );
+        })}
+        <QuoteListLoading fetchedList={fetchedList} isCex />
+      </CexListWrapper>
 
       <div className="mt-auto text-gray-light text-12 pb-16">
         Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}

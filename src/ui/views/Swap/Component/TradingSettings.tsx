@@ -37,11 +37,6 @@ export const TradingSettings = ({
     }
   };
 
-  console.log('swapViewList', {
-    swapViewList,
-    swapTradeList,
-  });
-
   return (
     <Popup
       visible={visible}

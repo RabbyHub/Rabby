@@ -29,6 +29,7 @@ import {
 } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -493,7 +494,7 @@ export const DexQuoteItem = (
         <div className="flex items-center">
           <div
             className={clsx(
-              'flex items-center gap-2 w-[108px] max-w-[108px] text-gray-title text-opacity-80'
+              'flex items-center gap-2 w-[108px] max-w-[108px] text-gray-title text-opacity-80 relative'
             )}
           >
             <span
@@ -505,17 +506,17 @@ export const DexQuoteItem = (
               {quoteProviderInfo.name}
             </span>
             {!!preExecResult?.shouldApproveToken && (
-              <Tooltip
-                overlayClassName="rectangle max-w-[300px]"
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content]"
                 title="Need to approve token before swap"
               >
                 <img src={ImgLock} className="w-14 h-14" />
-              </Tooltip>
+              </TooltipWithMagnetArrow>
             )}
           </div>
 
           <div className="flex flex-col">
-            <div className="price">
+            <div className="price relative">
               {middleContent}
               <CheckIcon />
             </div>
@@ -679,35 +680,19 @@ export function WarningOrChecked({
 }: {
   quoteWarning?: [string, string];
 }) {
-  const tooltipsClassName = useCss({
-    '& .ant-tooltip-arrow': {
-      left: '254px',
-    },
-  });
   return (
-    <Tooltip
-      overlayClassName={clsx(
-        'rectangle',
-        'max-w-[360px]',
-
-        quoteWarning ? 'left-[20px]' : '',
-        quoteWarning && tooltipsClassName
-      )}
+    <TooltipWithMagnetArrow
+      overlayClassName={clsx('rectangle', 'w-[max-content]')}
       title={
         quoteWarning
           ? getQuoteLessWarning(quoteWarning)
           : 'By transaction simulation, the quote is valid'
-      }
-      arrowContent={
-        <div className="ant-tooltip-arrow">
-          <span className="ant-tooltip-arrow-content">1</span>
-        </div>
       }
     >
       <img
         src={quoteWarning ? ImgWarning : ImgVerified}
         className="w-[14px] h-[14px]"
       />
-    </Tooltip>
+    </TooltipWithMagnetArrow>
   );
 }

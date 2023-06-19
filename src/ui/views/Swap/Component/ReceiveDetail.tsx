@@ -252,7 +252,7 @@ export const ReceiveDetails = (
     <ReceiveWrapper {...other}>
       <div className="column receive-token">
         <span>Receive amount</span>
-        <div className="right">
+        <div className="right relative">
           <SkeletonChildren
             loading={loading}
             style={{ maxWidth: 144, height: 20, opacity: 0.5 }}
@@ -273,7 +273,7 @@ export const ReceiveDetails = (
 
       <div
         className={clsx(
-          'flex justify-end items-center gap-2 text-[13px]',
+          'flex justify-end items-center gap-2 text-[13px] relative',
           loading && 'opacity-0'
         )}
       >
