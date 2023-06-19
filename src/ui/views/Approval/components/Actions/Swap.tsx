@@ -8,7 +8,7 @@ import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -101,7 +101,7 @@ const Swap = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -126,7 +126,7 @@ const Swap = ({
                   balanceChange.success && balanceChange.support
                     ? `${formatAmount(
                         receiveToken.amount
-                      )} ${ellipsisTokenSymbol(receiveToken.symbol)}`
+                      )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`
                     : 'Fail to load'
                 }
                 icon={
@@ -210,7 +210,7 @@ const Swap = ({
                 logo={minReceive.logo_url}
                 logoRadius="100%"
                 text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-                  minReceive.symbol
+                  getTokenSymbol(minReceive)
                 )}`}
               />
             </div>

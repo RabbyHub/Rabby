@@ -6,6 +6,7 @@ import { useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
+import { getTokenSymbol } from 'ui/utils/token';
 import IconSearch from 'ui/assets/search.svg';
 import './style.less';
 import BigNumber from 'bignumber.js';
@@ -173,7 +174,7 @@ const TokenSelector = ({
                 )}
                 key={`${token.chain}-${token.id}`}
                 onClick={() => onConfirm(token)}
-                title={token.symbol}
+                title={getTokenSymbol(token)}
               >
                 <div>
                   <TokenWithChain
@@ -184,7 +185,7 @@ const TokenSelector = ({
                     // hideChainIcon={isSwapType}
                   />
                   <div className="flex flex-col text-left">
-                    <span className="symbol">{token.symbol}</span>
+                    <span className="symbol">{getTokenSymbol(token)}</span>
                     <span
                       className={clsx(
                         'symbol text-12 text-gray-content',

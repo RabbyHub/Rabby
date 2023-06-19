@@ -5,6 +5,7 @@ import uniqBy from 'lodash/uniqBy';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, useWallet } from 'ui/utils';
+import { getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, {
   isSwapTokenType,
@@ -165,8 +166,8 @@ const TokenAmountInput = ({
     <div className={clsx('token-amount-input', className)}>
       <div className="left" onClick={handleSelectToken}>
         <TokenWithChain token={token} hideConer />
-        <span className="token-input__symbol" title={token.symbol}>
-          {token.symbol}
+        <span className="token-input__symbol" title={getTokenSymbol(token)}>
+          {getTokenSymbol(token)}
         </span>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
       </div>

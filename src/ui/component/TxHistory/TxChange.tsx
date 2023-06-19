@@ -1,18 +1,9 @@
-import {
-  TokenItem,
-  TxDisplayItem,
-  TxHistoryItem,
-} from '@/background/service/openapi';
+import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import React from 'react';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { numberWithCommasIsLtOne } from 'ui/utils';
-
-export function getTokenSymbol(token: TokenItem) {
-  return (
-    token?.symbol || token?.optimized_symbol || token?.display_symbol || ''
-  );
-}
+import { getTokenSymbol } from 'ui/utils/token';
 
 type TokenChangeProps = {
   data: TxDisplayItem | TxHistoryItem;

@@ -14,6 +14,7 @@ import { splitNumberByStep } from '@/ui/utils';
 import { ReactComponent as IconRightArrow } from '@/ui/assets/arrow-right-gray.svg';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 export const ConfirmDrawer = ({
   visible,
@@ -96,7 +97,8 @@ export const ConfirmDrawer = ({
             <Space size={12}>
               <TokenWithChain token={item} hideConer />
               <span>
-                {splitNumberByStep(item.amount?.toFixed(4))} {item.symbol}
+                {splitNumberByStep(item.amount?.toFixed(4))}{' '}
+                {getTokenSymbol(item)}
               </span>
             </Space>
             <div>
@@ -171,7 +173,7 @@ export const ConfirmDrawer = ({
               <>
                 <TokenWithChain token={token} hideConer />
                 <div className="ml-12 mr-[18px] text-gray-title text-15 font-medium">
-                  {token.symbol}
+                  {getTokenSymbol(token)}
                 </div>
               </>
             ) : null}

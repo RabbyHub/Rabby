@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -57,7 +57,7 @@ const TokenApprove = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(actionData.token.symbol)}
+              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               logoRadius="100%"
             />
           </Row>

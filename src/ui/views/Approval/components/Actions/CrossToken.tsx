@@ -14,6 +14,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
+import { getTokenSymbol } from 'ui/utils/token';
 
 const Wrapper = styled.div`
   .header {
@@ -93,7 +94,7 @@ const Swap = ({
             <LogoWithText
               logo={payToken.logo_url}
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                payToken.symbol
+                getTokenSymbol(payToken)
               )}`}
               logoRadius="100%"
             />
@@ -119,7 +120,7 @@ const Swap = ({
                 logoRadius="100%"
                 text={`${formatAmount(
                   receiveToken.min_amount
-                )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+                )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}

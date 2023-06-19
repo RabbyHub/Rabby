@@ -9,6 +9,7 @@ import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import BigNumber from 'bignumber.js';
 import { formatUsdValue } from 'ui/utils/number';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const NFTBalanceChange = ({
   data,
@@ -221,7 +222,7 @@ const BalanceChange = ({
                           <span className="text-red-forbidden">
                             - {formatAmount(token.amount)}
                           </span>{' '}
-                          {token.symbol}
+                          {getTokenSymbol(token)}
                         </>
                       }
                       key={token.id}
@@ -263,7 +264,7 @@ const BalanceChange = ({
                           <span className="text-green">
                             + {formatAmount(token.amount)}
                           </span>{' '}
-                          {token.symbol}
+                          {getTokenSymbol(token)}
                         </>
                       }
                       key={token.id}
