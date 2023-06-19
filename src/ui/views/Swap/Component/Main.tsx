@@ -159,8 +159,8 @@ export const Main = () => {
     return 'Get quotes';
   }, [
     slippageChanged,
-    activeProvider?.name,
-    receiveToken,
+    activeProvider,
+    expired,
     payToken,
     isWrapToken,
     DexDisplayName,
