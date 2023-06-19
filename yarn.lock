@@ -3534,12 +3534,12 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.0", "@rabby-wallet/rabby-api@^0.6.0-alpha.0":
-  version "0.6.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.0-alpha.0.tgz#f0529ede68ce290be970b2ed75d538af819e625d"
-  integrity sha512-z9NGa4Z9uVicuRPynaDAllE+fatVVoZnhGTOUpkG/T87L0PcMStMb3Jp8XI0mZ98MFsML5EpdlhHusVPh5HDZw==
+"@rabby-wallet/rabby-api@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.0.tgz#17c0e6f3686226848768c120155a8116be6332ca"
+  integrity sha512-XiNuCWm6meSYNWefExxFTIgzbNnA+dPu4ynjFA04IJaUzJF5x3kWCI11G6v44bHjk4/UHsHzt61Yy/k5goFREw==
   dependencies:
-    "@rabby-wallet/rabby-sign" "^0.3.2"
+    "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
     axios-rate-limit "^1.3.0"
     eth-rpc-errors "^4.0.3"
@@ -3554,10 +3554,10 @@
     "@debank/common" "^0.2.31"
     "@rabby-wallet/rabby-api" "^0.6.0"
 
-"@rabby-wallet/rabby-sign@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-sign/-/rabby-sign-0.3.2.tgz#03b35c5c4b3869628e282047d4a75a44f9275c18"
-  integrity sha512-GZkJBBOK1/CIbaS+qSGNs8sg+B64C+/erhJwv2jPCsMyVGNi0uHF+vYX6t/kwwBzqnB5bbM6iPO4iQgYMLUSrw==
+"@rabby-wallet/rabby-sign@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-sign/-/rabby-sign-0.3.3.tgz#cb3d8f9472363e07a0b429f47344dd352a118033"
+  integrity sha512-enFRKBJyNA9owudWYGq1FB0+SWM7ExgaPkYOwvL342oIUcZxfzJ8N8tVn2dfwGkK4cel36vrRX6VizKJmOGUAg==
   dependencies:
     fast-deep-equal "^3.1.3"
     lodash.clonedeep "^4.5.0"
