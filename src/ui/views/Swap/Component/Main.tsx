@@ -274,7 +274,7 @@ export const Main = () => {
         <div
           className={clsx(tipsClassName, 'flex items-center justify-between')}
         >
-          <div>Amount in {payToken?.symbol || ''}</div>
+          <div>Amount in {payToken ? getTokenSymbol(payToken) : ''}</div>
           <div
             className={clsx(
               'text-gray-title',
@@ -353,7 +353,8 @@ export const Main = () => {
                     <div>
                       <span>Minimum received: </span>
                       <span className="font-medium text-gray-title">
-                        {miniReceivedAmount} {receiveToken?.symbol}
+                        {miniReceivedAmount}{' '}
+                        {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
                     </div>
                   </div>
