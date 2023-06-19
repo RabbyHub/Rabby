@@ -138,8 +138,8 @@ const Permit2 = ({
               <SecurityListItem
                 id="1074"
                 engineResult={engineResultMap['1074']}
-                warningText="Never interacted before"
-                defaultText="Interacted before"
+                warningText={<Values.Interacted value={false} />}
+                defaultText={<Values.Interacted value />}
               />
 
               <SecurityListItem

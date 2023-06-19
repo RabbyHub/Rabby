@@ -233,6 +233,7 @@ const ApproveNFT = ({
                     ...requireData,
                     address: requireData.id,
                     chain,
+                    title: 'List on',
                   }}
                 />
               </li>

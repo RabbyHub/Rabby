@@ -13,6 +13,7 @@ interface ContractData {
   hasInteraction: boolean;
   bornAt: number | null;
   rank: number | null;
+  title?: string;
 }
 
 export interface Props {
@@ -27,7 +28,7 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        Interact contract{' '}
+        {data.title || 'Interact contract'}{' '}
         <Values.Address
           address={data.address}
           chain={data.chain}
