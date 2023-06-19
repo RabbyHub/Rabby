@@ -21,6 +21,7 @@ import React from 'react';
 import { ellipsisOverflowedText, formatAmount } from '@/ui/utils';
 import { QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { DEX } from '@/constant';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
   `The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is ${receive}. You'll receive ${diff}  less than the expected offer.`;
@@ -244,6 +245,9 @@ export const ReceiveDetails = (
   }, [payAmount, payToken.price, receiveAmount, receiveToken.price, reverse]);
 
   const openQuote = useSetQuoteVisible();
+  const payTokenSymbol = getTokenSymbol(payToken);
+  const receiveTokenSymbol = getTokenSymbol(receiveToken);
+
   return (
     <ReceiveWrapper {...other}>
       <div className="column receive-token">
@@ -254,10 +258,10 @@ export const ReceiveDetails = (
             style={{ maxWidth: 144, height: 20, opacity: 0.5 }}
           >
             <span
-              title={`${receiveNum} ${receiveToken.symbol}`}
+              title={`${receiveNum} ${receiveTokenSymbol}`}
               className="receive"
             >
-              {receiveNum} {receiveToken.symbol}
+              {receiveNum} {receiveTokenSymbol}
             </span>
             <WarningOrChecked quoteWarning={quoteWarning} />
           </SkeletonChildren>
@@ -297,11 +301,11 @@ export const ReceiveDetails = (
             <div className="flex flex-col gap-4 py-[5px] text-13">
               <div>
                 Est. Payment: {payAmount}
-                {payToken.symbol} ≈ ${payUsd}
+                {payTokenSymbol} ≈ ${payUsd}
               </div>
               <div>
                 Est. Receiving: {receiveNum}
-                {receiveToken.symbol} ≈ ${receiveUsd}
+                {receiveTokenSymbol} ≈ ${receiveUsd}
               </div>
               <div>
                 Est. Difference: {sign}
@@ -328,24 +332,22 @@ export const ReceiveDetails = (
           >
             <span className="cursor-pointer" onClick={reverseRate}>
               <span
-                title={`${1} ${
-                  reverse ? receiveToken.symbol : payToken.symbol
-                }`}
+                title={`${1} ${reverse ? receiveTokenSymbol : payTokenSymbol}`}
               >
                 1{' '}
                 {ellipsisOverflowedText(
-                  reverse ? receiveToken.symbol : payToken.symbol
+                  reverse ? receiveTokenSymbol : payTokenSymbol
                 )}{' '}
               </span>
               ={' '}
               <span
                 title={`${rate} ${
-                  reverse ? payToken.symbol : receiveToken.symbol
+                  reverse ? payTokenSymbol : receiveTokenSymbol
                 }`}
               >
                 {rate}{' '}
                 {ellipsisOverflowedText(
-                  reverse ? payToken.symbol : receiveToken.symbol
+                  reverse ? payTokenSymbol : receiveTokenSymbol
                 )}
               </span>
             </span>

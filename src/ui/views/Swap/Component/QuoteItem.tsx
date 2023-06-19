@@ -4,7 +4,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem, CEXQuote } from '@debank/rabby-api/dist/types';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
-import { Tooltip, message } from 'antd';
+import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo, useCallback, useState } from 'react';
 import { useCss, useDebounce } from 'react-use';
@@ -28,6 +28,7 @@ import {
   useVerifySdk,
 } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -272,12 +273,13 @@ export const DexQuoteItem = (
       );
 
       const s = formatAmount(receivedTokeAmountBn.toString(10));
+      const receiveTokenSymbol = getTokenSymbol(receiveToken);
       center = (
-        <span className="receiveNum" title={`${s} ${receiveToken.symbol}`}>
+        <span className="receiveNum" title={`${s} ${receiveTokenSymbol}`}>
           <span className="toToken" title={s}>
             {s}
           </span>{' '}
-          {receiveToken.symbol}
+          {receiveTokenSymbol}
         </span>
       );
 
@@ -358,7 +360,8 @@ export const DexQuoteItem = (
 
     return diffPercent.gt(0.01)
       ? ([
-          formatAmount(receivedTokeAmountBn.toString(10)) + receiveToken.symbol,
+          formatAmount(receivedTokeAmountBn.toString(10)) +
+            getTokenSymbol(receiveToken),
           `${diffPercent.toPrecision(2)}% (${formatAmount(
             receivedTokeAmountBn
               .minus(
@@ -366,7 +369,7 @@ export const DexQuoteItem = (
                   .receive_token_list[0]?.amount || 0
               )
               .toString(10)
-          )} ${receiveToken.symbol})`,
+          )} ${getTokenSymbol(receiveToken)})`,
         ] as [string, string])
       : undefined;
   }, [
@@ -484,7 +487,7 @@ export const DexQuoteItem = (
         inSufficient && !disabled && 'disabled inSufficient'
       )}
     >
-      <QuoteLogo logo={quoteProviderInfo.logo} isLoading={isLoading} />
+      <QuoteLogo loaded logo={quoteProviderInfo.logo} isLoading={isLoading} />
 
       <div className="flex flex-col justify-center ml-8 flex-1">
         <div className="flex items-center">
@@ -606,12 +609,14 @@ export const CexQuoteItem = (props: {
         .div(bestQuoteAmount)
         .times(100);
       const s = formatAmount(receiveToken.amount.toString(10));
+      const receiveTokenSymbol = getTokenSymbol(receiveToken);
+
       center = (
-        <span className="receiveNum" title={`${s} ${receiveToken.symbol}`}>
+        <span className="receiveNum" title={`${s} ${receiveTokenSymbol}`}>
           <span className="toToken" title={s}>
             {s}
           </span>{' '}
-          {receiveToken.symbol}
+          {receiveTokenSymbol}
         </span>
       );
 

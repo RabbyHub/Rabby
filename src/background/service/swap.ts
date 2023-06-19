@@ -122,7 +122,7 @@ class SwapService {
       this.store.viewList = {} as SwapServiceStore['viewList'];
     }
     this.store.viewList = {
-      ...this.store.tradeList,
+      ...this.store.viewList,
       [id]: bool,
     };
   };

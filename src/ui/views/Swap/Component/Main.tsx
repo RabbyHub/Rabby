@@ -150,9 +150,7 @@ export const Main = () => {
     if (activeProvider?.name) {
       return `Swap via ${isWrapToken ? 'Wrap Contract' : DexDisplayName}`;
     }
-    if (!receiveToken || !payToken) {
-      return 'Select token';
-    }
+
     return 'Get quotes';
   }, [
     slippageChanged,

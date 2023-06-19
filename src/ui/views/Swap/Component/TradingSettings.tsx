@@ -37,32 +37,37 @@ export const TradingSettings = ({
     }
   };
 
+  console.log('swapViewList', {
+    swapViewList,
+    swapTradeList,
+  });
+
   return (
     <Popup
       visible={visible}
       title={'Enable Exchanges'}
-      height={458}
+      height={510}
       onClose={onClose}
       closable
     >
       <div>
-        <div className="flex items-center text-gray-content text-12 pb-8 px-12">
+        <div className="flex items-center text-gray-content text-12 pb-16 px-12 pt-8">
           <div className="w-[188px]">Exchanges</div>
           <div className="w-[66px]">View quotes</div>
           <div className="ml-auto">Trade</div>
         </div>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-16">
           {list.map((item) => {
             return (
               <div
-                className="flex items-center h-[48px] bg-gray-bg rounded-[6px] p-12"
+                className="flex items-center h-[48px] bg-gray-bg rounded-[6px] px-12 py-14"
                 key={item.name}
               >
                 <div className="flex items-center gap-8 w-[188px]">
                   <img
                     src={item.logo}
-                    className="w-[24px] h-[24px] mr-[8px] rounded-full"
+                    className="w-[24px] h-[24px] rounded-full"
                   />
                   <span className="text-15 text-gray-title font-medium ">
                     {item.name}

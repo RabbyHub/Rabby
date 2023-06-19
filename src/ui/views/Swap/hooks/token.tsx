@@ -12,7 +12,12 @@ import {
   TDexQuoteData,
   useQuoteMethods,
 } from './quote';
-import { useQuoteVisible, useRefreshId, useSetRefreshId } from './context';
+import {
+  useQuoteVisible,
+  useRefreshId,
+  useSetRefreshId,
+  useSettingVisible,
+} from './context';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
@@ -270,6 +275,7 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
   const visible = useQuoteVisible();
+  const settingVisible = useSettingVisible();
 
   useEffect(() => {
     if (!visible) {
@@ -282,10 +288,13 @@ export const useTokenPair = (userAddress: string) => {
 
   useDebounce(
     () => {
-      setRefreshId((e) => e + 1);
+      if (!settingVisible) {
+        setQuotesList([]);
+        setRefreshId((e) => e + 1);
+      }
     },
     300,
-    [swapTradeList, swapViewList]
+    [swapTradeList, swapViewList, settingVisible]
   );
 
   const fetchIdRef = useRef(0);
