@@ -26,18 +26,12 @@ export const TradingSettings = ({
     setSwapTrade,
   } = useSwapSettings();
 
-  console.log('swapViewList', {
-    swapViewList,
-    swapTradeList,
-  });
-
   const [open, setOpen] = useState(false);
 
   const [id, setId] = useState<Parameters<typeof setSwapTrade>[0][0]>();
 
   const onConfirm = () => {
     if (id) {
-      console.log('onConfirm');
       setSwapTrade([id, true]);
       setOpen(false);
     }

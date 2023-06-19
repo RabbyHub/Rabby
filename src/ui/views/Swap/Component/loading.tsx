@@ -57,7 +57,6 @@ export const QuoteListLoading = ({
   fetchedList: dataList,
   isCex,
 }: QuoteListLoadingProps) => {
-  console.log('dataList', dataList);
   const { swapViewList } = useSwapSettings();
   return (
     <>

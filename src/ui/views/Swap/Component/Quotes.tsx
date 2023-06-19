@@ -8,6 +8,7 @@ import {
   TCexQuoteData,
   TDexQuoteData,
   isSwapWrapToken,
+  useSetRefreshId,
   useSetSettingVisible,
   useSwapSettings,
 } from '../hooks';
@@ -46,7 +47,6 @@ interface QuotesProps
   > {
   list?: (TCexQuoteData | TDexQuoteData)[];
   activeName?: string;
-  refresh?: () => void;
   visible: boolean;
   onClose: () => void;
 }
@@ -55,7 +55,6 @@ export const Quotes = ({
   visible,
   onClose,
   list,
-  refresh,
   activeName,
   inSufficient,
   ...other
@@ -129,6 +128,12 @@ export const Quotes = ({
     );
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
+  const refresh = useSetRefreshId();
+
+  const refreshQuote = React.useCallback(() => {
+    refresh((e) => e + 1);
+  }, [refresh]);
+
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
@@ -139,11 +144,7 @@ export const Quotes = ({
           <div>The following swap rates are found</div>
           <div className="w-20 h-20 relative overflow-hidden">
             <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-              <IconRefresh
-                refresh={() => {
-                  console.log('refresh');
-                }}
-              />
+              <IconRefresh refresh={refreshQuote} />
             </div>
           </div>
         </div>
@@ -190,11 +191,7 @@ export const Quotes = ({
         <div>The following swap rates are found</div>
         <div className="w-20 h-20 relative overflow-hidden">
           <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-            <IconRefresh
-              refresh={() => {
-                console.log('refresh');
-              }}
-            />
+            <IconRefresh refresh={refreshQuote} />
           </div>
         </div>
       </div>

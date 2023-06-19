@@ -41,7 +41,7 @@ const useTokenInfo = ({
       return data;
     }
   }, [refreshId, userAddress, token?.id, chain]);
-  console.log('value?.symbol', loading, error, value?.symbol, value);
+
   useDebounce(
     () => {
       if (value && !error && !loading) {
@@ -325,7 +325,6 @@ export const useTokenPair = (userAddress: string) => {
     console.error('quotesError', quotesError);
   }
 
-  console.log('quoteList', quoteList);
   const {
     value: slippageValidInfo,
     error: slippageValidError,

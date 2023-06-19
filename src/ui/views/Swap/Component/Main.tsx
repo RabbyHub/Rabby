@@ -199,8 +199,6 @@ export const Main = () => {
     }
   };
 
-  console.log('activeProvider', activeProvider);
-
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
       background: '#fff',
@@ -350,10 +348,7 @@ export const Main = () => {
                           : slippageValidInfo?.suggest_slippage
                       }
                     />
-                    {console.log(
-                      'suggest_slippage',
-                      slippageValidInfo?.suggest_slippage
-                    )}
+
                     <div>
                       <span>Minimum received: </span>
                       <span className="font-medium text-gray-title">
