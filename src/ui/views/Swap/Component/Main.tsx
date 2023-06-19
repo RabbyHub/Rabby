@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS } from '@debank/common';
 import { SwapChainSelector } from './ChainSelect';
@@ -12,17 +12,15 @@ import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './Quotes';
-import { QuoteProvider, useQuoteVisible, useSetQuoteVisible } from '../hooks';
+import { useQuoteVisible, useSetQuoteVisible } from '../hooks';
 import { InfoCircleFilled } from '@ant-design/icons';
-import { DEX } from '../../DexSwap/component/DexSelect';
 import { ReceiveDetails } from './ReceiveDetail';
 import { Slippage } from './Slippage';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { query2obj } from '@/ui/utils/url';
-import { useLocation } from 'react-router-dom';
+import { DEX } from '@/constant';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-12');
 
