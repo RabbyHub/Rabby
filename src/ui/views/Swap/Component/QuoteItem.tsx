@@ -25,7 +25,6 @@ import {
 import {
   useSetQuoteVisible,
   useSetSettingVisible,
-  useSettingVisible,
   useVerifySdk,
 } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
@@ -64,7 +63,9 @@ const ItemWrapper = styled.div`
     font-weight: 400;
     font-size: 12px;
     color: #ffffff;
+    pointer-events: none;
     &.active {
+      pointer-events: auto;
       height: 100%;
       transform: translateY(0);
       opacity: 1;

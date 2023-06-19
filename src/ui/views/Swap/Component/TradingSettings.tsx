@@ -44,7 +44,6 @@ export const TradingSettings = ({
       height={458}
       onClose={onClose}
       closable
-      className="z-[1010]"
     >
       <div>
         <div className="flex items-center text-gray-content text-12 pb-8 px-12">
@@ -98,6 +97,7 @@ export const TradingSettings = ({
                       if (checked) {
                         setId(item.id);
                         setOpen(true);
+                        console.log('checked', checked);
                       } else {
                         setSwapTrade([item.id, checked]);
                       }

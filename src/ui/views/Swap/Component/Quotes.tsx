@@ -13,7 +13,6 @@ import {
   useSwapSettings,
 } from '../hooks';
 import BigNumber from 'bignumber.js';
-import { InSufficientTip } from './InsufficientTip';
 import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
 
 const CexListWrapper = styled.div`
@@ -144,11 +143,10 @@ export const Quotes = ({
           <div>The following swap rates are found</div>
           <div className="w-20 h-20 relative overflow-hidden">
             <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-              <IconRefresh refresh={refreshQuote} />
+              <IconRefresh onClick={refreshQuote} />
             </div>
           </div>
         </div>
-        <InSufficientTip inSufficient={inSufficient} />
 
         <div className="flex flex-col gap-[16px]">
           {dex ? (
@@ -191,11 +189,10 @@ export const Quotes = ({
         <div>The following swap rates are found</div>
         <div className="w-20 h-20 relative overflow-hidden">
           <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-            <IconRefresh refresh={refreshQuote} />
+            <IconRefresh onClick={refreshQuote} />
           </div>
         </div>
       </div>
-      <InSufficientTip inSufficient={inSufficient} />
 
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
@@ -265,7 +262,7 @@ export const QuoteList = (props: QuotesProps) => {
       onClose={onClose}
       closable
       destroyOnClose
-      className="isConnectView"
+      className="isConnectView z-[999]"
       bodyStyle={{
         paddingBottom: 0,
       }}

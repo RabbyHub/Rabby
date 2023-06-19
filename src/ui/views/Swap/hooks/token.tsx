@@ -12,11 +12,12 @@ import {
   TDexQuoteData,
   useQuoteMethods,
 } from './quote';
-import { useQuoteVisible, useRefreshId } from './context';
+import { useQuoteVisible, useRefreshId, useSetRefreshId } from './context';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
+import { useSwapSettings } from './settings';
 
 const useTokenInfo = ({
   userAddress,
@@ -275,6 +276,17 @@ export const useTokenPair = (userAddress: string) => {
       setQuotesList([]);
     }
   }, [visible]);
+
+  const setRefreshId = useSetRefreshId();
+  const { swapTradeList, swapViewList } = useSwapSettings();
+
+  useDebounce(
+    () => {
+      setRefreshId((e) => e + 1);
+    },
+    300,
+    [swapTradeList, swapViewList]
+  );
 
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
