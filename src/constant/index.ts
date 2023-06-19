@@ -67,6 +67,7 @@ import LogoOpenOcean from 'ui/assets/swap/openocean.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
+import LogoTokenDefault from 'ui/assets/token-default.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -942,7 +943,7 @@ export const DEX = {
 export const DEX_WITH_WRAP = {
   ...DEX,
   [DEX_ENUM.WRAPTOKEN]: {
-    logo: 'rabby-internal://assets/icons/common/token-default.svg',
+    logo: LogoTokenDefault,
     name: 'Wrap Contract',
     chains: DEX_SUPPORT_CHAINS.WrapToken,
   },
