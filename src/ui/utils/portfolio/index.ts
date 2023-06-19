@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import { useSafeState } from '../safeState';
 
-// import { useTokens } from './token';
+import { useTokens } from './token';
 import { usePortfolios } from './usePortfolio';
 
 const Cache_Timeout = 5 * 60;
@@ -25,14 +25,14 @@ export const useQueryProjects = (
     time,
   ]);
 
-  // const {
-  //   tokens,
-  //   netWorth: tokenNetWorth,
-  //   isLoading: isTokensLoading,
-  //   hasValue: hasTokens,
-  //   updateData: updateTokens,
-  //   walletProject,
-  // } = useTokens(userAddr, historyTime);
+  const {
+    tokens,
+    netWorth: tokenNetWorth,
+    isLoading: isTokensLoading,
+    hasValue: hasTokens,
+    updateData: updateTokens,
+    walletProject,
+  } = useTokens(userAddr, historyTime);
 
   const {
     data: portfolios,
@@ -42,36 +42,36 @@ export const useQueryProjects = (
     updateData: updatePortfolio,
   } = usePortfolios(userAddr, historyTime);
 
-  // const refreshPositions = useCallback(() => {
-  //   if (!isTokensLoading && !isPortfoliosLoading) {
-  //     updatePortfolio();
-  //     updateTokens();
-  //     setTime(dayjs().subtract(1, 'day'));
-  //   }
-  // }, [
-  //   updatePortfolio,
-  //   updateTokens,
-  //   isTokensLoading,
-  //   isPortfoliosLoading,
-  //   setTime,
-  // ]);
+  const refreshPositions = useCallback(() => {
+    if (!isTokensLoading && !isPortfoliosLoading) {
+      updatePortfolio();
+      updateTokens();
+      setTime(dayjs().subtract(1, 'day'));
+    }
+  }, [
+    updatePortfolio,
+    updateTokens,
+    isTokensLoading,
+    isPortfoliosLoading,
+    setTime,
+  ]);
 
-  // const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
-  //   tokenNetWorth,
-  //   portfolioNetWorth,
-  // ]);
+  const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
+    tokenNetWorth,
+    portfolioNetWorth,
+  ]);
 
   return {
-    // tokenNetWorth,
+    tokenNetWorth,
     portfolioNetWorth,
-    // grossNetWorth,
-    // refreshPositions,
-    // isTokensLoading,
+    grossNetWorth,
+    refreshPositions,
+    isTokensLoading,
     isPortfoliosLoading,
-    // hasTokens,
+    hasTokens,
     hasPortfolios,
-    // tokens,
+    tokens,
     portfolios,
-    // walletProject,
+    walletProject,
   };
 };

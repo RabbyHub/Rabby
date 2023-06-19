@@ -22,7 +22,7 @@ import { DisplayedProject } from './project';
 
 const chunkSize = 5;
 
-const log = (...args: any) => {
+export const log = (...args: any) => {
   console.log(...args);
 };
 
@@ -42,7 +42,6 @@ export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
   // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
-    console.log('userAddr change', userAddr);
     let timer: ReturnType<typeof setTimeout> | null = null;
     setData([]);
     setNetWorth(0);
@@ -114,7 +113,6 @@ export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
     const snapshotData = Object.values(list)?.sort(
       (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
     );
-    console.log('snapshotData', snapshotData);
     setData(snapshotData);
     setNetWorth(snapshotNetWorth);
 
@@ -166,7 +164,6 @@ export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
     realtimeData = Object.values(projectDict.current)?.sort(
       (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
     );
-    console.log('realtimeData', realtimeData);
     setData(realtimeData);
 
     setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
