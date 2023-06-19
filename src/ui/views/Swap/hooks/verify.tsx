@@ -7,9 +7,14 @@ import {
   DecodeCalldataResult,
 } from '@rabby-wallet/rabby-swap/dist/quote';
 import { useMemo } from 'react';
-import { ValidateTokenParam } from '../../DexSwap/hooks';
 import { getRouter, getSpender, isSwapWrapToken } from './quote';
 import BigNumber from 'bignumber.js';
+
+type ValidateTokenParam = {
+  id: string;
+  symbol: string;
+  decimals: number;
+};
 
 export const useVerifyRouterAndSpender = (
   chain: CHAINS_ENUM,
