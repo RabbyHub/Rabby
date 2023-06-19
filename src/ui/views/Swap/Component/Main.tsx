@@ -144,7 +144,7 @@ export const Main = () => {
     if (slippageChanged) {
       return 'Slippage adjusted. Refresh quote.';
     }
-    if (expired) {
+    if (activeProvider && expired) {
       return 'Price expired. Refresh quote.';
     }
     if (activeProvider?.name) {

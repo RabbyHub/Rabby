@@ -83,9 +83,7 @@ const ItemWrapper = styled.div`
     border: 1px solid #8697ff;
   }
   &.active {
-    /* background: rgba(134, 151, 255, 0.1); */
     outline: 2px solid #8697ff;
-    /* box-shadow: 0px 10px 16px rgba(0, 0, 0, 0.1); */
   }
   &.disabled {
     height: 56px;
@@ -96,16 +94,6 @@ const ItemWrapper = styled.div`
     cursor: not-allowed;
   }
   &.error {
-    & > * {
-      /* opacity: 0.6; */
-    }
-    & > .cexDisabledTips {
-      opacity: 0;
-
-      &.active {
-        opacity: 1;
-      }
-    }
   }
   &:not(.cex).inSufficient,
   &:not(.cex).disabled {
