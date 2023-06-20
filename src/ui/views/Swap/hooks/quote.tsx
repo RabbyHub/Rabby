@@ -6,7 +6,7 @@ import {
   ExplainTxResponse,
   TokenItem,
   Tx,
-} from '@debank/rabby-api/dist/types';
+} from '@rabby-wallet/rabby-api/dist/types';
 import {
   DEX_ENUM,
   DEX_ROUTER_WHITELIST,
