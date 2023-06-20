@@ -31,6 +31,8 @@ export const ChainList = () => {
     }
   }, [visible]);
 
+  const moreLen = moreChainList.length;
+
   return (
     <div
       className={clsx(
@@ -50,7 +52,7 @@ export const ChainList = () => {
             setShowMore(true);
           }}
         >
-          Unfold {moreChainList.length} chains
+          Unfold {moreLen} chain{moreLen > 1 ? 's' : ''}
         </div>
       )}
     </div>

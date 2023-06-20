@@ -1,6 +1,6 @@
 import React from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import { TokenTabs } from './TokenTabs';
+import { TokenTabEnum, TokenTabs } from './TokenTabs';
 import { TokenItem } from '@debank/rabby-api/dist/types';
 import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
@@ -22,6 +22,9 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+  const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
+    TokenTabEnum.List
+  );
   const {
     isTokensLoading,
     isPortfoliosLoading,
@@ -39,7 +42,7 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
     <div className={className}>
       <div className="flex items-center justify-between">
         <TokenSearchInput onSearch={handleOnSearch} />
-        <TokenTabs />
+        <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
       <div className="mt-18">
         <TokenList list={tokenList} />

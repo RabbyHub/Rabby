@@ -7,6 +7,12 @@ export interface Props {
 }
 
 export const TokenList: React.FC<Props> = ({ list }) => {
+  const filteredList = React.useMemo(() => {
+    return list?.filter((item) => {
+      return item.is_core;
+    });
+  }, [list]);
+
   return (
     <div>
       <Table>
@@ -16,7 +22,7 @@ export const TokenList: React.FC<Props> = ({ list }) => {
           <THeadCell className="w-1/4 text-right">USD Value</THeadCell>
         </THeader>
         <TBody>
-          {list?.map((item) => {
+          {filteredList?.map((item) => {
             return <TokenItem key={`${item.chain}-${item.id}`} item={item} />;
           })}
         </TBody>

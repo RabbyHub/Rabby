@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import React from 'react';
 
 export const Table: React.FC<React.HTMLProps<HTMLTableElement>> = (attrs) => {
-  return <table {...attrs} className={clsx('w-full', attrs.className)} />;
+  return (
+    <table {...attrs} className={clsx('w-full table-fixed', attrs.className)} />
+  );
 };
 
 export const THeader: React.FC<React.HTMLProps<HTMLTableSectionElement>> = ({
