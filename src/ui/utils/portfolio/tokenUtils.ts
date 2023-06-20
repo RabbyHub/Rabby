@@ -2,7 +2,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
   TokenItem,
-} from '@debank/rabby-api/dist/types';
+} from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
 export const queryTokensCache = async (

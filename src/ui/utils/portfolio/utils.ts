@@ -4,7 +4,7 @@ import { WalletControllerType } from '../WalletContext';
 import { PortfolioProject } from './types';
 import { DisplayedProject } from './project';
 import { getTokenHistoryPrice } from './price';
-import { TokenItem } from '@debank/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export interface PortfolioItemToken extends TokenItem {
   claimable_amount?: number;

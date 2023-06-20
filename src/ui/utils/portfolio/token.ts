@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
-import { TokenItem } from '@debank/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
@@ -9,7 +9,7 @@ import { log } from './usePortfolio';
 import {
   PortfolioItem,
   PortfolioItemToken,
-} from '@debank/rabby-api/dist/types';
+} from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { AbstractPortfolioToken } from './types';
 import { getMissedTokenPrice } from './utils';

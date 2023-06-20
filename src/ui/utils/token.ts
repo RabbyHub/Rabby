@@ -147,9 +147,3 @@ export const ellipsisTokenSymbol = (text: string, length = 6) => {
   const regexp = new RegExp(`^(.{${length}})(.*)$`);
   return text?.replace(regexp, '$1...');
 };
-
-export const getTokenSymbol = (token?: TokenItem) => {
-  if (!token) return '';
-
-  return token.display_symbol || token.symbol || token.optimized_symbol || '';
-};

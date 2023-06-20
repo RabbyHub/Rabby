@@ -1,7 +1,7 @@
 import React from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import { TokenTabEnum, TokenTabs } from './TokenTabs';
-import { TokenItem } from '@debank/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { TokenList } from './TokenList';
