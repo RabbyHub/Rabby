@@ -2,7 +2,7 @@ import { TokenWithChain } from '@/ui/component';
 import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as IconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
-import { TokenItem } from '@debank/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 const TokenRenderWrapper = styled.div`
   width: 150px;

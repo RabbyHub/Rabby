@@ -1,7 +1,7 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { TokenItem } from '@debank/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

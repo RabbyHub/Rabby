@@ -1,7 +1,7 @@
 import { CEX } from '@/constant';
 import { formatAmount, formatUsdValue } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
-import { TokenItem, CEXQuote } from '@debank/rabby-api/dist/types';
+import { TokenItem, CEXQuote } from '@rabby-wallet/rabby-api/dist/types';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import { Tooltip } from 'antd';

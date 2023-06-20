@@ -3,7 +3,7 @@ import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
 import NFTWithName from '../NFTWithName';
-import { NFTItem } from '@debank/rabby-api/dist/types';
+import { NFTItem } from '@rabby-wallet/rabby-api/dist/types';
 import { formatAmount } from '@/ui/utils/number';
 
 interface NFTData {

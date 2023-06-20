@@ -1,7 +1,7 @@
 import { INITIAL_OPENAPI_URL } from '@/constant';
-import { OpenApiService } from '@debank/rabby-api';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { createPersistStore } from 'background/utils';
-export * from '@debank/rabby-api/dist/types';
+export * from '@rabby-wallet/rabby-api/dist/types';
 
 const service = new OpenApiService({
   store: await createPersistStore({
