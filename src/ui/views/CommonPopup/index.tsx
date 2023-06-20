@@ -47,13 +47,18 @@ export const CommonPopup: React.FC = () => {
 
   return (
     <Popup
-      title={<span className="text-[16px]">{config.title}</span>}
+      title={
+        config.title ? (
+          <span className="text-[16px]">{config.title}</span>
+        ) : null
+      }
       closable={config.closeable}
       height={height}
       onClose={() => setVisible(false)}
       visible={visible && !!componentName}
       className={className}
       destroyOnClose={false}
+      push={false}
     >
       {componentName === 'Approval' && <Approval className="h-full" />}
       {componentName === 'WalletConnect' && <ReconnectView />}

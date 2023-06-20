@@ -10,6 +10,7 @@ export interface Props {
 
 export const TokenSearchInput: React.FC<Props> = ({ onSearch }) => {
   const [input, setInput] = React.useState<string>('');
+  const [isFocus, setIsFocus] = React.useState<boolean>(false);
 
   useDebounce(
     () => {
@@ -23,9 +24,16 @@ export const TokenSearchInput: React.FC<Props> = ({ onSearch }) => {
     <Input
       onChange={(e) => setInput(e.target.value)}
       placeholder="Tokens"
+      onFocus={() => setIsFocus(true)}
+      onBlur={() => setIsFocus(false)}
       className={clsx(
-        'w-[160px] text-12 text-black py-0 px-[9px] h-[32px]',
-        'border border-gray-divider rounded-[6px]'
+        'text-12 text-black py-0 px-[9px] h-[32px]',
+        'border border-gray-divider rounded-[6px]',
+        'transform-none',
+        {
+          'w-full flex-1': isFocus,
+          'w-[160px]': !isFocus,
+        }
       )}
       prefix={<SearchSVG className="w-[14px] h-[14px]" />}
     />

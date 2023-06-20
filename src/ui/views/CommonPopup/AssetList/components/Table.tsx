@@ -3,7 +3,10 @@ import React from 'react';
 
 export const Table: React.FC<React.HTMLProps<HTMLTableElement>> = (attrs) => {
   return (
-    <table {...attrs} className={clsx('w-full table-fixed', attrs.className)} />
+    <div
+      {...attrs}
+      className={clsx('w-screen block -mx-20', attrs.className)}
+    />
   );
 };
 
@@ -12,9 +15,9 @@ export const THeader: React.FC<React.HTMLProps<HTMLTableSectionElement>> = ({
   ...attrs
 }) => {
   return (
-    <thead {...attrs}>
-      <tr>{children}</tr>
-    </thead>
+    <div {...attrs} className={clsx('block', attrs.className)}>
+      <TRow>{children}</TRow>
+    </div>
   );
 };
 
@@ -22,10 +25,10 @@ export const THeadCell: React.FC<React.HTMLProps<HTMLTableCellElement>> = (
   attrs
 ) => {
   return (
-    <th
+    <div
       {...attrs}
       className={clsx(
-        'uppercase text-black text-12 font-normal',
+        'uppercase text-black text-12 font-normal block',
         attrs.className
       )}
     />
@@ -35,15 +38,20 @@ export const THeadCell: React.FC<React.HTMLProps<HTMLTableCellElement>> = (
 export const TBody: React.FC<React.HTMLProps<HTMLTableSectionElement>> = (
   attrs
 ) => {
-  return <tbody {...attrs} />;
+  return <div {...attrs} className={clsx('block', attrs.className)} />;
 };
 
 export const TRow: React.FC<React.HTMLProps<HTMLTableRowElement>> = (attrs) => {
-  return <tr {...attrs} />;
+  return (
+    <div
+      {...attrs}
+      className={clsx('flex items-center px-20', attrs.className)}
+    />
+  );
 };
 
 export const TCell: React.FC<React.HTMLProps<HTMLTableCellElement>> = (
   attrs
 ) => {
-  return <td {...attrs} />;
+  return <div {...attrs} className={clsx('block', attrs.className)} />;
 };

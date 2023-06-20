@@ -63,14 +63,20 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     setCurvePoint(data);
   };
 
-  const { activePopup, setData } = useCommonPopupView();
+  const { activePopup, setData, componentName } = useCommonPopupView();
   const onClickViewAssets = () => {
-    setData({
-      chainBalances,
-      balance,
-    });
     activePopup('AssetList');
   };
+
+  useEffect(() => {
+    if (componentName === 'AssetList') {
+      setData({
+        chainBalances,
+        balance,
+        balanceLoading,
+      });
+    }
+  }, [chainBalances, balance, balanceLoading, componentName]);
 
   useEffect(() => {
     if (currentAccount) {
@@ -108,10 +114,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     <div onMouseLeave={() => setHover(false)} className={clsx('assets flex')}>
       <div className="left">
         <div className={clsx('amount group', 'text-32')}>
-          <div
-            className={clsx('amount-number leading-[38px]')}
-            onClick={onRefresh}
-          >
+          <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
             (balanceLoading && !balanceFromCache) ||
             currentBalance === null ||
@@ -133,6 +136,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             className={clsx('hidden mb-6', {
               'group-hover:block': !balanceLoading,
             })}
+            onClick={onRefresh}
           >
             <UpdateSVG />
           </div>

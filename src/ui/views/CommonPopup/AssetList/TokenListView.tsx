@@ -1,14 +1,10 @@
 import React from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import { TokenTabEnum, TokenTabs } from './TokenTabs';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
 import { TokenList } from './TokenList';
-import uniqBy from 'lodash/uniqBy';
-import cloneDeep from 'lodash/cloneDeep';
-import BigNumber from 'bignumber.js';
 import { useQueryProjects } from '@/ui/utils/portfolio';
+import { TokenListViewSkeleton } from './TokenListViewSkeleton';
 
 interface Props {
   className?: string;
@@ -38,9 +34,13 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
   console.log('portfolios', portfolios);
   console.log('tokenList', tokenList);
 
+  if (isTokensLoading || isPortfoliosLoading) {
+    return <TokenListViewSkeleton />;
+  }
+
   return (
     <div className={className}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-x-12">
         <TokenSearchInput onSearch={handleOnSearch} />
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
