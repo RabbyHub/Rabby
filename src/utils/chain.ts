@@ -12,8 +12,11 @@ export function findChainByEnum(
     fallback?: true | CHAINS_ENUM;
   }
 ): Chain | null {
-  const toFallbackEnum: CHAINS_ENUM | null = options?.fallback
-    ? CHAINS_ENUM[options?.fallback as any] || CHAINS_ENUM.ETH
+  const fallbackIdx = !options?.fallback ? null : (
+    typeof options?.fallback === 'string' ? options?.fallback : ('ETH' as const)
+  );
+  const toFallbackEnum: CHAINS_ENUM | null = fallbackIdx
+    ? CHAINS_ENUM[fallbackIdx] || CHAINS_ENUM.ETH
     : null;
   const toFallbackChain = toFallbackEnum ? CHAINS[toFallbackEnum] : null;
 
