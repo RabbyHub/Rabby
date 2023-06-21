@@ -164,6 +164,7 @@ export const account = createModel<RootModel>()({
       });
       const currentList = store.account.tokens.customize;
       dispatch.account.setCustomizeTokenList([...currentList, token]);
+      dispatch.account.setTokenList([...store.account.tokens.list, token]);
     },
 
     async removeCustomizeToken(token: AbstractPortfolioToken, store?) {
@@ -174,11 +175,11 @@ export const account = createModel<RootModel>()({
       const currentList = store.account.tokens.customize;
       dispatch.account.setCustomizeTokenList(
         currentList.filter((item) => {
-          return !(
-            isSameAddress(item._tokenId, token._tokenId) &&
-            item.chain === token.chain
-          );
+          return item.id !== token.id;
         })
+      );
+      dispatch.account.setTokenList(
+        store.account.tokens.list.filter((item) => item.id !== token.id)
       );
     },
 
@@ -189,6 +190,9 @@ export const account = createModel<RootModel>()({
       });
       const currentList = store.account.tokens.blocked;
       dispatch.account.setBlockedTokenList([...currentList, token]);
+      dispatch.account.setTokenList(
+        store.account.tokens.list.filter((item) => item.id !== token.id)
+      );
     },
 
     async removeBlockedToken(token: AbstractPortfolioToken, store?) {
@@ -199,12 +203,10 @@ export const account = createModel<RootModel>()({
       const currentList = store.account.tokens.blocked;
       dispatch.account.setCustomizeTokenList(
         currentList.filter((item) => {
-          return !(
-            isSameAddress(item._tokenId, token._tokenId) &&
-            item.chain === token.chain
-          );
+          return item.id !== token.id;
         })
       );
+      dispatch.account.setTokenList([...store.account.tokens.list, token]);
     },
   }),
 });
