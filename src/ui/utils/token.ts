@@ -1,8 +1,4 @@
-import {
-  PortfolioItem,
-  PortfolioItemToken,
-  TokenItem,
-} from '@rabby-wallet/rabby-api/dist/types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Contract, providers } from 'ethers';
 import { hexToString } from 'web3-utils';
 

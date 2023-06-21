@@ -340,7 +340,6 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     };
   }, []);
 
-
   return {
     netWorth: data?.netWorth || 0,
     isLoading,

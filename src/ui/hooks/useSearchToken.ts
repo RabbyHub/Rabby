@@ -6,7 +6,6 @@ import { AbstractPortfolioToken } from '../utils/portfolio/types';
 import { useRabbySelector } from 'ui/store';
 import { isSameAddress } from '../utils';
 
-// TODO: include customize tokens
 const useSearchToken = (
   address: string | undefined,
   kw: string,
