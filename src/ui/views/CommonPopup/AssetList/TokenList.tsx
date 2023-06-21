@@ -1,20 +1,21 @@
 import React from 'react';
-import { TBody, THeadCell, THeader, Table } from './components/Table';
-import { TokenItem, Props as TokenItemProps } from './TokenItem';
+import { Props as TokenItemProps } from './TokenItem';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS } from '@debank/common';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import BigNumber from 'bignumber.js';
 import { TokenLowValueItem } from './TokenLowValueItem';
-import { TokenButton } from './TokenButton';
-import { TokenTable } from './TokenTable';
+import { TokenTable } from './components/TokenTable';
+import { BlockedButton } from './BlockedButton';
+import { CustomizedButton } from './CustomizedButton';
 
 export interface Props {
   list?: TokenItemProps['item'][];
+  onFocusInput: () => void;
 }
 
 const ChainValues = Object.values(CHAINS);
-export const TokenList: React.FC<Props> = ({ list }) => {
+export const TokenList: React.FC<Props> = ({ list, onFocusInput }) => {
   // is_core is true
   // is in chain list
   // with customized list
@@ -43,8 +44,8 @@ export const TokenList: React.FC<Props> = ({ list }) => {
         <TokenLowValueItem list={lowValueList} className="h-[40px]" />
       </div>
       <div className="flex gap-12 mt-12">
-        <TokenButton label="customized" count={0} />
-        <TokenButton label="blocked" count={0} />
+        <CustomizedButton onClickLink={onFocusInput} />
+        <BlockedButton onClickLink={onFocusInput} />
       </div>
     </div>
   );

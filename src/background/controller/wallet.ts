@@ -2774,12 +2774,32 @@ export class WalletController extends BaseController {
   listChainAssets = async (address: string) => {
     return await openapiService.listChainAssets(address);
   };
+
+  /**
+   * @deprecated
+   */
   getAddedToken = (address: string) => {
     return preferenceService.getAddedToken(address);
   };
+
+  /**
+   * @deprecated
+   */
   updateAddedToken = (address: string, tokenList: string[]) => {
     return preferenceService.updateAddedToken(address, tokenList);
   };
+
+  getCustomizedToken = preferenceService.getCustomizedToken;
+
+  addCustomizedToken = preferenceService.addCustomizedToken;
+
+  removeCustomizedToken = preferenceService.removeCustomizedToken;
+
+  getBlockedToken = preferenceService.getBlockedToken;
+
+  addBlockedToken = preferenceService.addBlockedToken;
+
+  removeBlockedToken = preferenceService.removeBlockedToken;
 
   reportStats = (
     name: string,
