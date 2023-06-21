@@ -6,7 +6,7 @@ import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import BigNumber from 'bignumber.js';
 import { splitNumberByStep } from '@/ui/utils';
 import { Popup } from '@/ui/component';
-import { TokenTable } from './TokenTable';
+import { TokenTable } from './components/TokenTable';
 
 export interface Props {
   className?: string;

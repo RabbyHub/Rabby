@@ -8,34 +8,37 @@ export interface Props {
   onSearch?: (value: string) => void;
 }
 
-export const TokenSearchInput: React.FC<Props> = ({ onSearch }) => {
-  const [input, setInput] = React.useState<string>('');
-  const [isFocus, setIsFocus] = React.useState<boolean>(false);
+export const TokenSearchInput = React.forwardRef<Input, Props>(
+  ({ onSearch }, ref) => {
+    const [input, setInput] = React.useState<string>('');
+    const [isFocus, setIsFocus] = React.useState<boolean>(false);
 
-  useDebounce(
-    () => {
-      onSearch?.(input);
-    },
-    200,
-    [input]
-  );
+    useDebounce(
+      () => {
+        onSearch?.(input);
+      },
+      200,
+      [input]
+    );
 
-  return (
-    <Input
-      onChange={(e) => setInput(e.target.value)}
-      placeholder="Tokens"
-      onFocus={() => setIsFocus(true)}
-      onBlur={() => setIsFocus(false)}
-      className={clsx(
-        'text-12 text-black py-0 px-[9px] h-[32px]',
-        'border border-gray-divider rounded-[6px]',
-        'transform-none',
-        {
-          'w-full flex-1': isFocus,
-          'w-[160px]': !isFocus,
-        }
-      )}
-      prefix={<SearchSVG className="w-[14px] h-[14px]" />}
-    />
-  );
-};
+    return (
+      <Input
+        ref={ref}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Tokens"
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        className={clsx(
+          'text-12 text-black py-0 px-[9px] h-[32px]',
+          'border border-gray-divider rounded-[6px]',
+          'transform-none',
+          {
+            'w-full flex-1': isFocus,
+            'w-[160px]': !isFocus,
+          }
+        )}
+        prefix={<SearchSVG className="w-[14px] h-[14px]" />}
+      />
+    );
+  }
+);

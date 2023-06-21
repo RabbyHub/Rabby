@@ -1,7 +1,8 @@
 import React from 'react';
-import { TBody, THeadCell, THeader, Table } from './components/Table';
-import { TokenItem, Props as TokenItemProps } from './TokenItem';
+import { TBody, THeadCell, THeader, Table } from './Table';
+import { TokenItem, Props as TokenItemProps } from '../TokenItem';
 import { FixedSizeList } from 'react-window';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -12,6 +13,14 @@ export interface Props {
 }
 
 export const TokenTable: React.FC<Props> = ({ list, virtual }) => {
+  const [selected, setSelected] = React.useState<TokenItemProps['item']>();
+  const [visible, setVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    setVisible(!!selected);
+  }, [selected]);
+
+  console.log(selected);
   return (
     <Table>
       <THeader>
@@ -32,6 +41,7 @@ export const TokenTable: React.FC<Props> = ({ list, virtual }) => {
               const item = data[index];
               return (
                 <TokenItem
+                  onClick={() => setSelected(item)}
                   style={style}
                   key={`${item.chain}-${item.id}`}
                   item={item}
@@ -41,10 +51,27 @@ export const TokenTable: React.FC<Props> = ({ list, virtual }) => {
           </FixedSizeList>
         ) : (
           list?.map((item) => {
-            return <TokenItem key={`${item.chain}-${item.id}`} item={item} />;
+            return (
+              <TokenItem
+                onClick={() => setSelected(item)}
+                key={`${item.chain}-${item.id}`}
+                item={item}
+              />
+            );
           })
         )}
       </TBody>
+      <TokenDetailPopup
+        token={selected}
+        visible={visible}
+        onClose={() => setSelected(undefined)}
+        addToken={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+        removeToken={function (): void {
+          throw new Error('Function not implemented.');
+        }}
+      />
     </Table>
   );
 };

@@ -3,10 +3,12 @@ import { TCell, TRow } from './components/Table';
 import { CHAINS_LIST } from '@debank/common';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
+import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface Props {
   item: AbstractPortfolioToken;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
@@ -17,12 +19,12 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
       <div className="relative">
         <img
           className="w-24 h-24 rounded-full"
-          src={item.logo_url}
+          src={item.logo_url || IconUnknown}
           alt={item.symbol}
         />
         <img
           className="w-14 h-14 absolute right-[-2px] top-[-2px]"
-          src={chain?.logo}
+          src={chain?.logo || IconUnknown}
           alt={item.chain}
         />
       </div>
@@ -54,9 +56,10 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   );
 };
 
-export const TokenItem: React.FC<Props> = ({ item, style }) => {
+export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   return (
     <TRow
+      onClick={onClick}
       style={style}
       className={clsx(
         'cursor-pointer',

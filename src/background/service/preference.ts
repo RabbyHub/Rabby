@@ -39,6 +39,11 @@ export interface addedToken {
   [address: string]: string[];
 }
 
+export interface Token {
+  address: string;
+  chain: string;
+}
+
 export type IHighlightedAddress = {
   brandName: Account['brandName'];
   address: Account['address'];
@@ -63,6 +68,9 @@ export interface PreferenceStore {
   currentVersion: string;
   firstOpen: boolean;
   pinnedChain: string[];
+  /**
+   * @deprecated
+   */
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
@@ -71,6 +79,8 @@ export interface PreferenceStore {
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
+  customizedToken?: Token[];
+  blockedToken?: Token[];
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -108,6 +118,8 @@ class PreferenceService {
         sendLogTime: 0,
         needSwitchWalletCheck: true,
         sendEnableTime: 0,
+        customizedToken: [],
+        blockedToken: [],
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -167,6 +179,12 @@ class PreferenceService {
     }
     if (!this.store.sendEnableTime) {
       this.store.sendEnableTime = 0;
+    }
+    if (!this.store.customizedToken) {
+      this.store.customizedToken = [];
+    }
+    if (!this.store.blockedToken) {
+      this.store.blockedToken = [];
     }
   };
 
@@ -477,14 +495,58 @@ class PreferenceService {
     this.store.pinnedChain = [...this.store.pinnedChain, name];
   };
   updateChain = (list: string[]) => (this.store.pinnedChain = list);
+  /**
+   * @deprecated
+   */
   getAddedToken = (address: string) => {
     const key = address.toLowerCase();
     return this.store.addedToken[key] || [];
   };
+  /**
+   * @deprecated
+   */
   updateAddedToken = (address: string, tokenList: string[]) => {
     const key = address.toLowerCase();
     this.store.addedToken[key] = tokenList;
   };
+  getCustomizedToken = () => {
+    return this.store.customizedToken || [];
+  };
+  addCustomizedToken = (token: Token) => {
+    if (
+      !this.store.customizedToken?.find(
+        (item) => item.address === token.address && item.chain === token.chain
+      )
+    ) {
+      this.store.customizedToken = [
+        ...(this.store.customizedToken || []),
+        token,
+      ];
+    }
+  };
+  removeCustomizedToken = (token: Token) => {
+    this.store.customizedToken = this.store.customizedToken?.filter(
+      (item) => !(item.address === token.address && item.chain === token.chain)
+    );
+  };
+  getBlockedToken = () => {
+    return this.store.blockedToken || [];
+  };
+  addBlockedToken = (token: Token) => {
+    if (
+      !this.store.blockedToken?.find(
+        (item) => item.address === token.address && item.chain === token.chain
+      )
+    ) {
+      this.store.blockedToken = [...(this.store.blockedToken || []), token];
+    }
+  };
+  removeBlockedToken = (token: Token) => {
+    this.store.blockedToken = this.store.blockedToken?.filter(
+      (item) => !(item.address === token.address && item.chain === token.chain)
+    );
+  };
+
   getSendLogTime = () => {
     return this.store.sendLogTime || 0;
   };
