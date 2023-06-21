@@ -24,7 +24,7 @@ export const TokenList: React.FC<Props> = ({ list, onFocusInput }) => {
   const filteredList = React.useMemo(() => {
     return list?.filter((item) => {
       const chain = ChainValues.find((chain) => chain.serverId === item.chain);
-      return item.is_core && findChainByEnum(chain?.enum) && item._usdValue;
+      return findChainByEnum(chain?.enum);
     });
   }, [list]);
   const totalValue = React.useMemo(() => {

@@ -4,6 +4,7 @@ import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
+import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 
 interface AccountState {
   currentAccount: null | Account;
@@ -13,6 +14,11 @@ interface AccountState {
   keyrings: DisplayedKeryring[];
   balanceMap: {
     [address: string]: TotalBalanceResponse;
+  };
+  tokens: {
+    list: AbstractPortfolioToken[];
+    customize: AbstractPortfolioToken[];
+    blocked: AbstractPortfolioToken[];
   };
 
   mnemonicAccounts: DisplayedKeryring[];
@@ -29,6 +35,11 @@ export const account = createModel<RootModel>()({
     keyrings: [],
     balanceMap: {},
     mnemonicAccounts: [],
+    tokens: {
+      list: [],
+      customize: [],
+      blocked: [],
+    },
   } as AccountState,
 
   reducers: {
@@ -40,6 +51,36 @@ export const account = createModel<RootModel>()({
         },
         { ...state }
       );
+    },
+
+    setTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          list: payload,
+        },
+      };
+    },
+
+    setCustomizeTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          customize: payload,
+        },
+      };
+    },
+
+    setBlockedTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          blocked: payload,
+        },
+      };
     },
 
     setCurrentAccount(
