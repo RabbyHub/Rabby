@@ -298,7 +298,7 @@ class DisplayedPortfolio implements AbstractPortfolio {
   // static createFromHistory(h: PortfolioItem) {}
 }
 
-class DisplayedToken implements AbstractPortfolioToken {
+export class DisplayedToken implements AbstractPortfolioToken {
   [immerable] = true;
   id: string;
   _tokenId: string;

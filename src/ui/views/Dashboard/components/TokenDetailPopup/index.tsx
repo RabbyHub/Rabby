@@ -5,6 +5,9 @@ import TokenDetail from './TokenDetail';
 import './style.less';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { Token } from '@/background/service/preference';
+import { useRabbyDispatch } from 'ui/store';
+import { DisplayedToken } from 'ui/utils/portfolio/project';
+import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 
 interface TokenDetailProps {
   visible?: boolean;
@@ -19,20 +22,19 @@ export const TokenDetailPopup = ({
   variant,
 }: TokenDetailProps) => {
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const [isAdded, setIsAdded] = React.useState(false);
   const handleAddToken = React.useCallback(() => {
     if (!token) return;
 
-    if (token?.is_core) {
-      wallet.addBlockedToken({
-        address: token.id,
-        chain: token.chain,
-      });
+    if (token.is_core) {
+      dispatch.account.addBlockedToken(
+        new DisplayedToken(token) as AbstractPortfolioToken
+      );
     } else {
-      wallet.addCustomizedToken({
-        address: token.id,
-        chain: token.chain,
-      });
+      dispatch.account.addCustomizeToken(
+        new DisplayedToken(token) as AbstractPortfolioToken
+      );
     }
     setIsAdded(true);
   }, [token]);
@@ -41,15 +43,13 @@ export const TokenDetailPopup = ({
     if (!token) return;
 
     if (token?.is_core) {
-      wallet.removeBlockedToken({
-        address: token.id,
-        chain: token.chain,
-      });
+      dispatch.account.removeBlockedToken(
+        new DisplayedToken(token) as AbstractPortfolioToken
+      );
     } else {
-      wallet.removeCustomizedToken({
-        address: token.id,
-        chain: token.chain,
-      });
+      dispatch.account.removeCustomizeToken(
+        new DisplayedToken(token) as AbstractPortfolioToken
+      );
     }
     setIsAdded(false);
   }, [token]);

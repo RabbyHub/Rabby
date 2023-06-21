@@ -3546,10 +3546,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-api@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.1.tgz#303ba153d06bcc0c1699c42a323a942283aa3b2f"
-  integrity sha512-Uu0U08PH6tknocfRVMkyb1hRLc6cPkfnM5LEUVvnd46gZTKG3+aToMLx1juP4E568nrwas5tEcJ/OECj3UyFFg==
+"@rabby-wallet/rabby-api@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.2.tgz#fc539b981ef49dd2ee65757e880bca647331f8e2"
+  integrity sha512-GnH7Y/L/VwUij0etBaRJAcyG/HbVYYyFT/TVLrXW4nMyIdZUQI61yfR7WadM8y3M+cVYMu51+YLVe9nAaA+Yuw==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -5993,7 +5993,7 @@ blake-hash@^2.0.0:
   dependencies:
     nanoassert "^1.0.0"
 
-"blake2b@https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36":
+"blake2b@https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac", "blake2b@https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36":
   version "2.1.3"
   resolved "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
   dependencies:

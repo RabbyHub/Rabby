@@ -2,7 +2,9 @@ import { useRef, useEffect } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-
+import { CHAINS } from '@debank/common';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { findChainByEnum } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -10,7 +12,7 @@ import {
   PortfolioItem,
   PortfolioItemToken,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { DisplayedProject } from './project';
+import { DisplayedProject, DisplayedToken } from './project';
 import { AbstractPortfolioToken } from './types';
 import { getMissedTokenPrice } from './utils';
 import {
@@ -21,17 +23,41 @@ import {
   queryTokensCache,
   sortWalletTokens,
 } from './tokenUtils';
+import { isSameAddress } from '..';
+import { Token } from 'background/service/preference';
 
 // export const tokenChangeLoadingAtom = atom(false);
+
+const filterDisplayToken = (
+  tokens: AbstractPortfolioToken[],
+  blocked: Token[]
+) => {
+  const ChainValues = Object.values(CHAINS);
+  return tokens.filter((token) => {
+    const chain = ChainValues.find((chain) => chain.serverId === token.chain);
+    return (
+      token.is_core &&
+      !blocked.find(
+        (item) =>
+          isSameAddress(token._tokenId, item.address) &&
+          item.chain === token.chain
+      ) &&
+      findChainByEnum(chain?.enum)
+    );
+  });
+};
 
 export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
-  const [tokens, setTokens] = useSafeState<AbstractPortfolioToken[]>([]);
   const [isLoading, setLoading] = useSafeState(true);
   const historyTime = useRef<number>();
   const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
+  const { customize, list, blocked } = useRabbySelector(
+    (store) => store.account.tokens
+  );
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
 
   useEffect(() => {
@@ -97,7 +123,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     setData(_data);
 
     const snapshot = await queryTokensCache(userAddr, wallet);
-
+    const blocked = await wallet.getBlockedToken();
     if (snapshot?.length) {
       const chainTokens = snapshot.reduce((m, n) => {
         m[n.chain] = m[n.chain] || [];
@@ -111,17 +137,66 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
 
       setData(_data);
       _tokens = sortWalletTokens(_data);
-      setTokens(_tokens);
+      dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
     const tokenRes = await batchQueryTokens(userAddr, wallet);
-
-    if (currentAbort.signal.aborted) {
-      setLoading(false);
-      log('======Terminate-Token======', userAddr);
-      return;
+    // customize and blocked tokens
+    const customizeTokens = await wallet.getCustomizedToken();
+    const customTokenList: TokenItem[] = [];
+    const blockedTokenList: TokenItem[] = [];
+    tokenRes.forEach((token) => {
+      if (
+        customizeTokens.find(
+          (t) => isSameAddress(token.id, t.address) && token.chain === t.chain
+        )
+      ) {
+        // customize with balance
+        customTokenList.push(token);
+      }
+      if (
+        blocked.find(
+          (t) => isSameAddress(token.id, t.address) && token.chain === t.chain
+        )
+      ) {
+        blockedTokenList.push(token);
+      }
+    });
+    const noBalanceBlockedTokens = blocked.filter((token) => {
+      return !blockedTokenList.find(
+        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
+      );
+    });
+    const noBalanceCustomizeTokens = customizeTokens.filter((token) => {
+      return !customTokenList.find(
+        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
+      );
+    });
+    if (noBalanceCustomizeTokens.length > 0) {
+      const noBalanceCustomTokens = await wallet.openapi.customListToken(
+        noBalanceCustomizeTokens.map((item) => `${item.chain}:${item.address}`),
+        userAddr
+      );
+      customTokenList.push(
+        ...noBalanceCustomTokens.filter((token) => !token.is_core)
+      );
     }
-
+    if (noBalanceBlockedTokens.length > 0) {
+      const blockedTokens = await wallet.openapi.customListToken(
+        noBalanceBlockedTokens.map((item) => `${item.chain}:${item.address}`),
+        userAddr
+      );
+      blockedTokenList.push(...blockedTokens.filter((token) => token.is_core));
+    }
+    const formattedCustomTokenList = customTokenList.map(
+      (token) => new DisplayedToken(token) as AbstractPortfolioToken
+    );
+    const formattedBlockedTokenList = blockedTokenList.map(
+      (token) => new DisplayedToken(token) as AbstractPortfolioToken
+    );
+    dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
+    dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
     if (!tokenRes || !tokenRes.length) {
       // failed request
       setLoading(false);
@@ -142,7 +217,10 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
 
     setData(_data);
     _tokens = sortWalletTokens(_data);
-    setTokens(_tokens);
+    dispatch.account.setTokenList([
+      ...filterDisplayToken(_tokens, blocked),
+      ...formattedCustomTokenList,
+    ]);
     setLoading(false);
 
     loadHistory(_data, currentAbort);
@@ -207,7 +285,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     });
 
     const tokenList = sortWalletTokens(_data);
-    setTokens(tokenList);
+    dispatch.account.setTokenList(tokenList);
     setData(_data);
 
     if (currentAbort.signal.aborted) {
@@ -253,7 +331,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     }
 
     setData(_data);
-    setTokens(sortWalletTokens(_data));
+    dispatch.account.setTokenList(sortWalletTokens(_data));
   };
 
   useEffect(() => {
@@ -265,7 +343,9 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
-    tokens,
+    tokens: list,
+    customizeTokens: customize,
+    blockedTokens: blocked,
     hasValue: !!data?._portfolios?.length,
     updateData: loadProcess,
     walletProject: data,
