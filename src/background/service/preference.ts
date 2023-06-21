@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import eventBus from '@/eventBus';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import {
   keyringService,
   sessionService,
@@ -515,7 +515,9 @@ class PreferenceService {
   addCustomizedToken = (token: Token) => {
     if (
       !this.store.customizedToken?.find(
-        (item) => item.address === token.address && item.chain === token.chain
+        (item) =>
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
       )
     ) {
       this.store.customizedToken = [
@@ -526,7 +528,11 @@ class PreferenceService {
   };
   removeCustomizedToken = (token: Token) => {
     this.store.customizedToken = this.store.customizedToken?.filter(
-      (item) => !(item.address === token.address && item.chain === token.chain)
+      (item) =>
+        !(
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+        )
     );
   };
   getBlockedToken = () => {
@@ -535,7 +541,9 @@ class PreferenceService {
   addBlockedToken = (token: Token) => {
     if (
       !this.store.blockedToken?.find(
-        (item) => item.address === token.address && item.chain === token.chain
+        (item) =>
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
       )
     ) {
       this.store.blockedToken = [...(this.store.blockedToken || []), token];
@@ -543,7 +551,11 @@ class PreferenceService {
   };
   removeBlockedToken = (token: Token) => {
     this.store.blockedToken = this.store.blockedToken?.filter(
-      (item) => !(item.address === token.address && item.chain === token.chain)
+      (item) =>
+        !(
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+        )
     );
   };
 

@@ -3,7 +3,7 @@ import { Popup } from '@/ui/component';
 import React from 'react';
 import TokenDetail from './TokenDetail';
 import './style.less';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { Token } from '@/background/service/preference';
 
 interface TokenDetailProps {
@@ -65,7 +65,8 @@ export const TokenDetailPopup = ({
     }
 
     const isAdded = list.some(
-      (item) => item.address === token.id && item.chain === token.chain
+      (item) =>
+        isSameAddress(item.address, token.id) && item.chain === token.chain
     );
     setIsAdded(isAdded);
   }, [token]);

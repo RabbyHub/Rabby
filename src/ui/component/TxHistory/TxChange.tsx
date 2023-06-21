@@ -62,7 +62,7 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel token={token} />
+            <TokenLabel isNft={isNft} token={token} />
           </div>
         );
       })}
@@ -109,7 +109,7 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel token={token} />
+            <TokenLabel isNft={isNft} token={token} />
           </div>
         );
       })}
