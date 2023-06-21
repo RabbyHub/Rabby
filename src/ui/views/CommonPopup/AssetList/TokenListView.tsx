@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
 import { TokenTabEnum, TokenTabs } from './TokenTabs';
 import { useRabbySelector } from '@/ui/store';
 import { TokenList } from './TokenList';
 import { useQueryProjects } from '@/ui/utils/portfolio';
+import useSortTokens from 'ui/hooks/useSortTokens';
+import useSearchToken from '@/ui/hooks/useSearchToken';
 import { TokenListViewSkeleton } from './TokenListViewSkeleton';
 
 interface Props {
@@ -31,8 +33,11 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
     grossNetWorth,
     tokenNetWorth,
   } = useQueryProjects(currentAccount?.address, false);
-  console.log('portfolios', portfolios);
-  console.log('tokenList', tokenList);
+  const { isLoading, list } = useSearchToken(currentAccount?.address, search);
+  const displayTokenList = useMemo(() => {
+    return search ? list : tokenList;
+  }, [list, tokenList, search]);
+  const sortTokens = useSortTokens(displayTokenList);
 
   if (isTokensLoading || isPortfoliosLoading) {
     return <TokenListViewSkeleton />;
@@ -45,7 +50,7 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
       <div className="mt-18">
-        <TokenList list={tokenList} />
+        <TokenList list={sortTokens} />
       </div>
     </div>
   );
