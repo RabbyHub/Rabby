@@ -2,7 +2,9 @@ import { useRef, useEffect } from 'react';
 import produce from 'immer';
 import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { CHAINS } from '@debank/common';
 import { useRabbyDispatch } from 'ui/store';
+import { findChainByEnum } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -22,8 +24,28 @@ import {
   sortWalletTokens,
 } from './tokenUtils';
 import { isSameAddress } from '..';
+import { Token } from 'background/service/preference';
 
 // export const tokenChangeLoadingAtom = atom(false);
+
+const filterDisplayToken = (
+  tokens: AbstractPortfolioToken[],
+  blocked: Token[]
+) => {
+  const ChainValues = Object.values(CHAINS);
+  return tokens.filter((token) => {
+    const chain = ChainValues.find((chain) => chain.serverId === token.chain);
+    return (
+      token.is_core &&
+      !blocked.find(
+        (item) =>
+          isSameAddress(token._tokenId, item.address) &&
+          item.chain === token.chain
+      ) &&
+      findChainByEnum(chain?.enum)
+    );
+  });
+};
 
 export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
   const abortProcess = useRef<AbortController>();
@@ -113,18 +135,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
 
       setData(_data);
       _tokens = sortWalletTokens(_data);
-      setTokens(
-        _tokens.filter((token) => {
-          return (
-            token.is_core &&
-            !blocked.find(
-              (item) =>
-                isSameAddress(token._tokenId, item.address) &&
-                item.chain === token.chain
-            )
-          );
-        })
-      );
+      setTokens(filterDisplayToken(_tokens, blocked));
       dispatch.account.setTokenList(_tokens);
     }
 
@@ -205,16 +216,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     setData(_data);
     _tokens = sortWalletTokens(_data);
     setTokens([
-      ..._tokens.filter((token) => {
-        return (
-          token.is_core &&
-          !blocked.find(
-            (item) =>
-              isSameAddress(token._tokenId, item.address) &&
-              item.chain === token.chain
-          )
-        );
-      }),
+      ...filterDisplayToken(_tokens, blocked),
       ...formattedCustomTokenList,
     ]);
     setLoading(false);
@@ -330,6 +332,42 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     setTokens(sortWalletTokens(_data));
   };
 
+  const addCustomizedToken = async (token: AbstractPortfolioToken) => {
+    if (token.is_core) return;
+    await dispatch.account.addCustomizeToken(token);
+    const isInList = (tokens || []).some((item) => item.id === token.id);
+    if (!isInList) {
+      setTokens([...(tokens || []), token]);
+    }
+  };
+
+  const removeCustomizedToken = async (token: AbstractPortfolioToken) => {
+    if (token.is_core) return;
+    await dispatch.account.removeCustomizeToken(token);
+    const isInList = (tokens || []).some((item) => item.id === token.id);
+    if (isInList) {
+      setTokens((tokens || []).filter((item) => item.id === token.id));
+    }
+  };
+
+  const addBlockedToken = async (token: AbstractPortfolioToken) => {
+    if (!token.is_core) return;
+    await dispatch.account.addBlockedToken(token);
+    const isInList = (tokens || []).some((item) => item.id === token.id);
+    if (isInList) {
+      setTokens([...(tokens || []).filter((item) => item.id === token.id)]);
+    }
+  };
+
+  const removeBlockedToken = async (token: AbstractPortfolioToken) => {
+    if (!token.is_core) return;
+    await dispatch.account.removeBlockedToken(token);
+    const isInList = (tokens || []).some((item) => item.id === token.id);
+    if (!isInList) {
+      setTokens([...(tokens || []), token]);
+    }
+  };
+
   useEffect(() => {
     return () => {
       abortProcess.current?.abort();
@@ -343,5 +381,9 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     hasValue: !!data?._portfolios?.length,
     updateData: loadProcess,
     walletProject: data,
+    addCustomizedToken,
+    removeCustomizedToken,
+    addBlockedToken,
+    removeBlockedToken,
   };
 };

@@ -5,6 +5,7 @@ import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
+import { isSameAddress } from '../utils';
 
 interface AccountState {
   currentAccount: null | Account;
@@ -154,6 +155,56 @@ export const account = createModel<RootModel>()({
         KEYRING_CLASS.MNEMONIC
       );
       dispatch.account.setField({ mnemonicAccounts });
+    },
+
+    async addCustomizeToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.addCustomizedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.customize;
+      dispatch.account.setCustomizeTokenList([...currentList, token]);
+    },
+
+    async removeCustomizeToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.removeCustomizedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.customize;
+      dispatch.account.setCustomizeTokenList(
+        currentList.filter((item) => {
+          return !(
+            isSameAddress(item._tokenId, token._tokenId) &&
+            item.chain === token.chain
+          );
+        })
+      );
+    },
+
+    async addBlockedToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.addBlockedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.blocked;
+      dispatch.account.setBlockedTokenList([...currentList, token]);
+    },
+
+    async removeBlockedToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.removeBlockedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.blocked;
+      dispatch.account.setCustomizeTokenList(
+        currentList.filter((item) => {
+          return !(
+            isSameAddress(item._tokenId, token._tokenId) &&
+            item.chain === token.chain
+          );
+        })
+      );
     },
   }),
 });
