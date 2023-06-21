@@ -4,6 +4,7 @@ import React from 'react';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { numberWithCommasIsLtOne } from 'ui/utils';
 import { getTokenSymbol } from 'ui/utils/token';
+import { TokenLabel } from './TokenLabel';
 
 type TokenChangeProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -59,10 +60,9 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
               -
             </span>
             <span className="token-change-item-text">
-              {`${
-                isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
-              } ${name}`}
+              {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
+            <TokenLabel token={token} />
           </div>
         );
       })}
@@ -107,10 +107,9 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
               +
             </span>
             <span className="token-change-item-text">
-              {`${
-                isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
-              } ${name}`}
+              {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
+            <TokenLabel token={token} />
           </div>
         );
       })}

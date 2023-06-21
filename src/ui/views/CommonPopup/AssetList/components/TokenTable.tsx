@@ -3,6 +3,8 @@ import { TBody, THeadCell, THeader, Table } from './Table';
 import { TokenItem, Props as TokenItemProps } from '../TokenItem';
 import { FixedSizeList } from 'react-window';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { TokenItem as TokenItemType } from '@/background/service/openapi';
+import { useWallet } from '@/ui/utils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -15,12 +17,54 @@ export interface Props {
 export const TokenTable: React.FC<Props> = ({ list, virtual }) => {
   const [selected, setSelected] = React.useState<TokenItemProps['item']>();
   const [visible, setVisible] = React.useState(false);
+  const [token, setToken] = React.useState<TokenItemType>();
+  const wallet = useWallet();
 
   React.useEffect(() => {
     setVisible(!!selected);
+
+    if (selected) {
+      setToken({
+        ...selected,
+        id: selected._tokenId,
+      });
+    } else {
+      setToken(undefined);
+    }
   }, [selected]);
 
-  console.log(selected);
+  const handleAddToken = React.useCallback(() => {
+    if (!token) return;
+
+    if (token?.is_core) {
+      wallet.addBlockedToken({
+        address: token.id,
+        chain: token.chain,
+      });
+    } else {
+      wallet.addCustomizedToken({
+        address: token.id,
+        chain: token.chain,
+      });
+    }
+  }, [token]);
+
+  const handleRemoveToken = React.useCallback(() => {
+    if (!token) return;
+
+    if (token?.is_core) {
+      wallet.removeBlockedToken({
+        address: token.id,
+        chain: token.chain,
+      });
+    } else {
+      wallet.removeCustomizedToken({
+        address: token.id,
+        chain: token.chain,
+      });
+    }
+  }, [token]);
+
   return (
     <Table>
       <THeader>
@@ -62,15 +106,10 @@ export const TokenTable: React.FC<Props> = ({ list, virtual }) => {
         )}
       </TBody>
       <TokenDetailPopup
-        token={selected}
+        variant="add"
+        token={token}
         visible={visible}
         onClose={() => setSelected(undefined)}
-        addToken={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-        removeToken={function (): void {
-          throw new Error('Function not implemented.');
-        }}
       />
     </Table>
   );
