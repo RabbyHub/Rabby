@@ -51,7 +51,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
     <TCell className="py-8 text-gray-title text-13 font-medium text-right w-1/4">
-      {item._usdValue ? item._usdValueStr : '-'}
+      {item._usdValueStr || '<$0.01'}
     </TCell>
   );
 };

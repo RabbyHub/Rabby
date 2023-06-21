@@ -40,7 +40,10 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
     inputRef.current?.focus();
   }, []);
 
-  if (isTokensLoading || isPortfoliosLoading) {
+  if (
+    (isTokensLoading && !hasTokens) ||
+    (isPortfoliosLoading && !hasPortfolios)
+  ) {
     return <TokenListViewSkeleton />;
   }
 

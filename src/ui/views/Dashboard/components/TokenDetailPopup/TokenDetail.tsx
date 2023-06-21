@@ -7,9 +7,6 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconExternal from 'ui/assets/icon-share.svg';
-import IconCopy from 'ui/assets/icon-copy-2.svg';
-import IconPlus from 'ui/assets/plus.svg';
-import IconTrash from 'ui/assets/trash.svg';
 import { Copy, Modal, TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet, openInTab } from 'ui/utils';
 import { getChain } from '@/utils';
@@ -17,11 +14,12 @@ import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
-import { useRabbySelector } from '@/ui/store';
 import { CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { CustomizedButton } from './CustomizedButton';
+import { BlockedButton } from './BlockedButton';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -34,6 +32,7 @@ interface TokenDetailProps {
   addToken(token: TokenItem): void;
   removeToken(token: TokenItem): void;
   variant?: 'add';
+  isAdded?: boolean;
 }
 
 const TokenDetail = ({
@@ -41,6 +40,7 @@ const TokenDetail = ({
   addToken,
   removeToken,
   variant,
+  isAdded,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -190,17 +190,22 @@ const TokenDetail = ({
               token?.name
             )}
           </div>
-          {!token.is_core && variant !== 'add' ? (
-            <div
-              className="remove"
-              onClick={() => {
-                handleRemove(token);
-              }}
-            >
-              <img src={IconTrash} alt="" />
-            </div>
-          ) : null}
         </div>
+        {variant === 'add' ? (
+          token.is_core ? (
+            <BlockedButton
+              selected={isAdded}
+              onOpen={() => addToken(token)}
+              onClose={() => removeToken(token)}
+            />
+          ) : (
+            <CustomizedButton
+              selected={isAdded}
+              onOpen={() => addToken(token)}
+              onClose={() => removeToken(token)}
+            />
+          )
+        ) : null}
         <div className="balance">
           <div className="balance-title">{token?.name} balance</div>
           <div className="balance-content overflow-hidden">
@@ -221,41 +226,6 @@ const TokenDetail = ({
             </div>
           </div>
         </div>
-        {variant === 'add' && (
-          <>
-            {token.is_core ? (
-              <div className={clsx('alert', 'mb-[24px]')}>
-                This token is supported by default. It will show up in your
-                wallet as long as balance &gt; 0.
-              </div>
-            ) : (
-              <div className={clsx('alert alert-primary', 'mb-[24px]')}>
-                This token is not verified. Please do your <br />
-                own research before you add it.
-                {token.amount > 0 ? (
-                  <div
-                    className="alert-primary-btn"
-                    onClick={() => {
-                      addToken(token);
-                    }}
-                  >
-                    <img src={IconPlus} alt="" />
-                  </div>
-                ) : (
-                  <Tooltip
-                    title="Cannot add a token with 0 balance"
-                    placement="bottomLeft"
-                    overlayClassName={clsx('rectangle')}
-                  >
-                    <div className="alert-primary-btn opacity-20 cursor-not-allowed">
-                      <img src={IconPlus} alt="" />
-                    </div>
-                  </Tooltip>
-                )}
-              </div>
-            )}
-          </>
-        )}
 
         <div className="flex flex-row justify-between mt-24">
           <Tooltip

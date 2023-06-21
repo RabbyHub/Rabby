@@ -362,7 +362,7 @@ const TokenList = ({
           className="pt-[120px] w-full"
         ></Empty>
       )}
-      <TokenDetailPopup
+      {/* <TokenDetailPopup
         visible={detail.visible}
         token={detail.current}
         addToken={async (token) => {
@@ -388,7 +388,7 @@ const TokenList = ({
             current: null,
           });
         }}
-      ></TokenDetailPopup>
+      ></TokenDetailPopup> */}
     </div>
   );
 };
