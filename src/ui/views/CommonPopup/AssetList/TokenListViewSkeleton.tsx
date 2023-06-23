@@ -30,6 +30,16 @@ const TokenItemSkeleton: React.FC = () => {
   );
 };
 
+export const TokenListSkeleton = () => {
+  return (
+    <div className="mt-20">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <TokenItemSkeleton key={index} />
+      ))}
+    </div>
+  );
+};
+
 export const TokenListViewSkeleton: React.FC = () => {
   return (
     <div className="mt-16">
@@ -43,11 +53,7 @@ export const TokenListViewSkeleton: React.FC = () => {
           className="bg-gray-bg rounded-[6px] w-[100px] h-[32px]"
         />
       </div>
-      <div className="mt-20">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <TokenItemSkeleton key={index} />
-        ))}
-      </div>
+      <TokenListSkeleton />
     </div>
   );
 };
