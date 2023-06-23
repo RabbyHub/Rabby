@@ -1,5 +1,6 @@
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getTokenSymbol } from 'ui/utils/token';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -22,7 +23,7 @@ export const TokenLabel: React.FC<Props> = ({ token, isNft }) => {
           'underline cursor-pointer': !isNft,
         })}
       >
-        {token.name}
+        {getTokenSymbol(token)}
       </span>
       <TokenDetailPopup
         variant="add"

@@ -9,24 +9,17 @@ import {
   TokenListSkeleton,
   TokenListViewSkeleton,
 } from './TokenListViewSkeleton';
+import ProtocolList from './ProtocolList';
+import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
-import { Props as TokenItemProps } from './TokenItem';
 import { SummaryList } from './SummaryList';
 import { HistoryList } from './HisotryList';
 
 interface Props {
   className?: string;
-  tokenList: TokenItemProps['item'][];
-  isLoading?: boolean;
-  hasTokens: boolean;
 }
 
-export const TokenListView: React.FC<Props> = ({
-  className,
-  tokenList,
-  isLoading,
-  hasTokens,
-}) => {
+export const TokenListView: React.FC<Props> = ({ className }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
@@ -34,6 +27,16 @@ export const TokenListView: React.FC<Props> = ({
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+  const {
+    isTokensLoading,
+    isPortfoliosLoading,
+    portfolios,
+    tokens: tokenList,
+    hasTokens,
+    hasPortfolios,
+    grossNetWorth,
+    tokenNetWorth,
+  } = useQueryProjects(currentAccount?.address, false);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
@@ -51,7 +54,7 @@ export const TokenListView: React.FC<Props> = ({
     inputRef.current?.focus();
   }, []);
 
-  if (isLoading && !hasTokens) {
+  if (isTokensLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
   }
 
@@ -61,17 +64,22 @@ export const TokenListView: React.FC<Props> = ({
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-      {isLoading ? (
+      {isTokensLoading ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-18">
           {(activeTab === TokenTabEnum.List || search) && (
-            <TokenList list={sortTokens} onFocusInput={handleFocusInput} />
+            <TokenList
+              list={sortTokens}
+              onFocusInput={handleFocusInput}
+              isSearch={!!search}
+            />
           )}
           {activeTab === TokenTabEnum.Summary && !search && <SummaryList />}
           {activeTab === TokenTabEnum.History && !search && <HistoryList />}
         </div>
       )}
+      <ProtocolList list={portfolios} kw={search} />
     </div>
   );
 };

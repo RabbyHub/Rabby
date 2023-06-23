@@ -9,10 +9,15 @@ import { CustomizedButton } from './CustomizedButton';
 
 export interface Props {
   list?: TokenItemProps['item'][];
+  isSearch: boolean;
   onFocusInput: () => void;
 }
 
-export const TokenList: React.FC<Props> = ({ list, onFocusInput }) => {
+export const TokenList: React.FC<Props> = ({
+  list,
+  onFocusInput,
+  isSearch,
+}) => {
   const totalValue = React.useMemo(() => {
     return list
       ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
@@ -21,18 +26,22 @@ export const TokenList: React.FC<Props> = ({ list, onFocusInput }) => {
   const { result: currentList } = useExpandList(list, totalValue);
   const lowValueList = React.useMemo(() => {
     return list?.filter((item) => currentList?.indexOf(item) === -1);
-  }, [currentList]);
+  }, [currentList, list, isSearch]);
 
   return (
     <div>
       <div className="border-b-[0.5px] border-gray-divider">
-        <TokenTable list={currentList} />
-        <TokenLowValueItem list={lowValueList} className="h-[40px]" />
+        <TokenTable list={isSearch ? list : currentList} />
+        {!isSearch && (
+          <TokenLowValueItem list={lowValueList} className="h-[40px]" />
+        )}
       </div>
-      <div className="flex gap-12 mt-12">
-        <CustomizedButton onClickLink={onFocusInput} />
-        <BlockedButton onClickLink={onFocusInput} />
-      </div>
+      {!isSearch && (
+        <div className="flex gap-12 mt-12">
+          <CustomizedButton onClickLink={onFocusInput} />
+          <BlockedButton onClickLink={onFocusInput} />
+        </div>
+      )}
     </div>
   );
 };

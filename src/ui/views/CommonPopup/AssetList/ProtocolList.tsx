@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
+import { isSameAddress } from '@/ui/utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -89,17 +90,53 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
 
 interface Props {
   list: DisplayedProject[] | undefined;
+  kw: string;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 30px;
 `;
 
-const ProtocolList = ({ list }: Props) => {
-  if (!list) return null;
+const ProtocolList = ({ list, kw }: Props) => {
+  const displayList = useMemo(() => {
+    if (!list || !kw) return list;
+    const result: DisplayedProject[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+      const portfolios =
+        item._rawPortfolios?.filter((portfolio) => {
+          const hasToken = portfolio.asset_token_list.some((token) => {
+            if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
+              return isSameAddress(token.id, kw);
+            } else {
+              return (token.display_symbol || token.symbol).includes(kw);
+            }
+          });
+          return hasToken;
+        }) || [];
+      // item.setPortfolios(portfolios);
+      const project = new DisplayedProject(
+        {
+          chain: item.chain,
+          id: item.id,
+          logo_url: item.logo,
+          name: item.name,
+          site_url: item.site_url,
+        },
+        portfolios
+      );
+      if (portfolios.length > 0) {
+        result.push(project);
+      }
+    }
+    return result;
+  }, [list, kw]);
+
+  if (!displayList) return null;
+
   return (
     <ProtocolListWrapper>
-      {list.map((item) => (
+      {displayList.map((item) => (
         <ProtocolItem protocol={item} key={item.id} />
       ))}
     </ProtocolListWrapper>

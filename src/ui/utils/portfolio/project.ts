@@ -26,9 +26,7 @@ export class DisplayedProject implements AbstractProject {
   chain?: string;
   netWorth: number;
   _netWorth: string;
-  // Wallet 下的 _portfolioDict 按 chain 作 key，用于区分是原来没有，还是这个 chain 就没获取到
   _portfolioDict: Record<string, DisplayedPortfolio> = {};
-  // 用来变换结果使用，注意 _portfolioDict 变了也要再重新赋值 _portfolios，不然数据地址不变，可能 Component 不会渲染
   _portfolios: DisplayedPortfolio[] = [];
   _historyPatched?: boolean;
   _serverUpdatedAt = Math.ceil(new Date().getTime() / 1000);
@@ -36,8 +34,8 @@ export class DisplayedProject implements AbstractProject {
   netWorthChange = 0;
   _netWorthChange = '-';
   _netWorthChangePercent = '';
-  // 主要用于 profile 展示，后面改版会删掉它
   _intNetworth = '';
+  _rawPortfolios?: PortfolioItem[] = [];
 
   constructor(
     p: Partial<PortfolioProject>,
@@ -51,6 +49,7 @@ export class DisplayedProject implements AbstractProject {
     this.netWorth = 0;
     this._netWorth = '-';
     this.site_url = p.site_url;
+    this._rawPortfolios = portfolios;
 
     this.setPortfolios(portfolios, countRepeat);
   }

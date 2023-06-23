@@ -201,7 +201,7 @@ export const account = createModel<RootModel>()({
         chain: token.chain,
       });
       const currentList = store.account.tokens.blocked;
-      dispatch.account.setCustomizeTokenList(
+      dispatch.account.setBlockedTokenList(
         currentList.filter((item) => {
           return item.id !== token.id;
         })
