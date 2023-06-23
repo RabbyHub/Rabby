@@ -52,7 +52,7 @@ export const IconWithChain = ({
   noRound = false,
   hideChainIcon = false,
 }: {
-  iconUrl: string;
+  iconUrl?: string;
   chainServerId: string;
   width?: string;
   height?: string;
@@ -70,7 +70,7 @@ export const IconWithChain = ({
     >
       <img
         className={clsx('token-symbol', noRound && 'no-round')}
-        src={iconUrl}
+        src={iconUrl || IconUnknown}
         alt={''}
         style={{ width, height, minWidth: width }}
       />

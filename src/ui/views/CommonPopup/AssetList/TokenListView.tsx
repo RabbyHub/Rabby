@@ -3,17 +3,25 @@ import { TokenSearchInput } from './TokenSearchInput';
 import { TokenTabEnum, TokenTabs } from './TokenTabs';
 import { useRabbySelector } from '@/ui/store';
 import { TokenList } from './TokenList';
-import { useQueryProjects } from '@/ui/utils/portfolio';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import { TokenListViewSkeleton } from './TokenListViewSkeleton';
 import { Input } from 'antd';
+import { Props as TokenItemProps } from './TokenItem';
 
 interface Props {
   className?: string;
+  tokenList: TokenItemProps['item'][];
+  isLoading?: boolean;
+  hasTokens: boolean;
 }
 
-export const TokenListView: React.FC<Props> = ({ className }) => {
+export const TokenListView: React.FC<Props> = ({
+  className,
+  tokenList,
+  isLoading,
+  hasTokens,
+}) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
@@ -25,17 +33,10 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
     TokenTabEnum.List
   );
   const inputRef = React.useRef<Input>(null);
-  const {
-    isTokensLoading,
-    isPortfoliosLoading,
-    portfolios,
-    tokens: tokenList,
-    hasTokens,
-    hasPortfolios,
-    grossNetWorth,
-    tokenNetWorth,
-  } = useQueryProjects(currentAccount?.address, false);
-  const { isLoading, list } = useSearchToken(currentAccount?.address, search);
+  const { isLoading: isSearching, list } = useSearchToken(
+    currentAccount?.address,
+    search
+  );
   const displayTokenList = useMemo(() => {
     return search ? list : tokenList;
   }, [list, tokenList, search]);
@@ -45,7 +46,7 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
     inputRef.current?.focus();
   }, []);
 
-  if (isTokensLoading && !hasTokens) {
+  if (isLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
   }
 
