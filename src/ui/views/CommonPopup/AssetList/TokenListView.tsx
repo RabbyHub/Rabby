@@ -5,9 +5,14 @@ import { useRabbySelector } from '@/ui/store';
 import { TokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import useSearchToken from '@/ui/hooks/useSearchToken';
-import { TokenListViewSkeleton } from './TokenListViewSkeleton';
+import {
+  TokenListSkeleton,
+  TokenListViewSkeleton,
+} from './TokenListViewSkeleton';
 import { Input } from 'antd';
 import { Props as TokenItemProps } from './TokenItem';
+import { SummaryList } from './SummaryList';
+import { HistoryList } from './HisotryList';
 
 interface Props {
   className?: string;
@@ -56,9 +61,17 @@ export const TokenListView: React.FC<Props> = ({
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-      <div className="mt-18">
-        <TokenList list={sortTokens} onFocusInput={handleFocusInput} />
-      </div>
+      {isLoading ? (
+        <TokenListSkeleton />
+      ) : (
+        <div className="mt-18">
+          {(activeTab === TokenTabEnum.List || search) && (
+            <TokenList list={sortTokens} onFocusInput={handleFocusInput} />
+          )}
+          {activeTab === TokenTabEnum.Summary && !search && <SummaryList />}
+          {activeTab === TokenTabEnum.History && !search && <HistoryList />}
+        </div>
+      )}
     </div>
   );
 };

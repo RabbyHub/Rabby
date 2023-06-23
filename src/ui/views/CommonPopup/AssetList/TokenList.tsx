@@ -13,11 +13,6 @@ export interface Props {
 }
 
 export const TokenList: React.FC<Props> = ({ list, onFocusInput }) => {
-  // is_core is true
-  // is in chain list
-  // with customized list
-  // not in blocked list
-  // not zero balance
   const totalValue = React.useMemo(() => {
     return list
       ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
