@@ -56,6 +56,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { PreferMetamaskDapps } from './PreferMetamaskDapps';
 import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
+import { NFTView } from './NFTView';
 
 declare global {
   interface Window {
@@ -266,6 +267,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/prefer-metamask-dapps">
           <PreferMetamaskDapps />
+        </PrivateRoute>
+        <PrivateRoute exact path="/nft">
+          <NFTView />
         </PrivateRoute>
       </Switch>
 
