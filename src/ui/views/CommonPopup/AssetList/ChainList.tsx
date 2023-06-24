@@ -5,7 +5,11 @@ import { ChainItem, ChainItemType } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 
-export const ChainList = () => {
+export const ChainList = ({
+  onChange,
+}: {
+  onChange(id: string | null): void;
+}) => {
   const { data, visible } = useCommonPopupView();
   const chainList = (data?.chainBalances as DisplayChainWithWhiteLogo[]) ?? [];
   const balance = (data?.balance as number) ?? 0;
@@ -15,7 +19,17 @@ export const ChainList = () => {
   >([]);
   const [moreChainList, setMoreChainList] = React.useState<ChainItemType[]>([]);
   const [showMore, setShowMore] = React.useState(false);
-  const [activeChainId, setActiveChainId] = React.useState<string>();
+  const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
+
+  const handleSelectChain = (id: string) => {
+    if (activeChainId === id) {
+      setActiveChainId(null);
+      onChange(null);
+    } else {
+      setActiveChainId(id);
+      onChange(id);
+    }
+  };
 
   React.useEffect(() => {
     const list = chainList.map((item) => {
@@ -54,11 +68,11 @@ export const ChainList = () => {
     >
       {currentChainList.map((item) => (
         <ChainItem
-          inactive={activeChainId !== undefined && activeChainId !== item.id}
+          inactive={activeChainId !== null && activeChainId !== item.id}
           key={item.id}
           item={item}
           onClick={() => {
-            setActiveChainId(item.id);
+            handleSelectChain(item.id);
           }}
         />
       ))}
@@ -66,9 +80,9 @@ export const ChainList = () => {
         moreChainList.map((item) => (
           <ChainItem
             onClick={() => {
-              setActiveChainId(item.id);
+              handleSelectChain(item.id);
             }}
-            inactive={activeChainId !== undefined && activeChainId !== item.id}
+            inactive={activeChainId !== null && activeChainId !== item.id}
             key={item.id}
             item={item}
           />

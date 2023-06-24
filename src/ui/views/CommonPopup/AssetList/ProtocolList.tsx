@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
@@ -109,12 +109,17 @@ const ProtocolList = ({ list, kw }: Props) => {
             if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
               return isSameAddress(token.id, kw);
             } else {
-              return (token.display_symbol || token.symbol).includes(kw);
+              const reg = new RegExp(kw, 'i');
+              return (
+                reg.test(token.display_symbol || '') ||
+                reg.test(token.symbol) ||
+                reg.test(token.display_symbol || '') ||
+                reg.test(token.name)
+              );
             }
           });
           return hasToken;
         }) || [];
-      // item.setPortfolios(portfolios);
       const project = new DisplayedProject(
         {
           chain: item.chain,

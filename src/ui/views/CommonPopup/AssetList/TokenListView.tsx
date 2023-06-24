@@ -17,9 +17,13 @@ import { HistoryList } from './HisotryList';
 
 interface Props {
   className?: string;
+  selectChainId: string | null;
 }
 
-export const TokenListView: React.FC<Props> = ({ className }) => {
+export const TokenListView: React.FC<Props> = ({
+  className,
+  selectChainId,
+}) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
@@ -43,11 +47,24 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
-    search
+    search,
+    selectChainId ? selectChainId : undefined
   );
   const displayTokenList = useMemo(() => {
-    return search ? list : tokenList;
-  }, [list, tokenList, search]);
+    const result = search ? list : tokenList;
+    if (selectChainId) {
+      return result.filter((item) => item.chain === selectChainId);
+    }
+    return result;
+  }, [list, tokenList, search, selectChainId]);
+
+  const displayPortfolios = useMemo(() => {
+    if (selectChainId) {
+      return portfolios?.filter((item) => item.chain === selectChainId);
+    }
+    return portfolios;
+  }, [portfolios, selectChainId]);
+
   const sortTokens = useSortTokens(displayTokenList);
 
   const handleFocusInput = React.useCallback(() => {
@@ -64,7 +81,7 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-      {isTokensLoading ? (
+      {isTokensLoading || isSearching ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-18">
@@ -79,7 +96,11 @@ export const TokenListView: React.FC<Props> = ({ className }) => {
           {activeTab === TokenTabEnum.History && !search && <HistoryList />}
         </div>
       )}
-      <ProtocolList list={portfolios} kw={search} />
+      {isPortfoliosLoading ? (
+        <TokenListSkeleton />
+      ) : (
+        <ProtocolList list={displayPortfolios} kw={search} />
+      )}
     </div>
   );
 };
