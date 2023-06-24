@@ -8,9 +8,14 @@ import { TokenLabel } from './TokenLabel';
 
 type TokenChangeProps = {
   data: TxDisplayItem | TxHistoryItem;
+  canClickToken?: boolean;
 } & Pick<TxDisplayItem, 'tokenDict'>;
 
-export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
+export const TokenChange = ({
+  data: info,
+  tokenDict,
+  canClickToken = true,
+}: TokenChangeProps) => {
   const tokens = tokenDict || {};
 
   if (!info.sends?.length && !info.receives?.length) {
@@ -62,7 +67,11 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel isNft={isNft} token={token} />
+            <TokenLabel
+              isNft={isNft}
+              token={token}
+              canClickToken={canClickToken}
+            />
           </div>
         );
       })}
@@ -109,7 +118,11 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel isNft={isNft} token={token} />
+            <TokenLabel
+              isNft={isNft}
+              token={token}
+              canClickToken={canClickToken}
+            />
           </div>
         );
       })}

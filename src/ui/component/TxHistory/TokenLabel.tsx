@@ -7,20 +7,25 @@ import React from 'react';
 export interface Props {
   token: TokenItem;
   isNft?: boolean;
+  canClickToken?: boolean;
 }
 
-export const TokenLabel: React.FC<Props> = ({ token, isNft }) => {
+export const TokenLabel: React.FC<Props> = ({
+  token,
+  isNft,
+  canClickToken = true,
+}) => {
   const [visible, setVisible] = React.useState(false);
 
   return (
     <>
       <span
         onClick={() => {
-          if (isNft) return;
+          if (isNft || !canClickToken) return;
           setVisible(true);
         }}
         className={clsx('ml-2', {
-          'underline cursor-pointer': !isNft,
+          'underline cursor-pointer': !isNft && canClickToken,
         })}
       >
         {getTokenSymbol(token)}
