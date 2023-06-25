@@ -20,7 +20,7 @@ interface Props {
   selectChainId: string | null;
 }
 
-export const TokenListView: React.FC<Props> = ({
+export const AssetListContainer: React.FC<Props> = ({
   className,
   selectChainId,
 }) => {

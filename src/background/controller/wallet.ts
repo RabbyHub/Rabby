@@ -2801,6 +2801,12 @@ export class WalletController extends BaseController {
 
   removeBlockedToken = preferenceService.removeBlockedToken;
 
+  getCollectionStarred = preferenceService.getCollectionStarred;
+
+  addCollectionStarred = preferenceService.addCollectionStarred;
+
+  removeCollectionStarred = preferenceService.removeCollectionStarred;
+
   reportStats = (
     name: string,
     params: Record<string, string | number | boolean>
