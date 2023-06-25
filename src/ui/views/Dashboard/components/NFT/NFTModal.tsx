@@ -4,8 +4,10 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { getChain } from '@/utils';
 import NFTAvatar from './NFTAvatar';
-import { splitNumberByStep } from '@/ui/utils';
+import { openInTab, splitNumberByStep } from '@/ui/utils';
 import { IGAEventSource } from '@/ui/utils/ga-event';
+import { ReactComponent as LinkSVG } from '@/ui/assets/nft-view/link.svg';
+import clsx from 'clsx';
 
 interface ContentProps {
   data?: NFTItem;
@@ -33,6 +35,10 @@ const NFTModal = ({ data }: ContentProps) => {
     });
   };
 
+  const onDetail = () => {
+    if (data) openInTab(data.detail_url);
+  };
+
   return (
     <div className="nft-preview-card">
       <NFTAvatar
@@ -41,7 +47,16 @@ const NFTModal = ({ data }: ContentProps) => {
         type={data?.content_type}
         amount={data?.amount}
       ></NFTAvatar>
-      <div className="nft-preview-card-title">{data?.name || '-'}</div>
+      <div className={clsx('nft-preview-card-title', 'flex')}>
+        <span>{data?.name || '-'}</span>
+        <div
+          className="cursor-pointer hover:opacity-60 ml-4"
+          onClick={onDetail}
+        >
+          <LinkSVG />
+        </div>
+      </div>
+
       <div className="nft-preview-card-list">
         <div className="nft-preview-card-list-item">
           <div className="nft-preview-card-list-item-label">Collection</div>

@@ -147,6 +147,9 @@ export const NFTView: React.FC = () => {
         okText={null}
         footer={null}
         className="nft-modal"
+        maskStyle={{
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        }}
         onCancel={handleHideModal}
       >
         {nftItem && <NFTModal data={nftItem} />}
