@@ -23,12 +23,12 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           src={item.logo_url || IconUnknown}
           alt={item.symbol}
           fallback={IconUnknown}
+          preview={false}
         />
-        <Image
+        <img
           className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
           src={chain?.logo || IconUnknown}
           alt={item.chain}
-          fallback={IconUnknown}
         />
       </div>
       <div className="flex flex-col gap-4">
