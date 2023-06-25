@@ -12,6 +12,9 @@ import NFTModal from '../Dashboard/components/NFT/NFTModal';
 import { CollectionListSkeleton } from './CollectionListSkeleton';
 import styled from 'styled-components';
 import { useCollection } from './useCollection';
+import { ReactComponent as EmptyNFTListSVG } from '@/ui/assets/nft-view/empty-nft-list.svg';
+import { ReactComponent as EmptyNFTStarredListSVG } from '@/ui/assets/nft-view/empty-nft-list.svg';
+import { NFTListEmpty, NFTStarredListEmpty } from './NFTEmpty';
 
 const TabsStyled = styled(Tabs)`
   .ant-tabs-tab {
@@ -62,7 +65,13 @@ export const NFTView: React.FC = () => {
   const { currentAccount } = useRabbySelector((s) => s.account);
   const [nftItem, setNFTItem] = React.useState<NFTItem | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
-  const { isLoading, list, starredList, onToggleStar } = useCollection();
+  const {
+    isLoading,
+    list,
+    starredList,
+    onToggleStar,
+    checkStarred,
+  } = useCollection();
 
   const handleShowModal = React.useCallback((item: NFTItem) => {
     setNFTItem(item);
@@ -93,38 +102,39 @@ export const NFTView: React.FC = () => {
           <Tabs.TabPane tab="All" key="all">
             {isLoading ? (
               <CollectionListSkeleton />
-            ) : (
+            ) : list.length ? (
               <div className="space-y-12 pb-12">
                 {list.map((item) => (
                   <CollectionCard
-                    key={item.collection.id}
+                    key={`${item.id}${item.chain}`}
                     collection={item}
                     onClickNFT={handleShowModal}
-                    isStarred={starredList.some(
-                      (starredItem) =>
-                        starredItem.collection.id === item.collection.id
-                    )}
-                    onStar={() => onToggleStar(item.collection.id)}
+                    isStarred={checkStarred(item)}
+                    onStar={() => onToggleStar(item)}
                   />
                 ))}
               </div>
+            ) : (
+              <NFTListEmpty />
             )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Starred" key="starred">
+          <Tabs.TabPane tab={`Starred (${starredList.length})`} key="starred">
             {isLoading ? (
               <CollectionListSkeleton />
-            ) : (
+            ) : starredList.length ? (
               <div className="space-y-12 pb-12">
                 {starredList.map((item) => (
                   <CollectionCard
-                    key={item.collection.id}
+                    key={item.id}
                     collection={item}
                     onClickNFT={handleShowModal}
                     isStarred
-                    onStar={() => onToggleStar(item.collection.id)}
+                    onStar={() => onToggleStar(item)}
                   />
                 ))}
               </div>
+            ) : (
+              <NFTStarredListEmpty />
             )}
           </Tabs.TabPane>
         </TabsStyled>

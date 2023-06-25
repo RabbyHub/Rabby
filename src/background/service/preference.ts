@@ -81,7 +81,7 @@ export interface PreferenceStore {
   sendEnableTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
-  collectionStarred?: string[];
+  collectionStarred?: Token[];
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -566,17 +566,27 @@ class PreferenceService {
   getCollectionStarred = () => {
     return this.store.collectionStarred || [];
   };
-  addCollectionStarred = (id: string) => {
-    if (!this.store.collectionStarred?.includes(id)) {
+  addCollectionStarred = (token: Token) => {
+    if (
+      !this.store.collectionStarred?.find(
+        (item) =>
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+      )
+    ) {
       this.store.collectionStarred = [
         ...(this.store.collectionStarred || []),
-        id,
+        token,
       ];
     }
   };
-  removeCollectionStarred = (id: string) => {
+  removeCollectionStarred = (token: Token) => {
     this.store.collectionStarred = this.store.collectionStarred?.filter(
-      (item) => item !== id
+      (item) =>
+        !(
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+        )
     );
   };
 

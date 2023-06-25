@@ -2,12 +2,12 @@ import clsx from 'clsx';
 import React from 'react';
 import { ReactComponent as StarSVG } from '@/ui/assets/nft-view/star.svg';
 import { ReactComponent as StarredSVG } from '@/ui/assets/nft-view/starred.svg';
-import { NFTItem, UserCollection } from '@rabby-wallet/rabby-api/dist/types';
+import { NFTItem, CollectionList } from '@rabby-wallet/rabby-api/dist/types';
 import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
 import { ChainIcon, getChainName } from './ChainIcon';
 
 export interface Props {
-  collection: UserCollection;
+  collection: CollectionList;
   className?: string;
   onClickNFT?: (nft: NFTItem) => void;
   onStar?: () => void;
@@ -21,7 +21,7 @@ export const CollectionCard: React.FC<Props> = ({
   onStar,
   isStarred,
 }) => {
-  const chain = collection.list[0].chain;
+  const chain = collection.nft_list[0].chain;
   const chainName = getChainName(chain);
   return (
     <div className={clsx('p-12 rounded-[6px] bg-white', className)}>
@@ -34,14 +34,16 @@ export const CollectionCard: React.FC<Props> = ({
       >
         <div className="space-x-4">
           <span className="text-15 text-gray-title font-medium">
-            {collection.collection.name}
+            {collection.name}
           </span>
-          <span className="text-13 text-black">({collection.list.length})</span>
+          <span className="text-13 text-black">
+            ({collection.nft_list.length})
+          </span>
         </div>
         <div className="gap-x-4 flex">
           <ChainIcon chain={chain} />
           <span className="text-black text-12">
-            {chainName} / Floor Price: {collection.collection.floor_price} ETH
+            {chainName} / Floor Price: {collection.floor_price} ETH
           </span>
         </div>
 
@@ -56,7 +58,7 @@ export const CollectionCard: React.FC<Props> = ({
         </div>
       </section>
       <section className="grid grid-cols-5 gap-10">
-        {collection.list.map((item) => (
+        {collection.nft_list.map((item) => (
           <div
             key={item.id}
             className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
