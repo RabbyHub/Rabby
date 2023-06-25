@@ -14,7 +14,6 @@ import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
 import { SummaryList } from './SummaryList';
 import { HistoryList } from './HisotryList';
-import { useCommonPopupView } from '@/ui/utils';
 
 interface Props {
   className?: string;
@@ -32,7 +31,6 @@ export const AssetListContainer: React.FC<Props> = ({
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
-  const { visible } = useCommonPopupView();
   const {
     isTokensLoading,
     isPortfoliosLoading,
