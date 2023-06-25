@@ -4,6 +4,7 @@ import { CHAINS_LIST } from '@debank/common';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
+import { Image } from 'antd';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -15,17 +16,19 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const chain = CHAINS_LIST.find((c) => c.serverId === item.chain);
 
   return (
-    <TCell className="py-8 flex gap-12 w-1/2">
+    <TCell className="py-8 flex gap-12 w-1/2 items-center">
       <div className="relative">
-        <img
+        <Image
           className="w-24 h-24 rounded-full"
           src={item.logo_url || IconUnknown}
           alt={item.symbol}
+          fallback={IconUnknown}
         />
-        <img
-          className="w-14 h-14 absolute right-[-2px] top-[-2px]"
+        <Image
+          className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
           src={chain?.logo || IconUnknown}
           alt={item.chain}
+          fallback={IconUnknown}
         />
       </div>
       <div className="flex flex-col gap-4">

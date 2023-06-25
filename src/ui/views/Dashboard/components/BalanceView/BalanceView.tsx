@@ -104,16 +104,15 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   const currentBalance = curvePoint?.value || balance;
   const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
-  const currentChangePercent =
-    curvePoint?.changePercent || curveData?.changePercent;
+  const currentChangePercent = curvePoint?.changePercent;
   const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
-  const currentChangeValue = curvePoint?.change || curveData?.change;
+  const currentChangeValue = curvePoint?.change;
   const currentHover = isHover;
 
   return (
     <div onMouseLeave={() => setHover(false)} className={clsx('assets flex')}>
       <div className="left">
-        <div className={clsx('amount group', 'text-32')}>
+        <div onClick={onRefresh} className={clsx('amount group', 'text-32')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
             (balanceLoading && !balanceFromCache) ||
@@ -136,7 +135,6 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             className={clsx('hidden mb-6', {
               'group-hover:block': !balanceLoading,
             })}
-            onClick={onRefresh}
           >
             <UpdateSVG />
           </div>
@@ -159,9 +157,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className={clsx(
-            'mt-10',
-            currentHover &&
-              'bg-[#00000033] card border-[#FFFFFF33] border-[0.5px] mx-10 mb-10',
+            'mt-2',
+            currentHover && 'bg-[#00000033] card mx-10 mb-10',
             'rounded-[4px] relative cursor-pointer'
           )}
         >
@@ -174,7 +171,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           <div
             className={clsx(
               'extra flex',
-              currentHover ? 'mx-[9.5px] pt-[7.5px]' : 'mx-20 pt-8'
+              currentHover ? 'mx-[10px] pt-[8px]' : 'mx-20 pt-8'
             )}
           >
             {startRefresh || currentBalance === null ? (
