@@ -47,7 +47,11 @@ const filterDisplayToken = (
   });
 };
 
-export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
+export const useTokens = (
+  userAddr: string | undefined,
+  timeAt?: Dayjs,
+  visible = true
+) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
@@ -62,7 +66,9 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
 
   useEffect(() => {
     if (userAddr) {
-      loadProcess();
+      if (visible) {
+        loadProcess();
+      }
     } else {
       setData(undefined);
     }
@@ -72,7 +78,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
       abortProcess.current?.abort();
     };
     // eslint-disable-next-line
-  }, [userAddr]);
+  }, [userAddr, visible]);
 
   useEffect(() => {
     if (timeAt) {

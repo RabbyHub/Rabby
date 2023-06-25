@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useIntersection } from 'react-use';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -69,21 +70,62 @@ const ProtocolItemWrapper = styled.div`
   }
 `;
 const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
+  const intersectionRef = React.useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: '-20px',
+    threshold: 0,
+  });
+  const [isDisplay, setIsDisplay] = useState(true);
+  const [height, setHeight] = useState(0);
+  const isReady = useRef(false);
+
+  useEffect(() => {
+    console.log('intersection', intersection);
+    if (
+      intersection?.intersectionRatio &&
+      intersection?.intersectionRatio > 0
+    ) {
+      setIsDisplay(true);
+    } else {
+      setIsDisplay(false);
+    }
+  }, [intersection]);
+
+  useEffect(() => {
+    isReady.current = true;
+    if (intersectionRef.current) {
+      const rect = intersectionRef.current.getBoundingClientRect();
+      setHeight(rect.height);
+    }
+  }, []);
+
   return (
-    <ProtocolItemWrapper>
-      <div className="title">
-        <IconWithChain
-          iconUrl={protocol.logo}
-          chainServerId={protocol.chain || 'eth'}
-          width="24px"
-          height="24px"
-        />
-        <span className="name">{protocol.name}</span>
-        <span className="net-worth">{protocol._netWorth}</span>
+    <ProtocolItemWrapper
+      ref={intersectionRef}
+      style={{
+        height: height ? `${height}px` : undefined,
+      }}
+    >
+      <div
+        style={{
+          display: isDisplay ? 'block' : 'none',
+        }}
+      >
+        <div className="title">
+          <IconWithChain
+            iconUrl={protocol.logo}
+            chainServerId={protocol.chain || 'eth'}
+            width="24px"
+            height="24px"
+          />
+          <span className="name">{protocol.name}</span>
+          <span className="net-worth">{protocol._netWorth}</span>
+        </div>
+        {protocol._portfolios.map((portfolio) => (
+          <PoolItem item={portfolio} />
+        ))}
       </div>
-      {protocol._portfolios.map((portfolio) => (
-        <PoolItem item={portfolio} />
-      ))}
     </ProtocolItemWrapper>
   );
 };
