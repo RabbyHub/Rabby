@@ -2,23 +2,27 @@ import clsx from 'clsx';
 import React from 'react';
 import { ReactComponent as StarSVG } from '@/ui/assets/nft-view/star.svg';
 import { ReactComponent as StarredSVG } from '@/ui/assets/nft-view/starred.svg';
-import { UserCollection } from '@rabby-wallet/rabby-api/dist/types';
+import { NFTItem, UserCollection } from '@rabby-wallet/rabby-api/dist/types';
+import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
+import { ChainIcon, getChainName } from './ChainIcon';
 
 export interface Props {
   collection: UserCollection;
   className?: string;
-  onClickNFT?: () => void;
+  onClickNFT?: (nft: NFTItem) => void;
+  onStar?: () => void;
+  isStarred?: boolean;
 }
 
 export const CollectionCard: React.FC<Props> = ({
   collection,
   className,
   onClickNFT,
+  onStar,
+  isStarred,
 }) => {
-  const onStar = React.useCallback(() => {
-    console.log('star');
-  }, []);
-
+  const chain = collection.list[0].chain;
+  const chainName = getChainName(chain);
   return (
     <div className={clsx('p-12 rounded-[6px] bg-white', className)}>
       <section
@@ -35,10 +39,9 @@ export const CollectionCard: React.FC<Props> = ({
           <span className="text-13 text-black">({collection.list.length})</span>
         </div>
         <div className="gap-x-4 flex">
-          <img className="w-[14px] h-[14px] rounded-full" />
+          <ChainIcon chain={chain} />
           <span className="text-black text-12">
-            {collection.list[0].chain} / Floor Price:{' '}
-            {collection.collection.floor_price} ETH
+            {chainName} / Floor Price: {collection.collection.floor_price} ETH
           </span>
         </div>
 
@@ -49,19 +52,24 @@ export const CollectionCard: React.FC<Props> = ({
           )}
           onClick={onStar}
         >
-          <StarSVG />
+          {isStarred ? <StarredSVG /> : <StarSVG />}
         </div>
       </section>
       <section className="grid grid-cols-5 gap-10">
-        {collection.list.map((item, index) => {
+        {collection.list.map((item) => (
           <div
             key={item.id}
-            className="rounded w-full h-[59px] cursor-pointer"
-            onClick={() => onClickNFT?.()}
+            className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
           >
-            img
-          </div>;
-        })}
+            <NFTAvatar
+              onPreview={() => onClickNFT?.(item)}
+              type={item.content_type}
+              amount={item.amount}
+              content={item.content}
+              key={item.id}
+            />
+          </div>
+        ))}
       </section>
     </div>
   );

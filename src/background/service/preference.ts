@@ -81,6 +81,7 @@ export interface PreferenceStore {
   sendEnableTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
+  collectionStarred?: string[];
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -120,6 +121,7 @@ class PreferenceService {
         sendEnableTime: 0,
         customizedToken: [],
         blockedToken: [],
+        collectionStarred: [],
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -185,6 +187,9 @@ class PreferenceService {
     }
     if (!this.store.blockedToken) {
       this.store.blockedToken = [];
+    }
+    if (!this.store.collectionStarred) {
+      this.store.collectionStarred = [];
     }
   };
 
@@ -556,6 +561,22 @@ class PreferenceService {
           isSameAddress(item.address, token.address) &&
           item.chain === token.chain
         )
+    );
+  };
+  getCollectionStarred = () => {
+    return this.store.collectionStarred || [];
+  };
+  addCollectionStarred = (id: string) => {
+    if (!this.store.collectionStarred?.includes(id)) {
+      this.store.collectionStarred = [
+        ...(this.store.collectionStarred || []),
+        id,
+      ];
+    }
+  };
+  removeCollectionStarred = (id: string) => {
+    this.store.collectionStarred = this.store.collectionStarred?.filter(
+      (item) => item !== id
     );
   };
 

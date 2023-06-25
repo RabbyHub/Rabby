@@ -1,7 +1,7 @@
 import { useCommonPopupView } from '@/ui/utils';
 import React, { useState } from 'react';
 import { ChainList } from './ChainList';
-import { TokenListView } from './TokenListView';
+import { AssetListContainer } from './AssetListContainer';
 
 export const AssetList = () => {
   const { setHeight } = useCommonPopupView();
@@ -17,7 +17,7 @@ export const AssetList = () => {
   return (
     <div>
       <ChainList onChange={handleSelectChainChange} />
-      <TokenListView className="mt-16" selectChainId={selectChainId} />
+      <AssetListContainer className="mt-16" selectChainId={selectChainId} />
     </div>
   );
 };

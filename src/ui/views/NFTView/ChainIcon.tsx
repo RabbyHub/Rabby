@@ -19,8 +19,7 @@ export const ChainIcon = ({ chain, className, style }: ChainIconProps) => {
   return (
     <img
       src={data?.logo || IconUnknown}
-      alt=""
-      className={clsx('rabby-chain-icon', className)}
+      className={clsx('w-[14px] h-[14px] rounded-full', className)}
       style={style}
     />
   );
