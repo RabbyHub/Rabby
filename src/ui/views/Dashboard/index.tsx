@@ -1,10 +1,7 @@
 import { Input, message, Popover } from 'antd';
-import { AssetItem, TokenItem } from 'background/service/openapi';
-import { Account } from 'background/service/preference';
-import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
-import { useTranslation, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -17,13 +14,10 @@ import {
   WALLET_BRAND_CONTENT,
   EVENTS,
 } from 'consts';
-import cloneDeep from 'lodash/cloneDeep';
-import uniqBy from 'lodash/uniqBy';
 import QRCode from 'qrcode.react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { FixedSizeList } from 'react-window';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
@@ -31,8 +25,7 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
 
 import IconSuccess from 'ui/assets/success.svg';
-import IconTagYou from 'ui/assets/tag-you.svg';
-import { AddressViewer, Modal, NameAndAddress } from 'ui/component';
+import { AddressViewer, Modal } from 'ui/component';
 import {
   connectStore,
   useRabbyDispatch,
@@ -41,21 +34,15 @@ import {
 } from 'ui/store';
 import { isSameAddress, useWallet } from 'ui/utils';
 import {
-  AssetsList,
   BalanceView,
   ChainAndSiteSelector,
   GnosisWrongChainAlertBar,
-  NFTListContainer,
-  TokenList,
-  ExtraLink,
   DefaultWalletSetting,
 } from './components';
-import Dropdown from './components/NFT/Dropdown';
 import './style.less';
 
 import PendingApproval from './components/PendingApproval';
 import PendingTxs from './components/PendingTxs';
-import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
 
@@ -63,57 +50,20 @@ import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-addres
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import Queue from './components/Queue';
 import { copyAddress } from '@/ui/utils/clipboard';
-import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
-import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
-import { useRequest } from 'ahooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
-import { useQueryProjects } from 'ui/utils/portfolio';
-
-const GnosisAdminItem = ({
-  accounts,
-  address,
-}: {
-  accounts: Account[];
-  address: string;
-}) => {
-  const addressInWallet = accounts.find((account) =>
-    isSameAddress(account.address, address)
-  );
-  return (
-    <li>
-      <NameAndAddress address={address} nameClass="max-143" />
-      {addressInWallet ? (
-        <img src={IconTagYou} className="icon icon-tag" />
-      ) : (
-        <></>
-      )}
-    </li>
-  );
-};
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
-  const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
-  const fixedList = useRef<FixedSizeList>();
 
-  const {
-    alianName,
-    currentAccount,
-    accountsList,
-    loadingAccounts,
-    highlightedAddresses,
-  } = useRabbySelector((s) => ({
+  const { alianName, currentAccount, accountsList } = useRabbySelector((s) => ({
     alianName: s.account.alianName,
     currentAccount: s.account.currentAccount,
     accountsList: s.accountToDisplay.accountsList,
-    loadingAccounts: s.accountToDisplay.loadingAccounts,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
   const { pendingTransactionCount: pendingTxCount } = useRabbySelector((s) => ({
@@ -124,29 +74,6 @@ const Dashboard = () => {
     ...s.appVersion,
   }));
 
-  const { sortedAccountsList } = React.useMemo(() => {
-    const restAccounts = [...accountsList];
-    let highlightedAccounts: typeof accountsList = [];
-
-    highlightedAddresses.forEach((highlighted) => {
-      const idx = restAccounts.findIndex(
-        (account) =>
-          account.address === highlighted.address &&
-          account.brandName === highlighted.brandName
-      );
-      if (idx > -1) {
-        highlightedAccounts.push(restAccounts[idx]);
-        restAccounts.splice(idx, 1);
-      }
-    });
-
-    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
-
-    return {
-      sortedAccountsList: highlightedAccounts.concat(restAccounts),
-    };
-  }, [accountsList, highlightedAddresses]);
-
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -156,27 +83,15 @@ const Dashboard = () => {
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
   const [showNFT, setShowNFT] = useState(false);
-  const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
-  const [assets, setAssets] = useState<AssetItem[]>([]);
-  const [startSearch, setStartSearch] = useState(false);
-  const [addedToken, setAddedToken] = useState<string[]>([]);
-  const [defiAnimate, setDefiAnimate] = useState('fadeOut');
-  const [nftAnimate, setNFTAnimate] = useState('fadeOut');
-  const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
-  const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
-  const [startAnimate, setStartAnimate] = useState(false);
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const gnosisPendingCount = useRabbySelector(
     (s) => s.chains.gnosisPendingCount
   );
-  const [isListLoading, setIsListLoading] = useState(false);
-  const [isAssetsLoading, setIsAssetsLoading] = useState(true);
 
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
@@ -302,12 +217,6 @@ const Dashboard = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [clicked]);
-  const handleChange = async (account: Account) => {
-    setIsListLoading(true);
-    setIsAssetsLoading(true);
-    await dispatch.account.changeAccountAsync(account);
-    hide();
-  };
 
   const handleCopyCurrentAddress = () => {
     const clipboard = new ClipboardJS('.address-popover', {
@@ -377,70 +286,6 @@ const Dashboard = () => {
     }
   };
 
-  const sortTokensByPrice = (tokens: TokenItem[]) => {
-    const copy = cloneDeep(tokens);
-    return copy.sort((a, b) => {
-      return new BigNumber(b.amount)
-        .times(new BigNumber(b.price || 0))
-        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
-        .toNumber();
-    });
-  };
-  const sortAssetsByUSDValue = (assets: AssetItem[]) => {
-    const copy = cloneDeep(assets);
-    return copy.sort((a, b) => {
-      return new BigNumber(b.net_usd_value)
-        .minus(new BigNumber(a.net_usd_value))
-        .toNumber();
-    });
-  };
-
-  const handleLoadTokens = async (q?: string) => {
-    let tokens: TokenItem[] = [];
-    if (q) {
-      if (q.length !== 42 || !q.startsWith('0x')) return [];
-      tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount?.address || '', q)
-      );
-      setSearchTokens(tokens);
-    } else {
-      setIsListLoading(true);
-      const defaultTokens = await wallet.openapi.listToken(
-        currentAccount?.address || ''
-      );
-      const localAdded =
-        (await wallet.getAddedToken(currentAccount?.address || '')) || [];
-      const localAddedTokens = await wallet.openapi.customListToken(
-        localAdded,
-        currentAccount?.address || ''
-      );
-      const addedToken = localAdded
-        .map((item) => {
-          if (item.includes(':')) {
-            return item.split(':')[1];
-          }
-        })
-        .filter((item): item is string => item != undefined);
-      setAddedToken(addedToken);
-      tokens = sortTokensByPrice(
-        uniqBy([...defaultTokens, ...localAddedTokens], (token) => {
-          return `${token.chain}-${token.id}`;
-        })
-      );
-      setTokens(tokens);
-      setIsListLoading(false);
-    }
-  };
-
-  const handleLoadAssets = async () => {
-    setIsAssetsLoading(true);
-    const assets = sortAssetsByUSDValue(
-      await wallet.listChainAssets(currentAccount?.address || '')
-    );
-    setAssets(assets);
-    setIsAssetsLoading(false);
-  };
-
   const gotoAddAddress = () => {
     matomoRequestEvent({
       category: 'Front Page Click',
@@ -452,123 +297,8 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
   }, []);
-  useEffect(() => {
-    if (currentAccount) {
-      setTokens([]);
-      setAssets([]);
-    }
-  }, [currentAccount]);
 
-  const hide = () => {
-    setStartEdit(false);
-    setClicked(false);
-    setHovered(false);
-  };
-  const displayTokenList = () => {
-    if (tokens.length === 0) {
-      handleLoadTokens();
-    }
-    if (showToken) {
-      setStartSearch(false);
-      setTokenAnimate('fadeOut');
-      setDefiAnimate('fadeOut');
-      setConnectionAnimation('fadeInBottom');
-      setShowToken(false);
-      setShowChain(false);
-      setShowNFT(false);
-      setTopAnimate('fadeInTop');
-    } else {
-      if (showAssets) {
-        setTokenAnimate('fadeInLeft');
-        setDefiAnimate('fadeOutRight');
-      } else if (showNFT) {
-        setTokenAnimate('fadeInLeft');
-        setNFTAnimate('fadeOutRight');
-      } else {
-        setTokenAnimate('fadeIn');
-      }
-      setStartAnimate(true);
-      setShowToken(true);
-      setShowChain(true);
-      setTopAnimate('fadeOutTop');
-      setConnectionAnimation('fadeOutBottom');
-    }
-    setStartSearch(false);
-    setShowAssets(false);
-    setShowNFT(false);
-  };
-  const displayAssets = () => {
-    if (assets.length === 0) {
-      handleLoadAssets();
-    }
-    if (showAssets) {
-      setShowNFT(false);
-      setShowAssets(false);
-      setShowChain(false);
-      setTopAnimate('fadeInTop');
-      setTokenAnimate('fadeOut');
-      setDefiAnimate('fadeOut');
-      setConnectionAnimation('fadeInBottom');
-    } else {
-      if (showToken) {
-        setDefiAnimate('fadeInRight');
-        setTokenAnimate('fadeOutLeft');
-      } else if (showNFT) {
-        setDefiAnimate('fadeInLeft');
-        setNFTAnimate('fadeOutRight');
-      } else {
-        setDefiAnimate('fadeIn');
-      }
-      setStartAnimate(true);
-      setShowAssets(true);
-      setShowChain(true);
-      setTopAnimate('fadeOutTop');
-      setConnectionAnimation('fadeOutBottom');
-    }
-    setShowToken(false);
-    setShowNFT(false);
-  };
-  const displayNFTs = () => {
-    if (showNFT) {
-      setShowNFT(false);
-      setShowAssets(false);
-      setShowChain(false);
-      setTopAnimate('fadeInTop');
-      setTokenAnimate('fadeOut');
-      setDefiAnimate('fadeOut');
-      setNFTAnimate('fadeOut');
-      setConnectionAnimation('fadeInBottom');
-    } else {
-      if (showToken) {
-        setNFTAnimate('fadeInRight');
-        setTokenAnimate('fadeOutLeft');
-      } else if (showAssets) {
-        setNFTAnimate('fadeInRight');
-        setDefiAnimate('fadeOutLeft');
-      } else {
-        setNFTAnimate('fadeIn');
-      }
-      setStartAnimate(true);
-      setShowAssets(true);
-      setShowChain(true);
-      setShowNFT(true);
-      setTopAnimate('fadeOutTop');
-      setConnectionAnimation('fadeOutBottom');
-    }
-    setShowToken(false);
-    setShowAssets(false);
-  };
   const hideAllList = () => {
-    if (showAssets) {
-      setDefiAnimate('fadeOut');
-    }
-    if (showToken) {
-      setTokenAnimate('fadeOut');
-    }
-    if (showNFT) {
-      setNFTAnimate('fadeOut');
-    }
-    setStartSearch(false);
     setShowAssets(false);
     setShowChain(false);
     setShowToken(false);
@@ -576,39 +306,7 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (token: TokenItem) => {
-    const uuid = `${token?.chain}:${token?.id}`;
-    const localAdded =
-      (await wallet.getAddedToken(currentAccount?.address || '')) || [];
-    const newAddTokenSymbolList = localAdded.filter((item) => item !== uuid);
-    await wallet.updateAddedToken(
-      currentAccount?.address || '',
-      newAddTokenSymbolList
-    );
-    const removeNewTokens = tokens.filter((item) => item.id !== token?.id);
-    const newAddedTokens = addedToken.filter((item) => item !== token?.id);
-    setTokens(removeNewTokens);
-    setAddedToken(newAddedTokens);
-  };
-  const addToken = async (newAddToken: TokenItem) => {
-    const newAddTokenList = [...addedToken, newAddToken?.id];
-    const uuid = `${newAddToken?.chain}:${newAddToken?.id}`;
-    const localAdded =
-      (await wallet.getAddedToken(currentAccount?.address || '')) || [];
-    setAddedToken(newAddTokenList);
-    await wallet.updateAddedToken(currentAccount?.address || '', [
-      ...localAdded,
-      uuid,
-    ]);
-    const newTokenList = [...tokens, newAddToken];
-    setTokens(sortTokensByPrice(newTokenList));
-  };
 
-  useEffect(() => {
-    if (!showNFT) {
-      setNFTType('collection');
-    }
-  }, [showNFT]);
   const showGnosisWrongChainAlert = useRabbyGetter(
     (s) => s.chains.isShowGnosisWrongChainAlert
   );
@@ -716,38 +414,6 @@ const Dashboard = () => {
           <BalanceView
             currentAccount={currentAccount}
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}
-            // onClick={() => {
-            //   if (!showToken && !showAssets && !showNFT) {
-            //     matomoRequestEvent({
-            //       category: 'ViewAssets',
-            //       action: 'openTotal',
-            //       label: [
-            //         getKRCategoryByType(currentAccount?.type),
-            //         currentAccount?.brandName,
-            //       ].join('|'),
-            //     });
-            //     displayTokenList();
-            //   } else {
-            //     matomoRequestEvent({
-            //       category: 'ViewAssets',
-            //       action: 'closeTotal',
-            //       label: [
-            //         getKRCategoryByType(currentAccount?.type),
-            //         currentAccount?.brandName,
-            //       ].join('|'),
-            //     });
-            //     setStartSearch(false);
-            //     setShowToken(false);
-            //     setShowAssets(false);
-            //     setShowChain(false);
-            //     setShowNFT(false);
-            //     setTokenAnimate('fadeOut');
-            //     setDefiAnimate('fadeOut');
-            //     setNFTAnimate('fadeOut');
-            //     setConnectionAnimation('fadeInBottom');
-            //     setTopAnimate('fadeInTop');
-            //   }
-            // }}
           />
           {isGnosis ? (
             <Queue
@@ -761,128 +427,6 @@ const Dashboard = () => {
             pendingTxCount > 0 &&
             !showChain && <PendingTxs pendingTxCount={pendingTxCount} />
           )}
-          {/* <div className={clsx('listContainer', showChain && 'mt-10')}>
-            <div
-              className={clsx('token', showToken && 'showToken')}
-              onClick={() => {
-                matomoRequestEvent({
-                  category: 'ViewAssets',
-                  action: 'clickHeadToken',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                    !showToken ? 'open' : 'close',
-                  ].join('|'),
-                });
-                displayTokenList();
-              }}
-            >
-              Token
-            </div>
-            <div
-              className={clsx('token', showAssets && 'showToken')}
-              onClick={() => {
-                matomoRequestEvent({
-                  category: 'ViewAssets',
-                  action: 'clickHeadDefi',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                    !showAssets ? 'open' : 'close',
-                  ].join('|'),
-                });
-                displayAssets();
-              }}
-            >
-              DeFi
-            </div>
-            <div
-              className={clsx('token', showNFT && 'showToken')}
-              onClick={() => {
-                matomoRequestEvent({
-                  category: 'ViewAssets',
-                  action: 'clickHeadNFT',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                    !showNFT ? 'open' : 'close',
-                  ].join('|'),
-                });
-                displayNFTs();
-              }}
-            >
-              NFT
-            </div>
-            {!(showNFT || showToken || showAssets) && (
-              <ExtraLink
-                address={currentAccount?.address as string}
-              ></ExtraLink>
-            )}
-            {showToken ? (
-              !startSearch ? (
-                <img
-                  src={IconAddToken}
-                  onClick={() => setStartSearch(true)}
-                  className="w-[18px] h-[18px] pointer absolute right-0"
-                />
-              ) : (
-                <span
-                  onClick={() => setStartSearch(false)}
-                  className="text-white text-[12px] underline pointer absolute right-0 opacity-80"
-                >
-                  Cancel
-                </span>
-              )
-            ) : null}
-            {showNFT && (
-              <div className="pointer absolute right-0">
-                <Dropdown
-                  value={nftType}
-                  onChange={(nextVal: typeof nftType) => {
-                    matomoRequestEvent({
-                      category: 'ViewAssets',
-                      action: 'switchNFTFilter',
-                      label: [
-                        getKRCategoryByType(currentAccount?.type),
-                        currentAccount?.brandName,
-                        nextVal === 'collection' ? 'collections' : 'all',
-                      ].join('|'),
-                    });
-                    setNFTType(nextVal);
-                  }}
-                />
-              </div>
-            )}
-          </div> */}
-          <TokenList
-            tokens={tokens}
-            searchTokens={searchTokens}
-            addedToken={addedToken}
-            startSearch={startSearch}
-            removeToken={removeToken}
-            addToken={addToken}
-            onSearch={handleLoadTokens}
-            closeSearch={() => {
-              setSearchTokens([]);
-              setIsListLoading(false);
-              setStartSearch(false);
-            }}
-            tokenAnimate={tokenAnimate}
-            startAnimate={startAnimate}
-            isloading={isListLoading}
-          />
-          <AssetsList
-            assets={assets}
-            defiAnimate={defiAnimate}
-            startAnimate={startAnimate}
-            isloading={isAssetsLoading}
-          />
-          <NFTListContainer
-            address={currentAccount?.address}
-            animate={nftAnimate}
-            startAnimate={startAnimate}
-            type={nftType}
-          ></NFTListContainer>
         </div>
         <ChainAndSiteSelector
           onChange={(currentConnection) => {
@@ -1006,40 +550,6 @@ const Dashboard = () => {
               <QRCode value={currentAccount?.address} size={100} />
             </div>
           </div>
-          {/* {isGnosis && (
-            <div className="address-popover__gnosis">
-              <h4 className="text-15 mb-4">Admins</h4>
-              {safeInfo ? (
-                <>
-                  <p className="text-black text-12 mb-8">
-                    Any transaction requires the confirmation of{' '}
-                    <span className="ml-8 font-medium threshold">
-                      {safeInfo.threshold}/{safeInfo.owners.length}
-                    </span>
-                  </p>
-                  <ul className="admin-list">
-                    {safeInfo.owners.map((owner, index) => (
-                      <GnosisAdminItem
-                        address={owner}
-                        accounts={sortedAccountsList}
-                        key={index}
-                      />
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <div className="loading-wrapper">
-                  <SvgIconLoading
-                    className="icon icon-loading"
-                    fill="#707280"
-                  />
-                  <p className="text-14 text-gray-light mb-0">
-                    Loading address
-                  </p>
-                </div>
-              )}
-            </div>
-          )} */}
         </div>
       </Modal>
       {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}

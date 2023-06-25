@@ -23,7 +23,7 @@ import { DisplayedProject } from './project';
 const chunkSize = 5;
 
 export const log = (...args: any) => {
-  console.log(...args);
+  // console.log(...args);
 };
 
 // export const portfolioChangeLoadingAtom = atom(true);
