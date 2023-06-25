@@ -2776,10 +2776,13 @@ export class WalletController extends BaseController {
   };
 
   /**
-   * @deprecated
+   * @deprecated use preferenceService.getCustomizedToken instead
    */
   getAddedToken = (address: string) => {
-    return preferenceService.getAddedToken(address);
+    const tokens = preferenceService.getCustomizedToken();
+    return tokens.map((item) => {
+      return `${item.chain}:${item.address}`;
+    });
   };
 
   /**
