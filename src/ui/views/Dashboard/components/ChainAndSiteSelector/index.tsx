@@ -1,13 +1,11 @@
-import { Badge, message, Skeleton, Tooltip } from 'antd';
-import { GasLevel } from 'background/service/openapi';
+import { Badge, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
@@ -24,10 +22,9 @@ import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
 import './style.less';
-import { CHAINS, CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
-import { findChainByEnum } from '@/utils/chain';
 
 export default ({
   gnosisPendingCount,
@@ -50,9 +47,6 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
-  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
-    CHAINS_ENUM.ETH
-  );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
@@ -100,70 +94,6 @@ export default ({
     setCurrentConnect(current);
   }, []);
 
-  const currentConnectedSiteChainNativeToken = useMemo(
-    () =>
-      currentConnectedSiteChain
-        ? CHAINS?.[currentConnectedSiteChain]?.nativeTokenAddress || 'eth'
-        : 'eth',
-    [currentConnectedSiteChain]
-  );
-
-  const {
-    value: gasPrice = 0,
-    loading: gasPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const marketGas: GasLevel[] = await wallet.openapi.gasMarket(
-        currentConnectedSiteChainNativeToken
-      );
-      const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-        ?.price;
-      if (selectedGasPice) {
-        return Number(selectedGasPice / 1e9);
-      }
-    } catch (e) {
-      // DO NOTHING
-    }
-  }, [currentConnectedSiteChainNativeToken]);
-
-  const { value: tokenLogo, loading: tokenLoading } = useAsync(async () => {
-    const chainItem = findChainByEnum(currentConnectedSiteChain, {
-      fallback: true,
-    })!;
-
-    try {
-      const data = await wallet.openapi.getToken(
-        account!.address,
-        chainItem.serverId || '',
-        chainItem.nativeTokenAddress || ''
-      );
-      return data?.logo_url || chainItem.nativeTokenLogo;
-    } catch (error) {
-      return chainItem.nativeTokenLogo;
-    }
-  }, [currentConnectedSiteChain]);
-
-  const {
-    value: tokenPrice,
-    loading: currentPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const {
-        change_percent = 0,
-        last_price = 0,
-      } = await wallet.openapi.tokenPrice(currentConnectedSiteChainNativeToken);
-
-      return { currentPrice: last_price, percentage: change_percent };
-    } catch (e) {
-      return {
-        currentPrice: null,
-        percentage: null,
-      };
-    }
-  }, [currentConnectedSiteChainNativeToken]);
-
-  const { currentPrice = null, percentage = null } = tokenPrice || {};
-
   const changeURL = () => {
     setUrlVisible(!urlVisible);
   };
@@ -177,11 +107,11 @@ export default ({
     getCurrentSite();
   }, []);
 
-  useEffect(() => {
-    if (currentConnect?.chain) {
-      setCurrentConnectedSiteChain(currentConnect?.chain);
-    }
-  }, [currentConnect?.chain]);
+  // useEffect(() => {
+  //   if (currentConnect?.chain) {
+  //     setCurrentConnectedSiteChain(currentConnect?.chain);
+  //   }
+  // }, [currentConnect?.chain]);
 
   useEffect(() => {
     onChange(currentConnect);
@@ -392,7 +322,7 @@ export default ({
       </div>
       <CurrentConnection
         onChainChange={(chain) => {
-          setCurrentConnectedSiteChain(chain);
+          // setCurrentConnectedSiteChain(chain);
           if (currentConnect) {
             onChange({
               ...currentConnect,
