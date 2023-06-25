@@ -26,7 +26,6 @@ import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -47,6 +46,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import { findChainByEnum } from '@/utils/chain';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -725,6 +725,7 @@ const SendToken = () => {
       </PageHeader>
       <Form
         form={form}
+        className="send-token-form"
         onFinish={handleSubmit}
         onValuesChange={handleFormValuesChange}
         initialValues={{
@@ -732,13 +733,14 @@ const SendToken = () => {
           amount: '',
         }}
       >
-        <TagChainSelector
-          value={chain}
-          onChange={handleChainChanged}
-          showModal={showChainsModal}
-        />
         <div className="section relative">
-          <div className="section-title">{t('From')}</div>
+          <div className={clsx('section-title')}>{t('Chain')}</div>
+          <ChainSelectorInForm
+            value={chain}
+            onChange={handleChainChanged}
+            disabledTips={'Not supported'}
+          />
+          <div className={clsx('section-title mt-[10px]')}>{t('From')}</div>
           <AccountCard
             icons={{
               mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
@@ -901,8 +903,12 @@ const SendToken = () => {
         </div>
         <div
           className={clsx(
-            isNativeToken &&
-              'w-full absolute bottom-[32px] left-1/2 -translate-x-1/2'
+            'footer w-full absolute bottom-[32px] left-1/2 -translate-x-1/2',
+            showWhitelistAlert &&
+              whitelistEnabled &&
+              (whitelistAlertContent.success
+                ? 'J-whitelist_granted'
+                : 'J-whitelist_forbidden')
           )}
         >
           {showWhitelistAlert && (
@@ -930,13 +936,13 @@ const SendToken = () => {
               </p>
             </div>
           )}
-          <div className="footer flex justify-center">
+          <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
             <Button
               disabled={!canSubmit}
               type="primary"
               htmlType="submit"
               size="large"
-              className="w-[200px]"
+              className="w-[100%] h-[48px]"
               loading={isSubmitLoading}
             >
               {t('Send')}

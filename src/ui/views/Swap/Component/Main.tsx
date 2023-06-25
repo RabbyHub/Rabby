@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS } from '@debank/common';
-import { SwapChainSelector } from './ChainSelect';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
@@ -22,6 +21,7 @@ import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
 import { DEX } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -235,7 +235,7 @@ export const Main = () => {
     >
       <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-16 mx-20')}>
         <div className={clsx(tipsClassName)}>Chain</div>
-        <SwapChainSelector
+        <ChainSelectorInForm
           value={chain}
           onChange={chainSwitch}
           disabledTips={'Not supported'}

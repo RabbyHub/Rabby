@@ -302,6 +302,63 @@
   }
 }
 
+.send-token {
+  max-height: 100vh;
+  overflow: auto;
+
+  .send-token-form {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 0 20px;
+    position: relative;
+
+    /* for scalable footer style */
+    max-height: 100vh;
+    height: 100vh;
+    overflow: auto;
+
+    /* for static footer style */
+    // /* 40px is height of page-header  */
+    // max-height: calc(100vh - 40px);
+    // height: 100%;
+  }
+
+  .footer {
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+    padding: 16px 0 20px;
+
+    position: fixed !important;
+    bottom: 0 !important;
+    z-index: 999;
+
+    background-color: white;
+    border-top: 1px solid #e5e9ef;
+    height: 88px;
+
+    &.J-whitelist_granted {
+      height: 114px;
+    }
+
+    &.J-whitelist_forbidden {
+      height: 130px;
+    }
+
+    .btn-wrapper {
+      flex-shrink: 0;
+      position: absolute;
+      bottom: 20px;
+    }
+  }
+
+  .footer .whitelist-alert {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
 .send-token-gas-selector {
   .gas-selector {
     background: #f5f6fa;
