@@ -141,7 +141,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           <div
             className={clsx(
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
-              'text-15 font-normal mb-4',
+              'text-15 font-normal mb-[5px]',
               'group-hover:hidden',
               {
                 hidden: !currentChangePercent || balanceLoading,

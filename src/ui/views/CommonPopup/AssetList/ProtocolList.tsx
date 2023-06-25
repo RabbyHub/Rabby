@@ -56,7 +56,7 @@ const ProtocolItemWrapper = styled.div`
       font-weight: 500;
       font-size: 13px;
       line-height: 15px;
-      color: #4b4d59;
+      color: #13141a;
       margin-left: 8px;
     }
     .net-worth {

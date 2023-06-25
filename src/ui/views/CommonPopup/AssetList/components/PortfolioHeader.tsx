@@ -39,7 +39,7 @@ const PortfolioHeader = ({
 }) => {
   return (
     <Wrapper>
-      <div className="flex items-center">
+      <div className="flex items-start">
         <div className="name mr-6">{name}</div>
         {showDescription ? (
           <p className="description">
@@ -47,7 +47,7 @@ const PortfolioHeader = ({
           </p>
         ) : null}
       </div>
-      <div className="net-worth">
+      <div className="net-worth text-12">
         <p>{data._netWorth}</p>
         {showHistory ? (
           <p>

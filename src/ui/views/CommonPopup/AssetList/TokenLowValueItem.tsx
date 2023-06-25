@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js';
 import { splitNumberByStep } from '@/ui/utils';
 import { Popup } from '@/ui/component';
 import { TokenTable } from './components/TokenTable';
+import { TokenLowValueEmpty } from './TokenLowValueEmpty';
 
 export interface Props {
   className?: string;
@@ -52,13 +53,17 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         push={false}
         onClose={() => setVisible(false)}
       >
-        <TokenTable
-          list={list}
-          virtual={{
-            height: 403,
-            itemSize: 51,
-          }}
-        />
+        {list?.length ? (
+          <TokenTable
+            list={list}
+            virtual={{
+              height: 403,
+              itemSize: 51,
+            }}
+          />
+        ) : (
+          <TokenLowValueEmpty />
+        )}
       </Popup>
     </div>
   );

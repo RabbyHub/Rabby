@@ -39,7 +39,8 @@ export const CollectionCard: React.FC<Props> = ({
         <div className="gap-x-4 flex mt-6">
           <ChainIcon chain={chain} />
           <span className="text-black text-12">
-            {chainName} / Floor Price: {collection.floor_price} ETH
+            {chainName} / Floor Price: {collection.floor_price}{' '}
+            {collection.native_token?.symbol}
           </span>
         </div>
 

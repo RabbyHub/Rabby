@@ -258,7 +258,7 @@ export const Supplements = ({ data }: SupplementsProps) => {
     <SupplementsWrapper>
       {list.map((s) => (
         <div key={s.label} className="item flex">
-          <span className="label">{s.label}</span>
+          <span className="label">{s.label}:</span>
           <span className="content">{s.content}</span>
         </div>
       ))}
