@@ -15,6 +15,7 @@ const useSearchToken = (
   const [result, setResult] = useState<AbstractPortfolioToken[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const addressRef = useRef(address);
+  const kwRef = useRef('');
   const { customize, blocked } = useRabbySelector(
     (state) => state.account.tokens
   );
@@ -44,7 +45,7 @@ const useSearchToken = (
           reg.test(token.display_symbol || '')
         );
       });
-      if (addressRef.current === address) {
+      if (addressRef.current === address && kwRef.current === q) {
         setIsLoading(false);
         setResult(
           [
@@ -67,6 +68,10 @@ const useSearchToken = (
   useEffect(() => {
     addressRef.current = address;
   }, [address]);
+
+  useEffect(() => {
+    kwRef.current = kw;
+  }, [kw]);
 
   useEffect(() => {
     if (!address || !kw) return;

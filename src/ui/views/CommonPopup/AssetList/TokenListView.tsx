@@ -99,7 +99,10 @@ export const TokenListView: React.FC<Props> = ({
       {isPortfoliosLoading ? (
         <TokenListSkeleton />
       ) : (
-        <ProtocolList list={displayPortfolios} kw={search} />
+        activeTab !== TokenTabEnum.Summary &&
+        activeTab !== TokenTabEnum.History && (
+          <ProtocolList list={displayPortfolios} kw={search} />
+        )
       )}
     </div>
   );
