@@ -12,8 +12,6 @@ import NFTModal from '../Dashboard/components/NFT/NFTModal';
 import { CollectionListSkeleton } from './CollectionListSkeleton';
 import styled from 'styled-components';
 import { useCollection } from './useCollection';
-import { ReactComponent as EmptyNFTListSVG } from '@/ui/assets/nft-view/empty-nft-list.svg';
-import { ReactComponent as EmptyNFTStarredListSVG } from '@/ui/assets/nft-view/empty-nft-list.svg';
 import { NFTListEmpty, NFTStarredListEmpty } from './NFTEmpty';
 
 const TabsStyled = styled(Tabs)`
