@@ -101,10 +101,15 @@ export const AssetListContainer: React.FC<Props> = ({
       {isPortfoliosLoading ? (
         <TokenListSkeleton />
       ) : (
-        visible &&
         activeTab !== TokenTabEnum.Summary &&
         activeTab !== TokenTabEnum.History && (
-          <ProtocolList list={displayPortfolios} kw={search} />
+          <div
+            style={{
+              display: visible ? 'block' : 'none',
+            }}
+          >
+            <ProtocolList list={displayPortfolios} kw={search} />
+          </div>
         )
       )}
     </div>

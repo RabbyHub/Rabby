@@ -62,12 +62,15 @@ export const useTokens = (
   const { customize, list, blocked } = useRabbySelector(
     (store) => store.account.tokens
   );
+  const userAddrRef = useRef('');
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
 
   useEffect(() => {
     if (userAddr) {
-      if (visible) {
-        loadProcess();
+      if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+        loadProcess().then(() => {
+          userAddrRef.current = userAddr;
+        });
       }
     } else {
       setData(undefined);
@@ -102,19 +105,6 @@ export const useTokens = (
     abortProcess.current = currentAbort;
     historyLoad.current = false;
 
-    // if (!userInfo) {
-    //   return;
-    // }
-    // if (!userInfo.used_chains?.length) {
-    //   setLoading(false);
-    //   setData(
-    //     produce(initWallet, draft => {
-    //       draft._netWorth = '$0';
-    //     }),
-    //   );
-    //   return;
-    // }
-
     setLoading(true);
     log('======Start-Tokens======', userAddr);
     let _data = produce(walletProject, (draft) => {
@@ -144,6 +134,7 @@ export const useTokens = (
       setData(_data);
       _tokens = sortWalletTokens(_data);
       dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      setLoading(false);
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 

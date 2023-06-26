@@ -19,6 +19,7 @@ import {
   getMissedTokenPrice,
 } from './utils';
 import { DisplayedProject } from './project';
+import { isSameAddress } from '..';
 
 const chunkSize = 5;
 
@@ -43,17 +44,22 @@ export const usePortfolios = (
   const historyLoad = useRef<boolean>(false);
   const realtimeIds = useRef<string[]>([]);
   const wallet = useWallet();
+  const userAddrRef = useRef('');
   // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
-    setData([]);
-    setNetWorth(0);
+    if (userAddr && !isSameAddress(userAddr, userAddrRef.current)) {
+      setData([]);
+      setNetWorth(0);
+    }
 
     if (userAddr) {
       timer = setTimeout(() => {
-        if (visible) {
-          loadProcess();
+        if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+          loadProcess().then(() => {
+            userAddrRef.current = userAddr;
+          });
         }
       });
     }

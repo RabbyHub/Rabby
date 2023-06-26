@@ -81,7 +81,6 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
   const isReady = useRef(false);
 
   useEffect(() => {
-    console.log('intersection', intersection);
     if (
       intersection?.intersectionRatio &&
       intersection?.intersectionRatio > 0
