@@ -62,6 +62,8 @@ const TokenAmountInput = ({
     onTokenChange(token);
     setTokenSelectorVisible(false);
     tokenInputRef.current?.focus();
+
+    setQueryConds((prev) => ({ ...prev, chainServerId: token.chain }));
   };
 
   const handleTokenSelectorClose = () => {

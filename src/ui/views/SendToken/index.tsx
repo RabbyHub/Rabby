@@ -45,7 +45,7 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const MaxButton = styled.img`
@@ -460,6 +460,8 @@ const SendToken = () => {
         amount: '',
       });
     }
+    const chainItem = findChainByServerID(token.chain);
+    setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);

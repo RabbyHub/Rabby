@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { CHAINS } from '@debank/common';
+import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
@@ -22,6 +22,7 @@ import { useCss } from 'react-use';
 import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import { findChainByServerID } from '@/utils/chain';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -76,7 +77,7 @@ export const Main = () => {
 
   const {
     chain,
-    chainSwitch,
+    switchChain,
 
     payToken,
     setPayToken,
@@ -237,7 +238,7 @@ export const Main = () => {
         <div className={clsx(tipsClassName)}>Chain</div>
         <ChainSelectorInForm
           value={chain}
-          onChange={chainSwitch}
+          onChange={switchChain}
           disabledTips={'Not supported'}
           supportChains={SWAP_SUPPORT_CHAINS}
         />
@@ -250,7 +251,11 @@ export const Main = () => {
         <div className="flex items-center justify-between">
           <TokenSelect
             token={payToken}
-            onTokenChange={setPayToken}
+            onTokenChange={(token) => {
+              setPayToken(token);
+              const chainItem = findChainByServerID(token.chain);
+              switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+            }}
             chainId={CHAINS[chain].serverId}
             type={'swapFrom'}
             placeholder={'Search by Name / Address'}
@@ -263,7 +268,13 @@ export const Main = () => {
           />
           <TokenSelect
             token={receiveToken}
-            onTokenChange={setReceiveToken}
+            onTokenChange={(token) => {
+              setReceiveToken(token);
+              const chainItem = findChainByServerID(token.chain);
+              switchChain(chainItem?.enum || CHAINS_ENUM.ETH, {
+                changeTo: true,
+              });
+            }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
             placeholder={'Search by Name / Address'}

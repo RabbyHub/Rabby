@@ -11,6 +11,9 @@ import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useAsync } from 'react-use';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { useRabbyGetter } from '@/ui/store';
+import { uniqBy } from 'lodash';
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -90,12 +93,13 @@ const TokenSelect = ({
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
 
-  const isSwapType = isSwapTokenType(type);
-
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);
     setTokenSelectorVisible(false);
+
+    // const chainItem = findChainByServerID(token.chain);
+    setQueryConds((prev) => ({ ...prev, chainServerId: token.chain }));
   };
 
   const handleTokenSelectorClose = () => {
@@ -115,6 +119,7 @@ const TokenSelect = ({
         .toNumber();
     });
   };
+  const isSwapType = isSwapTokenType(type);
 
   const {
     value: originTokenList = [],
@@ -153,14 +158,26 @@ const TokenSelect = ({
     return tokens;
   }, [tokenSelectorVisible, chainId, isSwapType]);
 
+  const currentAccountAddr = useRabbyGetter(
+    (s) => s.account.currentAccountAddr
+  );
+
+  const isTokensFromSearchSearch =
+    !!queryConds.chainServerId || !!queryConds.keyword;
+
+  // when no any queryConds
+  const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    isTokensFromSearchSearch ? '' : currentAccountAddr
+  );
+
   const {
-    value: displayTokens = [],
+    value: searchedTokenByQuery = [],
     loading: isSearchLoading,
   } = useAsync(async (): Promise<TokenItem[]> => {
     if (!tokenSelectorVisible) return [];
-    // if (!queryConds.keyword) {
-    //   return originTokenList;
-    // }
+    if (!queryConds.keyword) {
+      return originTokenList;
+    }
 
     const kw = queryConds.keyword.trim();
 
@@ -172,7 +189,23 @@ const TokenSelect = ({
         queryConds.keyword,
         queryConds.chainServerId
       );
-      return data.filter((e) => e.chain === chainId);
+      return data.filter((e) => e.chain === queryConds.chainServerId);
+    } else if (isTokensFromSearchSearch) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
+
+      const data = await wallet.openapi.searchToken(
+        currentAccount!.address,
+        queryConds.keyword,
+        '',
+        true
+      );
+
+      return !kw
+        ? data
+        : data.filter((token) => {
+            const reg = new RegExp(kw, 'i');
+            return reg.test(token.name) || reg.test(token.symbol);
+          });
     }
     if (isSwapType) {
       const currentAccount = await wallet.syncGetCurrentAccount();
@@ -186,18 +219,33 @@ const TokenSelect = ({
       return data;
     }
 
-    return originTokenList.filter((token) => {
-      const reg = new RegExp(kw, 'i');
-      return reg.test(token.name) || reg.test(token.symbol);
-    });
+    return !kw
+      ? originTokenList
+      : originTokenList.filter((token) => {
+          const reg = new RegExp(kw, 'i');
+          return reg.test(token.name) || reg.test(token.symbol);
+        });
   }, [
     tokenSelectorVisible,
     originTokenList,
+    isTokensFromSearchSearch,
     queryConds.keyword,
     queryConds.chainServerId,
   ]);
 
-  const isListLoading = isTokenLoading || isSearchLoading;
+  const availableToken = useMemo(
+    () =>
+      uniqBy(
+        !isTokensFromSearchSearch ? allTokens : searchedTokenByQuery,
+        (token) => {
+          return `${token.chain}-${token.id}`;
+        }
+      ).filter((e) => !excludeTokens.includes(e.id)),
+    [allTokens, searchedTokenByQuery, isTokensFromSearchSearch, excludeTokens]
+  );
+  const isListLoading =
+    isTokenLoading ||
+    (isTokensFromSearchSearch ? isSearchLoading : isLoadingAllTokens);
 
   const handleSearchTokens = React.useCallback(async (ctx) => {
     setQueryConds({
@@ -205,11 +253,6 @@ const TokenSelect = ({
       chainServerId: ctx.chainServerId,
     });
   }, []);
-
-  const availableToken = useMemo(
-    () => displayTokens.filter((e) => !excludeTokens.includes(e.id)),
-    [excludeTokens, displayTokens]
-  );
 
   const [input, setInput] = useState('');
 
