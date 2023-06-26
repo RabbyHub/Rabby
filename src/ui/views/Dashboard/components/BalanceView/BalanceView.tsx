@@ -12,6 +12,7 @@ import { useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
+import { useDebounce } from 'react-use';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [
@@ -39,6 +40,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [startRefresh, setStartRefresh] = useState(false);
+  const [isDebounceHover, setIsDebounceHover] = useState(false);
 
   const onRefresh = () => {
     setStartRefresh(true);
@@ -102,18 +104,37 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     }
   }, [balanceLoading, curveLoading]);
 
-  const currentBalance = curvePoint?.value || balance;
+  const onMouseMove = () => {
+    setHover(true);
+  };
+  const onMouseLeave = () => {
+    setHover(false);
+    setIsDebounceHover(false);
+  };
+
+  useDebounce(
+    () => {
+      if (isHover) {
+        setIsDebounceHover(true);
+      }
+    },
+    300,
+    [isHover]
+  );
+
+  const currentHover = isDebounceHover;
+  const currentBalance = currentHover ? curvePoint?.value || balance : balance;
   const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
-  const currentChangePercent =
-    curvePoint?.changePercent || curveData?.changePercent;
+  const currentChangePercent = currentHover
+    ? curvePoint?.changePercent || curveData?.changePercent
+    : curveData?.changePercent;
   const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
-  const currentChangeValue = curvePoint?.change || curveData?.change;
-  const currentHover = isHover;
+  const currentChangeValue = currentHover ? curvePoint?.change : null;
 
   return (
-    <div onMouseLeave={() => setHover(false)} className={clsx('assets flex')}>
+    <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left">
-        <div className={clsx('amount group', 'text-32')}>
+        <div onClick={onRefresh} className={clsx('amount group', 'text-32')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
             (balanceLoading && !balanceFromCache) ||
@@ -136,14 +157,13 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             className={clsx('hidden mb-6', {
               'group-hover:block': !balanceLoading,
             })}
-            onClick={onRefresh}
           >
             <UpdateSVG />
           </div>
           <div
             className={clsx(
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
-              'text-15 font-normal mb-4',
+              'text-15 font-normal mb-[5px]',
               'group-hover:hidden',
               {
                 hidden: !currentChangePercent || balanceLoading,
@@ -151,17 +171,17 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             )}
           >
             {currentIsLoss ? '-' : '+'}
-            {currentChangePercent}({currentChangeValue})
+            <span>{currentChangePercent}</span>
+            {currentChangeValue ? <span>({currentChangeValue})</span> : null}
           </div>
         </div>
         <div
           onClick={onClickViewAssets}
-          onMouseMove={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-10',
-            currentHover &&
-              'bg-[#00000033] card border-[#FFFFFF33] border-[0.5px] mx-10 mb-10',
+            'mt-2',
+            currentHover && 'bg-[#00000033] card mx-10 mb-10',
             'rounded-[4px] relative cursor-pointer'
           )}
         >
@@ -174,7 +194,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           <div
             className={clsx(
               'extra flex',
-              currentHover ? 'mx-[9.5px] pt-[7.5px]' : 'mx-20 pt-8'
+              currentHover ? 'mx-[10px] pt-[8px]' : 'mx-20 pt-8'
             )}
           >
             {startRefresh || currentBalance === null ? (

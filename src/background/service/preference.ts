@@ -81,6 +81,7 @@ export interface PreferenceStore {
   sendEnableTime?: number;
   customizedToken?: Token[];
   blockedToken?: Token[];
+  collectionStarred?: Token[];
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -120,6 +121,7 @@ class PreferenceService {
         sendEnableTime: 0,
         customizedToken: [],
         blockedToken: [],
+        collectionStarred: [],
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -185,6 +187,9 @@ class PreferenceService {
     }
     if (!this.store.blockedToken) {
       this.store.blockedToken = [];
+    }
+    if (!this.store.collectionStarred) {
+      this.store.collectionStarred = [];
     }
   };
 
@@ -551,6 +556,32 @@ class PreferenceService {
   };
   removeBlockedToken = (token: Token) => {
     this.store.blockedToken = this.store.blockedToken?.filter(
+      (item) =>
+        !(
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+        )
+    );
+  };
+  getCollectionStarred = () => {
+    return this.store.collectionStarred || [];
+  };
+  addCollectionStarred = (token: Token) => {
+    if (
+      !this.store.collectionStarred?.find(
+        (item) =>
+          isSameAddress(item.address, token.address) &&
+          item.chain === token.chain
+      )
+    ) {
+      this.store.collectionStarred = [
+        ...(this.store.collectionStarred || []),
+        token,
+      ];
+    }
+  };
+  removeCollectionStarred = (token: Token) => {
+    this.store.collectionStarred = this.store.collectionStarred?.filter(
       (item) =>
         !(
           isSameAddress(item.address, token.address) &&

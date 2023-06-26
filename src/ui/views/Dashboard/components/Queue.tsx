@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 const Wrapper = styled.div`
   position: absolute;
-  top: 76px;
+  top: 70px;
   right: 20px;
   min-width: 62px;
   height: 27px;
@@ -35,7 +35,12 @@ const Queue = ({ count, className }: QueueProps) => {
   return (
     <Wrapper
       onClick={handleClickPendingTxs}
-      className={clsx(className, 'group')}
+      className={clsx(
+        className,
+        'ease-in-out',
+        'group max-w-[62px] hover:max-w-[200px]',
+        'whitespace-nowrap overflow-hidden overflow-ellipsis'
+      )}
     >
       <span className="group-hover:block hidden">
         {count ? `${count} in Queue` : 'Queue'}

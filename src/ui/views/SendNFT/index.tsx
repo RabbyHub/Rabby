@@ -261,7 +261,7 @@ const SendNFT = () => {
   };
 
   const handleClickBack = () => {
-    history.replace('/');
+    history.goBack();
   };
 
   const initByCache = async () => {

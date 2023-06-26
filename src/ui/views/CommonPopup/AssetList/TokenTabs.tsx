@@ -51,7 +51,7 @@ export const TokenTabs: React.FC<Props> = ({
   onTabChange,
 }) => {
   return (
-    <div>
+    <div className="flex-shrink-0">
       <TabsStyled
         options={[
           { label: <TabListSVG />, value: TokenTabEnum.List },

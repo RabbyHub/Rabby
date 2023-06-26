@@ -8,7 +8,12 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { Copy, Modal, TokenWithChain } from 'ui/component';
-import { splitNumberByStep, useWallet, openInTab } from 'ui/utils';
+import {
+  splitNumberByStep,
+  useWallet,
+  openInTab,
+  useCommonPopupView,
+} from 'ui/utils';
 import { getChain } from '@/utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
@@ -130,12 +135,14 @@ const TokenDetail = ({
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   const isShowAddress = /^0x.{40}$/.test(token.id);
+  const { closePopup } = useCommonPopupView();
 
   const history = useHistory();
   const goToSend = useCallback(() => {
     history.push(
       `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
     );
+    closePopup();
   }, [history, token]);
 
   const goToReceive = useCallback(() => {
@@ -144,13 +151,19 @@ const TokenDetail = ({
         getChain(token?.chain)?.enum
       }&token=${token?.symbol}`
     );
+    closePopup();
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
     history.push(
       `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
     );
+    closePopup();
   }, [history, token]);
+
+  const isHiddenButton =
+    // Customized and not added
+    variant === 'add' && !token.is_core && !isAdded;
 
   return (
     <div className="token-detail" ref={ref}>
@@ -227,49 +240,51 @@ const TokenDetail = ({
           </div>
         </div>
 
-        <div className="flex flex-row justify-between mt-24">
-          <Tooltip
-            overlayClassName="rectangle token_swap__tooltip"
-            placement="topLeft"
-            title={
-              shouldSelectDex
-                ? 'Please select the dex in swap first'
-                : t('The token on this chain is not supported')
-            }
-            visible={tokenSupportSwap ? false : undefined}
-          >
+        {!isHiddenButton && (
+          <div className="flex flex-row justify-between mt-24">
+            <Tooltip
+              overlayClassName="rectangle token_swap__tooltip"
+              placement="topLeft"
+              title={
+                shouldSelectDex
+                  ? 'Please select the dex in swap first'
+                  : t('The token on this chain is not supported')
+              }
+              visible={tokenSupportSwap ? false : undefined}
+            >
+              <Button
+                type="primary"
+                size="large"
+                onClick={goToSwap}
+                disabled={!tokenSupportSwap}
+                style={{
+                  width: 114,
+                }}
+              >
+                Swap
+              </Button>
+            </Tooltip>
+
             <Button
               type="primary"
+              ghost
               size="large"
-              onClick={goToSwap}
-              disabled={!tokenSupportSwap}
-              style={{
-                width: 114,
-              }}
+              className="w-[114px] rabby-btn-ghost"
+              onClick={goToSend}
             >
-              Swap
+              {t('Send')}
             </Button>
-          </Tooltip>
-
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] rabby-btn-ghost"
-            onClick={goToSend}
-          >
-            {t('Send')}
-          </Button>
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] rabby-btn-ghost"
-            onClick={goToReceive}
-          >
-            {t('Receive')}
-          </Button>
-        </div>
+            <Button
+              type="primary"
+              ghost
+              size="large"
+              className="w-[114px] rabby-btn-ghost"
+              onClick={goToReceive}
+            >
+              {t('Receive')}
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>

@@ -28,20 +28,33 @@ export const ChainItem: React.FC<Props> = ({
       onClick={onClick}
       className={clsx(
         'flex gap-6 items-center',
-        'cursor-pointer relative hover:opacity-60',
-        {
-          'opacity-30': inactive,
-        },
+        'cursor-pointer relative',
         className
       )}
     >
       <TooltipWithMagnetArrow className="rectangle" title={name}>
-        <img className="w-16 h-16" src={logo_url} alt={name} />
+        <img
+          className={clsx('w-16 h-16 rounded-full', {
+            'opacity-30': inactive,
+          })}
+          src={logo_url}
+          alt={name}
+        />
       </TooltipWithMagnetArrow>
-      <span className="text-13 font-bold text-gray-title">
+      <span
+        className={clsx('text-13 font-bold text-gray-title', {
+          'opacity-30': inactive,
+        })}
+      >
         ${currentBalance}
       </span>
-      <span className="text-12 text-black">{percent?.toFixed(0)}%</span>
+      <span
+        className={clsx('text-12 text-black', {
+          'opacity-30': inactive,
+        })}
+      >
+        {percent?.toFixed(0)}%
+      </span>
     </div>
   );
 };

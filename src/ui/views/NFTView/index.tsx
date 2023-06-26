@@ -3,12 +3,56 @@ import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
 import { CollectionCard } from './CollectionCard';
-import { Tabs } from 'antd';
+import { Modal, Tabs } from 'antd';
 import { useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
-import { keyBy, uniq, groupBy } from 'lodash';
-import { getChain } from '@/utils';
-import { UserCollection } from '@rabby-wallet/rabby-api/dist/types';
+import { NFTItem } from '@rabby-wallet/rabby-api/dist/types';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { getKRCategoryByType } from '@/utils/transaction';
+import NFTModal from '../Dashboard/components/NFT/NFTModal';
+import { CollectionListSkeleton } from './CollectionListSkeleton';
+import styled from 'styled-components';
+import { useCollection } from './useCollection';
+import { NFTListEmpty, NFTStarredListEmpty } from './NFTEmpty';
+
+const TabsStyled = styled(Tabs)`
+  .ant-tabs-tab {
+    border-radius: 2px;
+    color: #4b4d59;
+    font-size: 13px;
+    transition: all 0.3s ease-in-out;
+    margin: 0 !important;
+    width: 88px;
+    height: 24px;
+    font-weight: 500;
+    padding: 0;
+    text-align: center;
+
+    &.ant-tabs-tab-active {
+      background: #fff;
+      color: #8697ff;
+    }
+  }
+
+  .ant-tabs-tab-btn {
+    margin: auto;
+  }
+
+  .ant-tabs-nav-list {
+    margin: auto;
+    background: #e5e9ef;
+    border-radius: 4px;
+    padding: 3px;
+  }
+
+  .ant-tabs-ink-bar {
+    display: none;
+  }
+
+  .ant-tabs-tabpane {
+    height: calc(100vh - 100px);
+    overflow: auto;
+  }
+`;
 
 export const NFTView: React.FC = () => {
   const history = useHistory();
@@ -17,90 +61,84 @@ export const NFTView: React.FC = () => {
   }, [history]);
   const [tab, setTab] = React.useState('all');
   const { currentAccount } = useRabbySelector((s) => s.account);
-  const wallet = useWallet();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [list, setList] = React.useState<UserCollection[]>([]);
+  const [nftItem, setNFTItem] = React.useState<NFTItem | null>(null);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const {
+    isLoading,
+    list,
+    starredList,
+    onToggleStar,
+    checkStarred,
+  } = useCollection();
 
-  const fetchData = React.useCallback(async (id: string) => {
-    try {
-      setIsLoading(true);
-
-      const data = await wallet.openapi.listNFT(id, false);
-      const ids = uniq(data.map((item) => item.collection_id)).filter(
-        (item): item is string => !!item
-      );
-      const collections = await wallet.openapi.listCollection({
-        collection_ids: ids.join(','),
-      });
-
-      const dict = keyBy(collections, 'id');
-      const list = data
-        .filter((item) => getChain(item.chain))
-        .map((item) => ({
-          ...item,
-          collection: item.collection_id ? dict[item?.collection_id] : null,
-        }))
-        .sort((a, b) => {
-          if (!a.name) {
-            return 1;
-          }
-          if (!b.name) {
-            return -1;
-          }
-          return a.name > b.name ? 1 : -1;
-        });
-      const collectionList = Object.values(
-        groupBy(list, 'collection_id')
-      ).reduce((r, item) => {
-        const col = (item as any)[0]?.collection;
-        if (col) {
-          r.push({
-            collection: col,
-            list: item,
-          });
-        }
-        return r;
-      }, [] as UserCollection[]);
-
-      setList(collectionList);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleShowModal = React.useCallback((item: NFTItem) => {
+    setNFTItem(item);
+    setModalVisible(true);
+    matomoRequestEvent({
+      category: 'ViewAssets',
+      action: 'viewNFTDetail',
+      label: [
+        getKRCategoryByType(currentAccount?.type),
+        currentAccount?.brandName,
+        item?.collection ? 'true' : 'false',
+      ].join('|'),
+    });
   }, []);
 
-  React.useEffect(() => {
-    if (currentAccount) {
-      fetchData(currentAccount.address);
-    }
-  }, [currentAccount, fetchData]);
-
-  console.log(list);
+  const handleHideModal = React.useCallback(() => {
+    setModalVisible(false);
+    setNFTItem(null);
+  }, []);
 
   return (
-    <div className="nft-view px-20 pb-20 bg-[#F0F2F5] min-h-screen">
+    <div className="nft-view px-20 pb-20 bg-[#F0F2F5] h-screen">
       <PageHeader onBack={handleClickBack} forceShowBack>
         {'NFT'}
       </PageHeader>
       <div>
-        <Tabs defaultActiveKey={tab} centered onChange={setTab}>
+        <TabsStyled defaultActiveKey={tab} centered onChange={setTab}>
           <Tabs.TabPane tab="All" key="all">
-            <div className="space-y-12">
-              {list.map((item) => (
-                <CollectionCard key={item.collection.id} collection={item} />
-              ))}
-            </div>
+            {isLoading ? (
+              <CollectionListSkeleton />
+            ) : list.length ? (
+              <div className="space-y-12 pb-12">
+                {list.map((item) => (
+                  <CollectionCard
+                    key={`${item.id}${item.chain}`}
+                    collection={item}
+                    onClickNFT={handleShowModal}
+                    isStarred={checkStarred(item)}
+                    onStar={() => onToggleStar(item)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <NFTListEmpty />
+            )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Starred" key="starred">
-            <div className="space-y-12">
-              {/* <CollectionCard collection={{}} /> */}
-            </div>
+          <Tabs.TabPane tab={`Starred (${starredList.length})`} key="starred">
+            {isLoading ? (
+              <CollectionListSkeleton />
+            ) : starredList.length ? (
+              <div className="space-y-12 pb-12">
+                {starredList.map((item) => (
+                  <CollectionCard
+                    key={item.id}
+                    collection={item}
+                    onClickNFT={handleShowModal}
+                    isStarred
+                    onStar={() => onToggleStar(item)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <NFTStarredListEmpty />
+            )}
           </Tabs.TabPane>
-        </Tabs>
+        </TabsStyled>
       </div>
 
-      {/* <Modal
+      <Modal
         visible={modalVisible}
         centered
         width={336}
@@ -109,10 +147,13 @@ export const NFTView: React.FC = () => {
         okText={null}
         footer={null}
         className="nft-modal"
-        onCancel={handleToggleModal}
+        maskStyle={{
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        }}
+        onCancel={handleHideModal}
       >
-        <NFTModal data={item} />
-      </Modal> */}
+        {nftItem && <NFTModal data={nftItem} />}
+      </Modal>
     </div>
   );
 };

@@ -90,7 +90,12 @@ export const ChainList = ({
         ))
       ) : (
         <div
-          className="cursor-pointer text-12 underline text-black leading-[20px]"
+          className={clsx(
+            'cursor-pointer text-12 underline text-black leading-[20px]',
+            {
+              hidden: moreLen === 0,
+            }
+          )}
           onClick={() => {
             setShowMore(true);
           }}

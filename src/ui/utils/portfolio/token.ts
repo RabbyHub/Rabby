@@ -47,7 +47,11 @@ const filterDisplayToken = (
   });
 };
 
-export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
+export const useTokens = (
+  userAddr: string | undefined,
+  timeAt?: Dayjs,
+  visible = true
+) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
@@ -58,11 +62,16 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
   const { customize, list, blocked } = useRabbySelector(
     (store) => store.account.tokens
   );
+  const userAddrRef = useRef('');
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
 
   useEffect(() => {
     if (userAddr) {
-      loadProcess();
+      if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+        loadProcess().then(() => {
+          userAddrRef.current = userAddr;
+        });
+      }
     } else {
       setData(undefined);
     }
@@ -72,7 +81,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
       abortProcess.current?.abort();
     };
     // eslint-disable-next-line
-  }, [userAddr]);
+  }, [userAddr, visible]);
 
   useEffect(() => {
     if (timeAt) {
@@ -95,19 +104,6 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
-
-    // if (!userInfo) {
-    //   return;
-    // }
-    // if (!userInfo.used_chains?.length) {
-    //   setLoading(false);
-    //   setData(
-    //     produce(initWallet, draft => {
-    //       draft._netWorth = '$0';
-    //     }),
-    //   );
-    //   return;
-    // }
 
     setLoading(true);
     log('======Start-Tokens======', userAddr);
@@ -138,6 +134,7 @@ export const useTokens = (userAddr: string | undefined, timeAt?: Dayjs) => {
       setData(_data);
       _tokens = sortWalletTokens(_data);
       dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      setLoading(false);
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 

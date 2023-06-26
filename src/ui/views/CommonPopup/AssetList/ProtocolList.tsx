@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useIntersection } from 'react-use';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -56,7 +57,7 @@ const ProtocolItemWrapper = styled.div`
       font-weight: 500;
       font-size: 13px;
       line-height: 15px;
-      color: #4b4d59;
+      color: #13141a;
       margin-left: 8px;
     }
     .net-worth {
@@ -68,22 +69,70 @@ const ProtocolItemWrapper = styled.div`
     }
   }
 `;
-const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
+const ProtocolItem = ({
+  protocol,
+  enableVirtualList,
+}: {
+  protocol: DisplayedProject;
+  enableVirtualList: boolean;
+}) => {
+  const intersectionRef = React.useRef<HTMLDivElement>(null);
+  const divRef = React.useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: '-20px',
+    threshold: 0,
+  });
+  const [isDisplay, setIsDisplay] = useState(true);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (enableVirtualList) {
+      if (
+        intersection?.intersectionRatio &&
+        intersection?.intersectionRatio > 0
+      ) {
+        setIsDisplay(true);
+      } else {
+        setIsDisplay(false);
+      }
+    }
+  }, [intersection, enableVirtualList]);
+
+  useEffect(() => {
+    if (intersectionRef.current && divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
+      setHeight(rect.height);
+    }
+  }, [protocol._portfolios.length]);
+
   return (
-    <ProtocolItemWrapper>
-      <div className="title">
-        <IconWithChain
-          iconUrl={protocol.logo}
-          chainServerId={protocol.chain || 'eth'}
-          width="24px"
-          height="24px"
-        />
-        <span className="name">{protocol.name}</span>
-        <span className="net-worth">{protocol._netWorth}</span>
+    <ProtocolItemWrapper
+      ref={intersectionRef}
+      style={{
+        height: enableVirtualList && height ? `${height}px` : undefined,
+      }}
+    >
+      <div
+        ref={divRef}
+        style={{
+          display: isDisplay ? 'block' : 'none',
+        }}
+      >
+        <div className="title">
+          <IconWithChain
+            iconUrl={protocol.logo}
+            chainServerId={protocol.chain || 'eth'}
+            width="24px"
+            height="24px"
+          />
+          <span className="name">{protocol.name}</span>
+          <span className="net-worth">{protocol._netWorth}</span>
+        </div>
+        {protocol._portfolios.map((portfolio) => (
+          <PoolItem item={portfolio} key={portfolio.id} />
+        ))}
       </div>
-      {protocol._portfolios.map((portfolio) => (
-        <PoolItem item={portfolio} />
-      ))}
     </ProtocolItemWrapper>
   );
 };
@@ -136,13 +185,20 @@ const ProtocolList = ({ list, kw }: Props) => {
     }
     return result;
   }, [list, kw]);
+  const enableVirtualList = useMemo(() => {
+    return (displayList || []).length > 50;
+  }, [displayList]);
 
   if (!displayList) return null;
 
   return (
     <ProtocolListWrapper>
       {displayList.map((item) => (
-        <ProtocolItem protocol={item} key={item.id} />
+        <ProtocolItem
+          protocol={item}
+          key={item.id}
+          enableVirtualList={enableVirtualList}
+        />
       ))}
     </ProtocolListWrapper>
   );

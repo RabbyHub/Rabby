@@ -41,8 +41,10 @@ export const CustomizedButton: React.FC<Props> = ({
       )}
     >
       <div className={clsx('text-orange text-13')}>
-        Token is not listed by Rabby. It will be added to the token list if you
-        switch on.
+        {selected
+          ? "Token is not listed by Rabby. You've added it to the token list by custom."
+          : `Token is not listed by Rabby. It will be added to the token list if you
+        switch on.`}
       </div>
       <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
         <SwitchStyled

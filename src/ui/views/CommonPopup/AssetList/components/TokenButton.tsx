@@ -54,11 +54,11 @@ export const TokenButton: React.FC<Props> = ({
         onClose={() => setVisible(false)}
         title={`${len} ${label}`}
       >
+        <div className="text-black text-13 mb-[30px] text-center -m-8">
+          The token in this list will not be added to total balance
+        </div>
         {len > 0 ? (
           <div>
-            <div className="text-black text-13 font-medium mb-[30px] text-center">
-              The token in this list will not be added to total balance
-            </div>
             <TokenTable list={tokens} />
           </div>
         ) : (

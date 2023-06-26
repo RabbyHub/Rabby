@@ -65,7 +65,7 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'SwitchAddress' && <SwitchAddress />}
       {componentName === 'SwitchChain' && <SwitchChain />}
       {componentName === 'Ledger' && <Ledger />}
-      {componentName === 'AssetList' && <AssetList />}
+      {componentName === 'AssetList' && <AssetList visible={visible} />}
     </Popup>
   );
 };

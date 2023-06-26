@@ -9,12 +9,14 @@ import { isSameAddress } from '../utils';
 const useSearchToken = (
   address: string | undefined,
   kw: string,
-  chainServerId?: string
+  chainServerId?: string,
+  withBalance = false
 ) => {
   const wallet = useWallet();
   const [result, setResult] = useState<AbstractPortfolioToken[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const addressRef = useRef(address);
+  const kwRef = useRef('');
   const { customize, blocked } = useRabbySelector(
     (state) => state.account.tokens
   );
@@ -44,8 +46,11 @@ const useSearchToken = (
           reg.test(token.display_symbol || '')
         );
       });
-      if (addressRef.current === address) {
+      if (addressRef.current === address && kwRef.current === q) {
         setIsLoading(false);
+        if (withBalance) {
+          list = list.filter((item) => item.amount > 0);
+        }
         setResult(
           [
             ...(list.map(
@@ -69,7 +74,14 @@ const useSearchToken = (
   }, [address]);
 
   useEffect(() => {
-    if (!address || !kw) return;
+    kwRef.current = kw;
+  }, [kw]);
+
+  useEffect(() => {
+    if (!address || !kw) {
+      setIsLoading(false);
+      return;
+    }
     searchToken({
       address,
       q: kw,

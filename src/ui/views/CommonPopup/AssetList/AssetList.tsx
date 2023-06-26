@@ -1,9 +1,9 @@
 import { useCommonPopupView } from '@/ui/utils';
 import React, { useState } from 'react';
 import { ChainList } from './ChainList';
-import { TokenListView } from './TokenListView';
+import { AssetListContainer } from './AssetListContainer';
 
-export const AssetList = () => {
+export const AssetList = ({ visible }: { visible: boolean }) => {
   const { setHeight } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
   const handleSelectChainChange = (id: string | null) => {
@@ -11,13 +11,17 @@ export const AssetList = () => {
   };
 
   React.useEffect(() => {
-    setHeight(494);
+    setHeight(488);
   }, []);
 
   return (
     <div>
       <ChainList onChange={handleSelectChainChange} />
-      <TokenListView className="mt-16" selectChainId={selectChainId} />
+      <AssetListContainer
+        className="mt-16"
+        selectChainId={selectChainId}
+        visible={visible}
+      />
     </div>
   );
 };

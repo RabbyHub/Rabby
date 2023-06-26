@@ -30,14 +30,14 @@ export const TokenList: React.FC<Props> = ({
 
   return (
     <div>
-      <div className="border-b-[0.5px] border-gray-divider">
+      <div>
         <TokenTable list={isSearch ? list : currentList} />
         {!isSearch && (
           <TokenLowValueItem list={lowValueList} className="h-[40px]" />
         )}
       </div>
       {!isSearch && (
-        <div className="flex gap-12 mt-12">
+        <div className="flex gap-12 pt-12 border-t-[0.5px] border-gray-divider">
           <CustomizedButton onClickLink={onFocusInput} />
           <BlockedButton onClickLink={onFocusInput} />
         </div>

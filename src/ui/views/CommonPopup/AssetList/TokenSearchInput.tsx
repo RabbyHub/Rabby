@@ -3,10 +3,20 @@ import React from 'react';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
+import styled from 'styled-components';
 
 export interface Props {
   onSearch?: (value: string) => void;
 }
+
+const InputStyled = styled(Input)`
+  &.ant-input-affix-wrapper-focused {
+    border-color: #8697ff !important;
+  }
+  &:hover {
+    border-color: #8697ff !important;
+  }
+`;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
   ({ onSearch }, ref) => {
@@ -17,12 +27,12 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       () => {
         onSearch?.(input);
       },
-      200,
+      300,
       [input]
     );
 
     return (
-      <Input
+      <InputStyled
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Tokens"
@@ -31,10 +41,9 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
         className={clsx(
           'text-12 text-black py-0 px-[9px] h-[32px]',
           'border border-gray-divider rounded-[6px]',
-          'transform-none',
+          'transform-none w-[160px]',
           {
-            'w-full flex-1': isFocus,
-            'w-[160px]': !isFocus,
+            'w-[248px]': isFocus || input,
           }
         )}
         prefix={<SearchSVG className="w-[14px] h-[14px]" />}

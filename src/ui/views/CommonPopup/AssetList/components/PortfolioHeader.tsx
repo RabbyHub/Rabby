@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
+  align-items: start;
+  margin-bottom: 16px;
   .name {
     background: rgba(134, 151, 255, 0.1);
     border-radius: 10px;
@@ -19,11 +21,14 @@ const Wrapper = styled.div`
     line-height: 14px;
     color: #13141a;
     margin-bottom: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .net-worth {
-    flex: 1;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
   }
 `;
 const PortfolioHeader = ({
@@ -39,7 +44,7 @@ const PortfolioHeader = ({
 }) => {
   return (
     <Wrapper>
-      <div className="flex items-center">
+      <div className="flex items-center flex-1 overflow-hidden">
         <div className="name mr-6">{name}</div>
         {showDescription ? (
           <p className="description">
@@ -47,14 +52,14 @@ const PortfolioHeader = ({
           </p>
         ) : null}
       </div>
-      <div className="net-worth">
-        <p>{data._netWorth}</p>
+      <div className="net-worth text-13">
+        <span>{data._netWorth}</span>
         {showHistory ? (
-          <p>
+          <span>
             {data._netWorthChange !== '-'
               ? `${data._changePercentStr} (${data._netWorthChange})`
               : '-'}
-          </p>
+          </span>
         ) : null}
       </div>
     </Wrapper>
