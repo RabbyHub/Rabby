@@ -21,9 +21,11 @@ const Wrapper = styled.div`
     line-height: 14px;
     color: #13141a;
     margin-bottom: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .net-worth {
-    flex: 1;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -42,7 +44,7 @@ const PortfolioHeader = ({
 }) => {
   return (
     <Wrapper>
-      <div className="flex items-center">
+      <div className="flex items-center flex-1 overflow-hidden">
         <div className="name mr-6">{name}</div>
         {showDescription ? (
           <p className="description">

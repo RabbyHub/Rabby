@@ -123,10 +123,10 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   );
 
   const currentHover = isDebounceHover;
-  const currentBalance = currentHover ? curvePoint?.value : balance;
+  const currentBalance = currentHover ? curvePoint?.value || balance : balance;
   const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
   const currentChangePercent = currentHover
-    ? curvePoint?.changePercent
+    ? curvePoint?.changePercent || curveData?.changePercent
     : curveData?.changePercent;
   const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
   const currentChangeValue = currentHover ? curvePoint?.change : null;

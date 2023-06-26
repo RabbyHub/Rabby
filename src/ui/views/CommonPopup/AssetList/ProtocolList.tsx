@@ -69,7 +69,13 @@ const ProtocolItemWrapper = styled.div`
     }
   }
 `;
-const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
+const ProtocolItem = ({
+  protocol,
+  enableVirtualList,
+}: {
+  protocol: DisplayedProject;
+  enableVirtualList: boolean;
+}) => {
   const intersectionRef = React.useRef<HTMLDivElement>(null);
   const divRef = React.useRef<HTMLDivElement>(null);
   const intersection = useIntersection(intersectionRef, {
@@ -81,15 +87,17 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    if (
-      intersection?.intersectionRatio &&
-      intersection?.intersectionRatio > 0
-    ) {
-      setIsDisplay(true);
-    } else {
-      setIsDisplay(false);
+    if (enableVirtualList) {
+      if (
+        intersection?.intersectionRatio &&
+        intersection?.intersectionRatio > 0
+      ) {
+        setIsDisplay(true);
+      } else {
+        setIsDisplay(false);
+      }
     }
-  }, [intersection]);
+  }, [intersection, enableVirtualList]);
 
   useEffect(() => {
     if (intersectionRef.current && divRef.current) {
@@ -102,7 +110,7 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
     <ProtocolItemWrapper
       ref={intersectionRef}
       style={{
-        height: height ? `${height}px` : undefined,
+        height: enableVirtualList && height ? `${height}px` : undefined,
       }}
     >
       <div
@@ -177,13 +185,20 @@ const ProtocolList = ({ list, kw }: Props) => {
     }
     return result;
   }, [list, kw]);
+  const enableVirtualList = useMemo(() => {
+    return (displayList || []).length > 50;
+  }, [displayList]);
 
   if (!displayList) return null;
 
   return (
     <ProtocolListWrapper>
       {displayList.map((item) => (
-        <ProtocolItem protocol={item} key={item.id} />
+        <ProtocolItem
+          protocol={item}
+          key={item.id}
+          enableVirtualList={enableVirtualList}
+        />
       ))}
     </ProtocolListWrapper>
   );
