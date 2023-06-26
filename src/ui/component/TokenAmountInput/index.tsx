@@ -15,6 +15,8 @@ import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import './style.less';
 import clsx from 'clsx';
 import { useAsync } from 'react-use';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { useRabbyGetter } from '@/ui/store';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -47,7 +49,10 @@ const TokenAmountInput = ({
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
 
-  const [q, setQ] = useState('');
+  const [queryConds, setQueryConds] = useState({
+    keyword: '',
+    chainServerId: chainId,
+  });
 
   if (amountFocus && !tokenSelectorVisible) {
     tokenInputRef.current?.focus();
@@ -115,51 +120,100 @@ const TokenAmountInput = ({
     return tokens;
   }, [tokenSelectorVisible, chainId, isSwapType]);
 
+  const currentAccountAddr = useRabbyGetter(
+    (s) => s.account.currentAccountAddr
+  );
+
+  const isTokensFromSearchSearch =
+    !!queryConds.chainServerId || !!queryConds.keyword;
+
+  // when no any queryConds
+  const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    isTokensFromSearchSearch ? '' : currentAccountAddr
+  );
+
   const {
-    value: displayTokens = [],
+    value: searchedTokenByQuery = [],
     loading: isSearchLoading,
   } = useAsync(async (): Promise<TokenItem[]> => {
     if (!tokenSelectorVisible) return [];
-    if (!q) {
+    if (!queryConds.keyword) {
       return originTokenList;
     }
 
-    const kw = q.trim();
+    const kw = queryConds.keyword.trim();
 
     if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
       const currentAccount = await wallet.syncGetCurrentAccount();
 
-      const data = await wallet.openapi.searchToken(currentAccount!.address, q);
-      return data.filter((e) => e.chain === chainId);
+      const data = await wallet.openapi.searchToken(
+        currentAccount!.address,
+        queryConds.keyword,
+        queryConds.chainServerId
+      );
+      return data.filter((e) => e.chain === queryConds.chainServerId);
+    } else if (isTokensFromSearchSearch) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
+
+      const data = await wallet.openapi.searchToken(
+        currentAccount!.address,
+        queryConds.keyword,
+        '',
+        true
+      );
+
+      return !kw
+        ? data
+        : data.filter((token) => {
+            const reg = new RegExp(kw, 'i');
+            return reg.test(token.name) || reg.test(token.symbol);
+          });
     }
     if (isSwapType) {
       const currentAccount = await wallet.syncGetCurrentAccount();
 
       const data = await wallet.openapi.searchSwapToken(
         currentAccount!.address,
-        chainId,
-        q
+        // chainId,
+        queryConds.chainServerId,
+        queryConds.keyword
       );
       return data;
     }
 
-    return originTokenList.filter((token) => {
-      const reg = new RegExp(kw, 'i');
-      return reg.test(token.name) || reg.test(token.symbol);
-    });
-  }, [tokenSelectorVisible, originTokenList, q, chainId]);
+    return !kw
+      ? originTokenList
+      : originTokenList.filter((token) => {
+          const reg = new RegExp(kw, 'i');
+          return reg.test(token.name) || reg.test(token.symbol);
+        });
+  }, [
+    tokenSelectorVisible,
+    originTokenList,
+    isTokensFromSearchSearch,
+    queryConds.keyword,
+    queryConds.chainServerId,
+  ]);
 
   const availableToken = useMemo(
     () =>
-      uniqBy(displayTokens, (token) => {
-        return `${token.chain}-${token.id}`;
-      }).filter((e) => !excludeTokens.includes(e.id)),
-    [displayTokens, excludeTokens]
+      uniqBy(
+        !isTokensFromSearchSearch ? allTokens : searchedTokenByQuery,
+        (token) => {
+          return `${token.chain}-${token.id}`;
+        }
+      ).filter((e) => !excludeTokens.includes(e.id)),
+    [allTokens, searchedTokenByQuery, isTokensFromSearchSearch, excludeTokens]
   );
-  const isListLoading = isTokenLoading || isSearchLoading;
+  const isListLoading =
+    isTokenLoading ||
+    (isTokensFromSearchSearch ? isSearchLoading : isLoadingAllTokens);
 
-  const handleSearchTokens = React.useCallback(async (q: string) => {
-    setQ(q);
+  const handleSearchTokens = React.useCallback(async (ctx) => {
+    setQueryConds({
+      keyword: ctx.keyword,
+      chainServerId: ctx.chainServerId,
+    });
   }, []);
 
   return (
@@ -202,7 +256,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
-        chainId={chainId}
+        chainId={queryConds.chainServerId}
       />
     </div>
   );

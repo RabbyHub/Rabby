@@ -19,7 +19,7 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { DEX } from '@/constant';
+import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
@@ -239,6 +239,7 @@ export const Main = () => {
           value={chain}
           onChange={chainSwitch}
           disabledTips={'Not supported'}
+          supportChains={SWAP_SUPPORT_CHAINS}
         />
 
         <div className={clsx(tipsClassName, 'flex items-center mb-12')}>

@@ -83,7 +83,10 @@ const TokenSelect = ({
   loading = false,
   tokenRender,
 }: TokenSelectProps) => {
-  const [q, setQ] = useState('');
+  const [queryConds, setQueryConds] = useState({
+    keyword: '',
+    chainServerId: chainId,
+  });
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
 
@@ -155,16 +158,20 @@ const TokenSelect = ({
     loading: isSearchLoading,
   } = useAsync(async (): Promise<TokenItem[]> => {
     if (!tokenSelectorVisible) return [];
-    if (!q) {
-      return originTokenList;
-    }
+    // if (!queryConds.keyword) {
+    //   return originTokenList;
+    // }
 
-    const kw = q.trim();
+    const kw = queryConds.keyword.trim();
 
     if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
       const currentAccount = await wallet.syncGetCurrentAccount();
 
-      const data = await wallet.openapi.searchToken(currentAccount!.address, q);
+      const data = await wallet.openapi.searchToken(
+        currentAccount!.address,
+        queryConds.keyword,
+        queryConds.chainServerId
+      );
       return data.filter((e) => e.chain === chainId);
     }
     if (isSwapType) {
@@ -172,8 +179,9 @@ const TokenSelect = ({
 
       const data = await wallet.openapi.searchSwapToken(
         currentAccount!.address,
-        chainId,
-        q
+        // chainId,
+        queryConds.chainServerId,
+        queryConds.keyword
       );
       return data;
     }
@@ -182,12 +190,20 @@ const TokenSelect = ({
       const reg = new RegExp(kw, 'i');
       return reg.test(token.name) || reg.test(token.symbol);
     });
-  }, [tokenSelectorVisible, originTokenList, q, chainId]);
+  }, [
+    tokenSelectorVisible,
+    originTokenList,
+    queryConds.keyword,
+    queryConds.chainServerId,
+  ]);
 
   const isListLoading = isTokenLoading || isSearchLoading;
 
-  const handleSearchTokens = React.useCallback(async (q: string) => {
-    setQ(q);
+  const handleSearchTokens = React.useCallback(async (ctx) => {
+    setQueryConds({
+      keyword: ctx.keyword,
+      chainServerId: ctx.chainServerId,
+    });
   }, []);
 
   const availableToken = useMemo(
@@ -221,7 +237,7 @@ const TokenSelect = ({
           isLoading={isListLoading}
           type={type}
           placeholder={placeholder}
-          chainId={chainId}
+          chainId={queryConds.chainServerId}
         />
       </>
     );
@@ -280,7 +296,7 @@ const TokenSelect = ({
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
-        chainId={chainId}
+        chainId={queryConds.chainServerId}
       />
     </>
   );

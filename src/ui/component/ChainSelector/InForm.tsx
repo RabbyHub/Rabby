@@ -81,8 +81,8 @@ export default function ChainSelectorInForm({
   showModal = false,
   disabledTips,
   title,
-}: // supportChains,
-ChainSelectorProps) {
+  supportChains,
+}: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
   const handleClickSelector = () => {
@@ -110,7 +110,7 @@ ChainSelectorProps) {
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
-          supportChains={SWAP_SUPPORT_CHAINS}
+          supportChains={supportChains}
           disabledTips={disabledTips}
           title={title}
         />

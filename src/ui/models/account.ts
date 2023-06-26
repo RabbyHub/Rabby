@@ -1,3 +1,5 @@
+import { Chain } from '@debank/common';
+
 import type { Account } from '@/background/service/preference';
 import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
@@ -5,7 +7,8 @@ import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
-import { isSameAddress } from '../utils';
+import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
+import { coerceFloat } from '../utils';
 
 interface AccountState {
   currentAccount: null | Account;
@@ -15,6 +18,9 @@ interface AccountState {
   keyrings: DisplayedKeryring[];
   balanceMap: {
     [address: string]: TotalBalanceResponse;
+  };
+  matteredChainBalances: {
+    [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
   };
   tokens: {
     list: AbstractPortfolioToken[];
@@ -35,6 +41,7 @@ export const account = createModel<RootModel>()({
     hiddenAccounts: [],
     keyrings: [],
     balanceMap: {},
+    matteredChainBalances: {},
     mnemonicAccounts: [],
     tokens: {
       list: [],
@@ -96,6 +103,9 @@ export const account = createModel<RootModel>()({
     return {
       isShowMnemonic() {
         return slice((account) => account.mnemonicAccounts.length <= 0);
+      },
+      currentAccountAddr() {
+        return slice((account) => account.currentAccount?.address);
       },
     };
   },
@@ -207,6 +217,36 @@ export const account = createModel<RootModel>()({
         })
       );
       dispatch.account.setTokenList([...store.account.tokens.list, token]);
+    },
+
+    async getMatteredChainBalance(_?: any, store?) {
+      const wallet = store.app.wallet;
+      const currentAccountAddr = store.account.currentAccount?.address;
+
+      const cachedBalance = await wallet.getAddressCacheBalance(
+        currentAccountAddr
+      );
+
+      const totalUsdValue = (cachedBalance?.chain_list || []).reduce(
+        (accu, cur) => accu + coerceFloat(cur.usd_value),
+        0
+      );
+
+      const matteredChainBalances = (cachedBalance?.chain_list || []).reduce(
+        (accu, cur) => {
+          const curUsdValue = coerceFloat(cur.usd_value);
+          // TODO: only leave chain with blance greater than $1 and has percentage 1%
+          if (curUsdValue > 1 && curUsdValue / totalUsdValue > 0.01) {
+            accu[cur.id] = formatChainToDisplay(cur);
+          }
+          return accu;
+        },
+        {} as AccountState['matteredChainBalances']
+      );
+
+      dispatch.account.setField({
+        matteredChainBalances,
+      });
     },
   }),
 });

@@ -739,6 +739,7 @@ const SendToken = () => {
             value={chain}
             onChange={handleChainChanged}
             disabledTips={'Not supported'}
+            supportChains={undefined}
           />
           <div className={clsx('section-title mt-[10px]')}>{t('From')}</div>
           <AccountCard

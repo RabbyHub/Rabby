@@ -43,6 +43,7 @@
 .chain-selector__modal {
   .ant-drawer-content-wrapper {
     max-height: calc(100vh - 40px);
+    height: 494px !important;
   }
   header {
     padding-top: 8px;
@@ -177,6 +178,8 @@
     border-radius: 4px;
     position: relative;
     border: 1px solid transparent;
+    height: 56px;
+
     &::after {
       content: '';
       position: absolute;
@@ -197,12 +200,21 @@
       width: 24px;
       height: 24px;
     }
+    &-info {
+      margin-left: 12px;
+    }
     &-name {
       font-weight: 500;
       font-size: 15px;
       line-height: 18px;
       color: @color-title;
-      margin-left: 12px;
+    }
+    &-balance {
+      color: #707280;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
     }
     &-star {
       margin-left: 8px;

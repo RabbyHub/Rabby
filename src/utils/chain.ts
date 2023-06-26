@@ -1,4 +1,5 @@
 import { Chain } from '@debank/common';
+import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 
 const ALL_CHAINS = Object.values(CHAINS);
@@ -52,4 +53,68 @@ export function findChainByID(chainId: Chain['id']): Chain | null {
   return !chainId
     ? null
     : ALL_CHAINS.find((chain) => chain.id === chainId) || null;
+}
+
+/**
+ * @description safe find chain by serverId
+ */
+export function findChainByServerID(chainId: Chain['serverId']): Chain | null {
+  return !chainId
+    ? null
+    : ALL_CHAINS.find((chain) => chain.serverId === chainId) || null;
+}
+
+export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
+  logo?: string;
+  whiteLogo?: string;
+}
+
+export function formatChainToDisplay(
+  item: ChainWithBalance
+): DisplayChainWithWhiteLogo {
+  const chainsArray = Object.values(CHAINS);
+  const chain = chainsArray.find((chain) => chain.id === item.community_id);
+
+  return {
+    ...item,
+    logo: chain?.logo || item.logo_url,
+    whiteLogo: chain?.whiteLogo,
+  };
+}
+
+export function sortChainItems<T extends Chain>(
+  items: T[],
+  opts?: {
+    cachedChainBalances?: {
+      [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
+    };
+    supportChains?: CHAINS_ENUM[];
+  }
+) {
+  const { cachedChainBalances = {}, supportChains } = opts || {};
+
+  return (
+    items
+      // .map((item, index) => ({
+      //   ...item,
+      //   index,
+      // }))
+      .sort((a, b) => {
+        const aBalance = cachedChainBalances[a.serverId]?.usd_value || 0;
+        const bBalance = cachedChainBalances[b.serverId]?.usd_value || 0;
+
+        if (!supportChains) {
+          return aBalance > bBalance ? -1 : 1;
+        }
+
+        if (supportChains.includes(a.enum) && !supportChains.includes(b.enum)) {
+          return -1;
+        }
+        if (!supportChains.includes(a.enum) && supportChains.includes(b.enum)) {
+          return 1;
+        }
+
+        return aBalance > bBalance ? -1 : 1;
+      })
+  );
 }

@@ -7,23 +7,35 @@ import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
-import IconSearch from 'ui/assets/search.svg';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
+import { CHAINS_LIST, Chain } from '@debank/common';
+import { findChainByServerID } from '@/utils/chain';
+
 import MatchImage from 'ui/assets/match.svg';
-import { CHAINS_LIST } from '@debank/common';
+import IconSearch from 'ui/assets/search.svg';
+import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
 
+export interface SearchCallbackCtx {
+  chainServerId: Chain['serverId'] | null;
+  chainItem: Chain | null;
+}
 export interface TokenSelectorProps {
   visible: boolean;
   list: TokenItem[];
   isLoading?: boolean;
   onConfirm(item: TokenItem): void;
   onCancel(): void;
-  onSearch(q: string);
+  onSearch(
+    ctx: SearchCallbackCtx & {
+      keyword: string;
+    }
+  );
+  onRemoveChainFilter?(ctx: SearchCallbackCtx);
   type?: 'default' | 'swapFrom' | 'swapTo';
   placeholder?: string;
   chainId: string;
@@ -35,21 +47,33 @@ const TokenSelector = ({
   onConfirm,
   onCancel,
   onSearch,
+  onRemoveChainFilter,
   isLoading = false,
   type = 'default',
   placeholder,
-  chainId,
+  chainId: chainServerId,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
 
+  const { chainItem, chainSearchCtx } = useMemo(() => {
+    const chain = !chainServerId ? null : findChainByServerID(chainServerId);
+    return {
+      chainItem: chain,
+      chainSearchCtx: {
+        chainServerId,
+        chainItem: chain,
+      },
+    };
+  }, [chainServerId]);
+
   useDebounce(
     () => {
-      onSearch(query);
+      onSearch({ ...chainSearchCtx, keyword: query });
     },
     150,
-    [query]
+    [chainSearchCtx, query]
   );
 
   const handleQueryChange = (value: string) => {
@@ -114,25 +138,25 @@ const TokenSelector = ({
               </p>
               <p className="text-gray-content text-14 mt-0 text-center">
                 Try to search contract address on{' '}
-                {CHAINS_LIST.find((e) => e.serverId === chainId)?.name ||
+                {CHAINS_LIST.find((e) => e.serverId === chainServerId)?.name ||
                   'chain'}
               </p>
             </>
           )}
         </div>
       ),
-    [isLoading, isSwapType, t, isSearchAddr, chainId]
+    [isLoading, isSwapType, t, isSearchAddr, chainServerId]
   );
 
   useEffect(() => {
     if (query && isSwapType && displayList.length === 0) {
       stats.report('swapTokenSearchFailure', {
-        chainId,
+        chainId: chainServerId,
         searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
         keyword: query,
       });
     }
-  }, [type, query, isSwapType, displayList, query, chainId]);
+  }, [type, query, isSwapType, displayList, query, chainServerId]);
 
   return (
     <Drawer
@@ -155,6 +179,32 @@ const TokenSelector = ({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
         />
+      </div>
+      <div className="filters-wrapper">
+        {chainItem && (
+          <>
+            <div className="filter-item__chain">
+              <img
+                className="filter-item__chain-logo"
+                src={chainItem.nativeTokenLogo}
+                alt={chainItem.name}
+              />
+              <span className="ml-[4px]">{chainItem.name}</span>
+              <img
+                className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
+                src={IconChainFilterClose}
+                onClick={() => {
+                  onRemoveChainFilter?.({ chainServerId, chainItem });
+                  onSearch({
+                    chainItem: null,
+                    chainServerId: '',
+                    keyword: query,
+                  });
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">

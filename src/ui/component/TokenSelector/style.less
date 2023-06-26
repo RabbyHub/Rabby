@@ -1,5 +1,7 @@
 @import '../../style/mixin.less';
 
+@token-selector-px: 16px;
+
 .token-selector {
   padding-bottom: 0;
   .ant-drawer-content-wrapper {
@@ -19,7 +21,7 @@
   }
   .input-wrapper {
     width: 360px;
-    margin: 0 auto 16px;
+    margin: 0 auto @token-selector-px;
     .ant-input-affix-wrapper::before {
       height: 16px;
     }
@@ -42,7 +44,7 @@
   .token-sort {
     display: flex;
     margin-bottom: 8px;
-    padding: 0 16px;
+    padding: 0 @token-selector-px;
     justify-content: flex-end;
     align-items: center;
     color: #707880;
@@ -166,6 +168,30 @@
           height: 100px;
         }
       }
+    }
+  }
+
+  .filters-wrapper {
+    padding: 0 @token-selector-px;
+
+    .filter-item__chain {
+      cursor: default;
+      display: inline-flex;
+      padding: 6px;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 4px;
+      background: #f5f6fa;
+    }
+
+    img.filter-item__chain-logo {
+      width: 14px;
+      height: 14px;
+    }
+
+    .filter-item__chain-close {
+      cursor: pointer;
     }
   }
 }
