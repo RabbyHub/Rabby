@@ -28,11 +28,11 @@ export const CollectionCard: React.FC<Props> = ({
       <section
         className={clsx('border-b-[0.5px] border-gray-divider', 'mb-10 pb-10')}
       >
-        <div className="space-x-4">
-          <span className="inline-block text-15 text-gray-title font-medium leading-[18px]">
+        <div className="space-x-4 flex items-center">
+          <span className="block text-15 text-gray-title font-medium leading-[18px]">
             {collection.name}
           </span>
-          <span className="inline-block text-13 text-black leading-[18px]">
+          <span className="block text-13 text-black leading-[18px] -mt-1">
             ({collection.nft_list.length})
           </span>
         </div>

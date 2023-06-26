@@ -13,6 +13,9 @@ const InputStyled = styled(Input)`
   &.ant-input-affix-wrapper-focused {
     border-color: #8697ff !important;
   }
+  &:hover {
+    border-color: #8697ff !important;
+  }
 `;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
@@ -24,7 +27,7 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       () => {
         onSearch?.(input);
       },
-      200,
+      300,
       [input]
     );
 
