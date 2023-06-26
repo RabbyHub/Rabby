@@ -164,7 +164,9 @@ export const account = createModel<RootModel>()({
       });
       const currentList = store.account.tokens.customize;
       dispatch.account.setCustomizeTokenList([...currentList, token]);
-      dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      if (token.amount > 0) {
+        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      }
     },
 
     async removeCustomizeToken(token: AbstractPortfolioToken, store?) {
@@ -206,7 +208,9 @@ export const account = createModel<RootModel>()({
           return item.id !== token.id;
         })
       );
-      dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      if (token.amount > 0) {
+        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      }
     },
   }),
 });
