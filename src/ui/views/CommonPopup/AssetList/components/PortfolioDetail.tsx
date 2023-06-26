@@ -46,14 +46,14 @@ const AssetAvatar = ({ token }: { token: TokenItem }) => {
 const TokenListWrapper = styled.div`
   .header {
     display: flex;
-    margin-top: 18px;
+    margin-top: 16px;
     .td {
       font-size: 12px;
       line-height: 14px;
       color: #707280;
       text-align: left;
       width: 120px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       &:nth-last-child(1) {
         flex: 1;
         text-align: right;
@@ -190,9 +190,11 @@ export const TokenList = ({
       {list.map((l) => {
         return (
           <div className="row" key={l.id}>
-            <div className="td flex items-center">
+            <div className="td flex items-center pr-4">
               <AssetAvatar token={l} />
-              <span className="ml-8">{l._symbol}</span>
+              <span className="ml-8 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {l._symbol}
+              </span>
             </div>
             <div className="td flex items-center">{l._amount}</div>
             <div className="td flex items-center justify-end relative">
