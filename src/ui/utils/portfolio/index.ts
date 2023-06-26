@@ -10,7 +10,8 @@ const Cache_Timeout = 5 * 60;
 
 export const useQueryProjects = (
   userAddr: string | undefined,
-  withHistory = false
+  withHistory = false,
+  visible: boolean
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
 
@@ -34,7 +35,7 @@ export const useQueryProjects = (
     walletProject,
     customizeTokens,
     blockedTokens,
-  } = useTokens(userAddr, historyTime);
+  } = useTokens(userAddr, historyTime, visible);
 
   const {
     data: portfolios,
@@ -42,7 +43,7 @@ export const useQueryProjects = (
     hasValue: hasPortfolios,
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
-  } = usePortfolios(userAddr, historyTime);
+  } = usePortfolios(userAddr, historyTime, visible);
 
   const refreshPositions = useCallback(() => {
     if (!isTokensLoading && !isPortfoliosLoading) {

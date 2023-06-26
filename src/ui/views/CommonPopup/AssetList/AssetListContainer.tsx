@@ -18,11 +18,13 @@ import { HistoryList } from './HisotryList';
 interface Props {
   className?: string;
   selectChainId: string | null;
+  visible: boolean;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
   className,
   selectChainId,
+  visible,
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
@@ -40,7 +42,7 @@ export const AssetListContainer: React.FC<Props> = ({
     hasPortfolios,
     grossNetWorth,
     tokenNetWorth,
-  } = useQueryProjects(currentAccount?.address, false);
+  } = useQueryProjects(currentAccount?.address, false, visible);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
@@ -101,7 +103,13 @@ export const AssetListContainer: React.FC<Props> = ({
       ) : (
         activeTab !== TokenTabEnum.Summary &&
         activeTab !== TokenTabEnum.History && (
-          <ProtocolList list={displayPortfolios} kw={search} />
+          <div
+            style={{
+              display: visible ? 'block' : 'none',
+            }}
+          >
+            <ProtocolList list={displayPortfolios} kw={search} />
+          </div>
         )
       )}
     </div>

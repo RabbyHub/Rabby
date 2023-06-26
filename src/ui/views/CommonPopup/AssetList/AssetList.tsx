@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
 
-export const AssetList = () => {
+export const AssetList = ({ visible }: { visible: boolean }) => {
   const { setHeight } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
   const handleSelectChainChange = (id: string | null) => {
@@ -17,7 +17,11 @@ export const AssetList = () => {
   return (
     <div>
       <ChainList onChange={handleSelectChainChange} />
-      <AssetListContainer className="mt-16" selectChainId={selectChainId} />
+      <AssetListContainer
+        className="mt-16"
+        selectChainId={selectChainId}
+        visible={visible}
+      />
     </div>
   );
 };

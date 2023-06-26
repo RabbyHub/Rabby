@@ -19,6 +19,7 @@ import {
   getMissedTokenPrice,
 } from './utils';
 import { DisplayedProject } from './project';
+import { isSameAddress } from '..';
 
 const chunkSize = 5;
 
@@ -28,7 +29,11 @@ export const log = (...args: any) => {
 
 // export const portfolioChangeLoadingAtom = atom(true);
 
-export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
+export const usePortfolios = (
+  userAddr: string | undefined,
+  timeAt?: Dayjs,
+  visible = true
+) => {
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
   const [hasValue, setHasValue] = useSafeState(false);
@@ -39,16 +44,23 @@ export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
   const historyLoad = useRef<boolean>(false);
   const realtimeIds = useRef<string[]>([]);
   const wallet = useWallet();
+  const userAddrRef = useRef('');
   // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
-    setData([]);
-    setNetWorth(0);
+    if (userAddr && !isSameAddress(userAddr, userAddrRef.current)) {
+      setData([]);
+      setNetWorth(0);
+    }
 
     if (userAddr) {
       timer = setTimeout(() => {
-        loadProcess();
+        if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+          loadProcess().then(() => {
+            userAddrRef.current = userAddr;
+          });
+        }
       });
     }
 
@@ -59,7 +71,7 @@ export const usePortfolios = (userAddr: string | undefined, timeAt?: Dayjs) => {
         timer = null;
       }
     };
-  }, [userAddr]);
+  }, [userAddr, visible]);
 
   useEffect(() => {
     if (timeAt) {
