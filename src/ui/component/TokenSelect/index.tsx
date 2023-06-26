@@ -14,6 +14,7 @@ import { useAsync } from 'react-use';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { useRabbyGetter } from '@/ui/store';
 import { uniqBy } from 'lodash';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -281,6 +282,8 @@ const TokenSelect = ({
           type={type}
           placeholder={placeholder}
           chainId={queryConds.chainServerId}
+          disabledTips={'Not supported'}
+          supportChains={SWAP_SUPPORT_CHAINS}
         />
       </>
     );
@@ -340,6 +343,8 @@ const TokenSelect = ({
         type={type}
         placeholder={placeholder}
         chainId={queryConds.chainServerId}
+        disabledTips={'Not supported'}
+        supportChains={SWAP_SUPPORT_CHAINS}
       />
     </>
   );

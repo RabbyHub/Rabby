@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton } from 'antd';
+import { Input, Drawer, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -10,7 +10,7 @@ import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
-import { CHAINS_LIST, Chain } from '@debank/common';
+import { CHAINS_ENUM, CHAINS_LIST, Chain } from '@debank/common';
 import { findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
@@ -39,6 +39,8 @@ export interface TokenSelectorProps {
   type?: 'default' | 'swapFrom' | 'swapTo';
   placeholder?: string;
   chainId: string;
+  disabledTips?: string;
+  supportChains?: CHAINS_ENUM[] | undefined;
 }
 
 const TokenSelector = ({
@@ -52,6 +54,8 @@ const TokenSelector = ({
   type = 'default',
   placeholder,
   chainId: chainServerId,
+  disabledTips,
+  supportChains,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -80,7 +84,33 @@ const TokenSelector = ({
     setQuery(value);
   };
 
-  const displayList = useMemo(() => list || [], [list]);
+  const displayList = useMemo(() => {
+    if (!supportChains?.length) return list || [];
+
+    const varied = (list || []).reduce(
+      (accu, token) => {
+        const chainItem = findChainByServerID(token.chain);
+        const disabled =
+          !!supportChains?.length &&
+          chainItem &&
+          !supportChains.includes(chainItem.enum);
+
+        if (!disabled) {
+          accu.natural.push(token);
+        } else {
+          accu.disabled.push(token);
+        }
+
+        return accu;
+      },
+      {
+        natural: [] as TokenItem[],
+        disabled: [] as TokenItem[],
+      }
+    );
+
+    return [...varied.natural, ...varied.disabled];
+  }, [list, supportChains]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -216,74 +246,92 @@ const TokenSelector = ({
         </li>
         {isEmpty
           ? NoDataUI
-          : displayList.map((token) => (
-              <li
-                className={clsx(
-                  'token-list__item h-[52px]',
-                  isSwapType && 'justify-between'
-                )}
-                key={`${token.chain}-${token.id}`}
-                onClick={() => onConfirm(token)}
-                title={getTokenSymbol(token)}
-              >
-                <div>
-                  <TokenWithChain
-                    token={token}
-                    width="24px"
-                    height="24px"
-                    hideConer
-                    // hideChainIcon={isSwapType}
-                  />
-                  <div className="flex flex-col text-left">
-                    <span className="symbol">{getTokenSymbol(token)}</span>
-                    <span
-                      className={clsx(
-                        'symbol text-12 text-gray-content',
-                        !isSwapType && 'hidden'
-                      )}
-                    >
-                      ${splitNumberByStep((token.price || 0).toFixed(2))}
-                    </span>
-                  </div>
-                </div>
+          : displayList.map((token) => {
+              const chainItem = findChainByServerID(token.chain);
+              const disabled =
+                !!supportChains?.length &&
+                chainItem &&
+                !supportChains.includes(chainItem.enum);
 
-                <div className={clsx(isSwapType && 'hidden')}>
-                  ${splitNumberByStep((token.price || 0).toFixed(2))}
-                </div>
-
-                <div className="flex flex-col text-right items-end">
-                  <div
-                    className="max-w-full font-medium text-13 text-gray-title truncate ml-[8px]"
-                    title={formatTokenAmount(token.amount)}
-                  >
-                    {isSwapType
-                      ? token.amount !== 0 && token.amount < 0.0001
-                        ? '< 0.0001'
-                        : formatTokenAmount(token.amount)
-                      : formatTokenAmount(token.amount)}
-                  </div>
-                  <div
-                    title={splitNumberByStep(
-                      new BigNumber(token.price || 0)
-                        .times(token.amount)
-                        .toFixed(2)
-                    )}
+              return (
+                <Tooltip
+                  key={`${token.chain}-${token.id}`}
+                  trigger={['click', 'hover']}
+                  mouseEnterDelay={3}
+                  overlayClassName={clsx('rectangle left-[20px]')}
+                  placement="top"
+                  title={disabledTips}
+                  visible={disabled ? undefined : false}
+                >
+                  <li
                     className={clsx(
-                      'max-w-full text-12 text-gray-content',
-                      !isSwapType && 'hidden',
-                      'truncate'
+                      'token-list__item h-[52px]',
+                      isSwapType && 'justify-between',
+                      disabled && 'opacity-50'
                     )}
+                    onClick={() => !disabled && onConfirm(token)}
+                    title={getTokenSymbol(token)}
                   >
-                    $
-                    {splitNumberByStep(
-                      new BigNumber(token.price || 0)
-                        .times(token.amount)
-                        .toFixed(2)
-                    )}
-                  </div>
-                </div>
-              </li>
-            ))}
+                    <div>
+                      <TokenWithChain
+                        token={token}
+                        width="24px"
+                        height="24px"
+                        hideConer
+                        // hideChainIcon={isSwapType}
+                      />
+                      <div className="flex flex-col text-left">
+                        <span className="symbol">{getTokenSymbol(token)}</span>
+                        <span
+                          className={clsx(
+                            'symbol text-12 text-gray-content',
+                            !isSwapType && 'hidden'
+                          )}
+                        >
+                          ${splitNumberByStep((token.price || 0).toFixed(2))}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={clsx(isSwapType && 'hidden')}>
+                      ${splitNumberByStep((token.price || 0).toFixed(2))}
+                    </div>
+
+                    <div className="flex flex-col text-right items-end">
+                      <div
+                        className="max-w-full font-medium text-13 text-gray-title truncate ml-[8px]"
+                        title={formatTokenAmount(token.amount)}
+                      >
+                        {isSwapType
+                          ? token.amount !== 0 && token.amount < 0.0001
+                            ? '< 0.0001'
+                            : formatTokenAmount(token.amount)
+                          : formatTokenAmount(token.amount)}
+                      </div>
+                      <div
+                        title={splitNumberByStep(
+                          new BigNumber(token.price || 0)
+                            .times(token.amount)
+                            .toFixed(2)
+                        )}
+                        className={clsx(
+                          'max-w-full text-12 text-gray-content',
+                          !isSwapType && 'hidden',
+                          'truncate'
+                        )}
+                      >
+                        $
+                        {splitNumberByStep(
+                          new BigNumber(token.price || 0)
+                            .times(token.amount)
+                            .toFixed(2)
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                </Tooltip>
+              );
+            })}
       </ul>
     </Drawer>
   );

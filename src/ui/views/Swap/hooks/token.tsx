@@ -229,7 +229,7 @@ export const useTokenPair = (userAddress: string) => {
           ...getChainDefaultToken(c),
           ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
         });
-        setPayToken(undefined);
+        // setPayToken(undefined);
       }
       setPayAmount('');
       setActiveProvider(undefined);
