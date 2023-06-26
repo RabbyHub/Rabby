@@ -50,8 +50,8 @@ const PortfolioHeader = ({
           </p>
         ) : null}
       </div>
-      <div className="net-worth text-12">
-        <span>{data._netWorth}</span>
+      <div className="net-worth text-13">
+        <p>{data._netWorth}</p>
         {showHistory ? (
           <span>
             {data._netWorthChange !== '-'

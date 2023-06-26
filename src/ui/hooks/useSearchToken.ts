@@ -74,7 +74,10 @@ const useSearchToken = (
   }, [kw]);
 
   useEffect(() => {
-    if (!address || !kw) return;
+    if (!address || !kw) {
+      setIsLoading(false);
+      return;
+    }
     searchToken({
       address,
       q: kw,

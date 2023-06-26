@@ -34,7 +34,7 @@ export const ChainItem: React.FC<Props> = ({
     >
       <TooltipWithMagnetArrow className="rectangle" title={name}>
         <img
-          className={clsx('w-16 h-16', {
+          className={clsx('w-16 h-16 rounded-full', {
             'opacity-30': inactive,
           })}
           src={logo_url}
