@@ -77,13 +77,16 @@ const useChainSeletorList = ({
     [pinned]
   );
   const { allSearched, matteredList, unmatteredList } = useMemo(() => {
-    let unpinnedChainListWithBalance = [] as Chain[];
-    let pinnedChainListWithBalance = [] as Chain[];
-    const pinnedChainListWithoutBalance = [] as Chain[];
-    const unmatteredList = [] as Chain[];
-
-    // we have ensured allSearched chain enum is valid above
-    const _pinnedList = pinned.map((chain) => CHAINS[chain]);
+    const unpinnedListGroup = {
+      withBalance: [] as Chain[],
+      withoutBalance: [] as Chain[],
+      disabled: [] as Chain[],
+    };
+    const pinnedListGroup = {
+      withBalance: [] as Chain[],
+      withoutBalance: [] as Chain[],
+      disabled: [] as Chain[],
+    };
 
     const _all = Object.values(CHAINS).sort((a, b) =>
       a.name.localeCompare(b.name)
@@ -93,40 +96,61 @@ const useChainSeletorList = ({
       const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
 
       if (!inPinned) {
-        if (!matteredChainBalances[item.serverId]) {
-          unmatteredList.push(item);
+        if (supportChains?.length && !supportChains.includes(item.enum)) {
+          unpinnedListGroup.disabled.push(item);
+        } else if (!matteredChainBalances[item.serverId]) {
+          unpinnedListGroup.withoutBalance.push(item);
         } else {
-          unpinnedChainListWithBalance.push(item);
+          unpinnedListGroup.withBalance.push(item);
         }
       } else {
-        if (!matteredChainBalances[item.serverId]) {
-          pinnedChainListWithoutBalance.push(item);
+        if (supportChains?.length && !supportChains.includes(item.enum)) {
+          pinnedListGroup.disabled.push(item);
+        } else if (!matteredChainBalances[item.serverId]) {
+          pinnedListGroup.withoutBalance.push(item);
         } else {
-          pinnedChainListWithBalance.push(item);
+          pinnedListGroup.withBalance.push(item);
         }
       }
     });
 
-    unpinnedChainListWithBalance = sortChainItems(
-      unpinnedChainListWithBalance,
-      { supportChains, cachedChainBalances: matteredChainBalances }
-    );
-    pinnedChainListWithBalance = sortChainItems(pinnedChainListWithBalance, {
+    pinnedListGroup.withBalance = sortChainItems(pinnedListGroup.withBalance, {
       supportChains,
       cachedChainBalances: matteredChainBalances,
     });
+    unpinnedListGroup.withBalance = sortChainItems(
+      unpinnedListGroup.withBalance,
+      {
+        supportChains,
+        cachedChainBalances: matteredChainBalances,
+      }
+    );
     const searchKw = search?.trim();
 
     const allSearched = searchChains(_all, search);
+
+    pinnedListGroup.disabled = sortChainItems(pinnedListGroup.disabled, {
+      supportChains,
+      cachedChainBalances: matteredChainBalances,
+    });
+    unpinnedListGroup.disabled = sortChainItems(unpinnedListGroup.disabled, {
+      supportChains,
+      cachedChainBalances: matteredChainBalances,
+    });
 
     return {
       allSearched,
       matteredList: searchKw
         ? []
-        : pinnedChainListWithBalance
-            .concat(pinnedChainListWithoutBalance)
-            .concat(unpinnedChainListWithBalance),
-      unmatteredList: searchKw ? [] : unmatteredList,
+        : [
+            ...pinnedListGroup.withBalance,
+            ...pinnedListGroup.withoutBalance,
+            ...unpinnedListGroup.withBalance,
+            ...pinnedListGroup.disabled,
+          ],
+      unmatteredList: searchKw
+        ? []
+        : [...unpinnedListGroup.withoutBalance, ...unpinnedListGroup.disabled],
     };
   }, [search, pinned, supportChains, matteredChainBalances]);
 
