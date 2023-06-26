@@ -71,6 +71,7 @@ const ProtocolItemWrapper = styled.div`
 `;
 const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
   const intersectionRef = React.useRef<HTMLDivElement>(null);
+  const divRef = React.useRef<HTMLDivElement>(null);
   const intersection = useIntersection(intersectionRef, {
     root: null,
     rootMargin: '-20px',
@@ -78,7 +79,6 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
   });
   const [isDisplay, setIsDisplay] = useState(true);
   const [height, setHeight] = useState(0);
-  const isReady = useRef(false);
 
   useEffect(() => {
     if (
@@ -92,12 +92,11 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
   }, [intersection]);
 
   useEffect(() => {
-    isReady.current = true;
-    if (intersectionRef.current) {
-      const rect = intersectionRef.current.getBoundingClientRect();
+    if (intersectionRef.current && divRef.current) {
+      const rect = divRef.current.getBoundingClientRect();
       setHeight(rect.height);
     }
-  }, []);
+  }, [protocol._portfolios.length]);
 
   return (
     <ProtocolItemWrapper
@@ -107,6 +106,7 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
       }}
     >
       <div
+        ref={divRef}
         style={{
           display: isDisplay ? 'block' : 'none',
         }}

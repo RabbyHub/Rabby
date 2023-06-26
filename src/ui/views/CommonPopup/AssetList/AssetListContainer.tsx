@@ -73,6 +73,16 @@ export const AssetListContainer: React.FC<Props> = ({
     inputRef.current?.focus();
   }, []);
 
+  React.useEffect(() => {
+    if (!visible) {
+      setActiveTab(TokenTabEnum.List);
+      setSearch('');
+      inputRef.current?.setValue('');
+      inputRef.current?.focus();
+      inputRef.current?.blur();
+    }
+  }, [visible]);
+
   if (isTokensLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
   }

@@ -419,7 +419,7 @@ const Dashboard = () => {
             <Queue
               count={gnosisPendingCount || 0}
               className={clsx(
-                'transition-opacity',
+                'transition-all',
                 showChain ? 'opacity-0 pointer-events-none' : 'opacity-100'
               )}
             />

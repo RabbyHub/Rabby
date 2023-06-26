@@ -421,21 +421,21 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     },
   ];
 
-  // if (process.env.DEBUG) {
-  //   renderData.splice(-1, 0, {
-  //     leftIcon: IconServer,
-  //     content: t('Backend Service URL'),
-  //     onClick: () => setShowOpenApiModal(true),
-  //     rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-  //   } as typeof renderData[0]);
-  // }
+  if (process.env.DEBUG) {
+    renderData.splice(-1, 0, {
+      leftIcon: IconServer,
+      content: t('Backend Service URL'),
+      onClick: () => setShowOpenApiModal(true),
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    } as typeof renderData[0]);
+  }
 
-  // if (process.env.DEBUG) {
-  //   renderData.push({
-  //     content: t('Clear Watch Mode'),
-  //     onClick: handleClickClearWatchMode,
-  //   } as typeof renderData[0]);
-  // }
+  if (process.env.DEBUG) {
+    renderData.push({
+      content: t('Clear Watch Mode'),
+      onClick: handleClickClearWatchMode,
+    } as typeof renderData[0]);
+  }
 
   const lockWallet = async () => {
     matomoRequestEvent({

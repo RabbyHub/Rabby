@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import IconPendingTx from 'ui/assets/dashboard/pending-tx.svg';
+import clsx from 'clsx';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -12,7 +13,7 @@ const Wrapper = styled.div`
   font-size: 13px;
   line-height: 15px;
   color: #fff;
-  top: 76px;
+  top: 70px;
   right: 20px;
   cursor: pointer;
   user-select: none;
@@ -42,7 +43,14 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
   };
 
   return (
-    <Wrapper className="group" onClick={handleClickPendingTxs}>
+    <Wrapper
+      className={clsx(
+        'group max-w-[62px] hover:max-w-[200px]',
+        'transition-all ease-in-out',
+        'whitespace-nowrap overflow-hidden overflow-ellipsis'
+      )}
+      onClick={handleClickPendingTxs}
+    >
       <div className="group-hover:hidden flex relative">
         <IconPendingTxElement
           className="w-[20px] h-[20px] mr-0"

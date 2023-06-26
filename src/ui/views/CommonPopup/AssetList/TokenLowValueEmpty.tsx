@@ -6,7 +6,7 @@ export const TokenLowValueEmpty: React.FC = () => {
     <div className="mt-[117px]">
       <AssetEmptySVG className="m-auto" />
       <div className="mt-[24px] text-gray-subTitle text-13 text-center">
-        Custom token added by you will be shown here
+        Low value assets will be shown here
       </div>
     </div>
   );

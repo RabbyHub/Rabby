@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
+  align-items: start;
   margin-bottom: 16px;
   .name {
     background: rgba(134, 151, 255, 0.1);

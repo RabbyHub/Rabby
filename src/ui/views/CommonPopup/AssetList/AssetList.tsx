@@ -11,7 +11,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
   };
 
   React.useEffect(() => {
-    setHeight(494);
+    setHeight(488);
   }, []);
 
   return (

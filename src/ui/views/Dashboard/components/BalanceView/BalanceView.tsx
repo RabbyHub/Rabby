@@ -12,6 +12,7 @@ import { useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
+import { useDebounce } from 'react-use';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [
@@ -39,6 +40,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [startRefresh, setStartRefresh] = useState(false);
+  const [isDebounceHover, setIsDebounceHover] = useState(false);
 
   const onRefresh = () => {
     setStartRefresh(true);
@@ -102,16 +104,35 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     }
   }, [balanceLoading, curveLoading]);
 
-  const currentBalance = curvePoint?.value || balance;
+  const onMouseMove = () => {
+    setHover(true);
+  };
+  const onMouseLeave = () => {
+    setHover(false);
+    setIsDebounceHover(false);
+  };
+
+  useDebounce(
+    () => {
+      if (isHover) {
+        setIsDebounceHover(true);
+      }
+    },
+    150,
+    [isHover]
+  );
+
+  const currentHover = isDebounceHover;
+  const currentBalance = currentHover ? curvePoint?.value : balance;
   const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
-  const currentChangePercent =
-    curvePoint?.changePercent || curveData?.changePercent;
+  const currentChangePercent = currentHover
+    ? curvePoint?.changePercent
+    : curveData?.changePercent;
   const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
-  const currentChangeValue = curvePoint?.change;
-  const currentHover = isHover;
+  const currentChangeValue = currentHover ? curvePoint?.change : null;
 
   return (
-    <div onMouseLeave={() => setHover(false)} className={clsx('assets flex')}>
+    <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left">
         <div onClick={onRefresh} className={clsx('amount group', 'text-32')}>
           <div className={clsx('amount-number leading-[38px]')}>
@@ -156,8 +177,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         </div>
         <div
           onClick={onClickViewAssets}
-          onMouseMove={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
           className={clsx(
             'mt-2',
             currentHover && 'bg-[#00000033] card mx-10 mb-10',
