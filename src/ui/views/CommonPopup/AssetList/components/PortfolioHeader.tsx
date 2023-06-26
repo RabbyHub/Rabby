@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
+  align-items: center;
+  margin-bottom: 16px;
   .name {
     background: rgba(134, 151, 255, 0.1);
     border-radius: 10px;
@@ -24,6 +26,7 @@ const Wrapper = styled.div`
     flex: 1;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
   }
 `;
 const PortfolioHeader = ({
@@ -39,7 +42,7 @@ const PortfolioHeader = ({
 }) => {
   return (
     <Wrapper>
-      <div className="flex items-start">
+      <div className="flex items-center">
         <div className="name mr-6">{name}</div>
         {showDescription ? (
           <p className="description">
@@ -50,11 +53,11 @@ const PortfolioHeader = ({
       <div className="net-worth text-13">
         <p>{data._netWorth}</p>
         {showHistory ? (
-          <p>
+          <span>
             {data._netWorthChange !== '-'
               ? `${data._changePercentStr} (${data._netWorthChange})`
               : '-'}
-          </p>
+          </span>
         ) : null}
       </div>
     </Wrapper>

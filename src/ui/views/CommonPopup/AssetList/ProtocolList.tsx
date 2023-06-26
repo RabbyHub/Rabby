@@ -122,7 +122,7 @@ const ProtocolItem = ({ protocol }: { protocol: DisplayedProject }) => {
           <span className="net-worth">{protocol._netWorth}</span>
         </div>
         {protocol._portfolios.map((portfolio) => (
-          <PoolItem item={portfolio} />
+          <PoolItem item={portfolio} key={portfolio.id} />
         ))}
       </div>
     </ProtocolItemWrapper>
