@@ -39,9 +39,6 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-    hasPortfolios,
-    grossNetWorth,
-    tokenNetWorth,
   } = useQueryProjects(currentAccount?.address, false, visible);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
@@ -50,7 +47,8 @@ export const AssetListContainer: React.FC<Props> = ({
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
     search,
-    selectChainId ? selectChainId : undefined
+    selectChainId ? selectChainId : undefined,
+    true
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;

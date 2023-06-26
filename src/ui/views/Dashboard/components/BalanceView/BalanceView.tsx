@@ -118,7 +118,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         setIsDebounceHover(true);
       }
     },
-    150,
+    300,
     [isHover]
   );
 
