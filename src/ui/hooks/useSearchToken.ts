@@ -37,6 +37,9 @@ const useSearchToken = (
         list = await wallet.openapi.searchToken(address, q, chainId, true);
       } else {
         list = await wallet.openapi.searchToken(address, q, chainId);
+        if (withBalance) {
+          list = list.filter((item) => item.amount > 0);
+        }
       }
       const reg = new RegExp(q, 'i');
       const matchCustomTokens = customize.filter((token) => {
@@ -48,9 +51,6 @@ const useSearchToken = (
       });
       if (addressRef.current === address && kwRef.current === q) {
         setIsLoading(false);
-        if (withBalance) {
-          list = list.filter((item) => item.amount > 0);
-        }
         setResult(
           [
             ...(list.map(

@@ -252,9 +252,12 @@ export const Main = () => {
           <TokenSelect
             token={payToken}
             onTokenChange={(token) => {
-              setPayToken(token);
               const chainItem = findChainByServerID(token.chain);
-              switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setReceiveToken(undefined);
+              }
+              setPayToken(token);
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapFrom'}
@@ -269,17 +272,19 @@ export const Main = () => {
           <TokenSelect
             token={receiveToken}
             onTokenChange={(token) => {
-              setReceiveToken(token);
               const chainItem = findChainByServerID(token.chain);
-              switchChain(chainItem?.enum || CHAINS_ENUM.ETH, {
-                changeTo: true,
-              });
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setPayToken(undefined);
+              }
+              setReceiveToken(token);
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
             placeholder={'Search by Name / Address'}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
+            useSwapTokenList
           />
         </div>
 

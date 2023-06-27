@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
+import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
@@ -216,7 +216,7 @@ const TokenSelector = ({
             <div className="filter-item__chain">
               <img
                 className="filter-item__chain-logo"
-                src={chainItem.nativeTokenLogo}
+                src={chainItem.logo}
                 alt={chainItem.name}
               />
               <span className="ml-[4px]">{chainItem.name}</span>
@@ -238,11 +238,9 @@ const TokenSelector = ({
       </div>
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
-          <div>{t('Token')}</div>
-          {!isSwapType && <div>{t('Price')}</div>}
-          <div>
-            {isSwapType ? t('Balance') + ' / ' + t('Value') : t('Balance')}
-          </div>
+          <div>ASSET / AMOUNT</div>
+          <div>PRICE</div>
+          <div>USD VALUE</div>
         </li>
         {isEmpty
           ? NoDataUI
@@ -266,11 +264,9 @@ const TokenSelector = ({
                   <li
                     className={clsx(
                       'token-list__item h-[52px]',
-                      isSwapType && 'justify-between',
                       disabled && 'opacity-50'
                     )}
                     onClick={() => !disabled && onConfirm(token)}
-                    title={getTokenSymbol(token)}
                   >
                     <div>
                       <TokenWithChain
@@ -278,53 +274,38 @@ const TokenSelector = ({
                         width="24px"
                         height="24px"
                         hideConer
-                        // hideChainIcon={isSwapType}
                       />
-                      <div className="flex flex-col text-left">
-                        <span className="symbol">{getTokenSymbol(token)}</span>
+                      <div className="flex flex-col gap-4">
                         <span
-                          className={clsx(
-                            'symbol text-12 text-gray-content',
-                            !isSwapType && 'hidden'
-                          )}
+                          className="symbol text-13 text-gray-title font-medium"
+                          title={token.amount.toString()}
                         >
-                          ${splitNumberByStep((token.price || 0).toFixed(2))}
+                          {formatTokenAmount(token.amount)}
+                        </span>
+                        <span className="symbol" title={getTokenSymbol(token)}>
+                          {getTokenSymbol(token)}
                         </span>
                       </div>
                     </div>
 
-                    <div className={clsx(isSwapType && 'hidden')}>
-                      ${splitNumberByStep((token.price || 0).toFixed(2))}
-                    </div>
+                    <div>{formatUsdValue(token.price)}</div>
 
                     <div className="flex flex-col text-right items-end">
                       <div
-                        className="max-w-full font-medium text-13 text-gray-title truncate ml-[8px]"
-                        title={formatTokenAmount(token.amount)}
-                      >
-                        {isSwapType
-                          ? token.amount !== 0 && token.amount < 0.0001
-                            ? '< 0.0001'
-                            : formatTokenAmount(token.amount)
-                          : formatTokenAmount(token.amount)}
-                      </div>
-                      <div
-                        title={splitNumberByStep(
+                        title={formatUsdValue(
                           new BigNumber(token.price || 0)
                             .times(token.amount)
-                            .toFixed(2)
+                            .toFixed()
                         )}
                         className={clsx(
-                          'max-w-full text-12 text-gray-content',
-                          !isSwapType && 'hidden',
+                          'max-w-full text-13 text-gray-title',
                           'truncate'
                         )}
                       >
-                        $
-                        {splitNumberByStep(
+                        {formatUsdValue(
                           new BigNumber(token.price || 0)
                             .times(token.amount)
-                            .toFixed(2)
+                            .toFixed()
                         )}
                       </div>
                     </div>
