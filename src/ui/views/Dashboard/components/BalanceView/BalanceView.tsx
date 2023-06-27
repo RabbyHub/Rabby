@@ -74,7 +74,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        hasValueChainBalances,
+        matteredChainBalances: hasValueChainBalances,
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
