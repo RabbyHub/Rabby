@@ -231,14 +231,14 @@ const TokenDetail = ({
           token.is_core ? (
             <BlockedButton
               selected={isAdded}
-              onOpen={() => addToken(token)}
-              onClose={() => removeToken(token)}
+              onOpen={() => addToken(tokenWithAmount)}
+              onClose={() => removeToken(tokenWithAmount)}
             />
           ) : (
             <CustomizedButton
               selected={isAdded}
-              onOpen={() => addToken(token)}
-              onClose={() => removeToken(token)}
+              onOpen={() => addToken(tokenWithAmount)}
+              onClose={() => removeToken(tokenWithAmount)}
             />
           )
         ) : null}

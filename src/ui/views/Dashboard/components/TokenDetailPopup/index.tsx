@@ -24,35 +24,35 @@ export const TokenDetailPopup = ({
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [isAdded, setIsAdded] = React.useState(false);
-  const handleAddToken = React.useCallback(() => {
-    if (!token) return;
+  const handleAddToken = React.useCallback((tokenWithAmount) => {
+    if (!tokenWithAmount) return;
 
-    if (token.is_core) {
+    if (tokenWithAmount.is_core) {
       dispatch.account.addBlockedToken(
-        new DisplayedToken(token) as AbstractPortfolioToken
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
       );
     } else {
       dispatch.account.addCustomizeToken(
-        new DisplayedToken(token) as AbstractPortfolioToken
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
       );
     }
     setIsAdded(true);
-  }, [token]);
+  }, []);
 
-  const handleRemoveToken = React.useCallback(() => {
-    if (!token) return;
+  const handleRemoveToken = React.useCallback((tokenWithAmount) => {
+    if (!tokenWithAmount) return;
 
-    if (token?.is_core) {
+    if (tokenWithAmount?.is_core) {
       dispatch.account.removeBlockedToken(
-        new DisplayedToken(token) as AbstractPortfolioToken
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
       );
     } else {
       dispatch.account.removeCustomizeToken(
-        new DisplayedToken(token) as AbstractPortfolioToken
+        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
       );
     }
     setIsAdded(false);
-  }, [token]);
+  }, []);
 
   const checkIsAdded = React.useCallback(async () => {
     if (!token) return;

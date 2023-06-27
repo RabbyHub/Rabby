@@ -20,12 +20,14 @@ interface Props {
   className?: string;
   selectChainId: string | null;
   visible: boolean;
+  onEmptyAssets: (isEmpty: boolean) => void;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
   className,
   selectChainId,
   visible,
+  onEmptyAssets,
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
@@ -40,10 +42,22 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
+    customizeTokens,
   } = useQueryProjects(currentAccount?.address, false, visible);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
+  const isEmptyAssets =
+    !isTokensLoading &&
+    !tokenList.length &&
+    !isPortfoliosLoading &&
+    !portfolios?.length &&
+    !customizeTokens.length;
+
+  React.useEffect(() => {
+    onEmptyAssets(isEmptyAssets);
+  }, [isEmptyAssets]);
+
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
