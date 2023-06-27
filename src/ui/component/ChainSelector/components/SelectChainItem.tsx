@@ -83,7 +83,7 @@ export const SelectChainItem = forwardRef(
               {!!cachedChainBalances[data.serverId]?.usd_value && (
                 <div className="select-chain-item-balance">
                   <img
-                    className="w-[14px] h-[14px]"
+                    className="w-[14px] h-[14px] mt-1"
                     src={IconChainBalance}
                     alt={formatUsdValue(
                       cachedChainBalances[data.serverId]?.usd_value || 0
