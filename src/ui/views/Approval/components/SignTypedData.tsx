@@ -366,6 +366,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setEngineResults(result);
   };
 
+  const handleIgnoreAllRules = () => {
+    dispatch.securityEngine.processAllRules(
+      engineResults.map((result) => result.id)
+    );
+  };
+
   const handleIgnoreRule = (id: string) => {
     dispatch.securityEngine.processRule(id);
     dispatch.securityEngine.closeRuleDrawer();
@@ -468,6 +474,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             isWatch ||
             hasUnProcessSecurityResult
           }
+          onIgnoreAllRules={handleIgnoreAllRules}
         />
       </footer>
       <RuleDrawer

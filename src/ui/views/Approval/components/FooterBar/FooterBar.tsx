@@ -23,6 +23,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   hasUnProcessSecurityResult?: boolean;
   hasShadow?: boolean;
   engineResults?: Result[];
+  onIgnoreAllRules(): void;
 }
 
 const Wrapper = styled.section`
@@ -74,11 +75,11 @@ const Wrapper = styled.section`
   .security-level-tip {
     margin-top: 10px;
     border-radius: 4px;
-    padding: 6px 13px 6px 8px;
+    padding: 6px 10px 6px 8px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    display: inline-flex;
+    display: flex;
     position: relative;
     .icon-level {
       width: 14px;
@@ -93,8 +94,7 @@ const Wrapper = styled.section`
       border: 5px solid transparent;
       border-bottom: 8px solid currentColor;
       top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 115px;
     }
   }
 `;
@@ -116,17 +116,17 @@ const Shadow = styled.div`
 
 const SecurityLevelTipColor = {
   [Level.FORBIDDEN]: {
-    bg: '#EFCFCF',
+    bg: 'rgba(175, 22, 14, 0.1)',
     text: '#AF160E',
     icon: SecurityEngineLevel[Level.FORBIDDEN].icon,
   },
   [Level.DANGER]: {
-    bg: '#FCDCDC',
+    bg: 'rgba(236, 81, 81, 0.1)',
     text: '#EC5151',
     icon: SecurityEngineLevel[Level.DANGER].icon,
   },
   [Level.WARNING]: {
-    bg: '#FFEFD2',
+    bg: 'rgba(255, 176, 32, 0.1)',
     text: '#FFB020',
     icon: SecurityEngineLevel[Level.WARNING].icon,
   },
@@ -140,6 +140,7 @@ export const FooterBar: React.FC<Props> = ({
   engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
+  onIgnoreAllRules,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -168,7 +169,6 @@ export const FooterBar: React.FC<Props> = ({
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
-    console.log('rule', rule);
     if (!rule) return;
     const result = engineResultMap[id];
     dispatch.securityEngine.openRuleDrawer({
@@ -256,6 +256,7 @@ export const FooterBar: React.FC<Props> = ({
               className="icon icon-level"
             />
             <span
+              className="flex-1"
               style={{
                 color: SecurityLevelTipColor[securityLevel].text,
               }}
@@ -264,6 +265,17 @@ export const FooterBar: React.FC<Props> = ({
                 ? 'Found forbidden risks. Unable to sign'
                 : 'Please process the alert before signing'}
             </span>
+            {securityLevel !== Level.FORBIDDEN && (
+              <span
+                className="underline text-13 font-medium cursor-pointer"
+                style={{
+                  color: SecurityLevelTipColor[securityLevel].text,
+                }}
+                onClick={onIgnoreAllRules}
+              >
+                Ignore all
+              </span>
+            )}
           </div>
         )}
       </Wrapper>
