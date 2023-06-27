@@ -42,7 +42,6 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-    customizeTokens,
   } = useQueryProjects(currentAccount?.address, false, visible);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
@@ -51,8 +50,7 @@ export const AssetListContainer: React.FC<Props> = ({
     !isTokensLoading &&
     !tokenList.length &&
     !isPortfoliosLoading &&
-    !portfolios?.length &&
-    !customizeTokens.length;
+    !portfolios?.length;
 
   React.useEffect(() => {
     onEmptyAssets(isEmptyAssets);
