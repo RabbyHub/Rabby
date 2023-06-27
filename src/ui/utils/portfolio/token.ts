@@ -201,11 +201,6 @@ export const useTokens = (
     );
     dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
     dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
-    if (!tokenRes || !tokenRes.length) {
-      // failed request
-      setLoading(false);
-      return;
-    }
 
     const tokensDict: Record<string, TokenItem[]> = {};
     tokenRes.forEach((token) => {
