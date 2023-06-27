@@ -173,7 +173,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           >
             {currentIsLoss ? '-' : '+'}
             <span>{currentChangePercent}</span>
-            {currentChangeValue ? <span>({currentChangeValue})</span> : null}
+            {currentChangeValue ? (
+              <span className="ml-4">({currentChangeValue})</span>
+            ) : null}
           </div>
         </div>
         <div

@@ -120,20 +120,23 @@ export const AssetListContainer: React.FC<Props> = ({
           {activeTab === TokenTabEnum.History && !search && <HistoryList />}
         </div>
       )}
-      {isPortfoliosLoading ? (
-        <TokenListSkeleton />
-      ) : (
-        activeTab !== TokenTabEnum.Summary &&
-        activeTab !== TokenTabEnum.History && (
-          <div
-            style={{
-              display: visible ? 'block' : 'none',
-            }}
-          >
-            <ProtocolList list={filteredPortfolios} />
-          </div>
-        )
-      )}
+
+      <div
+        style={{
+          display:
+            visible &&
+            activeTab !== TokenTabEnum.Summary &&
+            activeTab !== TokenTabEnum.History
+              ? 'block'
+              : 'none',
+        }}
+      >
+        {isPortfoliosLoading ? (
+          <TokenListSkeleton />
+        ) : (
+          <ProtocolList list={filteredPortfolios} />
+        )}
+      </div>
     </div>
   );
 };
