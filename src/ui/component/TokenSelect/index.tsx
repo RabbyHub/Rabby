@@ -111,6 +111,10 @@ const TokenSelect = ({
 
   const handleTokenSelectorClose = () => {
     setTokenSelectorVisible(false);
+    setQueryConds((prev) => ({
+      ...prev,
+      chainServerId: chainId,
+    }));
   };
 
   const handleSelectToken = () => {

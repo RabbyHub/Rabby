@@ -70,7 +70,7 @@ const TokenSelector = ({
         chainItem: chain,
       },
     };
-  }, [chainServerId]);
+  }, [chainServerId, visible]);
 
   useDebounce(
     () => {

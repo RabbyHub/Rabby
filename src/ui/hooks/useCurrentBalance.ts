@@ -43,7 +43,7 @@ export default function useCurrentBalance(
       setBalance(total_usd_value);
       setSuccess(true);
       setChainBalances(
-        chain_list.filter((item) => item.usd_value > 0).map(formatChain)
+        chain_list.filter((item) => item.born_at !== null).map(formatChain)
       );
       setBalanceLoading(false);
       setBalanceFromCache(false);
@@ -85,7 +85,7 @@ export default function useCurrentBalance(
         setChainBalances(
           cache
             ? cache.chain_list
-                .filter((item) => item.usd_value > 0)
+                .filter((item) => item.born_at !== null)
                 .map(formatChain)
             : []
         );

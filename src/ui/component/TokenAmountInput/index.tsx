@@ -62,6 +62,7 @@ const TokenAmountInput = ({
   };
 
   const handleTokenSelectorClose = () => {
+    setChainServerId(chainId);
     setTokenSelectorVisible(false);
   };
 
