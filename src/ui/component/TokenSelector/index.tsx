@@ -220,9 +220,8 @@ const TokenSelector = ({
                 alt={chainItem.name}
               />
               <span className="ml-[4px]">{chainItem.name}</span>
-              <img
-                className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                src={IconChainFilterClose}
+              <div
+                className="py-4 cursor-pointer"
                 onClick={() => {
                   onRemoveChainFilter?.({ chainServerId, chainItem });
                   onSearch({
@@ -231,7 +230,12 @@ const TokenSelector = ({
                     keyword: query,
                   });
                 }}
-              />
+              >
+                <img
+                  className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
+                  src={IconChainFilterClose}
+                />
+              </div>
             </div>
           </>
         )}
