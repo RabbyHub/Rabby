@@ -14,6 +14,7 @@ import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
 import { SummaryList } from './SummaryList';
 import { HistoryList } from './HisotryList';
+import { useFilterProtocolList } from './useFilterProtocolList';
 
 interface Props {
   className?: string;
@@ -66,6 +67,10 @@ export const AssetListContainer: React.FC<Props> = ({
   }, [portfolios, selectChainId]);
 
   const sortTokens = useSortTokens(displayTokenList);
+  const filteredPortfolios = useFilterProtocolList({
+    list: displayPortfolios,
+    kw: search,
+  });
 
   const handleFocusInput = React.useCallback(() => {
     inputRef.current?.focus();
@@ -85,6 +90,14 @@ export const AssetListContainer: React.FC<Props> = ({
     return <TokenListViewSkeleton />;
   }
 
+  const isNoResults =
+    !isSearching &&
+    !isTokensLoading &&
+    !isPortfoliosLoading &&
+    !!search &&
+    !sortTokens.length &&
+    !filteredPortfolios?.length;
+
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12">
@@ -100,6 +113,7 @@ export const AssetListContainer: React.FC<Props> = ({
               list={sortTokens}
               onFocusInput={handleFocusInput}
               isSearch={!!search}
+              isNoResults={isNoResults}
             />
           )}
           {activeTab === TokenTabEnum.Summary && !search && <SummaryList />}
@@ -116,7 +130,7 @@ export const AssetListContainer: React.FC<Props> = ({
               display: visible ? 'block' : 'none',
             }}
           >
-            <ProtocolList list={displayPortfolios} kw={search} />
+            <ProtocolList list={filteredPortfolios} />
           </div>
         )
       )}

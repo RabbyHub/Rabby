@@ -39,13 +39,14 @@ const Queue = ({ count, className }: QueueProps) => {
         className,
         'ease-in-out',
         'group max-w-[62px] hover:max-w-[200px]',
-        'whitespace-nowrap overflow-hidden overflow-ellipsis'
+        'whitespace-nowrap overflow-hidden overflow-ellipsis',
+        'flex justify-end'
       )}
     >
-      <span className="group-hover:block hidden">
-        {count ? `${count} in Queue` : 'Queue'}
-      </span>
-      <span className="group-hover:hidden block">Queue</span>
+      <div className="group-hover:block hidden">
+        {count ? <span className="mr-4">{count} in</span> : null}
+      </div>
+      <div>Queue</div>
     </Wrapper>
   );
 };

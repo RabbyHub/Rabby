@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useIntersection } from 'react-use';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
-import { isSameAddress } from '@/ui/utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -139,61 +138,22 @@ const ProtocolItem = ({
 
 interface Props {
   list: DisplayedProject[] | undefined;
-  kw: string;
 }
 
 const ProtocolListWrapper = styled.div`
   margin-top: 30px;
 `;
 
-const ProtocolList = ({ list, kw }: Props) => {
-  const displayList = useMemo(() => {
-    if (!list || !kw) return list;
-    const result: DisplayedProject[] = [];
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      const portfolios =
-        item._rawPortfolios?.filter((portfolio) => {
-          const hasToken = portfolio.asset_token_list.some((token) => {
-            if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
-              return isSameAddress(token.id, kw);
-            } else {
-              const reg = new RegExp(kw, 'i');
-              return (
-                reg.test(token.display_symbol || '') ||
-                reg.test(token.symbol) ||
-                reg.test(token.display_symbol || '') ||
-                reg.test(token.name)
-              );
-            }
-          });
-          return hasToken;
-        }) || [];
-      const project = new DisplayedProject(
-        {
-          chain: item.chain,
-          id: item.id,
-          logo_url: item.logo,
-          name: item.name,
-          site_url: item.site_url,
-        },
-        portfolios
-      );
-      if (portfolios.length > 0) {
-        result.push(project);
-      }
-    }
-    return result;
-  }, [list, kw]);
+const ProtocolList = ({ list }: Props) => {
   const enableVirtualList = useMemo(() => {
-    return (displayList || []).length > 50;
-  }, [displayList]);
+    return (list || []).length > 50;
+  }, [list]);
 
-  if (!displayList) return null;
+  if (!list) return null;
 
   return (
     <ProtocolListWrapper>
-      {displayList.map((item) => (
+      {list.map((item) => (
         <ProtocolItem
           protocol={item}
           key={item.id}

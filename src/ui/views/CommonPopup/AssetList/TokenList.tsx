@@ -6,17 +6,20 @@ import { TokenLowValueItem } from './TokenLowValueItem';
 import { TokenTable } from './components/TokenTable';
 import { BlockedButton } from './BlockedButton';
 import { CustomizedButton } from './CustomizedButton';
+import { TokenListEmpty } from './TokenListEmpty';
 
 export interface Props {
   list?: TokenItemProps['item'][];
   isSearch: boolean;
   onFocusInput: () => void;
+  isNoResults?: boolean;
 }
 
 export const TokenList: React.FC<Props> = ({
   list,
   onFocusInput,
   isSearch,
+  isNoResults,
 }) => {
   const totalValue = React.useMemo(() => {
     return list
@@ -27,6 +30,14 @@ export const TokenList: React.FC<Props> = ({
   const lowValueList = React.useMemo(() => {
     return list?.filter((item) => currentList?.indexOf(item) === -1);
   }, [currentList, list, isSearch]);
+
+  if (isNoResults) {
+    return <TokenListEmpty className="mt-[92px]" text="No Match" />;
+  }
+
+  if (!list?.length || !currentList?.length) {
+    return null;
+  }
 
   return (
     <div>

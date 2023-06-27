@@ -38,7 +38,7 @@ export default {
       return {
         preference: {
           ...data.preference,
-          customizedToken: {},
+          customizedToken: [],
         },
       };
     }

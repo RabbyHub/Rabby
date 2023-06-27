@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
@@ -60,52 +61,56 @@ export const CurveThumbnail = ({
     }
   }, []);
 
+  const isEmpty = !data || data.isEmptyAssets;
+
   return (
     <CurveWrapper ref={divRef} className={className}>
       <CurveGlobalStyle />
-      <AreaChart
-        data={data?.list}
-        width={isHover ? 380 : 400}
-        height={height}
-        style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
-        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-        onMouseMove={(val) => {
-          if (val.activePayload) {
-            onHover(val.activePayload[0].payload);
-          }
-        }}
-        onMouseLeave={() => onHover(undefined)}
-      >
-        <defs>
-          <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-10%" stopColor={color} stopOpacity={0.4} />
-            <stop offset="110%" stopColor={color} stopOpacity={0.2} />
-          </linearGradient>
-        </defs>
-        <XAxis
-          dataKey="timestamp"
-          hide
-          type="number"
-          domain={['dataMin', 'dataMax']}
-        />
-        <YAxis hide domain={['dataMin', 'dataMax']} />
-        {isHover && (
-          <Tooltip
-            content={({ label }) => {
-              return <div>{dayjs(label * 1000).format('HH:mm')}</div>;
-            }}
+      {isEmpty ? null : (
+        <AreaChart
+          data={data?.list}
+          width={isHover ? 380 : 400}
+          height={height}
+          style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
+          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          onMouseMove={(val) => {
+            if (val.activePayload) {
+              onHover(val.activePayload[0].payload);
+            }
+          }}
+          onMouseLeave={() => onHover(undefined)}
+        >
+          <defs>
+            <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="-10%" stopColor={color} stopOpacity={0.4} />
+              <stop offset="110%" stopColor={color} stopOpacity={0.2} />
+            </linearGradient>
+          </defs>
+          <XAxis
+            dataKey="timestamp"
+            hide
+            type="number"
+            domain={['dataMin', 'dataMax']}
           />
-        )}
-        <Area
-          type="linear"
-          dataKey="value"
-          stroke={isHover ? color : 'none'}
-          strokeOpacity={0.8}
-          fill="url(#curveThumbnail)"
-          animationDuration={0}
-          fillOpacity={0.8}
-        />
-      </AreaChart>
+          <YAxis hide domain={['dataMin', 'dataMax']} />
+          {isHover && (
+            <Tooltip
+              content={({ label }) => {
+                return <div>{dayjs(label * 1000).format('HH:mm')}</div>;
+              }}
+            />
+          )}
+          <Area
+            type="linear"
+            dataKey="value"
+            stroke={isHover ? color : 'none'}
+            strokeOpacity={0.8}
+            fill="url(#curveThumbnail)"
+            animationDuration={0}
+            fillOpacity={0.8}
+          />
+        </AreaChart>
+      )}
     </CurveWrapper>
   );
 };

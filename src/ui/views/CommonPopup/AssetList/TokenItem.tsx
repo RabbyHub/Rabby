@@ -66,7 +66,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
       style={style}
       className={clsx(
         'cursor-pointer',
-        'rounded-[6px] border border-transparent -my-1 px-[19px]',
+        'rounded-[6px] border border-transparent -my-1 px-[19px] first-of-type:my-0',
         'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10'
       )}
     >

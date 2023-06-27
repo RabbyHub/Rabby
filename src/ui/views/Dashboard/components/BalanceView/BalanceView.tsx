@@ -76,6 +76,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         matteredChainBalances,
         balance,
         balanceLoading,
+        isEmptyAssets: !matteredChainBalances.length,
       });
     }
   }, [matteredChainBalances, balance, balanceLoading, componentName]);
@@ -180,9 +181,10 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-2',
+            'mt-[3px]',
             currentHover && 'bg-[#00000033] card mx-10 mb-10',
-            'rounded-[4px] relative cursor-pointer'
+            'rounded-[4px] relative cursor-pointer',
+            'overflow-hidden'
           )}
         >
           {currentHover ? (
@@ -193,7 +195,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           ) : null}
           <div
             className={clsx(
-              'extra flex',
+              'extra flex h-[28px]',
               currentHover ? 'mx-[10px] pt-[8px]' : 'mx-20 pt-8'
             )}
           >
@@ -216,9 +218,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>
-            ) : (
-              'No assets'
-            )}
+            ) : null}
           </div>
 
           <div
