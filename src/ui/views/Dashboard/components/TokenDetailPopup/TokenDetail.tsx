@@ -25,6 +25,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { CustomizedButton } from './CustomizedButton';
 import { BlockedButton } from './BlockedButton';
+import { useRabbySelector } from '@/ui/store';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -49,7 +50,10 @@ const TokenDetail = ({
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-
+  const { currentAccount } = useRabbySelector((s) => s.account);
+  const [tokenWithAmount, setTokenWithAmount] = React.useState<TokenItem>(
+    token
+  );
   const shouldSelectDex = false;
 
   const tokenSupportSwap = useMemo(() => {
@@ -60,11 +64,30 @@ const TokenDetail = ({
 
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const fetchData = async (startTime = 0) => {
-    const { address } = (await wallet.syncGetCurrentAccount())!;
+  const getTokenAmount = React.useCallback(async () => {
+    if (token.amount !== undefined) return;
+    const info = await wallet.openapi.getToken(
+      currentAccount!.address,
+      token.chain,
+      token.id
+    );
+    if (info) {
+      setTokenWithAmount({
+        ...token,
+        amount: info.amount,
+      });
+    }
+  }, [token]);
 
+  React.useEffect(() => {
+    if (currentAccount) {
+      getTokenAmount();
+    }
+  }, [currentAccount, getTokenAmount]);
+
+  const fetchData = async (startTime = 0) => {
     const res: TxHistoryResult = await wallet.openapi.listTxHisotry({
-      id: address,
+      id: currentAccount!.address,
       chain_id: token.chain,
       start_time: startTime,
       page_count: PAGE_COUNT,
@@ -224,18 +247,22 @@ const TokenDetail = ({
           <div className="balance-content overflow-hidden">
             <div
               className="balance-value truncate"
-              title={splitNumberByStep((token.amount || 0)?.toFixed(4))}
+              title={splitNumberByStep(
+                (tokenWithAmount.amount || 0)?.toFixed(4)
+              )}
             >
-              {splitNumberByStep((token.amount || 0)?.toFixed(4))}
+              {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(4))}
             </div>
             <div
               className="balance-value-usd truncate"
               title={splitNumberByStep(
-                (token.amount * token.price || 0)?.toFixed(2)
+                (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
               )}
             >
               ≈ $
-              {splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
+              {splitNumberByStep(
+                (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+              )}
             </div>
           </div>
         </div>
