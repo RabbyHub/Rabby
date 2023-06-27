@@ -321,7 +321,12 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
           <p>Token not found from this contract address</p>
         </div>
         <div className="footer">
-          <Button type="primary" size="large" className="w-[200px] h-[48px]">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[200px] h-[48px]"
+            onClick={() => rejectApproval('User rejected the request.')}
+          >
             OK
           </Button>
         </div>
