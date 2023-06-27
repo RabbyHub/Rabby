@@ -103,6 +103,12 @@ export const securityEngine = createModel<RootModel>()({
       });
     },
 
+    processAllRules(ids: string[]) {
+      dispatch.securityEngine.updateCurrentTx({
+        processedRules: ids,
+      });
+    },
+
     unProcessRule(id, store) {
       dispatch.securityEngine.updateCurrentTx({
         processedRules: store.securityEngine.currentTx.processedRules.filter(

@@ -1460,6 +1460,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleIgnoreAllRules = () => {
+    dispatch.securityEngine.processAllRules(
+      engineResults.map((result) => result.id)
+    );
+  };
+
   const handleIgnoreRule = (id: string) => {
     dispatch.securityEngine.processRule(id);
     dispatch.securityEngine.closeRuleDrawer();
@@ -1834,6 +1840,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             chain={chain}
             onCancel={handleCancel}
             onSubmit={() => handleAllow(forceProcess)}
+            onIgnoreAllRules={handleIgnoreAllRules}
             enableTooltip={
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden')

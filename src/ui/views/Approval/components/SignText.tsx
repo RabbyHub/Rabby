@@ -192,6 +192,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setEngineResults(result);
   };
 
+  const handleIgnoreAllRules = () => {
+    dispatch.securityEngine.processAllRules(
+      engineResults.map((result) => result.id)
+    );
+  };
+
   const handleIgnoreRule = (id: string) => {
     dispatch.securityEngine.processRule(id);
     dispatch.securityEngine.closeRuleDrawer();
@@ -332,6 +338,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             hasUnProcessSecurityResult
           }
           engineResults={engineResults}
+          onIgnoreAllRules={handleIgnoreAllRules}
         />
       </footer>
       <RuleDrawer
