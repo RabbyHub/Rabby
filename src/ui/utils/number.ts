@@ -76,6 +76,19 @@ export const formatNumber = (
   return n.toFormat(decimal, format);
 };
 
+export const formatPrice = (price: string | number) => {
+  if (price >= 1) {
+    return formatNumber(price);
+  }
+  if (price < 0.00001) {
+    if (price.toString().length > 10) {
+      return Number(price).toExponential(4);
+    }
+    return price.toString();
+  }
+  return formatNumber(price, 4);
+};
+
 export const intToHex = (n: number) => {
   if (n % 1 !== 0) throw new Error(`${n} is not int`);
   return `0x${n.toString(16)}`;
@@ -106,3 +119,35 @@ export const formatAmount = (amount: string | number, decimals = 4) => {
   }
   return formatNumber(amount, decimals);
 };
+
+export const calcPercent = (
+  pre?: number,
+  next?: number,
+  precision = 2,
+  needSign = true
+) => {
+  const delta = (next || 0) - (pre || 0);
+  const percent = pre
+    ? ((delta / pre) * 100).toFixed(precision)
+    : next
+    ? '100.00'
+    : '0.00';
+
+  return `${needSign && delta >= 0 ? '+' : ''}${percent}%`;
+};
+
+export function coerceInteger(input: any, fallbackInt = 0) {
+  const output = parseInt(input, 10);
+
+  if (Number.isNaN(output)) return fallbackInt;
+
+  return output;
+}
+
+export function coerceFloat(input: any, fallbackNum = 0) {
+  const output = parseFloat(input);
+
+  if (Number.isNaN(output)) return fallbackNum;
+
+  return output;
+}

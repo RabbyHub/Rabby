@@ -1,5 +1,7 @@
 @import '../../style/mixin.less';
 
+@token-selector-px: 16px;
+
 .token-selector {
   padding-bottom: 0;
   .ant-drawer-content-wrapper {
@@ -7,6 +9,8 @@
     overflow: hidden;
     .ant-drawer-body {
       padding: 18px 0 0;
+      display: flex;
+      flex-direction: column;
     }
   }
   .header {
@@ -19,7 +23,7 @@
   }
   .input-wrapper {
     width: 360px;
-    margin: 0 auto 16px;
+    margin: 0 auto @token-selector-px;
     .ant-input-affix-wrapper::before {
       height: 16px;
     }
@@ -42,7 +46,7 @@
   .token-sort {
     display: flex;
     margin-bottom: 8px;
-    padding: 0 16px;
+    padding: 0 @token-selector-px;
     justify-content: flex-end;
     align-items: center;
     color: #707880;
@@ -65,7 +69,7 @@
   .token-list {
     position: relative;
     background-color: #fff;
-    height: 461px;
+    flex: 1;
     overflow-y: auto;
     margin: 0;
     li {
@@ -74,7 +78,7 @@
       padding: 0 20px;
       & > div {
         &:nth-child(1) {
-          width: 120px;
+          width: 160px;
           display: flex;
           align-items: center;
           .symbol {
@@ -82,26 +86,25 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-weight: 500;
-            font-size: 13px;
+            font-size: 12px;
             line-height: 15px;
-            color: #161819;
+            color: #4B4D59;
             margin-left: 12px;
           }
         }
         &:nth-child(2) {
           width: 60px;
-          text-align: right;
+          text-align: left;
           font-size: 12px;
           line-height: 14px;
-          color: #707880;
+          color: #4B4D59;
         }
         &:nth-child(3) {
           width: 100px;
           text-align: right;
           font-size: 13px;
           line-height: 15px;
-          color: #5a6066;
+          color: #13141A;
           font-weight: 500;
           flex: 1;
         }
@@ -166,6 +169,30 @@
           height: 100px;
         }
       }
+    }
+  }
+
+  .filters-wrapper {
+    padding: 0 @token-selector-px;
+
+    .filter-item__chain {
+      cursor: default;
+      display: inline-flex;
+      padding: 6px;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 4px;
+      background: #f5f6fa;
+    }
+
+    img.filter-item__chain-logo {
+      width: 14px;
+      height: 14px;
+    }
+
+    .filter-item__chain-close {
+      cursor: pointer;
     }
   }
 }

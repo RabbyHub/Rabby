@@ -8,6 +8,8 @@ import ChainIcon from '../../ChainIcon';
 import IconCheck from 'ui/assets/check-2.svg';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import IconChainBalance from 'ui/assets/chain-select/chain-balance.svg';
+import { formatUsdValue } from '@/ui/utils';
 
 export type SelectChainItemProps = {
   stared?: boolean;
@@ -36,8 +38,9 @@ export const SelectChainItem = forwardRef(
     }: SelectChainItemProps,
     ref: React.ForwardedRef<HTMLDivElement>
   ) => {
-    const { customRPC } = useRabbySelector((s) => ({
-      ...s.customRPC,
+    const { customRPC, cachedChainBalances } = useRabbySelector((s) => ({
+      customRPC: s.customRPC.customRPC,
+      cachedChainBalances: s.account.matteredChainBalances,
     }));
     const dispatch = useRabbyDispatch();
 
@@ -75,7 +78,25 @@ export const SelectChainItem = forwardRef(
             ) : (
               <img src={data.logo} alt="" className="select-chain-item-icon" />
             )}
-            <div className="select-chain-item-name">{data.name}</div>
+            <div className="select-chain-item-info">
+              <div className="select-chain-item-name">{data.name}</div>
+              {!!cachedChainBalances[data.serverId]?.usd_value && (
+                <div className="select-chain-item-balance">
+                  <img
+                    className="w-[14px] h-[14px]"
+                    src={IconChainBalance}
+                    alt={formatUsdValue(
+                      cachedChainBalances[data.serverId]?.usd_value || 0
+                    )}
+                  />
+                  <div className="ml-[6px] relative top-[2px]">
+                    {formatUsdValue(
+                      cachedChainBalances[data.serverId]?.usd_value || 0
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <img
             className={clsx(

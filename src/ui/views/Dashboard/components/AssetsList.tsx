@@ -7,6 +7,7 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
+import { getTokenSymbol } from 'ui/utils/token';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { Skeleton } from 'antd';

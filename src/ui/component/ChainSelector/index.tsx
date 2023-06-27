@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { CHAINS_ENUM } from 'consts';
 import { useHover, useWallet } from 'ui/utils';
-import { SvgIconArrowDown } from 'ui/assets';
+import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
 import Modal from './Modal';
 import ChainIcon from '../ChainIcon';
 
@@ -81,7 +81,7 @@ const ChainSelector = ({
           />
         </div>
         {findChainByEnum(value)?.name}
-        <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
+        <ArrowDownSVG className={clsx('icon')} />
       </div>
       <Modal
         title={title}

@@ -10,7 +10,7 @@ import { DragEndEvent } from '@dnd-kit/core/dist/types';
 import { SortableContext } from '@dnd-kit/sortable';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SelectChainItemProps } from './SelectChainItem';
 import { SortableSelectChainItem } from './SortableSelectChainItem';
 
@@ -35,7 +35,6 @@ export const SelectChainList = (props: SelectChainListProps) => {
     className,
     onSort,
     sortable = false,
-    stared = false,
     value,
     onChange,
     onStarChange,
@@ -44,23 +43,13 @@ export const SelectChainList = (props: SelectChainListProps) => {
     disabledTips,
     showRPCStatus = false,
   } = props;
-  const items = data
-    .map((item, index) => ({
+
+  const items = useMemo(() => {
+    return data.map((item, index) => ({
       ...item,
       index,
-    }))
-    .sort((a, b) => {
-      if (!supportChains) {
-        return 0;
-      }
-      if (supportChains.includes(a.enum) && !supportChains.includes(b.enum)) {
-        return -1;
-      }
-      if (!supportChains.includes(a.enum) && supportChains.includes(b.enum)) {
-        return 1;
-      }
-      return 0;
-    });
+    }));
+  }, [data]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const source = event.active.id;
@@ -84,6 +73,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
       },
     })
   );
+
   if (data?.length <= 0) {
     return null;
   }

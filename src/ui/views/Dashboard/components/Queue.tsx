@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import clsx from 'clsx';
 
 const Wrapper = styled.div`
   position: absolute;
-  top: 86px;
+  top: 70px;
   right: 20px;
   min-width: 62px;
   height: 27px;
@@ -32,8 +33,20 @@ const Queue = ({ count, className }: QueueProps) => {
   };
 
   return (
-    <Wrapper onClick={handleClickPendingTxs} className={className}>
-      {count ? `${count} in Queue` : 'Queue'}
+    <Wrapper
+      onClick={handleClickPendingTxs}
+      className={clsx(
+        className,
+        'ease-in-out',
+        'group max-w-[62px] hover:max-w-[200px]',
+        'whitespace-nowrap overflow-hidden overflow-ellipsis',
+        'flex justify-end'
+      )}
+    >
+      <div className="group-hover:block hidden">
+        {count ? <span className="mr-4">{count} in</span> : null}
+      </div>
+      <div>Queue</div>
     </Wrapper>
   );
 };

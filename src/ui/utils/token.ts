@@ -1,6 +1,7 @@
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Contract, providers } from 'ethers';
 import { hexToString } from 'web3-utils';
+import { AbstractPortfolioToken } from './portfolio/types';
 
 export const geTokenDecimals = async (
   id: string,
@@ -142,4 +143,28 @@ export const ellipsisTokenSymbol = (text: string, length = 6) => {
 
   const regexp = new RegExp(`^(.{${length}})(.*)$`);
   return text?.replace(regexp, '$1...');
+};
+
+export const abstractTokenToTokenItem = (
+  token: AbstractPortfolioToken
+): TokenItem => {
+  return {
+    id: token._tokenId,
+    chain: token.chain,
+    amount: token.amount,
+    raw_amount: token.raw_amount,
+    decimals: token.decimals,
+    display_symbol: token.display_symbol,
+    is_core: token.is_core,
+    is_verified: token.is_verified,
+    is_wallet: token.is_wallet,
+    is_scam: token.is_scam,
+    is_suspicious: token.is_suspicious,
+    logo_url: token.logo_url,
+    name: token.name,
+    optimized_symbol: token.optimized_symbol,
+    price: token.price,
+    symbol: token.symbol,
+    time_at: token.time_at,
+  };
 };

@@ -19,7 +19,7 @@
     }
   }
   .lock-wallet {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     font-weight: 500;
     font-size: 15px;
     line-height: 17px;
@@ -34,13 +34,15 @@
   .field {
     background: @color-bg;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 14px;
     line-height: 16px;
     color: @color-title;
     padding: 0 16px;
     border: 1px solid transparent;
+    min-height: 52px;
     &.has-desc {
+      height: 64px;
       align-items: flex-start;
       padding: 12px 16px 0;
       .field-slot {
@@ -59,7 +61,7 @@
       }
     }
     & + .field {
-      margin-top: 12px;
+      margin-top: 8px;
     }
     &.default-wallet-field {
       padding-top: 20px;

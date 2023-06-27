@@ -74,15 +74,15 @@ interface ChainSelectorProps {
   disabledTips?: SelectChainListProps['disabledTips'];
   title?: React.ReactNode;
 }
-export const SwapChainSelector = ({
+export default function ChainSelectorInForm({
   value,
   onChange,
   readonly = false,
   showModal = false,
   disabledTips,
   title,
-}: // supportChains,
-ChainSelectorProps) => {
+  supportChains,
+}: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
   const handleClickSelector = () => {
@@ -110,11 +110,11 @@ ChainSelectorProps) => {
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
-          supportChains={SWAP_SUPPORT_CHAINS}
+          supportChains={supportChains}
           disabledTips={disabledTips}
           title={title}
         />
       )}
     </>
   );
-};
+}

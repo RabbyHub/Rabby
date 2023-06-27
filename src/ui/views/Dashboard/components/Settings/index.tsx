@@ -35,6 +35,7 @@ import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
 import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
+import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -366,6 +367,19 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       },
     },
     {
+      leftIcon: IconAddresses,
+      content: t('Manage Address'),
+      onClick: () => {
+        history.push('/settings/address');
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Manage Address',
+        });
+        reportSettings('Manage Address');
+      },
+    },
+    {
       leftIcon: IconPreferMetamask,
       content: t('MetaMask Preferred Dapps'),
       onClick: () => {
@@ -375,7 +389,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           action: 'clickToUse',
           label: 'MetaMask Preferred Dapps',
         });
-        reportSettings('Signature Record');
+        reportSettings('MetaMask Preferred Dapps');
       },
     },
     {
@@ -454,8 +468,8 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       <Popup
         visible={visible}
         onClose={handleClose}
-        height={512}
-        bodyStyle={{ height: '100%' }}
+        height={523}
+        bodyStyle={{ height: '100%', padding: '20px' }}
       >
         <div className="popup-settings">
           <div className="content">

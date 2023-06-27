@@ -1,4 +1,4 @@
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
@@ -70,6 +70,16 @@ import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 
 export { CHAINS, CHAINS_ENUM };
+
+interface PortfolioChain extends Chain {
+  isSupportHistory: boolean;
+}
+
+export const CHAIN_ID_LIST = new Map<string, PortfolioChain>(
+  Object.values(CHAINS).map((chain) => {
+    return [chain.serverId, { ...chain, isSupportHistory: false }];
+  })
+);
 
 export const KEYRING_TYPE = {
   HdKeyring: 'HD Key Tree',

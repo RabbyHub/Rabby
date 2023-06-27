@@ -1014,11 +1014,17 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 390 }])
-  walletWatchAsset = () => {
-    throw new Error(
-      'Rabby does not support adding tokens in this way for now.'
-    );
+  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 600 }])
+  walletWatchAsset = ({
+    approvalRes,
+  }: {
+    approvalRes: { id: string; chain: string };
+  }) => {
+    const { id, chain } = approvalRes;
+    preferenceService.addCustomizedToken({
+      address: id,
+      chain,
+    });
   };
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {

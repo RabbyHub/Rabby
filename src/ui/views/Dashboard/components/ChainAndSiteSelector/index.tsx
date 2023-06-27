@@ -1,13 +1,11 @@
-import { Badge, message, Skeleton, Tooltip } from 'antd';
-import { GasLevel } from 'background/service/openapi';
+import { Badge, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
@@ -15,18 +13,18 @@ import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
+import IconNFT from 'ui/assets/dashboard/nft.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
+import { getCurrentConnectSite, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
 import './style.less';
-import { CHAINS, CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
-import { findChainByEnum } from '@/utils/chain';
 
 export default ({
   gnosisPendingCount,
@@ -49,9 +47,6 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
-  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
-    CHAINS_ENUM.ETH
-  );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
@@ -99,70 +94,6 @@ export default ({
     setCurrentConnect(current);
   }, []);
 
-  const currentConnectedSiteChainNativeToken = useMemo(
-    () =>
-      currentConnectedSiteChain
-        ? CHAINS?.[currentConnectedSiteChain]?.nativeTokenAddress || 'eth'
-        : 'eth',
-    [currentConnectedSiteChain]
-  );
-
-  const {
-    value: gasPrice = 0,
-    loading: gasPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const marketGas: GasLevel[] = await wallet.openapi.gasMarket(
-        currentConnectedSiteChainNativeToken
-      );
-      const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-        ?.price;
-      if (selectedGasPice) {
-        return Number(selectedGasPice / 1e9);
-      }
-    } catch (e) {
-      // DO NOTHING
-    }
-  }, [currentConnectedSiteChainNativeToken]);
-
-  const { value: tokenLogo, loading: tokenLoading } = useAsync(async () => {
-    const chainItem = findChainByEnum(currentConnectedSiteChain, {
-      fallback: true,
-    })!;
-
-    try {
-      const data = await wallet.openapi.getToken(
-        account!.address,
-        chainItem.serverId || '',
-        chainItem.nativeTokenAddress || ''
-      );
-      return data?.logo_url || chainItem.nativeTokenLogo;
-    } catch (error) {
-      return chainItem.nativeTokenLogo;
-    }
-  }, [currentConnectedSiteChain]);
-
-  const {
-    value: tokenPrice,
-    loading: currentPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const {
-        change_percent = 0,
-        last_price = 0,
-      } = await wallet.openapi.tokenPrice(currentConnectedSiteChainNativeToken);
-
-      return { currentPrice: last_price, percentage: change_percent };
-    } catch (e) {
-      return {
-        currentPrice: null,
-        percentage: null,
-      };
-    }
-  }, [currentConnectedSiteChainNativeToken]);
-
-  const { currentPrice = null, percentage = null } = tokenPrice || {};
-
   const changeURL = () => {
     setUrlVisible(!urlVisible);
   };
@@ -176,11 +107,11 @@ export default ({
     getCurrentSite();
   }, []);
 
-  useEffect(() => {
-    if (currentConnect?.chain) {
-      setCurrentConnectedSiteChain(currentConnect?.chain);
-    }
-  }, [currentConnect?.chain]);
+  // useEffect(() => {
+  //   if (currentConnect?.chain) {
+  //     setCurrentConnectedSiteChain(currentConnect?.chain);
+  //   }
+  // }, [currentConnect?.chain]);
 
   useEffect(() => {
     onChange(currentConnect);
@@ -282,6 +213,13 @@ export default ({
         history.push('/settings/address');
       },
     },
+    nft: {
+      icon: IconNFT,
+      content: 'NFT',
+      onClick: () => {
+        history.push('/nft');
+      },
+    },
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -291,12 +229,12 @@ export default ({
       'swap',
       'send',
       'receive',
-      'gasTopUp',
+      'nft',
       // 'queue',
       'transactions',
-      'dapps',
+      'gasTopUp',
       'security',
-      'address',
+      'dapps',
       'settings',
     ];
   } else {
@@ -304,11 +242,11 @@ export default ({
       'swap',
       'send',
       'receive',
-      'gasTopUp',
+      'nft',
       'transactions',
-      'dapps',
+      'gasTopUp',
       'security',
-      'address',
+      'dapps',
       'settings',
     ];
   }
@@ -381,59 +319,10 @@ export default ({
             );
           })}
         </div>
-        <div className="price-viewer">
-          <div className="eth-price">
-            {tokenLoading ? (
-              <Skeleton.Avatar size={20} active shape="circle" />
-            ) : (
-              <img src={tokenLogo} className="w-[20px] h-[20px] rounded-full" />
-            )}
-            {currentPriceLoading ? (
-              <Skeleton.Button active={true} />
-            ) : (
-              <>
-                <div className="gasprice">
-                  {currentPrice !== null
-                    ? currentPrice < 0.01
-                      ? '<$0.01'
-                      : `$${splitNumberByStep(currentPrice.toFixed(2))}`
-                    : '-'}
-                </div>
-                {percentage !== null && (
-                  <div
-                    className={
-                      percentage > 0
-                        ? 'positive'
-                        : percentage === 0
-                        ? 'even'
-                        : 'depositive'
-                    }
-                  >
-                    {percentage >= 0 && '+'}
-                    {percentage?.toFixed(2)}%
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-          <div className="gas-container">
-            <img src={IconGas} className="w-[16px] h-[16px]" />
-            {gasPriceLoading ? (
-              <Skeleton.Button active={true} />
-            ) : (
-              <>
-                <div className="gasprice">{`${splitNumberByStep(
-                  gasPrice
-                )}`}</div>
-                <div className="gwei">Gwei</div>
-              </>
-            )}
-          </div>
-        </div>
       </div>
       <CurrentConnection
         onChainChange={(chain) => {
-          setCurrentConnectedSiteChain(chain);
+          // setCurrentConnectedSiteChain(chain);
           if (currentConnect) {
             onChange({
               ...currentConnect,

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { CHAINS } from '@debank/common';
-import { SwapChainSelector } from './ChainSelect';
+import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
@@ -20,8 +19,10 @@ import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { DEX } from '@/constant';
+import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import { findChainByServerID } from '@/utils/chain';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -76,7 +77,7 @@ export const Main = () => {
 
   const {
     chain,
-    chainSwitch,
+    switchChain,
 
     payToken,
     setPayToken,
@@ -235,10 +236,11 @@ export const Main = () => {
     >
       <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-16 mx-20')}>
         <div className={clsx(tipsClassName)}>Chain</div>
-        <SwapChainSelector
+        <ChainSelectorInForm
           value={chain}
-          onChange={chainSwitch}
+          onChange={switchChain}
           disabledTips={'Not supported'}
+          supportChains={SWAP_SUPPORT_CHAINS}
         />
 
         <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
@@ -249,7 +251,14 @@ export const Main = () => {
         <div className="flex items-center justify-between">
           <TokenSelect
             token={payToken}
-            onTokenChange={setPayToken}
+            onTokenChange={(token) => {
+              const chainItem = findChainByServerID(token.chain);
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setReceiveToken(undefined);
+              }
+              setPayToken(token);
+            }}
             chainId={CHAINS[chain].serverId}
             type={'swapFrom'}
             placeholder={'Search by Name / Address'}
@@ -262,12 +271,20 @@ export const Main = () => {
           />
           <TokenSelect
             token={receiveToken}
-            onTokenChange={setReceiveToken}
+            onTokenChange={(token) => {
+              const chainItem = findChainByServerID(token.chain);
+              if (chainItem?.enum !== chain) {
+                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                setPayToken(undefined);
+              }
+              setReceiveToken(token);
+            }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
             placeholder={'Search by Name / Address'}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
+            useSwapTokenList
           />
         </div>
 

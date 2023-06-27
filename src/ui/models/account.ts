@@ -1,9 +1,14 @@
+import { Chain } from '@debank/common';
+
 import type { Account } from '@/background/service/preference';
 import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
+import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
+import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
+import { coerceFloat } from '../utils';
 
 interface AccountState {
   currentAccount: null | Account;
@@ -13,6 +18,14 @@ interface AccountState {
   keyrings: DisplayedKeryring[];
   balanceMap: {
     [address: string]: TotalBalanceResponse;
+  };
+  matteredChainBalances: {
+    [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
+  };
+  tokens: {
+    list: AbstractPortfolioToken[];
+    customize: AbstractPortfolioToken[];
+    blocked: AbstractPortfolioToken[];
   };
 
   mnemonicAccounts: DisplayedKeryring[];
@@ -28,7 +41,13 @@ export const account = createModel<RootModel>()({
     hiddenAccounts: [],
     keyrings: [],
     balanceMap: {},
+    matteredChainBalances: {},
     mnemonicAccounts: [],
+    tokens: {
+      list: [],
+      customize: [],
+      blocked: [],
+    },
   } as AccountState,
 
   reducers: {
@@ -40,6 +59,36 @@ export const account = createModel<RootModel>()({
         },
         { ...state }
       );
+    },
+
+    setTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          list: payload,
+        },
+      };
+    },
+
+    setCustomizeTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          customize: payload,
+        },
+      };
+    },
+
+    setBlockedTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          blocked: payload,
+        },
+      };
     },
 
     setCurrentAccount(
@@ -54,6 +103,9 @@ export const account = createModel<RootModel>()({
     return {
       isShowMnemonic() {
         return slice((account) => account.mnemonicAccounts.length <= 0);
+      },
+      currentAccountAddr() {
+        return slice((account) => account.currentAccount?.address);
       },
     };
   },
@@ -77,6 +129,10 @@ export const account = createModel<RootModel>()({
 
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
+      // clear store tokenList when account changed
+      dispatch.account.setTokenList([]);
+      dispatch.account.setBlockedTokenList([]);
+      dispatch.account.setCustomizeTokenList([]);
     },
 
     async getAlianNameAsync(address: string, store) {
@@ -113,6 +169,92 @@ export const account = createModel<RootModel>()({
         KEYRING_CLASS.MNEMONIC
       );
       dispatch.account.setField({ mnemonicAccounts });
+    },
+
+    async addCustomizeToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.addCustomizedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.customize;
+      dispatch.account.setCustomizeTokenList([...currentList, token]);
+      if (token.amount > 0) {
+        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      }
+    },
+
+    async removeCustomizeToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.removeCustomizedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.customize;
+      dispatch.account.setCustomizeTokenList(
+        currentList.filter((item) => {
+          return item.id !== token.id;
+        })
+      );
+      dispatch.account.setTokenList(
+        store.account.tokens.list.filter((item) => item.id !== token.id)
+      );
+    },
+
+    async addBlockedToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.addBlockedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.blocked;
+      dispatch.account.setBlockedTokenList([...currentList, token]);
+      dispatch.account.setTokenList(
+        store.account.tokens.list.filter((item) => item.id !== token.id)
+      );
+    },
+
+    async removeBlockedToken(token: AbstractPortfolioToken, store?) {
+      await store.app.wallet.removeBlockedToken({
+        address: token._tokenId,
+        chain: token.chain,
+      });
+      const currentList = store.account.tokens.blocked;
+      dispatch.account.setBlockedTokenList(
+        currentList.filter((item) => {
+          return item.id !== token.id;
+        })
+      );
+      if (token.amount > 0) {
+        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+      }
+    },
+
+    async getMatteredChainBalance(_?: any, store?) {
+      const wallet = store.app.wallet;
+      const currentAccountAddr = store.account.currentAccount?.address;
+
+      const cachedBalance = await wallet.getAddressCacheBalance(
+        currentAccountAddr
+      );
+
+      const totalUsdValue = (cachedBalance?.chain_list || []).reduce(
+        (accu, cur) => accu + coerceFloat(cur.usd_value),
+        0
+      );
+
+      const matteredChainBalances = (cachedBalance?.chain_list || []).reduce(
+        (accu, cur) => {
+          const curUsdValue = coerceFloat(cur.usd_value);
+          // TODO: only leave chain with blance greater than $1 and has percentage 1%
+          if (curUsdValue > 1 && curUsdValue / totalUsdValue > 0.01) {
+            accu[cur.id] = formatChainToDisplay(cur);
+          }
+          return accu;
+        },
+        {} as AccountState['matteredChainBalances']
+      );
+
+      dispatch.account.setField({
+        matteredChainBalances,
+      });
     },
   }),
 });

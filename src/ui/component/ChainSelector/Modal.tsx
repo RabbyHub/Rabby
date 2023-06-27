@@ -1,17 +1,24 @@
 import { Drawer, Input } from 'antd';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
+
 import Empty from '../Empty';
 import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, sortChainItems } from '@/utils/chain';
 interface ChainSelectorModalProps {
   visible: boolean;
   value?: CHAINS_ENUM;
@@ -26,20 +33,21 @@ interface ChainSelectorModalProps {
   height?: number;
 }
 
-const useSetup = () => {
+const useChainSeletorList = ({
+  supportChains,
+}: {
+  supportChains?: Chain['enum'][];
+}) => {
   const [search, setSearch] = useState('');
-  const pinned = useRabbySelector(
-    (state) =>
-      state.preference.pinnedChain?.filter((item) => findChainByEnum(item)) ||
-      []
-  );
+  const { pinned, matteredChainBalances } = useRabbySelector((state) => {
+    return {
+      pinned:
+        state.preference.pinnedChain?.filter((item) => findChainByEnum(item)) ||
+        [],
+      matteredChainBalances: state.account.matteredChainBalances,
+    };
+  });
   const dispatch = useRabbyDispatch();
-
-  // we have ensured all chain enum is valid above
-  const _pinnedList = pinned.map((chain) => CHAINS[chain]);
-  const _all = Object.values(CHAINS).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
 
   const handleStarChange = (chain: CHAINS_ENUM, value) => {
     if (value) {
@@ -68,16 +76,92 @@ const useSetup = () => {
     },
     [pinned]
   );
-  const pinnedList = search?.trim() ? [] : _pinnedList;
-  const all = searchChains(_all, search);
+  const { allSearched, matteredList, unmatteredList } = useMemo(() => {
+    const unpinnedListGroup = {
+      withBalance: [] as Chain[],
+      withoutBalance: [] as Chain[],
+      disabled: [] as Chain[],
+    };
+    const pinnedListGroup = {
+      withBalance: [] as Chain[],
+      withoutBalance: [] as Chain[],
+      disabled: [] as Chain[],
+    };
+
+    const _all = Object.values(CHAINS).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    _all.forEach((item) => {
+      const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
+
+      if (!inPinned) {
+        if (supportChains?.length && !supportChains.includes(item.enum)) {
+          unpinnedListGroup.disabled.push(item);
+        } else if (!matteredChainBalances[item.serverId]) {
+          unpinnedListGroup.withoutBalance.push(item);
+        } else {
+          unpinnedListGroup.withBalance.push(item);
+        }
+      } else {
+        if (supportChains?.length && !supportChains.includes(item.enum)) {
+          pinnedListGroup.disabled.push(item);
+        } else if (!matteredChainBalances[item.serverId]) {
+          pinnedListGroup.withoutBalance.push(item);
+        } else {
+          pinnedListGroup.withBalance.push(item);
+        }
+      }
+    });
+
+    pinnedListGroup.withBalance = sortChainItems(pinnedListGroup.withBalance, {
+      supportChains,
+      cachedChainBalances: matteredChainBalances,
+    });
+    unpinnedListGroup.withBalance = sortChainItems(
+      unpinnedListGroup.withBalance,
+      {
+        supportChains,
+        cachedChainBalances: matteredChainBalances,
+      }
+    );
+    const searchKw = search?.trim();
+
+    const allSearched = searchChains(_all, search);
+
+    pinnedListGroup.disabled = sortChainItems(pinnedListGroup.disabled, {
+      supportChains,
+      cachedChainBalances: matteredChainBalances,
+    });
+    unpinnedListGroup.disabled = sortChainItems(unpinnedListGroup.disabled, {
+      supportChains,
+      cachedChainBalances: matteredChainBalances,
+    });
+
+    return {
+      allSearched,
+      matteredList: searchKw
+        ? []
+        : [
+            ...pinnedListGroup.withBalance,
+            ...pinnedListGroup.withoutBalance,
+            ...unpinnedListGroup.withBalance,
+            ...pinnedListGroup.disabled,
+          ],
+      unmatteredList: searchKw
+        ? []
+        : [...unpinnedListGroup.withoutBalance, ...unpinnedListGroup.disabled],
+    };
+  }, [search, pinned, supportChains, matteredChainBalances]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
   }, [dispatch]);
 
   return {
-    pinnedList,
-    all,
+    matteredList,
+    unmatteredList: search?.trim() ? allSearched : unmatteredList,
+    allSearched,
     handleStarChange,
     handleSort,
     search,
@@ -97,7 +181,7 @@ const ChainSelectorModal = ({
   supportChains,
   disabledTips,
   showRPCStatus = false,
-  height = 400,
+  height = 494,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -108,20 +192,26 @@ const ChainSelectorModal = ({
   };
 
   const {
-    all,
-    pinnedList,
+    matteredList,
+    unmatteredList,
     handleStarChange,
     handleSort,
     search,
     setSearch,
     pinned,
-  } = useSetup();
+  } = useChainSeletorList({
+    supportChains,
+  });
+
+  const rDispatch = useRabbyDispatch();
 
   useEffect(() => {
     if (!visible) {
       setSearch('');
+    } else {
+      rDispatch.account.getMatteredChainBalance();
     }
-  }, [visible]);
+  }, [visible, rDispatch]);
 
   return (
     <Drawer
@@ -151,8 +241,8 @@ const ChainSelectorModal = ({
       <div className="chain-selector__modal-content">
         <SelectChainList
           supportChains={supportChains}
-          data={pinnedList}
-          sortable={!supportChains}
+          data={matteredList}
+          sortable={false /* !supportChains */}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onSort={handleSort}
@@ -163,7 +253,7 @@ const ChainSelectorModal = ({
         ></SelectChainList>
         <SelectChainList
           supportChains={supportChains}
-          data={all}
+          data={unmatteredList}
           value={value}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
@@ -171,7 +261,7 @@ const ChainSelectorModal = ({
           disabledTips={disabledTips}
           showRPCStatus={showRPCStatus}
         ></SelectChainList>
-        {pinnedList.length === 0 && all.length === 0 ? (
+        {matteredList.length === 0 && unmatteredList.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">
             <Empty>No chains</Empty>
           </div>
