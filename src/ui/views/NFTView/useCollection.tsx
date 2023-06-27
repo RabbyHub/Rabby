@@ -26,11 +26,10 @@ export const useCollection = () => {
       setIsLoading(true);
       const collections = await wallet.openapi.collectionList({
         id,
-        isAll: true,
+        isAll: false,
       });
-      const filteredCollectionList = collections.filter((item) => item.is_core);
 
-      setList(filteredCollectionList);
+      setList(collections);
     } catch (e) {
       console.error(e);
     } finally {

@@ -28,8 +28,14 @@ export const CollectionCard: React.FC<Props> = ({
       <section
         className={clsx('border-b-[0.5px] border-gray-divider', 'mb-10 pb-10')}
       >
-        <div className="space-x-4 flex items-center">
-          <span className="block text-15 text-gray-title font-medium leading-[18px]">
+        <div className="space-x-4 flex items-center mr-28">
+          <span
+            className={clsx(
+              'block text-15 text-gray-title font-medium leading-[18px]',
+              'truncate'
+            )}
+            title={collection.name}
+          >
             {collection.name}
           </span>
           <span className="block text-13 text-black leading-[18px] -mt-1">
@@ -38,10 +44,16 @@ export const CollectionCard: React.FC<Props> = ({
         </div>
         <div className="gap-x-4 flex mt-6">
           <ChainIcon chain={chain} />
-          <span className="text-black text-12">
-            {chainName} / Floor Price: {collection.floor_price}{' '}
-            {collection.native_token?.symbol}
-          </span>
+          <div className="text-black text-12">
+            <span>{chainName}</span>
+            {collection.floor_price !== 0 ? (
+              <>
+                {' '}
+                <span>/ Floor Price: {collection.floor_price}</span>{' '}
+                <span>{collection.native_token?.symbol}</span>
+              </>
+            ) : null}
+          </div>
         </div>
 
         <div
