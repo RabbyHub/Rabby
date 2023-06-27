@@ -243,7 +243,7 @@ const TokenDetail = ({
           )
         ) : null}
         <div className="balance">
-          <div className="balance-title">{token?.name} balance</div>
+          <div className="balance-title">{getTokenSymbol(token)} balance</div>
           <div className="balance-content overflow-hidden">
             <div
               className="balance-value truncate"
