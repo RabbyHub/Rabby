@@ -36,15 +36,20 @@ export default function useCurrentBalance(
   const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
+  const [hasValueChainBalances, setHasValueChainBalances] = useState<
+    DisplayChainWithWhiteLogo[]
+  >([]);
 
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value, chain_list }) {
       if (isCanceled) return;
       setBalance(total_usd_value);
       setSuccess(true);
-      setChainBalances(
-        chain_list.filter((item) => item.born_at !== null).map(formatChain)
-      );
+      const chanList = chain_list
+        .filter((item) => item.born_at !== null)
+        .map(formatChain);
+      setChainBalances(chanList);
+      setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
       setBalanceLoading(false);
       setBalanceFromCache(false);
     },
@@ -103,5 +108,6 @@ export default function useCurrentBalance(
     balanceLoading,
     balanceFromCache,
     refresh,
+    hasValueChainBalances,
   ] as const;
 }
