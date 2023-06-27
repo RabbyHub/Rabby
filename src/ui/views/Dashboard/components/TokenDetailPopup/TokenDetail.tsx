@@ -231,19 +231,19 @@ const TokenDetail = ({
           token.is_core ? (
             <BlockedButton
               selected={isAdded}
-              onOpen={() => addToken(token)}
-              onClose={() => removeToken(token)}
+              onOpen={() => addToken(tokenWithAmount)}
+              onClose={() => removeToken(tokenWithAmount)}
             />
           ) : (
             <CustomizedButton
               selected={isAdded}
-              onOpen={() => addToken(token)}
-              onClose={() => removeToken(token)}
+              onOpen={() => addToken(tokenWithAmount)}
+              onClose={() => removeToken(tokenWithAmount)}
             />
           )
         ) : null}
         <div className="balance">
-          <div className="balance-title">{token?.name} balance</div>
+          <div className="balance-title">{getTokenSymbol(token)} balance</div>
           <div className="balance-content overflow-hidden">
             <div
               className="balance-value truncate"

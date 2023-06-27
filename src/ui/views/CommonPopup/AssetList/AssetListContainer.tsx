@@ -20,12 +20,14 @@ interface Props {
   className?: string;
   selectChainId: string | null;
   visible: boolean;
+  onEmptyAssets: (isEmpty: boolean) => void;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
   className,
   selectChainId,
   visible,
+  onEmptyAssets,
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
@@ -44,6 +46,16 @@ export const AssetListContainer: React.FC<Props> = ({
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
+  const isEmptyAssets =
+    !isTokensLoading &&
+    !tokenList.length &&
+    !isPortfoliosLoading &&
+    !portfolios?.length;
+
+  React.useEffect(() => {
+    onEmptyAssets(isEmptyAssets);
+  }, [isEmptyAssets]);
+
   const inputRef = React.useRef<Input>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
@@ -120,20 +132,23 @@ export const AssetListContainer: React.FC<Props> = ({
           {activeTab === TokenTabEnum.History && !search && <HistoryList />}
         </div>
       )}
-      {isPortfoliosLoading ? (
-        <TokenListSkeleton />
-      ) : (
-        activeTab !== TokenTabEnum.Summary &&
-        activeTab !== TokenTabEnum.History && (
-          <div
-            style={{
-              display: visible ? 'block' : 'none',
-            }}
-          >
-            <ProtocolList list={filteredPortfolios} />
-          </div>
-        )
-      )}
+
+      <div
+        style={{
+          display:
+            visible &&
+            activeTab !== TokenTabEnum.Summary &&
+            activeTab !== TokenTabEnum.History
+              ? 'block'
+              : 'none',
+        }}
+      >
+        {isPortfoliosLoading ? (
+          <TokenListSkeleton />
+        ) : (
+          <ProtocolList list={filteredPortfolios} />
+        )}
+      </div>
     </div>
   );
 };

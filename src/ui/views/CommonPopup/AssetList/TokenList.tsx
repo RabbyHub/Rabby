@@ -35,19 +35,20 @@ export const TokenList: React.FC<Props> = ({
     return <TokenListEmpty className="mt-[92px]" text="No Match" />;
   }
 
-  if (!list?.length || !currentList?.length) {
-    return null;
-  }
+  const hasList = !!(list?.length || currentList?.length);
 
   return (
     <div>
       <div>
-        <TokenTable list={isSearch ? list : currentList} />
-        {!isSearch && (
+        <TokenTable
+          list={isSearch ? list : currentList}
+          EmptyComponent={<div></div>}
+        />
+        {!isSearch && hasList && (
           <TokenLowValueItem list={lowValueList} className="h-[40px]" />
         )}
       </div>
-      {!isSearch && (
+      {!isSearch && hasList && (
         <div className="flex gap-12 pt-12 border-t-[0.5px] border-gray-divider">
           <CustomizedButton onClickLink={onFocusInput} />
           <BlockedButton onClickLink={onFocusInput} />

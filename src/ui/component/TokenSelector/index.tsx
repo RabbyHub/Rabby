@@ -70,7 +70,7 @@ const TokenSelector = ({
         chainItem: chain,
       },
     };
-  }, [chainServerId]);
+  }, [chainServerId, visible]);
 
   useDebounce(
     () => {
@@ -141,9 +141,9 @@ const TokenSelector = ({
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
-            .map((_, i) =>
-              isSwapType ? <SwapLoading key={i} /> : <DefaultLoading key={i} />
-            )}
+            .map((_, i) => (
+              <DefaultLoading key={i} />
+            ))}
         </div>
       ) : (
         <div className="no-token w-full">
@@ -220,9 +220,8 @@ const TokenSelector = ({
                 alt={chainItem.name}
               />
               <span className="ml-[4px]">{chainItem.name}</span>
-              <img
-                className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                src={IconChainFilterClose}
+              <div
+                className="py-4 cursor-pointer"
                 onClick={() => {
                   onRemoveChainFilter?.({ chainServerId, chainItem });
                   onSearch({
@@ -231,7 +230,12 @@ const TokenSelector = ({
                     keyword: query,
                   });
                 }}
-              />
+              >
+                <img
+                  className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
+                  src={IconChainFilterClose}
+                />
+              </div>
             </div>
           </>
         )}
@@ -319,63 +323,33 @@ const TokenSelector = ({
 };
 
 const DefaultLoading = () => (
-  <div className="flex justify-between mt-[16px] pl-[20px] pr-[17px]">
-    <Skeleton.Input
-      active
-      style={{
-        width: 73,
-        height: 23,
-      }}
-    />
-    <Skeleton.Input
-      active
-      style={{
-        width: 76,
-        height: 23,
-      }}
-    />
-    <Skeleton.Input
-      active
-      style={{
-        width: 92,
-        height: 23,
-      }}
-    />
-  </div>
-);
-
-const SwapLoading = () => (
-  <div className="mt-[12px] mb-[20px] pl-[20px] pr-[17px]">
-    <div className="flex justify-between mb-[2px]">
+  <div className="flex justify-between items-center py-10 pl-[20px] pr-[17px]">
+    <div className="gap-x-12 flex">
       <Skeleton.Input
         active
-        style={{
-          width: 139,
-          height: 15,
-        }}
+        className="rounded-full w-[24px] h-[24px] bg-gray-bg"
       />
+      <div className="gap-y-2 flex flex-col">
+        <Skeleton.Input
+          active
+          className="bg-gray-bg rounded-[2px] w-[72px] h-[15px]"
+        />
+        <Skeleton.Input
+          active
+          className="bg-gray-bg rounded-[2px] w-[44px] h-[10px]"
+        />
+      </div>
+    </div>
+    <div>
       <Skeleton.Input
         active
-        style={{
-          width: 90,
-          height: 15,
-        }}
+        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
-    <div className="flex justify-between">
+    <div>
       <Skeleton.Input
         active
-        style={{
-          width: 59,
-          height: 14,
-        }}
-      />
-      <Skeleton.Input
-        active
-        style={{
-          width: 59,
-          height: 14,
-        }}
+        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
   </div>

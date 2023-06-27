@@ -41,7 +41,7 @@ export const ChainList = ({
     });
     setCurrentChainList(list.filter((item) => item.percent >= 1));
     setMoreChainList(list.filter((item) => item.percent < 1));
-  }, [chainList]);
+  }, [chainList, balance]);
 
   React.useEffect(() => {
     if (!visible) {
@@ -58,6 +58,10 @@ export const ChainList = ({
         className="block rounded-[6px] w-[360px] h-[68px] bg-gray-bg"
       />
     );
+  }
+
+  if (balance <= 0) {
+    return null;
   }
 
   return (

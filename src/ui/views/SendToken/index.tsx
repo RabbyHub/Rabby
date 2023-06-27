@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button } from 'antd';
@@ -355,6 +355,10 @@ const SendToken = () => {
       ...values,
       to,
     });
+  };
+
+  const handleCancelContract = () => {
+    setShowListContactModal(false);
   };
 
   const handleCancelEditContact = () => {
@@ -863,6 +867,7 @@ const SendToken = () => {
                   onTokenChange={handleCurrentTokenChange}
                   chainId={chainItem.serverId}
                   amountFocus={amountFocus}
+                  excludeTokens={[]}
                   inlinePrize
                 />
               )}
@@ -955,7 +960,7 @@ const SendToken = () => {
       />
       <ContactListModal
         visible={showListContactModal}
-        onCancel={() => setShowListContactModal(false)}
+        onCancel={handleCancelContract}
         onOk={handleConfirmContact}
       />
 

@@ -12,6 +12,7 @@ export interface Props {
   tokens?: AbstractPortfolioToken[];
   linkText?: string;
   description?: string;
+  hiddenSubTitle?: boolean;
 }
 
 export const TokenButton: React.FC<Props> = ({
@@ -20,6 +21,7 @@ export const TokenButton: React.FC<Props> = ({
   onClickLink,
   linkText,
   description,
+  hiddenSubTitle,
 }) => {
   const [visible, setVisible] = React.useState(false);
   const len = tokens?.length ?? 0;
@@ -54,25 +56,26 @@ export const TokenButton: React.FC<Props> = ({
         onClose={() => setVisible(false)}
         title={`${len} ${label}`}
       >
-        <div className="text-black text-13 mb-[30px] text-center -m-8">
-          The token in this list will not be added to total balance
-        </div>
-        {len > 0 ? (
-          <div>
-            <TokenTable list={tokens} />
-          </div>
-        ) : (
-          <div className="space-y-24 text-13 text-center mt-[100px]">
-            <EmptySVG className="w-[52px] h-[52px] m-auto" />
-            <div className="text-gray-subTitle">{description}</div>
-            <div
-              onClick={handleClickLink}
-              className="text-blue-light underline cursor-pointer"
-            >
-              {linkText}
-            </div>
+        {!hiddenSubTitle && (
+          <div className="text-black text-13 mb-[30px] text-center -m-8">
+            The token in this list will not be added to total balance
           </div>
         )}
+        <TokenTable
+          list={tokens}
+          EmptyComponent={
+            <div className="space-y-24 text-13 text-center mt-[100px]">
+              <EmptySVG className="w-[52px] h-[52px] m-auto" />
+              <div className="text-gray-subTitle">{description}</div>
+              <div
+                onClick={handleClickLink}
+                className="text-blue-light underline cursor-pointer"
+              >
+                {linkText}
+              </div>
+            </div>
+          }
+        />
       </Popup>
     </div>
   );

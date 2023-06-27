@@ -23,6 +23,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     balanceLoading,
     balanceFromCache,
     refreshBalance,
+    hasValueChainBalances,
   ] = useCurrentBalance(
     currentAccount?.address,
     true,
@@ -73,13 +74,19 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances,
+        matteredChainBalances: hasValueChainBalances,
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
       });
     }
-  }, [matteredChainBalances, balance, balanceLoading, componentName]);
+  }, [
+    matteredChainBalances,
+    balance,
+    balanceLoading,
+    componentName,
+    hasValueChainBalances,
+  ]);
 
   useEffect(() => {
     if (currentAccount) {
@@ -173,7 +180,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           >
             {currentIsLoss ? '-' : '+'}
             <span>{currentChangePercent}</span>
-            {currentChangeValue ? <span>({currentChangeValue})</span> : null}
+            {currentChangeValue ? (
+              <span className="ml-4">({currentChangeValue})</span>
+            ) : null}
           </div>
         </div>
         <div
@@ -210,11 +219,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                   {'The network is disconnected and no data is obtained'}
                 </span>
               </>
-            ) : matteredChainBalances.length > 0 ? (
+            ) : hasValueChainBalances.length > 0 ? (
               <div className="flex space-x-4">
                 <ChainList
                   isGnosis={isGnosis}
-                  matteredChainBalances={matteredChainBalances}
+                  matteredChainBalances={hasValueChainBalances}
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>

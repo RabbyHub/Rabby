@@ -4,6 +4,7 @@ import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
 import styled from 'styled-components';
+import { useCommonPopupView } from '@/ui/utils';
 
 export interface Props {
   onSearch?: (value: string) => void;
@@ -22,6 +23,13 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
   ({ onSearch }, ref) => {
     const [input, setInput] = React.useState<string>('');
     const [isFocus, setIsFocus] = React.useState<boolean>(false);
+    const { visible } = useCommonPopupView();
+
+    React.useEffect(() => {
+      if (!visible) {
+        setInput('');
+      }
+    }, [visible]);
 
     useDebounce(
       () => {
