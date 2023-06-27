@@ -12,18 +12,24 @@ const TokenItemSkeleton: React.FC = () => {
         <div className="gap-y-2 flex flex-col">
           <Skeleton.Input
             active
-            className="bg-gray-bg rounded-[2px] w-[112px] h-[15px]"
+            className="bg-gray-bg rounded-[2px] w-[72px] h-[15px]"
           />
           <Skeleton.Input
             active
-            className="bg-gray-bg rounded-[2px] w-[58px] h-[10px]"
+            className="bg-gray-bg rounded-[2px] w-[44px] h-[10px]"
           />
         </div>
       </div>
       <div>
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[84px] h-[20px]"
+          className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
+        />
+      </div>
+      <div>
+        <Skeleton.Input
+          active
+          className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
         />
       </div>
     </div>

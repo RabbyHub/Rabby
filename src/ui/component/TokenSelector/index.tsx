@@ -332,55 +332,24 @@ const DefaultLoading = () => (
       <div className="gap-y-2 flex flex-col">
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[112px] h-[15px]"
+          className="bg-gray-bg rounded-[2px] w-[72px] h-[15px]"
         />
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[58px] h-[10px]"
+          className="bg-gray-bg rounded-[2px] w-[44px] h-[10px]"
         />
       </div>
     </div>
     <div>
       <Skeleton.Input
         active
-        className="bg-gray-bg rounded-[2px] w-[84px] h-[20px]"
+        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
-  </div>
-);
-
-const SwapLoading = () => (
-  <div className="mt-[12px] mb-[20px] pl-[20px] pr-[17px]">
-    <div className="flex justify-between mb-[2px]">
+    <div>
       <Skeleton.Input
         active
-        style={{
-          width: 139,
-          height: 15,
-        }}
-      />
-      <Skeleton.Input
-        active
-        style={{
-          width: 90,
-          height: 15,
-        }}
-      />
-    </div>
-    <div className="flex justify-between">
-      <Skeleton.Input
-        active
-        style={{
-          width: 59,
-          height: 14,
-        }}
-      />
-      <Skeleton.Input
-        active
-        style={{
-          width: 59,
-          height: 14,
-        }}
+        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
   </div>
