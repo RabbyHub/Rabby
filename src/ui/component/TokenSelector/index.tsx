@@ -141,9 +141,9 @@ const TokenSelector = ({
         <div>
           {Array(isSwapType ? 8 : 10)
             .fill(1)
-            .map((_, i) =>
-              isSwapType ? <SwapLoading key={i} /> : <DefaultLoading key={i} />
-            )}
+            .map((_, i) => (
+              <DefaultLoading key={i} />
+            ))}
         </div>
       ) : (
         <div className="no-token w-full">
@@ -319,28 +319,29 @@ const TokenSelector = ({
 };
 
 const DefaultLoading = () => (
-  <div className="flex justify-between mt-[16px] pl-[20px] pr-[17px]">
-    <Skeleton.Input
-      active
-      style={{
-        width: 73,
-        height: 23,
-      }}
-    />
-    <Skeleton.Input
-      active
-      style={{
-        width: 76,
-        height: 23,
-      }}
-    />
-    <Skeleton.Input
-      active
-      style={{
-        width: 92,
-        height: 23,
-      }}
-    />
+  <div className="flex justify-between items-center py-10 pl-[20px] pr-[17px]">
+    <div className="gap-x-12 flex">
+      <Skeleton.Input
+        active
+        className="rounded-full w-[24px] h-[24px] bg-gray-bg"
+      />
+      <div className="gap-y-2 flex flex-col">
+        <Skeleton.Input
+          active
+          className="bg-gray-bg rounded-[2px] w-[112px] h-[15px]"
+        />
+        <Skeleton.Input
+          active
+          className="bg-gray-bg rounded-[2px] w-[58px] h-[10px]"
+        />
+      </div>
+    </div>
+    <div>
+      <Skeleton.Input
+        active
+        className="bg-gray-bg rounded-[2px] w-[84px] h-[20px]"
+      />
+    </div>
   </div>
 );
 
