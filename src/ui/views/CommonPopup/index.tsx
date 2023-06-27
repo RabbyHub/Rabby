@@ -20,10 +20,12 @@ const ComponentConfig = {
   AssetList: {
     title: null,
     closeable: false,
+    padding: '12px 20px',
   },
   Default: {
     title: undefined,
     closeable: true,
+    padding: '20px 20px 24px',
   },
 };
 
@@ -59,6 +61,9 @@ export const CommonPopup: React.FC = () => {
       className={className}
       destroyOnClose={false}
       push={false}
+      bodyStyle={{
+        padding: config.padding,
+      }}
     >
       {componentName === 'Approval' && <Approval className="h-full" />}
       {componentName === 'WalletConnect' && <ReconnectView />}

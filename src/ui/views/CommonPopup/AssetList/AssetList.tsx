@@ -30,7 +30,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
     <div>
       <ChainList onChange={handleSelectChainChange} />
       <AssetListContainer
-        className="mt-16"
+        className="mt-12"
         selectChainId={selectChainId}
         visible={visible}
       />

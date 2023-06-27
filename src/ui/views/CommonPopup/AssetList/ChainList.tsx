@@ -55,7 +55,7 @@ export const ChainList = ({
     return (
       <Skeleton.Input
         active
-        className="rounded-[6px] w-[360px] h-[68px] bg-gray-bg"
+        className="block rounded-[6px] w-[360px] h-[68px] bg-gray-bg"
       />
     );
   }
