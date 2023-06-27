@@ -194,7 +194,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     if (token?.is_core) {
       return {
         disable: true,
-        reason: 'Token 已收录',
+        reason: 'Token has been supported on Rabby',
       };
     }
     const isCustom = customTokens.some(
@@ -203,7 +203,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     if (isCustom) {
       return {
         disable: true,
-        reason: '是自定义 token',
+        reason: 'Current token has already been added to customized',
       };
     }
     return {
@@ -318,7 +318,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
       <NoTokenWrapper>
         <div className="content flex-1">
           <img src={IconWarning} className="icon icon-warning" />
-          <p>未找到该合约地址对应的Token</p>
+          <p>Token not found from this contract address</p>
         </div>
         <div className="footer">
           <Button type="primary" size="large" className="w-[200px] h-[48px]">

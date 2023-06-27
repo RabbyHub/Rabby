@@ -5,10 +5,7 @@ import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils';
 import { getTokenSymbol, abstractTokenToTokenItem } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
-import TokenSelector, {
-  isSwapTokenType,
-  TokenSelectorProps,
-} from '../TokenSelector';
+import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import './style.less';
 import clsx from 'clsx';
@@ -50,11 +47,8 @@ const TokenAmountInput = ({
   const currentAccount = useRabbySelector(
     (state) => state.account.currentAccount
   );
-
-  const [queryConds, setQueryConds] = useState({
-    keyword: '',
-    chainServerId: chainId,
-  });
+  const [keyword, setKeyword] = useState('');
+  const [chainServerId, setChainServerId] = useState(chainId);
 
   if (amountFocus && !tokenSelectorVisible) {
     tokenInputRef.current?.focus();
@@ -64,8 +58,7 @@ const TokenAmountInput = ({
     onTokenChange(token);
     setTokenSelectorVisible(false);
     tokenInputRef.current?.focus();
-
-    setQueryConds((prev) => ({ ...prev, chainServerId: token.chain }));
+    setChainServerId(token.chain);
   };
 
   const handleTokenSelectorClose = () => {
@@ -79,15 +72,13 @@ const TokenAmountInput = ({
     setTokenSelectorVisible(true);
   };
 
-  const isSwapType = isSwapTokenType(type);
-
   // when no any queryConds
   const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
     currentAccount?.address,
     undefined,
     tokenSelectorVisible,
     updateNonce,
-    queryConds.chainServerId
+    chainServerId
   );
 
   const allDisplayTokens = useMemo(() => {
@@ -97,45 +88,35 @@ const TokenAmountInput = ({
   const {
     isLoading: isSearchLoading,
     list: searchedTokenByQuery,
-  } = useSearchToken(
-    currentAccount?.address,
-    queryConds.keyword,
-    queryConds.chainServerId,
-    isSwapType ? false : true
-  );
+  } = useSearchToken(currentAccount?.address, keyword, chainServerId);
 
   const availableToken = useMemo(() => {
-    const allTokens = queryConds.chainServerId
-      ? allDisplayTokens.filter(
-          (token) => token.chain === queryConds.chainServerId
-        )
+    const allTokens = chainServerId
+      ? allDisplayTokens.filter((token) => token.chain === chainServerId)
       : allDisplayTokens;
     return uniqBy(
-      queryConds.keyword
-        ? searchedTokenByQuery.map(abstractTokenToTokenItem)
-        : allTokens,
+      keyword ? searchedTokenByQuery.map(abstractTokenToTokenItem) : allTokens,
       (token) => {
         return `${token.chain}-${token.id}`;
       }
     ).filter((e) => !excludeTokens.includes(e.id));
-  }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
+  }, [
+    allDisplayTokens,
+    searchedTokenByQuery,
+    excludeTokens,
+    keyword,
+    chainServerId,
+  ]);
   const displayTokenList = useSortToken(availableToken);
-  const isListLoading = queryConds.keyword
-    ? isSearchLoading
-    : isLoadingAllTokens;
+  const isListLoading = keyword ? isSearchLoading : isLoadingAllTokens;
 
   const handleSearchTokens = React.useCallback(async (ctx) => {
-    setQueryConds({
-      keyword: ctx.keyword,
-      chainServerId: ctx.chainServerId,
-    });
+    setKeyword(ctx.keyword);
+    setChainServerId(ctx.chainServerId);
   }, []);
 
   useEffect(() => {
-    setQueryConds((prev) => ({
-      ...prev,
-      chainServerId: chainId,
-    }));
+    setChainServerId(chainId);
   }, [chainId]);
 
   return (
@@ -178,7 +159,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
-        chainId={queryConds.chainServerId}
+        chainId={chainServerId}
       />
     </div>
   );

@@ -22,10 +22,7 @@ export const useFilterProtocolList = ({
             } else {
               const reg = new RegExp(kw, 'i');
               return (
-                reg.test(token.display_symbol || '') ||
-                reg.test(token.symbol) ||
-                reg.test(token.display_symbol || '') ||
-                reg.test(token.name)
+                reg.test(token.display_symbol || '') || reg.test(token.symbol)
               );
             }
           });
