@@ -26,7 +26,6 @@ import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -46,7 +45,8 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -63,13 +63,9 @@ const SendToken = () => {
   const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
   const history = useHistory();
-  const { state } = useLocation<{
-    showChainsModal?: boolean;
-  }>();
   const dispatch = useRabbyDispatch();
 
   const rbisource = useRbiSource();
-  const { showChainsModal = false } = state ?? {};
 
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
@@ -460,6 +456,8 @@ const SendToken = () => {
         amount: '',
       });
     }
+    const chainItem = findChainByServerID(token.chain);
+    setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
@@ -725,6 +723,7 @@ const SendToken = () => {
       </PageHeader>
       <Form
         form={form}
+        className="send-token-form"
         onFinish={handleSubmit}
         onValuesChange={handleFormValuesChange}
         initialValues={{
@@ -732,179 +731,182 @@ const SendToken = () => {
           amount: '',
         }}
       >
-        <TagChainSelector
-          value={chain}
-          onChange={handleChainChanged}
-          showModal={showChainsModal}
-        />
-        <div className="section relative">
-          <div className="section-title">{t('From')}</div>
-          <AccountCard
-            icons={{
-              mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-              privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-              watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
-            }}
-            alianName={sendAlianName}
-          />
-          <div className="section-title">
-            <span className="section-title__to">{t('To')}</span>
-            <div className="flex flex-1 justify-end items-center">
-              {showContactInfo && !!contactInfo && (
-                <div
-                  className={clsx('contact-info', {
-                    disabled: editBtnDisabled,
-                  })}
-                  onClick={handleEditContact}
-                >
-                  {contactInfo && (
-                    <>
-                      <img src={IconEdit} className="icon icon-edit" />
-                      <span
-                        title={contactInfo.name}
-                        className="inline-block align-middle truncate max-w-[240px]"
-                      >
-                        {contactInfo.name}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-              <img
-                className="icon icon-contact"
-                src={whitelistEnabled ? IconWhitelist : IconContact}
-                onClick={handleListContact}
-              />
-            </div>
-          </div>
-          <div className="to-address">
-            <Form.Item
-              name="to"
-              rules={[
-                { required: true, message: t('Please input address') },
-                {
-                  validator(_, value) {
-                    if (!value) return Promise.resolve();
-                    if (value && isValidAddress(value)) {
-                      setAmountFocus(true);
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(t('This address is invalid'))
-                    );
-                  },
-                },
-              ]}
-            >
-              <Input
-                placeholder={t('Enter the address')}
-                autoComplete="off"
-                autoFocus
-                spellCheck={false}
-              />
-            </Form.Item>
-          </div>
-        </div>
-        <div
-          className={clsx('section', {
-            'mb-40': !showWhitelistAlert,
-          })}
-        >
-          <div className="section-title flex justify-between items-center">
-            <div className="token-balance whitespace-pre-wrap">
-              {isLoading ? (
-                <Skeleton.Input active style={{ width: 100 }} />
-              ) : (
-                <>
-                  {t('Balance')}:{' '}
-                  <span
-                    className="truncate max-w-[80px]"
-                    title={formatTokenAmount(
-                      new BigNumber(currentToken.raw_amount_hex_str || 0)
-                        .div(10 ** currentToken.decimals)
-                        .toFixed(),
-                      4
-                    )}
+        <div className="flex-1 overflow-auto">
+          <div className="section relative">
+            <div className={clsx('section-title')}>{t('Chain')}</div>
+            <ChainSelectorInForm
+              value={chain}
+              onChange={handleChainChanged}
+              disabledTips={'Not supported'}
+              supportChains={undefined}
+            />
+            <div className={clsx('section-title mt-[10px]')}>{t('From')}</div>
+            <AccountCard
+              icons={{
+                mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+                privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+                watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+              }}
+              alianName={sendAlianName}
+            />
+            <div className="section-title">
+              <span className="section-title__to">{t('To')}</span>
+              <div className="flex flex-1 justify-end items-center">
+                {showContactInfo && !!contactInfo && (
+                  <div
+                    className={clsx('contact-info', {
+                      disabled: editBtnDisabled,
+                    })}
+                    onClick={handleEditContact}
                   >
-                    {formatTokenAmount(
-                      new BigNumber(currentToken.raw_amount_hex_str || 0)
-                        .div(10 ** currentToken.decimals)
-                        .toFixed(),
-                      4
+                    {contactInfo && (
+                      <>
+                        <img src={IconEdit} className="icon icon-edit" />
+                        <span
+                          title={contactInfo.name}
+                          className="inline-block align-middle truncate max-w-[240px]"
+                        >
+                          {contactInfo.name}
+                        </span>
+                      </>
                     )}
-                  </span>
-                </>
-              )}
-              {currentToken.amount > 0 && (
-                <MaxButton src={ButtonMax} onClick={handleClickTokenBalance} />
-              )}
-            </div>
-            {showGasReserved &&
-              (selectedGasLevel ? (
-                <GasReserved
-                  token={currentToken}
-                  amount={tokenAmountForGas}
-                  onClickAmount={handleClickGasReserved}
+                  </div>
+                )}
+                <img
+                  className="icon icon-contact"
+                  src={whitelistEnabled ? IconWhitelist : IconContact}
+                  onClick={handleListContact}
                 />
-              ) : (
-                <Skeleton.Input active style={{ width: 180 }} />
-              ))}
-            {!showGasReserved && (balanceError || balanceWarn) ? (
-              <div className="balance-error">{balanceError || balanceWarn}</div>
-            ) : null}
+              </div>
+            </div>
+            <div className="to-address">
+              <Form.Item
+                name="to"
+                rules={[
+                  { required: true, message: t('Please input address') },
+                  {
+                    validator(_, value) {
+                      if (!value) return Promise.resolve();
+                      if (value && isValidAddress(value)) {
+                        setAmountFocus(true);
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(t('This address is invalid'))
+                      );
+                    },
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={t('Enter the address')}
+                  autoComplete="off"
+                  autoFocus
+                  spellCheck={false}
+                />
+              </Form.Item>
+            </div>
           </div>
-          <Form.Item name="amount">
-            {currentAccount && chainItem && (
-              <TokenAmountInput
-                token={currentToken}
-                onTokenChange={handleCurrentTokenChange}
-                chainId={chainItem.serverId}
-                amountFocus={amountFocus}
-                inlinePrize
-              />
-            )}
-          </Form.Item>
-          <div className="token-info">
-            <img className="token-info__header" src={TokenInfoArrow} />
-            {!isNativeToken ? (
-              <div className="section-field">
-                <span>{t('Contract Address')}</span>
-                <span className="flex">
-                  <AddressViewer address={currentToken.id} showArrow={false} />
-                  <img
-                    src={IconCopy}
-                    className="icon icon-copy"
-                    onClick={handleCopyContractAddress}
+          <div className="section">
+            <div className="section-title flex justify-between items-center">
+              <div className="token-balance whitespace-pre-wrap">
+                {isLoading ? (
+                  <Skeleton.Input active style={{ width: 100 }} />
+                ) : (
+                  <>
+                    {t('Balance')}:{' '}
+                    <span
+                      className="truncate max-w-[80px]"
+                      title={formatTokenAmount(
+                        new BigNumber(currentToken.raw_amount_hex_str || 0)
+                          .div(10 ** currentToken.decimals)
+                          .toFixed(),
+                        4
+                      )}
+                    >
+                      {formatTokenAmount(
+                        new BigNumber(currentToken.raw_amount_hex_str || 0)
+                          .div(10 ** currentToken.decimals)
+                          .toFixed(),
+                        4
+                      )}
+                    </span>
+                  </>
+                )}
+                {currentToken.amount > 0 && (
+                  <MaxButton
+                    src={ButtonMax}
+                    onClick={handleClickTokenBalance}
                   />
+                )}
+              </div>
+              {showGasReserved &&
+                (selectedGasLevel ? (
+                  <GasReserved
+                    token={currentToken}
+                    amount={tokenAmountForGas}
+                    onClickAmount={handleClickGasReserved}
+                  />
+                ) : (
+                  <Skeleton.Input active style={{ width: 180 }} />
+                ))}
+              {!showGasReserved && (balanceError || balanceWarn) ? (
+                <div className="balance-error">
+                  {balanceError || balanceWarn}
+                </div>
+              ) : null}
+            </div>
+            <Form.Item name="amount">
+              {currentAccount && chainItem && (
+                <TokenAmountInput
+                  token={currentToken}
+                  onTokenChange={handleCurrentTokenChange}
+                  chainId={chainItem.serverId}
+                  amountFocus={amountFocus}
+                  inlinePrize
+                />
+              )}
+            </Form.Item>
+            <div className="token-info">
+              <img className="token-info__header" src={TokenInfoArrow} />
+              {!isNativeToken ? (
+                <div className="section-field">
+                  <span>{t('Contract Address')}</span>
+                  <span className="flex">
+                    <AddressViewer
+                      address={currentToken.id}
+                      showArrow={false}
+                    />
+                    <img
+                      src={IconCopy}
+                      className="icon icon-copy"
+                      onClick={handleCopyContractAddress}
+                    />
+                  </span>
+                </div>
+              ) : (
+                ''
+              )}
+              <div className="section-field">
+                <span>{t('Chain')}</span>
+                <span>
+                  {
+                    Object.values(CHAINS).find(
+                      (chain) => chain.serverId === currentToken.chain
+                    )?.name
+                  }
                 </span>
               </div>
-            ) : (
-              ''
-            )}
-            <div className="section-field">
-              <span>{t('Chain')}</span>
-              <span>
-                {
-                  Object.values(CHAINS).find(
-                    (chain) => chain.serverId === currentToken.chain
-                  )?.name
-                }
-              </span>
-            </div>
-            <div className="section-field">
-              <span>{t('Price')}</span>
-              <span>
-                ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
-              </span>
+              <div className="section-field">
+                <span>{t('Price')}</span>
+                <span>
+                  ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div
-          className={clsx(
-            isNativeToken &&
-              'w-full absolute bottom-[32px] left-1/2 -translate-x-1/2'
-          )}
-        >
+        <div className="footer">
           {showWhitelistAlert && (
             <div
               className={clsx(
@@ -930,13 +932,13 @@ const SendToken = () => {
               </p>
             </div>
           )}
-          <div className="footer flex justify-center">
+          <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
             <Button
               disabled={!canSubmit}
               type="primary"
               htmlType="submit"
               size="large"
-              className="w-[200px]"
+              className="w-[100%] h-[48px]"
               loading={isSubmitLoading}
             >
               {t('Send')}

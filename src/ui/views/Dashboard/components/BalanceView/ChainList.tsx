@@ -5,8 +5,8 @@ import { Chain } from '@debank/common';
 export const ChainList: React.FC<{
   isGnosis: boolean;
   gnosisNetworks: Chain[];
-  chainBalances: DisplayChainWithWhiteLogo[];
-}> = ({ isGnosis, gnosisNetworks, chainBalances }) => {
+  matteredChainBalances: DisplayChainWithWhiteLogo[];
+}> = ({ isGnosis, gnosisNetworks, matteredChainBalances }) => {
   const MAX_CHAINS = 10;
 
   if (isGnosis) {
@@ -34,7 +34,7 @@ export const ChainList: React.FC<{
       );
     }
   }
-  const result = chainBalances
+  const result = matteredChainBalances
     .sort((a, b) => b.usd_value - a.usd_value)
     .map((item) => (
       <img

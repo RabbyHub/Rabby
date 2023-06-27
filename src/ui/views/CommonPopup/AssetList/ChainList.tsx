@@ -11,7 +11,8 @@ export const ChainList = ({
   onChange(id: string | null): void;
 }) => {
   const { data, visible } = useCommonPopupView();
-  const chainList = (data?.chainBalances as DisplayChainWithWhiteLogo[]) ?? [];
+  const chainList =
+    (data?.matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [];
   const balance = (data?.balance as number) ?? 0;
   const balanceLoading = (data?.balanceLoading as boolean) ?? false;
   const [currentChainList, setCurrentChainList] = React.useState<

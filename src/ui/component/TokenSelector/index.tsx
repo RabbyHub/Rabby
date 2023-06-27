@@ -1,32 +1,46 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Input, Drawer, Skeleton } from 'antd';
+import { Input, Drawer, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
+import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
-import IconSearch from 'ui/assets/search.svg';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
+import { CHAINS_ENUM, CHAINS_LIST, Chain } from '@debank/common';
+import { findChainByServerID } from '@/utils/chain';
+
 import MatchImage from 'ui/assets/match.svg';
-import { CHAINS_LIST } from '@debank/common';
+import IconSearch from 'ui/assets/search.svg';
+import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
 
+export interface SearchCallbackCtx {
+  chainServerId: Chain['serverId'] | null;
+  chainItem: Chain | null;
+}
 export interface TokenSelectorProps {
   visible: boolean;
   list: TokenItem[];
   isLoading?: boolean;
   onConfirm(item: TokenItem): void;
   onCancel(): void;
-  onSearch(q: string);
+  onSearch(
+    ctx: SearchCallbackCtx & {
+      keyword: string;
+    }
+  );
+  onRemoveChainFilter?(ctx: SearchCallbackCtx);
   type?: 'default' | 'swapFrom' | 'swapTo';
   placeholder?: string;
   chainId: string;
+  disabledTips?: string;
+  supportChains?: CHAINS_ENUM[] | undefined;
 }
 
 const TokenSelector = ({
@@ -35,28 +49,68 @@ const TokenSelector = ({
   onConfirm,
   onCancel,
   onSearch,
+  onRemoveChainFilter,
   isLoading = false,
   type = 'default',
   placeholder,
-  chainId,
+  chainId: chainServerId,
+  disabledTips,
+  supportChains,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
 
+  const { chainItem, chainSearchCtx } = useMemo(() => {
+    const chain = !chainServerId ? null : findChainByServerID(chainServerId);
+    return {
+      chainItem: chain,
+      chainSearchCtx: {
+        chainServerId,
+        chainItem: chain,
+      },
+    };
+  }, [chainServerId]);
+
   useDebounce(
     () => {
-      onSearch(query);
+      onSearch({ ...chainSearchCtx, keyword: query });
     },
     150,
-    [query]
+    [chainSearchCtx, query]
   );
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
 
-  const displayList = useMemo(() => list || [], [list]);
+  const displayList = useMemo(() => {
+    if (!supportChains?.length) return list || [];
+
+    const varied = (list || []).reduce(
+      (accu, token) => {
+        const chainItem = findChainByServerID(token.chain);
+        const disabled =
+          !!supportChains?.length &&
+          chainItem &&
+          !supportChains.includes(chainItem.enum);
+
+        if (!disabled) {
+          accu.natural.push(token);
+        } else {
+          accu.disabled.push(token);
+        }
+
+        return accu;
+      },
+      {
+        natural: [] as TokenItem[],
+        disabled: [] as TokenItem[],
+      }
+    );
+
+    return [...varied.natural, ...varied.disabled];
+  }, [list, supportChains]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -114,25 +168,25 @@ const TokenSelector = ({
               </p>
               <p className="text-gray-content text-14 mt-0 text-center">
                 Try to search contract address on{' '}
-                {CHAINS_LIST.find((e) => e.serverId === chainId)?.name ||
+                {CHAINS_LIST.find((e) => e.serverId === chainServerId)?.name ||
                   'chain'}
               </p>
             </>
           )}
         </div>
       ),
-    [isLoading, isSwapType, t, isSearchAddr, chainId]
+    [isLoading, isSwapType, t, isSearchAddr, chainServerId]
   );
 
   useEffect(() => {
     if (query && isSwapType && displayList.length === 0) {
       stats.report('swapTokenSearchFailure', {
-        chainId,
+        chainId: chainServerId,
         searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
         keyword: query,
       });
     }
-  }, [type, query, isSwapType, displayList, query, chainId]);
+  }, [type, query, isSwapType, displayList, query, chainServerId]);
 
   return (
     <Drawer
@@ -156,84 +210,109 @@ const TokenSelector = ({
           onBlur={handleInputBlur}
         />
       </div>
+      <div className="filters-wrapper">
+        {chainItem && (
+          <>
+            <div className="filter-item__chain">
+              <img
+                className="filter-item__chain-logo"
+                src={chainItem.logo}
+                alt={chainItem.name}
+              />
+              <span className="ml-[4px]">{chainItem.name}</span>
+              <img
+                className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
+                src={IconChainFilterClose}
+                onClick={() => {
+                  onRemoveChainFilter?.({ chainServerId, chainItem });
+                  onSearch({
+                    chainItem: null,
+                    chainServerId: '',
+                    keyword: query,
+                  });
+                }}
+              />
+            </div>
+          </>
+        )}
+      </div>
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
-          <div>{t('Token')}</div>
-          {!isSwapType && <div>{t('Price')}</div>}
-          <div>
-            {isSwapType ? t('Balance') + ' / ' + t('Value') : t('Balance')}
-          </div>
+          <div>ASSET / AMOUNT</div>
+          <div>PRICE</div>
+          <div>USD VALUE</div>
         </li>
         {isEmpty
           ? NoDataUI
-          : displayList.map((token) => (
-              <li
-                className={clsx(
-                  'token-list__item h-[52px]',
-                  isSwapType && 'justify-between'
-                )}
-                key={`${token.chain}-${token.id}`}
-                onClick={() => onConfirm(token)}
-                title={getTokenSymbol(token)}
-              >
-                <div>
-                  <TokenWithChain
-                    token={token}
-                    width="24px"
-                    height="24px"
-                    hideConer
-                    // hideChainIcon={isSwapType}
-                  />
-                  <div className="flex flex-col text-left">
-                    <span className="symbol">{getTokenSymbol(token)}</span>
-                    <span
-                      className={clsx(
-                        'symbol text-12 text-gray-content',
-                        !isSwapType && 'hidden'
-                      )}
-                    >
-                      ${splitNumberByStep((token.price || 0).toFixed(2))}
-                    </span>
-                  </div>
-                </div>
+          : displayList.map((token) => {
+              const chainItem = findChainByServerID(token.chain);
+              const disabled =
+                !!supportChains?.length &&
+                chainItem &&
+                !supportChains.includes(chainItem.enum);
 
-                <div className={clsx(isSwapType && 'hidden')}>
-                  ${splitNumberByStep((token.price || 0).toFixed(2))}
-                </div>
-
-                <div className="flex flex-col text-right items-end">
-                  <div
-                    className="max-w-full font-medium text-13 text-gray-title truncate ml-[8px]"
-                    title={formatTokenAmount(token.amount)}
-                  >
-                    {isSwapType
-                      ? token.amount !== 0 && token.amount < 0.0001
-                        ? '< 0.0001'
-                        : formatTokenAmount(token.amount)
-                      : formatTokenAmount(token.amount)}
-                  </div>
-                  <div
-                    title={splitNumberByStep(
-                      new BigNumber(token.price || 0)
-                        .times(token.amount)
-                        .toFixed(2)
-                    )}
+              return (
+                <Tooltip
+                  key={`${token.chain}-${token.id}`}
+                  trigger={['click', 'hover']}
+                  mouseEnterDelay={3}
+                  overlayClassName={clsx('rectangle left-[20px]')}
+                  placement="top"
+                  title={disabledTips}
+                  visible={disabled ? undefined : false}
+                >
+                  <li
                     className={clsx(
-                      'max-w-full text-12 text-gray-content',
-                      !isSwapType && 'hidden',
-                      'truncate'
+                      'token-list__item h-[52px]',
+                      disabled && 'opacity-50'
                     )}
+                    onClick={() => !disabled && onConfirm(token)}
                   >
-                    $
-                    {splitNumberByStep(
-                      new BigNumber(token.price || 0)
-                        .times(token.amount)
-                        .toFixed(2)
-                    )}
-                  </div>
-                </div>
-              </li>
-            ))}
+                    <div>
+                      <TokenWithChain
+                        token={token}
+                        width="24px"
+                        height="24px"
+                        hideConer
+                      />
+                      <div className="flex flex-col gap-4">
+                        <span
+                          className="symbol text-13 text-gray-title font-medium"
+                          title={token.amount.toString()}
+                        >
+                          {formatTokenAmount(token.amount)}
+                        </span>
+                        <span className="symbol" title={getTokenSymbol(token)}>
+                          {getTokenSymbol(token)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>{formatUsdValue(token.price)}</div>
+
+                    <div className="flex flex-col text-right items-end">
+                      <div
+                        title={formatUsdValue(
+                          new BigNumber(token.price || 0)
+                            .times(token.amount)
+                            .toFixed()
+                        )}
+                        className={clsx(
+                          'max-w-full text-13 text-gray-title',
+                          'truncate'
+                        )}
+                      >
+                        {formatUsdValue(
+                          new BigNumber(token.price || 0)
+                            .times(token.amount)
+                            .toFixed()
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                </Tooltip>
+              );
+            })}
       </ul>
     </Drawer>
   );

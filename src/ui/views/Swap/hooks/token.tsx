@@ -215,14 +215,22 @@ export const useTokenPair = (userAddress: string) => {
     [payToken, payAmount]
   );
 
-  const chainSwitch = useCallback(
-    (c: CHAINS_ENUM, payTokenId?: string) => {
+  const switchChain = useCallback(
+    (c: CHAINS_ENUM, opts?: { payTokenId?: string; changeTo?: boolean }) => {
       handleChain(c);
-      setPayToken({
-        ...getChainDefaultToken(c),
-        ...(payTokenId ? { id: payTokenId } : {}),
-      });
-      setReceiveToken(undefined);
+      if (!opts?.changeTo) {
+        setPayToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
+        setReceiveToken(undefined);
+      } else {
+        setReceiveToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
+        // setPayToken(undefined);
+      }
       setPayAmount('');
       setActiveProvider(undefined);
     },
@@ -400,7 +408,7 @@ export const useTokenPair = (userAddress: string) => {
 
   return {
     chain,
-    chainSwitch,
+    switchChain,
 
     payToken,
     setPayToken,

@@ -17,7 +17,7 @@ import { useDebounce } from 'react-use';
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [
     balance,
-    chainBalances,
+    matteredChainBalances,
     _,
     success,
     balanceLoading,
@@ -73,12 +73,12 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        chainBalances,
+        matteredChainBalances,
         balance,
         balanceLoading,
       });
     }
-  }, [chainBalances, balance, balanceLoading, componentName]);
+  }, [matteredChainBalances, balance, balanceLoading, componentName]);
 
   useEffect(() => {
     if (currentAccount) {
@@ -208,11 +208,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                   {'The network is disconnected and no data is obtained'}
                 </span>
               </>
-            ) : chainBalances.length > 0 ? (
+            ) : matteredChainBalances.length > 0 ? (
               <div className="flex space-x-4">
                 <ChainList
                   isGnosis={isGnosis}
-                  chainBalances={chainBalances}
+                  matteredChainBalances={matteredChainBalances}
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>

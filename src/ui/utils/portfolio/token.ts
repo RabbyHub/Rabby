@@ -50,7 +50,9 @@ const filterDisplayToken = (
 export const useTokens = (
   userAddr: string | undefined,
   timeAt?: Dayjs,
-  visible = true
+  visible = true,
+  updateNonce = 0,
+  chainId?: string
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -63,25 +65,30 @@ export const useTokens = (
     (store) => store.account.tokens
   );
   const userAddrRef = useRef('');
+  const chainIdRef = useRef<string | undefined>(undefined);
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
 
   useEffect(() => {
+    if (updateNonce === 0) return;
+    loadProcess();
+  }, [updateNonce]);
+
+  useEffect(() => {
     if (userAddr) {
-      if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+      if (
+        visible &&
+        (!isSameAddress(userAddr, userAddrRef.current) ||
+          chainId !== chainIdRef.current)
+      ) {
         loadProcess().then(() => {
           userAddrRef.current = userAddr;
+          chainIdRef.current = chainId;
         });
       }
     } else {
       setData(undefined);
     }
-
-    return () => {
-      // eslint-disable-next-line
-      abortProcess.current?.abort();
-    };
-    // eslint-disable-next-line
-  }, [userAddr, visible]);
+  }, [userAddr, visible, chainId]);
 
   useEffect(() => {
     if (timeAt) {
@@ -138,7 +145,7 @@ export const useTokens = (
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
-    const tokenRes = await batchQueryTokens(userAddr, wallet);
+    const tokenRes = await batchQueryTokens(userAddr, wallet, chainId);
     // customize and blocked tokens
     const customizeTokens = await wallet.getCustomizedToken();
     const customTokenList: TokenItem[] = [];

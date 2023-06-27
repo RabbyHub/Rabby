@@ -31,11 +31,11 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           alt={item.chain}
         />
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 overflow-hidden">
         <span className="text-gray-title text-13 font-medium leading-[15px]">
           {item._amountStr}
         </span>
-        <span className="text-gray-subTitle text-12 leading-[14px]">
+        <span className="text-gray-subTitle text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
           {item.symbol}
         </span>
       </div>

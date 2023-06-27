@@ -15,9 +15,10 @@ export const queryTokensCache = async (
 
 export const batchQueryTokens = async (
   user_id: string,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  chainId?: string
 ) => {
-  return wallet.openapi.listToken(user_id, undefined, true);
+  return wallet.openapi.listToken(user_id, chainId, true);
 };
 
 export const batchQueryHistoryTokens = async (

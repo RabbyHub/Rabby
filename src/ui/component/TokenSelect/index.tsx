@@ -1,16 +1,20 @@
-import React, { ComponentProps, useMemo, useState } from 'react';
+import React, { ComponentProps, useMemo, useState, useEffect } from 'react';
 import { Input, Skeleton } from 'antd';
-import cloneDeep from 'lodash/cloneDeep';
-import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
-import { useWallet } from 'ui/utils';
-import { getTokenSymbol } from 'ui/utils/token';
+import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { useRabbySelector } from '@/ui/store';
+import { uniqBy } from 'lodash';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import useSearchToken from '@/ui/hooks/useSearchToken';
+import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
+import { useWallet } from '@/ui/utils';
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -53,6 +57,7 @@ export interface TokenSelectProps {
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
+  useSwapTokenList?: boolean;
   excludeTokens?: TokenItem['id'][];
   type?: ComponentProps<typeof TokenSelector>['type'];
   placeholder?: string;
@@ -82,17 +87,26 @@ const TokenSelect = ({
   value,
   loading = false,
   tokenRender,
+  useSwapTokenList = false,
 }: TokenSelectProps) => {
-  const [q, setQ] = useState('');
+  const [queryConds, setQueryConds] = useState({
+    keyword: '',
+    chainServerId: chainId,
+  });
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+  const [updateNonce, setUpdateNonce] = useState(0);
+  const currentAccount = useRabbySelector(
+    (state) => state.account.currentAccount
+  );
   const wallet = useWallet();
-
-  const isSwapType = isSwapTokenType(type);
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);
     setTokenSelectorVisible(false);
+
+    // const chainItem = findChainByServerID(token.chain);
+    setQueryConds((prev) => ({ ...prev, chainServerId: token.chain }));
   };
 
   const handleTokenSelectorClose = () => {
@@ -100,100 +114,86 @@ const TokenSelect = ({
   };
 
   const handleSelectToken = () => {
+    if (allDisplayTokens.length > 0) {
+      setUpdateNonce(updateNonce + 1);
+    }
     setTokenSelectorVisible(true);
   };
 
-  const sortTokensByPrice = (tokens: TokenItem[]) => {
-    const copy = cloneDeep(tokens);
-    return copy.sort((a, b) => {
-      return new BigNumber(b.amount)
-        .times(new BigNumber(b.price || 0))
-        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
-        .toNumber();
-    });
-  };
+  const isSwapType = isSwapTokenType(type);
 
-  const {
-    value: originTokenList = [],
-    loading: isTokenLoading,
-  } = useAsync(async () => {
-    if (!tokenSelectorVisible) return [];
-    let tokens: TokenItem[] = [];
-    const currentAccount = await wallet.syncGetCurrentAccount();
-
-    const getDefaultTokens = isSwapType
-      ? wallet.openapi.getSwapTokenList
-      : wallet.openapi.listToken;
-
-    const currentAddress = currentAccount?.address || '';
-    const defaultTokens = await getDefaultTokens(currentAddress, chainId);
-    let localAddedTokens: TokenItem[] = [];
-
-    if (!isSwapType) {
-      const localAdded =
-        (await wallet.getAddedToken(currentAddress)).filter((item) => {
-          const [chain] = item.split(':');
-          return chain === chainId;
-        }) || [];
-      if (localAdded.length > 0) {
-        localAddedTokens = await wallet.openapi.customListToken(
-          localAdded,
-          currentAddress
-        );
-      }
-    }
-    tokens = sortTokensByPrice([
-      ...defaultTokens,
-      ...localAddedTokens,
-    ]).filter((e) => (type === 'swapFrom' ? e.amount > 0 : true));
-
-    return tokens;
-  }, [tokenSelectorVisible, chainId, isSwapType]);
-
-  const {
-    value: displayTokens = [],
-    loading: isSearchLoading,
-  } = useAsync(async (): Promise<TokenItem[]> => {
-    if (!tokenSelectorVisible) return [];
-    if (!q) {
-      return originTokenList;
-    }
-
-    const kw = q.trim();
-
-    if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
-      const currentAccount = await wallet.syncGetCurrentAccount();
-
-      const data = await wallet.openapi.searchToken(currentAccount!.address, q);
-      return data.filter((e) => e.chain === chainId);
-    }
-    if (isSwapType) {
-      const currentAccount = await wallet.syncGetCurrentAccount();
-
-      const data = await wallet.openapi.searchSwapToken(
-        currentAccount!.address,
-        chainId,
-        q
-      );
-      return data;
-    }
-
-    return originTokenList.filter((token) => {
-      const reg = new RegExp(kw, 'i');
-      return reg.test(token.name) || reg.test(token.symbol);
-    });
-  }, [tokenSelectorVisible, originTokenList, q, chainId]);
-
-  const isListLoading = isTokenLoading || isSearchLoading;
-
-  const handleSearchTokens = React.useCallback(async (q: string) => {
-    setQ(q);
-  }, []);
-
-  const availableToken = useMemo(
-    () => displayTokens.filter((e) => !excludeTokens.includes(e.id)),
-    [excludeTokens, displayTokens]
+  // when no any queryConds
+  const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    useSwapTokenList ? undefined : currentAccount?.address,
+    undefined,
+    tokenSelectorVisible,
+    updateNonce,
+    queryConds.chainServerId
   );
+
+  const {
+    value: swapTokenList,
+    loading: swapTokenListLoading,
+  } = useAsync(async () => {
+    if (!currentAccount || !useSwapTokenList || !tokenSelectorVisible)
+      return [];
+    const list = await wallet.openapi.getSwapTokenList(
+      currentAccount.address,
+      queryConds.chainServerId ? queryConds.chainServerId : undefined
+    );
+    return list;
+  }, [
+    queryConds.chainServerId,
+    currentAccount,
+    useSwapTokenList,
+    tokenSelectorVisible,
+  ]);
+
+  const allDisplayTokens = useMemo(() => {
+    if (useSwapTokenList) return swapTokenList || [];
+    return allTokens.map(abstractTokenToTokenItem);
+  }, [allTokens, swapTokenList, useSwapTokenList]);
+
+  const {
+    isLoading: isSearchLoading,
+    list: searchedTokenByQuery,
+  } = useSearchToken(
+    currentAccount?.address,
+    queryConds.keyword,
+    queryConds.chainServerId,
+    isSwapType ? false : true
+  );
+
+  const availableToken = useMemo(() => {
+    const allTokens = queryConds.chainServerId
+      ? allDisplayTokens.filter(
+          (token) => token.chain === queryConds.chainServerId
+        )
+      : allDisplayTokens;
+    return uniqBy(
+      queryConds.keyword
+        ? searchedTokenByQuery.map(abstractTokenToTokenItem)
+        : allTokens,
+      (token) => {
+        return `${token.chain}-${token.id}`;
+      }
+    ).filter((e) => !excludeTokens.includes(e.id));
+  }, [allDisplayTokens, searchedTokenByQuery, excludeTokens, queryConds]);
+
+  const displayTokenList = useSortToken(availableToken);
+
+  const isListLoading = queryConds.keyword
+    ? isSearchLoading
+    : useSwapTokenList
+    ? swapTokenListLoading
+    : isLoadingAllTokens;
+
+  const handleSearchTokens = React.useCallback(async (ctx) => {
+    setQueryConds({
+      keyword: ctx.keyword,
+      chainServerId: ctx.chainServerId,
+    });
+  }, []);
 
   const [input, setInput] = useState('');
 
@@ -206,6 +206,13 @@ const TokenSelect = ({
     onChange && onChange(v);
   };
 
+  useEffect(() => {
+    setQueryConds((prev) => ({
+      ...prev,
+      chainServerId: chainId,
+    }));
+  }, [chainId]);
+
   if (tokenRender) {
     return (
       <>
@@ -214,14 +221,16 @@ const TokenSelect = ({
           : tokenRender}
         <TokenSelector
           visible={tokenSelectorVisible}
-          list={availableToken}
+          list={displayTokenList}
           onConfirm={handleCurrentTokenChange}
           onCancel={handleTokenSelectorClose}
           onSearch={handleSearchTokens}
           isLoading={isListLoading}
           type={type}
           placeholder={placeholder}
-          chainId={chainId}
+          chainId={queryConds.chainServerId}
+          disabledTips={'Not supported'}
+          supportChains={SWAP_SUPPORT_CHAINS}
         />
       </>
     );
@@ -273,14 +282,16 @@ const TokenSelect = ({
       </Wrapper>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={availableToken}
+        list={displayTokenList}
         onConfirm={handleCurrentTokenChange}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
-        chainId={chainId}
+        chainId={queryConds.chainServerId}
+        disabledTips={'Not supported'}
+        supportChains={SWAP_SUPPORT_CHAINS}
       />
     </>
   );

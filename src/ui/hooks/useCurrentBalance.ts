@@ -33,7 +33,7 @@ export default function useCurrentBalance(
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [balanceFromCache, setBalanceFromCache] = useState(false);
   let isCanceled = false;
-  const [chainBalances, setChainBalances] = useState<
+  const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
 
@@ -97,7 +97,7 @@ export default function useCurrentBalance(
   }, [account, nonce]);
   return [
     balance,
-    chainBalances,
+    matteredChainBalances,
     getAddressBalance,
     success,
     balanceLoading,
