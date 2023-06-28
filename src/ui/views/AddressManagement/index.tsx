@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList } from 'react-window';
@@ -24,6 +24,9 @@ import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
+
+import { Input } from 'antd';
+import IconSearch from 'ui/assets/search.svg';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -86,6 +89,26 @@ const AddressManagement = () => {
   }, [accountList, loadingAccounts]);
 
   const dispatch = useRabbyDispatch();
+
+  const [searchVal, setSearchVal] = useState<string>('');
+
+  const accountListFiltered = useMemo(
+    () => {
+      const results = accountList.filter((item) => {
+        const res = `${item.address} ${item.alianName}`;
+        return res.toLowerCase().includes(searchVal.toLowerCase());
+      });
+      return results;
+    },
+    [searchVal, watchSortedAccountsList]
+  );
+
+  const handleSearchValChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    e.stopPropagation();
+    setSearchVal(e.target.value);
+  };
 
   useEffect(() => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
@@ -306,13 +329,22 @@ const AddressManagement = () => {
         NoAddressUI
       ) : (
         <>
+       
           <div className={'address-group-list management'}>
+          <Input
+            prefix={<img src={IconSearch} />}
+            placeholder="Search wallets"
+            onChange={handleSearchValChange}
+            value={searchVal}
+            allowClear
+          />
+
             <VList
               height={hasStatusBar ? 450 : 500}
               width="100%"
-              itemData={accountList}
-              itemCount={accountList.length}
-              itemSize={(i) => (i !== sortedAccountsList.length - 1 ? 64 : 78)}
+              itemData={accountListFiltered}
+              itemCount={accountListFiltered.length}
+              itemSize={(i) => (i !== accountListFiltered.length - 1 ? 64 : 78)}
               className="scroll-container"
             >
               {Row}
