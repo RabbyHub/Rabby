@@ -128,7 +128,9 @@ export const AssetListContainer: React.FC<Props> = ({
               isNoResults={isNoResults}
             />
           )}
-          {activeTab === TokenTabEnum.Summary && !search && <SummaryList />}
+          {activeTab === TokenTabEnum.Summary && !search && (
+            <SummaryList chainId={selectChainId} />
+          )}
           {activeTab === TokenTabEnum.History && !search && <HistoryList />}
         </div>
       )}
