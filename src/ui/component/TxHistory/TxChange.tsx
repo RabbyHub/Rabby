@@ -70,7 +70,7 @@ export const TokenChange = ({
             <TokenLabel
               isNft={isNft}
               token={token}
-              canClickToken={canClickToken}
+              canClickToken={isNft ? false : canClickToken}
             />
           </div>
         );

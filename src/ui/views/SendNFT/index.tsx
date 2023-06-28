@@ -468,43 +468,51 @@ const SendNFT = () => {
             </div>
           </div>
 
-          {showWhitelistAlert && (
-            <div
-              className={clsx(
-                'whitelist-alert',
-                !whitelistEnabled || whitelistAlertContent.success
-                  ? 'granted'
-                  : 'cursor-pointer'
-              )}
-              onClick={handleClickWhitelistAlert}
-            >
-              <p className="whitelist-alert__content text-center">
-                {whitelistEnabled && (
-                  <img
-                    src={
-                      whitelistAlertContent.success
-                        ? IconCheck
-                        : IconTemporaryGrantCheckbox
-                    }
-                    className="icon icon-check inline-block relative -top-1"
-                  />
+          <footer
+            className={clsx(
+              'p-20',
+              'fixed left-0 right-0 bottom-0',
+              'border-t border-gray-divider bg-white'
+            )}
+          >
+            {showWhitelistAlert && (
+              <div
+                className={clsx(
+                  'whitelist-alert',
+                  !whitelistEnabled || whitelistAlertContent.success
+                    ? 'granted'
+                    : 'cursor-pointer'
                 )}
-                {whitelistAlertContent.content}
-              </p>
-            </div>
-          )}
+                onClick={handleClickWhitelistAlert}
+              >
+                <p className="whitelist-alert__content text-center">
+                  {whitelistEnabled && (
+                    <img
+                      src={
+                        whitelistAlertContent.success
+                          ? IconCheck
+                          : IconTemporaryGrantCheckbox
+                      }
+                      className="icon icon-check inline-block relative -top-1"
+                    />
+                  )}
+                  {whitelistAlertContent.content}
+                </p>
+              </div>
+            )}
 
-          <div className="footer flex justify-center">
-            <Button
-              disabled={!canSubmit}
-              type="primary"
-              htmlType="submit"
-              size="large"
-              className="w-[200px]"
-            >
-              {t('Send')}
-            </Button>
-          </div>
+            <div className="footer flex justify-center">
+              <Button
+                disabled={!canSubmit}
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[200px]"
+              >
+                {t('Send')}
+              </Button>
+            </div>
+          </footer>
         </Form>
       )}
       <ContactEditModal
