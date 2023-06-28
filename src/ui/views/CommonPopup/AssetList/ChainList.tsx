@@ -22,8 +22,8 @@ export const ChainList = ({
   const [showMore, setShowMore] = React.useState(false);
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
 
-  const handleSelectChain = (id: string) => {
-    if (activeChainId === id) {
+  const handleSelectChain = (id?: string) => {
+    if (!id || activeChainId === id) {
       setActiveChainId(null);
       onChange(null);
     } else {
@@ -46,6 +46,7 @@ export const ChainList = ({
   React.useEffect(() => {
     if (!visible) {
       setShowMore(false);
+      handleSelectChain();
     }
   }, [visible]);
 
