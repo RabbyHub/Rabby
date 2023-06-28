@@ -324,9 +324,9 @@ const AddressManagement = () => {
         NoAddressUI
       ) : (
         <>
-          <div className="p-20">
+          <header className="p-20">
             <Input
-                className="h-[40px] rounded-[6px] p-0 pl-[12px] "
+                className="h-[40px] rounded-[6px] p-0 pl-[12px] pr-[12px]"
                 size="large"
                 prefix={<img className="mr-[10px]" src={IconSearch} />}
                 placeholder="Search wallets"
@@ -334,7 +334,7 @@ const AddressManagement = () => {
                 value={searchVal}
                 allowClear
               />
-          </div>
+          </header>
           <div className={'address-group-list management'}>
             <VList
               height={hasStatusBar ? 450 : 500}
