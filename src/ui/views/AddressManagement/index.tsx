@@ -92,20 +92,15 @@ const AddressManagement = () => {
 
   const [searchVal, setSearchVal] = useState<string>('');
 
-  const accountListFiltered = useMemo(
-    () => {
-      const results = accountList.filter((item) => {
-        const res = `${item.address} ${item.alianName}`;
-        return res.toLowerCase().includes(searchVal.toLowerCase());
-      });
-      return results;
-    },
-    [searchVal, watchSortedAccountsList]
-  );
+  const accountListFiltered = useMemo(() => {
+    const results = accountList.filter((item) => {
+      const res = `${item.address} ${item.alianName}`;
+      return res.toLowerCase().includes(searchVal.toLowerCase());
+    });
+    return results;
+  }, [searchVal, watchSortedAccountsList]);
 
-  const handleSearchValChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSearchValChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     setSearchVal(e.target.value);
   };
@@ -329,16 +324,18 @@ const AddressManagement = () => {
         NoAddressUI
       ) : (
         <>
-       
+          <div className="p-20">
+            <Input
+                className="h-[40px] rounded-[6px] p-0 pl-[12px] "
+                size="large"
+                prefix={<img className="mr-[10px]" src={IconSearch} />}
+                placeholder="Search wallets"
+                onChange={handleSearchValChange}
+                value={searchVal}
+                allowClear
+              />
+          </div>
           <div className={'address-group-list management'}>
-          <Input
-            prefix={<img src={IconSearch} />}
-            placeholder="Search wallets"
-            onChange={handleSearchValChange}
-            value={searchVal}
-            allowClear
-          />
-
             <VList
               height={hasStatusBar ? 450 : 500}
               width="100%"
