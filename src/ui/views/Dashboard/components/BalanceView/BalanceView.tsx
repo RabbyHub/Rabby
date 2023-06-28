@@ -239,7 +239,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               currentHover ? '' : 'mt-10'
             )}
           >
-            {!online ? null : curveLoading ? (
+            {!online && !curveData ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
