@@ -101,6 +101,9 @@
   "NoAddress": {
     "message": "No address"
   },
+  "NoWalletFound": {
+    "message": "No wallet found"
+  },
   "Add__addresses": {
     "message": "Add address"
   },

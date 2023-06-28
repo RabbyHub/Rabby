@@ -100,6 +100,10 @@ const AddressManagement = () => {
     return results;
   }, [searchVal, watchSortedAccountsList]);
 
+  const noSearchResults = useMemo(() => {
+    return accountListFiltered.length <= 0 && !loadingAccounts;
+  }, [accountListFiltered, loadingAccounts]);
+
   const handleSearchValChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     setSearchVal(e.target.value);
@@ -129,6 +133,17 @@ const AddressManagement = () => {
         alt="no address"
       />
       <p className="text-gray-content text-14">{t('NoAddress')}</p>
+    </div>
+  );
+
+  const NoSearchResultUI = (
+    <div className="no-address">
+      <img
+        className="no-data-image"
+        src="/images/nodata-address.png"
+        alt="no wallet found"
+      />
+      <p className="text-gray-content text-14">{t('NoWalletFound')}</p>
     </div>
   );
 
@@ -320,6 +335,7 @@ const AddressManagement = () => {
           </div>
         </>
       )}
+
       {noAccount ? (
         NoAddressUI
       ) : (
@@ -335,6 +351,8 @@ const AddressManagement = () => {
                 allowClear
               />
           </header>
+          {noSearchResults && NoSearchResultUI}
+
           <div className={'address-group-list management'}>
             <VList
               height={hasStatusBar ? 450 : 500}
