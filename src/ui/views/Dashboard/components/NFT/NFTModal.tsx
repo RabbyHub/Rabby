@@ -11,6 +11,7 @@ import clsx from 'clsx';
 
 interface ContentProps {
   data?: NFTItem;
+  collectionName?: string;
 }
 
 const calc = (data?: NFTItem) => {
@@ -20,7 +21,7 @@ const calc = (data?: NFTItem) => {
   return `$${splitNumberByStep(data.usd_price.toFixed(2))}`;
 };
 
-const NFTModal = ({ data }: ContentProps) => {
+const NFTModal = ({ data, collectionName }: ContentProps) => {
   const chain = getChain(data?.chain);
   const price = calc(data);
   const history = useHistory();
@@ -61,7 +62,7 @@ const NFTModal = ({ data }: ContentProps) => {
         <div className="nft-preview-card-list-item">
           <div className="nft-preview-card-list-item-label">Collection</div>
           <div className="nft-preview-card-list-item-value">
-            {data?.collection?.name || '-'}
+            {(data?.collection?.name ?? collectionName) || '-'}
           </div>
         </div>
         <div className="nft-preview-card-list-item">
