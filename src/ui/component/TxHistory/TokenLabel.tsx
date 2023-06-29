@@ -10,12 +10,14 @@ export interface Props {
   token: TokenItem;
   isNft?: boolean;
   canClickToken?: boolean;
+  onClose?: () => void;
 }
 
 export const TokenLabel: React.FC<Props> = ({
   token,
   isNft,
   canClickToken = true,
+  onClose,
 }) => {
   const [visible, setVisible] = React.useState(false);
 
@@ -53,7 +55,10 @@ export const TokenLabel: React.FC<Props> = ({
         <TokenDetailPopup
           variant="add"
           visible={visible}
-          onClose={() => setVisible(false)}
+          onClose={() => {
+            setVisible(false);
+            onClose?.();
+          }}
           token={token}
         />
       )}

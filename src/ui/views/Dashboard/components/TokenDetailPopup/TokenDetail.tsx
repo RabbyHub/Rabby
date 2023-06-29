@@ -47,6 +47,7 @@ const TokenDetail = ({
   removeToken,
   variant,
   isAdded,
+  onClose,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -322,6 +323,7 @@ const TokenDetail = ({
             cateDict={item.cateDict}
             tokenDict={item.tokenDict}
             key={item.id}
+            onClose={onClose}
           ></HistoryItem>
         ))}
         {(loadingMore || loading) && <Loading count={5} active />}

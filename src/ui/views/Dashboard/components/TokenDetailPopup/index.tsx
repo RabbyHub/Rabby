@@ -91,6 +91,7 @@ export const TokenDetailPopup = ({
           removeToken={handleRemoveToken}
           variant={variant}
           isAdded={isAdded}
+          onClose={onClose}
         ></TokenDetail>
       )}
     </Popup>
