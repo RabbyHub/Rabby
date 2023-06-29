@@ -183,8 +183,7 @@
   },
   "resolutions": {
     "@debank/common": "^0.3.0",
-    "blake2b": "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36",
-    "@debank/rabby-api": "@rabby-wallet/rabby-api@*"
+    "blake2b": "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36"
   },
   "keywords": [],
   "author": "",
