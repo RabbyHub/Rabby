@@ -13,8 +13,6 @@ import {
   Chain,
   ExplainTxResponse,
   GasLevel,
-  SecurityCheckDecision,
-  SecurityCheckResponse,
   Tx,
 } from 'background/service/openapi';
 import { Account, ChainGas } from 'background/service/preference';
@@ -656,18 +654,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
     null
   );
-  const [submitText, setSubmitText] = useState('Proceed');
-  const [checkText, setCheckText] = useState('Sign');
   const { t } = useTranslation();
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>('loading');
-  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
   const [preprocessSuccess, setPreprocessSuccess] = useState(true);
   const [chainId, setChainId] = useState<number>(
     params.data[0].chainId && Number(params.data[0].chainId)
@@ -875,47 +862,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     recommendGasLimitRatio,
   });
 
-  const checkTx = async (address: string) => {
-    try {
-      setSecurityCheckStatus('loading');
-      const res = await wallet.openapi.checkTx(
-        {
-          ...tx,
-          nonce: tx.nonce || '0x1',
-          data: tx.data,
-          value: tx.value || '0x0',
-          gas: tx.gas || '',
-        }, // set a mock nonce for check if dapp not set it
-        origin || '',
-        address,
-        !(nonce && tx.from === tx.to)
-      );
-      setSecurityCheckStatus(res.decision);
-      setSecurityCheckAlert(res.alert);
-      setSecurityCheckDetail(res);
-      setForceProcess(res.decision !== 'forbidden');
-    } catch (e: any) {
-      console.error(e);
-      const alert = 'Security engine service is temporarily unavailable';
-      const decision = 'pass';
-      setForceProcess(true);
-      setSecurityCheckStatus(decision);
-      setSecurityCheckAlert(alert);
-      setSecurityCheckDetail(({
-        error: {
-          msg: alert,
-          code: 4000,
-        },
-        alert,
-        decision,
-        danger_list: [],
-        warning_list: [],
-        forbidden_list: [],
-        trace_id: '',
-      } as unknown) as SecurityCheckResponse);
-    }
-  };
-
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
     if (!isGnosisAccount) {
@@ -1106,7 +1052,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setIsReady(false);
       await explainTx(currentAccount.address);
       setIsReady(true);
-      await checkTx(currentAccount.address);
     } catch (e: any) {
       Modal.error({
         title: t('Error'),
@@ -1155,12 +1100,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
-  const handleAllow = async (doubleCheck = false) => {
+  const handleAllow = async () => {
     if (!selectedGas) return;
-    if (!doubleCheck && securityCheckStatus !== 'pass') {
-      // setShowSecurityCheckDetail(true);
-      return;
-    }
 
     if (activeApprovalPopup()) {
       return;
@@ -1238,7 +1179,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
         type: currentAccount.type,
         address: currentAccount.address,
-        traceId: securityCheckDetail?.trace_id,
         extra: {
           brandName: currentAccount.brandName,
         },
@@ -1274,7 +1214,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
-      traceId: securityCheckDetail?.trace_id,
       signingTxId: approval.signingTxId,
     });
   };
@@ -1703,25 +1642,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [inited, updateId]);
 
   useEffect(() => {
-    (async () => {
-      const currentAccount = (await wallet.getCurrentAccount())!;
-      if (
-        [
-          KEYRING_CLASS.MNEMONIC,
-          KEYRING_CLASS.PRIVATE_KEY,
-          KEYRING_CLASS.WATCH,
-        ].includes(currentAccount.type)
-      ) {
-        setSubmitText('Sign');
-        setCheckText('Sign');
-      } else {
-        setSubmitText('Proceed');
-        setCheckText('Proceed');
-      }
-    })();
-  }, [securityCheckStatus]);
-
-  useEffect(() => {
     executeSecurityEngine();
   }, [userData, rules]);
 
@@ -1839,7 +1759,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             gnosisAccount={isGnosis ? account : undefined}
             chain={chain}
             onCancel={handleCancel}
-            onSubmit={() => handleAllow(forceProcess)}
+            onSubmit={() => handleAllow()}
             onIgnoreAllRules={handleIgnoreAllRules}
             enableTooltip={
               !canProcess ||
