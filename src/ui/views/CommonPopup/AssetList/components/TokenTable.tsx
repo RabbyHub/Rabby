@@ -4,6 +4,7 @@ import { TokenItem, Props as TokenItemProps } from '../TokenItem';
 import { FixedSizeList } from 'react-window';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenItem as TokenItemType } from '@/background/service/openapi';
+import { useCommonPopupView } from '@/ui/utils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -22,6 +23,7 @@ export const TokenTable: React.FC<Props> = ({
   const [selected, setSelected] = React.useState<TokenItemProps['item']>();
   const [visible, setVisible] = React.useState(false);
   const [token, setToken] = React.useState<TokenItemType>();
+  const { visible: commonPopupVisible } = useCommonPopupView();
 
   React.useEffect(() => {
     setVisible(!!selected);
@@ -35,6 +37,12 @@ export const TokenTable: React.FC<Props> = ({
       setToken(undefined);
     }
   }, [selected]);
+
+  React.useEffect(() => {
+    if (!commonPopupVisible) {
+      setVisible(false);
+    }
+  }, [commonPopupVisible]);
 
   return (
     <>
