@@ -4,23 +4,21 @@ import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
-import { useNetworkState } from 'react-use';
 import { SvgIconOffline } from '@/ui/assets';
 
 export const AssetList = ({ visible }: { visible: boolean }) => {
-  const { setHeight } = useCommonPopupView();
+  const { setHeight, data } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
   const handleSelectChainChange = (id: string | null) => {
     setSelectChainId(id);
   };
   const [isEmptyAssets, setIsEmptyAssets] = useState<boolean>(false);
-  const { online } = useNetworkState();
 
   React.useEffect(() => {
     setHeight(488);
   }, []);
 
-  if (!online) {
+  if (data?.isOffline) {
     return (
       <div className="text-gray-subTitle mt-40 flex items-center justify-center">
         <SvgIconOffline className="mr-4 text-gray-subTitle" />

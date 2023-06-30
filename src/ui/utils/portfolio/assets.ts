@@ -12,9 +12,6 @@ type AssetsClassify = {
 export const MINI_ASSET_ID = '__miniAssets__';
 export const MINI_DEBT_ID = '__miniDebts__';
 
-/**
- * https://github.com/DeBankDeFi/defi-insight-react/blob/master/src/views/PortfolioAnalysis/hooks/assets.ts
- */
 export const sumGrossWorth = (data: AssetsClassify) => {
   const list = [...data.coin_list, ...data.token_list]
     .map((x) => {
@@ -22,7 +19,6 @@ export const sumGrossWorth = (data: AssetsClassify) => {
 
       return {
         ...x,
-        // token id 不同链存在重复
         id: x.id + ((x as Tokens).chain || ''),
         _value,
         // _netWorth: numFormat(_value, 0, '$'),
@@ -110,8 +106,6 @@ export const groupAssets = (
   // 0.1%
   const threshold = (smallBaseWorth || baseWorth) / 1000;
 
-  // ???
-  // < 1% 的 networth
   const miniAssets = {
     symbol: 'Combined other small assets',
     id: MINI_ASSET_ID,
@@ -133,17 +127,14 @@ export const groupAssets = (
   }).length;
 
   for (let i = 0; i < list.length; i++) {
-    // <= 10 不触发合并
     if (totalCount <= 10) {
       result.push({ ...list[i], _percent: 0 });
       continue;
     }
-    // 符合条件资产 <= 3 不触发资产合并
     if (list[i]._value >= 0 && miniAssetsCount <= 3) {
       result.push({ ...list[i], _percent: 0 });
       continue;
     }
-    // 符合条件负债 <= 3 不触发负债合并
     if (list[i]._value < 0 && miniDebtsCount <= 3) {
       result.push({ ...list[i], _percent: 0 });
       continue;
@@ -180,7 +171,6 @@ const computeDelta = (pre?: AssetSummaryItem, next?: AssetSummaryItem) => {
   const delta = (next?._value || 0) - (pre?._value || 0);
   const meta = next || pre;
 
-  // pre 不为 0 且 next 有值
   const priceDelta =
     pre?.price && typeof next?.price !== 'undefined'
       ? next.price - pre.price
@@ -248,7 +238,6 @@ export const compareAssets = (
 
   const sortNumber = isNetWorthLoss ? 1 : -1;
 
-  // loss 时小到大
   return result
     .filter((x) => {
       // networth change / price change / balance change

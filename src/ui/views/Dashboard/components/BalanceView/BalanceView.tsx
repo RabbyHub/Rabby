@@ -11,11 +11,9 @@ import { useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
-import { useDebounce, useNetworkState } from 'react-use';
+import { useDebounce } from 'react-use';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
-  const { online } = useNetworkState();
-
   const [
     balance,
     matteredChainBalances,
@@ -44,11 +42,15 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [startRefresh, setStartRefresh] = useState(false);
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const onRefresh = () => {
-    if (!online) return;
+  const onRefresh = async () => {
     setStartRefresh(true);
-    refreshBalance();
-    refreshCurve();
+    try {
+      await Promise.all([refreshBalance(), refreshCurve()]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setStartRefresh(false);
+    }
   };
 
   const handleIsGnosisChange = async () => {
@@ -80,6 +82,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
+        isOffline: !success,
       });
     }
   }, [
@@ -215,7 +218,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
               </>
-            ) : !online ? (
+            ) : !success ? (
               <>
                 <SvgIconOffline className="mr-4 text-white" />
                 <span className="leading-tight">
@@ -239,7 +242,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               currentHover ? '' : 'mt-10'
             )}
           >
-            {!online && !curveData ? null : curveLoading ? (
+            {!success && !curveData ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active

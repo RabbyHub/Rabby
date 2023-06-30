@@ -88,10 +88,10 @@ export const useCurve = (
     setIsLoading(false);
   };
 
-  const refresh = () => {
+  const refresh = async () => {
     if (!address) return;
     setIsLoading(true);
-    fetch(address, true);
+    await fetch(address, true);
   };
 
   useEffect(() => {
