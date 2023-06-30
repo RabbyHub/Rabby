@@ -34,7 +34,13 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
     history.push({
       pathname: '/send-nft',
       state: {
-        nftItem: data,
+        nftItem: {
+          ...data,
+          collection: {
+            ...data?.collection,
+            name: collectionName,
+          },
+        },
       },
       search: `?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`,
     });
