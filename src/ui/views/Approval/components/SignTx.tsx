@@ -607,6 +607,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       success: true,
       usd_value_change: 0,
     },
+    trace_id: '',
     native_token: {
       amount: 0,
       chain: '',
@@ -819,7 +820,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   });
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
-  const [forceProcess, setForceProcess] = useState(true);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
@@ -876,67 +876,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
     const { pendings } = await wallet.getTransactionHistory(address);
-    const res: ExplainTxResponse = await wallet.openapi.preExecTx({
-      tx: {
-        ...tx,
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
-        data: tx.data,
-        value: tx.value || '0x0',
-        gas: tx.gas || '', // set gas limit if dapp not set
-      },
-      origin: origin || '',
-      address,
-      updateNonce,
-      pending_tx_list: pendings
-        .filter((item) =>
-          new BigNumber(item.nonce).lt(updateNonce ? recommendNonce : tx.nonce)
-        )
-        .reduce((result, item) => {
-          return result.concat(item.txs.map((tx) => tx.rawTx));
-        }, [] as Tx[])
-        .map((item) => ({
-          from: item.from,
-          to: item.to,
-          chainId: item.chainId,
-          data: item.data || '0x',
-          nonce: item.nonce,
-          value: item.value,
-          gasPrice: `0x${new BigNumber(
-            item.gasPrice || item.maxFeePerGas || 0
-          ).toString(16)}`,
-          gas: item.gas || item.gasLimit || '0x0',
-        })),
-    });
-    let estimateGas = 0;
-    if (res.gas.success) {
-      estimateGas = res.gas.gas_limit || res.gas.gas_used;
-    }
-    const { gas, needRatio, gasUsed } = await getRecommendGas({
-      gasUsed: res.gas.gas_used,
-      gas: estimateGas,
-      tx,
-      wallet,
-      chainId,
-    });
-    setGasUsed(gasUsed);
-    setRecommendGasLimit(`0x${gas.toString(16)}`);
-    let block = null;
-    try {
-      block = await wallet.requestETHRpc(
-        {
-          method: 'eth_getBlockByNumber',
-          params: ['latest', false],
-        },
-        chain.serverId
-      );
-      setBlockInfo(block);
-    } catch (e) {
-      // DO NOTHING
-    }
-    if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
-      setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
-      reCalcGasLimitBaseAccountBalance({
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+    const preExecPromise = wallet.openapi
+      .preExecTx({
         tx: {
           ...tx,
           nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
@@ -944,105 +885,174 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           value: tx.value || '0x0',
           gas: tx.gas || '', // set gas limit if dapp not set
         },
-        gasPrice: selectedGas?.price || 0,
-        customRecommendGasLimit: gas.toNumber(),
-        customGasLimit: Number(tx.gas),
-        customRecommendGasLimitRatio: 1,
-        block,
+        origin: origin || '',
+        address,
+        updateNonce,
+        pending_tx_list: pendings
+          .filter((item) =>
+            new BigNumber(item.nonce).lt(
+              updateNonce ? recommendNonce : tx.nonce
+            )
+          )
+          .reduce((result, item) => {
+            return result.concat(item.txs.map((tx) => tx.rawTx));
+          }, [] as Tx[])
+          .map((item) => ({
+            from: item.from,
+            to: item.to,
+            chainId: item.chainId,
+            data: item.data || '0x',
+            nonce: item.nonce,
+            value: item.value,
+            gasPrice: `0x${new BigNumber(
+              item.gasPrice || item.maxFeePerGas || 0
+            ).toString(16)}`,
+            gas: item.gas || item.gasLimit || '0x0',
+          })),
+      })
+      .then(async (res) => {
+        let estimateGas = 0;
+        if (res.gas.success) {
+          estimateGas = res.gas.gas_limit || res.gas.gas_used;
+        }
+        const { gas, needRatio, gasUsed } = await getRecommendGas({
+          gasUsed: res.gas.gas_used,
+          gas: estimateGas,
+          tx,
+          wallet,
+          chainId,
+        });
+        setGasUsed(gasUsed);
+        setRecommendGasLimit(`0x${gas.toString(16)}`);
+        let block = null;
+        try {
+          block = await wallet.requestETHRpc(
+            {
+              method: 'eth_getBlockByNumber',
+              params: ['latest', false],
+            },
+            chain.serverId
+          );
+          setBlockInfo(block);
+        } catch (e) {
+          // DO NOTHING
+        }
+        if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
+          setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
+          reCalcGasLimitBaseAccountBalance({
+            nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            tx: {
+              ...tx,
+              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
+              data: tx.data,
+              value: tx.value || '0x0',
+              gas: tx.gas || '', // set gas limit if dapp not set
+            },
+            gasPrice: selectedGas?.price || 0,
+            customRecommendGasLimit: gas.toNumber(),
+            customGasLimit: Number(tx.gas),
+            customRecommendGasLimitRatio: 1,
+            block,
+          });
+        } else if (!gasLimit) {
+          // use server response gas limit
+          const ratio =
+            SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+          setRecommendGasLimitRatio(needRatio ? ratio : 1);
+          const recommendGasLimit = needRatio
+            ? gas.times(ratio).toFixed(0)
+            : gas.toFixed(0);
+          setGasLimit(intToHex(Number(recommendGasLimit)));
+          reCalcGasLimitBaseAccountBalance({
+            nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+            tx: {
+              ...tx,
+              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
+              data: tx.data,
+              value: tx.value || '0x0',
+              gas: tx.gas || '', // set gas limit if dapp not set
+            },
+            gasPrice: selectedGas?.price || 0,
+            customRecommendGasLimit: gas.toNumber(),
+            customGasLimit: Number(recommendGasLimit),
+            customRecommendGasLimitRatio: needRatio ? ratio : 1,
+            block,
+          });
+        }
+        setTxDetail(res);
+
+        setPreprocessSuccess(res.pre_exec.success);
+        return res;
       });
-    } else if (!gasLimit) {
-      // use server response gas limit
-      const ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
-      setRecommendGasLimitRatio(needRatio ? ratio : 1);
-      const recommendGasLimit = needRatio
-        ? gas.times(ratio).toFixed(0)
-        : gas.toFixed(0);
-      setGasLimit(intToHex(Number(recommendGasLimit)));
-      reCalcGasLimitBaseAccountBalance({
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+
+    return wallet.openapi
+      .parseTx({
+        chainId: chain.serverId,
         tx: {
           ...tx,
-          nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
-          data: tx.data,
+          gas: '0x0',
+          nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
           value: tx.value || '0x0',
-          gas: tx.gas || '', // set gas limit if dapp not set
+          // todo
+          to: tx.to || '',
         },
-        gasPrice: selectedGas?.price || 0,
-        customRecommendGasLimit: gas.toNumber(),
-        customGasLimit: Number(recommendGasLimit),
-        customRecommendGasLimitRatio: needRatio ? ratio : 1,
-        block,
+        origin: origin || '',
+        addr: address,
+      })
+      .then(async (actionData) => {
+        return preExecPromise.then(async (res) => {
+          const parsed = parseAction(
+            actionData.action,
+            res.balance_change,
+            {
+              ...tx,
+              gas: '0x0',
+              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+              value: tx.value || '0x0',
+            },
+            res.pre_exec_version
+          );
+          const requiredData = await fetchActionRequiredData({
+            actionData: parsed,
+            contractCall: actionData.contract_call,
+            chainId: chain.serverId,
+            address,
+            wallet,
+            tx: {
+              ...tx,
+              gas: '0x0',
+              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+              value: tx.value || '0x0',
+            },
+          });
+          const ctx = formatSecurityEngineCtx({
+            actionData: parsed,
+            requireData: requiredData,
+            chainId: chain.serverId,
+          });
+          const result = await executeEngine(ctx);
+          setEngineResults(result);
+          setActionData(parsed);
+          setActionRequireData(requiredData);
+          const approval = await getApproval();
+
+          approval.signingTxId &&
+            (await wallet.updateSigningTx(approval.signingTxId, {
+              rawTx: {
+                nonce: updateNonce ? recommendNonce : tx.nonce,
+              },
+              explain: {
+                ...res,
+                approvalId: approval.id,
+                calcSuccess: !(checkErrors.length > 0),
+              },
+              action: {
+                actionData: parsed,
+                requiredData,
+              },
+            }));
+        });
       });
-    }
-    const actionData = await wallet.openapi.parseTx({
-      chainId: chain.serverId,
-      tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-        value: tx.value || '0x0',
-        // todo
-        to: tx.to || '',
-      },
-      origin: origin || '',
-      addr: address,
-    });
-    console.log('res', res);
-    const parsed = parseAction(
-      actionData.action,
-      res.balance_change,
-      {
-        ...tx,
-        gas: '0x0',
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-        value: tx.value || '0x0',
-      },
-      res.pre_exec_version
-    );
-    const requiredData = await fetchActionRequiredData({
-      actionData: parsed,
-      contractCall: actionData.contract_call,
-      chainId: chain.serverId,
-      address,
-      wallet,
-      tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-        value: tx.value || '0x0',
-      },
-    });
-    const ctx = formatSecurityEngineCtx({
-      actionData: parsed,
-      requireData: requiredData,
-      chainId: chain.serverId,
-    });
-    const result = await executeEngine(ctx);
-    setEngineResults(result);
-    setActionData(parsed);
-    setActionRequireData(requiredData);
-    setTxDetail(res);
-
-    setPreprocessSuccess(res.pre_exec.success);
-    const approval = await getApproval();
-
-    approval.signingTxId &&
-      (await wallet.updateSigningTx(approval.signingTxId, {
-        rawTx: {
-          nonce: updateNonce ? recommendNonce : tx.nonce,
-        },
-        explain: {
-          ...res,
-          approvalId: approval.id,
-          calcSuccess: !(checkErrors.length > 0),
-        },
-        action: {
-          actionData: parsed,
-          requiredData,
-        },
-      }));
-
-    return res;
   };
 
   const explain = async () => {
@@ -1179,6 +1189,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
         type: currentAccount.type,
         address: currentAccount.address,
+        traceId: txDetail?.trace_id,
         extra: {
           brandName: currentAccount.brandName,
         },
@@ -1214,6 +1225,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
+      traceId: txDetail?.trace_id,
       signingTxId: approval.signingTxId,
     });
   };
@@ -1665,7 +1677,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         })}
         ref={scrollRef}
       >
-        {txDetail && (
+        {txDetail && actionData && (
           <>
             {txDetail && (
               <TxTypeComponent
