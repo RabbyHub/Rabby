@@ -37,8 +37,12 @@ const ChainWrapper = styled.div`
 
 export const ChainRender = ({
   chain,
+  readonly,
   ...other
-}: { chain: CHAINS_ENUM } & InsHTMLAttributes<HTMLDivElement>) => {
+}: {
+  chain: CHAINS_ENUM;
+  readonly: boolean;
+} & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
 
   const [customRPC, setCustomRPC] = useState('');
@@ -59,7 +63,7 @@ export const ChainRender = ({
         showCustomRPCToolTip
       />
       <span className="name">{CHAINS[chain].name}</span>
-      <img className="down" src={ImgArrowDown} alt="" />
+      {!readonly && <img className="down" src={ImgArrowDown} alt="" />}
     </ChainWrapper>
   );
 };
@@ -103,7 +107,11 @@ export default function ChainSelectorInForm({
 
   return (
     <>
-      <ChainRender chain={value} onClick={handleClickSelector} />
+      <ChainRender
+        chain={value}
+        onClick={handleClickSelector}
+        readonly={readonly}
+      />
       {!readonly && (
         <Modal
           value={value}

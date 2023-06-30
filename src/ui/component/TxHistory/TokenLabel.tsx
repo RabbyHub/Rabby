@@ -49,7 +49,13 @@ export const TokenLabel: React.FC<Props> = ({
           }}
           onCancel={() => setVisible(false)}
         >
-          <NFTModal data={token as any} />
+          <NFTModal
+            onClose={() => {
+              setVisible(false);
+              onClose?.();
+            }}
+            data={token as any}
+          />
         </Modal>
       ) : (
         <TokenDetailPopup

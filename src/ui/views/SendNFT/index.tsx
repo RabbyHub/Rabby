@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +18,6 @@ import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet, isSameAddress, openInTab } from 'ui/utils';
 import AccountCard from '../Approval/components/AccountCard';
-import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer, Copy } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -28,8 +26,6 @@ import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
-import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
@@ -38,6 +34,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { findChainByEnum } from '@/utils/chain';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -351,9 +348,15 @@ const SendNFT = () => {
           }}
           onValuesChange={handleFormValuesChange}
         >
-          {chain && <TagChainSelector value={chain!} readonly />}
           <div className="section relative">
-            <div className="section-title">{t('From')}</div>
+            {/* {chain && <TagChainSelector value={chain!} readonly />} */}
+            {chain && (
+              <>
+                <div className={clsx('section-title')}>{t('Chain')}</div>
+                <ChainSelectorInForm value={chain} readonly />
+              </>
+            )}
+            <div className="section-title mt-[10px]">{t('From')}</div>
             <AccountCard
               icons={{
                 mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
@@ -468,13 +471,7 @@ const SendNFT = () => {
             </div>
           </div>
 
-          <footer
-            className={clsx(
-              'p-20',
-              'fixed left-0 right-0 bottom-0',
-              'border-t border-gray-divider bg-white'
-            )}
-          >
+          <div className="footer">
             {showWhitelistAlert && (
               <div
                 className={clsx(
@@ -500,19 +497,18 @@ const SendNFT = () => {
                 </p>
               </div>
             )}
-
-            <div className="footer flex justify-center">
+            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
               <Button
                 disabled={!canSubmit}
                 type="primary"
                 htmlType="submit"
                 size="large"
-                className="w-[200px]"
+                className="w-[100%] h-[48px]"
               >
                 {t('Send')}
               </Button>
             </div>
-          </footer>
+          </div>
         </Form>
       )}
       <ContactEditModal
