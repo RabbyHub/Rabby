@@ -348,126 +348,128 @@ const SendNFT = () => {
           }}
           onValuesChange={handleFormValuesChange}
         >
-          <div className="section relative">
-            {/* {chain && <TagChainSelector value={chain!} readonly />} */}
-            {chain && (
-              <>
-                <div className={clsx('section-title')}>{t('Chain')}</div>
-                <ChainSelectorInForm value={chain} readonly />
-              </>
-            )}
-            <div className="section-title mt-[10px]">{t('From')}</div>
-            <AccountCard
-              icons={{
-                mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-                privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-                watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
-              }}
-              alianName={sendAlianName}
-            />
-            <div className="section-title">
-              <span className="section-title__to">{t('To')}</span>
-              <div className="flex flex-1 justify-end items-center">
-                {showContactInfo && (
-                  <div
-                    className={clsx('contact-info', {
-                      disabled: editBtnDisabled,
-                    })}
-                    onClick={handleEditContact}
-                  >
-                    {contactInfo && (
-                      <>
-                        <img src={IconEdit} className="icon icon-edit" />
-                        <span
-                          title={contactInfo.name}
-                          className="inline-block align-middle truncate max-w-[240px]"
-                        >
-                          {contactInfo.name}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
-                <img
-                  className="icon icon-contact"
-                  src={whitelistEnabled ? IconWhitelist : IconContact}
-                  onClick={handleListContact}
-                />
-              </div>
-            </div>
-            <div className="to-address">
-              <Form.Item
-                name="to"
-                rules={[
-                  { required: true, message: t('Please input address') },
-                  {
-                    validator(_, value) {
-                      if (!value) return Promise.resolve();
-                      if (value && isValidAddress(value)) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error(t('This address is invalid'))
-                      );
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={t('Enter the address')}
-                  autoComplete="off"
-                  autoFocus
-                />
-              </Form.Item>
-            </div>
-          </div>
-          <div
-            className={clsx('section', {
-              'mb-40': !showWhitelistAlert,
-            })}
-          >
-            <div className="nft-info flex">
-              <NFTAvatar
-                type={nftItem.content_type}
-                content={nftItem.content}
-                className="w-[72px] h-[72px]"
+          <div className="flex-1 overflow-auto">
+            <div className="section relative">
+              {/* {chain && <TagChainSelector value={chain!} readonly />} */}
+              {chain && (
+                <>
+                  <div className={clsx('section-title')}>{t('Chain')}</div>
+                  <ChainSelectorInForm value={chain} readonly />
+                </>
+              )}
+              <div className="section-title mt-[10px]">{t('From')}</div>
+              <AccountCard
+                icons={{
+                  mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+                  privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+                  watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+                }}
+                alianName={sendAlianName}
               />
-              <div className="nft-info__detail">
-                <h3>{nftItem.name}</h3>
-                <p>
-                  <span className="field-name">Collection</span>
-                  <span className="value">
-                    {nftItem.collection?.name || '-'}
-                  </span>
-                </p>
-                <p>
-                  <span className="field-name">Contract</span>
-                  <span className="value gap-[4px]">
-                    <AddressViewer
-                      address={nftItem.contract_id}
-                      showArrow={false}
-                    />
-                    <img
-                      src={IconExternal}
-                      className="icon icon-copy"
-                      onClick={handleClickContractId}
-                    />
-                    <Copy data={nftItem.contract_id} variant="address"></Copy>
-                  </span>
-                </p>
+              <div className="section-title">
+                <span className="section-title__to">{t('To')}</span>
+                <div className="flex flex-1 justify-end items-center">
+                  {showContactInfo && (
+                    <div
+                      className={clsx('contact-info', {
+                        disabled: editBtnDisabled,
+                      })}
+                      onClick={handleEditContact}
+                    >
+                      {contactInfo && (
+                        <>
+                          <img src={IconEdit} className="icon icon-edit" />
+                          <span
+                            title={contactInfo.name}
+                            className="inline-block align-middle truncate max-w-[240px]"
+                          >
+                            {contactInfo.name}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <img
+                    className="icon icon-contact"
+                    src={whitelistEnabled ? IconWhitelist : IconContact}
+                    onClick={handleListContact}
+                  />
+                </div>
+              </div>
+              <div className="to-address">
+                <Form.Item
+                  name="to"
+                  rules={[
+                    { required: true, message: t('Please input address') },
+                    {
+                      validator(_, value) {
+                        if (!value) return Promise.resolve();
+                        if (value && isValidAddress(value)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(t('This address is invalid'))
+                        );
+                      },
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t('Enter the address')}
+                    autoComplete="off"
+                    autoFocus
+                  />
+                </Form.Item>
               </div>
             </div>
-            <div className="section-footer">
-              <span>Send amount</span>
-
-              <Form.Item name="amount">
-                <NumberInput
-                  max={nftItem.amount}
-                  nftItem={nftItem}
-                  disabled={!nftItem.is_erc1155}
-                  ref={amountInputEl}
+            <div
+              className={clsx('section', {
+                'mb-40': !showWhitelistAlert,
+              })}
+            >
+              <div className="nft-info flex">
+                <NFTAvatar
+                  type={nftItem.content_type}
+                  content={nftItem.content}
+                  className="w-[72px] h-[72px]"
                 />
-              </Form.Item>
+                <div className="nft-info__detail">
+                  <h3>{nftItem.name}</h3>
+                  <p>
+                    <span className="field-name">Collection</span>
+                    <span className="value">
+                      {nftItem.collection?.name || '-'}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="field-name">Contract</span>
+                    <span className="value gap-[4px]">
+                      <AddressViewer
+                        address={nftItem.contract_id}
+                        showArrow={false}
+                      />
+                      <img
+                        src={IconExternal}
+                        className="icon icon-copy"
+                        onClick={handleClickContractId}
+                      />
+                      <Copy data={nftItem.contract_id} variant="address"></Copy>
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className="section-footer">
+                <span>Send amount</span>
+
+                <Form.Item name="amount">
+                  <NumberInput
+                    max={nftItem.amount}
+                    nftItem={nftItem}
+                    disabled={!nftItem.is_erc1155}
+                    ref={amountInputEl}
+                  />
+                </Form.Item>
+              </div>
             </div>
           </div>
 

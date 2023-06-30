@@ -8,6 +8,7 @@ import ChainIcon from '@/ui/component/ChainIcon';
 import ImgArrowDown from '@/ui/assets/swap/arrow-down.svg';
 import { useWallet } from '@/ui/utils';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import clsx from 'clsx';
 
 const ChainWrapper = styled.div`
   height: 40px;
@@ -38,6 +39,7 @@ const ChainWrapper = styled.div`
 export const ChainRender = ({
   chain,
   readonly,
+  className,
   ...other
 }: {
   chain: CHAINS_ENUM;
@@ -54,7 +56,15 @@ export const ChainRender = ({
     getCustomRPC();
   }, [chain]);
   return (
-    <ChainWrapper {...other}>
+    <ChainWrapper
+      className={clsx(
+        {
+          'cursor-default hover:bg-[#f5f6fa]': readonly,
+        },
+        className
+      )}
+      {...other}
+    >
       {/* <img className="logo" src={CHAINS[chain].logo} alt={CHAINS[chain].name} /> */}
       <ChainIcon
         chain={chain}
