@@ -62,6 +62,7 @@ export const NFTView: React.FC = () => {
   const [tab, setTab] = React.useState('all');
   const { currentAccount } = useRabbySelector((s) => s.account);
   const [nftItem, setNFTItem] = React.useState<NFTItem | null>(null);
+  const [collectionName, setCollectionName] = React.useState<string>();
   const [modalVisible, setModalVisible] = React.useState(false);
   const {
     isLoading,
@@ -71,7 +72,8 @@ export const NFTView: React.FC = () => {
     checkStarred,
   } = useCollection();
 
-  const handleShowModal = React.useCallback((item: NFTItem) => {
+  const handleShowModal = React.useCallback((item: NFTItem, name: string) => {
+    setCollectionName(name);
     setNFTItem(item);
     setModalVisible(true);
     matomoRequestEvent({
@@ -152,7 +154,7 @@ export const NFTView: React.FC = () => {
         }}
         onCancel={handleHideModal}
       >
-        {nftItem && <NFTModal data={nftItem} />}
+        {nftItem && <NFTModal data={nftItem} collectionName={collectionName} />}
       </Modal>
     </div>
   );

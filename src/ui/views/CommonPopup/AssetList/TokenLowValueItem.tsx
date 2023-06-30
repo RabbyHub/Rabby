@@ -4,7 +4,7 @@ import { ReactComponent as LowValueSVG } from '@/ui/assets/dashboard/low-value.s
 import { ReactComponent as LowValueArrowSVG } from '@/ui/assets/dashboard/low-value-arrow.svg';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import BigNumber from 'bignumber.js';
-import { splitNumberByStep } from '@/ui/utils';
+import { splitNumberByStep, useCommonPopupView } from '@/ui/utils';
 import { Popup } from '@/ui/component';
 import { TokenTable } from './components/TokenTable';
 import { TokenListEmpty } from './TokenListEmpty';
@@ -21,6 +21,13 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       .toNumber();
   }, [list]);
   const [visible, setVisible] = React.useState(false);
+  const { visible: commonPopupVisible } = useCommonPopupView();
+
+  React.useEffect(() => {
+    if (!commonPopupVisible) {
+      setVisible(false);
+    }
+  }, [commonPopupVisible]);
 
   return (
     <div className={clsx('flex justify-between items-center mt-8', className)}>

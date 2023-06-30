@@ -4,13 +4,15 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { getChain } from '@/utils';
 import NFTAvatar from './NFTAvatar';
-import { openInTab, splitNumberByStep } from '@/ui/utils';
+import { openInTab, splitNumberByStep, useCommonPopupView } from '@/ui/utils';
 import { IGAEventSource } from '@/ui/utils/ga-event';
 import { ReactComponent as LinkSVG } from '@/ui/assets/nft-view/link.svg';
 import clsx from 'clsx';
 
 interface ContentProps {
   data?: NFTItem;
+  collectionName?: string;
+  onClose?(): void;
 }
 
 const calc = (data?: NFTItem) => {
@@ -20,12 +22,15 @@ const calc = (data?: NFTItem) => {
   return `$${splitNumberByStep(data.usd_price.toFixed(2))}`;
 };
 
-const NFTModal = ({ data }: ContentProps) => {
+const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   const chain = getChain(data?.chain);
   const price = calc(data);
   const history = useHistory();
+  const { setVisible } = useCommonPopupView();
 
   const handleClickSend = () => {
+    setVisible(false);
+    onClose?.();
     history.push({
       pathname: '/send-nft',
       state: {
@@ -61,7 +66,7 @@ const NFTModal = ({ data }: ContentProps) => {
         <div className="nft-preview-card-list-item">
           <div className="nft-preview-card-list-item-label">Collection</div>
           <div className="nft-preview-card-list-item-value">
-            {data?.collection?.name || '-'}
+            {(data?.collection?.name ?? collectionName) || '-'}
           </div>
         </div>
         <div className="nft-preview-card-list-item">

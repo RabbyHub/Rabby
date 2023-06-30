@@ -153,7 +153,10 @@ export const useTokens = (
     tokenRes.forEach((token) => {
       if (
         customizeTokens.find(
-          (t) => isSameAddress(token.id, t.address) && token.chain === t.chain
+          (t) =>
+            isSameAddress(token.id, t.address) &&
+            token.chain === t.chain &&
+            !token.is_core
         )
       ) {
         // customize with balance
@@ -161,7 +164,10 @@ export const useTokens = (
       }
       if (
         blocked.find(
-          (t) => isSameAddress(token.id, t.address) && token.chain === t.chain
+          (t) =>
+            isSameAddress(token.id, t.address) &&
+            token.chain === t.chain &&
+            token.is_core
         )
       ) {
         blockedTokenList.push(token);

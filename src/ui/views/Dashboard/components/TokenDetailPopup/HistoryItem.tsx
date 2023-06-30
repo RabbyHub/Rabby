@@ -10,6 +10,7 @@ import { CHAINS } from 'consts';
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
   canClickToken?: boolean;
+  onClose?: () => void;
 } & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
 
 const EtherscanLink = styled.div`
@@ -26,6 +27,7 @@ export const HistoryItem = ({
   projectDict,
   tokenDict,
   canClickToken = true,
+  onClose,
 }: HistoryItemProps) => {
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
@@ -63,6 +65,7 @@ export const HistoryItem = ({
           data={data}
           tokenDict={tokenDict}
           canClickToken={canClickToken}
+          onClose={onClose}
         />
       </div>
     </div>

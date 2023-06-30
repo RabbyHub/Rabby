@@ -9,7 +9,7 @@ import { ChainIcon, getChainName } from './ChainIcon';
 export interface Props {
   collection: CollectionList;
   className?: string;
-  onClickNFT?: (nft: NFTItem) => void;
+  onClickNFT?: (nft: NFTItem, name: string) => void;
   onStar?: () => void;
   isStarred?: boolean;
 }
@@ -75,7 +75,7 @@ export const CollectionCard: React.FC<Props> = ({
             className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
           >
             <NFTAvatar
-              onPreview={() => onClickNFT?.(item)}
+              onPreview={() => onClickNFT?.(item, collection.name)}
               type={item.content_type}
               amount={item.amount}
               content={item.content}

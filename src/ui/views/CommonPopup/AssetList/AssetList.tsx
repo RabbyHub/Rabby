@@ -4,6 +4,7 @@ import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
+import { SvgIconOffline } from '@/ui/assets';
 
 export const AssetList = ({ visible }: { visible: boolean }) => {
   const { setHeight, data } = useCommonPopupView();
@@ -16,6 +17,17 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
   React.useEffect(() => {
     setHeight(488);
   }, []);
+
+  if (data?.isOffline) {
+    return (
+      <div className="text-gray-subTitle mt-40 flex items-center justify-center">
+        <SvgIconOffline className="mr-4 text-gray-subTitle" />
+        <span className="leading-tight">
+          {'The network is disconnected and no data is obtained'}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <>

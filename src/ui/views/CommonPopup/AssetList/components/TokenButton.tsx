@@ -5,6 +5,7 @@ import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import { Popup } from '@/ui/component';
 import { ReactComponent as EmptySVG } from '@/ui/assets/dashboard/empty.svg';
 import { TokenTable } from './TokenTable';
+import { useCommonPopupView } from '@/ui/utils';
 
 export interface Props {
   label: string;
@@ -23,6 +24,7 @@ export const TokenButton: React.FC<Props> = ({
   description,
   hiddenSubTitle,
 }) => {
+  const { visible: commonPopupVisible } = useCommonPopupView();
   const [visible, setVisible] = React.useState(false);
   const len = tokens?.length ?? 0;
 
@@ -30,6 +32,12 @@ export const TokenButton: React.FC<Props> = ({
     setVisible(false);
     onClickLink();
   }, []);
+
+  React.useEffect(() => {
+    if (!commonPopupVisible) {
+      setVisible(false);
+    }
+  }, [commonPopupVisible]);
 
   return (
     <div>

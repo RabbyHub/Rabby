@@ -47,6 +47,7 @@ const TokenDetail = ({
   removeToken,
   variant,
   isAdded,
+  onClose,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -158,30 +159,33 @@ const TokenDetail = ({
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   const isShowAddress = /^0x.{40}$/.test(token.id);
-  const { closePopup } = useCommonPopupView();
+  const { setVisible } = useCommonPopupView();
 
   const history = useHistory();
   const goToSend = useCallback(() => {
+    setVisible(false);
+    onClose?.();
     history.push(
       `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
     );
-    closePopup();
   }, [history, token]);
 
   const goToReceive = useCallback(() => {
+    setVisible(false);
+    onClose?.();
     history.push(
       `/receive?rbisource=tokendetail&chain=${
         getChain(token?.chain)?.enum
       }&token=${token?.symbol}`
     );
-    closePopup();
   }, [history, token]);
 
   const goToSwap = useCallback(() => {
+    setVisible(false);
+    onClose?.();
     history.push(
       `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
     );
-    closePopup();
   }, [history, token]);
 
   const isHiddenButton =
@@ -322,6 +326,7 @@ const TokenDetail = ({
             cateDict={item.cateDict}
             tokenDict={item.tokenDict}
             key={item.id}
+            onClose={onClose}
           ></HistoryItem>
         ))}
         {(loadingMore || loading) && <Loading count={5} active />}
