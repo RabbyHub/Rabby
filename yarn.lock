@@ -1317,15 +1317,15 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.28", "@debank/common@^0.2.31", "@debank/common@^0.3.0":
+"@debank/common@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.3.tgz#a0774da8624db2395bd6bf3ecf9c31dae732399b"
-  integrity sha512-ReWfT/wrh9ZznYPVAlV5+Jebyxe+6TaV9dMhBfhMl18toDnwXHibqnngIS69mV3zdHbfCu65Qz3VIEQV/x7T/A==
+"@debank/common@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.5.tgz#4cc8fffe3cd6de2200b2c3c02889548666912fb7"
+  integrity sha512-001IlPnF0s0Ds1Iyx1hV5ugJGpmF9plsG3PQL/jzs0gtKO15hnym74aUH9KFQq5MV2pHWpw5ZG0qVj9pXbOahw==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3534,10 +3534,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.0.tgz#17c0e6f3686226848768c120155a8116be6332ca"
-  integrity sha512-XiNuCWm6meSYNWefExxFTIgzbNnA+dPu4ynjFA04IJaUzJF5x3kWCI11G6v44bHjk4/UHsHzt61Yy/k5goFREw==
+"@rabby-wallet/rabby-api@^0.6.11":
+  version "0.6.11"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.11.tgz#6e3573a32829d10b05798b1bfe50a11bc9ce7114"
+  integrity sha512-rq3muemcPFUxFKeGybpUqtOLW//VENjwILEbQ7wN4x660HQKNQS0q9vRkDFwSwysOV1tTyE+2DlV5ku0nLfSag==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -3546,25 +3546,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-api@^0.6.6":
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.6.tgz#f777c3f5a95cc3c1ce636269d52bffaeda810b87"
-  integrity sha512-thlw4bqxh+vJAyP9bm9txSBwMTA4E0pBt1MJATgk7jtzExadFfMY69qPNAVyOITfmn9MnvwbhzmaiUSJbavg5A==
-  dependencies:
-    "@rabby-wallet/rabby-sign" "^0.3.3"
-    axios "^0.27.2"
-    axios-rate-limit "^1.3.0"
-    eth-rpc-errors "^4.0.3"
-    lodash "^4.17.21"
-    qss "^2.0.3"
-
-"@rabby-wallet/rabby-security-engine@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.1.tgz#5672d1320e38b475e28d7dbd29dc7541ab599ca6"
-  integrity sha512-C3VL2OJE9/24wn9q1ekv1EfqBGMwk3Aj9rz9LncUOQ1mnjboErjd0pEzqh05XwrM8aBZaLSUm7Unomrbm67qcg==
-  dependencies:
-    "@debank/common" "^0.2.31"
-    "@rabby-wallet/rabby-api" "^0.6.0"
+"@rabby-wallet/rabby-security-engine@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.2.tgz#9f99041290282633918e025033e4ae5e27c3b164"
+  integrity sha512-nmm6bDceyjK7+3R3nrDsOpttEHv6k9r3LkvEfLNEnfM2m2wsfzLTE5qmC9E4gUIzowh7lZN1Tjc66SC+5RCILw==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
@@ -3576,12 +3561,11 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@^0.0.18":
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.18.tgz#a8799cdd3379adbc4a6cf7144a3f9f5dc5239760"
-  integrity sha512-Rqtqaj4pXaZYZFGozs390cY/FMiqXKQ2tysQwBDyRuCgPw1vlylGUIp99m1jR7WM4E6KhTStZvqhXtnBgKyukA==
+"@rabby-wallet/rabby-swap@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.22.tgz#dffddf286829829d02fea3b907447d58757b627c"
+  integrity sha512-gZvjQU+1EmCohH6ijiKdbh9vt4MfbUIVc105p/4NMPGMQ7eIKkUG7qj791xTIFEauV7pKtnwYzXhBXhYnSpwQw==
   dependencies:
-    "@debank/common" "^0.2.28"
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
     bignumber.js "^9.1.1"
