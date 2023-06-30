@@ -1677,7 +1677,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         })}
         ref={scrollRef}
       >
-        {txDetail && actionData && (
+        {txDetail && (
           <>
             {txDetail && (
               <TxTypeComponent
