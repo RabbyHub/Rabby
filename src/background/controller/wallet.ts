@@ -24,7 +24,9 @@ import {
   contextMenuService,
   securityEngineService,
 } from 'background/service';
-import buildinProvider from 'background/utils/buildinProvider';
+import buildinProvider, {
+  EthereumProvider,
+} from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
@@ -1411,15 +1413,16 @@ export class WalletController extends BaseController {
   ) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error('No Gnosis keyring found');
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = networkId;
+    const currentProvider = new EthereumProvider();
+    currentProvider.currentAccount = account.address;
+    currentProvider.currentAccountType = account.type;
+    currentProvider.currentAccountBrand = account.brandName;
+    currentProvider.chainId = networkId;
 
     const owners = await keyring.getOwners(
       safeAddress,
       version,
-      new ethers.providers.Web3Provider(buildinProvider.currentProvider),
+      new ethers.providers.Web3Provider(currentProvider),
       networkId
     );
     return owners;
