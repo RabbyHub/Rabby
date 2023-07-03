@@ -219,14 +219,14 @@ const TokenApprove = ({
               logo={actionData.token.logo_url}
               text={
                 <div className="overflow-hidden overflow-ellipsis flex justify-between items-center">
-                  <div className="flex flex-1">
+                  <div className="flex flex-1 overflow-hidden">
                     <Values.TokenAmount value={actionData.token.amount} />
                     <span className="ml-2">
                       {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
                     </span>
                   </div>
                   <span
-                    className="text-blue-light text-12 font-medium cursor-pointer"
+                    className="text-blue-light text-12 font-medium cursor-pointer ml-4"
                     onClick={() => setEditApproveModalVisible(true)}
                   >
                     Edit
