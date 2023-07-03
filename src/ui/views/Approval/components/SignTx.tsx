@@ -4,7 +4,7 @@ import {
   getKRCategoryByType,
   validateGasPriceRange,
 } from '@/utils/transaction';
-import Safe from '@rabby-wallet/gnosis-sdk';
+import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
@@ -833,7 +833,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [forceProcess, setForceProcess] = useState(true);
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
+  const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
   const { executeEngine } = useSecurityEngine();
@@ -1407,9 +1407,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = '' + chainId;
-    let safeInfo: SafeInfo | null = null;
+    let safeInfo: BasicSafeInfo | null = null;
     try {
-      safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+      safeInfo = await wallet.getBasicSafeInfo({
+        address: currentAccount.address,
+        networkId,
+      });
     } catch (e) {
       let networkIds: string[] = [];
       try {

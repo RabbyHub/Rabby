@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Skeleton, Tabs, Tooltip } from 'antd';
 import clsx from 'clsx';
-import Safe from '@rabby-wallet/gnosis-sdk';
+import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransactionItem,
   SafeInfo,
@@ -264,7 +264,7 @@ const GnosisTransactionItem = ({
 }: {
   data: SafeTransactionItem;
   networkId: string;
-  safeInfo: SafeInfo;
+  safeInfo: BasicSafeInfo;
   onSubmit(data: SafeTransactionItem): void;
 }) => {
   const wallet = useWallet();
@@ -453,7 +453,9 @@ export const GnosisTransactionQueueList = (props: {
     networkId,
   });
 
-  const init = async (txs: SafeTransactionItem[], info: SafeInfo) => {
+  console.log('safeInfo', safeInfo);
+
+  const init = async (txs: SafeTransactionItem[], info: any) => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
 
@@ -483,13 +485,6 @@ export const GnosisTransactionQueueList = (props: {
         })
       );
 
-      const owners = await wallet.getGnosisOwners(
-        account,
-        account.address,
-        info.version,
-        networkId
-      );
-      const comparedOwners = crossCompareOwners(info.owners, owners);
       setIsLoading(false);
 
       const transactions = txs
@@ -518,7 +513,7 @@ export const GnosisTransactionQueueList = (props: {
               info.address,
               tx,
               Number(networkId),
-              comparedOwners
+              info.owners
             )
           );
         })
