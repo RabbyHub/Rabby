@@ -28,6 +28,11 @@ const HDPathTypeGroup = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: [HDPathType.BIP44],
   [KEYRING_CLASS.HARDWARE.ONEKEY]: [HDPathType.BIP44],
   [KEYRING_CLASS.MNEMONIC]: [HDPathType.Default],
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: [
+    HDPathType.LedgerLive,
+    HDPathType.BIP44,
+    HDPathType.Legacy,
+  ],
 };
 
 const HDPathTypeTips = {
@@ -49,6 +54,14 @@ const HDPathTypeTips = {
     [HDPathType.Default]:
       'Default: The Default HD path for importing a seed phrase is used.',
   },
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
+    [HDPathType.LedgerLive]:
+      'Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.',
+    [HDPathType.BIP44]:
+      'BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.',
+    [HDPathType.Legacy]:
+      'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain.',
+  },
 };
 
 const HDPathTypeTipsNoChain = {
@@ -69,6 +82,14 @@ const HDPathTypeTipsNoChain = {
   [KEYRING_CLASS.MNEMONIC]: {
     [HDPathType.Default]:
       'Default: The Default HD path for importing a seed phrase is used.',
+  },
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
+    [HDPathType.LedgerLive]:
+      'Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.',
+    [HDPathType.BIP44]:
+      'BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.',
+    [HDPathType.Legacy]:
+      'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
   },
 };
 

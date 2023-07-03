@@ -114,7 +114,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (!isMounted) return null;
   }
 
-  if (isLedger || isOneKey || isTrezor || isMnemonic) {
+  if (isLedger || isOneKey || isTrezor || isMnemonic || isGrid) {
     return (
       <HDManager keyringId={keyringId.current ?? null} keyring={keyring} />
     );

@@ -1,35 +1,36 @@
-import React from 'react';
-import { MainContainer } from './MainContainer';
-import { useWallet } from '@/ui/utils';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { Modal } from 'antd';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import React from 'react';
 import {
   AdvancedSettings,
-  SettingData,
   DEFAULT_SETTING_DATA,
+  SettingData,
 } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
+import { MainContainer } from './MainContainer';
+import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { useWallet } from '@/ui/utils';
 import { Account } from './AccountList';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
 };
 
-const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
+const GRIDPLUS_TYPE = HARDWARE_KEYRING_TYPES.GridPlus.type;
 
-export const LedgerManager: React.FC = () => {
-  const wallet = useWallet();
+export const GridPlusManager: React.FC = () => {
+  const [loading, setLoading] = React.useState(true);
+  const { getCurrentAccounts, createTask, keyringId } = React.useContext(
+    HDManagerStateContext
+  );
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
   );
+  const wallet = useWallet();
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
-  const [loading, setLoading] = React.useState(false);
-  const { getCurrentAccounts, createTask, keyringId } = React.useContext(
-    HDManagerStateContext
-  );
+  const [preventLoading, setPreventLoading] = React.useState(false);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -53,7 +54,7 @@ export const LedgerManager: React.FC = () => {
     setLoading(true);
     try {
       const accounts = (await createTask(() =>
-        wallet.requestKeyring(LEDGER_TYPE, 'getInitialAccounts', keyringId)
+        wallet.requestKeyring(GRIDPLUS_TYPE, 'getInitialAccounts', keyringId)
       )) as InitAccounts;
       // fetch balance and transaction information
       for (const key in accounts) {
@@ -66,7 +67,7 @@ export const LedgerManager: React.FC = () => {
       const usedHDPathType =
         ((await createTask(() =>
           wallet.requestKeyring(
-            LEDGER_TYPE,
+            GRIDPLUS_TYPE,
             'getCurrentUsedHDPathType',
             keyringId
           )
@@ -82,7 +83,7 @@ export const LedgerManager: React.FC = () => {
 
   const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
     await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
+      wallet.requestKeyring(GRIDPLUS_TYPE, 'setHDPathType', keyringId, type)
     );
   }, []);
 
@@ -128,7 +129,12 @@ export const LedgerManager: React.FC = () => {
         <span className="title">Advanced Settings</span>
       </div>
 
-      <MainContainer setting={setting} loading={loading} HDName="Ledger" />
+      <MainContainer
+        setting={setting}
+        loading={loading}
+        HDName={'GridPlus'}
+        preventLoading={preventLoading}
+      />
 
       <Modal
         destroyOnClose
