@@ -9,7 +9,7 @@ import {
 import { useTranslation, Trans } from 'react-i18next';
 import { toChecksumAddress, numberToHex } from 'web3-utils';
 import dayjs from 'dayjs';
-import { groupBy } from 'lodash';
+import { groupBy, sortBy } from 'lodash';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 
@@ -448,12 +448,10 @@ export const GnosisTransactionQueueList = (props: {
   const [isLoadFaild, setIsLoadFaild] = useState(false);
   const [account] = useAccount();
 
-  const { data: safeInfo } = useGnosisSafeInfo({
+  const { data: safeInfo, loading: isSafeInfoLoading } = useGnosisSafeInfo({
     address: account?.address,
     networkId,
   });
-
-  console.log('safeInfo', safeInfo);
 
   const init = async (txs: SafeTransactionItem[], info: any) => {
     try {
@@ -591,7 +589,7 @@ export const GnosisTransactionQueueList = (props: {
   return (
     <div className="queue-list">
       {safeInfo && Object.keys(transactionsGroup).length > 0 ? (
-        Object.keys(transactionsGroup).map((nonce) =>
+        sortBy(Object.keys(transactionsGroup), (key) => -key).map((nonce) =>
           transactionsGroup[nonce].length > 1 ? (
             <div className="queue-group">
               <div className="queue-group__header">
@@ -625,7 +623,7 @@ export const GnosisTransactionQueueList = (props: {
         )
       ) : (
         <div className="tx-history__empty">
-          {isLoading || loading ? (
+          {isLoading || loading || isSafeInfoLoading ? (
             <>
               <LoadingOutlined className="text-24 text-gray-content" />
               <p className="text-14 text-gray-content mt-12">
