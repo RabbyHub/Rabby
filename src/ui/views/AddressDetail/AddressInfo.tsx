@@ -28,7 +28,7 @@ import { connectStore, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { useAsync } from 'react-use';
-import Safe from '@rabby-wallet/gnosis-sdk';
+import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { crossCompareOwners } from '@/ui/utils/gnosis';
 import { SvgIconLoading } from 'ui/assets';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
@@ -53,7 +53,7 @@ const GnonisSafeInfo = ({
   const [activeData, setActiveData] = useState<
     | {
         chain?: Chain;
-        data: SafeInfo;
+        data: BasicSafeInfo;
       }
     | undefined
   >(undefined);
@@ -65,7 +65,7 @@ const GnonisSafeInfo = ({
     const networks = await wallet.getGnosisNetworkIds(address);
     const res = await Promise.all(
       networks.map(async (networkId) => {
-        const info = await Safe.getSafeInfo(address, networkId);
+        const info = await wallet.getBasicSafeInfo({ address, networkId });
 
         const owners = await wallet.getGnosisOwners(
           {

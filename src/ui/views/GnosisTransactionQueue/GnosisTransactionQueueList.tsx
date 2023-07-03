@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Skeleton, Tabs, Tooltip } from 'antd';
 import clsx from 'clsx';
-import Safe from '@rabby-wallet/gnosis-sdk';
+import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import {
   SafeTransactionItem,
   SafeInfo,
@@ -9,7 +9,7 @@ import {
 import { useTranslation, Trans } from 'react-i18next';
 import { toChecksumAddress, numberToHex } from 'web3-utils';
 import dayjs from 'dayjs';
-import { groupBy } from 'lodash';
+import { groupBy, sortBy } from 'lodash';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 
@@ -264,7 +264,7 @@ const GnosisTransactionItem = ({
 }: {
   data: SafeTransactionItem;
   networkId: string;
-  safeInfo: SafeInfo;
+  safeInfo: BasicSafeInfo;
   onSubmit(data: SafeTransactionItem): void;
 }) => {
   const wallet = useWallet();
@@ -448,12 +448,12 @@ export const GnosisTransactionQueueList = (props: {
   const [isLoadFaild, setIsLoadFaild] = useState(false);
   const [account] = useAccount();
 
-  const { data: safeInfo } = useGnosisSafeInfo({
+  const { data: safeInfo, loading: isSafeInfoLoading } = useGnosisSafeInfo({
     address: account?.address,
     networkId,
   });
 
-  const init = async (txs: SafeTransactionItem[], info: SafeInfo) => {
+  const init = async (txs: SafeTransactionItem[], info: BasicSafeInfo) => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
 
@@ -483,13 +483,6 @@ export const GnosisTransactionQueueList = (props: {
         })
       );
 
-      const owners = await wallet.getGnosisOwners(
-        account,
-        account.address,
-        info.version,
-        networkId
-      );
-      const comparedOwners = crossCompareOwners(info.owners, owners);
       setIsLoading(false);
 
       const transactions = txs
@@ -518,7 +511,7 @@ export const GnosisTransactionQueueList = (props: {
               info.address,
               tx,
               Number(networkId),
-              comparedOwners
+              info.owners
             )
           );
         })
@@ -630,7 +623,7 @@ export const GnosisTransactionQueueList = (props: {
         )
       ) : (
         <div className="tx-history__empty">
-          {isLoading || loading ? (
+          {isLoading || loading || isSafeInfoLoading ? (
             <>
               <LoadingOutlined className="text-24 text-gray-content" />
               <p className="text-14 text-gray-content mt-12">

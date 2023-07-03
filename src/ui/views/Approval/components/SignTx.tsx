@@ -4,7 +4,7 @@ import {
   getKRCategoryByType,
   validateGasPriceRange,
 } from '@/utils/transaction';
-import Safe from '@rabby-wallet/gnosis-sdk';
+import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
@@ -820,7 +820,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   });
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
+  const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
   const { executeEngine } = useSecurityEngine();
@@ -1358,9 +1358,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = '' + chainId;
-    let safeInfo: SafeInfo | null = null;
+    let safeInfo: BasicSafeInfo | null = null;
     try {
-      safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+      safeInfo = await wallet.getBasicSafeInfo({
+        address: currentAccount.address,
+        networkId,
+      });
     } catch (e) {
       let networkIds: string[] = [];
       try {
@@ -1378,7 +1381,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     const pendingTxs = await Safe.getPendingTransactions(
       currentAccount.address,
-      networkId
+      networkId,
+      safeInfo.nonce
     );
     const maxNonceTx = maxBy(pendingTxs.results, (item) => item.nonce);
     let recommendSafeNonce = maxNonceTx ? maxNonceTx.nonce + 1 : safeInfo.nonce;
@@ -1387,6 +1391,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
 
     if (
+      tx.nonce !== undefined &&
+      tx.nonce !== null &&
       Number(tx.nonce || '0') >= safeInfo.nonce &&
       origin === INTERNAL_REQUEST_ORIGIN
     ) {

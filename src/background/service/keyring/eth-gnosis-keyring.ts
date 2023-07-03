@@ -340,8 +340,11 @@ class GnosisKeyring extends EventEmitter {
     const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
-      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
-      safe = new Safe(checksumAddress, safeInfo.version, provider, networkId);
+      const version = await Safe.getSafeVersion({
+        provider,
+        address: checksumAddress,
+      });
+      safe = new Safe(checksumAddress, version, provider, networkId);
     }
     await safe!.confirmTransaction(transaction);
     const threshold = await safe!.getThreshold();
@@ -412,8 +415,11 @@ class GnosisKeyring extends EventEmitter {
     const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
-      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
-      safe = new Safe(checksumAddress, safeInfo.version, provider, networkId);
+      const version = await Safe.getSafeVersion({
+        provider,
+        address: checksumAddress,
+      });
+      safe = new Safe(checksumAddress, version, provider, networkId);
     }
     const result = await safe!.executeTransaction(transaction);
     this.onExecedTransaction && this.onExecedTransaction(result.hash);
@@ -536,13 +542,11 @@ class GnosisKeyring extends EventEmitter {
     let transactionHash: string;
     const networkId = transaction?.chainId?.toString();
     const checksumAddress = toChecksumAddress(address);
-    const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
-    const safe = new Safe(
-      checksumAddress,
-      safeInfo.version,
-      opts.provider,
-      networkId
-    );
+    const version = await Safe.getSafeVersion({
+      provider: opts.provider,
+      address: checksumAddress,
+    });
+    const safe = new Safe(checksumAddress, version, opts.provider, networkId);
     if (this.currentTransaction) {
       safeTransaction = this.currentTransaction;
       transactionHash = await this.getTransactionHash();

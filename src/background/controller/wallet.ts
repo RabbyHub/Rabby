@@ -1,3 +1,4 @@
+import { account } from './../../ui/models/account';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
@@ -82,9 +83,10 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { isAddress } from 'web3-utils';
+import { AbiItem, isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
+import { createSafeService } from '../utils/safe';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -257,6 +259,40 @@ export class WalletController extends BaseController {
       params: [params],
       $ctx,
     });
+  };
+
+  getSafeVersion = async ({
+    address,
+    networkId,
+  }: {
+    address: string;
+    networkId: string;
+  }) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) {
+      throw new Error('no account');
+    }
+    const currentProvider = new EthereumProvider();
+    currentProvider.currentAccount = account.address;
+    currentProvider.currentAccountType = account.type;
+    currentProvider.currentAccountBrand = account.brandName;
+    currentProvider.chainId = networkId;
+
+    return Safe.getSafeVersion({
+      address,
+      provider: new ethers.providers.Web3Provider(currentProvider) as any,
+    });
+  };
+
+  getBasicSafeInfo = async ({
+    address,
+    networkId,
+  }: {
+    address: string;
+    networkId: string;
+  }) => {
+    const safe = await createSafeService({ address, networkId });
+    return safe.getBasicSafeInfo();
   };
 
   gasTopUp = async (params: {
@@ -1215,17 +1251,23 @@ export class WalletController extends BaseController {
       return Promise.reject(new Error('Not a valid address'));
     }
     return Promise.all(
-      GNOSIS_SUPPORT_CHAINS.map((chainEnum) => {
+      GNOSIS_SUPPORT_CHAINS.map(async (chainEnum) => {
         const chain = CHAINS[chainEnum];
-        return Safe.getSafeInfo(address, chain.network)
-          .then((res) => {
-            if (res) {
-              return chain;
-            }
-          })
-          .catch(() => null);
+        try {
+          const safe = await createSafeService({
+            address,
+            networkId: chain.network,
+          });
+          const owners = await safe.getOwners();
+          if (owners) {
+            return chain;
+          }
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
       })
-    ).then((res) => res.filter((item) => item) as Chain[]);
+    ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
   syncGnosisNetworks = () => {
@@ -1377,10 +1419,11 @@ export class WalletController extends BaseController {
     const results = await Promise.all(
       networks.map(async (networkId) => {
         try {
-          const { results } = await Safe.getPendingTransactions(
+          const safe = await createSafeService({
+            networkId: networkId,
             address,
-            networkId
-          );
+          });
+          const { results } = await safe.getPendingTransactions();
           return {
             networkId,
             txs: results,

@@ -13,9 +13,11 @@ import { KEYRING_TYPE, KEYRING_CLASS } from 'consts';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconTagNotYou from 'ui/assets/tag-notyou.svg';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 
 interface GnosisDrawerProps {
-  safeInfo: SafeInfo;
+  // safeInfo: SafeInfo;
+  safeInfo: BasicSafeInfo;
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void>;
 }
