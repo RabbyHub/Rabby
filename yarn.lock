@@ -2782,13 +2782,6 @@
     "@gnosis.pm/safe-deployments" "^1.4.0"
     ethereumjs-util "^7.1.3"
 
-"@gnosis.pm/safe-deployments@^1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-deployments/-/safe-deployments-1.15.0.tgz#71ed9a37437a3080443c49aa65308f2d8839d751"
-  integrity sha512-twfC5HNuj+TKS2gOowf6A1FGZfOLBHAV2JhYpmOCf2MKsfcG+Fe4TrSRgQg605MhWdwFiaGVpNkcwjvpxhGuew==
-  dependencies:
-    semver "^7.3.7"
-
 "@gnosis.pm/safe-deployments@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-deployments/-/safe-deployments-1.4.0.tgz#d49d3d36cc014ef62306d09c0f4761895a17d7a6"
@@ -3498,10 +3491,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.2.tgz#b5b357387af4ae68aa8378fd773c9a13a0100ea3"
-  integrity sha512-VkVnJJszODQbDzfolVKVDSAOT6xVpB2iF21m/Y3LwaJTeL9NBm3seEVw9fgHBXSCOm9VQaAhFIUBp+lhFOS52A==
+"@rabby-wallet/gnosis-sdk@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.3.tgz#ab4f762c73c488ce2d7bac64ba793e7818d9b78a"
+  integrity sha512-4auDwb1MPRtDAXNgZOx9ZTSgCrSMiua0OKRWzDnL5RTEcR4g3vvwOX9UJ0aZd/ZRrc59svwccsiipid8LXrACA==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
@@ -3510,12 +3503,12 @@
     "@ethersproject/solidity" "^5.5.0"
     "@gnosis.pm/safe-core-sdk" "^1.0.0"
     "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
-    "@gnosis.pm/safe-deployments" "^1.15.0"
+    "@safe-global/safe-deployments" "^1.25.0"
     axios "^0.24.0"
     bignumber.js "^9.0.2"
     ethereumjs-util "^7.1.3"
     ethers "^5.5.1"
-    typescript "^4.4.4"
+    typescript "^4.5.0"
     web3-core "^1.6.0"
 
 "@rabby-wallet/page-provider@^0.1.17":
@@ -3656,6 +3649,13 @@
   integrity sha512-ie1+P/xalAzVge68k4bfBIj5v1bQA2wuylx58vBPGnc+GLis8aUDmZfotndMRMVAGNnpg+noo/D0TvZaQmA2wQ==
   dependencies:
     reselect "^4.0.0"
+
+"@safe-global/safe-deployments@^1.25.0":
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.25.0.tgz#882f0703cd4dd86cc19238319d77459ded09ec88"
+  integrity sha512-j7Ml1MVZw73XMTLbyIjo+Gvohwg5HYi8WM6b3vo+AkYEO/X4TNY8eJ0T0Awip5PO9MNyZymF3QY065uccQP53A==
+  dependencies:
+    semver "^7.3.7"
 
 "@scure/base@~1.1.0":
   version "1.1.1"
@@ -14830,6 +14830,11 @@ typescript@^4.4.4:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.2.tgz#8ac1fba9f52256fdb06fb89e4122fa6a346c2998"
   integrity sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==
+
+typescript@^4.5.0:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
+  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 typescript@^4.5.4:
   version "4.5.4"
