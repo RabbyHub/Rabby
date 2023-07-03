@@ -1258,8 +1258,8 @@ export class WalletController extends BaseController {
             address,
             networkId: chain.network,
           });
-          const safeInfo = await safe.getBasicSafeInfo();
-          if (safeInfo) {
+          const owners = await safe.getOwners();
+          if (owners) {
             return chain;
           }
         } catch (e) {
