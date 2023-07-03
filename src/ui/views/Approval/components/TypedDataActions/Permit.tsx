@@ -76,17 +76,16 @@ const Permit = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+              text={
+                <div className="overflow-hidden overflow-ellipsis flex">
+                  <Values.TokenAmount value={actionData.token.amount} />
+                  <span className="mr-2">
+                    {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                  </span>
+                </div>
+              }
               logoRadius="100%"
             />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Amount</Row>
-          <Row>
-            <div className="flex justify-between pr-10">
-              <Values.TokenAmount value={actionData.token.amount} />
-            </div>
             <ul className="desc-list">
               <li>
                 My balance <span>{formatAmount(tokenBalance)}</span>{' '}

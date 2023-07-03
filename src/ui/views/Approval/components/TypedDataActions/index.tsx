@@ -11,6 +11,7 @@ import {
   TypedDataActionData,
   TypedDataRequireData,
   getActionTypeText,
+  BatchApproveTokenRequireData,
 } from './utils';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import BuyNFT from './BuyNFT';
@@ -22,6 +23,8 @@ import SwapTokenOrder from './SwapTokenOrder';
 import SignMultisig from './SignMultisig';
 import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
+import BatchSellNFT from './BatchSellNFT';
+import BatchPermit2 from './BatchPermit2';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
@@ -248,6 +251,14 @@ const Actions = ({
                 engineResults={engineResults}
               />
             )}
+            {data.batchPermit2 && chain && (
+              <BatchPermit2
+                data={data.batchPermit2}
+                requireData={requireData as BatchApproveTokenRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
             {data.swapTokenOrder && chain && (
               <SwapTokenOrder
                 data={data.swapTokenOrder}
@@ -259,6 +270,15 @@ const Actions = ({
             {data.buyNFT && chain && (
               <BuyNFT
                 data={data.buyNFT}
+                requireData={requireData as ContractRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                sender={data.sender}
+              />
+            )}
+            {data.batchSellNFT && chain && (
+              <BatchSellNFT
+                data={data.batchSellNFT}
                 requireData={requireData as ContractRequireData}
                 chain={chain}
                 engineResults={engineResults}
