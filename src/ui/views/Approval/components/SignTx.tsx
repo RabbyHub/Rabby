@@ -1381,7 +1381,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     const pendingTxs = await Safe.getPendingTransactions(
       currentAccount.address,
-      networkId
+      networkId,
+      safeInfo.nonce
     );
     const maxNonceTx = maxBy(pendingTxs.results, (item) => item.nonce);
     let recommendSafeNonce = maxNonceTx ? maxNonceTx.nonce + 1 : safeInfo.nonce;

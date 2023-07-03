@@ -1419,10 +1419,11 @@ export class WalletController extends BaseController {
     const results = await Promise.all(
       networks.map(async (networkId) => {
         try {
-          const { results } = await Safe.getPendingTransactions(
+          const safe = await createSafeService({
+            networkId: networkId,
             address,
-            networkId
-          );
+          });
+          const { results } = await safe.getPendingTransactions();
           return {
             networkId,
             txs: results,
