@@ -102,7 +102,7 @@ const BatchSellNFT = ({
       <Table>
         <Col>
           <Row isTitle>List NFT</Row>
-          <div>
+          <div className="flex-1 overflow-hidden">
             {actionData.pay_nft_list.map((nft) => (
               <Row key={nft.id} className="has-bottom-border">
                 <NFTWithName nft={nft}></NFTWithName>

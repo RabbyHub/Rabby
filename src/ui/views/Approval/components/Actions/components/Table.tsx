@@ -62,6 +62,7 @@ const RowWrapper = styled.div`
   &.has-bottom-border {
     flex: 1;
     border-bottom: 1px solid #e5e9ef;
+    width: auto;
     &:nth-last-child(1) {
       border-bottom: none;
     }
