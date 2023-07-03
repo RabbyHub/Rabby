@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Spin } from 'ui/component';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { splitNumberByStep, useCommonPopupView, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE } from 'consts';
-import { SvgIconOffline } from 'ui/assets';
+import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
 import { Chain } from '@debank/common';
@@ -43,10 +42,15 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [startRefresh, setStartRefresh] = useState(false);
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setStartRefresh(true);
-    refreshBalance();
-    refreshCurve();
+    try {
+      await Promise.all([refreshBalance(), refreshCurve()]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setStartRefresh(false);
+    }
   };
 
   const handleIsGnosisChange = async () => {
@@ -78,6 +82,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
+        isOffline: !success,
       });
     }
   }, [
@@ -162,8 +167,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             )}
           </div>
           <div
-            className={clsx('hidden mb-6', {
-              'group-hover:block': !balanceLoading,
+            className={clsx(' mb-6 group-hover:block', {
+              'block animate-spin': startRefresh,
+              hidden: !startRefresh,
             })}
           >
             <UpdateSVG />
@@ -214,7 +220,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               </>
             ) : !success ? (
               <>
-                <SvgIconOffline className="mr-4" />
+                <SvgIconOffline className="mr-4 text-white" />
                 <span className="leading-tight">
                   {'The network is disconnected and no data is obtained'}
                 </span>
@@ -236,7 +242,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               currentHover ? '' : 'mt-10'
             )}
           >
-            {curveLoading ? (
+            {!success && !curveData ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active

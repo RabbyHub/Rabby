@@ -17,7 +17,6 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconSearch from 'ui/assets/tokenSearch.png';
 import { AddressViewer, Empty, TokenWithChain } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
-import { TokenDetailPopup } from './TokenDetailPopup';
 import { getTokenSymbol } from '@/ui/utils/token';
 
 const Row = (props) => {

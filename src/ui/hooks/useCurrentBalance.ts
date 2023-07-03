@@ -79,8 +79,8 @@ export default function useCurrentBalance(
     }
   };
 
-  const refresh = () => {
-    getCurrentBalance(true);
+  const refresh = async () => {
+    await getCurrentBalance(true);
   };
 
   useEffect(() => {

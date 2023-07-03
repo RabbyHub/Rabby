@@ -9,12 +9,14 @@ import { TokenLabel } from './TokenLabel';
 type TokenChangeProps = {
   data: TxDisplayItem | TxHistoryItem;
   canClickToken?: boolean;
+  onClose?: () => void;
 } & Pick<TxDisplayItem, 'tokenDict'>;
 
 export const TokenChange = ({
   data: info,
   tokenDict,
   canClickToken = true,
+  onClose,
 }: TokenChangeProps) => {
   const tokens = tokenDict || {};
 
@@ -70,7 +72,8 @@ export const TokenChange = ({
             <TokenLabel
               isNft={isNft}
               token={token}
-              canClickToken={canClickToken}
+              canClickToken={isNft ? false : canClickToken}
+              onClose={onClose}
             />
           </div>
         );
@@ -122,6 +125,7 @@ export const TokenChange = ({
               isNft={isNft}
               token={token}
               canClickToken={canClickToken}
+              onClose={onClose}
             />
           </div>
         );

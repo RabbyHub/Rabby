@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +18,6 @@ import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet, isSameAddress, openInTab } from 'ui/utils';
 import AccountCard from '../Approval/components/AccountCard';
-import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer, Copy } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -28,8 +26,6 @@ import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
-import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
@@ -38,6 +34,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { findChainByEnum } from '@/utils/chain';
+import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -351,159 +348,168 @@ const SendNFT = () => {
           }}
           onValuesChange={handleFormValuesChange}
         >
-          {chain && <TagChainSelector value={chain!} readonly />}
-          <div className="section relative">
-            <div className="section-title">{t('From')}</div>
-            <AccountCard
-              icons={{
-                mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-                privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-                watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
-              }}
-              alianName={sendAlianName}
-            />
-            <div className="section-title">
-              <span className="section-title__to">{t('To')}</span>
-              <div className="flex flex-1 justify-end items-center">
-                {showContactInfo && (
-                  <div
-                    className={clsx('contact-info', {
-                      disabled: editBtnDisabled,
-                    })}
-                    onClick={handleEditContact}
-                  >
-                    {contactInfo && (
-                      <>
-                        <img src={IconEdit} className="icon icon-edit" />
-                        <span
-                          title={contactInfo.name}
-                          className="inline-block align-middle truncate max-w-[240px]"
-                        >
-                          {contactInfo.name}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
-                <img
-                  className="icon icon-contact"
-                  src={whitelistEnabled ? IconWhitelist : IconContact}
-                  onClick={handleListContact}
-                />
-              </div>
-            </div>
-            <div className="to-address">
-              <Form.Item
-                name="to"
-                rules={[
-                  { required: true, message: t('Please input address') },
-                  {
-                    validator(_, value) {
-                      if (!value) return Promise.resolve();
-                      if (value && isValidAddress(value)) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error(t('This address is invalid'))
-                      );
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={t('Enter the address')}
-                  autoComplete="off"
-                  autoFocus
-                />
-              </Form.Item>
-            </div>
-          </div>
-          <div
-            className={clsx('section', {
-              'mb-40': !showWhitelistAlert,
-            })}
-          >
-            <div className="nft-info flex">
-              <NFTAvatar
-                type={nftItem.content_type}
-                content={nftItem.content}
-                className="w-[72px] h-[72px]"
-              />
-              <div className="nft-info__detail">
-                <h3>{nftItem.name}</h3>
-                <p>
-                  <span className="field-name">Collection</span>
-                  <span className="value">
-                    {nftItem.collection?.name || '-'}
-                  </span>
-                </p>
-                <p>
-                  <span className="field-name">Contract</span>
-                  <span className="value gap-[4px]">
-                    <AddressViewer
-                      address={nftItem.contract_id}
-                      showArrow={false}
-                    />
-                    <img
-                      src={IconExternal}
-                      className="icon icon-copy"
-                      onClick={handleClickContractId}
-                    />
-                    <Copy data={nftItem.contract_id} variant="address"></Copy>
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div className="section-footer">
-              <span>Send amount</span>
-
-              <Form.Item name="amount">
-                <NumberInput
-                  max={nftItem.amount}
-                  nftItem={nftItem}
-                  disabled={!nftItem.is_erc1155}
-                  ref={amountInputEl}
-                />
-              </Form.Item>
-            </div>
-          </div>
-
-          {showWhitelistAlert && (
-            <div
-              className={clsx(
-                'whitelist-alert',
-                !whitelistEnabled || whitelistAlertContent.success
-                  ? 'granted'
-                  : 'cursor-pointer'
+          <div className="flex-1 overflow-auto">
+            <div className="section relative">
+              {/* {chain && <TagChainSelector value={chain!} readonly />} */}
+              {chain && (
+                <>
+                  <div className={clsx('section-title')}>{t('Chain')}</div>
+                  <ChainSelectorInForm value={chain} readonly />
+                </>
               )}
-              onClick={handleClickWhitelistAlert}
-            >
-              <p className="whitelist-alert__content text-center">
-                {whitelistEnabled && (
+              <div className="section-title mt-[10px]">{t('From')}</div>
+              <AccountCard
+                icons={{
+                  mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+                  privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+                  watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+                }}
+                alianName={sendAlianName}
+              />
+              <div className="section-title">
+                <span className="section-title__to">{t('To')}</span>
+                <div className="flex flex-1 justify-end items-center">
+                  {showContactInfo && (
+                    <div
+                      className={clsx('contact-info', {
+                        disabled: editBtnDisabled,
+                      })}
+                      onClick={handleEditContact}
+                    >
+                      {contactInfo && (
+                        <>
+                          <img src={IconEdit} className="icon icon-edit" />
+                          <span
+                            title={contactInfo.name}
+                            className="inline-block align-middle truncate max-w-[240px]"
+                          >
+                            {contactInfo.name}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
                   <img
-                    src={
-                      whitelistAlertContent.success
-                        ? IconCheck
-                        : IconTemporaryGrantCheckbox
-                    }
-                    className="icon icon-check inline-block relative -top-1"
+                    className="icon icon-contact"
+                    src={whitelistEnabled ? IconWhitelist : IconContact}
+                    onClick={handleListContact}
                   />
-                )}
-                {whitelistAlertContent.content}
-              </p>
+                </div>
+              </div>
+              <div className="to-address">
+                <Form.Item
+                  name="to"
+                  rules={[
+                    { required: true, message: t('Please input address') },
+                    {
+                      validator(_, value) {
+                        if (!value) return Promise.resolve();
+                        if (value && isValidAddress(value)) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(t('This address is invalid'))
+                        );
+                      },
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t('Enter the address')}
+                    autoComplete="off"
+                    autoFocus
+                  />
+                </Form.Item>
+              </div>
             </div>
-          )}
-
-          <div className="footer flex justify-center">
-            <Button
-              disabled={!canSubmit}
-              type="primary"
-              htmlType="submit"
-              size="large"
-              className="w-[200px]"
+            <div
+              className={clsx('section', {
+                'mb-40': !showWhitelistAlert,
+              })}
             >
-              {t('Send')}
-            </Button>
+              <div className="nft-info flex">
+                <NFTAvatar
+                  type={nftItem.content_type}
+                  content={nftItem.content}
+                  className="w-[72px] h-[72px]"
+                />
+                <div className="nft-info__detail">
+                  <h3>{nftItem.name}</h3>
+                  <p>
+                    <span className="field-name">Collection</span>
+                    <span className="value">
+                      {nftItem.collection?.name || '-'}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="field-name">Contract</span>
+                    <span className="value gap-[4px]">
+                      <AddressViewer
+                        address={nftItem.contract_id}
+                        showArrow={false}
+                      />
+                      <img
+                        src={IconExternal}
+                        className="icon icon-copy"
+                        onClick={handleClickContractId}
+                      />
+                      <Copy data={nftItem.contract_id} variant="address"></Copy>
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className="section-footer">
+                <span>Send amount</span>
+
+                <Form.Item name="amount">
+                  <NumberInput
+                    max={nftItem.amount}
+                    nftItem={nftItem}
+                    disabled={!nftItem.is_erc1155}
+                    ref={amountInputEl}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer">
+            {showWhitelistAlert && (
+              <div
+                className={clsx(
+                  'whitelist-alert',
+                  !whitelistEnabled || whitelistAlertContent.success
+                    ? 'granted'
+                    : 'cursor-pointer'
+                )}
+                onClick={handleClickWhitelistAlert}
+              >
+                <p className="whitelist-alert__content text-center">
+                  {whitelistEnabled && (
+                    <img
+                      src={
+                        whitelistAlertContent.success
+                          ? IconCheck
+                          : IconTemporaryGrantCheckbox
+                      }
+                      className="icon icon-check inline-block relative -top-1"
+                    />
+                  )}
+                  {whitelistAlertContent.content}
+                </p>
+              </div>
+            )}
+            <div className="btn-wrapper w-[100%] px-[20px] flex justify-center">
+              <Button
+                disabled={!canSubmit}
+                type="primary"
+                htmlType="submit"
+                size="large"
+                className="w-[100%] h-[48px]"
+              >
+                {t('Send')}
+              </Button>
+            </div>
           </div>
         </Form>
       )}
