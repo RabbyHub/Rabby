@@ -589,7 +589,7 @@ export const GnosisTransactionQueueList = (props: {
   return (
     <div className="queue-list">
       {safeInfo && Object.keys(transactionsGroup).length > 0 ? (
-        sortBy(Object.keys(transactionsGroup), (key) => -key).map((nonce) =>
+        Object.keys(transactionsGroup).map((nonce) =>
           transactionsGroup[nonce].length > 1 ? (
             <div className="queue-group">
               <div className="queue-group__header">
