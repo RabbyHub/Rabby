@@ -215,24 +215,29 @@ const TokenApprove = ({
           <Row isTitle>Approve token</Row>
           <Row>
             <LogoWithText
+              className="flex-1 pr-10"
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+              text={
+                <div className="overflow-hidden overflow-ellipsis flex justify-between items-center">
+                  <div className="flex flex-1">
+                    <Values.TokenAmount value={actionData.token.amount} />
+                    <span className="ml-2">
+                      {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                    </span>
+                  </div>
+                  <span
+                    className="text-blue-light text-12 font-medium cursor-pointer"
+                    onClick={() => setEditApproveModalVisible(true)}
+                  >
+                    Edit
+                  </span>
+                </div>
+              }
               logoRadius="100%"
+              textStyle={{
+                flex: 1,
+              }}
             />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Amount</Row>
-          <Row>
-            <div className="flex justify-between pr-10">
-              <Values.TokenAmount value={actionData.token.amount} />
-              <span
-                className="text-blue-light text-12 font-medium cursor-pointer"
-                onClick={() => setEditApproveModalVisible(true)}
-              >
-                Edit
-              </span>
-            </div>
             <ul className="desc-list">
               <li>
                 My balance{' '}

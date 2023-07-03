@@ -59,6 +59,13 @@ const RowWrapper = styled.div`
       display: inline;
     }
   }
+  &.has-bottom-border {
+    flex: 1;
+    border-bottom: 1px solid #e5e9ef;
+    &:nth-last-child(1) {
+      border-bottom: none;
+    }
+  }
   .desc-list {
     font-size: 13px;
     line-height: 15px;

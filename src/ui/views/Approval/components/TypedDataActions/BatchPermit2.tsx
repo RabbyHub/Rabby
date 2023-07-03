@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ApproveTokenRequireData, TypedDataActionData } from './utils';
+import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { formatAmount } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
@@ -39,8 +39,8 @@ const Permit2 = ({
   chain,
   engineResults,
 }: {
-  data: TypedDataActionData['permit2'];
-  requireData: ApproveTokenRequireData;
+  data: TypedDataActionData['batchPermit2'];
+  requireData: BatchApproveTokenRequireData;
   chain: Chain;
   engineResults: Result[];
 }) => {
@@ -55,10 +55,15 @@ const Permit2 = ({
     return map;
   }, [engineResults]);
 
-  const tokenBalance = useMemo(() => {
-    return new BigNumber(requireData.token.raw_amount || '0')
-      .div(10 ** requireData.token.decimals)
-      .toFixed();
+  const tokenBalanceMap: Record<string, string> = useMemo(() => {
+    return requireData.tokens.reduce((res, token) => {
+      return {
+        ...res,
+        [token.id]: new BigNumber(token.raw_amount || '0')
+          .div(10 ** token.decimals)
+          .toFixed(),
+      };
+    }, {});
   }, [requireData]);
 
   useEffect(() => {
@@ -72,26 +77,31 @@ const Permit2 = ({
       <Table>
         <Col>
           <Row isTitle>Approve token</Row>
-          <Row>
-            <LogoWithText
-              logo={actionData.token.logo_url}
-              text={
-                <div className="overflow-hidden overflow-ellipsis flex">
-                  <Values.TokenAmount value={actionData.token.amount} />
-                  <span className="ml-2">
-                    {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
-                  </span>
-                </div>
-              }
-              logoRadius="100%"
-            />
-            <ul className="desc-list">
-              <li>
-                My balance <span>{formatAmount(tokenBalance)}</span>{' '}
-                {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
-              </li>
-            </ul>
-          </Row>
+          <div>
+            {actionData.token_list.map((token) => (
+              <Row key={token.id} className="has-bottom-border">
+                <LogoWithText
+                  logo={token.logo_url}
+                  text={
+                    <div className="overflow-hidden overflow-ellipsis flex">
+                      <Values.TokenAmount value={token.amount} />
+                      <span className="ml-2">
+                        {ellipsisTokenSymbol(getTokenSymbol(token))}
+                      </span>
+                    </div>
+                  }
+                  logoRadius="100%"
+                />
+                <ul className="desc-list">
+                  <li>
+                    My balance{' '}
+                    <span>{formatAmount(tokenBalanceMap[token.id])}</span>{' '}
+                    {ellipsisTokenSymbol(getTokenSymbol(token))}
+                  </li>
+                </ul>
+              </Row>
+            ))}
+          </div>
         </Col>
         <Col>
           <Row
@@ -128,34 +138,34 @@ const Permit2 = ({
               <ProtocolListItem protocol={requireData.protocol} />
 
               <SecurityListItem
-                id="1071"
-                engineResult={engineResultMap['1071']}
+                id="1109"
+                engineResult={engineResultMap['1109']}
                 dangerText="EOA address"
               />
 
               <SecurityListItem
-                id="1074"
-                engineResult={engineResultMap['1074']}
+                id="1112"
+                engineResult={engineResultMap['1112']}
                 warningText={<Values.Interacted value={false} />}
                 defaultText={<Values.Interacted value />}
               />
 
               <SecurityListItem
-                id="1072"
-                engineResult={engineResultMap['1072']}
+                id="1110"
+                engineResult={engineResultMap['1110']}
                 dangerText="Risk exposure ≤ $10,000"
                 warningText="Risk exposure ≤ $100,000"
               />
 
               <SecurityListItem
-                id="1073"
-                engineResult={engineResultMap['1073']}
+                id="1111"
+                engineResult={engineResultMap['1111']}
                 warningText="Deployed time < 3 days"
               />
 
               <SecurityListItem
-                id="1075"
-                engineResult={engineResultMap['1075']}
+                id="1113"
+                engineResult={engineResultMap['1113']}
                 dangerText="Flagged by Rabby"
               />
 
