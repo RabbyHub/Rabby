@@ -453,7 +453,7 @@ export const GnosisTransactionQueueList = (props: {
     networkId,
   });
 
-  const init = async (txs: SafeTransactionItem[], info: any) => {
+  const init = async (txs: SafeTransactionItem[], info: BasicSafeInfo) => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
 
