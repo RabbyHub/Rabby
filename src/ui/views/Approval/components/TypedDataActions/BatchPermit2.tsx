@@ -77,7 +77,7 @@ const Permit2 = ({
       <Table>
         <Col>
           <Row isTitle>Approve token</Row>
-          <div>
+          <div className="flex-1 overflow-hidden">
             {actionData.token_list.map((token) => (
               <Row key={token.id} className="has-bottom-border">
                 <LogoWithText

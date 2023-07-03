@@ -52,39 +52,10 @@ const NFTBalanceChange = ({
     return (
       <Col>
         <Row isTitle>NFT in</Row>
-        <Row>
+        <div className="flex-1 overflow-hidden">
           {receiveNftList.map((item) => (
-            <div className="mb-0 last:mb-0" key={`${item.id}-${item.inner_id}`}>
-              <div className="flex">
-                <span
-                  className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
-                  title={item.collection ? item.collection.name : item.name}
-                >
-                  + {item.amount}{' '}
-                  {item.collection ? item.collection.name : item.name}
-                </span>
-                <Values.TokenLabel
-                  isFake={item.collection?.is_verified === false}
-                  isScam={
-                    item.collection?.is_verified !== false &&
-                    !!item.collection?.is_suspicious
-                  }
-                />
-              </div>
-            </div>
-          ))}
-        </Row>
-      </Col>
-    );
-  }
-  if (type === 'send' && hasTransferedOut) {
-    return (
-      <Col>
-        <Row isTitle>NFT out</Row>
-        <Row>
-          {sendNftList.map((item) => (
-            <div
-              className="mb-10 last:mb-0"
+            <Row
+              className="has-bottom-border"
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex">
@@ -92,7 +63,7 @@ const NFTBalanceChange = ({
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
                   title={item.collection ? item.collection.name : item.name}
                 >
-                  - {item.amount}{' '}
+                  <span className="text-green">+ {item.amount}</span>{' '}
                   {item.collection ? item.collection.name : item.name}
                 </span>
                 <Values.TokenLabel
@@ -103,9 +74,41 @@ const NFTBalanceChange = ({
                   }
                 />
               </div>
-            </div>
+            </Row>
           ))}
-        </Row>
+        </div>
+      </Col>
+    );
+  }
+  if (type === 'send' && hasTransferedOut) {
+    return (
+      <Col>
+        <Row isTitle>NFT out</Row>
+        <div className="flex-1 overflow-hidden">
+          {sendNftList.map((item) => (
+            <Row
+              className="has-bottom-border"
+              key={`${item.id}-${item.inner_id}`}
+            >
+              <div className="flex">
+                <span
+                  className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
+                  title={item.collection ? item.collection.name : item.name}
+                >
+                  <span className="text-red-forbidden">- {item.amount}</span>{' '}
+                  {item.collection ? item.collection.name : item.name}
+                </span>
+                <Values.TokenLabel
+                  isFake={item.collection?.is_verified === false}
+                  isScam={
+                    item.collection?.is_verified !== false &&
+                    !!item.collection?.is_suspicious
+                  }
+                />
+              </div>
+            </Row>
+          ))}
+        </div>
       </Col>
     );
   }
@@ -212,9 +215,9 @@ const BalanceChange = ({
           {sendTokenList && sendTokenList.length > 0 && (
             <Col>
               <Row isTitle>Token out</Row>
-              <Row>
+              <div className="flex-1 overflow-hidden">
                 {sendTokenList.map((token) => (
-                  <div className="mb-8 last:mb-0" key={token.id}>
+                  <Row className="has-bottom-border" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
                       text={
@@ -246,17 +249,17 @@ const BalanceChange = ({
                         )}
                       </li>
                     </ul>
-                  </div>
+                  </Row>
                 ))}
-              </Row>
+              </div>
             </Col>
           )}
           {receiveTokenList && receiveTokenList.length > 0 && (
             <Col>
               <Row isTitle>Token in</Row>
-              <Row>
+              <div className="flex-1 overflow-hidden">
                 {receiveTokenList.map((token) => (
-                  <div className="mb-8 last:mb-0" key={token.id}>
+                  <Row className="has-bottom-border" key={token.id}>
                     <LogoWithText
                       logo={token.logo_url}
                       text={
@@ -288,9 +291,9 @@ const BalanceChange = ({
                         )}
                       </li>
                     </ul>
-                  </div>
+                  </Row>
                 ))}
-              </Row>
+              </div>
             </Col>
           )}
           <NFTBalanceChange type="send" data={data}></NFTBalanceChange>
