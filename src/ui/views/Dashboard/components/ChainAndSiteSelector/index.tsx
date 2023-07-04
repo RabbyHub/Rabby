@@ -49,7 +49,7 @@ export default ({
 }) => {
   const history = useHistory();
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
-  const [urlVisible, setUrlVisible] = useState(false);
+  const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
@@ -96,11 +96,7 @@ export default ({
     setCurrentConnect(current);
   }, []);
 
-  const changeURL = () => {
-    setUrlVisible(!urlVisible);
-  };
-
-  const showMoreSettings = () => {
+  const toggleShowMoreSettings = () => {
     setSettingVisible(!settingVisible);
     setDashboardReload();
   };
@@ -211,7 +207,7 @@ export default ({
     more: {
       icon: IconMoreSettings,
       content: 'More',
-      onClick: showMoreSettings,
+      onClick: toggleShowMoreSettings,
     } as IPanelItem,
     address: {
       icon: IconAddresses,
@@ -350,12 +346,24 @@ export default ({
           setIsShowReceiveModal(false);
         }}
       />
-      <Settings visible={settingVisible} onClose={showMoreSettings} />
+      <Settings
+        visible={settingVisible}
+        onClose={toggleShowMoreSettings}
+        onOpenConnectedDapps={() => {
+          setConnectedDappsVisible(true);
+          setSettingVisible(false);
+        }}
+      />
       <FeedbackPopup
         visible={feedbackVisible}
         onClose={() => showFeedbackModal(false)}
       />
-      <RecentConnections visible={urlVisible} onClose={changeURL} />
+      <RecentConnections
+        visible={connectedDappsVisible}
+        onClose={() => {
+          setConnectedDappsVisible(false);
+        }}
+      />
     </div>
   );
 };

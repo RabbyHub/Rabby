@@ -12,11 +12,11 @@ import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
-import IconLock from 'ui/assets/lock.svg';
+
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconClear from 'ui/assets/icon-clear.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -26,16 +26,21 @@ import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import IconContacts from 'ui/assets/swap/contact.svg';
+import IconLockWallet from 'ui/assets/dashboard/settings/lock.svg';
 import IconDiscord from 'ui/assets/discord.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
-import IconFindUs from 'ui/assets/find-us.svg';
 import IconTwitter from 'ui/assets/twitter.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
 import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
+
+import IconSettingsFeatureConnectedDapps from 'ui/assets/dashboard/settings/connected-dapps.svg';
+import IconSettingsAboutFollowUs from 'ui/assets/dashboard/settings/follow-us.svg';
+import IconSettingsAboutSupporetedChains from 'ui/assets/dashboard/settings/supported-chains.svg';
+import IconSettingsAboutVersion from 'ui/assets/dashboard/settings/version.svg';
+
 import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -44,6 +49,7 @@ import semver from 'semver-compare';
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
+  onOpenConnectedDapps?: () => void;
 }
 
 const { confirm } = Modal;
@@ -226,7 +232,19 @@ const ResetAccountModal = ({
   );
 };
 
-const Settings = ({ visible, onClose }: SettingsProps) => {
+type SettingItem = {
+  leftIcon: string;
+  content: React.ReactNode;
+  description?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  onClick?: (...args: any[]) => any;
+};
+
+const Settings = ({
+  visible,
+  onClose,
+  onOpenConnectedDapps,
+}: SettingsProps) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
@@ -341,177 +359,145 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     }
   };
 
-  const renderData = [
-    {
-      leftIcon: IconWhitelist,
-      content: t('Whitelist'),
-      description: 'You can only send assets to whitelisted address',
-      rightIcon: (
-        <Switch
-          checked={whitelistEnable}
-          onChange={handleSwitchWhitelistEnable}
-        />
-      ),
+  const renderData = {
+    features: {
+      label: 'Features',
+      items: [
+        {
+          leftIcon: IconLockWallet,
+          content: t('Lock Wallet'),
+          onClick: () => {
+            lockWallet();
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Lock Wallet',
+            });
+            reportSettings('Lock Wallet');
+          },
+        },
+        {
+          leftIcon: IconWhitelist,
+          content: t('Whitelist'),
+          description: 'You can only send assets to whitelisted address',
+          rightIcon: (
+            <Switch
+              checked={whitelistEnable}
+              onChange={handleSwitchWhitelistEnable}
+            />
+          ),
+        },
+        {
+          leftIcon: IconActivities,
+          content: t('Signature Record'),
+          onClick: () => {
+            history.push('/activities');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Signature Record',
+            });
+            reportSettings('Signature Record');
+          },
+        },
+        {
+          leftIcon: IconAddresses,
+          content: t('Manage Address'),
+          onClick: () => {
+            history.push('/settings/address');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Manage Address',
+            });
+            reportSettings('Manage Address');
+          },
+        },
+        {
+          leftIcon: IconSettingsFeatureConnectedDapps,
+          content: t('Connected Dapps'),
+          onClick: () => {
+            onOpenConnectedDapps?.();
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Connected Dapps',
+            });
+            reportSettings('Connected Dapps');
+          },
+        },
+      ] as SettingItem[],
     },
-    {
-      leftIcon: IconActivities,
-      content: t('Signature Record'),
-      onClick: () => {
-        history.push('/activities');
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'Signature Record',
-        });
-        reportSettings('Signature Record');
-      },
+    settings: {
+      label: 'Settings',
+      items: [
+        {
+          leftIcon: IconCustomRPC,
+          content: t('Custom RPC'),
+          onClick: () => {
+            history.push('/custom-rpc');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Custom RPC',
+            });
+            reportSettings('Custom RPC');
+          },
+        },
+        {
+          leftIcon: IconPreferMetamask,
+          content: t('MetaMask Preferred Dapps'),
+          onClick: () => {
+            history.push('/prefer-metamask-dapps');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'MetaMask Preferred Dapps',
+            });
+            reportSettings('MetaMask Preferred Dapps');
+          },
+        },
+        {
+          leftIcon: IconClear,
+          content: t('Clear Pending'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Reset Account',
+            });
+            setShowResetAccountModal(true);
+            reportSettings('Reset Account');
+          },
+          rightIcon: (
+            <img src={IconArrowRight} className="icon icon-arrow-right" />
+          ),
+        },
+      ] as SettingItem[],
     },
-    {
-      leftIcon: IconAddresses,
-      content: t('Manage Address'),
-      onClick: () => {
-        history.push('/settings/address');
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'Manage Address',
-        });
-        reportSettings('Manage Address');
-      },
-    },
-    {
-      leftIcon: IconPreferMetamask,
-      content: t('MetaMask Preferred Dapps'),
-      onClick: () => {
-        history.push('/prefer-metamask-dapps');
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'MetaMask Preferred Dapps',
-        });
-        reportSettings('MetaMask Preferred Dapps');
-      },
-    },
-    {
-      leftIcon: IconCustomRPC,
-      content: t('Custom RPC'),
-      onClick: () => {
-        history.push('/custom-rpc');
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'Custom RPC',
-        });
-        reportSettings('Custom RPC');
-      },
-    },
-    {
-      leftIcon: IconClear,
-      content: t('Clear Pending'),
-      onClick: () => {
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'Reset Account',
-        });
-        setShowResetAccountModal(true);
-        reportSettings('Reset Account');
-      },
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    },
-  ];
-
-  if (process.env.DEBUG) {
-    renderData.splice(-1, 0, {
-      leftIcon: IconServer,
-      content: t('Backend Service URL'),
-      onClick: () => setShowOpenApiModal(true),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    } as typeof renderData[0]);
-  }
-
-  if (process.env.DEBUG) {
-    renderData.push({
-      content: t('Clear Watch Mode'),
-      onClick: handleClickClearWatchMode,
-    } as typeof renderData[0]);
-  }
-
-  const lockWallet = async () => {
-    matomoRequestEvent({
-      category: 'Setting',
-      action: 'clickToUse',
-      label: 'lockWallet',
-    });
-    reportSettings('lockWallet');
-    await wallet.lockWallet();
-    history.push('/unlock');
-  };
-
-  const handleClose: DrawerProps['onClose'] = (e) => {
-    setShowOpenApiModal(false);
-    setShowResetAccountModal(false);
-    onClose && onClose(e);
-  };
-
-  const initWhitelistEnabled = async () => {
-    const enabled = await wallet.isWhitelistEnabled();
-    setWhitelistEnable(enabled);
-  };
-
-  useEffect(() => {
-    initWhitelistEnabled();
-  }, []);
-
-  return (
-    <>
-      <Popup
-        visible={visible}
-        onClose={handleClose}
-        height={523}
-        bodyStyle={{ height: '100%', padding: '20px' }}
-      >
-        <div className="popup-settings">
-          <div className="content">
-            <Button
-              block
-              size="large"
-              type="primary"
-              className="flex justify-center items-center lock-wallet"
-              onClick={lockWallet}
-            >
-              <img src={IconLock} className="icon icon-lock" />{' '}
-              {t('Lock Wallet')}
-            </Button>
-            {renderData.map((data, index) => (
-              <Field
-                key={index}
-                leftIcon={<img src={data.leftIcon} className="icon" />}
-                rightIcon={
-                  data.rightIcon || (
-                    <img
-                      src={IconArrowRight}
-                      className="icon icon-arrow-right"
-                    />
-                  )
-                }
-                onClick={data.onClick}
-                className={clsx(data.description ? 'has-desc' : null)}
-              >
-                {data.content}
-                {data.description && <p className="desc">{data.description}</p>}
-              </Field>
-            ))}
-          </div>
-          <footer className="footer">
-            <img src={LogoRabby} alt="" />
-            <div>
+    about: {
+      label: 'About us',
+      items: [
+        {
+          leftIcon: IconSettingsAboutVersion,
+          content: t('Current Version'),
+          onClick: () => {
+            updateVersion();
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Current Version',
+            });
+            reportSettings('Current Version');
+          },
+          rightIcon: (
+            <>
               <span
-                className="text-12 underline text-gray-content cursor-pointer"
+                className="text-14 mr-[8px] text-[#13141a]"
                 role="button"
                 onClick={updateVersion}
               >
-                {process.env.version}
+                {process.env.release}
                 <span
                   className={clsx(
                     'text-[#ec5151] underline',
@@ -522,11 +508,41 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                 >
                   &nbsp;(Update Available)&nbsp;
                 </span>
-              </span>{' '}
-              /{' '}
-              <Link to="/settings/chain-list" className="underline">
-                {Object.values(CHAINS).length} chains supported
-              </Link>
+              </span>
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </>
+          ),
+        },
+        {
+          leftIcon: IconSettingsAboutSupporetedChains,
+          content: t('Supported Chains'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Supported Chains',
+            });
+            reportSettings('Supported Chains');
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-[#13141a]"
+                role="button"
+                onClick={updateVersion}
+              >
+                {Object.values(CHAINS).length}
+              </span>
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </>
+          ),
+        },
+        {
+          leftIcon: IconSettingsAboutFollowUs,
+          content: t('Follow Us'),
+          onClick: () => {},
+          rightIcon: (
+            <>
               <a
                 href="https://twitter.com/rabby_io"
                 target="_blank"
@@ -573,7 +589,108 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                   className=" w-0 h-0 overflow-hidden group-hover:w-16 group-hover:h-16"
                 />
               </a>
-            </div>
+            </>
+          ),
+        },
+      ] as SettingItem[],
+    },
+  };
+
+  if (process.env.DEBUG) {
+    renderData.features.items.splice(-1, 0, {
+      leftIcon: IconServer,
+      content: t('Backend Service URL'),
+      onClick: () => setShowOpenApiModal(true),
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    } as typeof renderData.features.items[0]);
+  }
+
+  if (process.env.DEBUG) {
+    renderData.features.items.push({
+      content: t('Clear Watch Mode'),
+      onClick: handleClickClearWatchMode,
+    } as typeof renderData.features.items[0]);
+  }
+
+  const lockWallet = async () => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'lockWallet',
+    });
+    reportSettings('lockWallet');
+    await wallet.lockWallet();
+    history.push('/unlock');
+  };
+
+  const handleClose: DrawerProps['onClose'] = (e) => {
+    setShowOpenApiModal(false);
+    setShowResetAccountModal(false);
+    onClose && onClose(e);
+  };
+
+  const initWhitelistEnabled = async () => {
+    const enabled = await wallet.isWhitelistEnabled();
+    setWhitelistEnable(enabled);
+  };
+
+  useEffect(() => {
+    initWhitelistEnabled();
+  }, []);
+
+  return (
+    <>
+      <Popup
+        visible={visible}
+        onClose={handleClose}
+        height={523}
+        bodyStyle={{ height: '100%', padding: '20px' }}
+      >
+        <div className="popup-settings">
+          <div className="content">
+            {/* <Button
+              block
+              size="large"
+              type="primary"
+              className="flex justify-center items-center lock-wallet"
+              onClick={lockWallet}
+            >
+              <img src={IconLock} className="icon icon-lock" />{' '}
+              {t('Lock Wallet')}
+            </Button> */}
+            {Object.values(renderData).map((group, index) => {
+              return (
+                <div className="setting-block">
+                  <div className="setting-title">{group.label}</div>
+                  <div className="setting-items">
+                    {group.items.map((data, index) => (
+                      <Field
+                        key={index}
+                        leftIcon={<img src={data.leftIcon} className="icon" />}
+                        rightIcon={
+                          data.rightIcon || (
+                            <img
+                              src={IconArrowRight}
+                              className="icon icon-arrow-right"
+                            />
+                          )
+                        }
+                        onClick={data.onClick}
+                        className={clsx(data.description ? 'has-desc' : null)}
+                      >
+                        {data.content}
+                        {data.description && (
+                          <p className="desc">{data.description}</p>
+                        )}
+                      </Field>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <footer className="footer">
+            <img src={LogoRabby} alt="" />
           </footer>
           <Contacts
             visible={contactsVisible}
