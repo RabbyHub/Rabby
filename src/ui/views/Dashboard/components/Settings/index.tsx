@@ -658,14 +658,14 @@ const Settings = ({
               <img src={IconLock} className="icon icon-lock" />{' '}
               {t('Lock Wallet')}
             </Button> */}
-            {Object.values(renderData).map((group, index) => {
+            {Object.values(renderData).map((group, idxl1) => {
               return (
-                <div className="setting-block">
+                <div key={`g-${idxl1}`} className="setting-block">
                   <div className="setting-title">{group.label}</div>
                   <div className="setting-items">
-                    {group.items.map((data, index) => (
+                    {group.items.map((data, idxl2) => (
                       <Field
-                        key={index}
+                        key={`g-${idxl1}-item-${idxl2}`}
                         leftIcon={<img src={data.leftIcon} className="icon" />}
                         rightIcon={
                           data.rightIcon || (
