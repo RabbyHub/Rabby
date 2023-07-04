@@ -48,6 +48,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const query = new URLSearchParams(search);
 
   state.keyring = state?.keyring || (query.get('hd') as string);
+  state.brand = state?.brand || (query.get('brand') as string);
   if (query.get('keyringId') && !state.keyringId) {
     state.keyringId = Number(query.get('keyringId') as string);
   }
@@ -108,15 +109,27 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isOneKey = keyring === HARDWARE_KEYRING_TYPES.Onekey.type;
   const isTrezor = keyring === HARDWARE_KEYRING_TYPES.Trezor.type;
   const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
+  const isKeystoneLike = keyring === HARDWARE_KEYRING_TYPES.Keystone.type;
   const [hasError, setHasError] = useState(false);
 
   if (isMnemonic) {
     if (!isMounted) return null;
   }
 
-  if (isLedger || isOneKey || isTrezor || isMnemonic || isGrid) {
+  if (
+    isLedger ||
+    isOneKey ||
+    isTrezor ||
+    isMnemonic ||
+    isGrid ||
+    isKeystoneLike
+  ) {
     return (
-      <HDManager keyringId={keyringId.current ?? null} keyring={keyring} />
+      <HDManager
+        keyringId={keyringId.current ?? null}
+        keyring={keyring}
+        brand={brand}
+      />
     );
   }
 

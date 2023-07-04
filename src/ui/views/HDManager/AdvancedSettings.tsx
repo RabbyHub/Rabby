@@ -33,6 +33,7 @@ const HDPathTypeGroup = {
     HDPathType.BIP44,
     HDPathType.Legacy,
   ],
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: [HDPathType.BIP44],
 };
 
 const HDPathTypeTips = {
@@ -62,6 +63,9 @@ const HDPathTypeTips = {
     [HDPathType.Legacy]:
       'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain.',
   },
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
 };
 
 const HDPathTypeTipsNoChain = {
@@ -90,6 +94,9 @@ const HDPathTypeTipsNoChain = {
       'BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.',
     [HDPathType.Legacy]:
       'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
+  },
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
   },
 };
 
@@ -125,30 +132,47 @@ export const AdvancedSettings: React.FC<Props> = ({
     }
   }, []);
 
-  const isOnChain = React.useCallback((type) => {
+  const disabledSelectHDPath = React.useMemo(() => {
     return (
-      type && initAccounts?.[type].some((account) => account.chains?.length)
+      keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
+      keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
+      keyring === KEYRING_CLASS.MNEMONIC ||
+      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE
     );
-  }, []);
+  }, [keyring]);
+
+  const isOnChain = React.useCallback(
+    (type) => {
+      if (disabledSelectHDPath) {
+        return true;
+      }
+      return (
+        type && initAccounts?.[type].some((account) => account.chains?.length)
+      );
+    },
+    [disabledSelectHDPath]
+  );
 
   const currentHdPathTypeTip = React.useMemo(() => {
-    if (!hdPathType) {
-      if (
-        keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
-        keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
-        keyring === KEYRING_CLASS.MNEMONIC
-      ) {
-        // only one type
-        return HDPathTypeTips[keyring][HDPathTypeGroup[keyring][0]];
-      }
+    if (disabledSelectHDPath) {
+      // only one type
+      return HDPathTypeTips[keyring][HDPathTypeGroup[keyring][0]];
+    }
 
+    if (!hdPathType) {
       return null;
     }
 
     return isOnChain(hdPathType)
       ? HDPathTypeTips[keyring][hdPathType]
       : HDPathTypeTipsNoChain[keyring][hdPathType];
-  }, [hdPathType, keyring]);
+  }, [hdPathType, keyring, disabledSelectHDPath]);
+
+  const handleSubmit = () =>
+    onConfirm?.({
+      type: hdPathType,
+      startNo,
+    });
 
   return (
     <div className="AdvancedSettings">
@@ -179,6 +203,7 @@ export const AdvancedSettings: React.FC<Props> = ({
           value={startNo}
           min={MIN_START_NO}
           max={MAX_START_NO}
+          onPressEnter={handleSubmit}
         ></InputNumber>
         <div className="tip">
           Manage address from {startNo} to {startNo + MAX_ACCOUNT_COUNT - 1}
@@ -190,12 +215,7 @@ export const AdvancedSettings: React.FC<Props> = ({
           className="advanced-button"
           block
           type="primary"
-          onClick={() =>
-            onConfirm?.({
-              type: hdPathType,
-              startNo,
-            })
-          }
+          onClick={handleSubmit}
         >
           Confirm
         </Button>

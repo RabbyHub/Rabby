@@ -88,12 +88,7 @@ const AddAddressOptions = () => {
           pathname: '/import/gnosis',
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-        history.push({
-          pathname: '/import/qrcode',
-          state: {
-            brand: item.brand,
-          },
-        });
+        openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
       } else {
         history.push({
           pathname: '/import/wallet-connect',

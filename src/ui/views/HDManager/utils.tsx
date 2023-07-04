@@ -200,6 +200,7 @@ export interface StateProviderProps {
   // don't know the keyringId now.
   keyringId: number | null;
   keyring: string;
+  brand?: string;
 }
 
 export const HDManagerStateContext = React.createContext<

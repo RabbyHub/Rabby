@@ -121,4 +121,15 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     super.removeAccount(address);
     delete this.brandsMap[address.toLowerCase()];
   };
+
+  getCurrentAccounts = async () => {
+    const addrs = await this.getAccounts();
+
+    return addrs.map((address) => {
+      return {
+        address,
+        index: this.indexes[address] + 1,
+      };
+    });
+  };
 }
