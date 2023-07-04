@@ -540,7 +540,7 @@ const Settings = ({
         {
           leftIcon: IconSettingsAboutFollowUs,
           content: t('Follow Us'),
-          onClick: () => {},
+          // onClick: () => {},
           rightIcon: (
             <>
               <a
