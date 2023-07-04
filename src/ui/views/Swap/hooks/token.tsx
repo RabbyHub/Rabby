@@ -39,6 +39,13 @@ const useTokenInfo = ({
 
   const { value, loading, error } = useAsync(async () => {
     if (userAddress && token?.id && chain) {
+      console.log('token info', {
+        refreshId,
+        userAddress,
+        tokenid: token?.id,
+        raw_amount_hex_str: token?.raw_amount_hex_str,
+        chain,
+      });
       const data = await wallet.openapi.getToken(
         userAddress,
         CHAINS[chain].serverId,
@@ -46,7 +53,7 @@ const useTokenInfo = ({
       );
       return data;
     }
-  }, [refreshId, userAddress, token?.id, chain]);
+  }, [refreshId, userAddress, token?.id, token?.raw_amount_hex_str, chain]);
 
   useDebounce(
     () => {
@@ -76,13 +83,6 @@ export const useSlippage = () => {
     slippage,
     setSlippage,
   };
-};
-
-const feeTips = {
-  '0.3': () => '0.3% fee for common token',
-  '0.1': () => '0.1% fee for stablecoins',
-  '0': (symbol) =>
-    `0 fee to wrap/unwrap tokens by interacting directly with ${symbol} contracts.`,
 };
 
 export interface FeeProps {
@@ -117,7 +117,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const [payAmount, setPayAmount] = useState('');
 
-  const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
+  const [feeRate] = useState<FeeProps['fee']>('0');
 
   const {
     slippageChanged,
@@ -238,13 +238,13 @@ export const useTokenPair = (userAddress: string) => {
   );
 
   useEffect(() => {
-    if (isWrapToken) {
-      setFeeRate('0');
-    } else if (isStableCoin) {
-      setFeeRate('0.1');
-    } else {
-      setFeeRate('0.3');
-    }
+    // if (isWrapToken) {
+    //   setFeeRate('0');
+    // } else if (isStableCoin) {
+    //   setFeeRate('0.1');
+    // } else {
+    //   setFeeRate('0.3');
+    // }
 
     if (isStableCoin) {
       setSlippage('0.05');

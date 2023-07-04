@@ -132,8 +132,6 @@ export const Main = () => {
     slippage,
   ]);
 
-  const active = false;
-
   const DexDisplayName = useMemo(
     () => DEX?.[activeProvider?.name as keyof typeof DEX]?.name || '',
     [activeProvider?.name]
@@ -170,7 +168,7 @@ export const Main = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  const gotoSwap = async () => {
+  const gotoSwap = useCallback(async () => {
     if (!inSufficient && payToken && activeProvider?.quote) {
       try {
         wallet.dexSwap(
@@ -199,7 +197,16 @@ export const Main = () => {
         console.error(error);
       }
     }
-  };
+  }, [
+    inSufficient,
+    payToken,
+    unlimitedAllowance,
+    activeProvider?.quote,
+    wallet?.dexSwap,
+    activeProvider?.shouldApproveToken,
+    activeProvider?.name,
+    activeProvider?.shouldTwoStepApprove,
+  ]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -222,6 +229,8 @@ export const Main = () => {
       },
     },
   });
+
+  console.log('render');
 
   return (
     <div
@@ -412,7 +421,6 @@ export const Main = () => {
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
           'bg-white border border-gray-divider',
-          active ? 'opacity-40' : '',
           activeProvider && activeProvider.shouldApproveToken && 'pt-16'
         )}
       >
@@ -496,3 +504,5 @@ export const Main = () => {
     </div>
   );
 };
+
+Main.whyDidYouRender = true;

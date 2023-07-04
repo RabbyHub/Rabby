@@ -63,6 +63,8 @@ import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import Logo0X from 'ui/assets/swap/0xswap.png';
+import Logo1inch from 'ui/assets/swap/1inch.png';
+
 import LogoOpenOcean from 'ui/assets/swap/openocean.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
@@ -930,6 +932,12 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
+  [DEX_ENUM.ONEINCH]: {
+    id: DEX_ENUM.ONEINCH,
+    logo: Logo1inch,
+    name: '1inch',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
+  },
   [DEX_ENUM.ZEROXAPI]: {
     id: DEX_ENUM.ZEROXAPI,
     logo: Logo0X,
