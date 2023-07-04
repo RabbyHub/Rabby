@@ -3,6 +3,8 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { GasCache, ChainGas } from './preference';
 import { CEX, DEX } from '@/constant';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { openapiService } from 'background/service';
 
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
@@ -139,6 +141,43 @@ class SwapService {
       ...this.store.tradeList,
       [dexId]: bool,
     };
+  };
+
+  txQuotes: Record<
+    string,
+    Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
+  > = {};
+
+  addTx = (
+    chain: CHAINS_ENUM,
+    data: string,
+    quoteInfo: Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
+  ) => {
+    this.txQuotes[`${chain}-${data}`] = quoteInfo;
+    console.log('addTx', this.txQuotes);
+  };
+
+  postSwap = (
+    chain: CHAINS_ENUM,
+    hash: string,
+    tx: Parameters<OpenApiService['postSwap']>[0]['tx']
+  ) => {
+    const { postSwap } = openapiService;
+    const { txQuotes } = this;
+    const key = `${chain}-${tx.data}`;
+    const quoteInfo = txQuotes[key];
+    if (tx) {
+      delete txQuotes[key];
+
+      console.log('txQuotes', txQuotes);
+      console.log('addTx', this.txQuotes);
+
+      return postSwap({
+        ...quoteInfo,
+        tx,
+        tx_id: hash,
+      });
+    }
   };
 }
 

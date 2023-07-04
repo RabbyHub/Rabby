@@ -169,7 +169,7 @@ export const Main = () => {
   const rbiSource = useRbiSource();
 
   const gotoSwap = useCallback(async () => {
-    if (!inSufficient && payToken && activeProvider?.quote) {
+    if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
       try {
         wallet.dexSwap(
           {
@@ -183,6 +183,24 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: unlimitedAllowance,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            postSwapParams: {
+              quote: {
+                pay_token_id: payToken.id,
+                pay_token_amount: Number(payAmount),
+                receive_token_id: receiveToken!.id,
+                receive_token_amount: new BigNumber(
+                  activeProvider?.quote.toTokenAmount
+                )
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+              },
+              dex_id: activeProvider?.name.replace('API', ''),
+            },
           },
           {
             ga: {
@@ -229,8 +247,6 @@ export const Main = () => {
       },
     },
   });
-
-  console.log('render');
 
   return (
     <div

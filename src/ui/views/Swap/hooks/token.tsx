@@ -39,13 +39,6 @@ const useTokenInfo = ({
 
   const { value, loading, error } = useAsync(async () => {
     if (userAddress && token?.id && chain) {
-      console.log('token info', {
-        refreshId,
-        userAddress,
-        tokenid: token?.id,
-        raw_amount_hex_str: token?.raw_amount_hex_str,
-        chain,
-      });
       const data = await wallet.openapi.getToken(
         userAddress,
         CHAINS[chain].serverId,
