@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type WrappedComponentProps<T = {}> = {
   onFinished(...args: any[]): void;
   onCancel(): void;
   wallet: import('@/ui/utils').WalletControllerType;
 } & T;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type FunctionalComponent<P = {}> = ((p: P) => JSX.Element | null) | React.FC<P>;
 
 export const wrapModalPromise = <T extends WrappedComponentProps>(
@@ -25,7 +27,7 @@ export const wrapModalPromise = <T extends WrappedComponentProps>(
     };
 
     ReactDOM.render(
-      // @ts-expect-error
+      // @ts-expect-error we know T would be valid
       <Component
         onFinished={resolve as () => void}
         onCancel={handleCancel}
