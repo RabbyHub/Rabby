@@ -203,7 +203,7 @@ export default ({
       icon: IconFeedback,
       content: 'Feedback',
       onClick: showFeedbackModal,
-    },
+    } as IPanelItem,
     more: {
       icon: IconMoreSettings,
       content: 'More',
