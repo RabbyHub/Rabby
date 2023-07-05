@@ -68,7 +68,10 @@ export const HDManager: React.FC<StateProviderProps> = ({
   }, []);
 
   React.useEffect(() => {
-    if (keyring === KEYRING_CLASS.MNEMONIC) {
+    if (
+      keyring === KEYRING_CLASS.MNEMONIC ||
+      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE
+    ) {
       idRef.current = keyringId;
       setInitialed(true);
     } else {

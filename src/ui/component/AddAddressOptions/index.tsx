@@ -28,6 +28,7 @@ import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
+import { Modal } from 'antd';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -66,6 +67,26 @@ const AddAddressOptions = () => {
     };
   }, []);
 
+  const checkQRBasedWallet = async (item: IWalletBrandContent) => {
+    const { allowed, brand } = await wallet.checkQRHardwareAllowImport(
+      item.brand
+    );
+
+    if (!allowed) {
+      Modal.error({
+        title: 'Unable to import',
+        content: `Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from ${brand} before importing another device.`,
+        okText: 'OK',
+        centered: true,
+        maskClosable: true,
+        className: 'text-center',
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (history, item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
@@ -88,7 +109,10 @@ const AddAddressOptions = () => {
           pathname: '/import/gnosis',
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-        openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
+        checkQRBasedWallet(item).then((success) => {
+          if (!success) return;
+          openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
+        });
       } else {
         history.push({
           pathname: '/import/wallet-connect',

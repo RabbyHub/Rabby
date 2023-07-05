@@ -14,6 +14,8 @@ import clsx from 'clsx';
 
 type Valueof<T> = T[keyof T];
 
+const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
+
 export const QRCodeConnect = () => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -24,6 +26,7 @@ export const QRCodeConnect = () => {
   const [scan, setScan] = useState(true);
   const { search } = useLocation();
   const brand = new URLSearchParams(search).get('brand');
+  const stashKeyringIdRef = useRef<number | null>(null);
 
   if (!brand) {
     history.goBack();
@@ -42,14 +45,15 @@ export const QRCodeConnect = () => {
       decoder.current.receivePart(data);
       if (decoder.current.isComplete()) {
         const result = decoder.current.resultUR();
-        let stashKeyringId;
         if (result.type === 'crypto-hdkey') {
-          stashKeyringId = await wallet.submitQRHardwareCryptoHDKey(
-            result.cbor.toString('hex')
+          stashKeyringIdRef.current = await wallet.submitQRHardwareCryptoHDKey(
+            result.cbor.toString('hex'),
+            stashKeyringIdRef.current
           );
         } else if (result.type === 'crypto-account') {
-          stashKeyringId = await wallet.submitQRHardwareCryptoAccount(
-            result.cbor.toString('hex')
+          stashKeyringIdRef.current = await wallet.submitQRHardwareCryptoAccount(
+            result.cbor.toString('hex'),
+            stashKeyringIdRef.current
           );
         } else {
           Sentry.captureException(
@@ -62,20 +66,8 @@ export const QRCodeConnect = () => {
           );
           return;
         }
-        let search = `?hd=${HARDWARE_KEYRING_TYPES.Keystone.type}&brand=${brand}`;
-        if (stashKeyringId) {
-          search += `&keyringId=${stashKeyringId}`;
-        }
 
-        history.push({
-          pathname: '/import/select-address',
-          state: {
-            keyring: HARDWARE_KEYRING_TYPES.Keystone.type,
-            keyringId: stashKeyringId,
-            brand,
-          },
-          search,
-        });
+        goToSelectAddress(stashKeyringIdRef.current);
       }
     } catch (e) {
       Sentry.captureException(`QRCodeError ${e.message}`);
@@ -86,6 +78,23 @@ export const QRCodeConnect = () => {
         )
       );
     }
+  };
+
+  const goToSelectAddress = async (keyringId?: number | null) => {
+    let search = `?hd=${KEYSTONE_TYPE}&brand=${brand}`;
+    if (keyringId) {
+      search += `&keyringId=${keyringId}`;
+    }
+
+    history.push({
+      pathname: '/import/select-address',
+      state: {
+        keyring: KEYSTONE_TYPE,
+        keyringId,
+        brand,
+      },
+      search,
+    });
   };
 
   const handleScanQRCodeError = async () => {
@@ -106,6 +115,16 @@ export const QRCodeConnect = () => {
   };
 
   useEffect(() => {
+    wallet.initQRHardware(brand).then((stashKeyringId) => {
+      stashKeyringIdRef.current = stashKeyringId;
+      wallet
+        .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
+        .then((res) => {
+          if (res) {
+            goToSelectAddress(stashKeyringId);
+          }
+        });
+    });
     return () => {
       wallet.clearPageStateCache();
     };

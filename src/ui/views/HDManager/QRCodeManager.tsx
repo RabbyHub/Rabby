@@ -13,16 +13,17 @@ import { ReactComponent as HardwareSVG } from 'ui/assets/import/hardware.svg';
 import { useAsyncRetry } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { useHistory } from 'react-router-dom';
 
 interface Props {
   brand?: string;
 }
 
-const QRCODE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
+const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
 export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts, keyringId } = React.useContext(
+  const { getCurrentAccounts, currentAccounts, keyringId } = React.useContext(
     HDManagerStateContext
   );
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
@@ -31,6 +32,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   );
   const [firstFetchAccounts, setFirstFetchAccounts] = React.useState(false);
   const wallet = useWallet();
+  const history = useHistory();
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -60,12 +62,6 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   }, []);
 
   React.useEffect(() => {
-    if (brand) {
-      wallet.requestKeyring(QRCODE_TYPE, 'setCurrentBrand', keyringId, brand);
-    }
-  }, [brand]);
-
-  React.useEffect(() => {
     if (fetchCurrentAccountsRetry.loading) {
       return;
     }
@@ -77,8 +73,31 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
 
   const openSwitchHD = React.useCallback(async () => {
-    console.log(123);
-  }, []);
+    Modal.error({
+      title: `Switch to a new ${brand} device`,
+      content: `It's not supported to import multiple ${brand} devices If you switch to a new ${brand} device, the current device's address list will be removed before starting the import process.`,
+      okText: 'Confirm',
+      onOk: async () => {
+        await Promise.all(
+          currentAccounts.map(async (account) =>
+            wallet.removeAddress(
+              account.address,
+              KEYSTONE_TYPE,
+              undefined,
+              true
+            )
+          )
+        );
+        await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', keyringId);
+        history.goBack();
+      },
+      okCancel: false,
+      centered: true,
+      closable: true,
+      maskClosable: true,
+      className: 'hd-manager-switch-modal',
+    });
+  }, [currentAccounts]);
 
   return (
     <>

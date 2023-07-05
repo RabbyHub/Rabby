@@ -132,4 +132,27 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       };
     });
   };
+
+  isReady = async () => {
+    return this.initialized;
+  };
+
+  getCurrentBrand = async () => {
+    return this.currentBrand;
+  };
+
+  checkAllowImport = async (brand: string) => {
+    const [account] = await this.getAccountsWithBrand();
+
+    if (!account) {
+      return {
+        allowed: true,
+      };
+    }
+
+    return {
+      brand: account.brandName,
+      allowed: account.brandName === brand,
+    };
+  };
 }
