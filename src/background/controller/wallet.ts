@@ -1550,7 +1550,10 @@ export class WalletController extends BaseController {
     await keyring.addSignature(address, signature);
   };
 
-  importWatchAddress = async (address) => {
+  /**
+   * @description add address as watch only account, and DON'T set it as current account
+   */
+  addWatchAddressOnly = async (address: string) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
     try {
@@ -1566,6 +1569,13 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
     }
+
+    return keyring;
+  };
+
+  importWatchAddress = async (address: string) => {
+    const keyring = this.addWatchAddressOnly(address);
+
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
@@ -2615,6 +2625,10 @@ export class WalletController extends BaseController {
     }
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
+  }
+
+  getContactsByMap() {
+    return contactBookService.getContactsByMap();
   }
 
   listContact = (includeAlias = true) => {
