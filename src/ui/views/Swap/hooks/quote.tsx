@@ -318,7 +318,7 @@ export const useQuoteMethods = () => {
                 userAddress,
                 slippage: Number(slippage),
                 feeRate:
-                  feeAfterDiscount && feeAfterDiscount === '0'
+                  feeAfterDiscount === '0' && isOpenOcean
                     ? undefined
                     : Number(feeAfterDiscount) || 0,
                 chain,
