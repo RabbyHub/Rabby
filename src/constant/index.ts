@@ -68,6 +68,7 @@ import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
+import IconUtila from 'ui/assets/walletlogo/utila.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -349,6 +350,7 @@ export enum WALLET_BRAND_TYPES {
   Bitkeep = 'Bitkeep',
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
+  Utila = 'Utila'
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -588,6 +590,15 @@ export const WALLET_BRAND_CONTENT: {
   //   connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   //   category: WALLET_BRAND_CATEGORY.MOBILE,
   // },
+  [WALLET_BRAND_TYPES.Utila]: {
+    id: 25,
+    name: 'Utila',
+    brand: WALLET_BRAND_TYPES.Utila,
+    icon: IconUtila,
+    image: IconUtila,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
 };
 
 export const KEYRING_ICONS = {
