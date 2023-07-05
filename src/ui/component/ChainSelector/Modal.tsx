@@ -10,7 +10,7 @@ import React, {
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
 
 import Empty from '../Empty';
@@ -18,7 +18,9 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
-import { findChainByEnum, sortChainItems } from '@/utils/chain';
+import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
+
 interface ChainSelectorModalProps {
   visible: boolean;
   value?: CHAINS_ENUM;
@@ -41,9 +43,9 @@ const useChainSeletorList = ({
   const [search, setSearch] = useState('');
   const { pinned, matteredChainBalances } = useRabbySelector((state) => {
     return {
-      pinned:
-        state.preference.pinnedChain?.filter((item) => findChainByEnum(item)) ||
-        [],
+      pinned: (state.preference.pinnedChain?.filter((item) =>
+        findChainByEnum(item)
+      ) || []) as CHAINS_ENUM[],
       matteredChainBalances: state.account.matteredChainBalances,
     };
   });
@@ -59,98 +61,19 @@ const useChainSeletorList = ({
   const handleSort = (chains: Chain[]) => {
     dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
   };
-  const searchChains = useCallback(
-    (list: Chain[], input: string) => {
-      input = input?.trim().toLowerCase();
-      if (!input) {
-        return list.filter((item) => !pinned.includes(item.enum));
-      }
-      const res = list.filter((item) =>
-        [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
-          item.toLowerCase().includes(input)
-        )
-      );
-      return res
-        .filter((item) => pinned.includes(item.enum))
-        .concat(res.filter((item) => !pinned.includes(item.enum)));
-    },
-    [pinned]
-  );
   const { allSearched, matteredList, unmatteredList } = useMemo(() => {
-    const unpinnedListGroup = {
-      withBalance: [] as Chain[],
-      withoutBalance: [] as Chain[],
-      disabled: [] as Chain[],
-    };
-    const pinnedListGroup = {
-      withBalance: [] as Chain[],
-      withoutBalance: [] as Chain[],
-      disabled: [] as Chain[],
-    };
-
-    const _all = Object.values(CHAINS).sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
-    _all.forEach((item) => {
-      const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
-
-      if (!inPinned) {
-        if (supportChains?.length && !supportChains.includes(item.enum)) {
-          unpinnedListGroup.disabled.push(item);
-        } else if (!matteredChainBalances[item.serverId]) {
-          unpinnedListGroup.withoutBalance.push(item);
-        } else {
-          unpinnedListGroup.withBalance.push(item);
-        }
-      } else {
-        if (supportChains?.length && !supportChains.includes(item.enum)) {
-          pinnedListGroup.disabled.push(item);
-        } else if (!matteredChainBalances[item.serverId]) {
-          pinnedListGroup.withoutBalance.push(item);
-        } else {
-          pinnedListGroup.withBalance.push(item);
-        }
-      }
-    });
-
-    pinnedListGroup.withBalance = sortChainItems(pinnedListGroup.withBalance, {
+    const searchKw = search?.trim().toLowerCase();
+    const result = varyAndSortChainItems({
       supportChains,
-      cachedChainBalances: matteredChainBalances,
-    });
-    unpinnedListGroup.withBalance = sortChainItems(
-      unpinnedListGroup.withBalance,
-      {
-        supportChains,
-        cachedChainBalances: matteredChainBalances,
-      }
-    );
-    const searchKw = search?.trim();
-
-    const allSearched = searchChains(_all, search);
-
-    pinnedListGroup.disabled = sortChainItems(pinnedListGroup.disabled, {
-      supportChains,
-      cachedChainBalances: matteredChainBalances,
-    });
-    unpinnedListGroup.disabled = sortChainItems(unpinnedListGroup.disabled, {
-      supportChains,
-      cachedChainBalances: matteredChainBalances,
+      searchKeyword: searchKw,
+      matteredChainBalances,
+      pinned,
     });
 
     return {
-      allSearched,
-      matteredList: searchKw
-        ? []
-        : [
-            ...pinnedListGroup.withBalance,
-            ...pinnedListGroup.withoutBalance,
-            ...unpinnedListGroup.withBalance,
-            ...pinnedListGroup.disabled,
-          ],
-      unmatteredList: searchKw
-        ? []
-        : [...unpinnedListGroup.withoutBalance, ...unpinnedListGroup.disabled],
+      allSearched: result.allSearched,
+      matteredList: searchKw ? [] : result.matteredList,
+      unmatteredList: searchKw ? [] : result.unmatteredList,
     };
   }, [search, pinned, supportChains, matteredChainBalances]);
 

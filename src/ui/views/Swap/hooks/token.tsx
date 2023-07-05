@@ -23,6 +23,7 @@ import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useSwapSettings } from './settings';
+import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 
 const useTokenInfo = ({
   userAddress,
@@ -98,12 +99,17 @@ export const useTokenPair = (userAddress: string) => {
     (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
   );
   const [chain, setChain] = useState(oChain);
-
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
     dispatch.swap.setSelectedChain(c);
     // resetSwapTokens(c);
   };
+  useAsyncInitializeChainList({
+    supportChains: undefined,
+    onChainInitializedAsync: (firstEnum) => {
+      handleChain(firstEnum);
+    },
+  });
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -381,7 +387,7 @@ export const useTokenPair = (userAddress: string) => {
     chain?: string;
   }>(query2obj(search));
 
-  useMemo(() => {
+  useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
       const target = Object.values(CHAINS).find(
         (item) => item.serverId === searchObj.chain

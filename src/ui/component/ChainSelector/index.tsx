@@ -2,12 +2,13 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { CHAINS_ENUM } from 'consts';
 import { useHover, useWallet } from 'ui/utils';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/dashboard/arrow-down.svg';
-import Modal from './Modal';
+import ChainSelectorModal from './Modal';
 import ChainIcon from '../ChainIcon';
 
 import './style.less';
 import clsx from 'clsx';
 import { findChainByEnum } from '@/utils/chain';
+import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -83,7 +84,7 @@ const ChainSelector = ({
         {findChainByEnum(value)?.name}
         <ArrowDownSVG className={clsx('icon')} />
       </div>
-      <Modal
+      <ChainSelectorModal
         title={title}
         value={value}
         visible={showSelectorModal}

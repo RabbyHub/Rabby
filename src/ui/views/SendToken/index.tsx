@@ -47,6 +47,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -57,7 +58,15 @@ const MaxButton = styled.img`
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+  const { markFinishInitializeChainExternally } = useAsyncInitializeChainList({
+    supportChains: undefined,
+    onChainInitializedAsync: (firstEnum) => {
+      setChain(firstEnum);
+    },
+  });
+
   const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const { t } = useTranslation();
   const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
@@ -599,6 +608,7 @@ const SendToken = () => {
         loadCurrentToken(currentToken.id, currentToken.chain, account.address);
         return;
       }
+      markFinishInitializeChainExternally(target.enum);
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
@@ -626,6 +636,7 @@ const SendToken = () => {
         const target = Object.values(CHAINS).find(
           (item) => item.serverId === needLoadToken.chain
         )!;
+        markFinishInitializeChainExternally(target.enum);
         setChain(target.enum);
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
