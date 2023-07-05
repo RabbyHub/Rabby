@@ -22,16 +22,19 @@ import { ReactComponent as GridPlusSVG } from '@/ui/assets/walletlogo/gridplus.s
 import { ReactComponent as KeyStoneSVG } from '@/ui/assets/walletlogo/keystone.svg';
 import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
+import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
+import { BitBox02Manager } from './BitBox02Manager';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: TrezorSVG,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: OneKeySVG,
   [KEYRING_CLASS.MNEMONIC]: MnemonicSVG,
-  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: GridPlusSVG,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: GridPlusSVG,
   [WALLET_BRAND_TYPES.KEYSTONE]: KeyStoneSVG,
   [WALLET_BRAND_TYPES.AIRGAP]: AirGapSVG,
   [WALLET_BRAND_TYPES.COOLWALLET]: CoolWalletSVG,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
 };
 
 const LOGO_NAME_MAP = {
@@ -39,10 +42,11 @@ const LOGO_NAME_MAP = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: 'Connected to Trezor',
   [HARDWARE_KEYRING_TYPES.Onekey.type]: 'Connected to OneKey',
   [KEYRING_CLASS.MNEMONIC]: 'Manage Seed Phrase ',
-  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Manage GridPlus',
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: 'Manage GridPlus',
   [WALLET_BRAND_TYPES.KEYSTONE]: 'Manage KeyStone',
   [WALLET_BRAND_TYPES.AIRGAP]: 'Manage AirGap',
   [WALLET_BRAND_TYPES.COOLWALLET]: 'Manage CoolWallet',
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: 'Manage BitBox02',
 };
 
 const MANAGER_MAP = {
@@ -50,8 +54,9 @@ const MANAGER_MAP = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: TrezorManager,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: OneKeyManager,
   [KEYRING_CLASS.MNEMONIC]: MnemonicManager,
-  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: GridPlusManager,
-  [KEYRING_CLASS.HARDWARE.KEYSTONE]: QRCodeManager,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: GridPlusManager,
+  [HARDWARE_KEYRING_TYPES.Keystone.type]: QRCodeManager,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02Manager,
 };
 
 export const HDManager: React.FC<StateProviderProps> = ({

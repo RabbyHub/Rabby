@@ -34,6 +34,7 @@ const HDPathTypeGroup = {
     HDPathType.Legacy,
   ],
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: [HDPathType.BIP44],
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: [HDPathType.BIP44],
 };
 
 const HDPathTypeTips = {
@@ -66,6 +67,9 @@ const HDPathTypeTips = {
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
     [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
   },
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
 };
 
 const HDPathTypeTipsNoChain = {
@@ -96,6 +100,9 @@ const HDPathTypeTipsNoChain = {
       'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
   },
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: {
     [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
   },
 };
@@ -137,7 +144,8 @@ export const AdvancedSettings: React.FC<Props> = ({
       keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
       keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
       keyring === KEYRING_CLASS.MNEMONIC ||
-      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE
+      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE ||
+      keyring === KEYRING_CLASS.HARDWARE.BITBOX02
     );
   }, [keyring]);
 

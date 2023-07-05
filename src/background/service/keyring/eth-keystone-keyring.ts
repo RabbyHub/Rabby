@@ -126,9 +126,11 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     const addrs = await this.getAccounts();
 
     return addrs.map((address) => {
+      const checksummedAddress = toChecksumAddress(address);
+
       return {
         address,
-        index: this.indexes[address] + 1,
+        index: this.indexes[checksummedAddress] + 1,
       };
     });
   };
