@@ -1,7 +1,6 @@
 import { DrawerProps } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import { browser } from 'webextension-polyfill-ts';
 
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { Field, Popup } from 'ui/component';
@@ -9,6 +8,7 @@ import './style.less';
 import IconDirectMessage from 'ui/assets/feedback-popup/entry-hi.svg';
 import IconProposal from 'ui/assets/feedback-popup/entry-proposal.svg';
 import IconItemLink from 'ui/assets/feedback-popup/item-link.svg';
+import { openInTab } from '@/ui/utils';
 
 interface SettingsProps {
   visible?: boolean;
@@ -23,7 +23,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       description: 'Chat with Rabby Wallet Official on DeBank',
       rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
       onClick: () => {
-        browser.tabs.create({ url: 'https://debank.com/hi/0a110032' });
+        openInTab('https://debank.com/hi/0a110032');
       },
     },
     {
@@ -32,9 +32,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       description: 'Submit a proposal for Rabby Wallet on DeBank',
       rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
       onClick: () => {
-        browser.tabs.create({
-          url: 'https://debank.com/official-account/110032/proposals',
-        });
+        openInTab('https://debank.com/official-account/110032/proposals');
       },
     },
   ];

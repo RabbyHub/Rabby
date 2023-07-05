@@ -517,6 +517,7 @@ const Settings = ({
           leftIcon: IconSettingsAboutSupporetedChains,
           content: t('Supported Chains'),
           onClick: () => {
+            history.push('/settings/chain-list');
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
