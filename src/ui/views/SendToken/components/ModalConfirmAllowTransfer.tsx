@@ -15,8 +15,9 @@ import LessPalette from '@/ui/style/var-defs';
 import IconCheckboxChecked from 'ui/assets/send-token/modal/checkbox-checked.svg';
 import IconCheckboxUnchecked from 'ui/assets/send-token/modal/checkbox-unchecked.svg';
 
-interface ConfirmAddToWhitelistModalProps extends WrappedComponentProps {
-  toAddr?: string;
+interface ConfirmAllowTransferModalProps extends WrappedComponentProps {
+  toAddr: string;
+  showAddToWhitelist?: boolean;
   onFinished: (result: { confirmedToAddToWhitelist: boolean }) => void;
   confirmText?: string;
   cancelText?: string;
@@ -33,15 +34,16 @@ const FormInputItem = styled(Form.Item)`
   }
 `;
 
-function ModalConfirmAddToContacts({
+function ModalConfirmAllowTransfer({
   toAddr = '',
+  showAddToWhitelist = false,
   onFinished,
   onCancel,
   wallet,
   cancelText,
   confirmText = 'Confirm',
   title = 'Enter Password',
-}: ConfirmAddToWhitelistModalProps) {
+}: ConfirmAllowTransferModalProps) {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -53,7 +55,7 @@ function ModalConfirmAddToContacts({
     try {
       await wallet.verifyPassword(password);
 
-      if (confirmToAddToWhitelist) {
+      if (toAddr && confirmToAddToWhitelist) {
         await wallet.addWhitelist(password, toAddr);
       }
       onFinished({
@@ -103,7 +105,8 @@ function ModalConfirmAddToContacts({
           onClick={() => setConfirmToAddToWhitelist((prev) => !prev)}
           className={clsx(
             'text-center text-[12px] cursor-pointer',
-            `text-[${LessPalette['@color-body']}]`
+            `text-[${LessPalette['@color-body']}]`,
+            !showAddToWhitelist && 'hidden'
           )}
         >
           <img
@@ -148,6 +151,6 @@ function ModalConfirmAddToContacts({
   );
 }
 
-export const confirmAddToWhitelistModalPromise = wrapModalPromise<ConfirmAddToWhitelistModalProps>(
-  ModalConfirmAddToContacts
+export const confirmAllowTransferToPromise = wrapModalPromise<ConfirmAllowTransferModalProps>(
+  ModalConfirmAllowTransfer
 );

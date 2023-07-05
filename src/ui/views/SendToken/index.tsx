@@ -46,8 +46,9 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import { confirmAddToWhitelistModalPromise } from './components/ModalConfirmAddToWhitelist';
+import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
+import LessPalette from '@/ui/style/var-defs';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -704,34 +705,37 @@ const SendToken = () => {
     return gasTokenAmount;
   };
 
-  const handleClickWhitelistAlert = () => {
-    if (!whitelistEnabled || temporaryGrant) return;
+  const handleClickAllowTransferTo = () => {
+    if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
 
     const toAddr = form.getFieldValue('to');
+    confirmAllowTransferToPromise({
+      wallet,
+      toAddr,
+      showAddToWhitelist: !!toAddressInContactBook,
+      title: 'Enter the Password to Confirm',
+      cancelText: 'Cancel',
+      confirmText: 'Confirm',
+      onFinished(result) {
+        dispatch.whitelist.getWhitelist();
+        setTemporaryGrant(true);
+      },
+    });
+  };
 
-    if (!toAddressInContactBook) {
-      confirmAddToContactsModalPromise({
-        wallet,
-        addrToAdd: toAddr,
-        title: 'Add to contacts',
-        confirmText: 'Confirm',
-        onFinished() {
-          dispatch.contactBook.getContactBookAsync();
-        },
-      });
-    } else if (!toAddressInWhitelist) {
-      confirmAddToWhitelistModalPromise({
-        wallet,
-        toAddr: toAddr,
-        title: 'Enter the Password to Confirm',
-        cancelText: 'Cancel',
-        confirmText: 'Confirm',
-        onFinished(result) {
-          dispatch.whitelist.getWhitelist();
-          setTemporaryGrant(true);
-        },
-      });
-    }
+  const handleClickAddContact = () => {
+    if (toAddressInContactBook) return;
+
+    const toAddr = form.getFieldValue('to');
+    confirmAddToContactsModalPromise({
+      wallet,
+      addrToAdd: toAddr,
+      title: 'Add to contacts',
+      confirmText: 'Confirm',
+      onFinished() {
+        dispatch.contactBook.getContactBookAsync();
+      },
+    });
   };
 
   useEffect(() => {
@@ -836,6 +840,18 @@ const SendToken = () => {
                   spellCheck={false}
                 />
               </Form.Item>
+              {formSnapshot.to && !toAddressInContactBook && (
+                <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
+                  Not on address list.{' '}
+                  <span
+                    onClick={handleClickAddContact}
+                    className={clsx('ml-[2px] underline cursor-pointer')}
+                    style={{ color: LessPalette['@primary-text-color'] }}
+                  >
+                    Add to contacts
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="section">
@@ -947,7 +963,7 @@ const SendToken = () => {
                   ? 'granted'
                   : 'cursor-pointer'
               )}
-              onClick={handleClickWhitelistAlert}
+              onClick={handleClickAllowTransferTo}
             >
               <p className="whitelist-alert__content text-center">
                 {whitelistEnabled && (
