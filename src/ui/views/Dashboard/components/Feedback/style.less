@@ -1,0 +1,99 @@
+@import '../../../../style/var.less';
+
+.popup-feedback {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+
+  .popup-title {
+    color: @color-title;
+    text-align: center;
+    font-size: 20px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .content {
+    flex: 1;
+  }
+  .field {
+    background: @color-bg;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 16px;
+    color: @color-title;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    min-height: 52px;
+    .title {
+      color: @color-title;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    .title + .desc {
+      margin-top: 4px;
+    }
+
+    &.has-desc {
+      height: 64px;
+      align-items: flex-start;
+      padding: 14px 16px 14px;
+      .field-slot {
+        overflow: visible;
+        flex-wrap: wrap;
+      }
+      .desc {
+        width: 100%;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+        color: #4b4d59;
+        margin-top: 4px;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+    }
+    & + .field {
+      margin-top: 8px;
+    }
+    &.default-wallet-field {
+      padding-top: 20px;
+      height: 72px;
+      align-items: flex-start;
+      .default-wallet-title {
+        line-height: 20px;
+      }
+    }
+    &:hover,
+    &.checked {
+      background-color: rgba(134, 151, 255, 0.2);
+      border: 1px solid #8697ff;
+    }
+    .not-default-tip {
+      color: @color-red;
+      font-size: 12px;
+      line-height: 14px;
+    }
+    .left-icon, .right-icon {
+      align-self: center;
+    }
+
+    .left-icon {
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .right-icon {
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
