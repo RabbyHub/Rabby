@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
@@ -61,6 +60,14 @@ export const CurveThumbnail = ({
     }
   }, []);
 
+  // const [dataMin, dataMax] = useMemo(() => {
+  //   if (!data) return [0, 0];
+  //   const valueArr = data.list.map((item) => item.value);
+  //   const min = Math.min(...valueArr);
+  //   const max = Math.max(...valueArr);
+  //   return [min, max];
+  // }, [data]);
+
   const isEmpty = !data || data.isEmptyAssets;
 
   return (
@@ -92,7 +99,10 @@ export const CurveThumbnail = ({
             type="number"
             domain={['dataMin', 'dataMax']}
           />
-          <YAxis hide domain={['dataMin', 'dataMax']} />
+          <YAxis
+            hide
+            domain={[(dataMin) => dataMin * 0.9, (dataMax) => dataMax * 1.1]}
+          />
           {isHover && (
             <Tooltip
               content={({ label }) => {
