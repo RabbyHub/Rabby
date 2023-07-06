@@ -49,6 +49,7 @@ const FormInputItem = styled(Form.Item)`
 `;
 
 interface ConfirmAddToContactsModalProps extends WrappedComponentProps {
+  onFinished: (result: { contactAddrAdded: string }) => void;
   addrToAdd: string;
   confirmText?: string;
   cancelText?: string;
@@ -87,7 +88,7 @@ function ModalConfirmAddToContacts({
         duration: 3,
       });
 
-      onFinished();
+      onFinished({ contactAddrAdded: addrToAdd });
       setVisible(false);
     } catch (e: any) {
       form.setFields([

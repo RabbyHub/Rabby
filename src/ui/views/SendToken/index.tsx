@@ -732,8 +732,10 @@ const SendToken = () => {
       addrToAdd: toAddr,
       title: 'Add to contacts',
       confirmText: 'Confirm',
-      async onFinished() {
+      async onFinished(result) {
         await dispatch.contactBook.getContactBookAsync();
+        // trigger get balance of address
+        await wallet.getAddressBalance(result.contactAddrAdded, true);
         // trigger fetch contactInfo
         const values = form.getFieldsValue();
         handleFormValuesChange(null, { ...values });
