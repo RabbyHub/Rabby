@@ -47,6 +47,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import AccountSearchInput from '@/ui/component/AccountSearchInput';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -802,11 +803,20 @@ const SendToken = () => {
                   },
                 ]}
               >
-                <Input
+                <AccountSearchInput
                   placeholder={t('Enter the address')}
                   autoComplete="off"
                   autoFocus
                   spellCheck={false}
+                  onSelectedAccount={(account) => {
+                    const nextVals = {
+                      ...form.getFieldsValue(),
+                      to: account.address,
+                    };
+                    handleFormValuesChange({ to: nextVals.to }, nextVals);
+                    form.setFieldsValue(nextVals);
+                    setAmountFocus(true);
+                  }}
                 />
               </Form.Item>
             </div>

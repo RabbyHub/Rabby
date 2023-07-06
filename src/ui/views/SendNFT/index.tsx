@@ -35,6 +35,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { findChainByEnum } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import AccountSearchInput from '@/ui/component/AccountSearchInput';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -414,10 +415,24 @@ const SendNFT = () => {
                     },
                   ]}
                 >
-                  <Input
+                  <AccountSearchInput
                     placeholder={t('Enter the address')}
                     autoComplete="off"
                     autoFocus
+                    spellCheck={false}
+                    onSelectedAccount={(account) => {
+                      const nextVals = {
+                        ...form.getFieldsValue(),
+                        to: account.address,
+                      };
+                      form.setFieldsValue(nextVals);
+                      handleFormValuesChange(
+                        {
+                          to: nextVals.to,
+                        },
+                        nextVals
+                      );
+                    }}
                   />
                 </Form.Item>
               </div>
