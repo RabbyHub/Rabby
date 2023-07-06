@@ -146,10 +146,9 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
     ref
   ) => {
     const searchKeyword = useMemo(() => value + '', [value]);
-    const {
-      filteredAccounts,
-      noAnySearchedAccount,
-    } = useSearchAccount(searchKeyword);
+    const { filteredAccounts, noAnySearchedAccount } = useSearchAccount(
+      searchKeyword
+    );
 
     const isInputAddrLike = useMemo(() => {
       return searchKeyword?.startsWith('0x');
