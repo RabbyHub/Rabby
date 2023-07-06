@@ -8,6 +8,7 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { ReactComponent as HardwareSVG } from 'ui/assets/import/hardware.svg';
 import { useWallet } from '@/ui/utils';
 import { Account } from './AccountList';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
@@ -30,7 +31,6 @@ export const GridPlusManager: React.FC = () => {
   );
   const wallet = useWallet();
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
-  const [preventLoading, setPreventLoading] = React.useState(false);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -122,19 +122,48 @@ export const GridPlusManager: React.FC = () => {
     fetchInitAccountsTask();
   }, []);
 
+  const openSwitchHD = React.useCallback(async () => {
+    Modal.error({
+      title: 'Switch to a new GridPlus device',
+      content:
+        "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process.",
+      okText: 'Confirm',
+      onOk: async () => {
+        const accounts = await wallet.requestKeyring(
+          GRIDPLUS_TYPE,
+          'getAccounts',
+          keyringId
+        );
+        console.log(accounts);
+        await Promise.all(
+          accounts.map(async (account) =>
+            wallet.removeAddress(account, GRIDPLUS_TYPE, undefined, true)
+          )
+        );
+        window.location.reload();
+      },
+      okCancel: false,
+      centered: true,
+      closable: true,
+      maskClosable: true,
+      className: 'hd-manager-switch-modal',
+    });
+  }, []);
+
   return (
     <>
-      <div className="setting" onClick={openAdvanced}>
-        <SettingSVG className="icon" />
-        <span className="title">Advanced Settings</span>
+      <div className="toolbar">
+        <div className="toolbar-item" onClick={openSwitchHD}>
+          <HardwareSVG className="icon" />
+          <span className="title">Switch to another GridPlus</span>
+        </div>
+        <div className="toolbar-item" onClick={openAdvanced}>
+          <SettingSVG className="icon" />
+          <span className="title">Advanced Settings</span>
+        </div>
       </div>
 
-      <MainContainer
-        setting={setting}
-        loading={loading}
-        HDName={'GridPlus'}
-        preventLoading={preventLoading}
-      />
+      <MainContainer setting={setting} loading={loading} HDName={'GridPlus'} />
 
       <Modal
         destroyOnClose

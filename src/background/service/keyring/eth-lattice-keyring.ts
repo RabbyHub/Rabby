@@ -7,6 +7,7 @@ const keyringType = 'GridPlus Hardware';
 
 import HDPathType = LedgerHDPathType;
 import { LedgerHDPathType } from '@/utils/ledger';
+import { isSameAddress } from '@/background/utils';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",
@@ -127,6 +128,25 @@ class LatticeKeyring extends OldLatticeKeyring {
 
   async getCurrentUsedHDPathType() {
     return HD_PATH_TYPE[this.hdPath];
+  }
+
+  async getAccountInfo(address) {
+    const addrs = await this.getAccounts();
+    const accounts = addrs.map((address, index) => {
+      return {
+        address,
+        index: this.accountIndices[index] + 1,
+        hdPath: this.accountOpts[index]?.hdPath,
+      };
+    });
+    const account = accounts.find((account) => {
+      return isSameAddress(account.address, address);
+    });
+
+    return {
+      ...account,
+      hdPathType: HD_PATH_TYPE[account.hdPath],
+    };
   }
 }
 

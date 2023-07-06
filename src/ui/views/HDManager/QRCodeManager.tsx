@@ -33,6 +33,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const [firstFetchAccounts, setFirstFetchAccounts] = React.useState(false);
   const wallet = useWallet();
   const history = useHistory();
+  const currentAccountsRef = React.useRef(currentAccounts);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -62,6 +63,10 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   }, []);
 
   React.useEffect(() => {
+    currentAccountsRef.current = currentAccounts;
+  }, [currentAccounts]);
+
+  React.useEffect(() => {
     if (fetchCurrentAccountsRetry.loading) {
       return;
     }
@@ -79,7 +84,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       okText: 'Confirm',
       onOk: async () => {
         await Promise.all(
-          currentAccounts.map(async (account) =>
+          currentAccountsRef.current?.map(async (account) =>
             wallet.removeAddress(
               account.address,
               KEYSTONE_TYPE,
@@ -97,7 +102,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       maskClosable: true,
       className: 'hd-manager-switch-modal',
     });
-  }, [currentAccounts]);
+  }, []);
 
   return (
     <>
