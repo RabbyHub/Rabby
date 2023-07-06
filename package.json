@@ -40,7 +40,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "^1.7.21",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.3.4",
-    "@rabby-wallet/page-provider": "^0.1.17",
+    "@rabby-wallet/page-provider": "^0.1.19",
     "@rabby-wallet/rabby-api": "^0.6.13",
     "@rabby-wallet/rabby-security-engine": "^1.1.4",
     "@rabby-wallet/rabby-swap": "^0.0.22",
