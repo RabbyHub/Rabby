@@ -734,11 +734,11 @@ const SendToken = () => {
       confirmText: 'Confirm',
       async onFinished(result) {
         await dispatch.contactBook.getContactBookAsync();
-        // trigger get balance of address
-        await wallet.getAddressBalance(result.contactAddrAdded, true);
         // trigger fetch contactInfo
         const values = form.getFieldsValue();
         handleFormValuesChange(null, { ...values });
+        // trigger get balance of address
+        await wallet.getAddressBalance(result.contactAddrAdded, true);
       },
     });
   };
