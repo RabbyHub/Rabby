@@ -24,6 +24,7 @@ import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useSwapSettings } from './settings';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const useTokenInfo = ({
   userAddress,
@@ -105,7 +106,8 @@ export const useTokenPair = (userAddress: string) => {
     // resetSwapTokens(c);
   };
   useAsyncInitializeChainList({
-    supportChains: undefined,
+    // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
+    supportChains: SWAP_SUPPORT_CHAINS,
     onChainInitializedAsync: (firstEnum) => {
       handleChain(firstEnum);
     },
