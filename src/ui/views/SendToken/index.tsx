@@ -124,7 +124,11 @@ const SendToken = () => {
     })
   );
 
-  const { toAddressIsValid, toAddressInWhitelist, toAddressInContactBook } = useMemo(() => {
+  const {
+    toAddressIsValid,
+    toAddressInWhitelist,
+    toAddressInContactBook,
+  } = useMemo(() => {
     return {
       toAddressIsValid: !!formSnapshot.to && isValidAddress(formSnapshot.to),
       toAddressInWhitelist: !!whitelist.find((item) =>
