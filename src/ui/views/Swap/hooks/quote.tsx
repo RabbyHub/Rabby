@@ -637,4 +637,5 @@ export type QuoteProvider = {
   activeLoading?: boolean;
   activeTx?: string;
   actualReceiveAmount: string | number;
+  gasUsd?: string;
 };

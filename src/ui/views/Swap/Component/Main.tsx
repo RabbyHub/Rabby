@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -23,6 +23,7 @@ import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
+import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -165,6 +166,8 @@ export const Main = () => {
     DexDisplayName,
   ]);
 
+  const [slippageOpen, setSlippageOpen] = useState(false);
+
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
@@ -256,7 +259,7 @@ export const Main = () => {
           ? ''
           : activeProvider?.shouldApproveToken
           ? 'pb-[130px]'
-          : 'pb-[120px]'
+          : 'pb-[110px]'
       )}
     >
       <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-16 mx-20')}>
@@ -373,13 +376,26 @@ export const Main = () => {
               ) : (
                 <div className="section text-12 text-gray-subTitle mt-12">
                   <div className="subText flex flex-col gap-8">
-                    <div className="flex">
-                      <span>Slippage tolerance: </span>
-                      <span className="font-medium text-gray-title">
-                        {slippage}%
+                    <div
+                      className="flex justify-between cursor-pointer"
+                      onClick={() => {
+                        setSlippageOpen((e) => !e);
+                      }}
+                    >
+                      <span>Slippage tolerance</span>
+                      <span className="font-medium text-gray-title inline-flex items-center">
+                        <span>{slippage}% </span>
+                        <img
+                          src={ImgArrowUp}
+                          className={clsx(
+                            'transition-transform inline-block w-14 h-[15px]',
+                            !slippageOpen && 'rotate-180'
+                          )}
+                        />
                       </span>
                     </div>
                     <Slippage
+                      open={slippageOpen}
                       value={slippageState}
                       onChange={(e) => {
                         setSlippageChanged(true);
@@ -392,12 +408,16 @@ export const Main = () => {
                       }
                     />
 
-                    <div>
-                      <span>Minimum received: </span>
+                    <div className="flex justify-between">
+                      <span>Minimum received</span>
                       <span className="font-medium text-gray-title">
                         {miniReceivedAmount}{' '}
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Rabby fee</span>
+                      <span className="font-medium text-gray-title">0%</span>
                     </div>
                   </div>
                 </div>
@@ -520,5 +540,3 @@ export const Main = () => {
     </div>
   );
 };
-
-Main.whyDidYouRender = true;

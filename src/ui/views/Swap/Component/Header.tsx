@@ -19,17 +19,17 @@ export const Header = () => {
         className="mx-[20px] pt-[20px] mb-[16px]"
         forceShowBack
         rightSlot={
-          <div className="flex items-center gap-20">
-            <IconSwapSettings
-              className="cursor-pointer"
-              onClick={useCallback(() => {
-                setVisible(true);
-              }, [])}
-            />
+          <div className="flex items-center gap-20 absolute bottom-0 right-0">
             <IconSwapHistory
               className="cursor-pointer"
               onClick={useCallback(() => {
                 setHistoryVisible(true);
+              }, [])}
+            />
+            <IconSwapSettings
+              className="cursor-pointer"
+              onClick={useCallback(() => {
+                setVisible(true);
               }, [])}
             />
           </div>

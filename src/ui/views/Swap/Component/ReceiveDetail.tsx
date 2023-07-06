@@ -14,6 +14,8 @@ import ImgVerified from '@/ui/assets/swap/verified.svg';
 import ImgWarning from '@/ui/assets/swap/warn.svg';
 import ImgInfo from '@/ui/assets/swap/info-outline.svg';
 import ImgSwitch from '@/ui/assets/swap/switch.svg';
+import ImgGas from '@/ui/assets/swap/gas.svg';
+import ImgLock from '@/ui/assets/swap/lock.svg';
 
 import clsx from 'clsx';
 import { SkeletonInputProps } from 'antd/lib/skeleton/Input';
@@ -22,6 +24,7 @@ import { ellipsisOverflowedText, formatAmount } from '@/ui/utils';
 import { QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { DEX } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
   `The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is ${receive}. You'll receive ${diff}  less than the expected offer.`;
@@ -58,7 +61,6 @@ const ReceiveWrapper = styled.div`
   border: 1px solid #e5e9ef;
   border-radius: 4px;
   padding: 12px;
-  padding-top: 20px;
 
   color: #4b4d59;
   font-size: 13px;
@@ -145,7 +147,7 @@ const ReceiveWrapper = styled.div`
     position: absolute;
     top: -12px;
     left: 12px;
-    height: 24px;
+    height: 20px;
     padding: 4px 6px;
     display: flex;
     align-items: center;
@@ -250,80 +252,116 @@ export const ReceiveDetails = (
 
   return (
     <ReceiveWrapper {...other}>
-      <div className="column receive-token">
-        <span>Receive amount</span>
-        <div className="right relative">
-          <SkeletonChildren
-            loading={loading}
-            style={{ maxWidth: 144, height: 20, opacity: 0.5 }}
-          >
-            <span
-              title={`${receiveNum} ${receiveTokenSymbol}`}
-              className="receive"
+      <div className="column receive-token pb-8">
+        <div className="flex items-center gap-8">
+          <div>
+            <img
+              className={clsx('rounded-full w-24 h-24')}
+              src={
+                isWrapToken
+                  ? receiveToken?.logo_url
+                  : DEX?.[activeProvider?.name]?.logo
+              }
+            />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 w-[108px] text-13 font-medium text-gray-title h-18">
+              <span>
+                {isWrapToken ? 'Wrap Contract' : DEX[activeProvider.name].name}
+              </span>
+              {!!activeProvider.shouldApproveToken && (
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  title="Need to approve token before swap"
+                >
+                  <img src={ImgLock} className="w-14 h-14" />
+                </TooltipWithMagnetArrow>
+              )}
+            </div>
+            {!!activeProvider?.gasUsd && (
+              <div className="flex items-center gap-2 text-12 text-gray-content font-normal">
+                <img src={ImgGas} className="w-14 h-14 relative top-[-1px] " />
+                <span>{activeProvider?.gasUsd}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="right relative flex flex-col">
+          <div className="flex items-center gap-2 text-15 font-medium text-gray-title h-18 ml-auto">
+            <SkeletonChildren
+              loading={loading}
+              style={{ maxWidth: 144, height: 20, opacity: 0.5 }}
             >
-              {receiveNum} {receiveTokenSymbol}
+              <span
+                title={`${receiveNum} ${receiveTokenSymbol}`}
+                className="receive"
+              >
+                {receiveNum}{' '}
+                <span className="text-gray-content">{receiveTokenSymbol}</span>
+              </span>
+              <WarningOrChecked quoteWarning={quoteWarning} />
+            </SkeletonChildren>
+          </div>
+
+          <div
+            className={clsx(
+              'flex justify-end items-center gap-2 text-[13px] relative text-12 font-normal text-gray-content ml-auto',
+              loading && 'opacity-0'
+            )}
+          >
+            <span>
+              ≈ ${receiveUsd} (
+              <span
+                className={clsx(
+                  'diffPercent',
+                  sign === '+' && 'positive',
+                  sign === '-' && 'negative'
+                )}
+              >
+                {sign}
+                {diff}%
+              </span>
+              )
             </span>
-            <WarningOrChecked quoteWarning={quoteWarning} />
-          </SkeletonChildren>
+            <Tooltip
+              align={{
+                offset: [10, 0],
+              }}
+              placement={'topRight'}
+              overlayClassName="rectangle max-w-[360px]"
+              title={
+                <div className="flex flex-col gap-4 py-[5px] text-13">
+                  <div>
+                    Est. Payment: {payAmount}
+                    {payTokenSymbol} ≈ ${payUsd}
+                  </div>
+                  <div>
+                    Est. Receiving: {receiveNum}
+                    {receiveTokenSymbol} ≈ ${receiveUsd}
+                  </div>
+                  <div>
+                    Est. Difference: {sign}
+                    {diff}%
+                  </div>
+                </div>
+              }
+            >
+              <img src={ImgInfo} />
+            </Tooltip>
+          </div>
         </div>
       </div>
       {!loading && quoteWarning && (
         <div className="warning">{getQuoteLessWarning(quoteWarning)}</div>
       )}
 
-      <div
-        className={clsx(
-          'flex justify-end items-center gap-2 text-[13px] relative',
-          loading && 'opacity-0'
-        )}
-      >
-        <span>
-          ${receiveUsd} (
-          <span
-            className={clsx(
-              'diffPercent',
-              sign === '+' && 'positive',
-              sign === '-' && 'negative'
-            )}
-          >
-            {sign}
-            {diff}%
-          </span>
-          )
-        </span>
-        <Tooltip
-          align={{
-            offset: [10, 0],
-          }}
-          placement={'topRight'}
-          overlayClassName="rectangle max-w-[360px]"
-          title={
-            <div className="flex flex-col gap-4 py-[5px] text-13">
-              <div>
-                Est. Payment: {payAmount}
-                {payTokenSymbol} ≈ ${payUsd}
-              </div>
-              <div>
-                Est. Receiving: {receiveNum}
-                {receiveTokenSymbol} ≈ ${receiveUsd}
-              </div>
-              <div>
-                Est. Difference: {sign}
-                {diff}%
-              </div>
-            </div>
-          }
-        >
-          <img src={ImgInfo} />
-        </Tooltip>
-      </div>
-
       {!loading && showLoss && (
         <div className="warning rate">
           Selected offer differs greatly from current rate, may cause big losses
         </div>
       )}
-      <div className="column mt-20 footer">
+      <div className="column mt-8 footer">
         <span className="rate">Rate</span>
         <div className="right">
           <SkeletonChildren
@@ -361,17 +399,6 @@ export const ReceiveDetails = (
             openQuote(true);
           }}
         >
-          <img
-            className={clsx('rounded-full w-16 h-16')}
-            src={
-              isWrapToken
-                ? receiveToken?.logo_url
-                : DEX?.[activeProvider?.name]?.logo
-            }
-          />
-          <span className="ml-4 mr-6 ">
-            {isWrapToken ? 'Wrap Contract' : DEX[activeProvider.name].name}
-          </span>
           <img src={ImgSwitch} className="w-12 h-12" />
         </div>
       ) : null}

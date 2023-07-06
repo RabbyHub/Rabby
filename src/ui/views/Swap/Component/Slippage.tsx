@@ -86,9 +86,10 @@ interface SlippageProps {
   value: string;
   onChange: (n: string) => void;
   recommendValue?: number;
+  open: boolean;
 }
 export const Slippage = memo((props: SlippageProps) => {
-  const { value, onChange, recommendValue } = props;
+  const { open, value, onChange, recommendValue } = props;
   const [isCustom, setIsCustom] = useToggle(false);
 
   const [isLow, isHigh] = useMemo(() => {
@@ -143,9 +144,18 @@ export const Slippage = memo((props: SlippageProps) => {
     [onChange]
   );
 
+  if (!tips && !open) {
+    return null;
+  }
+
   return (
     <Wrapper>
-      <div className="slippage">
+      <div
+        className={clsx(
+          'slippage transition-all',
+          !open && 'h-0 overflow-hidden'
+        )}
+      >
         {SLIPPAGE.map((e) => (
           <SlippageItem
             key={e}

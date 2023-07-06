@@ -168,10 +168,6 @@ class SwapService {
     const quoteInfo = txQuotes[key];
     if (tx) {
       delete txQuotes[key];
-
-      console.log('txQuotes', txQuotes);
-      console.log('addTx', this.txQuotes);
-
       return postSwap({
         ...quoteInfo,
         tx,
