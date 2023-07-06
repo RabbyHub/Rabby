@@ -60,14 +60,6 @@ export const CurveThumbnail = ({
     }
   }, []);
 
-  // const [dataMin, dataMax] = useMemo(() => {
-  //   if (!data) return [0, 0];
-  //   const valueArr = data.list.map((item) => item.value);
-  //   const min = Math.min(...valueArr);
-  //   const max = Math.max(...valueArr);
-  //   return [min, max];
-  // }, [data]);
-
   const isEmpty = !data || data.isEmptyAssets;
 
   return (
