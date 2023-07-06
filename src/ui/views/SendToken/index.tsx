@@ -732,8 +732,11 @@ const SendToken = () => {
       addrToAdd: toAddr,
       title: 'Add to contacts',
       confirmText: 'Confirm',
-      onFinished() {
-        dispatch.contactBook.getContactBookAsync();
+      async onFinished() {
+        await dispatch.contactBook.getContactBookAsync();
+        // trigger fetch contactInfo
+        const values = form.getFieldsValue();
+        handleFormValuesChange(null, { ...values });
       },
     });
   };
