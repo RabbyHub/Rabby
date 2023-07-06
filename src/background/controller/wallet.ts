@@ -1574,7 +1574,7 @@ export class WalletController extends BaseController {
   };
 
   importWatchAddress = async (address: string) => {
-    const keyring = this.addWatchAddressOnly(address);
+    const keyring = await this.addWatchAddressOnly(address);
 
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
