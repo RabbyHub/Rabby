@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -23,7 +23,6 @@ import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
-import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -109,6 +108,14 @@ export const Main = () => {
     expired,
   } = useTokenPair(userAddress);
 
+  const inputRef = useRef<Input>();
+
+  useLayoutEffect(() => {
+    if ((payToken?.id, receiveToken?.id)) {
+      inputRef.current?.focus();
+    }
+  }, [payToken?.id, receiveToken?.id]);
+
   const miniReceivedAmount = useMemo(() => {
     if (activeProvider?.quote?.toTokenAmount) {
       const receivedTokeAmountBn = new BigNumber(
@@ -165,8 +172,6 @@ export const Main = () => {
     isWrapToken,
     DexDisplayName,
   ]);
-
-  const [slippageOpen, setSlippageOpen] = useState(false);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -339,6 +344,7 @@ export const Main = () => {
           placeholder="0"
           value={payAmount}
           onChange={handleAmountChange}
+          ref={inputRef as any}
           suffix={
             <span className="text-gray-content text-12">
               {payAmount
@@ -375,27 +381,9 @@ export const Main = () => {
                 </div>
               ) : (
                 <div className="section text-12 text-gray-subTitle mt-12">
-                  <div className="subText flex flex-col gap-8">
-                    <div
-                      className="flex justify-between cursor-pointer"
-                      onClick={() => {
-                        setSlippageOpen((e) => !e);
-                      }}
-                    >
-                      <span>Slippage tolerance</span>
-                      <span className="font-medium text-gray-title inline-flex items-center">
-                        <span>{slippage}% </span>
-                        <img
-                          src={ImgArrowUp}
-                          className={clsx(
-                            'transition-transform inline-block w-14 h-[15px]',
-                            !slippageOpen && 'rotate-180'
-                          )}
-                        />
-                      </span>
-                    </div>
+                  <div className="subText flex flex-col gap-12">
                     <Slippage
-                      open={slippageOpen}
+                      displaySlippage={slippage}
                       value={slippageState}
                       onChange={(e) => {
                         setSlippageChanged(true);
@@ -407,7 +395,6 @@ export const Main = () => {
                           : slippageValidInfo?.suggest_slippage
                       }
                     />
-
                     <div className="flex justify-between">
                       <span>Minimum received</span>
                       <span className="font-medium text-gray-title">

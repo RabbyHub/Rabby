@@ -135,7 +135,11 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             )}
             <span>{!isPending && sinceTime(time)}</span>
           </div>
-          {!!targetDex && <span>{targetDex}</span>}
+          {!!targetDex && (
+            <span className="text-12 font-medium text-gray-title">
+              {targetDex}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center mt-12">

@@ -196,7 +196,6 @@ export const ReceiveDetails = (
     payAmount,
     payToken,
     receiveToken,
-    receiveTokenDecimals,
     quoteWarning,
     loading = false,
     activeProvider,
@@ -268,7 +267,9 @@ export const ReceiveDetails = (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 w-[108px] text-13 font-medium text-gray-title h-18">
               <span>
-                {isWrapToken ? 'Wrap Contract' : DEX[activeProvider.name].name}
+                {isWrapToken
+                  ? 'Wrap Contract'
+                  : DEX?.[activeProvider?.name]?.name}
               </span>
               {!!activeProvider.shouldApproveToken && (
                 <TooltipWithMagnetArrow
