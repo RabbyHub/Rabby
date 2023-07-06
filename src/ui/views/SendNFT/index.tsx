@@ -86,9 +86,10 @@ const SendNFT = () => {
       contactsByAddr: s.contactBook.contactsByAddr,
     })
   );
-  
-  const { toAddressInWhitelist, toAddressInContactBook } = useMemo(() => {
+
+  const { toAddressIsValid, toAddressInWhitelist, toAddressInContactBook } = useMemo(() => {
     return {
+      toAddressIsValid: !!formSnapshot.to && isValidAddress(formSnapshot.to),
       toAddressInWhitelist: !!whitelist.find((item) =>
         isSameAddress(item, formSnapshot.to)
       ),
@@ -453,7 +454,7 @@ const SendNFT = () => {
                     autoFocus
                   />
                 </Form.Item>
-                {formSnapshot.to && !toAddressInContactBook && (
+                {toAddressIsValid && !toAddressInContactBook && (
                   <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
                     Not on address list.{' '}
                     <span
