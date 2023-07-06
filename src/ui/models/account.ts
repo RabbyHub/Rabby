@@ -10,7 +10,7 @@ import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat } from '../utils';
 
-interface AccountState {
+export interface AccountState {
   currentAccount: null | Account;
   visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
@@ -227,7 +227,10 @@ export const account = createModel<RootModel>()({
       }
     },
 
-    async getMatteredChainBalance(_?: any, store?) {
+    async getMatteredChainBalance(
+      _?: any,
+      store?
+    ): Promise<AccountState['matteredChainBalances']> {
       const wallet = store.app.wallet;
       const currentAccountAddr = store.account.currentAccount?.address;
 
@@ -255,6 +258,8 @@ export const account = createModel<RootModel>()({
       dispatch.account.setField({
         matteredChainBalances,
       });
+
+      return matteredChainBalances;
     },
   }),
 });
