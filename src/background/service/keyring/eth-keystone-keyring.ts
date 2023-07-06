@@ -147,6 +147,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     const [account] = await this.getAccountsWithBrand();
 
     if (!account) {
+      await this.forgetDevice();
       return {
         allowed: true,
       };
