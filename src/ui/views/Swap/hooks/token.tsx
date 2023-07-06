@@ -96,9 +96,12 @@ export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
 
-  const oChain = useRabbySelector(
-    (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
-  );
+  const { initialSelectedChain, oChain } = useRabbySelector((state) => {
+    return {
+      initialSelectedChain: state.swap.$$initialSelectedChain,
+      oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
+    };
+  });
   const [chain, setChain] = useState(oChain);
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
@@ -109,7 +112,10 @@ export const useTokenPair = (userAddress: string) => {
     // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
     supportChains: SWAP_SUPPORT_CHAINS,
     onChainInitializedAsync: (firstEnum) => {
-      handleChain(firstEnum);
+      // only init chain if it's not cached before
+      if (!initialSelectedChain) {
+        handleChain(firstEnum);
+      }
     },
   });
 

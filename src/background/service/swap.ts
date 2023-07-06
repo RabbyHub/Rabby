@@ -9,7 +9,7 @@ type ViewKey = keyof typeof CEX | keyof typeof DEX;
 export type SwapServiceStore = {
   gasPriceCache: GasCache;
   selectedDex: DEX_ENUM | null;
-  selectedChain: CHAINS_ENUM;
+  selectedChain: CHAINS_ENUM | null;
   unlimitedAllowance: boolean;
   viewList: Record<ViewKey, boolean>;
   tradeList: Record<ViewKey, boolean>;
@@ -18,7 +18,7 @@ export type SwapServiceStore = {
 class SwapService {
   store: SwapServiceStore = {
     gasPriceCache: {},
-    selectedChain: CHAINS_ENUM.ETH,
+    selectedChain: null,
     selectedDex: null,
     unlimitedAllowance: false,
     viewList: {} as SwapServiceStore['viewList'],
@@ -30,7 +30,7 @@ class SwapService {
       name: 'swap',
       template: {
         gasPriceCache: {},
-        selectedChain: CHAINS_ENUM.ETH,
+        selectedChain: null,
         selectedDex: null,
         unlimitedAllowance: false,
         viewList: {} as SwapServiceStore['viewList'],
