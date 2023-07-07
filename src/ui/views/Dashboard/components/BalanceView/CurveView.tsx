@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
@@ -91,10 +92,7 @@ export const CurveThumbnail = ({
             type="number"
             domain={['dataMin', 'dataMax']}
           />
-          <YAxis
-            hide
-            domain={[(dataMin) => dataMin * 0.98, (dataMax) => dataMax * 1.02]}
-          />
+          <YAxis hide domain={['dataMin', 'dataMax']} />
           {isHover && (
             <Tooltip
               content={({ label }) => {
