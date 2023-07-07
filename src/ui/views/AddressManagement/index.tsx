@@ -139,7 +139,7 @@ const AddressManagement = () => {
         const lowerAddress = account.address.toLowerCase();
         const aliasName = account.alianName?.toLowerCase();
 
-        return lowerAddress.includes(lKeyword) || aliasName?.includes(lKeyword);
+        return lowerAddress === lKeyword || aliasName?.includes(lKeyword);
       });
     }
 
