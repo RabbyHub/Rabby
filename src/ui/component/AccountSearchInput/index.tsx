@@ -81,7 +81,6 @@ function useSearchAccount(searchKeyword?: string) {
       const lKeyword = debouncedSearchKeyword.toLowerCase();
 
       result.filteredAccounts = result.accountList.filter((account) => {
-        const lowerAddress = account.address.toLowerCase();
         const aliasName = account.alianName?.toLowerCase();
 
         return aliasName?.includes(lKeyword);
@@ -174,7 +173,7 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
                 filteredAccounts.map((account, idx) => {
                   return (
                     <div
-                      key={`account-search-item-${account.address}-${idx}`}
+                      key={`account-search-item-${account.brandName}-${account.address}-${idx}`}
                       className="account-search-item"
                     >
                       <AddressItem
