@@ -43,7 +43,7 @@ const LOGO_NAME_MAP = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: 'Connected to OneKey',
   [KEYRING_CLASS.MNEMONIC]: 'Manage Seed Phrase ',
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: 'Manage GridPlus',
-  [WALLET_BRAND_TYPES.KEYSTONE]: 'Manage KeyStone',
+  [WALLET_BRAND_TYPES.KEYSTONE]: 'Manage Keystone',
   [WALLET_BRAND_TYPES.AIRGAP]: 'Manage AirGap',
   [WALLET_BRAND_TYPES.COOLWALLET]: 'Manage CoolWallet',
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: 'Manage BitBox02',
