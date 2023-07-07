@@ -82,9 +82,9 @@ function useSearchAccount(searchKeyword?: string) {
 
       result.filteredAccounts = result.accountList.filter((account) => {
         const lowerAddress = account.address.toLowerCase();
-        const aliasName = account.alianName.toLowerCase();
+        const aliasName = account.alianName?.toLowerCase();
 
-        return lowerAddress.includes(lKeyword) || aliasName.includes(lKeyword);
+        return lowerAddress.includes(lKeyword) || aliasName?.includes(lKeyword);
       });
     }
 
