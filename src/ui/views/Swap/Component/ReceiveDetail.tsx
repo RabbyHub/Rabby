@@ -80,9 +80,6 @@ const ReceiveWrapper = styled.div`
   .column {
     display: flex;
     justify-content: space-between;
-    + .column {
-      margin-top: 16px;
-    }
 
     .right {
       font-weight: medium;
@@ -103,7 +100,7 @@ const ReceiveWrapper = styled.div`
   }
 
   .warning {
-    margin: 8px 0;
+    margin-bottom: 8px;
     padding: 8px;
     font-weight: 400;
     font-size: 12px;
@@ -111,37 +108,12 @@ const ReceiveWrapper = styled.div`
     position: relative;
     background: rgba(255, 176, 32, 0.1);
     border-radius: 4px;
-
-    &:after {
-      position: absolute;
-      top: -8px;
-      right: 4px;
-      /* transform: translateX(-50%); */
-      content: '';
-      width: 0;
-      height: 0;
-      border-width: 0 4px 8px 4px;
-      border-color: transparent transparent rgba(255, 176, 32, 0.1) transparent;
-      border-style: solid;
-    }
-
-    &.rate:after {
-      right: 44px;
-    }
   }
 
   .footer {
     position: relative;
-    &::after {
-      position: absolute;
-      content: '';
-      width: 312px;
-      height: 0;
-      border-top: 0.5px solid #e5e9ef;
-      left: 50%;
-      top: -8px;
-      transform: translate(-50%, 0);
-    }
+    border-top: 0.5px solid #e5e9ef;
+    padding-top: 8px;
   }
   .quote-provider {
     position: absolute;
@@ -362,7 +334,7 @@ export const ReceiveDetails = (
           Selected offer differs greatly from current rate, may cause big losses
         </div>
       )}
-      <div className="column mt-8 footer">
+      <div className="column footer">
         <span className="rate">Rate</span>
         <div className="right">
           <SkeletonChildren

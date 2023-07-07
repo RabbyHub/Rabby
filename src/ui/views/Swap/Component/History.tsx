@@ -183,7 +183,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         </div>
 
         <div className="flex items-center text-12 text-gray-content pt-10 border-t border-solid border-gray-divider">
-          <span onClick={gotoScan}>
+          <span className="cursor-pointer" onClick={gotoScan}>
             {chainName}:{' '}
             <span className="underline underline-gray-content">
               {ellipsis(txId)}

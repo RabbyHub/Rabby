@@ -31,6 +31,9 @@ export const SlippageItem = styled.div<{
   font-size: 12px;
   background: #f5f6fa;
   border-radius: 4px;
+  &:hover {
+    background: rgba(134, 151, 255, 0.2);
+  }
 `;
 
 const SLIPPAGE = ['0.1', '0.3', '0.5'];
