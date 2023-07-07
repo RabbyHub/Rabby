@@ -31,7 +31,10 @@ import buildinProvider, {
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import keyring, {
+  KEYRING_CLASS,
+  DisplayedKeryring,
+} from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -2291,42 +2294,57 @@ export class WalletController extends BaseController {
     }
   };
 
-  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+  submitQRHardwareCryptoHDKey = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
+
     keyring.readKeyring();
     await keyring.submitCryptoHDKey(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
-  submitQRHardwareCryptoAccount = async (cbor: string) => {
+  submitQRHardwareCryptoAccount = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
     keyring.readKeyring();
     await keyring.submitCryptoAccount(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
   submitQRHardwareSignature = async (
@@ -2996,6 +3014,42 @@ export class WalletController extends BaseController {
       securityEngineService.enableRule(id);
     } else {
       securityEngineService.disableRule(id);
+    }
+  };
+
+  initQRHardware = async (brand: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = this.addKeyringToStash(keyring);
+    }
+
+    await keyring.setCurrentBrand(brand);
+    return stashKeyringId;
+  };
+
+  checkQRHardwareAllowImport = async (brand: string) => {
+    try {
+      const keyring = this._getKeyringByType(KEYRING_CLASS.QRCODE);
+
+      if (!keyring) {
+        return {
+          allowed: true,
+        };
+      }
+
+      return keyring.checkAllowImport(brand);
+    } catch (e) {
+      return {
+        allowed: true,
+      };
     }
   };
 }

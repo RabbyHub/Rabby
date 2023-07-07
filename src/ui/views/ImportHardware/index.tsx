@@ -41,6 +41,7 @@ const ImportHardware = () => {
   const { t } = useTranslation();
   const query = new URLSearchParams(history.location.search);
   const connectType = query.get('connectType');
+  const brand = query.get('brand');
   const navSelectAddress = async (hardware) => {
     if (hardware === 'LEDGER') {
       history.push(
@@ -52,12 +53,17 @@ const ImportHardware = () => {
     }
 
     try {
+      let search = `?hd=${KEYRING_CLASS.HARDWARE[hardware]}`;
+      if (brand) {
+        search += `&brand=${brand}`;
+      }
       history.push({
         pathname: '/import/select-address',
         state: {
           keyring: KEYRING_CLASS.HARDWARE[hardware],
+          brand,
         },
-        search: `?hd=${KEYRING_CLASS.HARDWARE[hardware]}`,
+        search,
       });
     } catch (err) {
       console.log('connect error', err);

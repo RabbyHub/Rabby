@@ -221,7 +221,7 @@ class NotificationService extends Events {
       }
 
       const approval: Approval = {
-        taskId: uuid,
+        taskId: uuid as any,
         id: uuid,
         signingTxId,
         data,
