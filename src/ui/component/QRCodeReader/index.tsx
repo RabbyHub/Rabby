@@ -28,12 +28,12 @@ const QRCodeReader = ({
   const checkCameraPermission = async () => {
     const devices = await window.navigator.mediaDevices.enumerateDevices();
     const webcams = devices.filter((device) => device.kind === 'videoinput');
-    const hasWebcamPermissions = webcams.some(
-      (webcam) => webcam.label && webcam.label.length > 0
-    );
-    if (!hasWebcamPermissions) {
-      openInternalPageInTab('request-permission?type=camera');
-    }
+    // const hasWebcamPermissions = webcams.some(
+    //   (webcam) => webcam.label && webcam.label.length > 0
+    // );
+    // if (!hasWebcamPermissions) {
+    //   openInternalPageInTab('request-permission?type=camera');
+    // }
   };
   useEffect(() => {
     checkCameraPermission();
