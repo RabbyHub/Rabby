@@ -6,6 +6,7 @@ import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import IconSearch from 'ui/assets/search.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
@@ -19,11 +20,46 @@ import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
 
 import { groupBy } from 'lodash';
 import { KEYRING_CLASS } from '@/constant';
-import { Tooltip } from 'antd';
+import { Input, Tooltip } from 'antd';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import LessPalette from '@/ui/style/var-defs';
+
+function NoAddressUI() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="no-address">
+      <img
+        className="no-data-image"
+        src="/images/nodata-address.png"
+        alt="no address"
+      />
+      <p className="text-gray-content text-14">{t('NoAddress')}</p>
+    </div>
+  );
+}
+
+function NoSearchedAddressUI() {
+  return (
+    <div className="no-matched-address">
+      <img
+        className="no-data-image w-[52px] h-[52px]"
+        src="/images/no-matched-addr.svg"
+        alt="no address"
+      />
+      <p
+        className="text-14 mt-[24px]"
+        style={{ color: LessPalette['@color-body'] }}
+      >
+        No match
+      </p>
+    </div>
+  );
+}
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -76,14 +112,43 @@ const AddressManagement = () => {
     ];
   }, [accountsList, highlightedAddresses]);
 
-  const accountList = useMemo(
-    () => [...(sortedAccountsList || []), ...(watchSortedAccountsList || [])],
-    [sortedAccountsList, watchSortedAccountsList]
-  );
+  const [searchKeyword, setSearchKeyword] = React.useState('');
+  const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
 
-  const noAccount = useMemo(() => {
-    return accountList.length <= 0 && !loadingAccounts;
-  }, [accountList, loadingAccounts]);
+  const {
+    accountList,
+    filteredAccounts,
+    noAnyAccount,
+    noAnySearchedAccount,
+  } = useMemo(() => {
+    const result = {
+      accountList: [
+        ...(sortedAccountsList || []),
+        ...(watchSortedAccountsList || []),
+      ],
+      filteredAccounts: [] as typeof sortedAccountsList,
+      noAnyAccount: false,
+      noAnySearchedAccount: false,
+    };
+    result.filteredAccounts = [...result.accountList];
+
+    if (debouncedSearchKeyword) {
+      const lKeyword = debouncedSearchKeyword.toLowerCase();
+
+      result.filteredAccounts = result.accountList.filter((account) => {
+        const lowerAddress = account.address.toLowerCase();
+        const aliasName = account.alianName?.toLowerCase();
+
+        return lowerAddress === lKeyword || aliasName?.includes(lKeyword);
+      });
+    }
+
+    result.noAnyAccount = result.accountList.length <= 0 && !loadingAccounts;
+    result.noAnySearchedAccount =
+      result.filteredAccounts.length <= 0 && !loadingAccounts;
+
+    return result;
+  }, [sortedAccountsList, watchSortedAccountsList, debouncedSearchKeyword]);
 
   const dispatch = useRabbyDispatch();
 
@@ -102,17 +167,6 @@ const AddressManagement = () => {
     //   message.error('Update balance failed');
     // },
   });
-
-  const NoAddressUI = (
-    <div className="no-address">
-      <img
-        className="no-data-image"
-        src="/images/nodata-address.png"
-        alt="no address"
-      />
-      <p className="text-gray-content text-14">{t('NoAddress')}</p>
-    </div>
-  );
 
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
 
@@ -291,7 +345,16 @@ const AddressManagement = () => {
             </AddressItem>
           </div>
           <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
-            <div>Switch Address</div>
+            <div className="search-address-wrapper">
+              <Input
+                className="radius-6px"
+                placeholder="Search"
+                prefix={<img src={IconSearch} />}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                value={searchKeyword}
+                allowClear
+              />
+            </div>
             <div
               className="flex items-center cursor-pointer"
               onClick={gotoManageAddress}
@@ -302,23 +365,23 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      {noAccount ? (
-        NoAddressUI
+      {noAnyAccount ? (
+        <NoAddressUI />
+      ) : noAnySearchedAccount ? (
+        <NoSearchedAddressUI />
       ) : (
-        <>
-          <div className={'address-group-list management'}>
-            <VList
-              height={hasStatusBar ? 450 : 500}
-              width="100%"
-              itemData={accountList}
-              itemCount={accountList.length}
-              itemSize={(i) => (i !== sortedAccountsList.length - 1 ? 64 : 78)}
-              className="scroll-container"
-            >
-              {Row}
-            </VList>
-          </div>
-        </>
+        <div className={'address-group-list management'}>
+          <VList
+            height={hasStatusBar ? 450 : 500}
+            width="100%"
+            itemData={filteredAccounts}
+            itemCount={filteredAccounts.length}
+            itemSize={(i) => (i !== sortedAccountsList.length - 1 ? 64 : 78)}
+            className="scroll-container"
+          >
+            {Row}
+          </VList>
+        </div>
       )}
     </div>
   );

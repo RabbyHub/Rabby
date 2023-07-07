@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Input } from 'antd';
 import uniqBy from 'lodash/uniqBy';
 import { TokenItem } from 'background/service/openapi';
@@ -50,9 +56,12 @@ const TokenAmountInput = ({
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
 
-  if (amountFocus && !tokenSelectorVisible) {
-    tokenInputRef.current?.focus();
-  }
+  useLayoutEffect(() => {
+    if (amountFocus && !tokenSelectorVisible) {
+      tokenInputRef.current?.focus();
+    }
+  }, [amountFocus, tokenSelectorVisible]);
+
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);

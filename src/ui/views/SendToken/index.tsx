@@ -46,6 +46,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import LessPalette from '@/ui/style/var-defs';
@@ -105,7 +106,6 @@ const SendToken = () => {
   const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
-  const [amountFocus, setAmountFocus] = useState(false);
   const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
@@ -362,7 +362,6 @@ const SendToken = () => {
     setShowListContactModal(false);
     setShowEditContactModal(false);
     setContactInfo(account);
-    setAmountFocus(true);
     const values = form.getFieldsValue();
     const to = account ? account.address : '';
     if (!account) return;
@@ -833,7 +832,7 @@ const SendToken = () => {
                     validator(_, value) {
                       if (!value) return Promise.resolve();
                       if (value && isValidAddress(value)) {
-                        setAmountFocus(true);
+                        // setAmountFocus(true);
                         return Promise.resolve();
                       }
                       return Promise.reject(
@@ -843,11 +842,19 @@ const SendToken = () => {
                   },
                 ]}
               >
-                <Input
-                  placeholder={t('Enter the address')}
+                <AccountSearchInput
+                  placeholder={'Enter address or search'}
                   autoComplete="off"
                   autoFocus
                   spellCheck={false}
+                  onSelectedAccount={(account) => {
+                    const nextVals = {
+                      ...form.getFieldsValue(),
+                      to: account.address,
+                    };
+                    handleFormValuesChange({ to: nextVals.to }, nextVals);
+                    form.setFieldsValue(nextVals);
+                  }}
                 />
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
@@ -919,7 +926,6 @@ const SendToken = () => {
                   token={currentToken}
                   onTokenChange={handleCurrentTokenChange}
                   chainId={chainItem.serverId}
-                  amountFocus={amountFocus}
                   excludeTokens={[]}
                   inlinePrize
                 />
@@ -1022,7 +1028,6 @@ const SendToken = () => {
         onClose={handleGasSelectorClose}
         chainId={chainItem?.id || CHAINS.ETH.id}
         onChange={(val) => {
-          setAmountFocus(false);
           setGasSelectorVisible(false);
           handleGasChange(val);
         }}

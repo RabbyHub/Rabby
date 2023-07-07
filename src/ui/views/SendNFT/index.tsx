@@ -35,6 +35,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { findChainByEnum } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalConfirmAddToContacts';
 import LessPalette from '@/ui/style/var-defs';
@@ -452,10 +453,24 @@ const SendNFT = () => {
                     },
                   ]}
                 >
-                  <Input
-                    placeholder={t('Enter the address')}
+                  <AccountSearchInput
+                    placeholder={'Enter address or search'}
                     autoComplete="off"
                     autoFocus
+                    spellCheck={false}
+                    onSelectedAccount={(account) => {
+                      const nextVals = {
+                        ...form.getFieldsValue(),
+                        to: account.address,
+                      };
+                      form.setFieldsValue(nextVals);
+                      handleFormValuesChange(
+                        {
+                          to: nextVals.to,
+                        },
+                        nextVals
+                      );
+                    }}
                   />
                 </Form.Item>
                 {toAddressIsValid && !toAddressInContactBook && (
