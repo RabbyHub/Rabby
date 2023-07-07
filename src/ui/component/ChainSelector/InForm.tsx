@@ -1,14 +1,16 @@
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import React, { InsHTMLAttributes, useEffect } from 'react';
+import clsx from 'clsx';
+import { CHAINS, CHAINS_ENUM } from '@debank/common';
+
 import { useState } from 'react';
 import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
-import Modal from '@/ui/component/ChainSelector/Modal';
+import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
+import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
 import styled from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
 import ImgArrowDown from '@/ui/assets/swap/arrow-down.svg';
 import { useWallet } from '@/ui/utils';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
-import clsx from 'clsx';
 
 const ChainWrapper = styled.div`
   height: 40px;
@@ -123,7 +125,7 @@ export default function ChainSelectorInForm({
         readonly={readonly}
       />
       {!readonly && (
-        <Modal
+        <ChainSelectorModal
           value={value}
           visible={showSelectorModal}
           onChange={handleChange}

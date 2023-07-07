@@ -23,6 +23,8 @@ import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useSwapSettings } from './settings';
+import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const useTokenInfo = ({
   userAddress,
@@ -87,16 +89,28 @@ export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
 
-  const oChain = useRabbySelector(
-    (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
-  );
+  const { initialSelectedChain, oChain } = useRabbySelector((state) => {
+    return {
+      initialSelectedChain: state.swap.$$initialSelectedChain,
+      oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
+    };
+  });
   const [chain, setChain] = useState(oChain);
-
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
     dispatch.swap.setSelectedChain(c);
     // resetSwapTokens(c);
   };
+  useAsyncInitializeChainList({
+    // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
+    supportChains: SWAP_SUPPORT_CHAINS,
+    onChainInitializedAsync: (firstEnum) => {
+      // only init chain if it's not cached before
+      if (!initialSelectedChain) {
+        handleChain(firstEnum);
+      }
+    },
+  });
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -374,7 +388,7 @@ export const useTokenPair = (userAddress: string) => {
     chain?: string;
   }>(query2obj(search));
 
-  useMemo(() => {
+  useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
       const target = Object.values(CHAINS).find(
         (item) => item.serverId === searchObj.chain

@@ -44,7 +44,11 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import {
+  findChainByEnum,
+  findChainByServerID,
+  makeTokenFromChain,
+} from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
@@ -60,7 +64,9 @@ const MaxButton = styled.img`
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+
   const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const { t } = useTranslation();
   const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
@@ -619,9 +625,21 @@ const SendToken = () => {
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
+      let tokenFromOrder: TokenItem | null = null;
+
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) setCurrentToken(lastTimeToken);
-      let needLoadToken: TokenItem = lastTimeToken || currentToken;
+      if (lastTimeToken) {
+        setCurrentToken(lastTimeToken);
+      } else {
+        const { firstChain } = await dispatch.chains.getOrderedChainList({
+          supportChains: undefined,
+        });
+        tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
+        if (firstChain) setCurrentToken(tokenFromOrder!);
+      }
+
+      let needLoadToken: TokenItem =
+        lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
         if (cache?.path === history.location.pathname) {

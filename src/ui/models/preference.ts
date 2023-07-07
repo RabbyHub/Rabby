@@ -61,9 +61,13 @@ export const preference = createModel<RootModel>()({
         this.setField({
           [key]: value,
         });
+
+        return value as PreferenceState[typeof key];
       } else {
         this.setField(value);
       }
+
+      return value as PreferenceState;
     },
     async getIsDefaultWallet(_?, store?) {
       const isDefaultWallet = await store.app.wallet.isDefaultWallet();

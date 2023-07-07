@@ -1,15 +1,12 @@
 import { createModel } from '@rematch/core';
 
 import { ConnectedSite } from '@/background/service/permission';
-import Safe from '@rabby-wallet/gnosis-sdk';
-import type { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
-
-import { crossCompareOwners } from '../utils/gnosis';
 
 import { RootModel } from '.';
-import { CHAINS, KEYRING_CLASS } from '@/constant';
+import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import { RabbyRootState } from '../store';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import type { AccountState } from './account';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
@@ -60,4 +57,42 @@ export const chains = createModel<RootModel>()({
       },
     };
   },
+  effects: (dispatch) => ({
+    /**
+     * @description get all chains current account could access, vary them and sort them
+     */
+    async getOrderedChainList(
+      opts: {
+        supportChains?: CHAINS_ENUM[];
+      },
+      store
+    ) {
+      const { supportChains } = opts || {};
+      const { pinned, matteredChainBalances } = await Promise.allSettled([
+        dispatch.preference.getPreference('pinnedChain'),
+        dispatch.account.getMatteredChainBalance(),
+      ]).then(([pinnedChain, balance]) => {
+        return {
+          pinned: (pinnedChain.status === 'fulfilled'
+            ? pinnedChain.value
+            : []) as CHAINS_ENUM[],
+          matteredChainBalances: (balance.status === 'fulfilled'
+            ? balance.value
+            : {}) as AccountState['matteredChainBalances'],
+        };
+      });
+
+      const { matteredList, unmatteredList } = varyAndSortChainItems({
+        supportChains,
+        pinned,
+        matteredChainBalances,
+      });
+
+      return {
+        matteredList,
+        unmatteredList,
+        firstChain: matteredList[0],
+      };
+    },
+  }),
 });
