@@ -3,8 +3,10 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet, openInTab } from 'ui/utils';
 import { Modal } from 'ui/component';
-import { wrapModalPromise } from 'ui/component/AuthenticationModal';
-import { WalletController } from 'background/controller/wallet';
+import {
+  WrappedComponentProps,
+  wrapModalPromise,
+} from 'ui/component/Modal/WrapPromise';
 import { query2obj, obj2query } from 'ui/utils/url';
 
 const ConfirmOpenExternalModal = ({
@@ -12,12 +14,9 @@ const ConfirmOpenExternalModal = ({
   onCancel,
   origin = 'https://debank.com',
   wallet,
-}: {
-  onFinished(): void;
-  onCancel(): void;
-  wallet: WalletController;
+}: WrappedComponentProps<{
   origin?: string;
-}) => {
+}>) => {
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
 
