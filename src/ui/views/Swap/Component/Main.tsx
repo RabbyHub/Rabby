@@ -267,7 +267,7 @@ export const Main = () => {
           : 'pb-[110px]'
       )}
     >
-      <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-16 mx-20')}>
+      <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-10 mx-20')}>
         <div className={clsx(tipsClassName)}>Chain</div>
         <ChainSelectorInForm
           value={chain}
