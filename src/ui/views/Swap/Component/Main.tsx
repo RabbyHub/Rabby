@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -108,6 +108,14 @@ export const Main = () => {
     expired,
   } = useTokenPair(userAddress);
 
+  const inputRef = useRef<Input>();
+
+  useLayoutEffect(() => {
+    if ((payToken?.id, receiveToken?.id)) {
+      inputRef.current?.focus();
+    }
+  }, [payToken?.id, receiveToken?.id]);
+
   const miniReceivedAmount = useMemo(() => {
     if (activeProvider?.quote?.toTokenAmount) {
       const receivedTokeAmountBn = new BigNumber(
@@ -131,8 +139,6 @@ export const Main = () => {
     receiveToken?.decimals,
     slippage,
   ]);
-
-  const active = false;
 
   const DexDisplayName = useMemo(
     () => DEX?.[activeProvider?.name as keyof typeof DEX]?.name || '',
@@ -170,8 +176,8 @@ export const Main = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  const gotoSwap = async () => {
-    if (!inSufficient && payToken && activeProvider?.quote) {
+  const gotoSwap = useCallback(async () => {
+    if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
       try {
         wallet.dexSwap(
           {
@@ -185,6 +191,24 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: unlimitedAllowance,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            postSwapParams: {
+              quote: {
+                pay_token_id: payToken.id,
+                pay_token_amount: Number(payAmount),
+                receive_token_id: receiveToken!.id,
+                receive_token_amount: new BigNumber(
+                  activeProvider?.quote.toTokenAmount
+                )
+                  .div(
+                    10 **
+                      (activeProvider?.quote.toTokenDecimals ||
+                        receiveToken.decimals)
+                  )
+                  .toNumber(),
+                slippage: new BigNumber(slippage).div(100).toNumber(),
+              },
+              dex_id: activeProvider?.name.replace('API', ''),
+            },
           },
           {
             ga: {
@@ -199,7 +223,16 @@ export const Main = () => {
         console.error(error);
       }
     }
-  };
+  }, [
+    inSufficient,
+    payToken,
+    unlimitedAllowance,
+    activeProvider?.quote,
+    wallet?.dexSwap,
+    activeProvider?.shouldApproveToken,
+    activeProvider?.name,
+    activeProvider?.shouldTwoStepApprove,
+  ]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -231,7 +264,7 @@ export const Main = () => {
           ? ''
           : activeProvider?.shouldApproveToken
           ? 'pb-[130px]'
-          : 'pb-[120px]'
+          : 'pb-[110px]'
       )}
     >
       <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-16 mx-20')}>
@@ -311,6 +344,7 @@ export const Main = () => {
           placeholder="0"
           value={payAmount}
           onChange={handleAmountChange}
+          ref={inputRef as any}
           suffix={
             <span className="text-gray-content text-12">
               {payAmount
@@ -347,14 +381,9 @@ export const Main = () => {
                 </div>
               ) : (
                 <div className="section text-12 text-gray-subTitle mt-12">
-                  <div className="subText flex flex-col gap-8">
-                    <div className="flex">
-                      <span>Slippage tolerance: </span>
-                      <span className="font-medium text-gray-title">
-                        {slippage}%
-                      </span>
-                    </div>
+                  <div className="subText flex flex-col gap-12">
                     <Slippage
+                      displaySlippage={slippage}
                       value={slippageState}
                       onChange={(e) => {
                         setSlippageChanged(true);
@@ -366,13 +395,16 @@ export const Main = () => {
                           : slippageValidInfo?.suggest_slippage
                       }
                     />
-
-                    <div>
-                      <span>Minimum received: </span>
+                    <div className="flex justify-between">
+                      <span>Minimum received</span>
                       <span className="font-medium text-gray-title">
                         {miniReceivedAmount}{' '}
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Rabby fee</span>
+                      <span className="font-medium text-gray-title">0%</span>
                     </div>
                   </div>
                 </div>
@@ -412,7 +444,6 @@ export const Main = () => {
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
           'bg-white border border-gray-divider',
-          active ? 'opacity-40' : '',
           activeProvider && activeProvider.shouldApproveToken && 'pt-16'
         )}
       >

@@ -90,6 +90,7 @@ import { AbiItem, isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -398,6 +399,7 @@ export class WalletController extends BaseController {
       unlimited,
       gasPrice,
       shouldTwoStepApprove,
+      postSwapParams,
     }: {
       chain: CHAINS_ENUM;
       quote: QuoteResult;
@@ -407,6 +409,11 @@ export class WalletController extends BaseController {
       unlimited: boolean;
       gasPrice?: number;
       shouldTwoStepApprove: boolean;
+
+      postSwapParams?: Omit<
+        Parameters<OpenApiService['postSwap']>[0],
+        'tx_id' | 'tx'
+      >;
     },
     $ctx?: any
   ) => {
@@ -453,6 +460,10 @@ export class WalletController extends BaseController {
           { isSwap: true }
         );
         unTriggerTxCounter.decrease();
+      }
+
+      if (postSwapParams) {
+        swapService.addTx(chain, quote.tx.data, postSwapParams);
       }
       await this.sendRequest({
         $ctx:

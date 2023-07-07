@@ -421,6 +421,7 @@ export const DexQuoteItem = (
       actualReceiveAmount:
         preExecResult?.swapPreExecTx.balance_change.receive_token_list[0]
           ?.amount || '',
+      gasUsd: preExecResult?.gasUsd,
     });
 
     openSwapQuote(false);
@@ -451,6 +452,7 @@ export const DexQuoteItem = (
           actualReceiveAmount:
             preExecResult?.swapPreExecTx.balance_change.receive_token_list[0]
               ?.amount || '',
+          gasUsed: preExecResult?.gasUsd,
         }));
       }
     },
