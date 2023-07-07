@@ -608,14 +608,18 @@ const SendToken = () => {
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
-      const { firstChain } = await dispatch.chains.getOrderedChainList({
-        supportChains: undefined,
-      });
-      const tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
+      let tokenFromOrder: TokenItem | null = null;
 
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) setCurrentToken(lastTimeToken);
-      else if (firstChain) setCurrentToken(tokenFromOrder!);
+      if (lastTimeToken) {
+        setCurrentToken(lastTimeToken);
+      } else {
+        const { firstChain } = await dispatch.chains.getOrderedChainList({
+          supportChains: undefined,
+        });
+        tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
+        if (firstChain) setCurrentToken(tokenFromOrder!);
+      }
 
       let needLoadToken: TokenItem =
         lastTimeToken || tokenFromOrder || currentToken;
