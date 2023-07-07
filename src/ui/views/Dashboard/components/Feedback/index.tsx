@@ -43,7 +43,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       onClose={onClose}
       height={230}
       bodyStyle={{ height: '100%', padding: '20px' }}
-      closable={true}
+      closable={false}
       className="dashboard-feedback-popup"
     >
       <div className="popup-feedback">

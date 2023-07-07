@@ -121,4 +121,41 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     super.removeAccount(address);
     delete this.brandsMap[address.toLowerCase()];
   };
+
+  getCurrentAccounts = async () => {
+    const addrs = await this.getAccounts();
+
+    return addrs.map((address) => {
+      const checksummedAddress = toChecksumAddress(address);
+
+      return {
+        address,
+        index: this.indexes[checksummedAddress] + 1,
+      };
+    });
+  };
+
+  isReady = async () => {
+    return this.initialized;
+  };
+
+  getCurrentBrand = async () => {
+    return this.currentBrand;
+  };
+
+  checkAllowImport = async (brand: string) => {
+    const [account] = await this.getAccountsWithBrand();
+
+    if (!account) {
+      await this.forgetDevice();
+      return {
+        allowed: true,
+      };
+    }
+
+    return {
+      brand: account.brandName,
+      allowed: account.brandName === brand,
+    };
+  };
 }

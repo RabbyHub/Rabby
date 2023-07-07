@@ -22,7 +22,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
       if (ur.type === 'eth-signature') {
         const ethSignature = ETHSignature.fromCBOR(ur.cbor);
         const buffer = ethSignature.getRequestId();
-        const signId = uuid.stringify(buffer);
+        const signId = uuid.stringify(buffer as any);
         if (signId === requestId) {
           onScan(ur.cbor.toString('hex'));
           // return await wallet.submitQRHardwareSignature(

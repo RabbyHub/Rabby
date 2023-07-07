@@ -57,6 +57,7 @@ import { PreferMetamaskDapps } from './PreferMetamaskDapps';
 import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
+import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 
 declare global {
   interface Window {
@@ -157,6 +158,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/qrcode">
+          <QRCodeConnect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />

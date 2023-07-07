@@ -3415,10 +3415,10 @@
     ethereumjs-util "^7.0.9"
     ethereumjs-wallet "^1.0.1"
 
-"@rabby-wallet/eth-lattice-keyring@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.0.4.tgz#73d1f24c30fc6118ee3c87e1a6e829347dae1d14"
-  integrity sha512-ZU5Q2oKFircYXGL6ewysSd3bxc1oHMfGx9FQEhmzMSpgUrOBLMTjYI9xM9xgzcUbHYw6VaX2slsmfcbxfseznA==
+"@rabby-wallet/eth-lattice-keyring@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.0.5.tgz#0615321963bbb88b5b2fb29534e027a662078227"
+  integrity sha512-SJSZVIf+8x7d3uWBOd4k+iCCzIfKEIAZaHP6P9dSe3lOPqrHMGqB0szo5c7CsW5n0w8t+cva2Dy/YKK42OBQMQ==
   dependencies:
     "@ethereumjs/common" "2.4.0"
     "@ethereumjs/tx" "3.3.0"
@@ -3554,10 +3554,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.22.tgz#dffddf286829829d02fea3b907447d58757b627c"
-  integrity sha512-gZvjQU+1EmCohH6ijiKdbh9vt4MfbUIVc105p/4NMPGMQ7eIKkUG7qj791xTIFEauV7pKtnwYzXhBXhYnSpwQw==
+"@rabby-wallet/rabby-swap@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.24.tgz#af3d84056b5b532e4872bc80fcd915dc74e0bc66"
+  integrity sha512-NFwkSzr/aLfcgBMtjMaeADUpAsYdRDhQl3msSmH0kvH7se6h6fUaBDfgfQzUQe8MvUF36GHz/PxyWFT2Bl4mqQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
