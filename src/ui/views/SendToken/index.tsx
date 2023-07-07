@@ -103,7 +103,6 @@ const SendToken = () => {
   const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
-  const [amountFocus, setAmountFocus] = useState(false);
   const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
@@ -344,7 +343,6 @@ const SendToken = () => {
     setShowListContactModal(false);
     setShowEditContactModal(false);
     setContactInfo(account);
-    setAmountFocus(true);
     const values = form.getFieldsValue();
     const to = account ? account.address : '';
     if (!account) return;
@@ -793,7 +791,7 @@ const SendToken = () => {
                     validator(_, value) {
                       if (!value) return Promise.resolve();
                       if (value && isValidAddress(value)) {
-                        setAmountFocus(true);
+                        // setAmountFocus(true);
                         return Promise.resolve();
                       }
                       return Promise.reject(
@@ -815,7 +813,6 @@ const SendToken = () => {
                     };
                     handleFormValuesChange({ to: nextVals.to }, nextVals);
                     form.setFieldsValue(nextVals);
-                    setAmountFocus(true);
                   }}
                 />
               </Form.Item>
@@ -876,7 +873,6 @@ const SendToken = () => {
                   token={currentToken}
                   onTokenChange={handleCurrentTokenChange}
                   chainId={chainItem.serverId}
-                  amountFocus={amountFocus}
                   excludeTokens={[]}
                   inlinePrize
                 />
@@ -979,7 +975,6 @@ const SendToken = () => {
         onClose={handleGasSelectorClose}
         chainId={chainItem?.id || CHAINS.ETH.id}
         onChange={(val) => {
-          setAmountFocus(false);
           setGasSelectorVisible(false);
           handleGasChange(val);
         }}
