@@ -23,7 +23,7 @@ export const QRCodeConnect = () => {
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
-  const [scan, setScan] = useState(true);
+  const [scan, setScan] = useState(false);
   const { search } = useLocation();
   const brand = new URLSearchParams(search).get('brand');
   const stashKeyringIdRef = useRef<number | null>(null);
@@ -123,6 +123,7 @@ export const QRCodeConnect = () => {
           if (res) {
             goToSelectAddress(stashKeyringId);
           }
+          setScan(true);
         });
     });
     return () => {
