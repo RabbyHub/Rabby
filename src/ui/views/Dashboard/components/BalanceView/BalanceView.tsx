@@ -141,7 +141,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const currentChangePercent = currentHover
     ? curvePoint?.changePercent || curveData?.changePercent
     : curveData?.changePercent;
-  const currentIsLoss = curvePoint ? curvePoint.isLoss : curveData?.isLoss;
+  const currentIsLoss =
+    currentHover && curvePoint ? curvePoint.isLoss : curveData?.isLoss;
   const currentChangeValue = currentHover ? curvePoint?.change : null;
 
   return (
@@ -167,18 +168,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             )}
           </div>
           <div
-            className={clsx(' mb-6 group-hover:block', {
-              'block animate-spin': startRefresh,
-              hidden: !startRefresh,
-            })}
-          >
-            <UpdateSVG />
-          </div>
-          <div
             className={clsx(
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
               'text-15 font-normal mb-[5px]',
-              'group-hover:hidden',
               {
                 hidden: !currentChangePercent || balanceLoading,
               }
@@ -189,6 +181,14 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             {currentChangeValue ? (
               <span className="ml-4">({currentChangeValue})</span>
             ) : null}
+          </div>
+          <div
+            className={clsx(' mb-6 group-hover:block', {
+              'block animate-spin': startRefresh,
+              hidden: !startRefresh,
+            })}
+          >
+            <UpdateSVG />
           </div>
         </div>
         <div
