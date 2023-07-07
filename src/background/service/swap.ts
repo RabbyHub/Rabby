@@ -154,7 +154,6 @@ class SwapService {
     quoteInfo: Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
   ) => {
     this.txQuotes[`${chain}-${data}`] = quoteInfo;
-    console.log('addTx', this.txQuotes);
   };
 
   postSwap = (
@@ -166,7 +165,7 @@ class SwapService {
     const { txQuotes } = this;
     const key = `${chain}-${tx.data}`;
     const quoteInfo = txQuotes[key];
-    if (tx) {
+    if (quoteInfo) {
       delete txQuotes[key];
       return postSwap({
         ...quoteInfo,
