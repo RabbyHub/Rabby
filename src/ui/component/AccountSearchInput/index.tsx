@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, InputProps, Popover } from 'antd';
 import { groupBy } from 'lodash';
+import { useClickAway } from 'react-use';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { KEYRING_CLASS } from '@/constant';
@@ -149,21 +150,34 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
       searchKeyword
     );
 
+    const [inputFocusing, setInputFocusing] = useState(false);
+
     const isInputAddrLike = useMemo(() => {
       return searchKeyword?.startsWith('0x');
     }, [searchKeyword]);
 
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useClickAway(wrapperRef, (event: MouseEvent) => {
+      const targetEl = event.target as HTMLElement;
+      const inComponent = wrapperRef.current?.contains(targetEl);
+      if (!inComponent) {
+        setInputFocusing(false);
+      }
+    });
+
     return (
-      <div className="account-search-input-wrapper">
+      <div ref={wrapperRef} className="account-search-input-wrapper">
         <Popover
           trigger={['none']}
-          visible={!!searchKeyword && !isInputAddrLike}
+          visible={!!searchKeyword && !isInputAddrLike && inputFocusing}
           placement="bottom"
           className="account-search-popover-input"
           overlayClassName="account-search-input-overlay"
           align={{
             targetOffset: [0, 10],
           }}
+          getPopupContainer={() => wrapperRef.current || document.body}
           destroyTooltipOnHide
           content={
             <div className="account-search-input-results">
@@ -201,6 +215,10 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
             ref={ref}
             value={searchKeyword}
             onChange={onChange}
+            onFocus={(e) => {
+              setInputFocusing(true);
+              inputProps.onFocus?.(e);
+            }}
           />
         </Popover>
       </div>
