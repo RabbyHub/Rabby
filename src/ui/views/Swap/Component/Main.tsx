@@ -380,7 +380,7 @@ export const Main = () => {
                   There is no fee and slippage for this trade
                 </div>
               ) : (
-                <div className="section text-13 text-gray-subTitle mt-12">
+                <div className="section text-13 leading-4 text-gray-subTitle mt-12">
                   <div className="subText flex flex-col gap-12">
                     <Slippage
                       displaySlippage={slippage}
