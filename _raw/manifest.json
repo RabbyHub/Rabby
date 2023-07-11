@@ -53,6 +53,5 @@
     "activeTab",
     "notifications",
     "contextMenus"
-  ],
-  "web_accessible_resources": ["user-media-permission.html"]
+  ]
 }
