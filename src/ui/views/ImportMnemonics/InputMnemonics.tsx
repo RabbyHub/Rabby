@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Button, Form, FormInstance, Input } from 'antd';
+import { Button, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import clsx from 'clsx';
+import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
+import { clearClipboard } from '@/ui/utils/clipboard';
 import LessPalette from '@/ui/style/var-defs';
 import { connectStore, useRabbyDispatch } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
@@ -84,6 +85,7 @@ const ImportMnemonics = () => {
     {
       onSuccess() {
         setErrMsgs([]);
+        clearClipboard();
         history.push({
           pathname: '/import/select-address',
           state: {

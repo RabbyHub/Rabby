@@ -51,3 +51,7 @@ export async function copyAddress(address: string) {
     ),
   });
 }
+
+export const clearClipboard = async () => {
+  await copyTextToClipboard('');
+};
