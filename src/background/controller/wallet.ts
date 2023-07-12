@@ -1284,7 +1284,7 @@ export class WalletController extends BaseController {
     ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
-  syncGnosisNetworks = () => {
+  syncAllGnosisNetworks = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
@@ -1300,7 +1300,7 @@ export class WalletController extends BaseController {
     );
   };
 
-  syncGnosisNetwork = async (address: string) => {
+  syncGnosisNetworks = async (address: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;

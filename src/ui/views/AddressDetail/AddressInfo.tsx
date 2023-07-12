@@ -109,7 +109,7 @@ const GnonisSafeInfo = ({
 
   useEffect(() => {
     if (address) {
-      wallet.syncGnosisNetwork(address);
+      wallet.syncGnosisNetworks(address);
     }
   }, [address]);
 

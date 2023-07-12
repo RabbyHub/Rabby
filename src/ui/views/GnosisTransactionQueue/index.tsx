@@ -104,7 +104,7 @@ const GnosisTransactionQueue = () => {
 
   useEffect(() => {
     if (account?.address) {
-      wallet.syncGnosisNetwork(account?.address);
+      wallet.syncGnosisNetworks(account?.address);
     }
   }, [account?.address]);
 
