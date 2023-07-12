@@ -74,7 +74,7 @@ export const CurveThumbnail = ({
           style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
           onMouseMove={(val) => {
-            if (val.activePayload) {
+            if (val?.activePayload) {
               onHover(val.activePayload[0].payload);
             }
           }}

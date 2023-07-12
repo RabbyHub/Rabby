@@ -148,7 +148,7 @@ export const AssetListContainer: React.FC<Props> = ({
         {isPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
-          <ProtocolList list={filteredPortfolios} />
+          <ProtocolList isSearch={!!search} list={filteredPortfolios} />
         )}
       </div>
     </div>
