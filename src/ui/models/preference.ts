@@ -18,6 +18,7 @@ interface PreferenceState {
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
+  autoLockTime: number;
 }
 
 export const preference = createModel<RootModel>()({
@@ -37,6 +38,7 @@ export const preference = createModel<RootModel>()({
     addedToken: {},
     tokenApprovalChain: {},
     nftApprovalChain: {},
+    autoLockTime: 0,
   } as PreferenceState,
 
   reducers: {
@@ -140,6 +142,14 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.updateChain(chains);
       dispatch.preference.getPreference('pinnedChain');
+    },
+    async setAutoLockTime(time: number, store?) {
+      dispatch.preference.setField({
+        autoLockTime: time,
+      });
+      // todo
+      await store.app.wallet.setAutoLockTime(time);
+      dispatch.preference.getPreference('autoLockTime');
     },
   }),
 });

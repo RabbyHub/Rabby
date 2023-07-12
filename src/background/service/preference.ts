@@ -82,6 +82,10 @@ export interface PreferenceStore {
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
+  /**
+   * auto lock time in minutes
+   */
+  autoLockTime?: number;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -190,6 +194,9 @@ class PreferenceService {
     }
     if (!this.store.collectionStarred) {
       this.store.collectionStarred = [];
+    }
+    if (!this.store.autoLockTime) {
+      this.store.autoLockTime = 0;
     }
   };
 
@@ -610,6 +617,10 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
+  };
+
+  setAutoLockTime = (time: number) => {
+    this.store.autoLockTime = time;
   };
 }
 
