@@ -93,7 +93,7 @@ export const CurveThumbnail = ({
           />
           <YAxis
             hide
-            domain={[(dataMin) => dataMin * 0.98, (dataMax) => dataMax * 1.02]}
+            domain={[(dataMin) => dataMin * 0.98, (dataMax) => dataMax * 1.005]}
           />
           {isHover && (
             <Tooltip
