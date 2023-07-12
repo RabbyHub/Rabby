@@ -23,6 +23,8 @@ import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { useSwapSettings } from './settings';
+import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
+import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const useTokenInfo = ({
   userAddress,
@@ -46,7 +48,7 @@ const useTokenInfo = ({
       );
       return data;
     }
-  }, [refreshId, userAddress, token?.id, chain]);
+  }, [refreshId, userAddress, token?.id, token?.raw_amount_hex_str, chain]);
 
   useDebounce(
     () => {
@@ -78,13 +80,6 @@ export const useSlippage = () => {
   };
 };
 
-const feeTips = {
-  '0.3': () => '0.3% fee for common token',
-  '0.1': () => '0.1% fee for stablecoins',
-  '0': (symbol) =>
-    `0 fee to wrap/unwrap tokens by interacting directly with ${symbol} contracts.`,
-};
-
 export interface FeeProps {
   fee: '0.3' | '0.1' | '0';
   symbol?: string;
@@ -94,16 +89,28 @@ export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
 
-  const oChain = useRabbySelector(
-    (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
-  );
+  const { initialSelectedChain, oChain } = useRabbySelector((state) => {
+    return {
+      initialSelectedChain: state.swap.$$initialSelectedChain,
+      oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
+    };
+  });
   const [chain, setChain] = useState(oChain);
-
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
     dispatch.swap.setSelectedChain(c);
     // resetSwapTokens(c);
   };
+  useAsyncInitializeChainList({
+    // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
+    supportChains: SWAP_SUPPORT_CHAINS,
+    onChainInitializedAsync: (firstEnum) => {
+      // only init chain if it's not cached before
+      if (!initialSelectedChain) {
+        handleChain(firstEnum);
+      }
+    },
+  });
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -117,7 +124,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const [payAmount, setPayAmount] = useState('');
 
-  const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
+  const [feeRate] = useState<FeeProps['fee']>('0');
 
   const {
     slippageChanged,
@@ -238,13 +245,13 @@ export const useTokenPair = (userAddress: string) => {
   );
 
   useEffect(() => {
-    if (isWrapToken) {
-      setFeeRate('0');
-    } else if (isStableCoin) {
-      setFeeRate('0.1');
-    } else {
-      setFeeRate('0.3');
-    }
+    // if (isWrapToken) {
+    //   setFeeRate('0');
+    // } else if (isStableCoin) {
+    //   setFeeRate('0.1');
+    // } else {
+    //   setFeeRate('0.3');
+    // }
 
     if (isStableCoin) {
       setSlippage('0.05');
@@ -381,7 +388,7 @@ export const useTokenPair = (userAddress: string) => {
     chain?: string;
   }>(query2obj(search));
 
-  useMemo(() => {
+  useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
       const target = Object.values(CHAINS).find(
         (item) => item.serverId === searchObj.chain

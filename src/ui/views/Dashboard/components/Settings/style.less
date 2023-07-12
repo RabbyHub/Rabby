@@ -1,6 +1,8 @@
 @import '../../../../style/var.less';
 
 .popup-settings {
+  @radius-value: 6px;
+
   display: flex;
   flex-direction: column;
   overflow: auto;
@@ -8,11 +10,54 @@
   .content {
     flex: 1;
   }
+
+  .setting-block + .setting-block {
+    margin-top: 16px;
+  }
+
+  .setting-block .setting-title {
+    color: @color-comment;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    & + .setting-items {
+      margin-top: 8px;
+    }
+  }
+
+  .setting-items {
+    background: @color-bg;
+    border-radius: @radius-value;
+  }
+
+  .setting-items .field {
+    margin-bottom: 0;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: @radius-value;
+      border-top-right-radius: @radius-value;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: @radius-value;
+      border-bottom-right-radius: @radius-value;
+    }
+
+    & + .field {
+      margin-top: 0;
+    }
+  }
+
   .footer {
     text-align: center;
     font-size: 12px;
     line-height: 16px;
     color: @color-comment-1;
+    padding-top: 18px;
+
     img {
       display: inline-block;
       width: 100px;
@@ -33,7 +78,7 @@
   }
   .field {
     background: @color-bg;
-    border-radius: 6px;
+    border-radius: @radius-value;
     margin-bottom: 8px;
     font-size: 14px;
     line-height: 16px;
@@ -75,6 +120,7 @@
     &.checked {
       background-color: rgba(134, 151, 255, 0.2);
       border: 1px solid #8697ff;
+      border-radius: @radius-value;
     }
     .not-default-tip {
       color: @color-red;
@@ -173,7 +219,7 @@
         background: rgba(246, 133, 27, 0.1);
         border: 1px solid #f6851b;
         box-sizing: border-box;
-        border-radius: 6px;
+        border-radius: @radius-value;
       }
       &-main {
         padding: 16px 0;

@@ -35,7 +35,9 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     const start = startNoRef.current;
     const index = start - 1;
     let i = index;
-    const isLedgerLive = typeRef.current === HDPathType.LedgerLive;
+    const oneByOne =
+      typeRef.current === HDPathType.LedgerLive &&
+      keyring === KEYRING_CLASS.HARDWARE.LEDGER;
 
     try {
       await createTask(() =>
@@ -61,14 +63,14 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
             'getAddresses',
             keyringId,
             i,
-            i + (isLedgerLive ? 1 : MAX_STEP_COUNT)
+            i + (oneByOne ? 1 : MAX_STEP_COUNT)
           );
         })) as Account[];
         setAccountList((prev) => [...prev, ...accounts]);
         setLoading(false);
 
         // only ledger live need to fetch one by one
-        if (isLedgerLive) {
+        if (oneByOne) {
           i++;
         } else {
           i += MAX_STEP_COUNT;
@@ -96,6 +98,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         runGetAccounts();
       } else {
         stoppedRef.current = true;
+        setLoading(true);
       }
     }
   }, [type, startNo]);

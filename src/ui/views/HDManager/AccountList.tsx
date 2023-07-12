@@ -131,7 +131,9 @@ export const AccountList: React.FC<Props> = ({
             account.address,
             keyring,
             undefined,
-            keyring !== KEYRING_CLASS.MNEMONIC
+            keyring !== KEYRING_CLASS.MNEMONIC &&
+              keyring !== KEYRING_CLASS.HARDWARE.KEYSTONE &&
+              keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS
           )
         );
         removeCurrentAccount(account.address);

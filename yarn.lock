@@ -3415,10 +3415,10 @@
     ethereumjs-util "^7.0.9"
     ethereumjs-wallet "^1.0.1"
 
-"@rabby-wallet/eth-lattice-keyring@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.0.4.tgz#73d1f24c30fc6118ee3c87e1a6e829347dae1d14"
-  integrity sha512-ZU5Q2oKFircYXGL6ewysSd3bxc1oHMfGx9FQEhmzMSpgUrOBLMTjYI9xM9xgzcUbHYw6VaX2slsmfcbxfseznA==
+"@rabby-wallet/eth-lattice-keyring@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.0.5.tgz#0615321963bbb88b5b2fb29534e027a662078227"
+  integrity sha512-SJSZVIf+8x7d3uWBOd4k+iCCzIfKEIAZaHP6P9dSe3lOPqrHMGqB0szo5c7CsW5n0w8t+cva2Dy/YKK42OBQMQ==
   dependencies:
     "@ethereumjs/common" "2.4.0"
     "@ethereumjs/tx" "3.3.0"
@@ -3511,10 +3511,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.17.tgz#ec340cbae2bff88e0f5c860fb9c9b147faff6dc4"
-  integrity sha512-WJ9XgzmQEWrdtJ4Fe2rhpaBNuxNP2v+LY/5NMHhaP+PFg7g8oR+L6qQosvle2tIp6L7I5R03dJCRzlGWqTJxLw==
+"@rabby-wallet/page-provider@^0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.19.tgz#615b8369c4a407e204659fcd2a81e19e5ce47501"
+  integrity sha512-8Yrgu4sLH3jVUXTln1Baq0ZFwPw/9YW0swj6AM9J5yewT/lU7eTUP78aT2jUHVapHdGxC+EJtYjzDakZTQcnfg==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3539,10 +3539,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.4.tgz#abb6893b931c40bb2ec6adb19a0a8490fbc21876"
-  integrity sha512-pt8VvXRwj5K1ugeK4ASctzX8CNTOaYX6FOfDOiiA9lBuJPNvy6g3k8JOICTHkh6l1BcJKTbTspk3r6fFBQexQw==
+"@rabby-wallet/rabby-security-engine@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.5.tgz#81abd964b6b3716ccb8c3c60c53db969f793c546"
+  integrity sha512-cixAqByDHp7qy/zcRotjZCangV8y5EMVbMpEq+U5k7PxQ33nonqEtheiDz0O3oWtZbiIyk4SrGrH9/G8IJK9TA==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
@@ -3554,10 +3554,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.22.tgz#dffddf286829829d02fea3b907447d58757b627c"
-  integrity sha512-gZvjQU+1EmCohH6ijiKdbh9vt4MfbUIVc105p/4NMPGMQ7eIKkUG7qj791xTIFEauV7pKtnwYzXhBXhYnSpwQw==
+"@rabby-wallet/rabby-swap@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.24.tgz#af3d84056b5b532e4872bc80fcd915dc74e0bc66"
+  integrity sha512-NFwkSzr/aLfcgBMtjMaeADUpAsYdRDhQl3msSmH0kvH7se6h6fUaBDfgfQzUQe8MvUF36GHz/PxyWFT2Bl4mqQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"

@@ -23,7 +23,6 @@ import { Account, ChainGas } from 'background/service/preference';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
-import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { GasLevel, TokenItem } from 'background/service/openapi';
@@ -45,8 +44,16 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import {
+  findChainByEnum,
+  findChainByServerID,
+  makeTokenFromChain,
+} from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
+import AccountSearchInput from '@/ui/component/AccountSearchInput';
+import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
+import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
+import LessPalette from '@/ui/style/var-defs';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -57,7 +64,9 @@ const MaxButton = styled.img`
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+
   const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const { t } = useTranslation();
   const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
@@ -68,6 +77,7 @@ const SendToken = () => {
   const rbisource = useRbiSource();
 
   const [form] = useForm<{ to: string; amount: string }>();
+  const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
@@ -102,22 +112,37 @@ const SendToken = () => {
   const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
-  const [amountFocus, setAmountFocus] = useState(false);
   const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
   const [temporaryGrant, setTemporaryGrant] = useState(false);
-  const [toAddressInWhitelist, setToAddressInWhitelist] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
-  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-    whitelistEnabled: s.whitelist.enabled,
-  }));
+  const { whitelist, whitelistEnabled, contactsByAddr } = useRabbySelector(
+    (s) => ({
+      whitelist: s.whitelist.whitelist,
+      whitelistEnabled: s.whitelist.enabled,
+      contactsByAddr: s.contactBook.contactsByAddr,
+    })
+  );
+
+  const {
+    toAddressIsValid,
+    toAddressInWhitelist,
+    toAddressInContactBook,
+  } = useMemo(() => {
+    return {
+      toAddressIsValid: !!formSnapshot.to && isValidAddress(formSnapshot.to),
+      toAddressInWhitelist: !!whitelist.find((item) =>
+        isSameAddress(item, formSnapshot.to)
+      ),
+      toAddressInContactBook: !!contactsByAddr[formSnapshot.to]?.isAlias,
+    };
+  }, [whitelist, contactsByAddr, formSnapshot]);
 
   const whitelistAlertContent = useMemo(() => {
     if (!whitelistEnabled) {
@@ -343,7 +368,6 @@ const SendToken = () => {
     setShowListContactModal(false);
     setShowEditContactModal(false);
     setContactInfo(account);
-    setAmountFocus(true);
     const values = form.getFieldsValue();
     const to = account ? account.address : '';
     if (!account) return;
@@ -357,7 +381,7 @@ const SendToken = () => {
     });
   };
 
-  const handleCancelContract = () => {
+  const handleCancelContact = () => {
     setShowListContactModal(false);
   };
 
@@ -395,9 +419,6 @@ const SendToken = () => {
     } else {
       setShowWhitelistAlert(true);
       setEditBtnDisabled(false);
-      setToAddressInWhitelist(
-        !!whitelist.find((item) => isSameAddress(item, to))
-      );
     }
     let resultAmount = amount;
     if (!/^\d*(\.\d*)?$/.test(amount)) {
@@ -434,10 +455,12 @@ const SendToken = () => {
     } else {
       setBalanceError(null);
     }
-    form.setFieldsValue({
+    const nextFormValues = {
       to,
       amount: resultAmount,
-    });
+    };
+    form.setFieldsValue(nextFormValues);
+    setFormSnapshot(nextFormValues);
     setCacheAmount(resultAmount);
     const alianName = await wallet.getAlianName(to.toLowerCase());
     if (alianName) {
@@ -547,7 +570,7 @@ const SendToken = () => {
     );
   };
 
-  const handleCopyContractAddress = () => {
+  const handleCopyContactAddress = () => {
     const clipboard = new ClipboardJS('.send-token', {
       text: function () {
         return currentToken.id;
@@ -602,9 +625,21 @@ const SendToken = () => {
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
+      let tokenFromOrder: TokenItem | null = null;
+
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) setCurrentToken(lastTimeToken);
-      let needLoadToken: TokenItem = lastTimeToken || currentToken;
+      if (lastTimeToken) {
+        setCurrentToken(lastTimeToken);
+      } else {
+        const { firstChain } = await dispatch.chains.getOrderedChainList({
+          supportChains: undefined,
+        });
+        tokenFromOrder = firstChain ? makeTokenFromChain(firstChain) : null;
+        if (firstChain) setCurrentToken(tokenFromOrder!);
+      }
+
+      let needLoadToken: TokenItem =
+        lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
         if (cache?.path === history.location.pathname) {
@@ -636,6 +671,7 @@ const SendToken = () => {
     const account = await wallet.syncGetCurrentAccount();
     dispatch.whitelist.getWhitelistEnabled();
     dispatch.whitelist.getWhitelist();
+    dispatch.contactBook.getContactBookAsync();
     if (!account) {
       history.replace('/');
       return;
@@ -691,20 +727,42 @@ const SendToken = () => {
     return gasTokenAmount;
   };
 
-  const handleClickWhitelistAlert = () => {
-    if (whitelistEnabled && !temporaryGrant && !toAddressInWhitelist) {
-      AuthenticationModalPromise({
-        title: 'Grant temporary permission',
-        cancelText: 'Cancel',
-        wallet,
-        onFinished() {
-          setTemporaryGrant(true);
-        },
-        onCancel() {
-          // do nothing
-        },
-      });
-    }
+  const handleClickAllowTransferTo = () => {
+    if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
+
+    const toAddr = form.getFieldValue('to');
+    confirmAllowTransferToPromise({
+      wallet,
+      toAddr,
+      showAddToWhitelist: !!toAddressInContactBook,
+      title: 'Enter the Password to Confirm',
+      cancelText: 'Cancel',
+      confirmText: 'Confirm',
+      onFinished(result) {
+        dispatch.whitelist.getWhitelist();
+        setTemporaryGrant(true);
+      },
+    });
+  };
+
+  const handleClickAddContact = () => {
+    if (toAddressInContactBook) return;
+
+    const toAddr = form.getFieldValue('to');
+    confirmAddToContactsModalPromise({
+      wallet,
+      addrToAdd: toAddr,
+      title: 'Add to contacts',
+      confirmText: 'Confirm',
+      async onFinished(result) {
+        await dispatch.contactBook.getContactBookAsync();
+        // trigger fetch contactInfo
+        const values = form.getFieldsValue();
+        handleFormValuesChange(null, { ...values });
+        // trigger get balance of address
+        await wallet.getAddressBalance(result.contactAddrAdded, true);
+      },
+    });
   };
 
   useEffect(() => {
@@ -792,7 +850,7 @@ const SendToken = () => {
                     validator(_, value) {
                       if (!value) return Promise.resolve();
                       if (value && isValidAddress(value)) {
-                        setAmountFocus(true);
+                        // setAmountFocus(true);
                         return Promise.resolve();
                       }
                       return Promise.reject(
@@ -802,13 +860,33 @@ const SendToken = () => {
                   },
                 ]}
               >
-                <Input
-                  placeholder={t('Enter the address')}
+                <AccountSearchInput
+                  placeholder={'Enter address or search'}
                   autoComplete="off"
                   autoFocus
                   spellCheck={false}
+                  onSelectedAccount={(account) => {
+                    const nextVals = {
+                      ...form.getFieldsValue(),
+                      to: account.address,
+                    };
+                    handleFormValuesChange({ to: nextVals.to }, nextVals);
+                    form.setFieldsValue(nextVals);
+                  }}
                 />
               </Form.Item>
+              {toAddressIsValid && !toAddressInContactBook && (
+                <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
+                  Not on address list.{' '}
+                  <span
+                    onClick={handleClickAddContact}
+                    className={clsx('ml-[2px] underline cursor-pointer')}
+                    style={{ color: LessPalette['@primary-text-color'] }}
+                  >
+                    Add to contacts
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="section">
@@ -866,7 +944,6 @@ const SendToken = () => {
                   token={currentToken}
                   onTokenChange={handleCurrentTokenChange}
                   chainId={chainItem.serverId}
-                  amountFocus={amountFocus}
                   excludeTokens={[]}
                   inlinePrize
                 />
@@ -885,7 +962,7 @@ const SendToken = () => {
                     <img
                       src={IconCopy}
                       className="icon icon-copy"
-                      onClick={handleCopyContractAddress}
+                      onClick={handleCopyContactAddress}
                     />
                   </span>
                 </div>
@@ -920,7 +997,7 @@ const SendToken = () => {
                   ? 'granted'
                   : 'cursor-pointer'
               )}
-              onClick={handleClickWhitelistAlert}
+              onClick={handleClickAllowTransferTo}
             >
               <p className="whitelist-alert__content text-center">
                 {whitelistEnabled && (
@@ -960,7 +1037,7 @@ const SendToken = () => {
       />
       <ContactListModal
         visible={showListContactModal}
-        onCancel={handleCancelContract}
+        onCancel={handleCancelContact}
         onOk={handleConfirmContact}
       />
 
@@ -969,7 +1046,6 @@ const SendToken = () => {
         onClose={handleGasSelectorClose}
         chainId={chainItem?.id || CHAINS.ETH.id}
         onChange={(val) => {
-          setAmountFocus(false);
           setGasSelectorVisible(false);
           handleGasChange(val);
         }}

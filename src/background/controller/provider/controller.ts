@@ -28,6 +28,7 @@ import {
   signTextHistoryService,
   RPCService,
   i18n,
+  swapService,
 } from 'background/service';
 import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
@@ -435,6 +436,9 @@ class ProviderController extends BaseController {
             }
           });
         }
+
+        const { r, s, v, ...other } = approvalRes;
+        swapService.postSwap(chain, hash, other);
 
         stats.report('submitTransaction', {
           type: currentAccount.brandName,

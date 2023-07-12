@@ -575,6 +575,7 @@ export class KeyringService extends EventEmitter {
       .then(([accounts, currentKeyring]) => {
         // Check if this was the last/only account
         if (accounts.length === 0 && removeEmptyKeyrings) {
+          currentKeyring.forgetDevice?.();
           this.keyrings = this.keyrings.filter(
             (item) => item !== currentKeyring
           );

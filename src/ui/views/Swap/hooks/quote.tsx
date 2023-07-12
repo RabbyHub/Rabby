@@ -285,9 +285,10 @@ export const useQuoteMethods = () => {
     }: getDexQuoteParams & {
       setQuote?: (quote: TDexQuoteData) => void;
     }): Promise<TDexQuoteData> => {
+      const isOpenOcean = dexId === DEX_ENUM.OPENOCEAN;
       try {
         let gasPrice: number;
-        if (dexId === DEX_ENUM.OPENOCEAN) {
+        if (isOpenOcean) {
           const gasMarket = await walletOpenapi.gasMarket(
             CHAINS[chain].serverId
           );
@@ -299,6 +300,7 @@ export const useQuoteMethods = () => {
           fromToken: payToken.id,
           toToken: receiveToken.id,
         });
+
         const data = await pRetry(
           () =>
             getQuote(
@@ -315,7 +317,10 @@ export const useQuoteMethods = () => {
                   .toFixed(0, 1),
                 userAddress,
                 slippage: Number(slippage),
-                feeRate: Number(feeAfterDiscount) || 0,
+                feeRate:
+                  feeAfterDiscount === '0' && isOpenOcean
+                    ? undefined
+                    : Number(feeAfterDiscount) || 0,
                 chain,
                 gasPrice,
               }
@@ -632,4 +637,5 @@ export type QuoteProvider = {
   activeLoading?: boolean;
   activeTx?: string;
   actualReceiveAmount: string | number;
+  gasUsd?: string;
 };

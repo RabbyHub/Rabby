@@ -36,41 +36,6 @@ class ContactBook {
     return contact;
   };
 
-  removeContact = (address: string) => {
-    const key = address.toLowerCase();
-    if (!this.store[key]) return;
-    if (this.store[key]?.isAlias) {
-      this.store[key] = Object.assign({}, this.store[key], {
-        isContact: false,
-      });
-    } else {
-      delete this.store[key];
-    }
-  };
-
-  updateContact = (data: ContactBookItem) => {
-    if (this.store[data.address.toLowerCase()]) {
-      this.store[data.address.toLowerCase()] = Object.assign(
-        {},
-        this.store[data.address.toLowerCase()],
-        {
-          name: data.name,
-          address: data.address.toLowerCase(),
-          isContact: true,
-        }
-      );
-    } else {
-      this.store[data.address.toLowerCase()] = {
-        name: data.name,
-        address: data.address.toLowerCase(),
-        isContact: true,
-        isAlias: false,
-      };
-    }
-  };
-
-  addContact = this.updateContact;
-
   listContacts = (): ContactBookItem[] => {
     const list = Object.values(this.store);
     return (

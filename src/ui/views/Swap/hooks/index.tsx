@@ -4,3 +4,4 @@ export * from './settings';
 export * from './context';
 export * from './verify';
 export * from './quote';
+export * from './history';

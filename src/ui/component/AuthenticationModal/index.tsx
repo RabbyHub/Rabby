@@ -1,6 +1,5 @@
 import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
-import { WalletController } from 'background/controller/wallet';
 import clsx from 'clsx';
 import React, {
   useEffect,
@@ -9,21 +8,18 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import * as ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import LessPalette from '@/ui/style/var-defs';
+import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
 
-interface AuthenticationModalProps {
-  onFinished(): void;
-  onCancel(): void;
+interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;
   confirmText?: string;
   cancelText?: string;
   title?: string;
   description?: string;
   checklist?: string[];
-  wallet: WalletController;
 }
 
 const Description = styled.div`
@@ -135,7 +131,7 @@ const AuthenticationModal = ({
       if (validationHandler) {
         await validationHandler(password);
       } else {
-        await wallet.verifyPassword(password);
+        await wallet?.verifyPassword(password);
       }
       onFinished();
       setVisible(false);
@@ -244,30 +240,8 @@ const AuthenticationModal = ({
   );
 };
 
-export const wrapModalPromise = (Component) => (props?) => {
-  const div = document.createElement('div');
-  document.body.appendChild(div);
-
-  return new Promise((resolve, reject) => {
-    const handleCancel = () => {
-      setTimeout(() => {
-        ReactDOM.unmountComponentAtNode(div);
-        div.parentElement?.removeChild(div);
-      }, 1000);
-      reject();
-    };
-
-    ReactDOM.render(
-      <Component
-        onFinished={resolve as () => void}
-        onCancel={handleCancel}
-        {...props}
-      />,
-      div
-    );
-  });
-};
-
-const AuthenticationModalPromise = wrapModalPromise(AuthenticationModal);
+const AuthenticationModalPromise = wrapModalPromise<AuthenticationModalProps>(
+  AuthenticationModal
+);
 
 export default AuthenticationModalPromise;

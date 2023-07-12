@@ -31,7 +31,10 @@ import buildinProvider, {
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import keyring, {
+  KEYRING_CLASS,
+  DisplayedKeryring,
+} from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -87,6 +90,7 @@ import { AbiItem, isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -395,6 +399,7 @@ export class WalletController extends BaseController {
       unlimited,
       gasPrice,
       shouldTwoStepApprove,
+      postSwapParams,
     }: {
       chain: CHAINS_ENUM;
       quote: QuoteResult;
@@ -404,6 +409,11 @@ export class WalletController extends BaseController {
       unlimited: boolean;
       gasPrice?: number;
       shouldTwoStepApprove: boolean;
+
+      postSwapParams?: Omit<
+        Parameters<OpenApiService['postSwap']>[0],
+        'tx_id' | 'tx'
+      >;
     },
     $ctx?: any
   ) => {
@@ -450,6 +460,10 @@ export class WalletController extends BaseController {
           { isSwap: true }
         );
         unTriggerTxCounter.decrease();
+      }
+
+      if (postSwapParams) {
+        swapService.addTx(chain, quote.tx.data, postSwapParams);
       }
       await this.sendRequest({
         $ctx:
@@ -1550,7 +1564,10 @@ export class WalletController extends BaseController {
     await keyring.addSignature(address, signature);
   };
 
-  importWatchAddress = async (address) => {
+  /**
+   * @description add address as watch only account, and DON'T set it as current account
+   */
+  addWatchAddressOnly = async (address: string) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
     try {
@@ -1566,6 +1583,13 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
     }
+
+    return keyring;
+  };
+
+  importWatchAddress = async (address: string) => {
+    const keyring = await this.addWatchAddressOnly(address);
+
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
@@ -2291,42 +2315,57 @@ export class WalletController extends BaseController {
     }
   };
 
-  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+  submitQRHardwareCryptoHDKey = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
+
     keyring.readKeyring();
     await keyring.submitCryptoHDKey(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
-  submitQRHardwareCryptoAccount = async (cbor: string) => {
+  submitQRHardwareCryptoAccount = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
     keyring.readKeyring();
     await keyring.submitCryptoAccount(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
   submitQRHardwareSignature = async (
@@ -2615,6 +2654,10 @@ export class WalletController extends BaseController {
     }
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
+  }
+
+  getContactsByMap() {
+    return contactBookService.getContactsByMap();
   }
 
   listContact = (includeAlias = true) => {
@@ -2996,6 +3039,42 @@ export class WalletController extends BaseController {
       securityEngineService.enableRule(id);
     } else {
       securityEngineService.disableRule(id);
+    }
+  };
+
+  initQRHardware = async (brand: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = this.addKeyringToStash(keyring);
+    }
+
+    await keyring.setCurrentBrand(brand);
+    return stashKeyringId;
+  };
+
+  checkQRHardwareAllowImport = async (brand: string) => {
+    try {
+      const keyring = this._getKeyringByType(KEYRING_CLASS.QRCODE);
+
+      if (!keyring) {
+        return {
+          allowed: true,
+        };
+      }
+
+      return keyring.checkAllowImport(brand);
+    } catch (e) {
+      return {
+        allowed: true,
+      };
     }
   };
 }

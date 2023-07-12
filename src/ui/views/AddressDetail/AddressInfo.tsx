@@ -67,26 +67,12 @@ const GnonisSafeInfo = ({
       networks.map(async (networkId) => {
         const info = await wallet.getBasicSafeInfo({ address, networkId });
 
-        const owners = await wallet.getGnosisOwners(
-          {
-            type,
-            address,
-            brandName,
-          },
-          address,
-          info.version,
-          networkId
-        );
-
-        const comparedOwners = crossCompareOwners(owners, info.owners);
-
         return {
           chain: Object.values(CHAINS).find(
             (chain) => chain.network === networkId
           ),
           data: {
             ...info,
-            owners: comparedOwners,
           },
         };
       })

@@ -55,8 +55,6 @@ interface QuotesProps
 }
 
 export const Quotes = ({
-  visible,
-  onClose,
   list,
   activeName,
   inSufficient,
@@ -147,7 +145,7 @@ export const Quotes = ({
 
     return (
       <>
-        <div className="h-18 mb-20 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
+        <div className="h-18 mb-16 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
           <div>The following swap rates are found</div>
           <div className="w-20 h-20 relative overflow-hidden">
             <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
@@ -156,7 +154,7 @@ export const Quotes = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[16px]">
+        <div className="flex flex-col gap-8">
           {dex ? (
             <DexQuoteItem
               inSufficient={inSufficient}
@@ -193,7 +191,7 @@ export const Quotes = ({
   }
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="h-18 mb-20 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
+      <div className="h-18 mb-16 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
         <div>The following swap rates are found</div>
         <div className="w-20 h-20 relative overflow-hidden">
           <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
@@ -202,7 +200,7 @@ export const Quotes = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-8">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
           if (!isDex) return null;
@@ -227,7 +225,7 @@ export const Quotes = ({
       </div>
 
       {!noCex && (
-        <div className="text-gray-light text-12 mt-32 mb-8">Rates from CEX</div>
+        <div className="text-gray-light text-12 mt-16 mb-8">Rates from CEX</div>
       )}
 
       <CexListWrapper>
@@ -248,7 +246,7 @@ export const Quotes = ({
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
 
-      <div className="mt-auto text-gray-light text-12 pb-16">
+      <div className="mt-auto text-gray-light text-12 pb-14">
         Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
         {tradeCount} can trade.{' '}
         <span
@@ -268,7 +266,7 @@ export const QuoteList = (props: QuotesProps) => {
     <Popup
       visible={visible}
       title={null}
-      height={510}
+      height={544}
       onClose={onClose}
       closable
       destroyOnClose

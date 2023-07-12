@@ -371,6 +371,20 @@ class BitBox02Keyring extends EventEmitter {
     }
     return `${this.hdPath}/${index}`;
   }
+
+  async getCurrentAccounts() {
+    return this.withDevice(async () => {
+      const addrs = await this.getAccounts();
+
+      return addrs.map((address) => {
+        const checksummedAddress = ethUtil.toChecksumAddress(address);
+        return {
+          address,
+          index: this.paths[checksummedAddress] + 1,
+        };
+      });
+    });
+  }
 }
 
 export default BitBox02Keyring;

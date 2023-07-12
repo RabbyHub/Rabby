@@ -3,13 +3,15 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { GasCache, ChainGas } from './preference';
 import { CEX, DEX } from '@/constant';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { openapiService } from 'background/service';
 
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
 export type SwapServiceStore = {
   gasPriceCache: GasCache;
   selectedDex: DEX_ENUM | null;
-  selectedChain: CHAINS_ENUM;
+  selectedChain: CHAINS_ENUM | null;
   unlimitedAllowance: boolean;
   viewList: Record<ViewKey, boolean>;
   tradeList: Record<ViewKey, boolean>;
@@ -18,7 +20,7 @@ export type SwapServiceStore = {
 class SwapService {
   store: SwapServiceStore = {
     gasPriceCache: {},
-    selectedChain: CHAINS_ENUM.ETH,
+    selectedChain: null,
     selectedDex: null,
     unlimitedAllowance: false,
     viewList: {} as SwapServiceStore['viewList'],
@@ -30,7 +32,7 @@ class SwapService {
       name: 'swap',
       template: {
         gasPriceCache: {},
-        selectedChain: CHAINS_ENUM.ETH,
+        selectedChain: null,
         selectedDex: null,
         unlimitedAllowance: false,
         viewList: {} as SwapServiceStore['viewList'],
@@ -139,6 +141,38 @@ class SwapService {
       ...this.store.tradeList,
       [dexId]: bool,
     };
+  };
+
+  txQuotes: Record<
+    string,
+    Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
+  > = {};
+
+  addTx = (
+    chain: CHAINS_ENUM,
+    data: string,
+    quoteInfo: Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
+  ) => {
+    this.txQuotes[`${chain}-${data}`] = quoteInfo;
+  };
+
+  postSwap = (
+    chain: CHAINS_ENUM,
+    hash: string,
+    tx: Parameters<OpenApiService['postSwap']>[0]['tx']
+  ) => {
+    const { postSwap } = openapiService;
+    const { txQuotes } = this;
+    const key = `${chain}-${tx.data}`;
+    const quoteInfo = txQuotes[key];
+    if (quoteInfo) {
+      delete txQuotes[key];
+      return postSwap({
+        ...quoteInfo,
+        tx,
+        tx_id: hash,
+      });
+    }
   };
 }
 
