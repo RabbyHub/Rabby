@@ -72,6 +72,7 @@ const getTabs = (
 
 const GnosisTransactionQueue = () => {
   const { t } = useTranslation();
+  const wallet = useWallet();
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
@@ -100,6 +101,12 @@ const GnosisTransactionQueue = () => {
   useEffect(() => {
     setActiveKey(tabs[0]?.key || null);
   }, [tabs[0]?.key]);
+
+  useEffect(() => {
+    if (account?.address) {
+      wallet.syncGnosisNetwork(account?.address);
+    }
+  }, [account?.address]);
 
   return (
     <div className="queue">

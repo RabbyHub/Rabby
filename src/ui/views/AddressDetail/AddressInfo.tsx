@@ -1,5 +1,5 @@
 import { Button, Form, Input, message, Popover } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, NameAndAddress, PageHeader, Popup } from 'ui/component';
 import {
@@ -106,6 +106,12 @@ const GnonisSafeInfo = ({
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
     };
   }, [accountsList, highlightedAddresses]);
+
+  useEffect(() => {
+    if (address) {
+      wallet.syncGnosisNetwork(address);
+    }
+  }, [address]);
 
   if (loading) {
     return (

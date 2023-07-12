@@ -1300,6 +1300,19 @@ export class WalletController extends BaseController {
     );
   };
 
+  syncGnosisNetwork = async (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      return;
+    }
+    const networks = keyring.networkIdsMap[address];
+    const chainList = await this.fetchGnosisChainList(address);
+    keyring.setNetworkIds(
+      address,
+      uniq((networks || []).concat(chainList.map((chain) => chain.network)))
+    );
+  };
+
   clearGnosisTransaction = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction || keyring.safeInstance) {
