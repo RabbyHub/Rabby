@@ -7,7 +7,6 @@ class AutoLockService {
 
   constructor({ onAutoLock }: { onAutoLock?: () => void } = {}) {
     this.onAutoLock = onAutoLock;
-    // this.setLastActiveTime();
   }
 
   resetTimer() {

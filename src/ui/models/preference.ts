@@ -147,7 +147,6 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.setField({
         autoLockTime: time,
       });
-      // todo
       await store.app.wallet.setAutoLockTime(time);
       dispatch.preference.getPreference('autoLockTime');
     },
