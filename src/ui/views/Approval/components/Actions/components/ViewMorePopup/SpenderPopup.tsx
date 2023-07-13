@@ -60,7 +60,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row
             className="bg-[#F6F8FF]"
-            tip="The total risk exposure approved to this spender address"
+            tip="The total asset value approved and exposed to this contract"
           >
             Risk exposure
           </Row>
