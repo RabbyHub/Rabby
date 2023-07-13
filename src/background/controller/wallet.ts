@@ -1294,7 +1294,7 @@ export class WalletController extends BaseController {
     ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
-  syncGnosisNetworks = () => {
+  syncAllGnosisNetworks = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
@@ -1307,6 +1307,19 @@ export class WalletController extends BaseController {
           uniq((networks || []).concat(chainList.map((chain) => chain.network)))
         );
       }
+    );
+  };
+
+  syncGnosisNetworks = async (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      return;
+    }
+    const networks = keyring.networkIdsMap[address];
+    const chainList = await this.fetchGnosisChainList(address);
+    keyring.setNetworkIds(
+      address,
+      uniq((networks || []).concat(chainList.map((chain) => chain.network)))
     );
   };
 
