@@ -4,6 +4,8 @@ import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
 import { InitAccounts } from './LedgerManager';
 import { HDManagerStateContext } from './utils';
 import { KEYRING_CLASS } from '@/constant';
+import { useWallet } from '@/ui/utils';
+import clsx from 'clsx';
 
 const MIN_START_NO = 1;
 const MAX_START_NO = 950 + MIN_START_NO;
@@ -120,7 +122,9 @@ export const AdvancedSettings: React.FC<Props> = ({
 }) => {
   const [hdPathType, setHDPathType] = React.useState<HDPathType>();
   const [startNo, setStartNo] = React.useState(DEFAULT_SETTING_DATA.startNo);
-  const { keyring } = React.useContext(HDManagerStateContext);
+  const { keyring, keyringId } = React.useContext(HDManagerStateContext);
+  const wallet = useWallet();
+  const [disableStartFrom, setDisableStartFrom] = React.useState(false);
 
   const onInputChange = React.useCallback((value: number) => {
     if (isNaN(value) || value < DEFAULT_SETTING_DATA.startNo) {
@@ -133,10 +137,19 @@ export const AdvancedSettings: React.FC<Props> = ({
   }, []);
 
   React.useEffect(() => {
+    setDisableStartFrom(false);
     if (initSettingData) {
       setStartNo(initSettingData.startNo);
       setHDPathType(initSettingData.type);
     }
+
+    wallet
+      .requestKeyring(keyring, 'getMaxAccountLimit', keyringId, null)
+      .then((count) => {
+        if (count < MAX_ACCOUNT_COUNT) {
+          setDisableStartFrom(true);
+        }
+      });
   }, []);
 
   const disabledSelectHDPath = React.useMemo(() => {
@@ -199,7 +212,11 @@ export const AdvancedSettings: React.FC<Props> = ({
         </div>
         <div className="tip">{currentHdPathTypeTip}</div>
       </div>
-      <div className="group">
+      <div
+        className={clsx('group', {
+          hidden: disableStartFrom,
+        })}
+      >
         <div className="label">
           Select the serial number of addresses to start from:
         </div>

@@ -61,9 +61,22 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     });
   }
 
+  async getMaxAccountLimit() {
+    if (!this.initialized) {
+      await this.readKeyring();
+    }
+    if (this.keyringMode === 'pubkey') {
+      return Object.keys(this.paths).length;
+    }
+  }
+
   async getAddresses(start: number, end: number) {
     if (!this.initialized) {
       await this.readKeyring();
+    }
+    if (this.keyringMode === 'pubkey') {
+      end = Math.min(end, Object.keys(this.paths).length);
+      start = Math.min(start, end);
     }
     const accounts: {
       address: string;
