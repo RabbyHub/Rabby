@@ -91,6 +91,7 @@ import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { autoLockService } from '../service/autoLock';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -970,6 +971,15 @@ export class WalletController extends BaseController {
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
   };
+
+  setAutoLockTime = (time: number) => {
+    return autoLockService.setAutoLockTime(time);
+  };
+
+  setLastActiveTime = () => {
+    return autoLockService.setLastActiveTime();
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };
@@ -3079,4 +3089,11 @@ export class WalletController extends BaseController {
   };
 }
 
-export default new WalletController();
+const wallet = new WalletController();
+autoLockService.onAutoLock = async () => {
+  await wallet.lockWallet();
+  eventBus.emit(EVENTS.broadcastToUI, {
+    method: EVENTS.LOCK_WALLET,
+  });
+};
+export default wallet;

@@ -1,50 +1,70 @@
-import {
-  Button,
-  DrawerProps,
-  Form,
-  Input,
-  message,
-  Modal,
-  Switch,
-  Tooltip,
-} from 'antd';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
+import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 
-import LogoRabby from 'ui/assets/logo-rabby-large.svg';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import IconAddresses from 'ui/assets/dashboard/addresses.svg';
+import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
+import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
+import IconAutoLock from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
+import IconLockWallet from 'ui/assets/dashboard/settings/lock.svg';
+import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
+import IconDiscordHover from 'ui/assets/discord-hover.svg';
+import IconDiscord from 'ui/assets/discord.svg';
 import IconClear from 'ui/assets/icon-clear.svg';
-import IconSuccess from 'ui/assets/success.svg';
+import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconServer from 'ui/assets/server.svg';
+import IconSuccess from 'ui/assets/success.svg';
+import IconTwitterHover from 'ui/assets/twitter-hover.svg';
+import IconTwitter from 'ui/assets/twitter.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, useWallet } from 'ui/utils';
 import './style.less';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import IconLockWallet from 'ui/assets/dashboard/settings/lock.svg';
-import IconDiscord from 'ui/assets/discord.svg';
-import IconDiscordHover from 'ui/assets/discord-hover.svg';
-import IconTwitter from 'ui/assets/twitter.svg';
-import IconTwitterHover from 'ui/assets/twitter-hover.svg';
-import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
-import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
-import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
-import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 
+import IconCheck from 'ui/assets/check-2.svg';
 import IconSettingsFeatureConnectedDapps from 'ui/assets/dashboard/settings/connected-dapps.svg';
 import IconSettingsAboutFollowUs from 'ui/assets/dashboard/settings/follow-us.svg';
 import IconSettingsAboutSupporetedChains from 'ui/assets/dashboard/settings/supported-chains.svg';
 import IconSettingsAboutVersion from 'ui/assets/dashboard/settings/version.svg';
 
-import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
+import { Contacts } from '..';
+
+const AUTO_LOCK_OPTIONS = [
+  {
+    value: 0,
+    label: 'Never',
+  },
+  {
+    value: 7 * 24 * 60,
+    label: '7 days',
+  },
+  {
+    value: 24 * 60,
+    label: '1 day',
+  },
+  {
+    value: 4 * 60,
+    label: '4 hours',
+  },
+  {
+    value: 60,
+    label: '1 hour',
+  },
+  {
+    value: 10,
+    label: '10 minutes',
+  },
+];
 
 interface SettingsProps {
   visible?: boolean;
@@ -232,6 +252,81 @@ const ResetAccountModal = ({
   );
 };
 
+const AutoLockModal = ({
+  visible,
+  onFinish,
+  onCancel,
+}: {
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const wallet = useWallet();
+  const { t } = useTranslation();
+  const [isVisible, setIsVisible] = useState(false);
+
+  const autoLockTime = useRabbySelector(
+    (state) => state.preference.autoLockTime || 0
+  );
+  const dispatch = useRabbyDispatch();
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  const handleSelect = async (value: number) => {
+    dispatch.preference.setAutoLockTime(value);
+    setIsVisible(false);
+    setTimeout(() => {
+      onFinish();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  return (
+    <div
+      className={clsx('auto-lock-modal', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('Auto lock time')}
+      </PageHeader>
+      <div className="auto-lock-option-list">
+        {AUTO_LOCK_OPTIONS.map((item) => {
+          return (
+            <div
+              className="auto-lock-option-list-item"
+              key={item.value}
+              onClick={() => {
+                handleSelect(item.value);
+              }}
+            >
+              {item.label}
+              {autoLockTime === item.value && (
+                <img
+                  src={IconCheck}
+                  alt=""
+                  className="auto-lock-option-list-item-icon"
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 type SettingItem = {
   leftIcon: string;
   content: React.ReactNode;
@@ -250,8 +345,19 @@ const Settings = ({
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
+  const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
+  const autoLockTime = useRabbySelector(
+    (state) => state.preference.autoLockTime || 0
+  );
+
+  const autoLockTimeLabel = useMemo(() => {
+    return (
+      AUTO_LOCK_OPTIONS.find((item) => item.value === autoLockTime)?.label ||
+      `${autoLockTime} minutes`
+    );
+  }, [autoLockTime]);
 
   const handleSwitchWhitelistEnable = async (checked: boolean) => {
     matomoRequestEvent({
@@ -275,18 +381,6 @@ const Settings = ({
         await wallet.toggleWhitelist(password, value),
       onFinished() {
         setWhitelistEnable(value);
-        message.success({
-          duration: 1.5,
-          icon: <i />,
-          content: (
-            <div>
-              <div className="flex gap-10 text-white">
-                <img src={IconSuccess} alt="" />
-                {value ? 'Whitelist is enabled' : 'Whitelist is disabled'}
-              </div>
-            </div>
-          ),
-        });
       },
       onCancel() {
         // do nothing
@@ -377,17 +471,6 @@ const Settings = ({
           },
         },
         {
-          leftIcon: IconWhitelist,
-          content: t('Whitelist'),
-          description: 'You can only send assets to whitelisted address',
-          rightIcon: (
-            <Switch
-              checked={whitelistEnable}
-              onChange={handleSwitchWhitelistEnable}
-            />
-          ),
-        },
-        {
           leftIcon: IconActivities,
           content: t('Signature Record'),
           onClick: () => {
@@ -432,6 +515,16 @@ const Settings = ({
       label: 'Settings',
       items: [
         {
+          leftIcon: IconWhitelist,
+          content: t('Enable Whitelist For Sending Assets'),
+          rightIcon: (
+            <Switch
+              checked={whitelistEnable}
+              onChange={handleSwitchWhitelistEnable}
+            />
+          ),
+        },
+        {
           leftIcon: IconCustomRPC,
           content: t('Custom RPC'),
           onClick: () => {
@@ -456,6 +549,31 @@ const Settings = ({
             });
             reportSettings('MetaMask Preferred Dapps');
           },
+        },
+        {
+          leftIcon: IconAutoLock,
+          content: t('Auto lock time'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Auto lock time',
+            });
+            reportSettings('Auto lock time');
+            setIsShowAutoLockModal(true);
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-[#13141a]"
+                role="button"
+                onClick={updateVersion}
+              >
+                {autoLockTimeLabel}
+              </span>
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </>
+          ),
         },
         {
           leftIcon: IconClear,
@@ -709,6 +827,11 @@ const Settings = ({
             visible={showResetAccountModal}
             onFinish={() => setShowResetAccountModal(false)}
             onCancel={() => setShowResetAccountModal(false)}
+          />
+          <AutoLockModal
+            visible={isShowAutoLockModal}
+            onFinish={() => setIsShowAutoLockModal(false)}
+            onCancel={() => setIsShowAutoLockModal(false)}
           />
         </div>
       </Popup>
