@@ -21,6 +21,7 @@ interface NameAndAddressProps {
   openExternal?: boolean;
   chainEnum?: CHAINS_ENUM;
   isShowCopyIcon?: boolean;
+  addressSuffix?: React.ReactNode;
 }
 
 const NameAndAddress = ({
@@ -33,6 +34,7 @@ const NameAndAddress = ({
   openExternal = false,
   chainEnum,
   isShowCopyIcon = true,
+  addressSuffix = null,
 }: NameAndAddressProps) => {
   const wallet = useWallet();
   const [alianName, setAlianName] = useState('');
@@ -100,6 +102,7 @@ const NameAndAddress = ({
               ?.toLowerCase()
               .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
       </div>
+      {addressSuffix || null}
       {openExternal && (
         <img
           onClick={handleClickContractId}

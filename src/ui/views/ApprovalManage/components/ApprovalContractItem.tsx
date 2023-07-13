@@ -1,9 +1,3 @@
-import {
-  NFTApproval,
-  NFTApprovalContract,
-  Spender,
-  TokenApproval,
-} from '@/background/service/openapi';
 import { NameAndAddress } from '@/ui/component';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import clsx from 'clsx';
@@ -17,49 +11,8 @@ import { openInTab, splitNumberByStep } from '@/ui/utils';
 import { CHAINS } from '@debank/common';
 import { ReactComponent as IconExternalLink } from 'ui/assets/open-external-gray.svg';
 
-export type ApprovalItem =
-  | ContractApprovalItem
-  | TokenApprovalItem
-  | NftApprovalItem;
+import { ApprovalItem } from '@/utils/approval';
 
-export type ContractApprovalItem = {
-  name: string;
-  logo_url: string;
-  risk_level: string;
-  risk_alert?: string;
-  id: string;
-  type: 'contract';
-
-  list: (NFTApprovalContract | NFTApproval | TokenApproval)[];
-  chain: string;
-};
-export type TokenApprovalItem = {
-  name: string;
-  logo_url: string;
-  risk_level: string;
-  risk_alert?: string;
-  id: string;
-  type: 'token';
-  balance: number;
-
-  list: Spender[];
-  chain: string;
-};
-export type NftApprovalItem = {
-  nftContract?: NFTApprovalContract;
-  nftToken?: NFTApproval;
-} & {
-  name: string;
-  logo_url: string;
-  risk_level: string;
-  risk_alert?: string;
-  id: string;
-  type: 'nft';
-  amount: string;
-
-  list: Spender[];
-  chain: string;
-};
 type Props = {
   data: ApprovalItem[];
   index: number;

@@ -4,7 +4,7 @@ import { Alert, Button, Drawer } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
-import { ApprovalContractItem, ApprovalItem } from './ApprovalContractItem';
+import { ApprovalContractItem } from './ApprovalContractItem';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import { IconChecked, IconNotChecked } from '@/ui/assets';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
@@ -13,6 +13,7 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { ApprovalItem } from '@/utils/approval';
 
 export const RevokeApprovalDrawer = (props: {
   item?: ApprovalItem;

@@ -1,46 +1,96 @@
-import { useRabbySelector } from '@/ui/store';
-import { Dropdown, Input, Menu } from 'antd';
-import { CHAINS_ENUM } from 'consts';
-import React, {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
+import {
   useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useAsync, useThrottleFn } from 'react-use';
-import IconSearch from 'ui/assets/search.svg';
-import { Empty, PageHeader } from 'ui/component';
-import { useWallet } from 'ui/utils';
-import { Loading } from './components/Loading';
-import './style.less';
+
+import { VariableSizeGrid } from 'react-window';
 import PQueue from 'p-queue';
-import { VariableSizeList } from 'react-window';
+
+import { useRabbySelector } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
+import { CHAINS_ENUM } from '@debank/common';
 import {
   ApprovalItem,
+  AssetApprovalItem,
   ContractApprovalItem,
   NftApprovalItem,
   TokenApprovalItem,
   makeComputedRiskAboutValues,
 } from '@/utils/approval';
-import { RevokeApprovalDrawer } from './components/RevokeApprovalDrawer';
-import { groupBy, sortBy, flatten } from 'lodash';
-import { ReactComponent as IconDownArrow } from 'ui/assets/approval-management/down.svg';
+
+import { groupBy, sortBy, flatten, debounce } from 'lodash';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
-import { ApprovalContractItem } from './components/ApprovalContractItem';
-import { accumulateRiskAboutValues } from '../ApprovalManagePage/utils';
+import { accumulateRiskAboutValues } from './utils';
+
+/**
+ * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
+ */
+function getYValue() {
+  return window.innerHeight - 200 - 191;
+}
+
+export function useTableScrollableHeight() {
+  const [yValue, setYValue] = useState(getYValue);
+
+  useLayoutEffect(() => {
+    const listener = debounce(() => {
+      setYValue(getYValue());
+    }, 500);
+
+    window.addEventListener('resize', listener);
+
+    return () => {
+      window.removeEventListener('resize', listener);
+    };
+  });
+
+  return {
+    yValue,
+  };
+}
 
 const FILTER_TYPES = {
   contract: 'By Contracts',
-  token: 'By Tokens',
-  nft: 'By NFTs',
-};
+  assets: 'By Assets',
+} as const;
 
-const ApprovalManage = () => {
+export const SwitchPills = [
+  {
+    key: 'contract',
+    label: FILTER_TYPES.contract,
+  },
+  {
+    key: 'assets',
+    label: FILTER_TYPES.assets,
+  },
+] as const;
+
+function sortTokenOrNFTApprovalsSpenderList(
+  item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
+) {
+  Object.keys(item).forEach((t) => {
+    item[t].list
+      .sort((a, b) => b.value - a.value)
+      .sort((a, b) => {
+        const numMap: Record<string, number> = {
+          safe: 1,
+          warning: 10,
+          danger: 100,
+        };
+        return numMap[b.risk_level] - numMap[a.risk_level];
+      });
+  });
+}
+
+export function useApprovalsPage() {
   const wallet = useWallet();
   const { t } = useTranslation();
   const history = useHistory();
@@ -57,18 +107,29 @@ const ApprovalManage = () => {
     'contract'
   );
 
-  const [value, setValue] = useState('');
-  const search = useThrottleFn(
-    (value) => {
-      if (sizeMap.current && listRef?.current) {
-        sizeMap.current = {};
-        listRef?.current.resetAfterIndex(0);
-      }
-      return value;
-    },
-    200,
-    [value]
-  );
+  const [searchkeyword, setSearchKw] = useState('');
+  // const debouncedSearchKw = useDebounceValue(searchKw, 250);
+
+  const vGridRef = useRef<VariableSizeGrid>(null);
+  const sizeMap = useRef<Record<number, number>>({});
+
+  const searchKw =
+    useThrottleFn(
+      (value) => {
+        if (sizeMap.current && vGridRef?.current) {
+          sizeMap.current = {};
+          vGridRef?.current.resetAfterColumnIndex(0);
+        }
+        return value;
+      },
+      200,
+      [searchkeyword]
+    ) || '';
+
+  useEffect(() => {
+    vGridRef?.current?.scrollToItem(0);
+    vGridRef?.current?.resetAfterColumnIndex(0);
+  }, [filterType]);
 
   const [selectedItem, setSelectedItem] = useState<ApprovalItem | undefined>();
   const [visible, setVisible] = useState(false);
@@ -102,7 +163,6 @@ const ApprovalManage = () => {
             const spender = contract.spender;
 
             if (!contractMap[`${chainName}:${contractId}`]) {
-              const spender = contract.spender;
               contractMap[`${chainName}:${contractId}`] = {
                 list: [],
                 chain: e.id,
@@ -124,7 +184,6 @@ const ApprovalManage = () => {
             );
 
             if (!nftMap[`${chainName}:${contract.contract_id}`]) {
-              const spender = contract.spender;
               nftMap[`${chainName}:${contract.contract_id}`] = {
                 nftContract: contract,
                 list: [],
@@ -280,18 +339,13 @@ const ApprovalManage = () => {
     console.log('error', error);
   }
 
-  const sortedContractList: ApprovalItem[] = useMemo(() => {
+  const sortedContractList: ContractApprovalItem[] = useMemo(() => {
     if (contractMap) {
-      const filterMap = {
-        contract: contractMap,
-        token: tokenMap,
-        nft: nftMap,
-      };
-      const contractMapArr = Object.values(filterMap[filterType]);
+      const contractMapArr = Object.values(contractMap);
       const l = contractMapArr.length;
-      const dangerList: ApprovalItem[] = [];
-      const warnList: ApprovalItem[] = [];
-      const safeList: ApprovalItem[] = [];
+      const dangerList: ContractApprovalItem[] = [];
+      const warnList: ContractApprovalItem[] = [];
+      const safeList: ContractApprovalItem[] = [];
       const numMap: Record<string, string> = {
         safe: 'safe',
         warning: 'warning',
@@ -318,165 +372,75 @@ const ApprovalManage = () => {
     return [];
   }, [contractMap, tokenMap, nftMap, filterType]);
 
-  const displaySortedContractList = useMemo(() => {
-    if (!search || search.trim() === '') {
-      return sortedContractList;
+  const sortedAssetstList: AssetApprovalItem[] = useMemo(() => {
+    const assetsList = [
+      ...Object.values(tokenMap || {}),
+      ...Object.values(nftMap || {}),
+    ];
+    const l = assetsList.length;
+    const dangerList: AssetApprovalItem[] = [];
+    const warnList: AssetApprovalItem[] = [];
+    const safeList: AssetApprovalItem[] = [];
+    const numMap: Record<string, string> = {
+      safe: 'safe',
+      warning: 'warning',
+      danger: 'danger',
+    };
+    for (let i = 0; i < l; i++) {
+      const item = assetsList[i];
+      if (item.risk_level === numMap.warning) {
+        warnList.push(item);
+      } else if (item.risk_level === numMap.danger) {
+        dangerList.push(item);
+      } else {
+        safeList.push(item);
+      }
     }
 
-    const keywords = search.toLowerCase();
-    return sortedContractList.filter((e) => {
-      return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
-        e.toLowerCase().includes(keywords)
-      );
-    });
-  }, [sortedContractList, search]);
+    const groupedSafeList = groupBy(safeList, (item) => item.chain);
+    const sorted = sortBy(Object.values(groupedSafeList), 'length');
+    const sortedList = sorted.map((e) =>
+      sortBy(e, (a) => a.list.length).reverse()
+    );
+    return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
+  }, [tokenMap, nftMap, filterType]);
 
-  const handleClickBack = useCallback(() => {
-    queueRef.current.clear();
-    history.replace('/');
-  }, []);
-
-  const listRef = useRef<VariableSizeList>(null);
-  const sizeMap = useRef<Record<number, number>>({});
-
-  const setSize = useCallback((index: number, size: number) => {
-    sizeMap.current = { ...sizeMap.current, [index]: size + 12 };
-    listRef?.current.resetAfterIndex(index);
-  }, []);
-
-  const getSize = useCallback(
-    (index: number) =>
-      filterType === 'contract' ? sizeMap.current[index] || 68 : 68,
-    [filterType]
-  );
-
-  const subTitle = useMemo(() => {
-    if (filterType === 'contract') {
-      return 'Approval contract';
+  const { displaySortedContractList, displaySortedAssetsList } = useMemo(() => {
+    if (!searchKw || searchKw.trim() === '') {
+      return {
+        displaySortedContractList: sortedContractList,
+        displaySortedAssetsList: sortedAssetstList,
+      };
     }
-    if (filterType === 'token') {
-      return 'Token Balance';
-    }
-    return 'NFT & Collection';
-  }, [filterType]);
 
-  useEffect(() => {
-    listRef?.current?.scrollToItem(0);
-    listRef?.current?.resetAfterIndex?.(0);
-  }, [filterType]);
+    const keywords = searchKw.toLowerCase();
+    return {
+      displaySortedContractList: sortedContractList.filter((e) => {
+        return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
+          e.toLowerCase().includes(keywords)
+        );
+      }),
+      displaySortedAssetsList: sortedAssetstList.filter((e) => {
+        return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
+          e.toLowerCase().includes(keywords)
+        );
+      }),
+    };
+  }, [sortedContractList, searchKw]);
 
-  if (!chain) {
-    return null;
-  }
+  return {
+    isLoading: loading,
+    searchKw,
+    setSearchKw,
 
-  return (
-    <div className="token-approval">
-      <PageHeader className="mb-0" onBack={handleClickBack} forceShowBack>
-        {t('Approvals')}
-      </PageHeader>
-      <div>
-        <div className="flex justify-between items-center mt-[16px]">
-          <Input
-            className="w-[244px] h-[40px] rounded-[6px] p-0 pl-[12px] "
-            size="large"
-            prefix={<img className="mr-[10px]" src={IconSearch} />}
-            placeholder={'Search by name/address'}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            spellCheck={false}
-          />
-          <Dropdown
-            trigger={['click']}
-            overlay={
-              <Menu className="filter-approval-menu ">
-                {(Object.keys(FILTER_TYPES) as Array<
-                  keyof typeof FILTER_TYPES
-                >).map((e) => {
-                  return (
-                    <Menu.Item key={e} onClick={() => setFilterType(e)}>
-                      {FILTER_TYPES[e]}
-                    </Menu.Item>
-                  );
-                })}
-              </Menu>
-            }
-          >
-            <div
-              role="button"
-              className="bg-white cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-gray-subTitle hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
-            >
-              {FILTER_TYPES[filterType]} <IconDownArrow className="ml-4" />
-            </div>
-          </Dropdown>
-        </div>
-        <div className="mt-[16px] mb-[8px] text-12 text-gray-subTitle w-full flex justify-between items-center">
-          <span>{subTitle}</span>
-        </div>
+    filterType,
+    setFilterType,
 
-        <div className="token-approval-list bg-transparent">
-          <div className="token-approval-body  min-h-[450px]">
-            {loading && <Loading />}
+    vGridRef,
 
-            {!loading &&
-              (displaySortedContractList.length <= 0 ? (
-                <Empty className="py-[90px]">{t('No Approvals')}</Empty>
-              ) : (
-                <VariableSizeList
-                  ref={listRef}
-                  height={450}
-                  width="100%"
-                  itemCount={displaySortedContractList.length}
-                  itemSize={getSize}
-                  itemData={displaySortedContractList}
-                  setSize={setSize}
-                >
-                  {({
-                    data,
-                    index,
-                    style,
-                  }: {
-                    data: ApprovalItem[];
-                    index: number;
-                    style: CSSProperties;
-                  }) => (
-                    <div style={style}>
-                      <ApprovalContractItem
-                        data={data}
-                        index={index}
-                        setSize={setSize}
-                        onClick={onSelect}
-                      />
-                    </div>
-                  )}
-                </VariableSizeList>
-              ))}
-          </div>
-        </div>
-      </div>
-      <RevokeApprovalDrawer
-        item={selectedItem}
-        visible={visible}
-        onClose={onClose}
-      />
-    </div>
-  );
-};
-
-function sortTokenOrNFTApprovalsSpenderList(
-  item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
-) {
-  Object.keys(item).forEach((t) => {
-    item[t].list
-      .sort((a, b) => b.value - a.value)
-      .sort((a, b) => {
-        const numMap: Record<string, number> = {
-          safe: 1,
-          warning: 10,
-          danger: 100,
-        };
-        return numMap[b.risk_level] - numMap[a.risk_level];
-      });
-  });
+    account,
+    chain,
+    displaySortedContractList,
+    displaySortedAssetsList,
+  };
 }
-
-export default ApprovalManage;

@@ -1,0 +1,225 @@
+@import "@/ui/style/var.less";
+
+@page-padding-top: 40px;
+@page-header-h: 24px;
+@page-header-mb: 20px;
+@tools-h: 48px;
+@table-mt: 20px;
+@table-header-h: 48px;
+
+// value of `@sticky-top-height` is 200px
+@sticky-top-height: @page-padding-top + @page-header-h + @page-header-mb + @tools-h + @table-mt + @table-header-h;
+@sticky-footer-height: 191px;
+@radius-value: 6px;
+
+@table-last-cell-pr: 20px;
+
+@main-w: 1040px;
+
+.approvals-manager-page {
+  width: 100vw;
+  height: 100vh;
+  padding-top: @page-padding-top;
+  padding-bottom: @sticky-footer-height;
+  background: @color-bg;
+}
+
+.approvals-manager {
+  overflow: hidden;
+  height: 100%;
+  min-width: @main-w;
+  width: @main-w;
+  max-width: 1280px;
+  // width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  > .approvals-manager__header {
+    flex-shrink: 0;
+  }
+
+  > main {
+    flex-shrink: 1;
+    height: 100%;
+  }
+}
+
+.approvals-manager__header {
+  height: @page-header-h;
+  width: @main-w;
+  margin: 0 auto;
+  // font-family: Roboto;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
+
+  > .title {
+    text-align: center;
+    color: @color-title;
+    text-align: center;
+  }
+  
+  .addr-abbr {
+    color: @color-comment;
+  }
+}
+
+.approvals-manager__table-tools {
+  width: @main-w;
+  margin: 0 auto;
+  height: @tools-h;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > .search-input-wrapper {
+    height: @tools-h;
+    background-color: white;
+    border-radius: @radius-value;
+    overflow: hidden;
+  }
+
+  .search-input {
+    height: 100%;
+    width: 380px;
+    border-width: 0;
+    border-color: transparent !important;
+  }
+
+  .search-input .ant-input-prefix {
+    margin-right: 12px;
+  }
+}
+
+.approvals-manager__table-wrapper {
+  margin-top: @table-mt;
+}
+
+@table-row-height: 60px;
+@table-body-row-gap: 12px;
+
+.am-virtual-table {
+  max-width: @main-w;
+  margin: 0 auto;
+
+  .ant-table {
+    background: transparent;
+  }
+
+  .ant-table-header, .ant-table-header > table {
+    height: @table-row-height;
+  }
+
+  .ant-table-thead > tr > th.am-virtual-table-head-cell {
+    padding-left: 0;
+    padding-right: 0;
+    background-color: white;
+
+    // in fact, the last item is placeholder with `.ant-table-cell-scrollbar`
+    &:nth-last-child(1) {
+      padding-right: @table-last-cell-pr;
+    }
+
+    &:first-child {
+      border-top-left-radius: @radius-value;
+      border-bottom-left-radius: @radius-value;
+    }
+    
+    &:last-child {
+      border-top-right-radius: @radius-value;
+      border-bottom-right-radius: @radius-value;
+    }
+  }
+
+  .ant-table-thead > tr {
+    border-radius: @radius-value;
+  }
+
+  .ant-table-container:before,
+  .ant-table-container:after {
+    display: none;
+  }
+
+  .am-virtual-grid {
+    overflow-y: overlay !important;
+
+    .am-virtual-table-cell-inner {
+      cursor: pointer;
+    }
+  }
+  
+  .am-virtual-table-cell {
+    padding: 12px 0;
+    background: transparent;
+
+    &.is-first-cell > .am-virtual-table-cell-inner {
+      border-top-left-radius: @radius-value;
+      border-bottom-left-radius: @radius-value;
+    }
+    
+    &.is-last-cell > .am-virtual-table-cell-inner {
+      border-top-right-radius: @radius-value;
+      border-bottom-right-radius: @radius-value;
+
+      padding-right: @table-last-cell-pr;
+    }
+  }
+
+  .am-virtual-table-cell-inner {
+    box-sizing: border-box;
+    padding: 16px 0;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  [data-theme="dark"]  .am-virtual-table-cell-inner {
+    background: #141414;
+  }
+
+  .am-virtual-table-cell-inner .name-and-address {
+    &, .address {
+      color: @color-title;
+    }
+
+    .contract-name {
+      color: @color-body;
+    }
+  }
+}
+
+.pills-switch {
+  background-color: @color-border;
+  // min-height: 48px;
+  height: 100%;
+  padding: 4px;
+  border-radius: @radius-value;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pills-switch__item {
+  color: @color-comment;
+  text-align: center;
+  // font-family: Roboto;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  width: 148px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+
+  &.is-active {
+    border-radius: 4px;
+    background: #fff;
+    color: @primary-color;
+  }
+}
