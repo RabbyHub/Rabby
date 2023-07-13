@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useIntersection } from 'react-use';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -78,22 +77,13 @@ const ProtocolItemWrapper = styled.div`
 `;
 const ProtocolItem = ({
   protocol,
-  enableVirtualList,
+  enableDelayVisible,
   isSearch,
 }: {
   protocol: DisplayedProject;
-  enableVirtualList: boolean;
+  enableDelayVisible: boolean;
   isSearch?: boolean;
 }) => {
-  const intersectionRef = React.useRef<HTMLDivElement>(null);
-  const divRef = React.useRef<HTMLDivElement>(null);
-  // const intersection = useIntersection(intersectionRef, {
-  //   root: null,
-  //   rootMargin: '-20px',
-  //   threshold: 0,
-  // });
-  // const [isDisplay, setIsDisplay] = useState(true);
-  // const [height, setHeight] = useState(0);
   const [isExpand, setIsExpand] = useState(false);
   const { visible } = useCommonPopupView();
   const [delayVisible, setDelayVisible] = useState(false);
@@ -114,53 +104,19 @@ const ProtocolItem = ({
 
     const timer = setTimeout(() => {
       setDelayVisible(visible);
-    }, 500);
+    }, 300);
     return () => {
       clearTimeout(timer);
     };
   }, [visible]);
 
-  // useEffect(() => {
-  //   if (enableVirtualList) {
-  //     if (
-  //       intersection?.intersectionRatio &&
-  //       intersection?.intersectionRatio > 0
-  //     ) {
-  //       setIsDisplay(true);
-  //     } else {
-  //       setIsDisplay(false);
-  //     }
-  //   }
-  // }, [intersection, enableVirtualList]);
-
-  // useEffect(() => {
-  //   if (intersectionRef.current && divRef.current) {
-  //     const rect = divRef.current.getBoundingClientRect();
-  //     setHeight(rect.height);
-  //   }
-  // }, [protocol._portfolios.length, isExpand]);
-
-  if (!delayVisible) {
+  if (enableDelayVisible && !delayVisible) {
     return null;
   }
 
   return (
-    <ProtocolItemWrapper
-      ref={intersectionRef}
-      style={
-        {
-          // height: enableVirtualList && height ? `${height}px` : undefined,
-        }
-      }
-    >
-      <div
-        ref={divRef}
-        style={
-          {
-            // display: isDisplay ? 'block' : 'none',
-          }
-        }
-      >
+    <ProtocolItemWrapper>
+      <div>
         <div className="title" onClick={onClickTitle}>
           <IconWithChain
             iconUrl={protocol.logo}
@@ -195,8 +151,8 @@ const ProtocolListWrapper = styled.div`
 `;
 
 const ProtocolList = ({ list, isSearch }: Props) => {
-  const enableVirtualList = useMemo(() => {
-    return (list || []).length > 50;
+  const enableDelayVisible = useMemo(() => {
+    return (list || []).length > 100;
   }, [list]);
 
   if (!list) return null;
@@ -207,7 +163,7 @@ const ProtocolList = ({ list, isSearch }: Props) => {
         <ProtocolItem
           protocol={item}
           key={item.id}
-          enableVirtualList={enableVirtualList}
+          enableDelayVisible={enableDelayVisible}
           isSearch={isSearch}
         />
       ))}
