@@ -96,7 +96,7 @@ export const Quotes = ({
             }
             return new BigNumber(
               quote?.preExecResult.swapPreExecTx.balance_change
-                .receive_token_list[0].amount || 0
+                .receive_token_list?.[0]?.amount || 0
             );
           }
 
@@ -129,12 +129,6 @@ export const Quotes = ({
     );
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
-  const refresh = useSetRefreshId();
-
-  const refreshQuote = React.useCallback(() => {
-    refresh((e) => e + 1);
-  }, [refresh]);
-
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
 
   const noCex = useMemo(() => {
@@ -144,62 +138,42 @@ export const Quotes = ({
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
     return (
-      <>
-        <div className="h-18 mb-16 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
-          <div>The following swap rates are found</div>
-          <div className="w-20 h-20 relative overflow-hidden">
-            <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-              <IconRefresh onClick={refreshQuote} />
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col gap-8">
+        {dex ? (
+          <DexQuoteItem
+            inSufficient={inSufficient}
+            preExecResult={dex?.preExecResult}
+            quote={dex?.data}
+            name={dex?.name}
+            isBestQuote
+            bestAmount={`${
+              dex?.preExecResult?.swapPreExecTx.balance_change
+                .receive_token_list[0]?.amount || '0'
+            }`}
+            active={activeName === dex?.name}
+            isLoading={dex.loading}
+            quoteProviderInfo={{
+              name: 'Wrap Contract',
+              logo: other?.receiveToken?.logo_url,
+            }}
+            {...other}
+          />
+        ) : (
+          <QuoteLoading
+            name="Wrap Contract"
+            logo={other?.receiveToken?.logo_url}
+          />
+        )}
 
-        <div className="flex flex-col gap-8">
-          {dex ? (
-            <DexQuoteItem
-              inSufficient={inSufficient}
-              preExecResult={dex?.preExecResult}
-              quote={dex?.data}
-              name={dex?.name}
-              isBestQuote
-              bestAmount={`${
-                dex?.preExecResult?.swapPreExecTx.balance_change
-                  .receive_token_list[0]?.amount || '0'
-              }`}
-              active={activeName === dex?.name}
-              isLoading={dex.loading}
-              quoteProviderInfo={{
-                name: 'Wrap Contract',
-                logo: other?.receiveToken?.logo_url,
-              }}
-              {...other}
-            />
-          ) : (
-            <QuoteLoading
-              name="Wrap Contract"
-              logo={other?.receiveToken?.logo_url}
-            />
-          )}
-
-          <div className="text-13 text-gray-content">
-            Wrapping {other.receiveToken.name} tokens directly with the smart
-            contract
-          </div>
+        <div className="text-13 text-gray-content">
+          Wrapping {other.receiveToken.name} tokens directly with the smart
+          contract
         </div>
-      </>
+      </div>
     );
   }
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="h-18 mb-16 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
-        <div>The following swap rates are found</div>
-        <div className="w-20 h-20 relative overflow-hidden">
-          <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-            <IconRefresh onClick={refreshQuote} />
-          </div>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-8">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
@@ -260,20 +234,38 @@ export const Quotes = ({
   );
 };
 
+const bodyStyle = {
+  paddingTop: 0,
+  paddingBottom: 0,
+};
+
 export const QuoteList = (props: QuotesProps) => {
   const { visible, onClose } = props;
+  const refresh = useSetRefreshId();
+
+  const refreshQuote = React.useCallback(() => {
+    refresh((e) => e + 1);
+  }, [refresh]);
+
   return (
     <Popup
       visible={visible}
-      title={null}
+      title={
+        <div className="mb-[-2px] pb-10 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
+          <div>The following swap rates are found</div>
+          <div className="w-20 h-20 relative overflow-hidden">
+            <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+              <IconRefresh onClick={refreshQuote} />
+            </div>
+          </div>
+        </div>
+      }
       height={544}
       onClose={onClose}
       closable
       destroyOnClose
       className="isConnectView z-[999]"
-      bodyStyle={{
-        paddingBottom: 0,
-      }}
+      bodyStyle={bodyStyle}
     >
       <Quotes {...props} />
     </Popup>
