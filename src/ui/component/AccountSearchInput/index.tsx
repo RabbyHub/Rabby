@@ -83,8 +83,13 @@ function useSearchAccount(searchKeyword?: string) {
 
       result.filteredAccounts = result.accountList.filter((account) => {
         const aliasName = account.alianName?.toLowerCase();
-
-        return aliasName?.includes(lKeyword);
+        let addrIncludeKw = false;
+        if (lKeyword.replace(/^0x/, '').length >= 2) {
+          addrIncludeKw = account.address
+            .toLowerCase()
+            .includes(lKeyword.toLowerCase());
+        }
+        return aliasName?.includes(lKeyword) || addrIncludeKw;
       });
     }
 
@@ -153,7 +158,7 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
     const [inputFocusing, setInputFocusing] = useState(false);
 
     const isInputAddrLike = useMemo(() => {
-      return searchKeyword?.startsWith('0x');
+      return searchKeyword?.startsWith('0x') && searchKeyword?.length === 42;
     }, [searchKeyword]);
 
     const wrapperRef = useRef<HTMLDivElement>(null);
