@@ -62,7 +62,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
             tip="The USD value of the top NFT that has approved to this spender address"
             className="bg-[#F6F8FF]"
           >
-            Risk exposure
+            Contract trust value
           </Row>
           <Row>
             {data.riskExposure === null ? (

@@ -404,7 +404,7 @@ const checkGasAndNonce = ({
   ) {
     errors.push({
       code: 3001,
-      msg: 'The reserved gas fee is not enough',
+      msg: 'You do not have enough gas in your wallet',
       level: 'forbidden',
     });
   }

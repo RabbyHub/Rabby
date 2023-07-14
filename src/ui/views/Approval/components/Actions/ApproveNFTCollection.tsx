@@ -117,8 +117,8 @@ const ApproveNFTCollection = ({
               <SecurityListItem
                 id="1054"
                 engineResult={engineResultMap['1054']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Contract trust value ≤ $10,000"
+                warningText="Contract trust value ≤ $100,000"
               />
 
               <SecurityListItem
