@@ -223,3 +223,23 @@
     color: @primary-color;
   }
 }
+.approvals-manager .alert-with-caret {
+  position: relative;
+
+  &:before {
+    content: " ";
+    position: absolute;
+    top: -16px;
+    left: 68px;
+    border: 8px solid transparent;
+    border-bottom: 12px solid #ec5151;
+  }
+
+  &.J_risky_danger &::before {
+    border-bottom-color: #ec5151;
+  }
+
+  &.J_risky_warning &::before {
+    border-bottom-color: @color-orange;
+  }
+}

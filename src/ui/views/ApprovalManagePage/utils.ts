@@ -108,3 +108,7 @@ export function getRiskAboutValues(
 
   return result;
 }
+
+export function isRiskyContract(contract: ContractApprovalItem) {
+  return ['danger', 'warning'].includes(contract.risk_level);
+}

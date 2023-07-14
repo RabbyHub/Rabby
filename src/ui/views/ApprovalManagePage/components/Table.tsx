@@ -58,11 +58,19 @@ export function VirtualTable<RecordType extends object>({
   isLoading,
   markHoverRow,
   vGridRef,
+  getRowHeight,
+  getTotalHeight,
   ...props
 }: TableProps<RecordType> & {
   isLoading?: boolean;
   markHoverRow?: boolean;
   vGridRef?: React.MutableRefObject<VGrid>;
+  getTotalHeight?: (rows: readonly RecordType[]) => number;
+  getRowHeight?: (
+    row: RecordType,
+    idx: number,
+    rows: readonly RecordType[]
+  ) => number | void;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -117,12 +125,16 @@ export function VirtualTable<RecordType extends object>({
 
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
+  const totalHeight = useMemo(() => {
+    return getTotalHeight?.(props.dataSource || []) || 0;
+  }, [getTotalHeight, props.dataSource]);
+
   const renderVirtualList = (
     rowData: readonly RecordType[],
     { scrollbarSize, ref, onScroll }: any
   ) => {
     ref.current = connectObject;
-    const totalHeight = rowData.length * ROW_HEIGHT;
+    // const totalHeight = rowData.length * ROW_HEIGHT;
 
     return (
       <VGrid
@@ -137,7 +149,11 @@ export function VirtualTable<RecordType extends object>({
             : (width as number);
         }}
         rowCount={rowData.length}
-        rowHeight={() => ROW_HEIGHT}
+        rowHeight={(rowIndex: number) => {
+          return (
+            getRowHeight?.(rowData[rowIndex], rowIndex, rowData) || ROW_HEIGHT
+          );
+        }}
         height={scroll!.y as number}
         width={tableWidth}
         onScroll={({ scrollLeft }: { scrollLeft: number }) => {
