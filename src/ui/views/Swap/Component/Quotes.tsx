@@ -14,6 +14,7 @@ import {
 } from '../hooks';
 import BigNumber from 'bignumber.js';
 import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
+import { SvgIconCross } from 'ui/assets';
 
 const CexListWrapper = styled.div`
   border: 1px solid #e5e9ef;
@@ -199,7 +200,7 @@ export const Quotes = ({
       </div>
 
       {!noCex && (
-        <div className="text-gray-light text-12 mt-16 mb-8">Rates from CEX</div>
+        <div className="text-gray-light text-12 mt-20 mb-8">Rates from CEX</div>
       )}
 
       <CexListWrapper>
@@ -219,13 +220,14 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
+      <div className="pt-[40px]" />
 
-      <div className="mt-auto text-gray-light text-12 pb-14">
+      <div className="flex items-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2 pl-20 text-gray-light ">
         Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
         {tradeCount} can trade.{' '}
         <span
           onClick={openSettings}
-          className="cursor-pointer text-blue-light underline underline-blue-light"
+          className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
         >
           Edit
         </span>
@@ -249,6 +251,9 @@ export const QuoteList = (props: QuotesProps) => {
 
   return (
     <Popup
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-gray-content pt-[2px]" />
+      }
       visible={visible}
       title={
         <div className="mb-[-2px] pb-10 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">

@@ -70,7 +70,7 @@ import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
-import LogoUniswap from 'ui/assets/walletlogo/uniswap.svg';
+import LogoUniswap from 'ui/assets/swap/uniswap.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
