@@ -117,7 +117,13 @@ const ProtocolItem = ({
   return (
     <ProtocolItemWrapper>
       <div>
-        <div className="title" onClick={onClickTitle}>
+        <div
+          className={clsx(
+            'title border border-solid border-transparent rounded-[6px]',
+            'hover:border-blue-light'
+          )}
+          onClick={onClickTitle}
+        >
           <IconWithChain
             iconUrl={protocol.logo}
             chainServerId={protocol.chain || 'eth'}
