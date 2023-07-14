@@ -24,8 +24,18 @@
   background: @color-bg;
 
   * {
+    // ::-webkit-scrollbar {
+    //   display: none;
+    // }
     ::-webkit-scrollbar {
-      display: none;
+      width: 6px;
+      background-color: #fafafa;
+      padding-left: 1px;
+      padding-right: 1px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 4px;
     }
   }
 }
@@ -124,19 +134,26 @@
     padding-right: 0;
     background-color: white;
 
-    // in fact, the last item is placeholder with `.ant-table-cell-scrollbar`
-    &:nth-last-child(1) {
-      padding-right: @table-last-cell-pr;
-    }
-
     &:first-child {
       border-top-left-radius: @radius-value;
       border-bottom-left-radius: @radius-value;
     }
     
-    &:last-child {
+    // &:last-child {
+    //   border-top-right-radius: @radius-value;
+    //   border-bottom-right-radius: @radius-value;
+    // }
+
+    // in fact, the last item is placeholder with `.ant-table-cell-scrollbar`
+    &:nth-last-child(1) {
+      padding-right: @table-last-cell-pr;
       border-top-right-radius: @radius-value;
       border-bottom-right-radius: @radius-value;
+    }
+
+    &.ant-table-cell-scrollbar:last-child {
+      box-shadow: none;
+      width: 0;
     }
 
     .ant-table-column-sorters {

@@ -113,3 +113,73 @@ export function makeComputedRiskAboutValues(
     last_approve_at: coerceInteger(spender?.last_approve_at, 0),
   };
 }
+
+export type ApprovalRiskLevel = 'safe' | 'warning' | 'danger';
+const RiskNumMap = {
+  safe: 1,
+  warning: 10,
+  danger: 100,
+} as const;
+function getContractRiskInfo(contract: ContractApprovalItem) {
+  const serverRiskLevel = contract.risk_level;
+  const serverRiskScore = RiskNumMap[serverRiskLevel];
+
+  const exposureValue = coerceFloat(
+    contract.$riskAboutValues.risk_exposure_usd_value
+  );
+  const clientExposureLevel =
+    exposureValue < 1e4 ? 'danger' : exposureValue < 1e6 ? 'warning' : 'safe';
+  const clientExposureScore = RiskNumMap[clientExposureLevel];
+
+  const approve_user_count = coerceInteger(
+    contract.$riskAboutValues.approve_user_count
+  );
+  const revoke_user_count = coerceInteger(
+    contract.$riskAboutValues.revoke_user_count
+  );
+
+  const clientApprovalLevel =
+    revoke_user_count > approve_user_count * 2
+      ? 'danger'
+      : revoke_user_count > approve_user_count / 2
+      ? 'warning'
+      : 'safe';
+  ('safe');
+  const clientApprovalScore = RiskNumMap[clientApprovalLevel];
+
+  const clientRiskScore = Math.max(clientExposureScore, clientApprovalScore);
+
+  return {
+    serverRiskScore,
+    clientRiskScore,
+
+    extra: {
+      serverRiskLevel,
+
+      clientExposureLevel,
+      clientExposureScore,
+
+      clientApprovalLevel,
+      clientApprovalScore,
+    },
+  };
+}
+
+export function sortContractApprovalItems(
+  contractItems: ContractApprovalItem[]
+) {
+  return contractItems.sort((a, b) => {
+    const aRisk = getContractRiskInfo(a);
+    const bRisk = getContractRiskInfo(b);
+
+    if (aRisk.serverRiskScore !== bRisk.serverRiskScore) {
+      return aRisk.serverRiskScore - bRisk.serverRiskScore;
+    }
+
+    if (aRisk.clientRiskScore !== bRisk.clientRiskScore) {
+      return aRisk.clientRiskScore - bRisk.clientRiskScore;
+    }
+
+    return 0;
+  });
+}

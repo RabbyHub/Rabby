@@ -92,8 +92,6 @@ function sortTokenOrNFTApprovalsSpenderList(
 
 export function useApprovalsPage() {
   const wallet = useWallet();
-  const { t } = useTranslation();
-  const history = useHistory();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
   const chain = useRabbySelector(
@@ -127,7 +125,7 @@ export function useApprovalsPage() {
     ) || '';
 
   useEffect(() => {
-    vGridRef?.current?.scrollToItem(0);
+    vGridRef?.current?.scrollToItem({ columnIndex: 0 });
     vGridRef?.current?.resetAfterColumnIndex(0);
   }, [filterType]);
 
@@ -358,7 +356,7 @@ export function useApprovalsPage() {
     const assetsList = [
       ...Object.values(tokenMap || {}),
       ...Object.values(nftMap || {}),
-    ];
+    ] as AssetApprovalItem[];
     const l = assetsList.length;
     const dangerList: AssetApprovalItem[] = [];
     const warnList: AssetApprovalItem[] = [];

@@ -320,7 +320,7 @@ const ApprovalManage = () => {
 
   const setSize = useCallback((index: number, size: number) => {
     sizeMap.current = { ...sizeMap.current, [index]: size + 12 };
-    listRef?.current.resetAfterIndex(index);
+    listRef?.current?.resetAfterIndex(index);
   }, []);
 
   const getSize = useCallback(
@@ -407,6 +407,7 @@ const ApprovalManage = () => {
                   itemCount={displaySortedContractList.length}
                   itemSize={getSize}
                   itemData={displaySortedContractList}
+                  // @ts-expect-error
                   setSize={setSize}
                 >
                   {({

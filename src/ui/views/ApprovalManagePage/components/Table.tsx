@@ -1,27 +1,3 @@
-// import React from 'react';
-
-// function TableHead({ children }: React.PropsWithChildren<{}>) {
-//   return <div className="approvals-manager__table-head">{children}</div>;
-// }
-
-// function TableBody({ children }: React.PropsWithChildren<{}>) {
-//   return <div className="approvals-manager__table-body">{children}</div>;
-// }
-
-// function TableRow({ children }: React.PropsWithChildren<{}>) {
-//   return <div className="approvals-manager__table-row">{children}</div>;
-// }
-
-// export default function ApprovalsTable({ children }: React.PropsWithChildren<{}>) {
-//   return <>
-//     {children}
-//   </>;
-// }
-
-// ApprovalsTable.Head = TableHead;
-// ApprovalsTable.Body = TableBody;
-// ApprovalsTable.Row = TableRow;
-
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
@@ -31,12 +7,9 @@ import classNames from 'classnames';
 import clsx from 'clsx';
 import ResizeObserver from 'rc-resize-observer';
 import { VariableSizeGrid as VGrid } from 'react-window';
+import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
 const DEFAULT_SCROLL = { y: 300, x: '100vw' };
-const ROW_INNER_HEIGHT = 60;
-const ROW_GAP = 12;
-
-const ROW_HEIGHT = ROW_INNER_HEIGHT + ROW_GAP * 2;
 
 function TableHeadCell({
   children,
@@ -60,10 +33,11 @@ export function VirtualTable<RecordType extends object>({
   onClickRow,
   getRowHeight,
   getTotalHeight,
+  showScrollbar = true,
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
-  vGridRef?: React.MutableRefObject<VGrid>;
+  vGridRef?: React.RefObject<VGrid>;
   onClickRow?: (e: React.MouseEvent, record: RecordType) => void;
   getTotalHeight?: (rows: readonly RecordType[]) => number;
   getRowHeight?: (
@@ -71,6 +45,7 @@ export function VirtualTable<RecordType extends object>({
     idx: number,
     rows: readonly RecordType[]
   ) => number | void;
+  showScrollbar?: boolean;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -92,14 +67,15 @@ export function VirtualTable<RecordType extends object>({
     });
   }, [columns, tableWidth, widthColumnCount]);
 
-  const localGridRef = useRef<VGrid>();
+  const localGridRef = useRef<VGrid>(null);
 
   const gridRef = vGridRef || localGridRef;
   const [connectObject] = useState<any>(() => {
-    const obj = {};
+    const obj = {} as {};
     Object.defineProperty(obj, 'scrollLeft', {
       get: () => {
         if (gridRef.current) {
+          // @ts-expect-error
           return gridRef.current?.state?.scrollLeft;
         }
         return null;
@@ -117,6 +93,7 @@ export function VirtualTable<RecordType extends object>({
   const resetVirtualGrid = () => {
     gridRef.current?.resetAfterIndices({
       columnIndex: 0,
+      rowIndex: 0,
       shouldForceUpdate: true,
     });
   };
@@ -126,7 +103,10 @@ export function VirtualTable<RecordType extends object>({
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
   const totalHeight = useMemo(() => {
-    return getTotalHeight?.(props.dataSource || []) || 0;
+    return (
+      getTotalHeight?.(props.dataSource || []) ||
+      (props.dataSource?.length ?? 0) * ROW_HEIGHT
+    );
   }, [getTotalHeight, props.dataSource]);
 
   const renderVirtualList = (
@@ -143,9 +123,12 @@ export function VirtualTable<RecordType extends object>({
         columnCount={mergedColumns.length}
         columnWidth={(index: number) => {
           const { width } = mergedColumns[index];
+
+          if (!showScrollbar) return width as number;
+
           return totalHeight > (scroll!.y! as number) &&
             index === mergedColumns.length - 1
-            ? (width as number) - scrollbarSize - 1
+            ? (width as number) - SCROLLBAR_WIDTH - 1
             : (width as number);
         }}
         rowCount={rowData.length}

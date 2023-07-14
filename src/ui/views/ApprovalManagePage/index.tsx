@@ -9,9 +9,10 @@ import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
 import { NameAndAddress } from '@/ui/component';
-import { findChainByServerID } from '@/utils/chain';
+import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
 
 import { VirtualTable } from './components/Table';
+import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from './components/SwitchPills';
 
 import IconSearch from 'ui/assets/search.svg';
@@ -35,19 +36,10 @@ import type {
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import { formatTimeFromNow, isRiskyContract } from './utils';
-import { IconWithChain } from '@/ui/component/TokenWithChain';
+import TokenWithChain, { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
-
-const ROW_SIZES = {
-  ROW_INNER_HEIGHT: 60,
-  ROW_GAP: 12,
-  RISKY_ROW_INNER_HEIGHT: 96,
-};
-const ROW_GAP = 12;
-
-const ROW_HEIGHT = ROW_SIZES.ROW_INNER_HEIGHT + ROW_GAP * 2;
-const RISKY_ROW_HEIGHT = ROW_SIZES.RISKY_ROW_INNER_HEIGHT + ROW_GAP * 2;
+import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort: 'ascend' | 'descend') {
@@ -267,7 +259,7 @@ function getColumnsForAsset({
       key: 'assetType',
       dataIndex: 'type',
       render: (_, row) => {
-        if (row.type === 'nft') {
+        if (row.type === 'nft' && row.nftContract) {
           const chainItem = findChainByServerID(row.chain as Chain['serverId']);
           return (
             <span className="capitalize inline-flex items-center">
@@ -287,6 +279,8 @@ function getColumnsForAsset({
               />
             </span>
           );
+        } else if (row.type === 'nft' && row.nftToken) {
+          return <span className="capitalize">NFT</span>;
         }
 
         return <span className="capitalize">{row.type}</span>;
@@ -306,7 +300,13 @@ function getColumnsForAsset({
           return `${splitNumberByStep(row.balance.toFixed(2))} ${row.name}`;
         }
 
-        return `${row.list.length} Collection`;
+        if (row.type === 'nft' && row.nftContract) {
+          return '1 Collection';
+        }
+
+        return `${
+          row.nftContract?.is_erc721 ? 1 : row.nftContract?.is_erc721
+        } NFT`;
       },
       width: 160,
     },
@@ -317,23 +317,30 @@ function getColumnsForAsset({
       dataIndex: 'key',
       render: (_, row) => {
         const chainItem = findChainByServerID(row.chain as Chain['serverId']);
-        if (!chainItem) return null;
+        // if (!chainItem) return null;
 
         return (
           <div className="flex items-center">
-            <IconWithChain
+            {/* <IconWithChain
               width="24px"
               height="24px"
               hideConer
               iconUrl={row?.logo_url || IconUnknown}
               chainServerId={row.chain}
               noRound={row.type === 'nft'}
-            />
+            /> */}
+            {chainItem && (
+              <TokenWithChain
+                width="24px"
+                height="24px"
+                token={makeTokenFromChain(chainItem)}
+              />
+            )}
 
             <NameAndAddress
               className="ml-[6px]"
               address={row.id}
-              chainEnum={chainItem.enum}
+              chainEnum={chainItem?.enum}
               addressSuffix={
                 <span className="contract-name ml-[4px]">
                   ({row.name || 'Unknown'})
@@ -360,27 +367,136 @@ function getColumnsForAsset({
 
         return formatTimeFromNow(time ? time * 1e3 : 0);
       },
-      width: 160,
+      width: 160 + 20,
     },
   ];
 
   return columnsForAsset;
 }
 
+type PageTableProps<T extends ApprovalItem = ApprovalItem> = {
+  isLoading: boolean;
+  dataSource: T[];
+  containerHeight: number;
+  onClickRow: (e: React.MouseEvent, record: T) => void;
+  vGridRef: React.RefObject<VGrid>;
+};
+function TableByContracts({
+  isLoading,
+  dataSource,
+  containerHeight,
+  onClickRow,
+  vGridRef,
+}: PageTableProps<ContractApprovalItem>) {
+  const [sortedInfo, setSortedInfo] = useState<
+    SorterResult<ContractApprovalItem>
+  >({
+    columnKey: 'approvalTime',
+    order: DEFAULT_SORT_ORDER,
+  });
+
+  const handleChange: TableProps<ContractApprovalItem>['onChange'] = useCallback(
+    (pagination, filters, sorter) => {
+      setSortedInfo((prev) => ({
+        ...sorter,
+        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+      }));
+    },
+    []
+  );
+
+  const getContractListTotalHeight = useCallback(
+    (rows: readonly ContractApprovalItem[]) => {
+      return rows.reduce((accu, row) => {
+        if (isRiskyContract(row)) {
+          accu += RISKY_ROW_HEIGHT;
+        } else {
+          accu += ROW_HEIGHT;
+        }
+        return accu;
+      }, 0);
+    },
+    []
+  );
+
+  return (
+    <VirtualTable<ContractApprovalItem>
+      loading={isLoading}
+      vGridRef={vGridRef}
+      columns={getColumnsForContract({
+        sortedInfo: sortedInfo,
+      })}
+      dataSource={dataSource}
+      scroll={{ y: containerHeight, x: '100%' }}
+      onClickRow={onClickRow}
+      getTotalHeight={getContractListTotalHeight}
+      getRowHeight={(row) => {
+        if (isRiskyContract(row)) {
+          return RISKY_ROW_HEIGHT;
+        }
+
+        return ROW_HEIGHT;
+      }}
+      onChange={handleChange}
+    />
+  );
+}
+
+function TableByAssets({
+  isLoading,
+  dataSource,
+  containerHeight,
+  onClickRow,
+  vGridRef,
+}: PageTableProps<AssetApprovalItem>) {
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<AssetApprovalItem>>(
+    {
+      columnKey: 'approveTime',
+      order: DEFAULT_SORT_ORDER,
+    }
+  );
+
+  const handleChange: TableProps<AssetApprovalItem>['onChange'] = useCallback(
+    (pagination, filters, sorter) => {
+      setSortedInfo((prev) => ({
+        ...sorter,
+        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+      }));
+    },
+    []
+  );
+
+  return (
+    <VirtualTable<AssetApprovalItem>
+      loading={isLoading}
+      vGridRef={vGridRef}
+      columns={getColumnsForAsset({
+        sortedInfo: sortedInfo,
+      })}
+      dataSource={dataSource}
+      scroll={{ y: containerHeight, x: '100%' }}
+      onClickRow={onClickRow}
+      getRowHeight={(row) => ROW_HEIGHT}
+      onChange={handleChange}
+    />
+  );
+}
+
 const ApprovalManagePage = () => {
   useEffect(() => {
     const listener = (payload: any) => {
-      message.info({
-        type: 'info',
-        content: (
-          <span className="text-white">
-            Switching to a new address. Please wait for the page to refresh.
-          </span>
-        ),
-      });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1200);
+      // message.info({
+      //   type: 'info',
+      //   content: (
+      //     <span className="text-white">
+      //       Switching to a new address. Please wait for the page to refresh.
+      //     </span>
+      //   ),
+      // });
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1200);
+      window.location.reload();
     };
     eventBus.addEventListener('accountsChanged', listener);
 
@@ -405,53 +521,6 @@ const ApprovalManagePage = () => {
   } = useApprovalsPage();
 
   const { yValue } = useTableScrollableHeight();
-
-  const getContractListTotalHeight = useCallback(
-    (rows: readonly ContractApprovalItem[]) => {
-      return rows.reduce((accu, row) => {
-        if (isRiskyContract(row)) {
-          accu += RISKY_ROW_HEIGHT;
-        } else {
-          accu += ROW_HEIGHT;
-        }
-        return accu;
-      }, 0);
-    },
-    []
-  );
-
-  const [sortedInfoForContract, setSortedInfoForContract] = useState<
-    SorterResult<ContractApprovalItem>
-  >({
-    columnKey: 'approvalTime',
-    order: DEFAULT_SORT_ORDER,
-  });
-  const [sortedInfoForAsset, setSortedInfoForAsset] = useState<
-    SorterResult<AssetApprovalItem>
-  >({
-    columnKey: 'approveTime',
-    order: DEFAULT_SORT_ORDER,
-  });
-
-  const handleChangeForContracts: TableProps<ContractApprovalItem>['onChange'] = useCallback(
-    (pagination, filters, sorter) => {
-      setSortedInfoForContract((prev) => ({
-        ...sorter,
-        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
-      }));
-    },
-    []
-  );
-
-  const handleChangeForAsset: TableProps<AssetApprovalItem>['onChange'] = useCallback(
-    (pagination, filters, sorter) => {
-      setSortedInfoForAsset((prev) => ({
-        ...sorter,
-        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
-      }));
-    },
-    []
-  );
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
@@ -499,34 +568,21 @@ const ApprovalManagePage = () => {
 
           <div className="approvals-manager__table-wrapper">
             {filterType === 'contract' && (
-              <VirtualTable<ContractApprovalItem>
-                loading={isLoading}
+              <TableByContracts
+                isLoading={isLoading}
                 vGridRef={vGridRef}
-                columns={getColumnsForContract({
-                  sortedInfo: sortedInfoForContract,
-                })}
+                containerHeight={yValue}
                 dataSource={displaySortedContractList}
-                scroll={{ y: yValue, x: '100%' }}
                 onClickRow={handleClickRow}
-                getTotalHeight={getContractListTotalHeight}
-                getRowHeight={(row) => {
-                  if (isRiskyContract(row)) {
-                    return RISKY_ROW_HEIGHT;
-                  }
-
-                  return ROW_HEIGHT;
-                }}
-                onChange={handleChangeForContracts}
               />
             )}
             {filterType === 'assets' && (
-              <VirtualTable<AssetApprovalItem>
-                loading={isLoading}
+              <TableByAssets
+                isLoading={isLoading}
                 vGridRef={vGridRef}
-                columns={getColumnsForAsset({ sortedInfo: sortedInfoForAsset })}
+                containerHeight={yValue}
                 dataSource={displaySortedAssetsList}
-                scroll={{ y: yValue, x: '100%' }}
-                onChange={handleChangeForAsset}
+                onClickRow={handleClickRow}
               />
             )}
           </div>

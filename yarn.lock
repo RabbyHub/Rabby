@@ -3527,10 +3527,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.13":
-  version "0.6.13"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.13.tgz#ef71a6776de2d05163b564a3d5caaa8a643669fe"
-  integrity sha512-O9vJmQfGDzfZROc4x5nSfwu1lBfQ3r6kUV4CkZantPBMQLJ/RR0IBFv4AYe5yR1psqMgljOCf3s+fEyorsfsww==
+"@rabby-wallet/rabby-api@0.6.14-alpha.0":
+  version "0.6.14-alpha.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.14-alpha.0.tgz#8b13dd0beed8d81a895a4e63aae4b821f354f0b7"
+  integrity sha512-k733NebqVc3OLMVSR21C/ZVYt7RMV7nBMYxBQ++EYKhfmId3l5n77ucw/XfYO0LfM/rzLSJFQRpxMhfBy+khOA==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -4673,6 +4673,13 @@
   integrity sha512-LAJpqYUaCTMT2anZheoidiIymt8MuX286zoVFPM3DVb23aQBH0mAkFvzpd4LKqiolV8bBtZWT5Qp7hClCNDENw==
   dependencies:
     "@types/history" "*"
+    "@types/react" "*"
+
+"@types/react-window@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@types/react-window/-/react-window-1.8.5.tgz#285fcc5cea703eef78d90f499e1457e9b5c02fc1"
+  integrity sha512-V9q3CvhC9Jk9bWBOysPGaWy/Z0lxYcTXLtLipkt2cnRj1JOSFNF7wqGpkScSXMgBwC+fnVRg/7shwgddBG5ICw==
+  dependencies:
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^17.0.4":
