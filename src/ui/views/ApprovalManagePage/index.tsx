@@ -32,7 +32,7 @@ import {
   ApprovalItem,
   ContractApprovalItem,
   AssetApprovalSpender,
-  getSpenderApprovalValue,
+  getSpenderApprovalAmount,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
@@ -43,9 +43,10 @@ import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 
 const DEFAULT_SORT_ORDER = 'descend';
-function getNextSort(currentSort: 'ascend' | 'descend') {
+function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
   return currentSort === 'ascend' ? 'descend' : ('ascend' as const);
 }
+const DEFAULT_SORT_ORDER_TUPLE = ['descend', 'ascend'] as const;
 
 function getColumnsForContract({
   sortedInfo,
@@ -136,10 +137,10 @@ function getColumnsForContract({
         );
       },
       key: 'riskExposure',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) =>
         a.$riskAboutValues.risk_exposure_usd_value -
         b.$riskAboutValues.risk_exposure_usd_value,
-      sortDirections: ['ascend', 'descend'],
       sortOrder:
         sortedInfo.columnKey === 'riskExposure' ? sortedInfo.order : null,
       render(_, row) {
@@ -162,6 +163,7 @@ function getColumnsForContract({
       title: () => <span>{'Recent Revokes(24h)'}</span>,
       key: 'recentRevokes',
       dataIndex: 'revoke_user_count',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) =>
         a.$riskAboutValues.revoke_user_count -
         b.$riskAboutValues.revoke_user_count,
@@ -181,6 +183,7 @@ function getColumnsForContract({
       title: () => <span>{'Approval Time'}</span>,
       key: 'approvalTime',
       dataIndex: 'last_approve_at',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) =>
         a.$riskAboutValues.last_approve_at - b.$riskAboutValues.last_approve_at,
       sortOrder:
@@ -197,6 +200,7 @@ function getColumnsForContract({
       title: () => <span>{'My Approved Assets'}</span>,
       key: 'myApprovedAssets',
       dataIndex: 'approve_user_count',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) => a.list.length - b.list.length,
       sortOrder:
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
@@ -304,28 +308,31 @@ function getColumnsForAsset({
       title: () => <span>{'Approved Amount'}</span>,
       key: 'approvedAmount',
       dataIndex: 'key',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) =>
-        (a.$assetParent?.list.length ?? 0) - (b.$assetParent?.list.length ?? 0),
+        getSpenderApprovalAmount(a).bigValue.gte(
+          getSpenderApprovalAmount(b).bigValue
+        )
+          ? 1
+          : -1,
       sortOrder:
         sortedInfo.columnKey === 'approvedAmount' ? sortedInfo.order : null,
-      render: (_, row) => {
-        const asset = row.$assetParent;
+      render: (_, spender) => {
+        const asset = spender.$assetParent;
         if (!asset) return null;
 
         if (asset.type === 'token') {
-          const spendValues = getSpenderApprovalValue(row);
+          const spendValues = getSpenderApprovalAmount(spender);
           return spendValues.isUnlimited
             ? 'Unlimited'
-            : `${spendValues.stepValue} ${asset.name}`;
+            : `${spendValues.stepNumberText} ${asset.name}`;
         }
 
         if (asset.type === 'nft' && asset.nftContract) {
           return '1 Collection';
         }
 
-        return `${
-          asset.nftContract?.is_erc721 ? 1 : asset.nftContract?.is_erc721
-        } NFT`;
+        return `${asset.nftToken?.is_erc721 ? 1 : 1} NFT`;
       },
       width: 160,
     },
@@ -375,6 +382,7 @@ function getColumnsForAsset({
       title: () => <span>{'Approve Time'}</span>,
       key: 'approveTime',
       dataIndex: 'key',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       sorter: (a, b) => (a.last_approve_at || 0) - (b.last_approve_at || 0),
       sortOrder:
         sortedInfo.columnKey === 'approveTime' ? sortedInfo.order : null,
@@ -415,7 +423,7 @@ function TableByContracts({
     (pagination, filters, sorter) => {
       setSortedInfo((prev) => ({
         ...sorter,
-        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+        order: sorter.order ?? getNextSort(prev.order) ?? DEFAULT_SORT_ORDER,
       }));
     },
     []
@@ -476,7 +484,7 @@ function TableByAssetSpenders({
     (pagination, filters, sorter) => {
       setSortedInfo((prev) => ({
         ...sorter,
-        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+        order: sorter.order ?? getNextSort(prev.order) ?? DEFAULT_SORT_ORDER,
       }));
     },
     []
@@ -535,8 +543,6 @@ const ApprovalManagePage = () => {
 
     vGridRef,
   } = useApprovalsPage();
-
-  console.log('[feat] displaySortedAssetsList', displaySortedAssetsList);
 
   const { yValue } = useTableScrollableHeight();
 

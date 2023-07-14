@@ -207,14 +207,29 @@ export function markParentForAssetItemSpender(
   return spender;
 }
 
-export function getSpenderApprovalValue(spender: AssetApprovalSpender) {
-  const bigValue = new BigNumber(spender.value || 0);
+export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
+  let absValue = spender.value || 0;
+  const bigValue = new BigNumber(absValue);
+
   const isUnlimited = bigValue.gte(10 ** 9);
-  const stepValue = splitNumberByStep(bigValue.toFixed(2));
+  const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
+  let displayText = stepNumberText;
+
+  if (spender.$assetParent?.type === 'nft') {
+    if (spender.$assetParent?.nftContract?.is_erc721) {
+      absValue = 1;
+      displayText = '1 Collection';
+    } else if (spender.$assetParent?.nftToken) {
+      // TODO: is that right?
+      absValue = 1;
+      displayText = '1 NFT';
+    }
+  }
 
   return {
     bigValue,
     isUnlimited,
-    stepValue,
+    stepNumberText,
+    displayText,
   };
 }
