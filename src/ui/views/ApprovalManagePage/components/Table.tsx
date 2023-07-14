@@ -58,6 +58,7 @@ export function VirtualTable<RecordType extends object>({
   isLoading,
   markHoverRow,
   vGridRef,
+  onClickRow,
   getRowHeight,
   getTotalHeight,
   ...props
@@ -65,6 +66,7 @@ export function VirtualTable<RecordType extends object>({
   isLoading?: boolean;
   markHoverRow?: boolean;
   vGridRef?: React.MutableRefObject<VGrid>;
+  onClickRow?: (e: React.MouseEvent, record: RecordType) => void;
   getTotalHeight?: (rows: readonly RecordType[]) => number;
   getRowHeight?: (
     row: RecordType,
@@ -201,6 +203,7 @@ export function VirtualTable<RecordType extends object>({
                 'is-last-cell': columnIndex === mergedColumns.length - 1,
                 'is-hovered-cell': markHoverRow && hoveredRowIndex === rowIndex,
               })}
+              onClick={(e) => onClickRow?.(e, record)}
               style={style}
               onMouseEnter={() => {
                 if (!markHoverRow) return;
