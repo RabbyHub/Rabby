@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Input, Tooltip, message } from 'antd';
+import { Alert, Button, Input, Tooltip, message } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { formatUsdValue, openInTab, splitNumberByStep } from 'ui/utils';
+import {
+  formatUsdValue,
+  openInTab,
+  splitNumberByStep,
+  useWallet,
+} from 'ui/utils';
 import './style.less';
 import eventBus from '@/eventBus';
 
@@ -40,6 +45,12 @@ import TokenWithChain, { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
+import { RevokeButton } from './components/RevokeButton';
+
+interface RevokeItem {
+  id: string;
+  list: any[];
+}
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort: 'ascend' | 'descend') {
@@ -533,6 +544,21 @@ const ApprovalManagePage = () => {
     []
   );
 
+  const [revokeMap, setRevokeMap] = React.useState<Record<string, any[]>>({});
+  const revokeList = Object.values(revokeMap).flat();
+  const wallet = useWallet();
+  const handleRevoke = React.useCallback(() => {
+    wallet
+      .revoke({ list: revokeList })
+      .then(() => {
+        setVisibleRevokeModal(false);
+        setRevokeMap({});
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [revokeList]);
+
   return (
     <div className="approvals-manager-page">
       <div className="approvals-manager">
@@ -586,14 +612,26 @@ const ApprovalManagePage = () => {
               />
             )}
           </div>
-          <RevokeApprovalModal
-            item={selectedItem}
-            visible={visibleRevokeModal}
-            onClose={() => {
-              setVisibleRevokeModal(false);
-            }}
-          />
+          {selectedItem ? (
+            <RevokeApprovalModal
+              item={selectedItem}
+              visible={visibleRevokeModal}
+              onClose={() => {
+                setVisibleRevokeModal(false);
+              }}
+              onConfirm={(list) => {
+                setRevokeMap((prev) => ({
+                  ...prev,
+                  [selectedItem!.id]: list,
+                }));
+              }}
+              revokeList={revokeMap[selectedItem!.id]}
+            />
+          ) : null}
         </main>
+        <div className="mt-[50px] text-center">
+          <RevokeButton revokeList={revokeList} onRevoke={handleRevoke} />
+        </div>
       </div>
     </div>
   );

@@ -27,10 +27,18 @@ export const RevokeApprovalModal = (props: {
   visible: boolean;
   onClose: () => void;
   drawClassName?: string;
+  revokeList?: any[];
+  onConfirm: (items: ApprovalItem[]) => void;
 }) => {
-  const { item, visible, onClose, drawClassName } = props;
+  const {
+    item,
+    visible,
+    onClose,
+    drawClassName,
+    revokeList,
+    onConfirm,
+  } = props;
   const { t } = useTranslation();
-  const wallet = useWallet();
 
   const [selectedList, setSelectedList] = useState<number[]>([]);
 
@@ -53,6 +61,7 @@ export const RevokeApprovalModal = (props: {
               abi,
               tokenId: token?.inner_id,
               isApprovedForAll: false,
+              _index: e,
             } as const;
           } else if ('contract_name' in token) {
             const abi = token?.is_erc721
@@ -67,12 +76,14 @@ export const RevokeApprovalModal = (props: {
               tokenId: null,
               abi,
               isApprovedForAll: true,
+              _index: e,
             } as const;
           } else {
             return {
               chainServerId: item.chain,
               id: token?.id,
               spender: item.id,
+              _index: e,
             };
           }
         });
@@ -83,6 +94,7 @@ export const RevokeApprovalModal = (props: {
           chainServerId: item.chain,
           id: item.id,
           spender: item.list[e].id,
+          _index: e,
         }));
       }
 
@@ -102,16 +114,13 @@ export const RevokeApprovalModal = (props: {
             tokenId: (nftInfo as NFTApproval)?.inner_id || null,
             abi,
             isApprovedForAll: nftInfo && 'inner_id' in nftInfo ? false : true,
+            _index: e,
           };
         });
       }
 
-      try {
-        wallet.revoke({ list: revokeList });
-        onClose();
-      } catch (error) {
-        console.error('popup revoke error:', error);
-      }
+      onConfirm(revokeList);
+      onClose();
     }
   };
 
@@ -145,7 +154,8 @@ export const RevokeApprovalModal = (props: {
               'relative px-[16px] h-[56px] flex justify-between items-center bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
               index === item.list.length - 1 && 'rounded-b-[6px]',
               index !== item.list.length - 1 &&
-                'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider'
+                'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider',
+              '-mt-1 first:mt-0'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -290,9 +300,11 @@ export const RevokeApprovalModal = (props: {
 
   useEffect(() => {
     if (visible) {
-      setSelectedList([]);
+      setSelectedList(
+        (revokeList?.map((e: any) => e._index) as number[]) ?? []
+      );
     }
-  }, [visible]);
+  }, [visible, revokeList]);
 
   if (!item) return null;
 
@@ -326,21 +338,16 @@ export const RevokeApprovalModal = (props: {
           </div>
         </section>
 
-        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[60px]">
+        <section className="max-h-[424px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[60px]">
           {displayList}
         </section>
       </div>
       <div
         className={clsx(
           'absolute flex flex-col items-center justify-center bg-white left-0 bottom-0 w-full z-[99999] border-t border-gray-divider',
-          selectedList.length > 1 ? 'h-[115px]' : 'h-[76px]'
+          'h-[76px]'
         )}
       >
-        {selectedList.length > 1 && (
-          <div className="mb-[16px] text-13 leading-[15px] text-gray-subTitle">
-            {selectedList.length} transactions to be signed sequentially
-          </div>
-        )}
         <Button
           style={{
             width: 172,
@@ -351,7 +358,7 @@ export const RevokeApprovalModal = (props: {
           disabled={selectedList.length === 0}
           onClick={handleRevoke}
         >
-          Revoke {selectedList.length > 0 ? `(${selectedList.length})` : ''}
+          Confirm {selectedList.length > 0 ? `(${selectedList.length})` : ''}
         </Button>
       </div>
     </ModalStyled>
