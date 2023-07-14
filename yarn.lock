@@ -3539,10 +3539,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.10.tgz#dce17e2d1cf6a5dadf46a2705239b03aa6099cc3"
-  integrity sha512-KX2v19Wh/D+Qr1QhJGuqzbBz1qee8diJRt9KzvZbNh9Hkbbaz9m6FzJ0sahXh+KGA6V5TA9MnlJQupoW7AWFeQ==
+"@rabby-wallet/rabby-security-engine@^1.1.12":
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.12.tgz#966f2920f16a475aec79102c1fe34d2acd6ef1fc"
+  integrity sha512-Ow4fh5MLGTLZdEYN4vRSbDWCBaoJwmlEbNkPs/tqQiGtB/VpozNqIliW/PGOp5MtcZtijac8SCHESCqb7UYBVg==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
