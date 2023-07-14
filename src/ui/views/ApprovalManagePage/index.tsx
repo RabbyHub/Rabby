@@ -371,11 +371,11 @@ const ApprovalManagePage = () => {
     const listener = (payload: any) => {
       message.info({
         type: 'info',
-        content: 'Account changed, Refreshing page...',
+        content: <span className='text-white'>Account changed, Refreshing page...</span>,
       });
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1200);
     };
     eventBus.addEventListener('accountsChanged', listener);
 
