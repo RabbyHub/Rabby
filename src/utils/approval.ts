@@ -38,6 +38,7 @@ export type ContractApprovalItem<T extends ContractFor = ContractFor> = {
   list: GetContractTypeByContractFor<T>[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
+  $contractRiskEvaluation: ComputedRiskEvaluation;
 };
 
 export type TokenApprovalItem = {
@@ -82,6 +83,31 @@ export type ComputedRiskAboutValues = {
   last_approve_at: number;
 };
 
+export type ApprovalRiskLevel = 'safe' | 'warning' | 'danger';
+export const RiskNumMap = {
+  unknown: 0,
+  safe: 1,
+  warning: 10,
+  danger: 100,
+} as const;
+type RiskLevelScore = typeof RiskNumMap[ApprovalRiskLevel];
+
+export type ComputedRiskEvaluation = {
+  serverRiskScore: RiskLevelScore;
+  clientMaxRiskScore: RiskLevelScore;
+  clientTotalRiskScore: number;
+
+  extra: {
+    serverRiskLevel: ApprovalRiskLevel;
+
+    clientExposureLevel: ApprovalRiskLevel;
+    clientExposureScore: RiskLevelScore;
+
+    clientApprovalLevel: ApprovalRiskLevel;
+    clientApprovalScore: RiskLevelScore;
+  };
+};
+
 export function isContractType(
   contract: ContractApprovalItem,
   type: 'nft'
@@ -122,44 +148,58 @@ export function makeComputedRiskAboutValues(
   };
 }
 
-export type ApprovalRiskLevel = 'safe' | 'warning' | 'danger';
-const RiskNumMap = {
-  safe: 1,
-  warning: 10,
-  danger: 100,
-} as const;
-function getContractRiskInfo(contract: ContractApprovalItem) {
-  const serverRiskLevel = contract.risk_level;
-  const serverRiskScore = RiskNumMap[serverRiskLevel];
+export function getContractRiskEvaluation(
+  risk_level: ApprovalRiskLevel | string,
+  riskValues: ComputedRiskAboutValues
+): ComputedRiskEvaluation {
+  const serverRiskLevel = risk_level as ApprovalRiskLevel;
+  const serverRiskScore = coerceInteger(
+    RiskNumMap[serverRiskLevel],
+    0
+  ) as RiskLevelScore;
 
-  const exposureValue = coerceFloat(
-    contract.$riskAboutValues.risk_exposure_usd_value
-  );
-  const clientExposureLevel =
+  const exposureValue = coerceFloat(riskValues.risk_exposure_usd_value);
+  const clientExposureLevel: ApprovalRiskLevel =
     exposureValue < 1e4 ? 'danger' : exposureValue < 1e6 ? 'warning' : 'safe';
-  const clientExposureScore = RiskNumMap[clientExposureLevel];
+  const clientExposureScore = coerceInteger(
+    RiskNumMap[clientExposureLevel],
+    0
+  ) as RiskLevelScore;
 
   const approve_user_count = coerceInteger(
-    contract.$riskAboutValues.approve_user_count
-  );
+    riskValues.approve_user_count
+  ) as RiskLevelScore;
   const revoke_user_count = coerceInteger(
-    contract.$riskAboutValues.revoke_user_count
-  );
+    riskValues.revoke_user_count
+  ) as RiskLevelScore;
 
-  const clientApprovalLevel =
-    revoke_user_count > approve_user_count * 2
+  const clientApprovalLevel: ApprovalRiskLevel =
+    revoke_user_count < 10
+      ? 'safe'
+      : revoke_user_count > approve_user_count * 2
       ? 'danger'
       : revoke_user_count > approve_user_count / 2
       ? 'warning'
       : 'safe';
-  ('safe');
-  const clientApprovalScore = RiskNumMap[clientApprovalLevel];
 
-  const clientRiskScore = Math.max(clientExposureScore, clientApprovalScore);
+  const clientApprovalScore = coerceInteger(
+    RiskNumMap[clientApprovalLevel],
+    0
+  ) as RiskLevelScore;
+
+  const allClientScores = [clientExposureScore, clientApprovalScore];
+
+  const clientMaxRiskScore = Math.max(...allClientScores) as RiskLevelScore;
+
+  const clientTotalRiskScore = allClientScores.reduce(
+    (acc, cur) => (acc + cur) as RiskLevelScore,
+    0
+  );
 
   return {
     serverRiskScore,
-    clientRiskScore,
+    clientTotalRiskScore,
+    clientMaxRiskScore,
 
     extra: {
       serverRiskLevel,
@@ -173,23 +213,41 @@ function getContractRiskInfo(contract: ContractApprovalItem) {
   };
 }
 
-export function sortContractApprovalItems(
-  contractItems: ContractApprovalItem[]
+/**
+ * @description compare contract approval item by risk score,
+ * it's supposed to make descending order
+ *
+ * if a's risk score greater than b's, return 1
+ * if a's risk score less than b's, return -1
+ * if a's risk score equal to b's, return 0
+ *
+ * @param a
+ * @param b
+ */
+export function compareContractApprovalItemByRiskLevel(
+  a: ContractApprovalItem,
+  b: ContractApprovalItem
 ) {
-  return contractItems.sort((a, b) => {
-    const aRisk = getContractRiskInfo(a);
-    const bRisk = getContractRiskInfo(b);
+  const aRisk =
+    a.$contractRiskEvaluation ||
+    getContractRiskEvaluation(a.risk_level, a.$riskAboutValues);
+  const bRisk =
+    b.$contractRiskEvaluation ||
+    getContractRiskEvaluation(b.risk_level, a.$riskAboutValues);
 
-    if (aRisk.serverRiskScore !== bRisk.serverRiskScore) {
-      return aRisk.serverRiskScore - bRisk.serverRiskScore;
-    }
+  if (aRisk.serverRiskScore !== bRisk.serverRiskScore) {
+    return aRisk.serverRiskScore > bRisk.serverRiskScore ? 1 : -1;
+  }
 
-    if (aRisk.clientRiskScore !== bRisk.clientRiskScore) {
-      return aRisk.clientRiskScore - bRisk.clientRiskScore;
-    }
+  if (aRisk.clientTotalRiskScore !== bRisk.clientTotalRiskScore) {
+    return aRisk.clientTotalRiskScore > bRisk.clientTotalRiskScore ? 1 : -1;
+  }
 
-    return 0;
-  });
+  if (aRisk.clientMaxRiskScore !== bRisk.clientMaxRiskScore) {
+    return aRisk.clientMaxRiskScore > bRisk.clientMaxRiskScore ? 1 : -1;
+  }
+
+  return 0;
 }
 
 export function markParentForAssetItemSpender(

@@ -1,4 +1,4 @@
-@import "@/ui/style/var.less";
+@import "@/ui/style/mixin.less";
 
 @page-padding-top: 40px;
 @page-header-h: 24px;
@@ -132,8 +132,22 @@
   .ant-table-thead > tr > th.am-virtual-table-head-cell {
     padding-left: 0;
     padding-right: 0;
-
+    background-color: white;
+    font-size: 13px;
     user-select: none;
+
+    // override default head cell style
+    &.ant-table-column-has-sorters:hover {
+      background-color: white;
+    }
+    // ant-table-column-sort means current sorter
+    &.ant-table-column-has-sorters.ant-table-column-sort {
+      background: white;
+
+      .ant-table-column-sorters {
+        color: @primary-text-color;
+      }
+    }
 
     &:first-child {
       border-top-left-radius: @radius-value;
@@ -229,6 +243,8 @@
 
     .contract-name {
       color: @color-body;
+      max-width: 10em;
+      .ellipsis();
     }
   }
 }
@@ -282,5 +298,62 @@
 
   &.J_risky_warning &::before {
     border-bottom-color: @color-orange;
+  }
+}
+
+.J-risk-cell__text {
+  position: relative;
+  display: inline-block;
+
+  &::before {
+    display: block;
+    content: " ";
+    top: 2px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    border-bottom: 1px dashed transparent;
+  }
+
+  &.is-warning {
+    color: #ffb020;
+    &::before {
+      display: block;
+      border-bottom-color: #ffb020;
+    }
+  }
+  &.is-danger {
+    color: #ec5151;
+    &::before {
+      display: block;
+      border-bottom-color: #ec5151;
+    }
+  }
+}
+
+.J-risk-cell__tooltip {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+
+  .ant-tooltip-inner {
+    line-height: 18px;
+    border-radius: 2px;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  &.tip-trust-value .ant-tooltip-inner {
+    width: 280px;
+  }
+
+  &.is-danger.tip-recent-revokes .ant-tooltip-inner {
+    width: 400px;
+  }
+  &.is-warning.tip-recent-revokes .ant-tooltip-inner {
+    width: 460px;
   }
 }

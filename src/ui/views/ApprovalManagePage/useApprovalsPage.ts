@@ -22,6 +22,7 @@ import {
   ContractApprovalItem,
   NftApprovalItem,
   TokenApprovalItem,
+  getContractRiskEvaluation,
   makeComputedRiskAboutValues,
   markParentForAssetItemSpender,
 } from '@/utils/approval';
@@ -29,7 +30,6 @@ import {
 import { groupBy, sortBy, flatten, debounce } from 'lodash';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
-import { accumulateRiskAboutValues } from './utils';
 
 /**
  * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
@@ -162,14 +162,19 @@ export function useApprovalsPage() {
             const spender = contract.spender;
 
             if (!contractMap[`${chainName}:${contractId}`]) {
+              const $riskAboutValues = makeComputedRiskAboutValues(
+                'nft-contract',
+                spender
+              );
               contractMap[`${chainName}:${contractId}`] = {
                 list: [],
                 chain: e.id,
                 type: 'contract',
                 contractFor: 'nft-contract',
-                $riskAboutValues: makeComputedRiskAboutValues(
-                  'nft-contract',
-                  spender
+                $riskAboutValues,
+                $contractRiskEvaluation: getContractRiskEvaluation(
+                  spender.risk_level,
+                  $riskAboutValues
                 ),
                 risk_level: spender.risk_level,
                 risk_alert: spender.risk_alert,
@@ -212,6 +217,10 @@ export function useApprovalsPage() {
             const spender = token.spender;
 
             if (!contractMap[`${token.chain}:${contractId}`]) {
+              const $riskAboutValues = makeComputedRiskAboutValues(
+                'nft',
+                spender
+              );
               contractMap[`${token.chain}:${contractId}`] = {
                 list: [],
                 chain: e.id,
@@ -222,7 +231,11 @@ export function useApprovalsPage() {
                 logo_url: spender.protocol?.logo_url || IconUnknownNFT,
                 type: 'contract',
                 contractFor: 'nft',
-                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
+                $riskAboutValues,
+                $contractRiskEvaluation: getContractRiskEvaluation(
+                  spender.risk_level,
+                  $riskAboutValues
+                ),
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(token);
@@ -264,6 +277,10 @@ export function useApprovalsPage() {
               const chainName = token.chain;
               const contractId = spender.id;
               if (!contractMap[`${chainName}:${contractId}`]) {
+                const $riskAboutValues = makeComputedRiskAboutValues(
+                  'token',
+                  spender
+                );
                 contractMap[`${chainName}:${contractId}`] = {
                   list: [],
                   chain: token.chain,
@@ -274,9 +291,10 @@ export function useApprovalsPage() {
                   logo_url: spender.protocol?.logo_url,
                   type: 'contract',
                   contractFor: 'token',
-                  $riskAboutValues: makeComputedRiskAboutValues(
-                    'token',
-                    spender
+                  $riskAboutValues,
+                  $contractRiskEvaluation: getContractRiskEvaluation(
+                    spender.risk_level,
+                    $riskAboutValues
                   ),
                 };
               }

@@ -38,10 +38,15 @@ import {
   ContractApprovalItem,
   AssetApprovalSpender,
   getSpenderApprovalAmount,
+  RiskNumMap,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
-import { formatTimeFromNow, isRiskyContract } from './utils';
+import {
+  checkCompareContractItem,
+  formatTimeFromNow,
+  isRiskyContract,
+} from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
@@ -132,13 +137,13 @@ function getColumnsForContract({
       },
       width: 280,
     },
-    // Risk Exposure
+    // Contract Trust value
     {
       title: (props) => {
         return (
           <span className="inline-flex items-center justify-center">
-            {'Risk Exposure'}
-            <Tooltip overlay="The total asset value approved and exposed to this contract">
+            {'Contract Trust value'}
+            <Tooltip overlay="Trust value refers to the total asset value approved and exposed to this contract. When trust value is low, it's more likely to be risky.">
               <img
                 className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
                 src={IconQuestion}
@@ -147,27 +152,75 @@ function getColumnsForContract({
           </span>
         );
       },
-      key: 'riskExposure',
+      key: 'contractTrustValue',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
-      sorter: (a, b) =>
-        a.$riskAboutValues.risk_exposure_usd_value -
-        b.$riskAboutValues.risk_exposure_usd_value,
+      showSorterTooltip: false,
+      sorter: (a, b) => {
+        const checkResult = checkCompareContractItem(
+          a,
+          b,
+          sortedInfo,
+          'contractTrustValue'
+        );
+        if (checkResult.shouldEarlyReturn)
+          return checkResult.keepRiskFirstReturnValue;
+
+        return (
+          a.$riskAboutValues.risk_exposure_usd_value -
+          b.$riskAboutValues.risk_exposure_usd_value
+        );
+      },
       sortOrder:
-        sortedInfo.columnKey === 'riskExposure' ? sortedInfo.order : null,
+        sortedInfo.columnKey === 'contractTrustValue' ? sortedInfo.order : null,
       render(_, row) {
-        if (row.type === 'contract') {
-          return (
-            <span>
+        if (row.type !== 'contract') return null;
+
+        const isDanger =
+          row.$contractRiskEvaluation.extra.clientExposureScore >=
+          RiskNumMap.danger;
+        const isWarning =
+          !isDanger &&
+          row.$contractRiskEvaluation.extra.clientExposureScore >=
+            RiskNumMap.warning;
+
+        return (
+          <Tooltip
+            overlayClassName={clsx(
+              'J-risk-cell__tooltip disable-ant-overwrite tip-trust-value',
+              {
+                'is-warning': isWarning,
+                'is-danger': isDanger,
+              }
+            )}
+            overlay={
+              <div className="text-[12px]">
+                <p>{'Warning: The contract trust value < $100,000'}</p>
+                <p>{'Danger: The  contract trust value < $10,000'}</p>
+              </div>
+            }
+            {...(!isDanger &&
+              !isWarning && {
+                visible: false,
+              })}
+            // // leave here for debug
+            // {...(isDanger || isWarning) && {
+            //   visible: true,
+            // }}
+          >
+            <span
+              className={clsx('J-risk-cell__text', {
+                'is-warning': isWarning,
+                'is-danger': isDanger,
+              })}
+            >
               {formatUsdValue(
                 row.$riskAboutValues.risk_exposure_usd_value || 0
               )}
             </span>
-          );
-        }
-
-        return null;
+          </Tooltip>
+        );
       },
-      width: 160,
+      width: 180,
     },
     // Recent Revokes(24h)
     {
@@ -175,36 +228,119 @@ function getColumnsForContract({
       key: 'recentRevokes',
       dataIndex: 'revoke_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
-      sorter: (a, b) =>
-        a.$riskAboutValues.revoke_user_count -
-        b.$riskAboutValues.revoke_user_count,
+      showSorterTooltip: false,
+      sorter: (a, b) => {
+        const checkResult = checkCompareContractItem(
+          a,
+          b,
+          sortedInfo,
+          'recentRevokes'
+        );
+        if (checkResult.shouldEarlyReturn)
+          return checkResult.keepRiskFirstReturnValue;
+
+        return (
+          a.$riskAboutValues.revoke_user_count -
+          b.$riskAboutValues.revoke_user_count
+        );
+      },
       sortOrder:
         sortedInfo.columnKey === 'recentRevokes' ? sortedInfo.order : null,
       render: (_, row) => {
-        if (row.type === 'contract') {
-          return <span>{row.$riskAboutValues.revoke_user_count}</span>;
-        }
+        if (row.type !== 'contract') return null;
 
-        return null;
+        const isDanger =
+          row.$contractRiskEvaluation.extra.clientApprovalScore >=
+          RiskNumMap.danger;
+        const isWarning =
+          !isDanger &&
+          row.$contractRiskEvaluation.extra.clientApprovalScore >=
+            RiskNumMap.warning;
+
+        return (
+          <Tooltip
+            overlayClassName={clsx(
+              'J-risk-cell__tooltip disable-ant-overwrite tip-recent-revokes',
+              {
+                'is-warning': isWarning,
+                'is-danger': isDanger,
+              }
+            )}
+            overlay={
+              <div className="text-[12px]">
+                {isWarning && (
+                  <p>
+                    Warning: Recent revokes exceed 50% of newly approved users
+                    in the last 24 hours.
+                  </p>
+                )}
+                {isDanger && (
+                  <p>
+                    Danger: Recent revokes are double the number of newly
+                    approved users.
+                  </p>
+                )}
+                <p>
+                  Newly approved users(24h):{' '}
+                  {row.$riskAboutValues.approve_user_count}
+                </p>
+                <p>
+                  Recent revokes(24h): {row.$riskAboutValues.revoke_user_count}
+                </p>
+              </div>
+            }
+            {...(!isDanger &&
+              !isWarning && {
+                visible: false,
+              })}
+            // // leave here for debug
+            // {...(isDanger || isWarning) && {
+            //   visible: true,
+            // }}
+          >
+            <span
+              className={clsx('J-risk-cell__text', {
+                'is-warning': isWarning,
+                'is-danger': isDanger,
+              })}
+            >
+              {row.$riskAboutValues.revoke_user_count}
+            </span>
+          </Tooltip>
+        );
       },
       width: 160,
     },
-    // Approval Time
+    // My approve Time
     {
-      title: () => <span>{'Approval Time'}</span>,
-      key: 'approvalTime',
+      title: () => <span>{'My approve Time'}</span>,
+      key: 'myApproveTime',
       dataIndex: 'last_approve_at',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
-      sorter: (a, b) =>
-        a.$riskAboutValues.last_approve_at - b.$riskAboutValues.last_approve_at,
+      showSorterTooltip: false,
+      sorter: (a, b) => {
+        const checkResult = checkCompareContractItem(
+          a,
+          b,
+          sortedInfo,
+          'myApproveTime'
+        );
+        if (checkResult.shouldEarlyReturn)
+          return checkResult.keepRiskFirstReturnValue;
+
+        return (
+          a.$riskAboutValues.last_approve_at -
+          b.$riskAboutValues.last_approve_at
+        );
+      },
       sortOrder:
-        sortedInfo.columnKey === 'approvalTime' ? sortedInfo.order : null,
+        sortedInfo.columnKey === 'myApproveTime' ? sortedInfo.order : null,
       render: (_, row) => {
         const time = row.$riskAboutValues.last_approve_at;
 
         return formatTimeFromNow(time ? time * 1e3 : 0);
       },
-      width: 160,
+      width: 140,
     },
     // My Approved Assets
     {
@@ -212,7 +348,19 @@ function getColumnsForContract({
       key: 'myApprovedAssets',
       dataIndex: 'approve_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
-      sorter: (a, b) => a.list.length - b.list.length,
+      showSorterTooltip: false,
+      sorter: (a, b) => {
+        const checkResult = checkCompareContractItem(
+          a,
+          b,
+          sortedInfo,
+          'myApprovedAssets'
+        );
+        if (checkResult.shouldEarlyReturn)
+          return checkResult.keepRiskFirstReturnValue;
+
+        return a.list.length - b.list.length;
+      },
       sortOrder:
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
       render: (_, row) => {
@@ -320,6 +468,7 @@ function getColumnsForAsset({
       key: 'approvedAmount',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
+      showSorterTooltip: false,
       sorter: (a, b) =>
         getSpenderApprovalAmount(a).bigValue.gte(
           getSpenderApprovalAmount(b).bigValue
@@ -394,6 +543,7 @@ function getColumnsForAsset({
       key: 'approveTime',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
+      showSorterTooltip: false,
       sorter: (a, b) => (a.last_approve_at || 0) - (b.last_approve_at || 0),
       sortOrder:
         sortedInfo.columnKey === 'approveTime' ? sortedInfo.order : null,
@@ -426,7 +576,7 @@ function TableByContracts({
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<ContractApprovalItem>
   >({
-    columnKey: 'approvalTime',
+    columnKey: 'myApproveTime',
     order: DEFAULT_SORT_ORDER,
   });
 
@@ -436,6 +586,7 @@ function TableByContracts({
         ...sorter,
         order: sorter.order ?? getNextSort(prev.order) ?? DEFAULT_SORT_ORDER,
       }));
+      vGridRef.current?.resetAfterRowIndex(0, true);
     },
     []
   );
@@ -466,11 +617,12 @@ function TableByContracts({
       onClickRow={onClickRow}
       getTotalHeight={getContractListTotalHeight}
       getRowHeight={(row) => {
-        if (isRiskyContract(row)) {
-          return RISKY_ROW_HEIGHT;
-        }
+        if (isRiskyContract(row)) return RISKY_ROW_HEIGHT;
 
         return ROW_HEIGHT;
+      }}
+      getCellKey={(params) => {
+        return `${params.rowIndex}-${params.columnIndex}-${params.data?.id}`;
       }}
       onChange={handleChange}
     />

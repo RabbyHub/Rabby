@@ -33,6 +33,7 @@ export function VirtualTable<RecordType extends object>({
   onClickRow,
   getRowHeight,
   getTotalHeight,
+  getCellKey,
   showScrollbar = true,
   ...props
 }: TableProps<RecordType> & {
@@ -45,6 +46,11 @@ export function VirtualTable<RecordType extends object>({
     idx: number,
     rows: readonly RecordType[]
   ) => number | void;
+  getCellKey?: (params: {
+    columnIndex: number;
+    rowIndex: number;
+    data: RecordType;
+  }) => string | number;
   showScrollbar?: boolean;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
@@ -120,6 +126,13 @@ export function VirtualTable<RecordType extends object>({
       <VGrid
         ref={gridRef}
         className="am-virtual-grid"
+        itemKey={(params) => {
+          const keyStr = getCellKey?.(params);
+          if (keyStr) return keyStr;
+
+          const idValue = (params.data as any)?.$id || (params.data as any)?.id;
+          return `${params.rowIndex}-${params.columnIndex}-${idValue}`;
+        }}
         columnCount={mergedColumns.length}
         columnWidth={(index: number) => {
           const { width } = mergedColumns[index];
@@ -134,7 +147,7 @@ export function VirtualTable<RecordType extends object>({
         rowCount={rowData.length}
         rowHeight={(rowIndex: number) => {
           return (
-            getRowHeight?.(rowData[rowIndex], rowIndex, rowData) || ROW_HEIGHT
+            getRowHeight?.(rowData[rowIndex], rowIndex, rowData) ?? ROW_HEIGHT
           );
         }}
         height={scroll!.y as number}
@@ -179,6 +192,8 @@ export function VirtualTable<RecordType extends object>({
 
           return (
             <div
+              // pointless, see itemKey property of VGrid
+              key={`r-${rowIndex}-c-${columnIndex}`}
               className={classNames('am-virtual-table-cell', {
                 'is-first-cell': columnIndex === 0,
                 'is-last-cell': columnIndex === mergedColumns.length - 1,
