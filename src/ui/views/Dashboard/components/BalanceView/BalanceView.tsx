@@ -196,8 +196,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-[3px]',
-            currentHover && 'bg-[#00000033] card mx-10 mb-10',
+            'mt-[3px] mx-10 mb-10',
+            currentHover && 'bg-[#00000033] card',
             'rounded-[4px] relative cursor-pointer',
             'overflow-hidden'
           )}
@@ -208,12 +208,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               className="absolute top-[10px] right-[12px]"
             />
           ) : null}
-          <div
-            className={clsx(
-              'extra flex h-[28px]',
-              currentHover ? 'mx-[10px] pt-[8px]' : 'mx-20 pt-8'
-            )}
-          >
+          <div className={clsx('extra flex h-[28px]', 'mx-[10px] pt-[8px]')}>
             {startRefresh || currentBalance === null ? (
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
@@ -236,12 +231,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             ) : null}
           </div>
 
-          <div
-            className={clsx(
-              'h-[88px] w-full relative',
-              currentHover ? '' : 'mt-10'
-            )}
-          >
+          <div className={clsx('h-[88px] w-full relative')}>
             {!success && !curveData ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
