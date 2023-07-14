@@ -13,6 +13,9 @@ import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
@@ -61,6 +64,7 @@ interface GasSelectorProps {
     msg: string;
     level?: 'warn' | 'danger' | 'forbidden';
   }[];
+  engineResults?: Result[];
 }
 
 const useExplainGas = ({
@@ -214,7 +218,9 @@ const GasSelector = ({
   isGnosisAccount,
   manuallyChangeGasLimit,
   errors,
+  engineResults = [],
 }: GasSelectorProps) => {
+  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
@@ -253,6 +259,19 @@ const GasSelector = ({
     if (selectedGas.price / 1e9 <= 50) return 0.1;
     return 1;
   }, [selectedGas]);
+
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
 
   const handleSetRecommendTimes = () => {
     if (isGnosisAccount) return;
@@ -472,6 +491,18 @@ const GasSelector = ({
     setMaxPriorityFee(val);
   };
 
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
   useDebounce(
     () => {
       (isReady || !isFirstTimeLoad) &&
@@ -514,6 +545,10 @@ const GasSelector = ({
       setIsFirstTimeLoad(false);
     }
   }, [isReady]);
+
+  useEffect(() => {
+    dispatch.securityEngine.init();
+  }, []);
 
   useEffect(() => {
     if (!is1559) return;
@@ -574,36 +609,46 @@ const GasSelector = ({
             gas.error || !gas.success ? 'items-start mb-12' : 'mb-14'
           )}
         >
-          <div className="gas-selector-card-title">Gas</div>
-          <div className="gas-selector-card-content ml-4">
-            {isGnosisAccount ? (
-              <div className="font-semibold">No gas required</div>
-            ) : gas.error || !gas.success ? (
-              <>
-                <div className="gas-selector-card-error">
-                  Fail to fetch gas cost
-                </div>
-                {/* {version === 'v2' && gas.error ? (
-                  <div className="gas-selector-card-error-desc">
-                    {gas.error.msg}{' '}
-                    <span className="number">#{gas.error.code}</span>
+          <div className="relative flex">
+            <div className="gas-selector-card-title">Gas</div>
+            <div className="gas-selector-card-content ml-4">
+              {isGnosisAccount ? (
+                <div className="font-semibold">No gas required</div>
+              ) : gas.error || !gas.success ? (
+                <>
+                  <div className="gas-selector-card-error">
+                    Fail to fetch gas cost
                   </div>
-                ) : null} */}
-              </>
-            ) : (
-              <div className="gas-selector-card-content-item">
-                <div className="gas-selector-card-amount">
-                  <span className="text-blue-purple font-medium text-15">
-                    {formatTokenAmount(
-                      new BigNumber(gas.gasCostAmount).toString(10)
-                    )}{' '}
-                    {chain.nativeTokenSymbol}
-                  </span>
-                  &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                </>
+              ) : (
+                <div className="gas-selector-card-content-item">
+                  <div className="gas-selector-card-amount">
+                    <span className="text-blue-purple font-medium text-15">
+                      {formatTokenAmount(
+                        new BigNumber(gas.gasCostAmount).toString(10)
+                      )}{' '}
+                      {chain.nativeTokenSymbol}
+                    </span>
+                    &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+            {engineResultMap['1118'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1118'].enable}
+                level={
+                  processedRules.includes('1118')
+                    ? 'proceed'
+                    : engineResultMap['1118'].level
+                }
+                onClick={() => handleClickRule('1118')}
+                right="-40px"
+                className="security-level-tag"
+              />
             )}
           </div>
+          <div className="flex-1" />
           <div
             className="flex items-center text-12 text-gray-content cursor-pointer"
             role="button"
