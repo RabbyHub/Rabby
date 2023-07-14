@@ -49,6 +49,9 @@ export const useVerifyRouterAndSpender = (
   return data;
 };
 
+const isNativeToken = (chain: CHAINS_ENUM, tokenId: string) =>
+  isSameAddress(tokenId, CHAINS[chain].nativeTokenAddress);
+
 export const useVerifyCalldata = <
   T extends Parameters<typeof decodeCalldata>[1]
 >(
@@ -69,13 +72,20 @@ export const useVerifyCalldata = <
   }, [dexId, tx]);
 
   const result = useMemo(() => {
-    if (slippage && callDataResult && data) {
+    if (slippage && callDataResult && data && tx) {
       const estimateMinReceive = new BigNumber(data.toTokenAmount).times(
         new BigNumber(1).minus(slippage)
       );
+      const chain = Object.values(CHAINS).find(
+        (item) => item.id === tx.chainId
+      );
+
+      if (!chain) return true;
 
       return (
-        isSameAddress(callDataResult.fromToken, data.fromToken) &&
+        ((dexId === DEX_ENUM['UNISWAP'] &&
+          isNativeToken(chain.enum, data.fromToken)) ||
+          isSameAddress(callDataResult.fromToken, data.fromToken)) &&
         callDataResult.fromTokenAmount === data.fromTokenAmount &&
         isSameAddress(callDataResult.toToken, data.toToken) &&
         new BigNumber(callDataResult.minReceiveToTokenAmount)
