@@ -220,8 +220,8 @@ export const Quotes = ({
       </CexListWrapper>
       <div className="pt-[40px]" />
       <div className="flex items-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2 pl-20 text-gray-light ">
-        {exchangeCount} exchanges, adn
-        {tradeCount} enable trading.{' '}
+        Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
+        {tradeCount} can trade.{' '}
         <span
           onClick={openSettings}
           className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
