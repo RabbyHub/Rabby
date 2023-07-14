@@ -43,6 +43,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import { formatTimeFromNow, getRiskAboutValues } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
+import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 
 export type RowType = ApprovalItem & {
   key?: number;
@@ -167,7 +168,7 @@ const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     dataIndex: 'approve_user_count',
     render: (_, row) => {
       return (
-        <div className="flex items-center justify-end w-[100%]">
+        <div className="flex items-center justify-end w-[100%] my-approved-assets">
           {row.list.length}
           <img className="ml-[4px]" src={IconRowArrowRight} />
         </div>
@@ -361,6 +362,17 @@ const ApprovalManagePage = () => {
     }
   }, [filterType, displaySortedContractList, displaySortedAssetsList]);
 
+  const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
+  const handleClickRow = React.useCallback(
+    (e: React.MouseEvent, record: ApprovalItem) => {
+      if (!(e.target as any).closest('.my-approved-assets')) return;
+      setSelectedItem(record);
+      setVisibleRevokeModal(true);
+    },
+    []
+  );
+
   return (
     <div className="approvals-manager-page">
       <div className="approvals-manager">
@@ -416,6 +428,7 @@ const ApprovalManagePage = () => {
                 columns={columnsForContract}
                 dataSource={displaySortedContractList}
                 scroll={{ y: yValue, x: '100%' }}
+                onClickRow={handleClickRow}
               />
             )}
             {filterType === 'assets' && (
@@ -428,6 +441,13 @@ const ApprovalManagePage = () => {
               />
             )}
           </div>
+          <RevokeApprovalModal
+            item={selectedItem}
+            visible={visibleRevokeModal}
+            onClose={() => {
+              setVisibleRevokeModal(false);
+            }}
+          />
         </main>
       </div>
     </div>
