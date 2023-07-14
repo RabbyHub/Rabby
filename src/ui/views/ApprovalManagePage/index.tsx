@@ -37,6 +37,7 @@ import clsx from 'clsx';
 import { formatTimeFromNow, isRiskyContract } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
+import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 
 const ROW_SIZES = {
   ROW_INNER_HEIGHT: 60,
@@ -371,7 +372,11 @@ const ApprovalManagePage = () => {
     const listener = (payload: any) => {
       message.info({
         type: 'info',
-        content: <span className='text-white'>Account changed, Refreshing page...</span>,
+        content: (
+          <span className="text-white">
+            Account changed, Refreshing page...
+          </span>
+        ),
       });
       setTimeout(() => {
         window.location.reload();
@@ -448,6 +453,17 @@ const ApprovalManagePage = () => {
     []
   );
 
+  const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
+  const handleClickRow = React.useCallback(
+    (e: React.MouseEvent, record: ApprovalItem) => {
+      if (!(e.target as any).closest('.my-approved-assets')) return;
+      setSelectedItem(record);
+      setVisibleRevokeModal(true);
+    },
+    []
+  );
+
   return (
     <div className="approvals-manager-page">
       <div className="approvals-manager">
@@ -491,6 +507,7 @@ const ApprovalManagePage = () => {
                 })}
                 dataSource={displaySortedContractList}
                 scroll={{ y: yValue, x: '100%' }}
+                onClickRow={handleClickRow}
                 getTotalHeight={getContractListTotalHeight}
                 getRowHeight={(row) => {
                   if (isRiskyContract(row)) {
@@ -513,6 +530,13 @@ const ApprovalManagePage = () => {
               />
             )}
           </div>
+          <RevokeApprovalModal
+            item={selectedItem}
+            visible={visibleRevokeModal}
+            onClose={() => {
+              setVisibleRevokeModal(false);
+            }}
+          />
         </main>
       </div>
     </div>
