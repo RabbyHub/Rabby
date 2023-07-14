@@ -132,7 +132,8 @@
   .ant-table-thead > tr > th.am-virtual-table-head-cell {
     padding-left: 0;
     padding-right: 0;
-    background-color: white;
+
+    user-select: none;
 
     &:first-child {
       border-top-left-radius: @radius-value;
@@ -188,7 +189,6 @@
 
     .am-virtual-table-cell-inner {
       cursor: pointer;
-      user-select: none;
     }
   }
   

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { useWallet } from 'ui/utils';
@@ -10,6 +10,23 @@ import { ALIAS_ADDRESS, CHAINS, CHAINS_ENUM } from '@/constant';
 import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
+
+function tipCopied(addr: string) {
+  message.success({
+    duration: 3,
+    icon: <i />,
+    content: (
+      <div>
+        <div className="flex gap-4 mb-4">
+          <img src={IconSuccess} alt="" />
+          Copied
+        </div>
+        <div className="text-white">{addr}</div>
+      </div>
+    ),
+  });
+}
 
 interface NameAndAddressProps {
   className?: string;
@@ -22,6 +39,11 @@ interface NameAndAddressProps {
   chainEnum?: CHAINS_ENUM;
   isShowCopyIcon?: boolean;
   addressSuffix?: React.ReactNode;
+  /**
+   * @description don't know why click event not be stopped when click copy icon,
+   * just add this prop to fix it in some case.
+   */
+  __internalRestrainClickEventOnCopyIcon?: boolean;
 }
 
 const NameAndAddress = ({
@@ -35,6 +57,7 @@ const NameAndAddress = ({
   chainEnum,
   isShowCopyIcon = true,
   addressSuffix = null,
+  __internalRestrainClickEventOnCopyIcon = false,
 }: NameAndAddressProps) => {
   const wallet = useWallet();
   const [alianName, setAlianName] = useState('');
@@ -54,22 +77,24 @@ const NameAndAddress = ({
     });
 
     clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{address}</div>
-          </div>
-        ),
-      });
+      tipCopied(address);
       clipboard.destroy();
     });
   };
+
+  const handleClickCopyIcon = useCallback(
+    (
+      evt: Parameters<
+        Exclude<React.DOMAttributes<HTMLImageElement>['onClick'], void>
+      >[0]
+    ) => {
+      evt.stopPropagation();
+      copyTextToClipboard(address).then(() => {
+        tipCopied(address);
+      });
+    },
+    [address]
+  );
 
   const handleClickContractId = () => {
     if (!chainEnum) return;
@@ -114,7 +139,11 @@ const NameAndAddress = ({
       )}
       {isShowCopyIcon && (
         <img
-          onClick={handleCopyContractAddress}
+          onClick={
+            __internalRestrainClickEventOnCopyIcon
+              ? handleClickCopyIcon
+              : handleCopyContractAddress
+          }
           src={IconAddressCopy}
           width={16}
           height={16}
@@ -128,3 +157,9 @@ const NameAndAddress = ({
 };
 
 export default NameAndAddress;
+
+NameAndAddress.SafeCopy = (
+  props: Omit<NameAndAddressProps, '__internalRestrainClickEventOnCopyIcon'>
+) => {
+  return <NameAndAddress {...props} __internalRestrainClickEventOnCopyIcon />;
+};

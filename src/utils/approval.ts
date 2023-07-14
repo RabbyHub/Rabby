@@ -4,7 +4,8 @@ import {
   Spender,
   TokenApproval,
 } from '@/background/service/openapi';
-import { coerceFloat, coerceInteger } from '@/ui/utils';
+import { coerceFloat, coerceInteger, splitNumberByStep } from '@/ui/utils';
+import BigNumber from 'bignumber.js';
 
 export type ApprovalItem =
   | ContractApprovalItem
@@ -12,6 +13,9 @@ export type ApprovalItem =
   | NftApprovalItem;
 
 export type AssetApprovalItem = TokenApprovalItem | NftApprovalItem;
+export type AssetApprovalSpender =
+  | TokenApprovalItem['list'][number]
+  | NftApprovalItem['list'][number];
 
 type ContractFor = 'nft' | 'nft-contract' | 'token';
 type GetContractTypeByContractFor<T extends ContractFor> = T extends 'nft'
@@ -45,7 +49,9 @@ export type TokenApprovalItem = {
   type: 'token';
   balance: number;
 
-  list: Spender[];
+  list: (Spender & {
+    readonly $assetParent?: TokenApprovalItem;
+  })[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
 };
@@ -62,7 +68,9 @@ export type NftApprovalItem = {
   type: 'nft';
   amount: string;
 
-  list: Spender[];
+  list: (Spender & {
+    readonly $assetParent?: NftApprovalItem;
+  })[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
 };
@@ -182,4 +190,31 @@ export function sortContractApprovalItems(
 
     return 0;
   });
+}
+
+export function markParentForAssetItemSpender(
+  spender: Spender,
+  parent: AssetApprovalItem
+) {
+  Object.defineProperty(spender, '$assetParent', {
+    enumerable: false,
+    configurable: process.env.NODE_ENV === 'production',
+    get() {
+      return parent;
+    },
+  });
+
+  return spender;
+}
+
+export function getSpenderApprovalValue(spender: AssetApprovalSpender) {
+  const bigValue = new BigNumber(spender.value || 0);
+  const isUnlimited = bigValue.gte(10 ** 9);
+  const stepValue = splitNumberByStep(bigValue.toFixed(2));
+
+  return {
+    bigValue,
+    isUnlimited,
+    stepValue,
+  };
 }

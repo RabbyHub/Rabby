@@ -8,7 +8,7 @@ import './style.less';
 import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
-import { NameAndAddress } from '@/ui/component';
+import NameAndAddress from '@/ui/component/NameAndAddress';
 import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
 
 import { VirtualTable } from './components/Table';
@@ -28,15 +28,16 @@ import {
   useApprovalsPage,
   useTableScrollableHeight,
 } from './useApprovalsPage';
-import type {
+import {
   ApprovalItem,
   ContractApprovalItem,
-  AssetApprovalItem,
+  AssetApprovalSpender,
+  getSpenderApprovalValue,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import { formatTimeFromNow, isRiskyContract } from './utils';
-import TokenWithChain, { IconWithChain } from '@/ui/component/TokenWithChain';
+import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
@@ -81,7 +82,7 @@ function getColumnsForContract({
                 noRound={false}
               />
 
-              <NameAndAddress
+              <NameAndAddress.SafeCopy
                 className="ml-[6px]"
                 address={row.id}
                 chainEnum={chainItem.enum}
@@ -201,7 +202,7 @@ function getColumnsForContract({
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
       render: (_, row) => {
         return (
-          <div className="flex items-center justify-end w-[100%] my-approved-assets">
+          <div className="flex items-center justify-end w-[100%]">
             {row.list.length}
             <img className="ml-[4px]" src={IconRowArrowRight} />
           </div>
@@ -217,9 +218,9 @@ function getColumnsForContract({
 function getColumnsForAsset({
   sortedInfo,
 }: {
-  sortedInfo: SorterResult<AssetApprovalItem>;
+  sortedInfo: SorterResult<AssetApprovalSpender>;
 }) {
-  const columnsForAsset: ColumnType<AssetApprovalItem>[] = [
+  const columnsForAsset: ColumnType<AssetApprovalSpender>[] = [
     {
       title: null,
       key: 'selection',
@@ -232,7 +233,10 @@ function getColumnsForAsset({
       key: 'asset',
       dataIndex: 'key',
       render: (_, row) => {
-        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+        const asset = row.$assetParent;
+        if (!asset) return null;
+
+        const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
 
         if (!chainItem?.enum) return;
 
@@ -242,12 +246,12 @@ function getColumnsForAsset({
               width="24px"
               height="24px"
               hideConer
-              iconUrl={row?.logo_url || IconUnknown}
-              chainServerId={row.chain}
+              iconUrl={asset?.logo_url || IconUnknown}
+              chainServerId={asset.chain}
               noRound={false}
             />
 
-            <span className="ml-[8px]">{row.name || 'Unknown'}</span>
+            <span className="ml-[8px]">{asset.name || 'Unknown'}</span>
           </div>
         );
       },
@@ -259,8 +263,13 @@ function getColumnsForAsset({
       key: 'assetType',
       dataIndex: 'type',
       render: (_, row) => {
-        if (row.type === 'nft' && row.nftContract) {
-          const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+        const asset = row.$assetParent;
+        if (!asset) return null;
+
+        if (asset.type === 'nft' && asset.nftContract) {
+          const chainItem = findChainByServerID(
+            asset.chain as Chain['serverId']
+          );
           return (
             <span className="capitalize inline-flex items-center">
               Collection
@@ -268,7 +277,10 @@ function getColumnsForAsset({
                 onClick={() => {
                   if (!chainItem) return;
                   openInTab(
-                    chainItem?.scanLink.replace(/tx\/_s_/, `address/${row.id}`),
+                    chainItem?.scanLink.replace(
+                      /tx\/_s_/,
+                      `address/${asset.id}`
+                    ),
                     false
                   );
                 }}
@@ -279,11 +291,11 @@ function getColumnsForAsset({
               />
             </span>
           );
-        } else if (row.type === 'nft' && row.nftToken) {
+        } else if (asset.type === 'nft' && asset.nftToken) {
           return <span className="capitalize">NFT</span>;
         }
 
-        return <span className="capitalize">{row.type}</span>;
+        return <span className="capitalize">{asset.type}</span>;
       },
       width: 140,
     },
@@ -292,20 +304,27 @@ function getColumnsForAsset({
       title: () => <span>{'Approved Amount'}</span>,
       key: 'approvedAmount',
       dataIndex: 'key',
-      sorter: (a, b) => a.list.length - b.list.length,
+      sorter: (a, b) =>
+        (a.$assetParent?.list.length ?? 0) - (b.$assetParent?.list.length ?? 0),
       sortOrder:
         sortedInfo.columnKey === 'approvedAmount' ? sortedInfo.order : null,
       render: (_, row) => {
-        if (row.type === 'token') {
-          return `${splitNumberByStep(row.balance.toFixed(2))} ${row.name}`;
+        const asset = row.$assetParent;
+        if (!asset) return null;
+
+        if (asset.type === 'token') {
+          const spendValues = getSpenderApprovalValue(row);
+          return spendValues.isUnlimited
+            ? 'Unlimited'
+            : `${spendValues.stepValue} ${asset.name}`;
         }
 
-        if (row.type === 'nft' && row.nftContract) {
+        if (asset.type === 'nft' && asset.nftContract) {
           return '1 Collection';
         }
 
         return `${
-          row.nftContract?.is_erc721 ? 1 : row.nftContract?.is_erc721
+          asset.nftContract?.is_erc721 ? 1 : asset.nftContract?.is_erc721
         } NFT`;
       },
       width: 160,
@@ -315,35 +334,33 @@ function getColumnsForAsset({
       title: () => <span>{'Approve Spender'}</span>,
       key: 'approveSpender',
       dataIndex: 'key',
-      render: (_, row) => {
-        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+      render: (_, spender) => {
+        const asset = spender.$assetParent;
+        if (!asset) return null;
+        const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
         // if (!chainItem) return null;
+
+        // it maybe null
+        const protocol = spender.protocol;
 
         return (
           <div className="flex items-center">
-            {/* <IconWithChain
+            <IconWithChain
               width="24px"
               height="24px"
               hideConer
-              iconUrl={row?.logo_url || IconUnknown}
-              chainServerId={row.chain}
-              noRound={row.type === 'nft'}
-            /> */}
-            {chainItem && (
-              <TokenWithChain
-                width="24px"
-                height="24px"
-                token={makeTokenFromChain(chainItem)}
-              />
-            )}
+              iconUrl={protocol?.logo_url || IconUnknown}
+              chainServerId={asset?.chain}
+              noRound={asset.type === 'nft'}
+            />
 
-            <NameAndAddress
+            <NameAndAddress.SafeCopy
               className="ml-[6px]"
-              address={row.id}
+              address={spender.id || ''}
               chainEnum={chainItem?.enum}
               addressSuffix={
                 <span className="contract-name ml-[4px]">
-                  ({row.name || 'Unknown'})
+                  ({protocol?.name || 'Unknown'})
                 </span>
               }
               openExternal={false}
@@ -358,12 +375,11 @@ function getColumnsForAsset({
       title: () => <span>{'Approve Time'}</span>,
       key: 'approveTime',
       dataIndex: 'key',
-      sorter: (a, b) =>
-        a.$riskAboutValues.last_approve_at - b.$riskAboutValues.last_approve_at,
+      sorter: (a, b) => (a.last_approve_at || 0) - (b.last_approve_at || 0),
       sortOrder:
         sortedInfo.columnKey === 'approveTime' ? sortedInfo.order : null,
       render: (_, row) => {
-        const time = row.$riskAboutValues.last_approve_at;
+        const time = row.last_approve_at;
 
         return formatTimeFromNow(time ? time * 1e3 : 0);
       },
@@ -374,11 +390,11 @@ function getColumnsForAsset({
   return columnsForAsset;
 }
 
-type PageTableProps<T extends ApprovalItem = ApprovalItem> = {
+type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   isLoading: boolean;
   dataSource: T[];
   containerHeight: number;
-  onClickRow: (e: React.MouseEvent, record: T) => void;
+  onClickRow?: (e: React.MouseEvent, record: T) => void;
   vGridRef: React.RefObject<VGrid>;
 };
 function TableByContracts({
@@ -442,21 +458,21 @@ function TableByContracts({
   );
 }
 
-function TableByAssets({
+function TableByAssetSpenders({
   isLoading,
   dataSource,
   containerHeight,
   onClickRow,
   vGridRef,
-}: PageTableProps<AssetApprovalItem>) {
-  const [sortedInfo, setSortedInfo] = useState<SorterResult<AssetApprovalItem>>(
-    {
-      columnKey: 'approveTime',
-      order: DEFAULT_SORT_ORDER,
-    }
-  );
+}: PageTableProps<AssetApprovalSpender>) {
+  const [sortedInfo, setSortedInfo] = useState<
+    SorterResult<AssetApprovalSpender>
+  >({
+    columnKey: 'approveTime',
+    order: DEFAULT_SORT_ORDER,
+  });
 
-  const handleChange: TableProps<AssetApprovalItem>['onChange'] = useCallback(
+  const handleChange: TableProps<AssetApprovalSpender>['onChange'] = useCallback(
     (pagination, filters, sorter) => {
       setSortedInfo((prev) => ({
         ...sorter,
@@ -467,7 +483,7 @@ function TableByAssets({
   );
 
   return (
-    <VirtualTable<AssetApprovalItem>
+    <VirtualTable<AssetApprovalSpender>
       loading={isLoading}
       vGridRef={vGridRef}
       columns={getColumnsForAsset({
@@ -520,13 +536,15 @@ const ApprovalManagePage = () => {
     vGridRef,
   } = useApprovalsPage();
 
+  console.log('[feat] displaySortedAssetsList', displaySortedAssetsList);
+
   const { yValue } = useTableScrollableHeight();
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
   const handleClickRow = React.useCallback(
     (e: React.MouseEvent, record: ApprovalItem) => {
-      if (!(e.target as any).closest('.my-approved-assets')) return;
+      // if (!(e.target as any).closest('.my-approved-assets')) return;
       setSelectedItem(record);
       setVisibleRevokeModal(true);
     },
@@ -577,12 +595,11 @@ const ApprovalManagePage = () => {
               />
             )}
             {filterType === 'assets' && (
-              <TableByAssets
+              <TableByAssetSpenders
                 isLoading={isLoading}
                 vGridRef={vGridRef}
                 containerHeight={yValue}
                 dataSource={displaySortedAssetsList}
-                onClickRow={handleClickRow}
               />
             )}
           </div>

@@ -23,6 +23,7 @@ import {
   NftApprovalItem,
   TokenApprovalItem,
   makeComputedRiskAboutValues,
+  markParentForAssetItemSpender,
 } from '@/utils/approval';
 
 import { groupBy, sortBy, flatten, debounce } from 'lodash';
@@ -198,7 +199,10 @@ export function useApprovalsPage() {
               };
             }
             nftMap[`${chainName}:${contract.contract_id}`].list.push(
-              contract.spender
+              markParentForAssetItemSpender(
+                spender,
+                nftMap[`${chainName}:${contract.contract_id}`]
+              )
             );
           });
 
@@ -238,7 +242,9 @@ export function useApprovalsPage() {
                 amount: token.amount,
               };
             }
-            nftMap[nftTokenKey].list.push(token.spender);
+            nftMap[nftTokenKey].list.push(
+              markParentForAssetItemSpender(spender, nftMap[nftTokenKey])
+            );
           });
         }
       } catch (error) {
@@ -294,7 +300,12 @@ export function useApprovalsPage() {
                   balance: token.balance,
                 };
               }
-              tokenMap[`${chainName}:${tokenId}`].list.push(spender);
+              tokenMap[`${chainName}:${tokenId}`].list.push(
+                markParentForAssetItemSpender(
+                  spender,
+                  tokenMap[`${chainName}:${tokenId}`]
+                )
+              );
             });
           });
         }
@@ -352,37 +363,18 @@ export function useApprovalsPage() {
     return [];
   }, [contractMap, tokenMap, nftMap, filterType]);
 
-  const sortedAssetstList: AssetApprovalItem[] = useMemo(() => {
+  const sortedAssetstList = useMemo(() => {
     const assetsList = [
-      ...Object.values(tokenMap || {}),
-      ...Object.values(nftMap || {}),
-    ] as AssetApprovalItem[];
-    const l = assetsList.length;
-    const dangerList: AssetApprovalItem[] = [];
-    const warnList: AssetApprovalItem[] = [];
-    const safeList: AssetApprovalItem[] = [];
-    const numMap: Record<string, string> = {
-      safe: 'safe',
-      warning: 'warning',
-      danger: 'danger',
-    };
-    for (let i = 0; i < l; i++) {
-      const item = assetsList[i];
-      if (item.risk_level === numMap.warning) {
-        warnList.push(item);
-      } else if (item.risk_level === numMap.danger) {
-        dangerList.push(item);
-      } else {
-        safeList.push(item);
-      }
-    }
+      ...flatten(
+        Object.values(tokenMap || {}).map(
+          (item: TokenApprovalItem) => item.list
+        )
+      ),
+      ...flatten(Object.values(nftMap || {}).map((item) => item.list)),
+    ] as AssetApprovalItem['list'][number][];
 
-    const groupedSafeList = groupBy(safeList, (item) => item.chain);
-    const sorted = sortBy(Object.values(groupedSafeList), 'length');
-    const sortedList = sorted.map((e) =>
-      sortBy(e, (a) => a.list.length).reverse()
-    );
-    return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
+    return assetsList;
+    // return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
   }, [tokenMap, nftMap, filterType]);
 
   const { displaySortedContractList, displaySortedAssetsList } = useMemo(() => {
@@ -396,14 +388,18 @@ export function useApprovalsPage() {
     const keywords = searchKw.toLowerCase();
     return {
       displaySortedContractList: sortedContractList.filter((e) => {
-        return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
-          e.toLowerCase().includes(keywords)
+        return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((i) =>
+          i.toLowerCase().includes(keywords)
         );
       }),
       displaySortedAssetsList: sortedAssetstList.filter((e) => {
-        return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
-          e.toLowerCase().includes(keywords)
-        );
+        return [
+          e.id,
+          e.risk_alert || '',
+          e.$assetParent?.name,
+          e.id,
+          e.$assetParent?.chain,
+        ].some((i) => i?.toLowerCase().includes(keywords));
       }),
     };
   }, [sortedContractList, searchKw]);

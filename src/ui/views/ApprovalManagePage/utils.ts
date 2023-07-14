@@ -14,18 +14,6 @@ import {
 import { Chain } from '@debank/common';
 import { Spender } from '@rabby-wallet/rabby-api/dist/types';
 
-export function getAssetApprovalItemApprovedAmount(row: AssetApprovalItem) {
-  return row.list.reduce((accu, item) => {
-    switch (row.type) {
-      default:
-      case 'nft':
-      case 'token': {
-        return accu + coerceFloat(item.value);
-      }
-    }
-  }, 0);
-}
-
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
 
