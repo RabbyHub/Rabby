@@ -629,7 +629,7 @@ const ApprovalManagePage = () => {
             />
           ) : null}
         </main>
-        <div className="mt-[50px] text-center">
+        <div className="mt-[50px] text-center absolute bottom-80">
           <RevokeButton revokeList={revokeList} onRevoke={handleRevoke} />
         </div>
       </div>
