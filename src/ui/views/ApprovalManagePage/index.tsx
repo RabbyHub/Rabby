@@ -1,17 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { Input, Tooltip, message } from 'antd';
+import React, { useCallback, useEffect } from 'react';
+import { Alert, Input, Tooltip, message } from 'antd';
 import type { ColumnType } from 'antd/lib/table';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
-import {
-  formatAmount,
-  formatUsdValue,
-  openInTab,
-  splitNumberByStep,
-  useWallet,
-} from 'ui/utils';
+import { formatUsdValue, openInTab, splitNumberByStep } from 'ui/utils';
 import './style.less';
-import { useRabbyDispatch } from '@/ui/store';
 import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
@@ -41,9 +34,23 @@ import type {
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
-import { formatTimeFromNow, getRiskAboutValues } from './utils';
+import {
+  formatTimeFromNow,
+  getRiskAboutValues,
+  isRiskyContract,
+} from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
+
+const ROW_SIZES = {
+  ROW_INNER_HEIGHT: 60,
+  ROW_GAP: 12,
+  RISKY_ROW_INNER_HEIGHT: 96,
+};
+const ROW_GAP = 12;
+
+const ROW_HEIGHT = ROW_SIZES.ROW_INNER_HEIGHT + ROW_GAP * 2;
+const RISKY_ROW_HEIGHT = ROW_SIZES.RISKY_ROW_INNER_HEIGHT + ROW_GAP * 2;
 
 export type RowType = ApprovalItem & {
   key?: number;
@@ -66,28 +73,53 @@ const columnsForContract: ColumnType<ContractApprovalItem>[] = [
       const chainItem = findChainByServerID(row.chain as Chain['serverId']);
       if (!chainItem) return null;
 
-      return (
-        <div className="flex items-center">
-          <IconWithChain
-            width="24px"
-            height="24px"
-            hideConer
-            iconUrl={row?.logo_url || IconUnknown}
-            chainServerId={row.chain}
-            noRound={false}
-          />
+      const risky = isRiskyContract(row);
 
-          <NameAndAddress
-            className="ml-[6px]"
-            address={row.id}
-            chainEnum={chainItem.enum}
-            addressSuffix={
-              <span className="contract-name ml-[4px]">
-                ({row.name || 'Unknown'})
-              </span>
-            }
-            openExternal={false}
-          />
+      return (
+        <div className="flex flex-col justify-between">
+          <div className="contract-basic-info flex items-center">
+            <IconWithChain
+              width="24px"
+              height="24px"
+              hideConer
+              iconUrl={row?.logo_url || IconUnknown}
+              chainServerId={row.chain}
+              noRound={false}
+            />
+
+            <NameAndAddress
+              className="ml-[6px]"
+              address={row.id}
+              chainEnum={chainItem.enum}
+              addressSuffix={
+                <span className="contract-name ml-[4px]">
+                  ({row.name || 'Unknown'})
+                </span>
+              }
+              openExternal={false}
+            />
+          </div>
+
+          {risky && (
+            <div className="mt-[14px]">
+              <Alert
+                className={clsx(
+                  'rounded-[4px] px-[8px] py-[3px]',
+                  row.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange',
+                  `J_risky_${row.risk_level}`,
+                  'alert-with-caret'
+                )}
+                icon={
+                  <InfoCircleOutlined className="text-white pt-[4px] self-start" />
+                }
+                banner
+                message={
+                  <span className="text-12 text-white">{row.risk_alert}</span>
+                }
+                type={'error'}
+              />
+            </div>
+          )}
         </div>
       );
     },
@@ -102,7 +134,7 @@ const columnsForContract: ColumnType<ContractApprovalItem>[] = [
       return (
         <span className="inline-flex items-center justify-center">
           {'Risk Exposure'}
-          <Tooltip overlay="Risk Exposure is the total value of assets that you have approved for this contract.">
+          <Tooltip overlay="The total asset value approved and exposed to this contract">
             <img
               className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
               src={IconQuestion}
@@ -197,10 +229,13 @@ const columnsForAsset: ColumnType<AssetApprovalItem>[] = [
 
       return (
         <div className="flex items-center font-bold">
-          <TokenWithChain
+          <IconWithChain
             width="24px"
             height="24px"
-            token={makeTokenFromChain(chainItem)}
+            hideConer
+            iconUrl={row?.logo_url || IconUnknown}
+            chainServerId={row.chain}
+            noRound={false}
           />
 
           <span className="ml-[8px]">{row.name || 'Unknown'}</span>
@@ -338,29 +373,39 @@ const ApprovalManagePage = () => {
     vGridRef,
   } = useApprovalsPage();
 
-  const dispatch = useRabbyDispatch();
-  React.useEffect(() => {}, []);
-  const wallet = useWallet();
-
   const { yValue } = useTableScrollableHeight();
 
-  const { tableColumns, dataList } = useMemo(() => {
-    switch (filterType) {
-      case 'contract':
-      default: {
-        return {
-          tableColumns: columnsForContract,
-          dataList: displaySortedContractList,
-        };
-      }
-      case 'assets': {
-        return {
-          tableColumns: columnsForAsset,
-          dataList: displaySortedAssetsList,
-        };
-      }
-    }
-  }, [filterType, displaySortedContractList, displaySortedAssetsList]);
+  // const { tableColumns, dataList } = useMemo(() => {
+  //   switch (filterType) {
+  //     case 'contract':
+  //     default: {
+  //       return {
+  //         tableColumns: columnsForContract,
+  //         dataList: displaySortedContractList,
+  //       };
+  //     }
+  //     case 'assets': {
+  //       return {
+  //         tableColumns: columnsForAsset,
+  //         dataList: displaySortedAssetsList,
+  //       };
+  //     }
+  //   }
+  // }, [filterType, displaySortedContractList, displaySortedAssetsList]);
+
+  const getContractListTotalHeight = useCallback(
+    (rows: readonly ContractApprovalItem[]) => {
+      return rows.reduce((accu, row) => {
+        if (isRiskyContract(row)) {
+          accu += RISKY_ROW_HEIGHT;
+        } else {
+          accu += ROW_HEIGHT;
+        }
+        return accu;
+      }, 0);
+    },
+    []
+  );
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
@@ -429,6 +474,14 @@ const ApprovalManagePage = () => {
                 dataSource={displaySortedContractList}
                 scroll={{ y: yValue, x: '100%' }}
                 onClickRow={handleClickRow}
+                getTotalHeight={getContractListTotalHeight}
+                getRowHeight={(row) => {
+                  if (isRiskyContract(row)) {
+                    return RISKY_ROW_HEIGHT;
+                  }
+
+                  return ROW_HEIGHT;
+                }}
               />
             )}
             {filterType === 'assets' && (
