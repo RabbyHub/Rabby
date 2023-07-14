@@ -209,7 +209,7 @@ function getColumnsForContract({
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
       render: (_, row) => {
         return (
-          <div className="flex items-center justify-end w-[100%]">
+          <div className="flex items-center justify-end w-[100%] my-approved-assets">
             {row.list.length}
             <img className="ml-[4px]" src={IconRowArrowRight} />
           </div>
@@ -374,7 +374,7 @@ const ApprovalManagePage = () => {
         type: 'info',
         content: (
           <span className="text-white">
-            Account changed, Refreshing page...
+            Switching to a new address. Please wait for the page to refresh.
           </span>
         ),
       });
