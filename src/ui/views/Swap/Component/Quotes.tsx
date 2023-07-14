@@ -219,9 +219,8 @@ export const Quotes = ({
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
       <div className="pt-[40px]" />
-      <div className="flex items-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2 pl-20 text-gray-light ">
-        Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
-        {tradeCount} can trade.{' '}
+      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2  text-gray-light ">
+        {viewCount} exchanges offer quotes, and {tradeCount} enable trading
         <span
           onClick={openSettings}
           className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
