@@ -5,7 +5,6 @@ import {
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
 import { maxBy } from 'lodash';
@@ -1010,7 +1009,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
               value: tx.value || '0x0',
             },
-            res.pre_exec_version
+            res.pre_exec_version,
+            res.gas.gas_used
           );
           const requiredData = await fetchActionRequiredData({
             actionData: parsed,
@@ -1738,6 +1738,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
               errors={checkErrors}
+              engineResults={engineResults}
             />
           </>
         )}
