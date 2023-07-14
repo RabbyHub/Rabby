@@ -108,7 +108,10 @@ const ApprovalManage = () => {
                 chain: e.id,
                 type: 'contract',
                 contractFor: 'nft-contract',
-                riskAboutValues: makeComputedRiskAboutValues(),
+                $riskAboutValues: makeComputedRiskAboutValues(
+                  'nft-contract',
+                  spender
+                ),
                 risk_level: spender.risk_level,
                 risk_alert: spender.risk_alert,
                 id: spender.id,
@@ -117,11 +120,6 @@ const ApprovalManage = () => {
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(contract);
-            accumulateRiskAboutValues(
-              contractMap[`${chainName}:${contractId}`]['contractFor'],
-              contractMap[`${chainName}:${contractId}`]['riskAboutValues'],
-              contract.spender
-            );
 
             if (!nftMap[`${chainName}:${contract.contract_id}`]) {
               const spender = contract.spender;
@@ -129,7 +127,7 @@ const ApprovalManage = () => {
                 nftContract: contract,
                 list: [],
                 type: 'nft',
-                riskAboutValues: makeComputedRiskAboutValues(),
+                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
                 risk_level: 'safe',
                 id: contract.contract_id,
                 name: contract.contract_name,
@@ -141,11 +139,6 @@ const ApprovalManage = () => {
             }
             nftMap[`${chainName}:${contract.contract_id}`].list.push(
               contract.spender
-            );
-            accumulateRiskAboutValues(
-              'nft',
-              nftMap[`${chainName}:${contract.contract_id}`]['riskAboutValues'],
-              spender
             );
           });
 
@@ -165,15 +158,10 @@ const ApprovalManage = () => {
                 logo_url: spender.protocol?.logo_url || IconUnknownNFT,
                 type: 'contract',
                 contractFor: 'nft',
-                riskAboutValues: makeComputedRiskAboutValues(),
+                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(token);
-            accumulateRiskAboutValues(
-              contractMap[`${chainName}:${contractId}`]['contractFor'],
-              contractMap[`${chainName}:${contractId}`]['riskAboutValues'],
-              token.spender
-            );
 
             const nftTokenKey = `${chainName}:${token.contract_id}:${token.inner_id}`;
             if (!nftMap[nftTokenKey]) {
@@ -186,16 +174,11 @@ const ApprovalManage = () => {
                 name: token.contract_name,
                 logo_url: token?.content || (token as any).collection?.logo_url,
                 type: 'nft',
-                riskAboutValues: makeComputedRiskAboutValues(),
+                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
                 amount: token.amount,
               };
             }
             nftMap[nftTokenKey].list.push(token.spender);
-            accumulateRiskAboutValues(
-              'nft',
-              nftMap[nftTokenKey]['riskAboutValues'],
-              spender
-            );
           });
         }
       } catch (error) {
@@ -225,15 +208,13 @@ const ApprovalManage = () => {
                   logo_url: spender.protocol?.logo_url,
                   type: 'contract',
                   contractFor: 'token',
-                  riskAboutValues: makeComputedRiskAboutValues(),
+                  $riskAboutValues: makeComputedRiskAboutValues(
+                    'token',
+                    spender
+                  ),
                 };
               }
               contractMap[`${chainName}:${contractId}`].list.push(token);
-              accumulateRiskAboutValues(
-                contractMap[`${chainName}:${contractId}`]['contractFor'],
-                contractMap[`${chainName}:${contractId}`]['riskAboutValues'],
-                spender
-              );
 
               const tokenId = token.id;
 
@@ -246,16 +227,14 @@ const ApprovalManage = () => {
                   name: token.symbol,
                   logo_url: token.logo_url || IconUnknownToken,
                   type: 'token',
-                  riskAboutValues: makeComputedRiskAboutValues(),
+                  $riskAboutValues: makeComputedRiskAboutValues(
+                    'token',
+                    spender
+                  ),
                   balance: token.balance,
                 };
               }
               tokenMap[`${chainName}:${tokenId}`].list.push(spender);
-              accumulateRiskAboutValues(
-                'token',
-                tokenMap[`${chainName}:${tokenId}`]['riskAboutValues'],
-                spender
-              );
             });
           });
         }

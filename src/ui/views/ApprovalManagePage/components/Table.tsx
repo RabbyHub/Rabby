@@ -55,14 +55,12 @@ function TableHeadCell({
 }
 
 export function VirtualTable<RecordType extends object>({
-  isLoading,
   markHoverRow,
   vGridRef,
   getRowHeight,
   getTotalHeight,
   ...props
 }: TableProps<RecordType> & {
-  isLoading?: boolean;
   markHoverRow?: boolean;
   vGridRef?: React.MutableRefObject<VGrid>;
   getTotalHeight?: (rows: readonly RecordType[]) => number;
@@ -232,7 +230,7 @@ export function VirtualTable<RecordType extends object>({
           header: {
             cell: TableHeadCell,
           },
-          body: !isLoading ? renderVirtualList : undefined,
+          body: !props.loading ? renderVirtualList : undefined,
         }}
       />
     </ResizeObserver>

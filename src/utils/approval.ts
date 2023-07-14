@@ -4,6 +4,7 @@ import {
   Spender,
   TokenApproval,
 } from '@/background/service/openapi';
+import { coerceFloat, coerceInteger } from '@/ui/utils';
 
 export type ApprovalItem =
   | ContractApprovalItem
@@ -32,7 +33,7 @@ export type ContractApprovalItem<T extends ContractFor = ContractFor> = {
 
   list: GetContractTypeByContractFor<T>[];
   chain: string;
-  riskAboutValues: ComputedRiskAboutValues;
+  $riskAboutValues: ComputedRiskAboutValues;
 };
 
 export type TokenApprovalItem = {
@@ -46,7 +47,7 @@ export type TokenApprovalItem = {
 
   list: Spender[];
   chain: string;
-  riskAboutValues: ComputedRiskAboutValues;
+  $riskAboutValues: ComputedRiskAboutValues;
 };
 
 export type NftApprovalItem = {
@@ -63,7 +64,7 @@ export type NftApprovalItem = {
 
   list: Spender[];
   chain: string;
-  riskAboutValues: ComputedRiskAboutValues;
+  $riskAboutValues: ComputedRiskAboutValues;
 };
 
 export type ComputedRiskAboutValues = {
@@ -92,11 +93,23 @@ export function isContractType<T extends ContractFor>(
   return contract.contractFor === type;
 }
 
-export function makeComputedRiskAboutValues(): ComputedRiskAboutValues {
+export function makeComputedRiskAboutValues(
+  contractFor: ContractFor,
+  spender?: Spender
+): ComputedRiskAboutValues {
+  if (contractFor === 'nft' || contractFor === 'nft-contract') {
+    return {
+      risk_exposure_usd_value: coerceFloat(spender?.exposure_nft_usd_value, 0),
+      approve_user_count: coerceInteger(spender?.approve_user_count, 0),
+      revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
+      last_approve_at: coerceInteger(spender?.last_approve_at, 0),
+    };
+  }
+
   return {
-    risk_exposure_usd_value: 0,
-    approve_user_count: 0,
-    revoke_user_count: 0,
-    last_approve_at: 0,
+    risk_exposure_usd_value: coerceFloat(spender?.exposure_usd_value, 0),
+    approve_user_count: coerceInteger(spender?.approve_user_count, 0),
+    revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
+    last_approve_at: coerceInteger(spender?.last_approve_at, 0),
   };
 }

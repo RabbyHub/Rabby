@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Input, Tooltip, message } from 'antd';
-import type { ColumnType } from 'antd/lib/table';
+import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { formatUsdValue, openInTab, splitNumberByStep } from 'ui/utils';
@@ -8,8 +8,8 @@ import './style.less';
 import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
-import { NameAndAddress, TokenWithChain } from '@/ui/component';
-import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
+import { NameAndAddress } from '@/ui/component';
+import { findChainByServerID } from '@/utils/chain';
 
 import { VirtualTable } from './components/Table';
 import PillsSwitch from './components/SwitchPills';
@@ -34,12 +34,9 @@ import type {
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
-import {
-  formatTimeFromNow,
-  getRiskAboutValues,
-  isRiskyContract,
-} from './utils';
+import { formatTimeFromNow, isRiskyContract } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
+import { SorterResult } from 'antd/lib/table/interface';
 
 const ROW_SIZES = {
   ROW_INNER_HEIGHT: 60,
@@ -51,32 +48,203 @@ const ROW_GAP = 12;
 const ROW_HEIGHT = ROW_SIZES.ROW_INNER_HEIGHT + ROW_GAP * 2;
 const RISKY_ROW_HEIGHT = ROW_SIZES.RISKY_ROW_INNER_HEIGHT + ROW_GAP * 2;
 
-export type RowType = ApprovalItem & {
-  key?: number;
-};
+const DEFAULT_SORT_ORDER = 'descend';
+function getNextSort(currentSort: 'ascend' | 'descend') {
+  return currentSort === 'ascend' ? 'descend' : ('ascend' as const);
+}
 
-// Usage
-const columnsForContract: ColumnType<ContractApprovalItem>[] = [
-  {
-    title: null,
-    key: 'selection',
-    render: () => null,
-    width: 100,
-  },
-  // Contract
-  {
-    title: () => <span>{'Contract'}</span>,
-    key: 'contract',
-    dataIndex: 'key',
-    render: (_, row, rowIndex) => {
-      const chainItem = findChainByServerID(row.chain as Chain['serverId']);
-      if (!chainItem) return null;
+function getColumnsForContract({
+  sortedInfo,
+}: {
+  sortedInfo: SorterResult<ContractApprovalItem>;
+}) {
+  const columnsForContract: ColumnType<ContractApprovalItem>[] = [
+    {
+      title: null,
+      key: 'selection',
+      render: () => null,
+      width: 100,
+    },
+    // Contract
+    {
+      title: () => <span>{'Contract'}</span>,
+      key: 'contract',
+      dataIndex: 'key',
+      render: (_, row, rowIndex) => {
+        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+        if (!chainItem) return null;
 
-      const risky = isRiskyContract(row);
+        const risky = isRiskyContract(row);
 
-      return (
-        <div className="flex flex-col justify-between">
-          <div className="contract-basic-info flex items-center">
+        return (
+          <div className="flex flex-col justify-between">
+            <div className="contract-basic-info flex items-center">
+              <IconWithChain
+                width="24px"
+                height="24px"
+                hideConer
+                iconUrl={row?.logo_url || IconUnknown}
+                chainServerId={row.chain}
+                noRound={false}
+              />
+
+              <NameAndAddress
+                className="ml-[6px]"
+                address={row.id}
+                chainEnum={chainItem.enum}
+                addressSuffix={
+                  <span className="contract-name ml-[4px]">
+                    ({row.name || 'Unknown'})
+                  </span>
+                }
+                openExternal={false}
+              />
+            </div>
+
+            {risky && (
+              <div className="mt-[14px]">
+                <Alert
+                  className={clsx(
+                    'rounded-[4px] px-[8px] py-[3px]',
+                    row.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange',
+                    `J_risky_${row.risk_level}`,
+                    'alert-with-caret'
+                  )}
+                  icon={
+                    <InfoCircleOutlined className="text-white pt-[4px] self-start" />
+                  }
+                  banner
+                  message={
+                    <span className="text-12 text-white">{row.risk_alert}</span>
+                  }
+                  type={'error'}
+                />
+              </div>
+            )}
+          </div>
+        );
+      },
+      width: 280,
+    },
+    // Risk Exposure
+    {
+      title: (props) => {
+        return (
+          <span className="inline-flex items-center justify-center">
+            {'Risk Exposure'}
+            <Tooltip overlay="The total asset value approved and exposed to this contract">
+              <img
+                className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
+                src={IconQuestion}
+              />
+            </Tooltip>
+          </span>
+        );
+      },
+      key: 'riskExposure',
+      sorter: (a, b) =>
+        a.$riskAboutValues.risk_exposure_usd_value -
+        b.$riskAboutValues.risk_exposure_usd_value,
+      sortDirections: ['ascend', 'descend'],
+      sortOrder:
+        sortedInfo.columnKey === 'riskExposure' ? sortedInfo.order : null,
+      render(_, row) {
+        if (row.type === 'contract') {
+          return (
+            <span>
+              {formatUsdValue(
+                row.$riskAboutValues.risk_exposure_usd_value || 0
+              )}
+            </span>
+          );
+        }
+
+        return null;
+      },
+      width: 160,
+    },
+    // Recent Revokes(24h)
+    {
+      title: () => <span>{'Recent Revokes(24h)'}</span>,
+      key: 'recentRevokes',
+      dataIndex: 'revoke_user_count',
+      sorter: (a, b) =>
+        a.$riskAboutValues.revoke_user_count -
+        b.$riskAboutValues.revoke_user_count,
+      sortOrder:
+        sortedInfo.columnKey === 'recentRevokes' ? sortedInfo.order : null,
+      render: (_, row) => {
+        if (row.type === 'contract') {
+          return <span>{row.$riskAboutValues.revoke_user_count}</span>;
+        }
+
+        return null;
+      },
+      width: 160,
+    },
+    // Approval Time
+    {
+      title: () => <span>{'Approval Time'}</span>,
+      key: 'approvalTime',
+      dataIndex: 'last_approve_at',
+      sorter: (a, b) =>
+        a.$riskAboutValues.last_approve_at - b.$riskAboutValues.last_approve_at,
+      sortOrder:
+        sortedInfo.columnKey === 'approvalTime' ? sortedInfo.order : null,
+      render: (_, row) => {
+        const time = row.$riskAboutValues.last_approve_at;
+
+        return formatTimeFromNow(time ? time * 1e3 : 0);
+      },
+      width: 160,
+    },
+    // My Approved Assets
+    {
+      title: () => <span>{'My Approved Assets'}</span>,
+      key: 'myApprovedAssets',
+      dataIndex: 'approve_user_count',
+      sorter: (a, b) => a.list.length - b.list.length,
+      sortOrder:
+        sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
+      render: (_, row) => {
+        return (
+          <div className="flex items-center justify-end w-[100%]">
+            {row.list.length}
+            <img className="ml-[4px]" src={IconRowArrowRight} />
+          </div>
+        );
+      },
+      width: 180,
+    },
+  ];
+
+  return columnsForContract;
+}
+
+function getColumnsForAsset({
+  sortedInfo,
+}: {
+  sortedInfo: SorterResult<AssetApprovalItem>;
+}) {
+  const columnsForAsset: ColumnType<AssetApprovalItem>[] = [
+    {
+      title: null,
+      key: 'selection',
+      render: () => null,
+      width: 100,
+    },
+    // Asset
+    {
+      title: () => <span>{'Asset'}</span>,
+      key: 'asset',
+      dataIndex: 'key',
+      render: (_, row) => {
+        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+
+        if (!chainItem?.enum) return;
+
+        return (
+          <div className="flex items-center font-bold">
             <IconWithChain
               width="24px"
               height="24px"
@@ -84,6 +252,81 @@ const columnsForContract: ColumnType<ContractApprovalItem>[] = [
               iconUrl={row?.logo_url || IconUnknown}
               chainServerId={row.chain}
               noRound={false}
+            />
+
+            <span className="ml-[8px]">{row.name || 'Unknown'}</span>
+          </div>
+        );
+      },
+      width: 180,
+    },
+    // Type
+    {
+      title: () => <span>{'Type'}</span>,
+      key: 'assetType',
+      dataIndex: 'type',
+      render: (_, row) => {
+        if (row.type === 'nft') {
+          const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+          return (
+            <span className="capitalize inline-flex items-center">
+              Collection
+              <img
+                onClick={() => {
+                  if (!chainItem) return;
+                  openInTab(
+                    chainItem?.scanLink.replace(/tx\/_s_/, `address/${row.id}`),
+                    false
+                  );
+                }}
+                src={IconExternal}
+                width={16}
+                height={16}
+                className={clsx('ml-6 cursor-pointer')}
+              />
+            </span>
+          );
+        }
+
+        return <span className="capitalize">{row.type}</span>;
+      },
+      width: 140,
+    },
+    // Approved Amount
+    {
+      title: () => <span>{'Approved Amount'}</span>,
+      key: 'approvedAmount',
+      dataIndex: 'key',
+      sorter: (a, b) => a.list.length - b.list.length,
+      sortOrder:
+        sortedInfo.columnKey === 'approvedAmount' ? sortedInfo.order : null,
+      render: (_, row) => {
+        if (row.type === 'token') {
+          return `${splitNumberByStep(row.balance.toFixed(2))} ${row.name}`;
+        }
+
+        return `${row.list.length} Collection`;
+      },
+      width: 160,
+    },
+    // Approve Spender
+    {
+      title: () => <span>{'Approve Spender'}</span>,
+      key: 'approveSpender',
+      dataIndex: 'key',
+      render: (_, row) => {
+        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
+        if (!chainItem) return null;
+
+        return (
+          <div className="flex items-center">
+            <IconWithChain
+              width="24px"
+              height="24px"
+              hideConer
+              iconUrl={row?.logo_url || IconUnknown}
+              chainServerId={row.chain}
+              noRound={row.type === 'nft'}
             />
 
             <NameAndAddress
@@ -98,246 +341,30 @@ const columnsForContract: ColumnType<ContractApprovalItem>[] = [
               openExternal={false}
             />
           </div>
-
-          {risky && (
-            <div className="mt-[14px]">
-              <Alert
-                className={clsx(
-                  'rounded-[4px] px-[8px] py-[3px]',
-                  row.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange',
-                  `J_risky_${row.risk_level}`,
-                  'alert-with-caret'
-                )}
-                icon={
-                  <InfoCircleOutlined className="text-white pt-[4px] self-start" />
-                }
-                banner
-                message={
-                  <span className="text-12 text-white">{row.risk_alert}</span>
-                }
-                type={'error'}
-              />
-            </div>
-          )}
-        </div>
-      );
-    },
-    width: 280,
-  },
-  // Risk Exposure
-  {
-    title: (props) => {
-      const filterByThisColumn = props.sortColumns?.find(
-        (item) => item.column.key === 'riskExposure'
-      );
-      return (
-        <span className="inline-flex items-center justify-center">
-          {'Risk Exposure'}
-          <Tooltip overlay="The total asset value approved and exposed to this contract">
-            <img
-              className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
-              src={IconQuestion}
-            />
-          </Tooltip>
-          {filterByThisColumn && (
-            <img
-              className="w-[12px] h-[12px] relative top-[1px]"
-              src={
-                filterByThisColumn.column.filtered
-                  ? IconFilterDownActive
-                  : IconFilterDefault
-              }
-            />
-          )}
-        </span>
-      );
-    },
-    key: 'riskExposure',
-    render(_, row) {
-      if (row.type === 'contract') {
-        return (
-          <span>
-            {formatUsdValue(row.riskAboutValues.risk_exposure_usd_value || 0)}
-          </span>
         );
-      }
-
-      return null;
+      },
+      width: 280,
     },
-    width: 160,
-  },
-  // Recent Revokes(24h)
-  {
-    title: () => <span>{'Recent Revokes(24h)'}</span>,
-    key: 'recentRevokes',
-    dataIndex: 'revoke_user_count',
-    render: (_, row) => {
-      if (row.type === 'contract') {
-        return <span>{row.riskAboutValues.revoke_user_count}</span>;
-      }
+    // Approve Time
+    {
+      title: () => <span>{'Approve Time'}</span>,
+      key: 'approveTime',
+      dataIndex: 'key',
+      sorter: (a, b) =>
+        a.$riskAboutValues.last_approve_at - b.$riskAboutValues.last_approve_at,
+      sortOrder:
+        sortedInfo.columnKey === 'approveTime' ? sortedInfo.order : null,
+      render: (_, row) => {
+        const time = row.$riskAboutValues.last_approve_at;
 
-      return null;
+        return formatTimeFromNow(time ? time * 1e3 : 0);
+      },
+      width: 160,
     },
-    width: 160,
-  },
-  // Approval Time
-  {
-    title: () => <span>{'Approval Time'}</span>,
-    key: 'approvalTime',
-    dataIndex: 'last_approve_at',
-    render: (_, row) => {
-      const time = row.riskAboutValues.last_approve_at;
+  ];
 
-      return formatTimeFromNow(time ? time * 1e3 : 0);
-    },
-    width: 160,
-  },
-  // My Approved Assets
-  {
-    title: () => <span>{'My Approved Assets'}</span>,
-    key: 'myApprovedAssets',
-    dataIndex: 'approve_user_count',
-    render: (_, row) => {
-      return (
-        <div className="flex items-center justify-end w-[100%]">
-          {row.list.length}
-          <img className="ml-[4px]" src={IconRowArrowRight} />
-        </div>
-      );
-    },
-    width: 180,
-  },
-];
-
-const columnsForAsset: ColumnType<AssetApprovalItem>[] = [
-  {
-    title: null,
-    key: 'selection',
-    render: () => null,
-    width: 100,
-  },
-  // Asset
-  {
-    title: () => <span>{'Asset'}</span>,
-    key: 'asset',
-    dataIndex: 'key',
-    render: (_, row) => {
-      const chainItem = findChainByServerID(row.chain as Chain['serverId']);
-
-      if (!chainItem?.enum) return;
-
-      return (
-        <div className="flex items-center font-bold">
-          <IconWithChain
-            width="24px"
-            height="24px"
-            hideConer
-            iconUrl={row?.logo_url || IconUnknown}
-            chainServerId={row.chain}
-            noRound={false}
-          />
-
-          <span className="ml-[8px]">{row.name || 'Unknown'}</span>
-        </div>
-      );
-    },
-    width: 180,
-  },
-  // Type
-  {
-    title: () => <span>{'Type'}</span>,
-    key: 'assetType',
-    dataIndex: 'type',
-    render: (_, row) => {
-      if (row.type === 'nft') {
-        const chainItem = findChainByServerID(row.chain as Chain['serverId']);
-        return (
-          <span className="capitalize inline-flex items-center">
-            Collection
-            <img
-              onClick={() => {
-                if (!chainItem) return;
-                openInTab(
-                  chainItem?.scanLink.replace(/tx\/_s_/, `address/${row.id}`),
-                  false
-                );
-              }}
-              src={IconExternal}
-              width={16}
-              height={16}
-              className={clsx('ml-6 cursor-pointer')}
-            />
-          </span>
-        );
-      }
-
-      return <span className="capitalize">{row.type}</span>;
-    },
-    width: 140,
-  },
-  // Approved Amount
-  {
-    title: () => <span>{'Approved Amount'}</span>,
-    key: 'approvedAmount',
-    dataIndex: 'key',
-    render: (_, row) => {
-      if (row.type === 'token') {
-        return `${splitNumberByStep(row.balance.toFixed(2))} ${row.name}`;
-      }
-
-      return `${row.list.length} Collection`;
-    },
-    width: 160,
-  },
-  // Approve Spender
-  {
-    title: () => <span>{'Approve Spender'}</span>,
-    key: 'approveSpender',
-    dataIndex: 'key',
-    render: (_, row) => {
-      const chainItem = findChainByServerID(row.chain as Chain['serverId']);
-      if (!chainItem) return null;
-
-      return (
-        <div className="flex items-center">
-          <IconWithChain
-            width="24px"
-            height="24px"
-            hideConer
-            iconUrl={row?.logo_url || IconUnknown}
-            chainServerId={row.chain}
-            noRound={row.type === 'nft'}
-          />
-
-          <NameAndAddress
-            className="ml-[6px]"
-            address={row.id}
-            chainEnum={chainItem.enum}
-            addressSuffix={
-              <span className="contract-name ml-[4px]">
-                ({row.name || 'Unknown'})
-              </span>
-            }
-            openExternal={false}
-          />
-        </div>
-      );
-    },
-    width: 280,
-  },
-  // Approve Time
-  {
-    title: () => <span>{'Approve Time'}</span>,
-    key: 'approveTime',
-    dataIndex: 'key',
-    render: (_, row) => {
-      const time = row.riskAboutValues.last_approve_at;
-
-      return formatTimeFromNow(time ? time * 1e3 : 0);
-    },
-    width: 160,
-  },
-];
+  return columnsForAsset;
+}
 
 const ApprovalManagePage = () => {
   useEffect(() => {
@@ -374,24 +401,6 @@ const ApprovalManagePage = () => {
 
   const { yValue } = useTableScrollableHeight();
 
-  // const { tableColumns, dataList } = useMemo(() => {
-  //   switch (filterType) {
-  //     case 'contract':
-  //     default: {
-  //       return {
-  //         tableColumns: columnsForContract,
-  //         dataList: displaySortedContractList,
-  //       };
-  //     }
-  //     case 'assets': {
-  //       return {
-  //         tableColumns: columnsForAsset,
-  //         dataList: displaySortedAssetsList,
-  //       };
-  //     }
-  //   }
-  // }, [filterType, displaySortedContractList, displaySortedAssetsList]);
-
   const getContractListTotalHeight = useCallback(
     (rows: readonly ContractApprovalItem[]) => {
       return rows.reduce((accu, row) => {
@@ -402,6 +411,39 @@ const ApprovalManagePage = () => {
         }
         return accu;
       }, 0);
+    },
+    []
+  );
+
+  const [sortedInfoForContract, setSortedInfoForContract] = useState<
+    SorterResult<ContractApprovalItem>
+  >({
+    columnKey: 'approvalTime',
+    order: DEFAULT_SORT_ORDER,
+  });
+  const [sortedInfoForAsset, setSortedInfoForAsset] = useState<
+    SorterResult<AssetApprovalItem>
+  >({
+    columnKey: 'approveTime',
+    order: DEFAULT_SORT_ORDER,
+  });
+
+  const handleChangeForContracts: TableProps<ContractApprovalItem>['onChange'] = useCallback(
+    (pagination, filters, sorter) => {
+      setSortedInfoForContract((prev) => ({
+        ...sorter,
+        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+      }));
+    },
+    []
+  );
+
+  const handleChangeForAsset: TableProps<AssetApprovalItem>['onChange'] = useCallback(
+    (pagination, filters, sorter) => {
+      setSortedInfoForAsset((prev) => ({
+        ...sorter,
+        order: sorter.order ?? getNextSort(prev.order || DEFAULT_SORT_ORDER),
+      }));
     },
     []
   );
@@ -440,25 +482,13 @@ const ApprovalManagePage = () => {
           </div>
 
           <div className="approvals-manager__table-wrapper">
-            {/* <VirtualTable<RowType>
-              isLoading={isLoading}
-              vGridRef={vGridRef}
-              // rowSelection={{
-              //   columnWidth: 100,
-              //   renderCell: (value, record, index, originNode) => originNode,
-              // }}
-              columns={tableColumns}
-              dataSource={dataList}
-              scroll={{
-                y: yValue,
-                x: '100%',
-              }}
-            /> */}
             {filterType === 'contract' && (
               <VirtualTable<ContractApprovalItem>
-                isLoading={isLoading}
+                loading={isLoading}
                 vGridRef={vGridRef}
-                columns={columnsForContract}
+                columns={getColumnsForContract({
+                  sortedInfo: sortedInfoForContract,
+                })}
                 dataSource={displaySortedContractList}
                 scroll={{ y: yValue, x: '100%' }}
                 getTotalHeight={getContractListTotalHeight}
@@ -469,15 +499,17 @@ const ApprovalManagePage = () => {
 
                   return ROW_HEIGHT;
                 }}
+                onChange={handleChangeForContracts}
               />
             )}
             {filterType === 'assets' && (
               <VirtualTable<AssetApprovalItem>
-                isLoading={isLoading}
+                loading={isLoading}
                 vGridRef={vGridRef}
-                columns={columnsForAsset}
+                columns={getColumnsForAsset({ sortedInfo: sortedInfoForAsset })}
                 dataSource={displaySortedAssetsList}
                 scroll={{ y: yValue, x: '100%' }}
+                onChange={handleChangeForAsset}
               />
             )}
           </div>
