@@ -318,7 +318,7 @@ export function markParentForAssetItemSpender(
 
 export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let absValue = spender.value || 0;
-  const bigValue = new BigNumber(absValue);
+  let bigValue = new BigNumber(absValue);
 
   const isUnlimited = bigValue.gte(10 ** 9);
   const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
@@ -327,10 +327,12 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   if (spender.$assetParent?.type === 'nft') {
     if (spender.$assetParent?.nftContract?.is_erc721) {
       absValue = 1;
+      bigValue = new BigNumber(absValue);
       displayText = '1 Collection';
     } else if (spender.$assetParent?.nftToken) {
       // TODO: is that right?
       absValue = 1;
+      bigValue = new BigNumber(absValue);
       displayText = '1 NFT';
     }
   }
