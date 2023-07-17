@@ -424,7 +424,7 @@ const ApprovalManage = () => {
                   itemCount={displaySortedContractList.length}
                   itemSize={getSize}
                   itemData={displaySortedContractList}
-                  // @ts-expect-error
+                  // @ts-expect-error it seems there's no `setSize` on `VariableSizeList` of this version react-window
                   setSize={setSize}
                 >
                   {({

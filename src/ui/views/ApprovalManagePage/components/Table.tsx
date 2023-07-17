@@ -77,11 +77,11 @@ export function VirtualTable<RecordType extends object>({
 
   const gridRef = vGridRef || localGridRef;
   const [connectObject] = useState<any>(() => {
-    const obj = {} as {};
+    const obj = {};
     Object.defineProperty(obj, 'scrollLeft', {
       get: () => {
         if (gridRef.current) {
-          // @ts-expect-error
+          // @ts-expect-error state is expected as {}, but it is not
           return gridRef.current?.state?.scrollLeft;
         }
         return null;
