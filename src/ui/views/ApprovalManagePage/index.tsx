@@ -29,6 +29,7 @@ import IconFilterDefault from './icons/sort-default.svg';
 import IconFilterDownActive from './icons/sort-down-active.svg';
 import IconRowArrowRight from './icons/row-arrow-right.svg';
 import IconCheckboxChecked from './icons/check-checked.svg';
+import IconCheckboxIndeterminate from './icons/check-indeterminate.svg';
 import IconCheckboxUnchecked from './icons/check-unchecked.svg';
 
 import {
@@ -81,14 +82,23 @@ function getColumnsForContract({
       key: 'selection',
       render: (_, row) => {
         const contractList = (row.list as any) as ContractApprovalItem[];
-        const hasSelected = contractList.find((contract) => {
+        const selectedContracts = contractList.filter((contract) => {
           // @ts-expect-error narrow type failure
           return isInRevokeList(selectedRows, row, contract);
         });
 
+        const isIndeterminate =
+          selectedContracts.length > 0 &&
+          selectedContracts.length < contractList.length;
+
         return (
           <div className="block h-[100%] w-[100%] flex items-center justify-center">
-            {hasSelected ? (
+            {isIndeterminate ? (
+              <img
+                className="J_indeterminate w-[20px] h-[20px]"
+                src={IconCheckboxIndeterminate}
+              />
+            ) : selectedContracts.length ? (
               <img
                 className="J_checked w-[20px] h-[20px]"
                 src={IconCheckboxChecked}
