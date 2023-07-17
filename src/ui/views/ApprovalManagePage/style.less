@@ -72,7 +72,7 @@
     height: 100%;
     display: inline-block;
   }
-  
+
   .addr-abbr {
     color: @color-comment;
   }
@@ -155,7 +155,7 @@
       border-top-left-radius: @radius-value;
       border-bottom-left-radius: @radius-value;
     }
-    
+
     // &:last-child {
     //   border-top-right-radius: @radius-value;
     //   border-bottom-right-radius: @radius-value;
@@ -182,7 +182,7 @@
       display: flex;
       align-items: center;
     }
-    
+
     .ant-table-column-sorter-full {
       margin-top: 0;
       position: relative;
@@ -207,7 +207,7 @@
       cursor: pointer;
     }
   }
-  
+
   .am-virtual-table-cell {
     @cell-padding-y: 12px;
 
@@ -230,7 +230,7 @@
       border-top-left-radius: @radius-value;
       border-bottom-left-radius: @radius-value;
     }
-    
+
     &.is-last-cell > .am-virtual-table-cell-inner {
       border-top-right-radius: @radius-value;
       border-bottom-right-radius: @radius-value;
@@ -271,7 +271,7 @@
     display: flex;
     align-items: center;
   }
-  
+
   [data-theme="dark"]  .am-virtual-table-cell-inner {
     background: #141414;
   }
@@ -297,14 +297,19 @@
   @mt-offset: 12px;
 
   height: 320px + @mt-offset;
-  margin-top: -@mt-offset;
-  background: white;
-  width: 100%;
   margin: 0;
+  margin-top: -@mt-offset;
+  width: 100%;
+
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
+
+  border-bottom-left-radius: @radius-value;
+  border-bottom-right-radius: @radius-value;
+
+  background: white;
 
   .ant-empty-image {
     height: initial;

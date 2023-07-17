@@ -109,6 +109,8 @@ export function useApprovalsPage() {
 
   const [skContracts, setSKContracts] = useState('');
   const [skAssets, setSKAssets] = useState('');
+  const vGridRefContracts = useRef<VariableSizeGrid>(null);
+  const vGridRefAsset = useRef<VariableSizeGrid>(null);
 
   const setSearchKw = useMemo(
     () => (filterType === 'contract' ? setSKContracts : setSKAssets),
@@ -121,20 +123,14 @@ export function useApprovalsPage() {
 
   const debouncedSearchKw = useDebounceValue(searchKw, 250);
 
-  const vGridRef = useRef<VariableSizeGrid>(null);
-  const sizeMap = useRef<Record<number, number>>({});
-
   useLayoutEffect(() => {
-    if (sizeMap.current && vGridRef?.current) {
-      sizeMap.current = {};
-      vGridRef?.current.resetAfterColumnIndex(0);
+    const vGridRef =
+      filterType === 'contract' ? vGridRefContracts : vGridRefAsset;
+    if (vGridRef.current) {
+      vGridRef.current?.scrollToItem({ columnIndex: 0 });
+      vGridRef.current?.resetAfterColumnIndex(0);
     }
   }, [debouncedSearchKw, filterType]);
-
-  useEffect(() => {
-    vGridRef?.current?.scrollToItem({ columnIndex: 0 });
-    vGridRef?.current?.resetAfterColumnIndex(0);
-  }, [filterType]);
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
@@ -437,7 +433,8 @@ export function useApprovalsPage() {
     filterType,
     setFilterType,
 
-    vGridRef,
+    vGridRefContracts,
+    vGridRefAsset,
 
     account,
     chain,

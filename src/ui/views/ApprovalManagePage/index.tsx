@@ -70,7 +70,7 @@ const DEFAULT_SORT_ORDER_TUPLE = ['descend', 'ascend'] as const;
 
 type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
   approvalItem: T;
-  selectedRevokeItems: any[];
+  selectedRevokeItems: ApprovalSpenderItemToBeRevoked[];
 }) => any;
 
 function getColumnsForContract({
@@ -105,12 +105,12 @@ function getColumnsForContract({
 
               const nextSelectAll =
                 isIndeterminate || selectedContracts.length === 0;
-              const revokeItems: ReturnType<
-                typeof toRevokeItem
-              >[] = nextSelectAll
-                ? contractList.map((contract) => {
-                    return toRevokeItem(row, contract);
-                  })
+              const revokeItems = nextSelectAll
+                ? (contractList
+                    .map((contract) => {
+                      return toRevokeItem(row, contract);
+                    })
+                    .filter(Boolean) as ApprovalSpenderItemToBeRevoked[])
                 : [];
 
               onChangeSelectedContractSpenders({
@@ -691,10 +691,10 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   isLoading: boolean;
   dataSource: T[];
   containerHeight: number;
-  selectedRows: any[];
+  selectedRows: ApprovalSpenderItemToBeRevoked[];
   onClickRow?: HandleClickTableRow<T>;
   vGridRef: React.RefObject<VGrid>;
-  selectedList?: any[];
+  className?: string;
 };
 function TableByContracts({
   isLoading,
@@ -703,6 +703,7 @@ function TableByContracts({
   selectedRows = [],
   onClickRow,
   vGridRef,
+  className,
   onChangeSelectedContractSpenders,
 }: PageTableProps<ContractApprovalItem> & {
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
@@ -743,6 +744,7 @@ function TableByContracts({
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
       vGridRef={vGridRef}
+      className={className}
       markHoverRow={false}
       columns={getColumnsForContract({
         selectedRows,
@@ -773,8 +775,8 @@ function TableByAssetSpenders({
   containerHeight,
   onClickRow,
   selectedRows = [],
-  selectedList = [],
   vGridRef,
+  className,
 }: PageTableProps<AssetApprovalSpender>) {
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<AssetApprovalSpender>
@@ -797,6 +799,7 @@ function TableByAssetSpenders({
     <VirtualTable<AssetApprovalSpender>
       loading={isLoading}
       vGridRef={vGridRef}
+      className={className}
       markHoverRow={false}
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
@@ -847,7 +850,8 @@ const ApprovalManagePage = () => {
     filterType,
     setFilterType,
 
-    vGridRef,
+    vGridRefContracts,
+    vGridRefAsset,
   } = useApprovalsPage();
 
   const { yValue } = useTableScrollableHeight();
@@ -919,6 +923,18 @@ const ApprovalManagePage = () => {
       });
   }, [currentRevokeList]);
 
+  const onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem> = useCallback(
+    (ctx) => {
+      const selectedItemKey = encodeRevokeItemIndex(ctx.approvalItem);
+
+      setContractRevokeMap((prev) => ({
+        ...prev,
+        [selectedItemKey]: ctx.selectedRevokeItems,
+      }));
+    },
+    []
+  );
+
   return (
     <div className="approvals-manager-page">
       <div className="approvals-manager">
@@ -952,37 +968,28 @@ const ApprovalManagePage = () => {
           </div>
 
           <div className="approvals-manager__table-wrapper">
-            {filterType === 'contract' && (
-              <TableByContracts
-                isLoading={isLoading}
-                vGridRef={vGridRef}
-                containerHeight={yValue}
-                dataSource={displaySortedContractList}
-                onClickRow={handleClickContractRow}
-                onChangeSelectedContractSpenders={(ctx) => {
-                  const selectedItemKey = encodeRevokeItemIndex(
-                    ctx.approvalItem
-                  );
+            <TableByContracts
+              isLoading={isLoading}
+              className={filterType === 'contract' ? '' : 'hidden'}
+              vGridRef={vGridRefContracts}
+              containerHeight={yValue}
+              dataSource={displaySortedContractList}
+              onClickRow={handleClickContractRow}
+              onChangeSelectedContractSpenders={
+                onChangeSelectedContractSpenders
+              }
+              selectedRows={contractRevokeList}
+            />
 
-                  setContractRevokeMap((prev) => ({
-                    ...prev,
-                    [selectedItemKey]: ctx.selectedRevokeItems,
-                  }));
-                }}
-                selectedRows={contractRevokeList}
-              />
-            )}
-            {filterType === 'assets' && (
-              <TableByAssetSpenders
-                isLoading={isLoading}
-                vGridRef={vGridRef}
-                containerHeight={yValue}
-                dataSource={displaySortedAssetsList}
-                selectedRows={assetRevokeList}
-                onClickRow={handleClickAssetRow}
-                selectedList={assetRevokeList}
-              />
-            )}
+            <TableByAssetSpenders
+              className={filterType === 'assets' ? '' : 'hidden'}
+              isLoading={isLoading}
+              vGridRef={vGridRefAsset}
+              containerHeight={yValue}
+              dataSource={displaySortedAssetsList}
+              selectedRows={assetRevokeList}
+              onClickRow={handleClickAssetRow}
+            />
           </div>
           {selectedItem ? (
             <RevokeApprovalModal
