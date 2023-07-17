@@ -117,7 +117,7 @@ export const RevokeApprovalModal = (props: {
                 <div className="text-13 font-medium leading-[15px] mb-2">
                   {e.contract_name}
                 </div>
-                <NameAndAddress
+                <NameAndAddress.SafeCopy
                   className="justify-start"
                   address={e.contract_id || (e as NFTApproval).id}
                 />
@@ -177,7 +177,7 @@ export const RevokeApprovalModal = (props: {
               <div className="text-13 font-medium leading-[15px] mb-2">
                 {spender.protocol?.name || 'Unknown Contract'}
               </div>
-              <NameAndAddress
+              <NameAndAddress.SafeCopy
                 className="justify-start"
                 addressClass="text-12"
                 copyIconClass="w-[14px] h-[14px]"

@@ -48,7 +48,7 @@ export const ApprovalContractItem = ({
   const desc = useMemo(() => {
     if (item.type === 'contract') {
       return (
-        <NameAndAddress
+        <NameAndAddress.SafeCopy
           address={item.id}
           chainEnum={
             Object.values(CHAINS).find((i) => i.serverId === item.chain)?.enum

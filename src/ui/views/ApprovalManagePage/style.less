@@ -2,13 +2,13 @@
 
 @page-padding-top: 40px;
 @page-header-h: 24px;
-@page-header-mb: 20px;
+@page-header-bottom-offset: 20px;
 @tools-h: 48px;
 @table-mt: 20px;
 @table-header-h: 48px;
 
 // value of `@sticky-top-height` is 200px
-@sticky-top-height: @page-padding-top + @page-header-h + @page-header-mb + @tools-h + @table-mt + @table-header-h;
+@sticky-top-height: @page-padding-top + @page-header-h + @page-header-bottom-offset + @tools-h + @table-mt + @table-header-h;
 @sticky-footer-height: 191px;
 @radius-value: 6px;
 
@@ -55,17 +55,21 @@
 
 .approvals-manager__header {
   height: @page-header-h;
+  box-sizing: content-box;
+  padding-bottom: @page-header-bottom-offset;
+  display: inline-block;
+  text-align: center;
   width: @main-w;
   margin: 0 auto;
-  // font-family: Roboto;
   font-size: 20px;
   font-weight: 500;
-  margin-bottom: 24px;
 
   > .title {
     text-align: center;
     color: @color-title;
-    text-align: center;
+    vertical-align: baseline;
+    height: 100%;
+    display: inline-block;
   }
   
   .addr-abbr {
@@ -86,6 +90,12 @@
     background-color: white;
     border-radius: @radius-value;
     overflow: hidden;
+    border: 1px solid transparent;
+    transition: ease-in 0.2s border-color;
+
+    &.is-focusing, &:hover {
+      border-color: @primary-color;
+    }
   }
 
   .search-input {
@@ -226,6 +236,26 @@
 
       padding-right: @table-last-cell-pr;
     }
+
+    &.is-sorting-cell > .am-virtual-table-cell-inner {
+      font-weight: bold;
+    }
+
+    // &:hover {
+    //   .am-virtual-table-cell-inner {
+    //     border-top: 1px solid @primary-color;
+    //     border-bottom: 1px solid @primary-color;
+    //     background: rgba(134, 151, 255, 0.10);
+    //   }
+
+    //   &.is-first-cell > .am-virtual-table-cell-inner {
+    //     border-left: 1px solid @primary-color;
+    //   }
+
+    //   &.is-last-cell > .am-virtual-table-cell-inner {
+    //     border-right: 1px solid @primary-color;
+    //   }
+    // }
   }
 
   .am-virtual-table-cell-inner {
@@ -239,6 +269,10 @@
   
   [data-theme="dark"]  .am-virtual-table-cell-inner {
     background: #141414;
+  }
+
+  .am-virtual-table-cell-inner .spender-address {
+    font-weight: 500;
   }
 
   .am-virtual-table-cell-inner .name-and-address {
@@ -343,6 +377,7 @@
 .J-risk-cell__text {
   position: relative;
   display: inline-block;
+  font-weight: bold;
 
   &::before {
     display: block;
@@ -371,7 +406,7 @@
   }
 }
 
-.J-risk-cell__tooltip {
+.J-risk-cell__tooltip, .J-table__tooltip {
   color: #fff;
   font-size: 12px;
   font-weight: 400;
@@ -384,7 +419,9 @@
       margin-bottom: 0;
     }
   }
+}
 
+.J-risk-cell__tooltip {
   &.tip-trust-value .ant-tooltip-inner {
     width: 280px;
   }

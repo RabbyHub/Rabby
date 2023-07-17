@@ -16,15 +16,16 @@ import { VariableSizeGrid as VGrid } from 'react-window';
 import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
 import IconNoMatch from '../icons/no-match.svg';
+import { SorterResult } from 'antd/lib/table/interface';
 
 const DEFAULT_SCROLL = { y: 300, x: '100vw' };
 
-function TableBodyEmpty() {
+function TableBodyEmpty({ isLoading }: { isLoading?: boolean }) {
   return (
     <Empty
       className="am-virtual-table-empty"
       image={IconNoMatch}
-      description="No match"
+      description={isLoading ? 'Loading...' : 'No Match'}
     />
   );
 }
@@ -61,6 +62,7 @@ export function VirtualTable<RecordType extends object>({
   getTotalHeight,
   getCellKey,
   showScrollbar = true,
+  sortedInfo,
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
@@ -78,6 +80,7 @@ export function VirtualTable<RecordType extends object>({
     data: RecordType;
   }) => string | number;
   showScrollbar?: boolean;
+  sortedInfo?: SorterResult<RecordType>;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -134,6 +137,12 @@ export function VirtualTable<RecordType extends object>({
 
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
+  const isLoading = useMemo(() => {
+    return typeof props.loading === 'object'
+      ? props.loading?.spinning
+      : props.loading;
+  }, [props.loading]);
+
   const totalHeight = useMemo(() => {
     return (
       getTotalHeight?.(props.dataSource || []) ||
@@ -149,7 +158,7 @@ export function VirtualTable<RecordType extends object>({
     // const totalHeight = rowData.length * ROW_HEIGHT;
 
     if (!rowData.length) {
-      return <TableBodyEmpty />;
+      return <TableBodyEmpty isLoading={isLoading} />;
     }
 
     return (
@@ -234,6 +243,7 @@ export function VirtualTable<RecordType extends object>({
                   'is-last-cell': columnIndex === mergedColumns.length - 1,
                   'is-hovered-cell':
                     markHoverRow && hoveredRowIndex === rowIndex,
+                  'is-sorting-cell': columnConfig.key === sortedInfo?.columnKey,
                 }
               )}
               onClick={(event) =>
@@ -261,7 +271,10 @@ export function VirtualTable<RecordType extends object>({
     );
   };
 
-  const renderEmpty = useCallback(() => <TableBodyEmpty />, []);
+  const renderEmpty = useCallback(
+    () => <TableBodyEmpty isLoading={isLoading} />,
+    [isLoading]
+  );
 
   return (
     <ResizeObserver

@@ -60,6 +60,7 @@ import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
+import SearchInput from './components/SearchInput';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -164,6 +165,7 @@ function getColumnsForContract({
 
               <NameAndAddress.SafeCopy
                 className="ml-[6px]"
+                addressClass="spender-address"
                 address={row.id}
                 chainEnum={chainItem.enum}
                 addressSuffix={
@@ -206,7 +208,18 @@ function getColumnsForContract({
         return (
           <span className="inline-flex items-center justify-center">
             {'Contract Trust value'}
-            <Tooltip overlay="Trust value refers to the total asset value approved and exposed to this contract. When trust value is low, it's more likely to be risky.">
+            <Tooltip
+              overlayClassName="J-table__tooltip disable-ant-overwrite"
+              overlay={
+                <div className="text-[12px]">
+                  <p>
+                    Trust value refers to the total asset value approved and
+                    exposed to this contract. A low trust value indicates either
+                    risk or inactivity for 180 days.
+                  </p>
+                </div>
+              }
+            >
               <img
                 className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
                 src={IconQuestion}
@@ -250,6 +263,8 @@ function getColumnsForContract({
           row.$contractRiskEvaluation.extra.clientExposureScore >=
             RiskNumMap.warning;
 
+        const isRisk = isDanger || isWarning;
+
         return (
           <Tooltip
             overlayClassName={clsx(
@@ -275,7 +290,7 @@ function getColumnsForContract({
             // }}
           >
             <span
-              className={clsx('J-risk-cell__text', {
+              className={clsx(isRisk && 'J-risk-cell__text', {
                 'is-warning': isWarning,
                 'is-danger': isDanger,
               })}
@@ -326,6 +341,8 @@ function getColumnsForContract({
           row.$contractRiskEvaluation.extra.clientApprovalScore >=
             RiskNumMap.warning;
 
+        const isRisk = isDanger || isWarning;
+
         return (
           <Tooltip
             overlayClassName={clsx(
@@ -368,7 +385,7 @@ function getColumnsForContract({
             // }}
           >
             <span
-              className={clsx('J-risk-cell__text', {
+              className={clsx(isRisk && 'J-risk-cell__text', {
                 'is-warning': isWarning,
                 'is-danger': isDanger,
               })}
@@ -380,10 +397,10 @@ function getColumnsForContract({
       },
       width: 160,
     },
-    // My approve Time
+    // Approval Time
     {
-      title: () => <span>{'My approve Time'}</span>,
-      key: 'myApproveTime',
+      title: () => <span>{'Approval Time'}</span>,
+      key: 'approvalTime',
       dataIndex: 'last_approve_at',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       showSorterTooltip: false,
@@ -392,7 +409,7 @@ function getColumnsForContract({
           a,
           b,
           sortedInfo,
-          'myApproveTime'
+          'approvalTime'
         );
         if (checkResult.shouldEarlyReturn)
           return checkResult.keepRiskFirstReturnValue;
@@ -403,7 +420,7 @@ function getColumnsForContract({
         );
       },
       sortOrder:
-        sortedInfo.columnKey === 'myApproveTime' ? sortedInfo.order : null,
+        sortedInfo.columnKey === 'approvalTime' ? sortedInfo.order : null,
       render: (_, row) => {
         const time = row.$riskAboutValues.last_approve_at;
 
@@ -633,6 +650,7 @@ function getColumnsForAsset({
 
             <NameAndAddress.SafeCopy
               className="ml-[6px]"
+              addressClass="spender-address"
               address={spender.id || ''}
               chainEnum={chainItem?.enum}
               addressSuffix={
@@ -692,7 +710,7 @@ function TableByContracts({
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<ContractApprovalItem>
   >({
-    columnKey: 'myApproveTime',
+    columnKey: 'approvalTime',
     order: DEFAULT_SORT_ORDER,
   });
 
@@ -730,6 +748,7 @@ function TableByContracts({
         sortedInfo: sortedInfo,
         onChangeSelectedContractSpenders,
       })}
+      sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRow}
@@ -781,6 +800,7 @@ function TableByAssetSpenders({
         sortedInfo: sortedInfo,
         selectedRows,
       })}
+      sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRow}
@@ -917,17 +937,16 @@ const ApprovalManagePage = () => {
               onChange={(key) => setFilterType(key)}
             />
 
-            <div className="search-input-wrapper">
-              <Input
-                value={searchKw}
-                onChange={(e) => setSearchKw(e.target.value)}
-                prefix={<img src={IconSearch} />}
-                className="search-input"
-                placeholder={`Search ${
-                  filterType === 'contract' ? 'contract' : 'assets'
-                } by name/address`}
-              />
-            </div>
+            <SearchInput
+              value={searchKw}
+              onChange={(e) => setSearchKw(e.target.value)}
+              prefix={<img src={IconSearch} />}
+              className="search-input"
+              suffix={<span />}
+              placeholder={`Search ${
+                filterType === 'contract' ? 'contract' : 'assets'
+              } by name/address`}
+            />
           </div>
 
           <div className="approvals-manager__table-wrapper">

@@ -129,7 +129,7 @@ export function useApprovalsPage() {
       sizeMap.current = {};
       vGridRef?.current.resetAfterColumnIndex(0);
     }
-  }, [debouncedSearchKw]);
+  }, [debouncedSearchKw, filterType]);
 
   useEffect(() => {
     vGridRef?.current?.scrollToItem({ columnIndex: 0 });
