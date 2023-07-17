@@ -980,6 +980,10 @@ export class WalletController extends BaseController {
     return autoLockService.setLastActiveTime();
   };
 
+  setHiddenBalance = (isHidden: boolean) => {
+    return preferenceService.setHiddenBalance(isHidden);
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };

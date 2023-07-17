@@ -19,6 +19,7 @@ interface PreferenceState {
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
   autoLockTime: number;
+  hiddenBalance: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -39,6 +40,7 @@ export const preference = createModel<RootModel>()({
     tokenApprovalChain: {},
     nftApprovalChain: {},
     autoLockTime: 0,
+    hiddenBalance: false,
   } as PreferenceState,
 
   reducers: {
@@ -149,6 +151,13 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setAutoLockTime(time);
       dispatch.preference.getPreference('autoLockTime');
+    },
+    async setHiddenBalance(hidden: boolean, store?) {
+      dispatch.preference.setField({
+        hiddenBalance: hidden,
+      });
+      await store.app.wallet.setHiddenBalance(hidden);
+      dispatch.preference.getPreference('hiddenBalance');
     },
   }),
 });

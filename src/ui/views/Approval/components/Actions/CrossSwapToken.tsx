@@ -193,7 +193,7 @@ const CrossSwapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1096']}
                   id="1096"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

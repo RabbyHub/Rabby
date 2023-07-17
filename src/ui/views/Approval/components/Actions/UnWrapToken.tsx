@@ -123,7 +123,7 @@ const UnWrapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1093']}
                   id="1093"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

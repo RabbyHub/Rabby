@@ -216,7 +216,7 @@ const BatchSellNFT = ({
                 <SecurityListItem
                   id="1115"
                   engineResult={engineResultMap['1115']}
-                  dangerText="not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>
