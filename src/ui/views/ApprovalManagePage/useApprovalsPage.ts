@@ -30,6 +30,7 @@ import {
 import { groupBy, sortBy, flatten, debounce } from 'lodash';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 /**
  * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
@@ -106,38 +107,34 @@ export function useApprovalsPage() {
     'contract'
   );
 
-  const [searchkeyword, setSearchKw] = useState('');
-  // const debouncedSearchKw = useDebounceValue(searchKw, 250);
+  const [skContracts, setSKContracts] = useState('');
+  const [skAssets, setSKAssets] = useState('');
+
+  const setSearchKw = useMemo(
+    () => (filterType === 'contract' ? setSKContracts : setSKAssets),
+    [filterType]
+  );
+  const searchKw = useMemo(
+    () => (filterType === 'contract' ? skContracts : skAssets),
+    [filterType, skContracts, skAssets]
+  );
+
+  const debouncedSearchKw = useDebounceValue(searchKw, 250);
 
   const vGridRef = useRef<VariableSizeGrid>(null);
   const sizeMap = useRef<Record<number, number>>({});
 
-  const searchKw =
-    useThrottleFn(
-      (value) => {
-        if (sizeMap.current && vGridRef?.current) {
-          sizeMap.current = {};
-          vGridRef?.current.resetAfterColumnIndex(0);
-        }
-        return value;
-      },
-      200,
-      [searchkeyword]
-    ) || '';
+  useLayoutEffect(() => {
+    if (sizeMap.current && vGridRef?.current) {
+      sizeMap.current = {};
+      vGridRef?.current.resetAfterColumnIndex(0);
+    }
+  }, [debouncedSearchKw]);
 
   useEffect(() => {
     vGridRef?.current?.scrollToItem({ columnIndex: 0 });
     vGridRef?.current?.resetAfterColumnIndex(0);
   }, [filterType]);
-
-  const [selectedItem, setSelectedItem] = useState<ApprovalItem | undefined>();
-  const [visible, setVisible] = useState(false);
-
-  const onClose = () => setVisible(false);
-  const onSelect = useCallback((i: ApprovalItem) => {
-    setSelectedItem(i);
-    setVisible(true);
-  }, []);
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
@@ -405,14 +402,14 @@ export function useApprovalsPage() {
   }, [tokenMap, nftMap, filterType]);
 
   const { displaySortedContractList, displaySortedAssetsList } = useMemo(() => {
-    if (!searchKw || searchKw.trim() === '') {
+    if (!debouncedSearchKw || debouncedSearchKw.trim() === '') {
       return {
         displaySortedContractList: sortedContractList,
         displaySortedAssetsList: sortedAssetstList,
       };
     }
 
-    const keywords = searchKw.toLowerCase();
+    const keywords = debouncedSearchKw.toLowerCase();
     return {
       displaySortedContractList: sortedContractList.filter((e) => {
         return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((i) =>
@@ -429,11 +426,12 @@ export function useApprovalsPage() {
         ].some((i) => i?.toLowerCase().includes(keywords));
       }),
     };
-  }, [sortedContractList, searchKw]);
+  }, [sortedContractList, debouncedSearchKw]);
 
   return {
     isLoading: loading,
     searchKw,
+    debouncedSearchKw,
     setSearchKw,
 
     filterType,

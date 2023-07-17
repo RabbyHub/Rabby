@@ -834,9 +834,6 @@ const ApprovalManagePage = () => {
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
   const handleClickContractRow: HandleClickTableRow<ApprovalItem> = React.useCallback(
     (ctx) => {
-      if (ctx.columnKey === 'selection') {
-      }
-
       setSelectedItem(ctx.record);
       setVisibleRevokeModal(true);
     },
