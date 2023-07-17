@@ -78,6 +78,7 @@ export type NftApprovalItem = {
 
 export type ComputedRiskAboutValues = {
   risk_exposure_usd_value: number;
+  is_exposure_usd_value_unknown: boolean;
   approve_user_count: number;
   revoke_user_count: number;
   last_approve_at: number;
@@ -134,6 +135,9 @@ export function makeComputedRiskAboutValues(
   if (contractFor === 'nft' || contractFor === 'nft-contract') {
     return {
       risk_exposure_usd_value: coerceFloat(spender?.exposure_nft_usd_value, 0),
+      is_exposure_usd_value_unknown:
+        spender?.exposure_nft_usd_value === null ||
+        typeof spender?.exposure_nft_usd_value !== 'number',
       approve_user_count: coerceInteger(spender?.approve_user_count, 0),
       revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
       last_approve_at: coerceInteger(spender?.last_approve_at, 0),
@@ -142,6 +146,9 @@ export function makeComputedRiskAboutValues(
 
   return {
     risk_exposure_usd_value: coerceFloat(spender?.exposure_usd_value, 0),
+    is_exposure_usd_value_unknown:
+      spender?.exposure_usd_value === null ||
+      typeof spender?.exposure_usd_value !== 'number',
     approve_user_count: coerceInteger(spender?.approve_user_count, 0),
     revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
     last_approve_at: coerceInteger(spender?.last_approve_at, 0),
@@ -159,8 +166,13 @@ export function getContractRiskEvaluation(
   ) as RiskLevelScore;
 
   const exposureValue = coerceFloat(riskValues.risk_exposure_usd_value);
-  const clientExposureLevel: ApprovalRiskLevel =
-    exposureValue < 1e4 ? 'danger' : exposureValue < 1e5 ? 'warning' : 'safe';
+  const clientExposureLevel: ApprovalRiskLevel = riskValues?.is_exposure_usd_value_unknown
+    ? 'safe'
+    : exposureValue < 1e4
+    ? 'danger'
+    : exposureValue < 1e5
+    ? 'warning'
+    : 'safe';
   const clientExposureScore = coerceInteger(
     RiskNumMap[clientExposureLevel],
     0
