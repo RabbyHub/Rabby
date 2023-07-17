@@ -195,6 +195,8 @@ export function VirtualTable<RecordType extends object>({
               // pointless, see itemKey property of VGrid
               key={`r-${rowIndex}-c-${columnIndex}`}
               className={classNames('am-virtual-table-cell', {
+                'is-first-row': rowIndex === 0,
+                'is-last-row': rowIndex === rowData.length - 1,
                 'is-first-cell': columnIndex === 0,
                 'is-last-cell': columnIndex === mergedColumns.length - 1,
                 'is-hovered-cell': markHoverRow && hoveredRowIndex === rowIndex,

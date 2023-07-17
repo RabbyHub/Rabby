@@ -23,21 +23,11 @@
   padding-bottom: @sticky-footer-height;
   background: @color-bg;
 
-  * {
-    // ::-webkit-scrollbar {
-    //   display: none;
-    // }
-    ::-webkit-scrollbar {
-      width: 6px;
-      background-color: #fafafa;
-      padding-left: 1px;
-      padding-right: 1px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: #c1c1c1;
-      border-radius: 4px;
-    }
-  }
+  .child-has-chromelike-scrollbar();
+}
+
+.revoke-approval-modal__windows {
+  .child-has-chromelike-scrollbar();
 }
 
 .approvals-manager {
@@ -207,8 +197,16 @@
   }
   
   .am-virtual-table-cell {
-    padding: 12px 0;
+    @cell-padding-y: 12px;
+
     background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: @cell-padding-y;
+
+    &.is-last-row {
+      padding-bottom: @cell-padding-y;
+    }
 
     &.is-first-cell > .am-virtual-table-cell-inner {
       border-top-left-radius: @radius-value;

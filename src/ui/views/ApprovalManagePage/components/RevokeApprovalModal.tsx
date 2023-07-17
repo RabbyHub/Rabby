@@ -14,8 +14,11 @@ import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalItem } from '@/utils/approval';
+import { detectClientOS } from '@/ui/utils/os';
 import styled from 'styled-components';
 import { findIndexRevokeList, toRevokeItem } from '../utils';
+
+const IS_WINDOWS = detectClientOS() === 'win32';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -27,18 +30,11 @@ export const RevokeApprovalModal = (props: {
   item?: ApprovalItem;
   visible: boolean;
   onClose: () => void;
-  drawClassName?: string;
+  className?: string;
   revokeList?: any[];
   onConfirm: (items: ApprovalItem[]) => void;
 }) => {
-  const {
-    item,
-    visible,
-    onClose,
-    drawClassName,
-    revokeList,
-    onConfirm,
-  } = props;
+  const { item, visible, onClose, className, revokeList, onConfirm } = props;
   const { t } = useTranslation();
 
   const [selectedList, setSelectedList] = useState<number[]>([]);
@@ -254,7 +250,10 @@ export const RevokeApprovalModal = (props: {
       width={400}
       visible={visible}
       onCancel={onClose}
-      className={drawClassName}
+      className={clsx(
+        IS_WINDOWS && 'revoke-approval-modal__windows',
+        className
+      )}
       bodyStyle={{
         height: '640px',
         maxHeight: '640px',
@@ -278,7 +277,12 @@ export const RevokeApprovalModal = (props: {
           </div>
         </section>
 
-        <section className="max-h-[424px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[60px]">
+        <section
+          className={clsx(
+            'max-h-[424px] overflow-hidden rounded-[6px] pb-[60px]',
+            !IS_WINDOWS ? 'overflow-y-scroll' : 'overflow-y-overlay'
+          )}
+        >
           {displayList}
         </section>
       </div>
