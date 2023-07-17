@@ -176,9 +176,9 @@ export function getContractRiskEvaluation(
   const clientApprovalLevel: ApprovalRiskLevel =
     revoke_user_count < 10
       ? 'safe'
-      : revoke_user_count > approve_user_count * 2
+      : revoke_user_count > approve_user_count * 4
       ? 'danger'
-      : revoke_user_count > approve_user_count / 2
+      : revoke_user_count > approve_user_count * 2
       ? 'warning'
       : 'safe';
 

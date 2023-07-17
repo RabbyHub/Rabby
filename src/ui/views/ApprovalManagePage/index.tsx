@@ -270,13 +270,13 @@ function getColumnsForContract({
               <div className="text-[12px]">
                 {isWarning && (
                   <p>
-                    Warning: Recent revokes exceed 50% of newly approved users
+                    Warning: Recent revokes are double of newly approved users
                     in the last 24 hours.
                   </p>
                 )}
                 {isDanger && (
                   <p>
-                    Danger: Recent revokes are double the number of newly
+                    Danger: Recent revokes are 4 times the number of newly
                     approved users.
                   </p>
                 )}
