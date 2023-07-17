@@ -125,6 +125,7 @@
     background-color: white;
     font-size: 13px;
     user-select: none;
+    border-bottom: transparent;
 
     // override default head cell style
     &.ant-table-column-has-sorters:hover {
@@ -250,6 +251,40 @@
       max-width: 10em;
       .ellipsis();
     }
+  }
+}
+
+.am-virtual-table-empty {
+  @mt-offset: 12px;
+
+  height: 320px + @mt-offset;
+  margin-top: -@mt-offset;
+  background: white;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  .ant-empty-image {
+    height: initial;
+    margin-bottom: 10px;
+
+    > img {
+      width: 52px;
+      height: 52px;
+    }
+  }
+
+  .ant-empty-description {
+    margin-top: 0;
+    border-bottom-left-radius: @mt-offset;
+    border-bottom-right-radius: @mt-offset;
+    color: @color-body;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
   }
 }
 

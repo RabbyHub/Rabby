@@ -1,5 +1,11 @@
-import React, { useMemo, useEffect, useRef, useState } from 'react';
-import { Table } from 'antd';
+import React, {
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
+import { ConfigProvider, Empty, Table } from 'antd';
 import type { TableProps } from 'antd';
 import type { ColumnGroupType, ColumnType } from 'antd/lib/table';
 
@@ -9,7 +15,19 @@ import ResizeObserver from 'rc-resize-observer';
 import { VariableSizeGrid as VGrid } from 'react-window';
 import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
+import IconNoMatch from '../icons/no-match.svg';
+
 const DEFAULT_SCROLL = { y: 300, x: '100vw' };
+
+function TableBodyEmpty() {
+  return (
+    <Empty
+      className="am-virtual-table-empty"
+      image={IconNoMatch}
+      description="No match"
+    />
+  );
+}
 
 function TableHeadCell({
   children,
@@ -130,6 +148,10 @@ export function VirtualTable<RecordType extends object>({
     ref.current = connectObject;
     // const totalHeight = rowData.length * ROW_HEIGHT;
 
+    if (!rowData.length) {
+      return <TableBodyEmpty />;
+    }
+
     return (
       <VGrid
         ref={gridRef}
@@ -239,24 +261,28 @@ export function VirtualTable<RecordType extends object>({
     );
   };
 
+  const renderEmpty = useCallback(() => <TableBodyEmpty />, []);
+
   return (
     <ResizeObserver
       onResize={({ width }) => {
         setTableWidth(width);
       }}
     >
-      <Table<RecordType>
-        {...props}
-        className={clsx('am-virtual-table', props.className)}
-        columns={mergedColumns}
-        pagination={false}
-        components={{
-          header: {
-            cell: TableHeadCell,
-          },
-          body: !props.loading ? renderVirtualList : undefined,
-        }}
-      />
+      <ConfigProvider renderEmpty={renderEmpty}>
+        <Table<RecordType>
+          {...props}
+          className={clsx('am-virtual-table', props.className)}
+          columns={mergedColumns}
+          pagination={false}
+          components={{
+            header: {
+              cell: TableHeadCell,
+            },
+            body: renderVirtualList,
+          }}
+        />
+      </ConfigProvider>
     </ResizeObserver>
   );
 }
