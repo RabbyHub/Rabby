@@ -21,12 +21,15 @@ import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from './components/SwitchPills';
 
 import IconSearch from 'ui/assets/search.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
+import IconUnknown from 'ui/assets/icon-unknown-1.svg';
+
 import IconQuestion from './icons/question.svg';
 import IconFilterDefault from './icons/sort-default.svg';
 import IconFilterDownActive from './icons/sort-down-active.svg';
 import IconRowArrowRight from './icons/row-arrow-right.svg';
-import IconExternal from 'ui/assets/icon-share.svg';
-import IconUnknown from 'ui/assets/icon-unknown-1.svg';
+import IconCheckboxChecked from './icons/check-checked.svg';
+import IconCheckboxUnchecked from './icons/check-unchecked.svg';
 
 import {
   SwitchPills,
@@ -45,6 +48,7 @@ import clsx from 'clsx';
 import {
   checkCompareContractItem,
   formatTimeFromNow,
+  isInRevokeList,
   isRiskyContract,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -66,14 +70,38 @@ const DEFAULT_SORT_ORDER_TUPLE = ['descend', 'ascend'] as const;
 
 function getColumnsForContract({
   sortedInfo,
+  selectedRows = [],
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
+  selectedRows: any[];
 }) {
   const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     {
       title: null,
       key: 'selection',
-      render: () => null,
+      render: (_, row) => {
+        const contractList = (row.list as any) as ContractApprovalItem[];
+        const hasSelected = contractList.find((contract) => {
+          // @ts-expect-error narrow type failure
+          return isInRevokeList(selectedRows, row, contract);
+        });
+
+        return (
+          <div className="block h-[100%] w-[100%] flex items-center justify-center">
+            {hasSelected ? (
+              <img
+                className="J_checked w-[20px] h-[20px]"
+                src={IconCheckboxChecked}
+              />
+            ) : (
+              <img
+                className="J_unchecked w-[20px] h-[20px]"
+                src={IconCheckboxUnchecked}
+              />
+            )}
+          </div>
+        );
+      },
       width: 100,
     },
     // Contract
@@ -364,9 +392,23 @@ function getColumnsForContract({
       sortOrder:
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
       render: (_, row) => {
+        const contractList = (row.list as any) as ContractApprovalItem[];
+        const selectedContracts = contractList.filter((contract) => {
+          // @ts-expect-error narrow type failure
+          return isInRevokeList(selectedRows, row, contract);
+        });
+
         return (
           <div className="flex items-center justify-end w-[100%]">
-            {row.list.length}
+            <span className="inline-flex items-center">
+              {contractList.length}
+              {!selectedContracts.length ? null : (
+                <span className="J_selected_count_text ml-[2px]">
+                  ({selectedContracts.length})
+                </span>
+              )}
+            </span>
+
             <img className="ml-[4px]" src={IconRowArrowRight} />
           </div>
         );
@@ -380,16 +422,38 @@ function getColumnsForContract({
 
 function getColumnsForAsset({
   sortedInfo,
-  selectedList,
+  selectedRows,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
-  selectedList: AssetApprovalSpender[];
+  selectedRows: AssetApprovalSpender[];
 }) {
   const columnsForAsset: ColumnType<AssetApprovalSpender>[] = [
     {
       title: null,
       key: 'selection',
-      render: () => null,
+      render: (_, row) => {
+        // TODO: await implement
+        const spenderList = row.$assetParent?.list as AssetApprovalSpender[];
+        const isSelected = spenderList.find((item) => {
+          return isInRevokeList(selectedRows, row as any, item);
+        });
+
+        return (
+          <div className="block h-[100%] w-[100%] flex items-center justify-center">
+            {isSelected ? (
+              <img
+                className="J_checked w-[20px] h-[20px]"
+                src={IconCheckboxChecked}
+              />
+            ) : (
+              <img
+                className="J_unchecked w-[20px] h-[20px]"
+                src={IconCheckboxUnchecked}
+              />
+            )}
+          </div>
+        );
+      },
       width: 100,
     },
     // Asset
@@ -565,6 +629,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   isLoading: boolean;
   dataSource: T[];
   containerHeight: number;
+  selectedRows: any[];
   onClickRow?: (e: React.MouseEvent, record: T) => void;
   vGridRef: React.RefObject<VGrid>;
   selectedList?: T[];
@@ -573,6 +638,7 @@ function TableByContracts({
   isLoading,
   dataSource,
   containerHeight,
+  selectedRows = [],
   onClickRow,
   vGridRef,
 }: PageTableProps<ContractApprovalItem>) {
@@ -613,6 +679,7 @@ function TableByContracts({
       loading={isLoading}
       vGridRef={vGridRef}
       columns={getColumnsForContract({
+        selectedRows,
         sortedInfo: sortedInfo,
       })}
       dataSource={dataSource}
@@ -637,6 +704,7 @@ function TableByAssetSpenders({
   dataSource,
   containerHeight,
   onClickRow,
+  selectedRows = [],
   selectedList = [],
   vGridRef,
 }: PageTableProps<AssetApprovalSpender>) {
@@ -663,7 +731,7 @@ function TableByAssetSpenders({
       vGridRef={vGridRef}
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
-        selectedList,
+        selectedRows,
       })}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
@@ -792,6 +860,7 @@ const ApprovalManagePage = () => {
                 containerHeight={yValue}
                 dataSource={displaySortedContractList}
                 onClickRow={handleClickContractRow}
+                selectedRows={revokeList}
               />
             )}
             {filterType === 'assets' && (
@@ -800,6 +869,7 @@ const ApprovalManagePage = () => {
                 vGridRef={vGridRef}
                 containerHeight={yValue}
                 dataSource={displaySortedAssetsList}
+                selectedRows={revokeList}
                 onClickRow={handleClickAssetRow}
               />
             )}

@@ -42,10 +42,12 @@ export function checkCompareContractItem(
   };
 }
 
-export const isInRevokeList = (
+export const isInRevokeList = <
+  T extends ApprovalItem['list'][number] = ApprovalItem['list'][number]
+>(
   list: any[],
   item: ApprovalItem,
-  token: ApprovalItem['list'][0]
+  token: T
 ) => {
   if (item.type === 'contract') {
     if ('inner_id' in token) {
