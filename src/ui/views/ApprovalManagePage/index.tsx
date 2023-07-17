@@ -743,6 +743,7 @@ function TableByContracts({
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
       vGridRef={vGridRef}
+      markHoverRow={false}
       columns={getColumnsForContract({
         selectedRows,
         sortedInfo: sortedInfo,
@@ -796,6 +797,7 @@ function TableByAssetSpenders({
     <VirtualTable<AssetApprovalSpender>
       loading={isLoading}
       vGridRef={vGridRef}
+      markHoverRow={false}
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
         selectedRows,
