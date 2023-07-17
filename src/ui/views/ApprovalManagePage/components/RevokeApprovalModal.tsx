@@ -15,7 +15,7 @@ import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalItem } from '@/utils/approval';
 import styled from 'styled-components';
-import { isInRevokeList, toRevokeItem } from '../utils';
+import { findIndexRevokeList, toRevokeItem } from '../utils';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -237,7 +237,7 @@ export const RevokeApprovalModal = (props: {
       const indexes: number[] = [];
 
       item.list.forEach((token, index) => {
-        if (isInRevokeList(revokeList, item, token)) {
+        if (findIndexRevokeList(revokeList, item, token) > -1) {
           indexes.push(index);
         }
       });

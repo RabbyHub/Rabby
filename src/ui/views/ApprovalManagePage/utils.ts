@@ -42,7 +42,7 @@ export function checkCompareContractItem(
   };
 }
 
-export const isInRevokeList = <
+export const findIndexRevokeList = <
   T extends ApprovalItem['list'][number] = ApprovalItem['list'][number]
 >(
   list: any[],
@@ -51,7 +51,7 @@ export const isInRevokeList = <
 ) => {
   if (item.type === 'contract') {
     if ('inner_id' in token) {
-      return list.some((revoke) => {
+      return list.findIndex((revoke) => {
         if (
           revoke.contractId === token.contract_id &&
           revoke.spender === token.spender.id &&
@@ -62,7 +62,7 @@ export const isInRevokeList = <
         }
       });
     } else if ('contract_name' in token) {
-      return list.some((revoke) => {
+      return list.findIndex((revoke) => {
         if (
           revoke.contractId === token.contract_id &&
           revoke.spender === token.spender.id &&
@@ -72,7 +72,7 @@ export const isInRevokeList = <
         }
       });
     } else {
-      return list.some((revoke) => {
+      return list.findIndex((revoke) => {
         if (
           revoke.spender === item.id &&
           revoke.id === token.id &&
@@ -83,7 +83,7 @@ export const isInRevokeList = <
       });
     }
   } else if (item.type === 'token') {
-    return list.some((revoke) => {
+    return list.findIndex((revoke) => {
       if (
         revoke.spender === (token as Spender).id &&
         revoke.id === item.id &&
@@ -93,7 +93,7 @@ export const isInRevokeList = <
       }
     });
   } else if (item.type === 'nft') {
-    return list.some((revoke) => {
+    return list.findIndex((revoke) => {
       const isNftContracts = !!item.nftContract;
       const nftInfo = isNftContracts ? item.nftContract : item.nftToken;
 
@@ -106,7 +106,7 @@ export const isInRevokeList = <
       }
     });
   }
-  return false;
+  return -1;
 };
 
 export const toRevokeItem = (
