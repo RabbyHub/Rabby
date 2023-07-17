@@ -1,4 +1,3 @@
-import { account } from './../../ui/models/account';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
@@ -2912,21 +2911,7 @@ export class WalletController extends BaseController {
   revoke = async ({
     list,
   }: {
-    list: (
-      | {
-          chainServerId: string;
-          contractId: string;
-          spender: string;
-          abi: 'ERC721' | 'ERC1155' | '';
-          tokenId: string | null | undefined;
-          isApprovedForAll: boolean;
-        }
-      | {
-          chainServerId: string;
-          id: string;
-          spender: string;
-        }
-    )[];
+    list: import('@/utils/approval').ApprovalSpenderItemToBeRevoked[];
   }) => {
     list.forEach((e) => {
       if ('tokenId' in e) {

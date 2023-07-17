@@ -27,6 +27,14 @@ function TableHeadCell({
   );
 }
 
+export type HandleClickTableRow<T> = (ctx: {
+  event: React.MouseEvent;
+  record: T;
+  rowIndex: number;
+  columnIndex: number;
+  columnKey: ColumnType<T>['key'];
+}) => any;
+
 export function VirtualTable<RecordType extends object>({
   markHoverRow,
   vGridRef,
@@ -39,7 +47,7 @@ export function VirtualTable<RecordType extends object>({
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
   vGridRef?: React.RefObject<VGrid>;
-  onClickRow?: (e: React.MouseEvent, record: RecordType, index: number) => void;
+  onClickRow?: HandleClickTableRow<RecordType>;
   getTotalHeight?: (rows: readonly RecordType[]) => number;
   getRowHeight?: (
     row: RecordType,
@@ -193,15 +201,28 @@ export function VirtualTable<RecordType extends object>({
           return (
             <div
               // pointless, see itemKey property of VGrid
-              key={`r-${rowIndex}-c-${columnIndex}`}
-              className={classNames('am-virtual-table-cell', {
-                'is-first-row': rowIndex === 0,
-                'is-last-row': rowIndex === rowData.length - 1,
-                'is-first-cell': columnIndex === 0,
-                'is-last-cell': columnIndex === mergedColumns.length - 1,
-                'is-hovered-cell': markHoverRow && hoveredRowIndex === rowIndex,
-              })}
-              onClick={(e) => onClickRow?.(e, record, rowIndex)}
+              key={`r-${rowIndex}-c-${columnIndex}-${columnConfig.key}`}
+              className={classNames(
+                'am-virtual-table-cell',
+                columnConfig.className,
+                {
+                  'is-first-row': rowIndex === 0,
+                  'is-last-row': rowIndex === rowData.length - 1,
+                  'is-first-cell': columnIndex === 0,
+                  'is-last-cell': columnIndex === mergedColumns.length - 1,
+                  'is-hovered-cell':
+                    markHoverRow && hoveredRowIndex === rowIndex,
+                }
+              )}
+              onClick={(event) =>
+                onClickRow?.({
+                  event,
+                  record,
+                  rowIndex,
+                  columnIndex,
+                  columnKey: columnConfig.key,
+                })
+              }
               style={style}
               onMouseEnter={() => {
                 if (!markHoverRow) return;

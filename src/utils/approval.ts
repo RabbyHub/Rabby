@@ -7,10 +7,29 @@ import {
 import { coerceFloat, coerceInteger, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 
+export type ApprovalSpenderItemToBeRevoked = {
+  chainServerId: ApprovalItem['chain'];
+  spender: Spender['id'];
+} & (
+  | {
+      contractId: NFTInfoHost['contract_id'];
+      abi: 'ERC721' | 'ERC1155' | '';
+      tokenId: string | null | undefined;
+      isApprovedForAll: boolean;
+    }
+  | {
+      id: TokenApproval['id'] | Spender['id'];
+    }
+);
+
 export type ApprovalItem =
   | ContractApprovalItem
   | TokenApprovalItem
   | NftApprovalItem;
+
+export type NFTInfoHost =
+  | NFTApproval
+  | /* nft (token) */ NFTApprovalContract /* nft-contract */;
 
 export type AssetApprovalItem = TokenApprovalItem | NftApprovalItem;
 export type AssetApprovalSpender =

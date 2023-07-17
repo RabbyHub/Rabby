@@ -13,7 +13,7 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { ApprovalItem } from '@/utils/approval';
+import { ApprovalItem, ApprovalSpenderItemToBeRevoked } from '@/utils/approval';
 import { detectClientOS } from '@/ui/utils/os';
 import styled from 'styled-components';
 import { findIndexRevokeList, toRevokeItem } from '../utils';
@@ -31,8 +31,8 @@ export const RevokeApprovalModal = (props: {
   visible: boolean;
   onClose: () => void;
   className?: string;
-  revokeList?: any[];
-  onConfirm: (items: ApprovalItem[]) => void;
+  revokeList?: ApprovalSpenderItemToBeRevoked[];
+  onConfirm: (items: ApprovalSpenderItemToBeRevoked[]) => void;
 }) => {
   const { item, visible, onClose, className, revokeList, onConfirm } = props;
   const { t } = useTranslation();
@@ -46,7 +46,7 @@ export const RevokeApprovalModal = (props: {
           const token = item.list[e];
           return toRevokeItem(item, token);
         })
-        .filter(Boolean) as any;
+        .filter(Boolean) as ApprovalSpenderItemToBeRevoked[];
 
       onConfirm(revokeList);
       onClose();

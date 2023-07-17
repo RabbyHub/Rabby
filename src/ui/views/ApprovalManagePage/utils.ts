@@ -5,6 +5,7 @@ dayjs.extend(relativeTime);
 
 import {
   ApprovalItem,
+  ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
@@ -40,6 +41,10 @@ export function checkCompareContractItem(
     shouldEarlyReturn: !!comparison,
     keepRiskFirstReturnValue: isColumnAsc ? -comparison : comparison,
   };
+}
+
+export function encodeRevokeItemIndex(approval: ApprovalItem) {
+  return `${approval.chain}:${approval.id}`;
 }
 
 export const findIndexRevokeList = <
@@ -109,10 +114,10 @@ export const findIndexRevokeList = <
   return -1;
 };
 
-export const toRevokeItem = (
-  item: ApprovalItem,
-  token: ApprovalItem['list'][0]
-) => {
+export const toRevokeItem = <T extends ApprovalItem>(
+  item: T,
+  token: T['list'][number]
+): ApprovalSpenderItemToBeRevoked | undefined => {
   if (item.type === 'contract') {
     if ('inner_id' in token) {
       const abi = token?.is_erc721
@@ -169,7 +174,7 @@ export const toRevokeItem = (
       : '';
     return {
       chainServerId: item?.chain,
-      contractId: nftInfo?.contract_id,
+      contractId: nftInfo?.contract_id || '',
       spender: (token as Spender).id,
       tokenId: (nftInfo as NFTApproval)?.inner_id || null,
       abi,

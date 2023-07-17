@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Button, Input, Tooltip, message } from 'antd';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { Alert, Input, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
@@ -16,7 +16,7 @@ import { Chain } from '@debank/common';
 import NameAndAddress from '@/ui/component/NameAndAddress';
 import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
 
-import { VirtualTable } from './components/Table';
+import { HandleClickTableRow, VirtualTable } from './components/Table';
 import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from './components/SwitchPills';
 
@@ -43,6 +43,7 @@ import {
   AssetApprovalSpender,
   getSpenderApprovalAmount,
   RiskNumMap,
+  ApprovalSpenderItemToBeRevoked,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
@@ -52,6 +53,7 @@ import {
   findIndexRevokeList,
   isRiskyContract,
   toRevokeItem,
+  encodeRevokeItemIndex,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -59,32 +61,34 @@ import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
 
-interface RevokeItem {
-  id: string;
-  list: any[];
-}
-
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
   return currentSort === 'ascend' ? 'descend' : ('ascend' as const);
 }
 const DEFAULT_SORT_ORDER_TUPLE = ['descend', 'ascend'] as const;
 
+type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
+  approvalItem: T;
+  selectedRevokeItems: any[];
+}) => any;
+
 function getColumnsForContract({
   sortedInfo,
   selectedRows = [],
+  onChangeSelectedContractSpenders,
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
   selectedRows: any[];
+  onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
 }) {
   const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     {
       title: null,
       key: 'selection',
+      className: 'J_selection',
       render: (_, row) => {
-        const contractList = (row.list as any) as ContractApprovalItem[];
+        const contractList = row.list;
         const selectedContracts = contractList.filter((contract) => {
-          // @ts-expect-error narrow type failure
           return findIndexRevokeList(selectedRows, row, contract) > -1;
         });
 
@@ -93,7 +97,27 @@ function getColumnsForContract({
           selectedContracts.length < contractList.length;
 
         return (
-          <div className="block h-[100%] w-[100%] flex items-center justify-center">
+          <div
+            className="block h-[100%] w-[100%] flex items-center justify-center"
+            onClick={(evt) => {
+              evt.stopPropagation();
+
+              const nextSelectAll =
+                isIndeterminate || selectedContracts.length === 0;
+              const revokeItems: ReturnType<
+                typeof toRevokeItem
+              >[] = nextSelectAll
+                ? contractList.map((contract) => {
+                    return toRevokeItem(row, contract);
+                  })
+                : [];
+
+              onChangeSelectedContractSpenders({
+                approvalItem: row,
+                selectedRevokeItems: revokeItems,
+              });
+            }}
+          >
             {isIndeterminate ? (
               <img
                 className="J_indeterminate w-[20px] h-[20px]"
@@ -650,7 +674,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   dataSource: T[];
   containerHeight: number;
   selectedRows: any[];
-  onClickRow?: (e: React.MouseEvent, record: T) => void;
+  onClickRow?: HandleClickTableRow<T>;
   vGridRef: React.RefObject<VGrid>;
   selectedList?: any[];
 };
@@ -661,7 +685,10 @@ function TableByContracts({
   selectedRows = [],
   onClickRow,
   vGridRef,
-}: PageTableProps<ContractApprovalItem>) {
+  onChangeSelectedContractSpenders,
+}: PageTableProps<ContractApprovalItem> & {
+  onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
+}) {
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<ContractApprovalItem>
   >({
@@ -701,6 +728,7 @@ function TableByContracts({
       columns={getColumnsForContract({
         selectedRows,
         sortedInfo: sortedInfo,
+        onChangeSelectedContractSpenders,
       })}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
@@ -804,16 +832,22 @@ const ApprovalManagePage = () => {
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
-  const handleClickContractRow = React.useCallback(
-    (e: React.MouseEvent, record: ApprovalItem) => {
-      setSelectedItem(record);
+  const handleClickContractRow: HandleClickTableRow<ApprovalItem> = React.useCallback(
+    (ctx) => {
+      if (ctx.columnKey === 'selection') {
+      }
+
+      setSelectedItem(ctx.record);
       setVisibleRevokeModal(true);
     },
     []
   );
-  const [assetRevokeList, setAssetRevokeList] = React.useState<any[]>([]);
-  const handleClickAssetRow = React.useCallback(
-    (e: React.MouseEvent, record: AssetApprovalSpender) => {
+  const [assetRevokeList, setAssetRevokeList] = React.useState<
+    ApprovalSpenderItemToBeRevoked[]
+  >([]);
+  const handleClickAssetRow: HandleClickTableRow<AssetApprovalSpender> = React.useCallback(
+    (ctx) => {
+      const record = ctx.record;
       const index = findIndexRevokeList(
         assetRevokeList,
         record.$assetContract!,
@@ -822,23 +856,28 @@ const ApprovalManagePage = () => {
       if (index > -1) {
         setAssetRevokeList((prev) => prev.filter((item, i) => i !== index));
       } else {
-        setAssetRevokeList((prev) => [
-          ...prev,
-          toRevokeItem(record.$assetContract!, record.$assetToken!),
-        ]);
+        const revokeItem = toRevokeItem(
+          record.$assetContract!,
+          record.$assetToken!
+        );
+        if (revokeItem) {
+          setAssetRevokeList((prev) => [...prev, revokeItem]);
+        }
       }
     },
     [assetRevokeList]
   );
 
   const [contractRevokeMap, setContractRevokeMap] = React.useState<
-    Record<string, any[]>
+    Record<string, ApprovalSpenderItemToBeRevoked[]>
   >({});
-  const contractRevokeList = Object.values(contractRevokeMap).flat();
+  const contractRevokeList = useMemo(() => {
+    return Object.values(contractRevokeMap).flat();
+  }, [contractRevokeMap]);
 
-  const selectedItemKey = selectedItem
-    ? `${selectedItem!.chain}:${selectedItem!.id}`
-    : '';
+  const selectedItemKey = useMemo(() => {
+    return selectedItem ? encodeRevokeItemIndex(selectedItem) : '';
+  }, [selectedItem]);
 
   const currentRevokeList =
     filterType === 'contract'
@@ -902,6 +941,16 @@ const ApprovalManagePage = () => {
                 containerHeight={yValue}
                 dataSource={displaySortedContractList}
                 onClickRow={handleClickContractRow}
+                onChangeSelectedContractSpenders={(ctx) => {
+                  const selectedItemKey = encodeRevokeItemIndex(
+                    ctx.approvalItem
+                  );
+
+                  setContractRevokeMap((prev) => ({
+                    ...prev,
+                    [selectedItemKey]: ctx.selectedRevokeItems,
+                  }));
+                }}
                 selectedRows={contractRevokeList}
               />
             )}
