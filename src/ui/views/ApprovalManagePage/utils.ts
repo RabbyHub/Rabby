@@ -4,10 +4,12 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 import {
+  ApprovalItem,
   ContractApprovalItem,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
 import { SorterResult } from 'antd/lib/table/interface';
+import { NFTApproval, Spender } from '@rabby-wallet/rabby-api/dist/types';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
@@ -39,3 +41,139 @@ export function checkCompareContractItem(
     keepRiskFirstReturnValue: isColumnAsc ? -comparison : comparison,
   };
 }
+
+export const isInRevokeList = (
+  list: any[],
+  item: ApprovalItem,
+  token: ApprovalItem['list'][0]
+) => {
+  if (item.type === 'contract') {
+    if ('inner_id' in token) {
+      return list.some((revoke) => {
+        if (
+          revoke.contractId === token.contract_id &&
+          revoke.spender === token.spender.id &&
+          revoke.tokenId === token.inner_id &&
+          revoke.chainServerId === token.chain
+        ) {
+          return true;
+        }
+      });
+    } else if ('contract_name' in token) {
+      return list.some((revoke) => {
+        if (
+          revoke.contractId === token.contract_id &&
+          revoke.spender === token.spender.id &&
+          revoke.chainServerId === token.chain
+        ) {
+          return true;
+        }
+      });
+    } else {
+      return list.some((revoke) => {
+        if (
+          revoke.spender === item.id &&
+          revoke.id === token.id &&
+          revoke.chainServerId === item.chain
+        ) {
+          return true;
+        }
+      });
+    }
+  } else if (item.type === 'token') {
+    return list.some((revoke) => {
+      if (
+        revoke.spender === (token as Spender).id &&
+        revoke.id === item.id &&
+        revoke.chainServerId === item.chain
+      ) {
+        return true;
+      }
+    });
+  } else if (item.type === 'nft') {
+    return list.some((revoke) => {
+      const isNftContracts = !!item.nftContract;
+      const nftInfo = isNftContracts ? item.nftContract : item.nftToken;
+
+      if (
+        revoke.spender === (token as Spender).id &&
+        revoke.tokenId === (nftInfo as NFTApproval).inner_id &&
+        revoke.chainServerId === item.chain
+      ) {
+        return true;
+      }
+    });
+  }
+  return false;
+};
+
+export const toRevokeItem = (
+  item: ApprovalItem,
+  token: ApprovalItem['list'][0]
+) => {
+  if (item.type === 'contract') {
+    if ('inner_id' in token) {
+      const abi = token?.is_erc721
+        ? 'ERC721'
+        : token?.is_erc1155
+        ? 'ERC1155'
+        : '';
+      return {
+        chainServerId: token?.chain,
+        contractId: token?.contract_id,
+        spender: token?.spender?.id,
+        abi,
+        tokenId: token?.inner_id,
+        isApprovedForAll: false,
+      } as const;
+    } else if ('contract_name' in token) {
+      const abi = token?.is_erc721
+        ? 'ERC721'
+        : token?.is_erc1155
+        ? 'ERC1155'
+        : '';
+      return {
+        chainServerId: token?.chain,
+        contractId: token?.contract_id,
+        spender: token?.spender?.id,
+        tokenId: null,
+        abi,
+        isApprovedForAll: true,
+      } as const;
+    } else {
+      return {
+        chainServerId: item.chain,
+        id: token?.id,
+        spender: item.id,
+      };
+    }
+  }
+
+  if (item.type === 'token') {
+    return {
+      chainServerId: item.chain,
+      id: item.id,
+      spender: (token as Spender).id,
+    };
+  }
+
+  if (item.type === 'nft') {
+    const isNftContracts = !!item.nftContract;
+    const nftInfo = isNftContracts ? item.nftContract : item.nftToken;
+    const abi = nftInfo?.is_erc721
+      ? 'ERC721'
+      : nftInfo?.is_erc1155
+      ? 'ERC1155'
+      : '';
+    return {
+      chainServerId: item?.chain,
+      contractId: nftInfo?.contract_id,
+      spender: (token as Spender).id,
+      tokenId: (nftInfo as NFTApproval)?.inner_id || null,
+      abi,
+      isApprovedForAll: nftInfo && 'inner_id' in nftInfo ? false : true,
+    };
+  }
+
+  return undefined;
+};
