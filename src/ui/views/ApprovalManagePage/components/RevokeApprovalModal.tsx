@@ -1,13 +1,13 @@
 import { NFTApproval, TokenItem } from '@/background/service/openapi';
-import { NameAndAddress, PageHeader, TokenWithChain } from '@/ui/component';
-import { Alert, Button, Drawer, Modal } from 'antd';
+import { NameAndAddress, TokenWithChain } from '@/ui/component';
+import { Alert, Button, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { ApprovalContractItem } from './ApprovalContractItem';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import { IconChecked, IconNotChecked } from '@/ui/assets';
-import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -15,6 +15,7 @@ import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalItem } from '@/utils/approval';
 import styled from 'styled-components';
+import { isInRevokeList, toRevokeItem } from '../utils';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -44,80 +45,12 @@ export const RevokeApprovalModal = (props: {
 
   const handleRevoke = async () => {
     if (item?.list) {
-      let revokeList;
-      if (item.type === 'contract') {
-        revokeList = selectedList.map((e) => {
+      const revokeList = selectedList
+        .map((e) => {
           const token = item.list[e];
-          if ('inner_id' in token) {
-            const abi = token?.is_erc721
-              ? 'ERC721'
-              : token?.is_erc1155
-              ? 'ERC1155'
-              : '';
-            return {
-              chainServerId: token?.chain,
-              contractId: token?.contract_id,
-              spender: token?.spender?.id,
-              abi,
-              tokenId: token?.inner_id,
-              isApprovedForAll: false,
-              _index: e,
-            } as const;
-          } else if ('contract_name' in token) {
-            const abi = token?.is_erc721
-              ? 'ERC721'
-              : token?.is_erc1155
-              ? 'ERC1155'
-              : '';
-            return {
-              chainServerId: token?.chain,
-              contractId: token?.contract_id,
-              spender: token?.spender?.id,
-              tokenId: null,
-              abi,
-              isApprovedForAll: true,
-              _index: e,
-            } as const;
-          } else {
-            return {
-              chainServerId: item.chain,
-              id: token?.id,
-              spender: item.id,
-              _index: e,
-            };
-          }
-        });
-      }
-
-      if (item.type === 'token') {
-        revokeList = selectedList.map((e) => ({
-          chainServerId: item.chain,
-          id: item.id,
-          spender: item.list[e].id,
-          _index: e,
-        }));
-      }
-
-      if (item.type === 'nft') {
-        revokeList = selectedList.map((e) => {
-          const isNftContracts = !!item.nftContract;
-          const nftInfo = isNftContracts ? item.nftContract : item.nftToken;
-          const abi = nftInfo?.is_erc721
-            ? 'ERC721'
-            : nftInfo?.is_erc1155
-            ? 'ERC1155'
-            : '';
-          return {
-            chainServerId: item?.chain,
-            contractId: nftInfo?.contract_id,
-            spender: item.list[e].id,
-            tokenId: (nftInfo as NFTApproval)?.inner_id || null,
-            abi,
-            isApprovedForAll: nftInfo && 'inner_id' in nftInfo ? false : true,
-            _index: e,
-          };
-        });
-      }
+          return toRevokeItem(item, token);
+        })
+        .filter(Boolean) as any;
 
       onConfirm(revokeList);
       onClose();
@@ -299,12 +232,19 @@ export const RevokeApprovalModal = (props: {
   }, [item, selectedList]);
 
   useEffect(() => {
-    if (visible) {
-      setSelectedList(
-        (revokeList?.map((e: any) => e._index) as number[]) ?? []
-      );
+    setSelectedList([]);
+    if (visible && item?.list && revokeList) {
+      const indexes: number[] = [];
+
+      item.list.forEach((token, index) => {
+        if (isInRevokeList(revokeList, item, token)) {
+          indexes.push(index);
+        }
+      });
+
+      setSelectedList(indexes);
     }
-  }, [visible, revokeList]);
+  }, [visible, revokeList, item]);
 
   if (!item) return null;
 
@@ -355,7 +295,6 @@ export const RevokeApprovalModal = (props: {
           }}
           type="primary"
           size="large"
-          disabled={selectedList.length === 0}
           onClick={handleRevoke}
         >
           Confirm {selectedList.length > 0 ? `(${selectedList.length})` : ''}

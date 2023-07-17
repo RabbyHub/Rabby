@@ -380,8 +380,10 @@ function getColumnsForContract({
 
 function getColumnsForAsset({
   sortedInfo,
+  selectedList,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
+  selectedList: AssetApprovalSpender[];
 }) {
   const columnsForAsset: ColumnType<AssetApprovalSpender>[] = [
     {
@@ -565,6 +567,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   containerHeight: number;
   onClickRow?: (e: React.MouseEvent, record: T) => void;
   vGridRef: React.RefObject<VGrid>;
+  selectedList?: T[];
 };
 function TableByContracts({
   isLoading,
@@ -634,6 +637,7 @@ function TableByAssetSpenders({
   dataSource,
   containerHeight,
   onClickRow,
+  selectedList = [],
   vGridRef,
 }: PageTableProps<AssetApprovalSpender>) {
   const [sortedInfo, setSortedInfo] = useState<
@@ -659,6 +663,7 @@ function TableByAssetSpenders({
       vGridRef={vGridRef}
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
+        selectedList,
       })}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
@@ -711,11 +716,19 @@ const ApprovalManagePage = () => {
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
-  const handleClickRow = React.useCallback(
+  const handleClickContractRow = React.useCallback(
     (e: React.MouseEvent, record: ApprovalItem) => {
-      // if (!(e.target as any).closest('.my-approved-assets')) return;
       setSelectedItem(record);
       setVisibleRevokeModal(true);
+    },
+    []
+  );
+  const handleClickAssetRow = React.useCallback(
+    (e: React.MouseEvent, record: AssetApprovalSpender) => {
+      // if (!(e.target as any).closest('.my-approved-assets')) return;
+      // setSelectedItem(record);
+      // setVisibleRevokeModal(true);
+      console.log(record.$assetParent);
     },
     []
   );
@@ -734,6 +747,9 @@ const ApprovalManagePage = () => {
         console.log(err);
       });
   }, [revokeList]);
+  const selectedItemId = selectedItem
+    ? `${selectedItem!.chain}:${selectedItem!.id}`
+    : '';
 
   return (
     <div className="approvals-manager-page">
@@ -775,7 +791,7 @@ const ApprovalManagePage = () => {
                 vGridRef={vGridRef}
                 containerHeight={yValue}
                 dataSource={displaySortedContractList}
-                onClickRow={handleClickRow}
+                onClickRow={handleClickContractRow}
               />
             )}
             {filterType === 'assets' && (
@@ -784,6 +800,7 @@ const ApprovalManagePage = () => {
                 vGridRef={vGridRef}
                 containerHeight={yValue}
                 dataSource={displaySortedAssetsList}
+                onClickRow={handleClickAssetRow}
               />
             )}
           </div>
@@ -797,10 +814,10 @@ const ApprovalManagePage = () => {
               onConfirm={(list) => {
                 setRevokeMap((prev) => ({
                   ...prev,
-                  [selectedItem!.id]: list,
+                  [selectedItemId]: list,
                 }));
               }}
-              revokeList={revokeMap[selectedItem!.id]}
+              revokeList={revokeMap[selectedItemId]}
             />
           ) : null}
         </main>
