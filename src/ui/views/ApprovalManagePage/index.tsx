@@ -854,6 +854,7 @@ const ApprovalManagePage = () => {
       .then(() => {
         setVisibleRevokeModal(false);
         setContractRevokeMap({});
+        setAssetRevokeList([]);
       })
       .catch((err) => {
         console.log(err);
