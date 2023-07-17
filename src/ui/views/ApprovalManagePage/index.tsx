@@ -49,8 +49,9 @@ import clsx from 'clsx';
 import {
   checkCompareContractItem,
   formatTimeFromNow,
-  isInRevokeList,
+  findIndexRevokeList,
   isRiskyContract,
+  toRevokeItem,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -84,7 +85,7 @@ function getColumnsForContract({
         const contractList = (row.list as any) as ContractApprovalItem[];
         const selectedContracts = contractList.filter((contract) => {
           // @ts-expect-error narrow type failure
-          return isInRevokeList(selectedRows, row, contract);
+          return findIndexRevokeList(selectedRows, row, contract) > -1;
         });
 
         const isIndeterminate =
@@ -411,7 +412,7 @@ function getColumnsForContract({
         const contractList = (row.list as any) as ContractApprovalItem[];
         const selectedContracts = contractList.filter((contract) => {
           // @ts-expect-error narrow type failure
-          return isInRevokeList(selectedRows, row, contract);
+          return findIndexRevokeList(selectedRows, row, contract) > -1;
         });
 
         return (
@@ -441,22 +442,25 @@ function getColumnsForAsset({
   selectedRows,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
-  selectedRows: AssetApprovalSpender[];
+  selectedRows: any[];
 }) {
+  const isSelected = (record: AssetApprovalSpender) => {
+    return (
+      findIndexRevokeList(
+        selectedRows,
+        record.$assetContract!,
+        record.$assetToken!
+      ) > -1
+    );
+  };
   const columnsForAsset: ColumnType<AssetApprovalSpender>[] = [
     {
       title: null,
       key: 'selection',
       render: (_, row) => {
-        // TODO: await implement
-        const spenderList = row.$assetParent?.list as AssetApprovalSpender[];
-        const isSelected = spenderList.find((item) => {
-          return isInRevokeList(selectedRows, row as any, item);
-        });
-
         return (
           <div className="block h-[100%] w-[100%] flex items-center justify-center">
-            {isSelected ? (
+            {isSelected(row) ? (
               <img
                 className="J_checked w-[20px] h-[20px]"
                 src={IconCheckboxChecked}
@@ -648,7 +652,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   selectedRows: any[];
   onClickRow?: (e: React.MouseEvent, record: T) => void;
   vGridRef: React.RefObject<VGrid>;
-  selectedList?: T[];
+  selectedList?: any[];
 };
 function TableByContracts({
   isLoading,
@@ -807,33 +811,55 @@ const ApprovalManagePage = () => {
     },
     []
   );
+  const [assetRevokeList, setAssetRevokeList] = React.useState<any[]>([]);
   const handleClickAssetRow = React.useCallback(
     (e: React.MouseEvent, record: AssetApprovalSpender) => {
-      // if (!(e.target as any).closest('.my-approved-assets')) return;
-      // setSelectedItem(record);
-      // setVisibleRevokeModal(true);
-      console.log(record.$assetParent);
+      const index = findIndexRevokeList(
+        assetRevokeList,
+        record.$assetContract!,
+        record.$assetToken!
+      );
+      if (index > -1) {
+        setAssetRevokeList((prev) => prev.filter((item, i) => i !== index));
+      } else {
+        setAssetRevokeList((prev) => [
+          ...prev,
+          toRevokeItem(record.$assetContract!, record.$assetToken!),
+        ]);
+      }
     },
-    []
+    [assetRevokeList]
   );
 
-  const [revokeMap, setRevokeMap] = React.useState<Record<string, any[]>>({});
-  const revokeList = Object.values(revokeMap).flat();
+  const [contractRevokeMap, setContractRevokeMap] = React.useState<
+    Record<string, any[]>
+  >({});
+  const contractRevokeList = Object.values(contractRevokeMap).flat();
+
+  const selectedItemKey = selectedItem
+    ? `${selectedItem!.chain}:${selectedItem!.id}`
+    : '';
+
+  const currentRevokeList =
+    filterType === 'contract'
+      ? contractRevokeList
+      : filterType === 'assets'
+      ? assetRevokeList
+      : [];
+
   const wallet = useWallet();
   const handleRevoke = React.useCallback(() => {
     wallet
-      .revoke({ list: revokeList })
+      .revoke({ list: currentRevokeList })
       .then(() => {
         setVisibleRevokeModal(false);
-        setRevokeMap({});
+        setContractRevokeMap({});
+        setAssetRevokeList([]);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [revokeList]);
-  const selectedItemId = selectedItem
-    ? `${selectedItem!.chain}:${selectedItem!.id}`
-    : '';
+  }, [currentRevokeList]);
 
   return (
     <div className="approvals-manager-page">
@@ -876,7 +902,7 @@ const ApprovalManagePage = () => {
                 containerHeight={yValue}
                 dataSource={displaySortedContractList}
                 onClickRow={handleClickContractRow}
-                selectedRows={revokeList}
+                selectedRows={contractRevokeList}
               />
             )}
             {filterType === 'assets' && (
@@ -885,8 +911,9 @@ const ApprovalManagePage = () => {
                 vGridRef={vGridRef}
                 containerHeight={yValue}
                 dataSource={displaySortedAssetsList}
-                selectedRows={revokeList}
+                selectedRows={assetRevokeList}
                 onClickRow={handleClickAssetRow}
+                selectedList={assetRevokeList}
               />
             )}
           </div>
@@ -898,17 +925,20 @@ const ApprovalManagePage = () => {
                 setVisibleRevokeModal(false);
               }}
               onConfirm={(list) => {
-                setRevokeMap((prev) => ({
+                setContractRevokeMap((prev) => ({
                   ...prev,
-                  [selectedItemId]: list,
+                  [selectedItemKey]: list,
                 }));
               }}
-              revokeList={revokeMap[selectedItemId]}
+              revokeList={contractRevokeMap[selectedItemKey]}
             />
           ) : null}
         </main>
         <div className="mt-[50px] text-center absolute bottom-80">
-          <RevokeButton revokeList={revokeList} onRevoke={handleRevoke} />
+          <RevokeButton
+            revokeList={currentRevokeList}
+            onRevoke={handleRevoke}
+          />
         </div>
       </div>
     </div>

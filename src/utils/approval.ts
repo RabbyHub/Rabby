@@ -52,6 +52,8 @@ export type TokenApprovalItem = {
 
   list: (Spender & {
     readonly $assetParent?: TokenApprovalItem;
+    readonly $assetToken?: TokenApproval;
+    readonly $assetContract?: ContractApprovalItem;
   })[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
@@ -71,6 +73,8 @@ export type NftApprovalItem = {
 
   list: (Spender & {
     readonly $assetParent?: NftApprovalItem;
+    readonly $assetToken?: NFTApproval | NFTApprovalContract;
+    readonly $assetContract?: ContractApprovalItem;
   })[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
@@ -264,13 +268,29 @@ export function compareContractApprovalItemByRiskLevel(
 
 export function markParentForAssetItemSpender(
   spender: Spender,
-  parent: AssetApprovalItem
+  parent: AssetApprovalItem,
+  assetContract: ContractApprovalItem,
+  assetToken: TokenApproval | NFTApproval | NFTApprovalContract
 ) {
   Object.defineProperty(spender, '$assetParent', {
     enumerable: false,
     configurable: process.env.NODE_ENV === 'production',
     get() {
       return parent;
+    },
+  });
+  Object.defineProperty(spender, '$assetContract', {
+    enumerable: false,
+    configurable: process.env.NODE_ENV === 'production',
+    get() {
+      return assetContract;
+    },
+  });
+  Object.defineProperty(spender, '$assetToken', {
+    enumerable: false,
+    configurable: process.env.NODE_ENV === 'production',
+    get() {
+      return assetToken;
     },
   });
 

@@ -206,7 +206,9 @@ export function useApprovalsPage() {
             nftMap[`${chainName}:${contract.contract_id}`].list.push(
               markParentForAssetItemSpender(
                 spender,
-                nftMap[`${chainName}:${contract.contract_id}`]
+                nftMap[`${chainName}:${contract.contract_id}`],
+                contractMap[`${chainName}:${contractId}`],
+                contract
               )
             );
           });
@@ -256,7 +258,12 @@ export function useApprovalsPage() {
               };
             }
             nftMap[nftTokenKey].list.push(
-              markParentForAssetItemSpender(spender, nftMap[nftTokenKey])
+              markParentForAssetItemSpender(
+                spender,
+                nftMap[nftTokenKey],
+                contractMap[`${chainName}:${contractId}`],
+                token
+              )
             );
           });
         }
@@ -321,7 +328,9 @@ export function useApprovalsPage() {
               tokenMap[`${chainName}:${tokenId}`].list.push(
                 markParentForAssetItemSpender(
                   spender,
-                  tokenMap[`${chainName}:${tokenId}`]
+                  tokenMap[`${chainName}:${tokenId}`],
+                  contractMap[`${chainName}:${contractId}`],
+                  token
                 )
               );
             });
