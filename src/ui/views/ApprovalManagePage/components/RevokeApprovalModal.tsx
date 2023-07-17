@@ -17,6 +17,7 @@ import { ApprovalItem, ApprovalSpenderItemToBeRevoked } from '@/utils/approval';
 import { detectClientOS } from '@/ui/utils/os';
 import styled from 'styled-components';
 import { findIndexRevokeList, toRevokeItem } from '../utils';
+import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 
 const IS_WINDOWS = detectClientOS() === 'win32';
 
@@ -261,6 +262,7 @@ export const RevokeApprovalModal = (props: {
       destroyOnClose
       footer={null}
       title="Approvals"
+      closeIcon={<IconClose />}
     >
       <div>
         <div className="mt-16 mb-18">
@@ -270,7 +272,7 @@ export const RevokeApprovalModal = (props: {
         <section className="mb-[6px] flex justify-between items-center">
           <span className="text-12 text-gray-title">{subTitle}</span>
           <div
-            className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light"
+            className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]"
             onClick={handleSelectAll}
           >
             {t('Select All')}

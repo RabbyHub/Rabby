@@ -172,7 +172,7 @@ export const ApprovalContractItem = ({
           </div>
         </div>
 
-        <span className="text-[13px] text-gray-subTitle ml-auto ">
+        <span className="text-[13px] text-gray-subTitle ml-auto font-medium">
           {item.list.length}{' '}
           {!onSelect && 'Approval' + (item.list.length > 1 ? 's' : '')}
           {}
