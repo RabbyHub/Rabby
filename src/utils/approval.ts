@@ -269,7 +269,12 @@ export function compareContractApprovalItemByRiskLevel(
     b.$contractRiskEvaluation ||
     getContractRiskEvaluation(b.risk_level, a.$riskAboutValues);
 
-  if (aRisk.serverRiskScore !== bRisk.serverRiskScore) {
+  // some times, server risk score is null, so we need to compare client risk score
+  if (
+    aRisk.serverRiskScore &&
+    bRisk.serverRiskScore &&
+    aRisk.serverRiskScore !== bRisk.serverRiskScore
+  ) {
     return aRisk.serverRiskScore > bRisk.serverRiskScore ? 1 : -1;
   }
 
