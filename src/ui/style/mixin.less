@@ -31,9 +31,9 @@
   }
 }
 
-.chromelike-scrollbar() {
+.chromelike-scrollbar(@bar-width: 6px) {
   ::-webkit-scrollbar {
-    width: 6px;
+    width: @bar-width;
     background-color: #fafafa;
     padding-left: 1px;
     padding-right: 1px;
@@ -44,8 +44,18 @@
   }
 }
 
-.child-has-chromelike-scrollbar() {
+.child-has-chromelike-scrollbar(@bar-width: 6px) {
   * {
-    .chromelike-scrollbar();
+    .chromelike-scrollbar(@bar-width);
+  }
+}
+
+.light-style-disabled-btn() {
+  &:hover,
+  &:focus,
+  &:active,
+  & {
+    background: rgba(134, 151, 255, 0.4);
+    border-color: transparent;
   }
 }

@@ -275,8 +275,8 @@ function getColumnsForContract({
             )}
             overlay={
               <div className="text-[12px]">
-                <p>{'Warning: The contract trust value < $100,000'}</p>
-                <p>{'Danger: The  contract trust value < $10,000'}</p>
+                {isWarning && <p>{'The contract trust value < $100,000'}</p>}
+                {isDanger && <p>{'The  contract trust value < $10,000'}</p>}
               </div>
             }
             {...(!isDanger &&
@@ -303,9 +303,9 @@ function getColumnsForContract({
       },
       width: 180,
     },
-    // Recent Revokes(24h)
+    // 24h revoke users
     {
-      title: () => <span>{'Recent Revokes(24h)'}</span>,
+      title: () => <span>{'24h revoke users'}</span>,
       key: 'recentRevokes',
       dataIndex: 'revoke_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -428,6 +428,7 @@ function getColumnsForContract({
     // My Approved Assets
     {
       title: () => <span>{'My Approved Assets'}</span>,
+      align: 'right',
       key: 'myApprovedAssets',
       dataIndex: 'approve_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -929,10 +930,7 @@ const ApprovalManagePage = () => {
       <div className="approvals-manager">
         <header className="approvals-manager__header">
           <div className="title">
-            Approvals on{' '}
-            <span className="addr-abbr">
-              {ellipsisAddress(account?.address || '')}
-            </span>
+            Approvals on {ellipsisAddress(account?.address || '')}
           </div>
         </header>
 

@@ -17,7 +17,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeList, onRevoke }) => {
         <div className="mt-[16px] h-[16px] mb-[16px]"> </div>
       )}
       <Button
-        className="w-[280px] h-[60px]"
+        className="w-[280px] h-[60px] text-[20px] am-revoke-btn"
         type="primary"
         size="large"
         disabled={!revokeList.length}

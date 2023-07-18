@@ -21,7 +21,8 @@
 // value of `@sticky-footer-height` is 148px
 @sticky-footer-height: @sticky-footer-textarea + @sticky-btn-height + @sticky-btn-bottom-offset;
 
-@table-last-cell-pr: 20px;
+@table-scoller-reserve-w: 6px;
+@table-last-cell-pr: @table-scoller-reserve-w;
 
 .approvals-manager-page {
   width: 100vw;
@@ -78,10 +79,6 @@
     vertical-align: baseline;
     height: 100%;
     display: inline-block;
-  }
-
-  .addr-abbr {
-    color: @color-comment;
   }
 }
 
@@ -161,11 +158,6 @@
       .ant-table-column-sorters {
         color: @primary-text-color;
       }
-    }
-
-    // in fact, the last item is placeholder with `.ant-table-cell-scrollbar`
-    &:nth-last-child(1) {
-      padding-right: @table-last-cell-pr;
     }
 
     &.ant-table-cell-scrollbar:last-child {
@@ -445,7 +437,9 @@
 
 .J-risk-cell__tooltip {
   &.tip-trust-value .ant-tooltip-inner {
-    width: 280px;
+    width: 210px;
+    line-height: 20px;
+    text-align: center;
   }
 
   &.is-danger.tip-recent-revokes .ant-tooltip-inner {
@@ -473,5 +467,9 @@
 }
 
 .modal-debug-row-item {
-  .child-has-chromelike-scrollbar();
+  .child-has-chromelike-scrollbar(@table-scoller-reserve-w);
+}
+
+.am-revoke-btn.ant-btn-primary {
+  .light-style-disabled-btn();
 }

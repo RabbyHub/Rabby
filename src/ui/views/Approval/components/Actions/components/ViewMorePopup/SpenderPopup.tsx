@@ -60,7 +60,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row
             className="bg-[#F6F8FF]"
-            tip="Trust value refers to the total asset value approved and exposed to this contract. When trust value is low, it's more likely to be risky."
+            tip="Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
           >
             Trust value
           </Row>
