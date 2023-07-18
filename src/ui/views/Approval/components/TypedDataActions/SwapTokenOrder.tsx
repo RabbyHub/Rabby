@@ -197,7 +197,7 @@ const Permit = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1094']}
                   id="1094"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

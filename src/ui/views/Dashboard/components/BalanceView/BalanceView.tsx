@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { splitNumberByStep, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
@@ -12,6 +12,8 @@ import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { useDebounce } from 'react-use';
+import { useRabbySelector } from '@/ui/store';
+import { BalanceLabel } from './BalanceLabel';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [
@@ -137,18 +139,18 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   const currentHover = isDebounceHover;
   const currentBalance = currentHover ? curvePoint?.value || balance : balance;
-  const splitBalance = splitNumberByStep((currentBalance || 0).toFixed(2));
   const currentChangePercent = currentHover
     ? curvePoint?.changePercent || curveData?.changePercent
     : curveData?.changePercent;
   const currentIsLoss =
     currentHover && curvePoint ? curvePoint.isLoss : curveData?.isLoss;
   const currentChangeValue = currentHover ? curvePoint?.change : null;
+  const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left">
-        <div onClick={onRefresh} className={clsx('amount group', 'text-32')}>
+        <div className={clsx('amount group', 'text-32')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
             (balanceLoading && !balanceFromCache) ||
@@ -156,23 +158,20 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             (balanceFromCache && currentBalance === 0) ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
             ) : (
-              <span
-                className={clsx(
-                  'cursor-pointer transition-opacity',
-                  balanceFromCache && 'opacity-80'
-                )}
-                title={splitBalance}
-              >
-                ${splitBalance}
-              </span>
+              <BalanceLabel
+                isCache={balanceFromCache}
+                balance={currentBalance}
+              />
             )}
           </div>
           <div
+            onClick={onRefresh}
             className={clsx(
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
               'text-15 font-normal mb-[5px]',
               {
-                hidden: !currentChangePercent || balanceLoading,
+                hidden:
+                  !currentChangePercent || balanceLoading || hiddenBalance,
               }
             )}
           >
@@ -183,9 +182,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             ) : null}
           </div>
           <div
-            className={clsx(' mb-6 group-hover:block', {
+            onClick={onRefresh}
+            className={clsx(' mb-6', {
               'block animate-spin': startRefresh,
               hidden: !startRefresh,
+              'group-hover:block': !hiddenBalance,
             })}
           >
             <UpdateSVG />
@@ -232,7 +233,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           </div>
 
           <div className={clsx('h-[88px] w-full relative')}>
-            {!success && !curveData ? null : curveLoading ? (
+            {(!success && !curveData) || hiddenBalance ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active

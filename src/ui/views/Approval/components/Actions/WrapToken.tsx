@@ -122,7 +122,7 @@ const WrapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1092']}
                   id="1092"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

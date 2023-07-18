@@ -185,7 +185,7 @@ const BuyNFT = ({
                 <SecurityListItem
                   id="1085"
                   engineResult={engineResultMap['1085']}
-                  dangerText="not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

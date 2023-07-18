@@ -86,6 +86,7 @@ export interface PreferenceStore {
    * auto lock time in minutes
    */
   autoLockTime?: number;
+  hiddenBalance?: boolean;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -126,6 +127,7 @@ class PreferenceService {
         customizedToken: [],
         blockedToken: [],
         collectionStarred: [],
+        hiddenBalance: false,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -197,6 +199,9 @@ class PreferenceService {
     }
     if (!this.store.autoLockTime) {
       this.store.autoLockTime = 0;
+    }
+    if (!this.store.hiddenBalance) {
+      this.store.hiddenBalance = false;
     }
   };
 
@@ -621,6 +626,9 @@ class PreferenceService {
 
   setAutoLockTime = (time: number) => {
     this.store.autoLockTime = time;
+  };
+  setHiddenBalance = (value: boolean) => {
+    this.store.hiddenBalance = value;
   };
 }
 
