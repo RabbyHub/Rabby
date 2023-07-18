@@ -21,7 +21,7 @@
 // value of `@sticky-footer-height` is 148px
 @sticky-footer-height: @sticky-footer-textarea + @sticky-btn-height + @sticky-btn-bottom-offset;
 
-@table-scoller-reserve-w: 6px;
+@table-scoller-reserve-w: 4px;
 @table-last-cell-pr: @table-scoller-reserve-w;
 
 .approvals-manager-page {
@@ -163,6 +163,7 @@
     &.ant-table-cell-scrollbar:last-child {
       box-shadow: none;
       width: 0;
+      // display: none;
     }
 
     .ant-table-column-sorters {
@@ -181,6 +182,10 @@
       top: -3px;
       margin-left: 2px;
     }
+    
+    &.J_contracts_last_column {
+      padding-right: 14px;
+    }
   }
 
   thead.ant-table-thead > tr {
@@ -194,6 +199,9 @@
 
   .am-virtual-grid {
     overflow-y: overlay !important;
+    overflow-x: hidden !important;
+
+    .chromelike-scrollbar(@table-scoller-reserve-w);
 
     .am-virtual-table-cell-inner {
       cursor: pointer;
@@ -256,6 +264,10 @@
         border-bottom-right-radius: @radius-value;
       }
     }
+  }
+
+  &.J_table_by_contracts .am-virtual-table-cell.is-last-cell > .am-virtual-table-cell-inner {
+    padding-right: 20px;
   }
 
   .am-virtual-table-cell-inner {
@@ -467,9 +479,9 @@
 }
 
 .modal-debug-row-item {
-  .child-has-chromelike-scrollbar(@table-scoller-reserve-w);
+  .child-has-chromelike-scrollbar(6px);
 }
 
-.am-revoke-btn.ant-btn-primary {
+.am-revoke-btn.ant-btn-primary[disabled] {
   .light-style-disabled-btn();
 }

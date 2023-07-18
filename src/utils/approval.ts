@@ -383,12 +383,10 @@ export function compareAssetSpenderByAmount(
   const bApprovedAmount = getSpenderApprovalAmount(b);
 
   if (!aApprovedAmount.bigValue.eq(bApprovedAmount.bigValue)) {
-    return aApprovedAmount.bigValue.gte(bApprovedAmount.bigValue) ? 1 : -1;
+    return aApprovedAmount.bigValue.gt(bApprovedAmount.bigValue) ? 1 : -1;
   }
 
-  return aApprovedAmount.nftOrderScore >= bApprovedAmount.nftOrderScore
-    ? 1
-    : -1;
+  return aApprovedAmount.nftOrderScore > bApprovedAmount.nftOrderScore ? 1 : -1;
 }
 
 const enum AssetTypeScores {
@@ -441,5 +439,5 @@ export function compareAssetSpenderByType(
     return aScore > bScore ? 1 : -1;
   }
 
-  return compareAssetSpenderByAmount(a, b);
+  return 0;
 }

@@ -64,6 +64,7 @@ import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
+import { IS_WINDOWS } from '@/constant';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -430,6 +431,7 @@ function getColumnsForContract({
     {
       title: () => <span>{'My Approved Assets'}</span>,
       align: 'right',
+      className: clsx('J_contracts_last_column', IS_WINDOWS && 'is-windows'),
       key: 'myApprovedAssets',
       dataIndex: 'approve_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -555,7 +557,16 @@ function getColumnsForAsset({
       dataIndex: 'type',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       showSorterTooltip: false,
-      sorter: (a, b) => compareAssetSpenderByType(a, b),
+      sorter: (a, b) => {
+        let comparison = compareAssetSpenderByType(a, b);
+        if (comparison) return comparison;
+
+        comparison = compareAssetSpenderByAmount(a, b);
+        const isColumnAsc =
+          sortedInfo.columnKey === 'assetType' && sortedInfo.order === 'ascend';
+
+        return isColumnAsc ? -comparison : comparison;
+      },
       sortOrder: sortedInfo.columnKey === 'assetType' ? sortedInfo.order : null,
       render: (_, row) => {
         const asset = row.$assetParent;
@@ -737,7 +748,7 @@ function TableByContracts({
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
       vGridRef={vGridRef}
-      className={className}
+      className={clsx(className, 'J_table_by_contracts')}
       markHoverRow={false}
       columns={getColumnsForContract({
         selectedRows,
@@ -794,7 +805,7 @@ function TableByAssetSpenders({
     <VirtualTable<AssetApprovalSpender>
       loading={isLoading}
       vGridRef={vGridRef}
-      className={className}
+      className={clsx(className, 'J_table_by_assets')}
       markHoverRow={false}
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
