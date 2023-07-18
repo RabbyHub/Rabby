@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { splitNumberByStep, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
@@ -170,7 +170,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
               'text-15 font-normal mb-[5px]',
               {
-                hidden: !currentChangePercent || balanceLoading,
+                hidden:
+                  !currentChangePercent || balanceLoading || hiddenBalance,
               }
             )}
           >
@@ -182,9 +183,10 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           </div>
           <div
             onClick={onRefresh}
-            className={clsx(' mb-6 group-hover:block', {
+            className={clsx(' mb-6', {
               'block animate-spin': startRefresh,
               hidden: !startRefresh,
+              'group-hover:block': !hiddenBalance,
             })}
           >
             <UpdateSVG />
