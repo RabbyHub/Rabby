@@ -3,6 +3,7 @@ import { splitNumberByStep, useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { Skeleton } from 'antd';
+import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useAsync } from 'react-use';
 import IconGas from 'ui/assets/dashboard/gas.svg';
@@ -78,17 +79,29 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
   }, [currentConnectedSiteChainNativeToken]);
 
   const { currentPrice = null, percentage = null } = tokenPrice || {};
+  const isETH = currentConnectedSiteChainNativeToken === 'eth';
 
   return (
-    <div className="price-viewer">
+    <div
+      className={clsx('price-viewer h-32', {
+        'px-[17px] py-[7px]': isETH,
+        'px-[18px] py-[8px]': !isETH,
+      })}
+    >
       <div className="eth-price">
         {tokenLoading ? (
-          <Skeleton.Avatar size={20} active shape="circle" />
+          <Skeleton.Avatar size={18} active shape="circle" />
         ) : (
-          <img src={tokenLogo} className="w-[20px] h-[20px] rounded-full" />
+          <img
+            src={tokenLogo}
+            className={clsx('rounded-full', {
+              'w-[18px] h-[18px]': isETH,
+              'w-[16px] h-[16px]': !isETH,
+            })}
+          />
         )}
         {currentPriceLoading ? (
-          <Skeleton.Button active={true} />
+          <Skeleton.Button className="h-[14px]" active={true} />
         ) : (
           <>
             <div className="gasprice">
@@ -116,9 +129,9 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
         )}
       </div>
       <div className="gas-container">
-        <img src={IconGas} className="w-[20px] h-[20px]" />
+        <img src={IconGas} className="w-[16px] h-[16px]" />
         {gasPriceLoading ? (
-          <Skeleton.Button active={true} />
+          <Skeleton.Button className="h-[14px]" active={true} />
         ) : (
           <>
             <div className="gasprice">{`${splitNumberByStep(gasPrice)}`}</div>

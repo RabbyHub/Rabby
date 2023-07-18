@@ -127,7 +127,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   );
 
   return (
-    <div className={clsx('current-connection-block h-[55px]')}>
+    <div className={clsx('current-connection-block h-[52px]')}>
       {site ? (
         site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
           Content

@@ -2,7 +2,7 @@
   background-color: #ffffff;
   position: relative;
   flex: 1;
-  padding: 23px 20px 18px;
+  padding: 14px 20px;
   .ant-badge {
     .ant-badge-count {
       background-color: #8697ff;
@@ -27,9 +27,8 @@
     // height: 258px;
     display: flex;
     justify-content: flex-start;
-    padding: 8px;
+    padding: 10px 8px;
     padding-right: 7px;
-    padding-bottom: 0;
     flex-direction: column;
     background: @color-bg;
     border-top-left-radius: 6px;
@@ -104,9 +103,10 @@
     display: flex;
     padding: 8px 12px;
     position: relative;
-    background: #EBECF4;
+    background: rgba(245, 246, 250, 0.80);
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
+    border-top: 0.5px solid var(--line, #E5E9EF);
 
     .eth-price,
     .gas-container {
@@ -116,17 +116,19 @@
       align-items: center;
 
       .gasprice {
-        font-size: 14px;
-        line-height: 16px;
+        font-size: 13px;
+        line-height: 15px;
+        font-weight: 500;
         margin-left: 6px;
-        color: #4B4D59;
+        color: #13141A;
       }
 
       .positive {
-        font-size: 13px;
+        font-size: 12px;
+        line-height: 14px;
         text-align: right;
         color: #27c193;
-        margin-left: 6px;
+        margin-left: 4px;
       }
 
       .depositive {
@@ -158,13 +160,14 @@
       justify-content: flex-end;
 
       .gasprice {
-        padding: 0 4px;
+        padding: 0 2px 0 3px;
         margin-left: 0;
       }
 
       .gwei {
-        color: #4B4D59;
+        color: #707280;
         line-height: 16px;
+        font-size: 12px;
       }
     }
   }
