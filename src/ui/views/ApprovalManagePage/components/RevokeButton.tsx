@@ -9,10 +9,12 @@ interface Props {
 export const RevokeButton: React.FC<Props> = ({ revokeList, onRevoke }) => {
   return (
     <>
-      {revokeList.length > 1 && (
-        <div className="mb-[16px] text-13 leading-[15px] text-gray-subTitle">
+      {revokeList.length > 1 ? (
+        <div className="mt-[16px] h-[16px] mb-[16px] text-13 leading-[15px] text-gray-subTitle">
           {revokeList.length} transactions to be signed sequentially
         </div>
+      ) : (
+        <div className="mt-[16px] h-[16px] mb-[16px]"> </div>
       )}
       <Button
         className="w-[280px] h-[60px]"

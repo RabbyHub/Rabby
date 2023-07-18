@@ -252,14 +252,10 @@ function getColumnsForContract({
       render(_, row) {
         if (row.type !== 'contract') return null;
 
-        const isUnknown = row.$riskAboutValues.is_exposure_usd_value_unknown;
-
         const isDanger =
-          !isUnknown &&
           row.$contractRiskEvaluation.extra.clientExposureScore >=
-            RiskNumMap.danger;
+          RiskNumMap.danger;
         const isWarning =
-          !isUnknown &&
           !isDanger &&
           row.$contractRiskEvaluation.extra.clientExposureScore >=
             RiskNumMap.warning;
@@ -296,11 +292,9 @@ function getColumnsForContract({
                 'is-danger': isDanger,
               })}
             >
-              {isUnknown
-                ? '-'
-                : formatUsdValue(
-                    row.$riskAboutValues.risk_exposure_usd_value || 0
-                  )}
+              {formatUsdValue(
+                row.$riskAboutValues.risk_exposure_usd_value || 0
+              )}
             </span>
           </Tooltip>
         );
@@ -1011,7 +1005,7 @@ const ApprovalManagePage = () => {
             />
           ) : null}
         </main>
-        <div className="mt-[50px] text-center absolute bottom-80">
+        <div className="sticky-footer">
           <RevokeButton
             revokeList={currentRevokeList}
             onRevoke={handleRevoke}

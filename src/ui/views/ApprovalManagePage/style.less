@@ -1,5 +1,9 @@
 @import "@/ui/style/mixin.less";
 
+@radius-value: 6px;
+
+@main-w: 1040px;
+
 @page-padding-top: 40px;
 @page-header-h: 24px;
 @page-header-bottom-offset: 20px;
@@ -9,12 +13,15 @@
 
 // value of `@sticky-top-height` is 200px
 @sticky-top-height: @page-padding-top + @page-header-h + @page-header-bottom-offset + @tools-h + @table-mt + @table-header-h;
-@sticky-footer-height: 191px;
-@radius-value: 6px;
+
+/* pt + height + pb */
+@sticky-footer-textarea: 16px + 16px + 16px;
+@sticky-btn-height: 60px;
+@sticky-btn-bottom-offset: 40px;
+// value of `@sticky-footer-height` is 148px
+@sticky-footer-height: @sticky-footer-textarea + @sticky-btn-height + @sticky-btn-bottom-offset;
 
 @table-last-cell-pr: 20px;
-
-@main-w: 1040px;
 
 .approvals-manager-page {
   width: 100vw;
@@ -117,7 +124,7 @@
 
 @table-head-height: 48px;
 // @table-row-height: 54px;
-@table-body-row-gap: 12px;
+@table-body-row-gap: 8px;
 
 .am-virtual-table {
   max-width: @main-w;
@@ -210,7 +217,7 @@
   }
 
   .am-virtual-table-cell {
-    @cell-padding-y: 12px;
+    @cell-padding-y: @table-body-row-gap;
 
     background: transparent;
     padding-left: 0;
@@ -460,4 +467,12 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+.sticky-footer {
+  text-align: center;
+  position: absolute;
+  height: @sticky-footer-height;
+  bottom: 0;
+  padding-bottom: @sticky-btn-bottom-offset;
 }

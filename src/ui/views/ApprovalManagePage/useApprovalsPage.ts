@@ -36,7 +36,7 @@ import useDebounceValue from '@/ui/hooks/useDebounceValue';
  * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
  */
 function getYValue() {
-  return window.innerHeight - 200 - 191;
+  return window.innerHeight - 200 - 148;
 }
 
 export function useTableScrollableHeight() {
