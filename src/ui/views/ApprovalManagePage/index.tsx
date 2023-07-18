@@ -138,7 +138,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 100,
+      width: 80,
     },
     // Contract
     {
@@ -200,7 +200,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 280,
+      width: 300,
     },
     // Contract Trust value
     {
@@ -209,7 +209,7 @@ function getColumnsForContract({
           <span className="inline-flex items-center justify-center">
             {'Contract Trust value'}
             <Tooltip
-              overlayClassName="J-table__tooltip disable-ant-overwrite"
+              overlayClassName="J-table__tooltip tip-column-contract-trust-value disable-ant-overwrite"
               overlay={
                 <div className="text-[12px]">
                   <p>
@@ -219,6 +219,7 @@ function getColumnsForContract({
                   </p>
                 </div>
               }
+              // visible
             >
               <img
                 className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
@@ -458,7 +459,7 @@ function getColumnsForContract({
 
         return (
           <div className="flex items-center justify-end w-[100%]">
-            <span className="inline-flex items-center">
+            <span className="block">
               {contractList.length}
               {!selectedContracts.length ? null : (
                 <span className="J_selected_count_text ml-[2px]">
@@ -515,7 +516,7 @@ function getColumnsForAsset({
           </div>
         );
       },
-      width: 100,
+      width: 80,
     },
     // Asset
     {
@@ -531,7 +532,7 @@ function getColumnsForAsset({
         if (!chainItem?.enum) return;
 
         return (
-          <div className="flex items-center font-bold">
+          <div className="flex items-center font-[500]">
             <IconWithChain
               width="24px"
               height="24px"
@@ -541,11 +542,13 @@ function getColumnsForAsset({
               noRound={false}
             />
 
-            <span className="ml-[8px]">{asset.name || 'Unknown'}</span>
+            <span className="ml-[8px] asset-name">
+              {asset.name || 'Unknown'}
+            </span>
           </div>
         );
       },
-      width: 180,
+      width: 200,
     },
     // Type
     {

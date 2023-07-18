@@ -115,7 +115,8 @@
   margin-top: @table-mt;
 }
 
-@table-row-height: 60px;
+@table-head-height: 48px;
+// @table-row-height: 54px;
 @table-body-row-gap: 12px;
 
 .am-virtual-table {
@@ -127,7 +128,7 @@
   }
 
   .ant-table-header, .ant-table-header > table {
-    height: @table-row-height;
+    height: @table-head-height;
   }
 
   .ant-table-thead > tr > th.am-virtual-table-head-cell {
@@ -239,7 +240,7 @@
     }
 
     &.is-sorting-cell > .am-virtual-table-cell-inner {
-      font-weight: bold;
+      font-weight: 500;
     }
 
     &.is-hovered-row-cell {
@@ -291,6 +292,11 @@
       .ellipsis();
     }
   }
+
+  .am-virtual-table-cell-inner .token-with-chain + .asset-name {
+    max-width: 10em;
+    .ellipsis();
+  } 
 }
 
 .am-virtual-table-empty {
@@ -387,7 +393,7 @@
 .J-risk-cell__text {
   position: relative;
   display: inline-block;
-  font-weight: bold;
+  font-weight: 500;
 
   &::before {
     display: block;
@@ -428,6 +434,10 @@
     p {
       margin-bottom: 0;
     }
+  }
+
+  &.tip-column-contract-trust-value .ant-tooltip-inner {
+    width: 350px;
   }
 }
 
