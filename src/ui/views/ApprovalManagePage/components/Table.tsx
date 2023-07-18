@@ -139,14 +139,18 @@ const TableCellProto = <RecordType extends object = any>({
         })
       }
       style={style}
-      onMouseEnter={(event) => {
-        return onMouseEnterCell?.({
-          event,
-          rowIndex,
-          columnIndex,
-          record,
-        });
-      }}
+      onMouseEnter={
+        !onMouseEnterCell
+          ? undefined
+          : (event) => {
+              return onMouseEnterCell?.({
+                event,
+                rowIndex,
+                columnIndex,
+                record,
+              });
+            }
+      }
     >
       <div className={classNames('am-virtual-table-cell-inner')}>
         {cellNode}
@@ -278,8 +282,6 @@ export function VirtualTable<RecordType extends object>({
       return <TableBodyEmpty isLoading={isLoading} />;
     }
 
-    console.log('[feat] hoveredRowIndex', hoveredRowIndex);
-
     return (
       <VGrid<IVGridItemDataType<RecordType>>
         ref={gridRef}
@@ -321,9 +323,11 @@ export function VirtualTable<RecordType extends object>({
           sortingKey: sortedInfo?.columnKey,
           onClickRow,
           hoveredRowIndex: !markHoverRow ? -1 : hoveredRowIndex,
-          onMouseEnterCell: (ctx) => {
-            setHoveredRowIndex(ctx.rowIndex);
-          },
+          onMouseEnterCell: !markHoverRow
+            ? undefined
+            : (ctx) => {
+                setHoveredRowIndex(ctx.rowIndex);
+              },
           getCellClassName,
         }}
         height={scroll!.y as number}
