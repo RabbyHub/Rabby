@@ -148,7 +148,7 @@ export function useInspectRowItem<
   T extends ContractApprovalItem | AssetApprovalSpender
 >(origOnClickRow?: HandleClickTableRow<T>) {
   // const [selectedRow, setSelectedRow] = useState<T | null>(null);
-  const onClickRowDebug: HandleClickTableRow<T> = useCallback(
+  const onClickRowInspection: HandleClickTableRow<T> = useCallback(
     (ctx) => {
       if (
         (IS_WINDOWS && ctx.event.ctrlKey && ctx.event.altKey) ||
@@ -178,6 +178,6 @@ export function useInspectRowItem<
   return {
     // selectedRow,
     // onModalCancel,
-    onClickRowDebug: appIsDev ? onClickRowDebug : origOnClickRow,
+    onClickRowInspection: onClickRowInspection,
   };
 }

@@ -56,18 +56,13 @@ import {
   toRevokeItem,
   encodeRevokeItemIndex,
 } from './utils';
-import { appIsDev } from '@/utils/env';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
-import {
-  ModalInspectSpender,
-  ModalInspectContract,
-  useInspectRowItem,
-} from './components/ModalDebugRowItem';
+import { useInspectRowItem } from './components/ModalDebugRowItem';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -730,7 +725,7 @@ function TableByContracts({
     []
   );
 
-  const { onClickRowDebug } = useInspectRowItem(onClickRow);
+  const { onClickRowInspection } = useInspectRowItem(onClickRow);
 
   return (
     <VirtualTable<ContractApprovalItem>
@@ -746,7 +741,7 @@ function TableByContracts({
       sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
-      onClickRow={!appIsDev ? onClickRow : onClickRowDebug}
+      onClickRow={onClickRowInspection}
       getTotalHeight={getContractListTotalHeight}
       getRowHeight={(row) => {
         if (isRiskyContract(row)) return RISKY_ROW_HEIGHT;
@@ -787,7 +782,7 @@ function TableByAssetSpenders({
     []
   );
 
-  const { onClickRowDebug } = useInspectRowItem(onClickRow);
+  const { onClickRowInspection } = useInspectRowItem(onClickRow);
 
   return (
     <VirtualTable<AssetApprovalSpender>
@@ -802,7 +797,7 @@ function TableByAssetSpenders({
       sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
-      onClickRow={!appIsDev ? onClickRow : onClickRowDebug}
+      onClickRow={onClickRowInspection}
       getRowHeight={(row) => ROW_HEIGHT}
       onChange={handleChange}
     />
