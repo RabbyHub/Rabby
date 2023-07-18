@@ -101,6 +101,7 @@ export interface ParsedActionData {
   revokeToken?: {
     spender: string;
     token: TokenItem;
+    gasUsed: number;
   };
   revokePermit2?: {
     spender: string;
@@ -161,7 +162,8 @@ export const parseAction = (
   data: ParseTxResponse['action'],
   balanceChange: ExplainTxResponse['balance_change'],
   tx: Tx,
-  preExecVersion: 'v0' | 'v1' | 'v2'
+  preExecVersion: 'v0' | 'v1' | 'v2',
+  gasUsed: number
 ): ParsedActionData => {
   if (data?.type === 'swap_token') {
     const {
@@ -300,6 +302,7 @@ export const parseAction = (
       revokeToken: {
         spender,
         token,
+        gasUsed,
       },
     };
   }
@@ -1211,6 +1214,14 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData.revokeToken) {
+    const { gasUsed } = actionData.revokeToken;
+    return {
+      revokeApprove: {
+        gasUsed,
       },
     };
   }

@@ -28,7 +28,6 @@ const Unlock = () => {
       } else {
         history.replace('/');
       }
-      wallet.syncGnosisNetworks();
     },
     onError(err) {
       form.setFields([

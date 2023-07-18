@@ -323,7 +323,8 @@ export const useQuoteMethods = () => {
                     : Number(feeAfterDiscount) || 0,
                 chain,
                 gasPrice,
-              }
+              },
+              walletOpenapi
             ),
           {
             retries: 1,

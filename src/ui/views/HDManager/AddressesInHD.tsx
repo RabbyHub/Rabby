@@ -23,6 +23,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     HDManagerStateContext
   );
   const dispatch = useRabbyDispatch();
+  const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -43,7 +44,11 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
       await createTask(() =>
         wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
       );
-      for (i = index; i < index + MAX_ACCOUNT_COUNT; ) {
+      maxCountRef.current =
+        (await createTask(() =>
+          wallet.requestKeyring(keyring, 'getMaxAccountLimit', keyringId, null)
+        )) ?? MAX_ACCOUNT_COUNT;
+      for (i = index; i < index + maxCountRef.current; ) {
         if (exitRef.current) {
           return;
         }
@@ -84,7 +89,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart
-    if (i !== index + MAX_ACCOUNT_COUNT) {
+    if (i !== index + maxCountRef.current) {
       runGetAccounts();
     }
   }, []);
@@ -113,7 +118,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     const newData = [...(accountList ?? [])];
     let lastIndex = newData[newData.length - 1]?.index ?? 0;
 
-    for (let i = newData.length; i < MAX_ACCOUNT_COUNT; i++) {
+    for (let i = newData.length; i < maxCountRef.current; i++) {
       newData.push({
         address: '',
         index: ++lastIndex,

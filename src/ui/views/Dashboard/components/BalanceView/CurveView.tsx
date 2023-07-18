@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
@@ -38,8 +37,8 @@ const CurveWrapper = styled.div`
 
 const CurveGlobalStyle = createGlobalStyle`
   :root {
-    --color-curve-green: #3cef4e;
-    --color-curve-red: #ff6e6e;
+    --color-curve-green: #28E43B;
+    --color-curve-red: #FF6A6B;
   }
 `;
 
@@ -69,12 +68,12 @@ export const CurveThumbnail = ({
       {isEmpty ? null : (
         <AreaChart
           data={data?.list}
-          width={isHover ? 380 : 400}
+          width={380}
           height={height}
           style={{ position: 'absolute', left: 0, cursor: 'pointer' }}
-          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
           onMouseMove={(val) => {
-            if (val.activePayload) {
+            if (val?.activePayload) {
               onHover(val.activePayload[0].payload);
             }
           }}
@@ -82,8 +81,8 @@ export const CurveThumbnail = ({
         >
           <defs>
             <linearGradient id="curveThumbnail" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="-10%" stopColor={color} stopOpacity={0.4} />
-              <stop offset="110%" stopColor={color} stopOpacity={0.2} />
+              <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
@@ -92,9 +91,13 @@ export const CurveThumbnail = ({
             type="number"
             domain={['dataMin', 'dataMax']}
           />
-          <YAxis hide domain={['dataMin', 'dataMax']} />
+          <YAxis
+            hide
+            domain={[(dataMin) => dataMin * 0.98, (dataMax) => dataMax * 1.005]}
+          />
           {isHover && (
             <Tooltip
+              cursor={{ strokeDasharray: '2 2', strokeWidth: 0.6 }}
               content={({ label }) => {
                 return <div>{dayjs(label * 1000).format('HH:mm')}</div>;
               }}
@@ -103,8 +106,9 @@ export const CurveThumbnail = ({
           <Area
             type="linear"
             dataKey="value"
-            stroke={isHover ? color : 'none'}
-            strokeOpacity={0.8}
+            stroke={color}
+            strokeOpacity={isHover ? 1 : 0.7}
+            strokeWidth={2}
             fill="url(#curveThumbnail)"
             animationDuration={0}
             fillOpacity={0.8}

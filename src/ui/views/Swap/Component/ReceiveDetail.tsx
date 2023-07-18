@@ -20,7 +20,7 @@ import ImgLock from '@/ui/assets/swap/lock.svg';
 import clsx from 'clsx';
 import { SkeletonInputProps } from 'antd/lib/skeleton/Input';
 import React from 'react';
-import { ellipsisOverflowedText, formatAmount } from '@/ui/utils';
+import { formatAmount } from '@/ui/utils';
 import { QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { DEX } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -86,8 +86,8 @@ const ReceiveWrapper = styled.div`
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      .receive {
-        max-width: 300px;
+      .ellipsis {
+        max-width: 170px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -227,7 +227,7 @@ export const ReceiveDetails = (
         <div className="flex items-center gap-8">
           <div>
             <img
-              className={clsx('rounded-full w-24 h-24')}
+              className={clsx('rounded-full w-24 h-24 min-w-[24px]')}
               src={
                 isWrapToken
                   ? receiveToken?.logo_url
@@ -268,7 +268,7 @@ export const ReceiveDetails = (
             >
               <span
                 title={`${receiveNum} ${receiveTokenSymbol}`}
-                className="receive"
+                className="ellipsis"
               >
                 {receiveNum}{' '}
                 <span className="text-gray-content">{receiveTokenSymbol}</span>
@@ -283,7 +283,7 @@ export const ReceiveDetails = (
               loading && 'opacity-0'
             )}
           >
-            <span>
+            <span className="ellipsis">
               ≈ ${receiveUsd} (
               <span
                 className={clsx(
@@ -341,14 +341,14 @@ export const ReceiveDetails = (
             loading={loading}
             style={{ maxWidth: 182, height: 20, opacity: 0.5 }}
           >
-            <span className="cursor-pointer" onClick={reverseRate}>
+            <span
+              className="cursor-pointer ellipsis max-w-[260px]"
+              onClick={reverseRate}
+            >
               <span
                 title={`${1} ${reverse ? receiveTokenSymbol : payTokenSymbol}`}
               >
-                1{' '}
-                {ellipsisOverflowedText(
-                  reverse ? receiveTokenSymbol : payTokenSymbol
-                )}{' '}
+                1 {reverse ? receiveTokenSymbol : payTokenSymbol}{' '}
               </span>
               ={' '}
               <span
@@ -356,10 +356,7 @@ export const ReceiveDetails = (
                   reverse ? payTokenSymbol : receiveTokenSymbol
                 }`}
               >
-                {rate}{' '}
-                {ellipsisOverflowedText(
-                  reverse ? payTokenSymbol : receiveTokenSymbol
-                )}
+                {rate} {reverse ? payTokenSymbol : receiveTokenSymbol}
               </span>
             </span>
           </SkeletonChildren>

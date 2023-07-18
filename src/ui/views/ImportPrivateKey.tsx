@@ -7,9 +7,9 @@ import { KEYRING_TYPE } from 'consts';
 
 import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import { clearClipboard } from 'ui/utils/clipboard';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
-import LessPalette from 'ui/style/var-defs';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -48,6 +48,7 @@ const ImportPrivateKey = () => {
       const successShowAccounts = accounts.map((item, index) => {
         return { ...item, index: index + 1 };
       });
+      clearClipboard();
       history.replace({
         pathname: '/popup/import/success',
         state: {

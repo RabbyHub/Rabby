@@ -11,13 +11,12 @@ export const createSafeService = async ({
   networkId: string;
 }) => {
   const account = await preferenceService.getCurrentAccount();
-  if (!account) {
-    throw new Error('no account');
-  }
   const currentProvider = new EthereumProvider();
-  currentProvider.currentAccount = account.address;
-  currentProvider.currentAccountType = account.type;
-  currentProvider.currentAccountBrand = account.brandName;
+  if (account) {
+    currentProvider.currentAccount = account.address;
+    currentProvider.currentAccountType = account.type;
+    currentProvider.currentAccountBrand = account.brandName;
+  }
   currentProvider.chainId = networkId;
 
   const provider = new ethers.providers.Web3Provider(currentProvider) as any;

@@ -153,8 +153,8 @@ const Permit2 = ({
               <SecurityListItem
                 id="1110"
                 engineResult={engineResultMap['1110']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Trust value ≤ $10,000"
+                warningText="Trust value ≤ $100,000"
               />
 
               <SecurityListItem

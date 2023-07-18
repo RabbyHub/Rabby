@@ -16,6 +16,8 @@ import RuleDetailDrawer from './RuleDetailDrawer';
 import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
 import IconError from 'ui/assets/sign/security-engine/error-big.svg';
 import IconDisable from 'ui/assets/sign/security-engine/disable-big.svg';
+import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const RuleDrawerWrapper = styled.div`
   border-radius: 8px;
@@ -501,13 +503,27 @@ const RuleDrawer = ({
         </RuleDrawerWrapper>
       );
     } else {
+      const valueTooltip = selectRule.ruleConfig.valueTooltip;
       return (
         <RuleDrawerWrapper
           className={clsx(selectRule.ignored ? 'proceed' : selectRule.level)}
         >
           <div className="value-desc">
             <span className="desc-title">Description:</span>
-            {selectRule.ruleConfig.valueDescription}
+            <div className="relative">
+              {selectRule.ruleConfig.valueDescription}
+              {valueTooltip ? (
+                <TooltipWithMagnetArrow
+                  className="rectangle w-[max-content] max-w-[355px]"
+                  title={valueTooltip}
+                >
+                  <img
+                    src={IconQuestionMark}
+                    className="inline-block ml-[3px]"
+                  />
+                </TooltipWithMagnetArrow>
+              ) : null}
+            </div>
           </div>
           <div className="threshold">
             <p>Alert triggered reason:</p>

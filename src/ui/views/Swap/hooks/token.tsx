@@ -380,7 +380,7 @@ export const useTokenPair = (userAddress: string) => {
     setExpired(false);
     setActiveProvider(undefined);
     setSlippageChanged(false);
-  }, [payToken?.id, receiveToken?.id, chain, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
 
   const { search } = useLocation();
   const [searchObj] = useState<{

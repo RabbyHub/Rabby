@@ -138,8 +138,18 @@ const AddressManagement = () => {
       result.filteredAccounts = result.accountList.filter((account) => {
         const lowerAddress = account.address.toLowerCase();
         const aliasName = account.alianName?.toLowerCase();
+        let addrIncludeKw = false;
+        if (lKeyword.replace(/^0x/, '').length >= 2) {
+          addrIncludeKw = account.address
+            .toLowerCase()
+            .includes(lKeyword.toLowerCase());
+        }
 
-        return lowerAddress === lKeyword || aliasName?.includes(lKeyword);
+        return (
+          lowerAddress === lKeyword ||
+          aliasName?.includes(lKeyword) ||
+          addrIncludeKw
+        );
       });
     }
 
