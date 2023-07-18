@@ -355,14 +355,14 @@ function getColumnsForContract({
               <div className="text-[12px]">
                 {isWarning && (
                   <p>
-                    Warning: Recent revokes are greater than double the number
-                    of newly approved users.
+                    Recent revokes are greater than double the number of newly
+                    approved users.
                   </p>
                 )}
                 {isDanger && (
                   <p>
-                    Danger: Recent revokes are greater than 4 times the number
-                    of newly approved users.
+                    Recent revokes are greater than 4 times the number of newly
+                    approved users.
                   </p>
                 )}
                 <p>
