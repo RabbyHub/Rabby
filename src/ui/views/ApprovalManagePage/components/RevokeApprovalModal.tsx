@@ -101,6 +101,8 @@ export const RevokeApprovalModal = (props: {
           >
             {'logo_url' in e ? (
               <TokenWithChain
+                width="24px"
+                height="24px"
                 hideChainIcon
                 token={(e as unknown) as TokenItem}
               />
@@ -113,7 +115,7 @@ export const RevokeApprovalModal = (props: {
                   (e as any)?.collection?.logo_url
                 }
                 thumbnail
-                chain={(e as NFTApproval)?.chain}
+                // chain={(e as NFTApproval)?.chain}
                 unknown={IconUnknownNFT}
               />
             )}

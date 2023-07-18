@@ -61,6 +61,7 @@ export function VirtualTable<RecordType extends object>({
   getRowHeight,
   getTotalHeight,
   getCellKey,
+  getCellClassName,
   showScrollbar = true,
   sortedInfo,
   ...props
@@ -79,6 +80,11 @@ export function VirtualTable<RecordType extends object>({
     rowIndex: number;
     data: RecordType;
   }) => string | number;
+  getCellClassName?: (params: {
+    columnIndex: number;
+    rowIndex: number;
+    data: RecordType;
+  }) => string;
   showScrollbar?: boolean;
   sortedInfo?: SorterResult<RecordType>;
 }) {
@@ -238,6 +244,12 @@ export function VirtualTable<RecordType extends object>({
               ) || null;
           }
 
+          const cellClassName = getCellClassName?.({
+            columnIndex,
+            rowIndex,
+            data: record,
+          });
+
           return (
             <div
               // pointless, see itemKey property of VGrid
@@ -245,6 +257,7 @@ export function VirtualTable<RecordType extends object>({
               className={classNames(
                 'am-virtual-table-cell',
                 columnConfig.className,
+                cellClassName,
                 {
                   'is-first-row': rowIndex === 0,
                   'is-last-row': rowIndex === rowData.length - 1,

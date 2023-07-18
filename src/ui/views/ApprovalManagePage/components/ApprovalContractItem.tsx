@@ -7,8 +7,6 @@ import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval-management/right.svg';
 import { Alert } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { openInTab, splitNumberByStep } from '@/ui/utils';
-import { CHAINS } from '@debank/common';
 
 import { ApprovalItem } from '@/utils/approval';
 import { findChainByServerID } from '@/utils/chain';
@@ -70,8 +68,8 @@ export const ApprovalContractItem = ({
         )}
       >
         <IconWithChain
-          width="16px"
-          height="16px"
+          width="18px"
+          height="18px"
           hideConer
           hideChainIcon
           iconUrl={chainItem?.logo || IconUnknown}

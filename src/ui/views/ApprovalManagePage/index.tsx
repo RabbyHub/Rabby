@@ -3,12 +3,7 @@ import { Alert, Input, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import {
-  formatUsdValue,
-  openInTab,
-  splitNumberByStep,
-  useWallet,
-} from 'ui/utils';
+import { formatUsdValue, openInTab, useWallet } from 'ui/utils';
 import './style.less';
 import eventBus from '@/eventBus';
 
@@ -56,6 +51,7 @@ import {
   isRiskyContract,
   toRevokeItem,
   encodeRevokeItemIndex,
+  getFinalRiskInfo,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -159,8 +155,8 @@ function getColumnsForContract({
           <div className="flex flex-col justify-between">
             <div className="contract-basic-info flex items-center">
               <IconWithChain
-                width="16px"
-                height="16px"
+                width="18px"
+                height="18px"
                 hideConer
                 hideChainIcon
                 iconUrl={chainItem?.logo || IconUnknown}
@@ -643,8 +639,8 @@ function getColumnsForAsset({
         return (
           <div className="flex items-center">
             <IconWithChain
-              width="16px"
-              height="16px"
+              width="18px"
+              height="18px"
               hideConer
               hideChainIcon
               iconUrl={chainItem?.logo || IconUnknown}
@@ -690,6 +686,33 @@ function getColumnsForAsset({
 
   return columnsForAsset;
 }
+
+const getRowHeight = (row: ContractApprovalItem) => {
+  if (isRiskyContract(row)) return RISKY_ROW_HEIGHT;
+
+  return ROW_HEIGHT;
+};
+
+type CellHandlerPayload = {
+  columnIndex: number;
+  rowIndex: number;
+  data: ContractApprovalItem;
+};
+
+const getCellKey = (params: CellHandlerPayload) => {
+  return `${params.rowIndex}-${params.columnIndex}`;
+};
+
+const getCellClassName = (ctx: CellHandlerPayload) => {
+  const rowData = ctx.data;
+
+  const riskResult = getFinalRiskInfo(rowData);
+
+  return clsx(
+    riskResult.isDanger && 'is-contract-row__danger',
+    riskResult.isWarning && 'is-contract-row__warning'
+  );
+};
 
 type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   isLoading: boolean;
@@ -746,30 +769,29 @@ function TableByContracts({
 
   const { onClickRowInspection } = useInspectRowItem(onClickRow);
 
+  const columnsForContracts = useMemo(() => {
+    return getColumnsForContract({
+      selectedRows,
+      sortedInfo: sortedInfo,
+      onChangeSelectedContractSpenders,
+    });
+  }, [selectedRows, sortedInfo, onChangeSelectedContractSpenders]);
+
   return (
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts')}
       markHoverRow={false}
-      columns={getColumnsForContract({
-        selectedRows,
-        sortedInfo: sortedInfo,
-        onChangeSelectedContractSpenders,
-      })}
+      columns={columnsForContracts}
       sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
       getTotalHeight={getContractListTotalHeight}
-      getRowHeight={(row) => {
-        if (isRiskyContract(row)) return RISKY_ROW_HEIGHT;
-
-        return ROW_HEIGHT;
-      }}
-      getCellKey={(params) => {
-        return `${params.rowIndex}-${params.columnIndex}-${params.data?.id}`;
-      }}
+      getRowHeight={getRowHeight}
+      getCellKey={getCellKey}
+      getCellClassName={getCellClassName}
       onChange={handleChange}
     />
   );
@@ -817,7 +839,7 @@ function TableByAssetSpenders({
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
-      getRowHeight={(row) => ROW_HEIGHT}
+      // getRowHeight={(row) => ROW_HEIGHT}
       onChange={handleChange}
     />
   );

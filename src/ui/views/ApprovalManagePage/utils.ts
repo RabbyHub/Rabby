@@ -7,6 +7,7 @@ import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
+  RiskNumMap,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -184,3 +185,46 @@ export const toRevokeItem = <T extends ApprovalItem>(
 
   return undefined;
 };
+
+export function getFinalRiskInfo(contract: ContractApprovalItem) {
+  // risk due to server
+  let isDanger =
+    contract.$contractRiskEvaluation.serverRiskScore >= RiskNumMap.danger;
+  let isWarning =
+    !isDanger &&
+    contract.$contractRiskEvaluation.serverRiskScore >= RiskNumMap.warning;
+
+  if (isDanger || isWarning) {
+    return { isDanger, isWarning };
+  }
+
+  // risk due to client
+  isDanger =
+    contract.$contractRiskEvaluation.extra.clientExposureScore >=
+    RiskNumMap.danger;
+  isWarning =
+    !isDanger &&
+    contract.$contractRiskEvaluation.extra.clientExposureScore >=
+      RiskNumMap.warning;
+
+  if (isDanger || isWarning) {
+    return { isDanger, isWarning };
+  }
+
+  isDanger =
+    contract.$contractRiskEvaluation.extra.clientApprovalScore >=
+    RiskNumMap.danger;
+  isWarning =
+    !isDanger &&
+    contract.$contractRiskEvaluation.extra.clientApprovalScore >=
+      RiskNumMap.warning;
+
+  if (isDanger || isWarning) {
+    return { isDanger, isWarning };
+  }
+
+  return {
+    isDanger: false,
+    isWarning: false,
+  };
+}
