@@ -232,7 +232,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             ) : null}
           </div>
 
-          <div className={clsx('h-[88px] w-full relative')}>
+          <div className={clsx('h-[80px] w-full relative')}>
             {(!success && !curveData) || hiddenBalance ? null : curveLoading ? (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
