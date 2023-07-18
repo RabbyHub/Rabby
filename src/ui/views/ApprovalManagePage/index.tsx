@@ -45,6 +45,7 @@ import {
   RiskNumMap,
   ApprovalSpenderItemToBeRevoked,
   compareAssetSpenderByAmount,
+  compareAssetSpenderByType,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
@@ -552,6 +553,10 @@ function getColumnsForAsset({
       title: () => <span>{'Type'}</span>,
       key: 'assetType',
       dataIndex: 'type',
+      sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
+      showSorterTooltip: false,
+      sorter: (a, b) => compareAssetSpenderByType(a, b),
+      sortOrder: sortedInfo.columnKey === 'assetType' ? sortedInfo.order : null,
       render: (_, row) => {
         const asset = row.$assetParent;
         if (!asset) return null;

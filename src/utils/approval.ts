@@ -6,7 +6,7 @@ import {
 } from '@/background/service/openapi';
 import { coerceFloat, coerceInteger, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { appIsDev } from './env';
+import { appIsDev, appIsProd } from './env';
 
 export type ApprovalSpenderItemToBeRevoked = {
   chainServerId: ApprovalItem['chain'];
@@ -289,21 +289,21 @@ export function markParentForAssetItemSpender(
 ) {
   Object.defineProperty(spender, '$assetParent', {
     enumerable: false,
-    configurable: process.env.NODE_ENV === 'production',
+    configurable: appIsProd,
     get() {
       return parent;
     },
   });
   Object.defineProperty(spender, '$assetContract', {
     enumerable: false,
-    configurable: process.env.NODE_ENV === 'production',
+    configurable: appIsProd,
     get() {
       return assetContract;
     },
   });
   Object.defineProperty(spender, '$assetToken', {
     enumerable: false,
-    configurable: process.env.NODE_ENV === 'production',
+    configurable: appIsProd,
     get() {
       return assetToken;
     },
@@ -389,4 +389,57 @@ export function compareAssetSpenderByAmount(
   return aApprovedAmount.nftOrderScore >= bApprovedAmount.nftOrderScore
     ? 1
     : -1;
+}
+
+const enum AssetTypeScores {
+  token = 9999,
+  colletion = 1000,
+  nft = 100,
+  unknown = 0,
+}
+
+function getAssetSpenderTypeOrderScore(spender: AssetApprovalSpender) {
+  let score = AssetTypeScores.unknown;
+  if (spender.$assetParent?.type === 'token') {
+    return AssetTypeScores.token;
+  }
+
+  if (spender.$assetParent?.type === 'nft') {
+    const nftInfoHost =
+      spender.$assetParent?.nftContract || spender.$assetParent?.nftToken;
+    if (nftInfoHost?.is_erc1155) {
+      score = AssetTypeScores.colletion;
+    } else if (nftInfoHost?.is_erc721) {
+      score = AssetTypeScores.nft;
+    } else {
+      score = AssetTypeScores.unknown;
+    }
+  }
+
+  return AssetTypeScores.unknown;
+}
+
+/**
+ * @description compare contract approval item by its type,
+ * it's supposed to make descending order
+ *
+ * if a's risk score greater than b's, return 1
+ * if a's risk score less than b's, return -1
+ * if a's risk score equal to b's, return 0
+ *
+ * @param a
+ * @param b
+ */
+export function compareAssetSpenderByType(
+  a: AssetApprovalSpender,
+  b: AssetApprovalSpender
+) {
+  const aScore = getAssetSpenderTypeOrderScore(a);
+  const bScore = getAssetSpenderTypeOrderScore(b);
+
+  if (aScore !== bScore) {
+    return aScore > bScore ? 1 : -1;
+  }
+
+  return compareAssetSpenderByAmount(a, b);
 }
