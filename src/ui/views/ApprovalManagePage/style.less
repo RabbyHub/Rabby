@@ -134,46 +134,39 @@
     background: transparent;
   }
 
+  .ant-table-header {
+    border-radius: @radius-value;
+    background-color: white;
+  }
+
   .ant-table-header, .ant-table-header > table {
     height: @table-head-height;
   }
 
-  .ant-table-thead > tr > th.am-virtual-table-head-cell {
+  thead.ant-table-thead > tr > th.am-virtual-table-head-cell {
     padding-left: 0;
     padding-right: 0;
-    background-color: white;
+    background-color: transparent;
     font-size: 13px;
     user-select: none;
     border-bottom: transparent;
 
     // override default head cell style
     &.ant-table-column-has-sorters:hover {
-      background-color: white;
+      background-color: transparent;
     }
     // ant-table-column-sort means current sorter
     &.ant-table-column-has-sorters.ant-table-column-sort {
-      background: white;
+      background: transparent;
 
       .ant-table-column-sorters {
         color: @primary-text-color;
       }
     }
 
-    &:first-child {
-      border-top-left-radius: @radius-value;
-      border-bottom-left-radius: @radius-value;
-    }
-
-    // &:last-child {
-    //   border-top-right-radius: @radius-value;
-    //   border-bottom-right-radius: @radius-value;
-    // }
-
     // in fact, the last item is placeholder with `.ant-table-cell-scrollbar`
     &:nth-last-child(1) {
       padding-right: @table-last-cell-pr;
-      border-top-right-radius: @radius-value;
-      border-bottom-right-radius: @radius-value;
     }
 
     &.ant-table-cell-scrollbar:last-child {
@@ -199,7 +192,7 @@
     }
   }
 
-  .ant-table-thead > tr {
+  thead.ant-table-thead > tr {
     border-radius: @radius-value;
   }
 

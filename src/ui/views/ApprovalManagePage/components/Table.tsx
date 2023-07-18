@@ -4,7 +4,6 @@ import React, {
   useCallback,
   useRef,
   useState,
-  useLayoutEffect,
 } from 'react';
 import { ConfigProvider, Empty, Table } from 'antd';
 import type { TableProps } from 'antd';
