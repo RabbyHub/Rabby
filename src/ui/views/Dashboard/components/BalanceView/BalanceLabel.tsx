@@ -26,7 +26,12 @@ export const BalanceLabel: React.FC<Props> = ({ isCache, balance }) => {
       onClick={handleClick}
     >
       {hiddenBalance ? (
-        <span className="font-bold text-[32px] tracking-[16px] mr-[-16px]">
+        <span
+          className={clsx(
+            'font-bold text-[32px] tracking-[16px]',
+            'mr-[-16px] ml-4'
+          )}
+        >
           *****
         </span>
       ) : (
