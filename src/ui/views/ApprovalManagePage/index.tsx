@@ -742,7 +742,7 @@ function TableByContracts({
       loading={isLoading}
       vGridRef={vGridRef}
       className={className}
-      markHoverRow={false}
+      markHoverRow
       columns={getColumnsForContract({
         selectedRows,
         sortedInfo: sortedInfo,
@@ -797,7 +797,7 @@ function TableByAssetSpenders({
       loading={isLoading}
       vGridRef={vGridRef}
       className={className}
-      markHoverRow={false}
+      markHoverRow
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
         selectedRows,

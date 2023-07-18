@@ -61,11 +61,15 @@ const NameAndAddress = ({
 }: NameAndAddressProps) => {
   const wallet = useWallet();
   const [alianName, setAlianName] = useState('');
+
+  const mountedRef = useRef(false);
   const init = async () => {
     const alianName =
       (await wallet.getAlianName(address?.toLowerCase())) ||
       ALIAS_ADDRESS[address?.toLowerCase() || ''] ||
       '';
+
+    if (!mountedRef.current) return;
     setAlianName(alianName);
   };
   const localName = alianName || '';
@@ -106,7 +110,12 @@ const NameAndAddress = ({
   };
 
   useEffect(() => {
+    mountedRef.current = true;
     init();
+
+    return () => {
+      mountedRef.current = false;
+    };
   }, [address]);
   return (
     <div className={clsx('name-and-address', className)}>
