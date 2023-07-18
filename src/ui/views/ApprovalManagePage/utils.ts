@@ -7,11 +7,16 @@ import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
+  NftApprovalItem,
   RiskNumMap,
+  TokenApprovalItem,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
 import { SorterResult } from 'antd/lib/table/interface';
 import { NFTApproval, Spender } from '@rabby-wallet/rabby-api/dist/types';
+import { Chain } from '@debank/common';
+import { openInTab } from '@/ui/utils';
+import { findChainByServerID } from '@/utils/chain';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
@@ -194,4 +199,25 @@ export function getFinalRiskInfo(contract: ContractApprovalItem) {
   const isWarning = !isDanger && finalMaxScore >= RiskNumMap.warning;
 
   return { isDanger, isWarning };
+}
+
+export function openScanLinkFromChainItem(
+  chainItem: Chain | null | undefined,
+  address: string
+) {
+  if (!chainItem) return;
+
+  openInTab(
+    chainItem?.scanLink.replace(/tx\/_s_/, `address/${address}`),
+    false
+  );
+}
+
+export function maybeNFTLikeItem(
+  contractListItem: ContractApprovalItem['list'][number]
+) {
+  return (
+    'spender' in contractListItem &&
+    (contractListItem.is_erc1155 || contractListItem.is_erc721)
+  );
 }

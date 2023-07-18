@@ -61,6 +61,11 @@ export type ContractApprovalItem<T extends ContractFor = ContractFor> = {
   $contractRiskEvaluation: ComputedRiskEvaluation;
 };
 
+export type SpenderInTokenApproval = Spender & {
+  readonly $assetParent?: TokenApprovalItem;
+  readonly $assetToken?: TokenApproval;
+  readonly $assetContract?: ContractApprovalItem;
+};
 export type TokenApprovalItem = {
   name: string;
   logo_url: string;
@@ -70,13 +75,15 @@ export type TokenApprovalItem = {
   type: 'token';
   balance: number;
 
-  list: (Spender & {
-    readonly $assetParent?: TokenApprovalItem;
-    readonly $assetToken?: TokenApproval;
-    readonly $assetContract?: ContractApprovalItem;
-  })[];
+  list: SpenderInTokenApproval[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
+};
+
+export type SpenderInNFTApproval = Spender & {
+  readonly $assetParent?: NftApprovalItem;
+  readonly $assetToken?: NFTApproval | NFTApprovalContract;
+  readonly $assetContract?: ContractApprovalItem;
 };
 
 export type NftApprovalItem = {
@@ -91,11 +98,7 @@ export type NftApprovalItem = {
   type: 'nft';
   amount: string;
 
-  list: (Spender & {
-    readonly $assetParent?: NftApprovalItem;
-    readonly $assetToken?: NFTApproval | NFTApprovalContract;
-    readonly $assetContract?: ContractApprovalItem;
-  })[];
+  list: SpenderInNFTApproval[];
   chain: string;
   $riskAboutValues: ComputedRiskAboutValues;
 };

@@ -20,8 +20,6 @@ import IconExternal from 'ui/assets/icon-share.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 
 import IconQuestion from './icons/question.svg';
-import IconFilterDefault from './icons/sort-default.svg';
-import IconFilterDownActive from './icons/sort-down-active.svg';
 import IconRowArrowRight from './icons/row-arrow-right.svg';
 import IconCheckboxChecked from './icons/check-checked.svg';
 import IconCheckboxIndeterminate from './icons/check-indeterminate.svg';
@@ -52,6 +50,7 @@ import {
   toRevokeItem,
   encodeRevokeItemIndex,
   getFinalRiskInfo,
+  openScanLinkFromChainItem,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -61,6 +60,7 @@ import { RevokeButton } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
 import { IS_WINDOWS } from '@/constant';
+import { ensureSuffix } from '@/utils/string';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -151,6 +151,8 @@ function getColumnsForContract({
 
         const risky = isRiskyContract(row);
 
+        const contractName = row.name || 'Unknown';
+
         return (
           <div className="flex flex-col justify-between">
             <div className="contract-basic-info flex items-center">
@@ -170,9 +172,14 @@ function getColumnsForContract({
                 address={row.id}
                 chainEnum={chainItem.enum}
                 addressSuffix={
-                  <span className="contract-name ml-[4px]">
-                    ({row.name || 'Unknown'})
-                  </span>
+                  <Tooltip
+                    overlayClassName="J-table__tooltip disable-ant-overwrite"
+                    overlay={contractName}
+                  >
+                    <span className="contract-name ml-[4px]">
+                      ({row.name || 'Unknown'})
+                    </span>
+                  </Tooltip>
                 }
                 openExternal={false}
               />
@@ -525,8 +532,15 @@ function getColumnsForAsset({
         if (!asset) return null;
 
         const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
+        if (!chainItem?.enum) return null;
 
-        if (!chainItem?.enum) return;
+        const fullName =
+          asset.type === 'nft' && asset.nftToken
+            ? ensureSuffix(
+                asset.name || 'Unknown',
+                ` #${asset.nftToken.inner_id}`
+              )
+            : asset.name || 'Unknown';
 
         return (
           <div className="flex items-center font-[500]">
@@ -539,9 +553,12 @@ function getColumnsForAsset({
               noRound={false}
             />
 
-            <span className="ml-[8px] asset-name">
-              {asset.name || 'Unknown'}
-            </span>
+            <Tooltip
+              overlayClassName="J-table__tooltip disable-ant-overwrite"
+              overlay={fullName}
+            >
+              <span className="ml-[8px] asset-name">{fullName}</span>
+            </Tooltip>
           </div>
         );
       },
@@ -569,33 +586,39 @@ function getColumnsForAsset({
         const asset = row.$assetParent;
         if (!asset) return null;
 
-        if (asset.type === 'nft' && asset.nftContract) {
+        if (asset.type === 'nft') {
           const chainItem = findChainByServerID(
             asset.chain as Chain['serverId']
           );
-          return (
-            <span className="capitalize inline-flex items-center">
-              Collection
-              <img
-                onClick={() => {
-                  if (!chainItem) return;
-                  openInTab(
-                    chainItem?.scanLink.replace(
-                      /tx\/_s_/,
-                      `address/${asset.id}`
-                    ),
-                    false
-                  );
-                }}
-                src={IconExternal}
-                width={16}
-                height={16}
-                className={clsx('ml-6 cursor-pointer')}
-              />
-            </span>
+
+          const imgNode = (
+            <img
+              onClick={(evt) => {
+                evt.stopPropagation();
+                openScanLinkFromChainItem(chainItem, asset.id);
+              }}
+              src={IconExternal}
+              width={16}
+              height={16}
+              className={clsx('ml-6 cursor-pointer')}
+            />
           );
-        } else if (asset.type === 'nft' && asset.nftToken) {
-          return <span className="capitalize">NFT</span>;
+
+          if (asset.nftContract) {
+            return (
+              <span className="capitalize inline-flex items-center">
+                Collection
+                {imgNode}
+              </span>
+            );
+          } else if (asset.nftToken) {
+            return (
+              <span className="capitalize inline-flex items-center">
+                NFT
+                {imgNode}
+              </span>
+            );
+          }
         }
 
         return <span className="capitalize">{asset.type}</span>;
@@ -636,6 +659,8 @@ function getColumnsForAsset({
         // it maybe null
         const protocol = spender.protocol;
 
+        const protocolName = protocol?.name || 'Unknown';
+
         return (
           <div className="flex items-center">
             <IconWithChain
@@ -647,16 +672,20 @@ function getColumnsForAsset({
               chainServerId={asset?.chain}
               noRound={asset.type === 'nft'}
             />
-
             <NameAndAddress.SafeCopy
               className="ml-[6px]"
               addressClass="spender-address"
               address={spender.id || ''}
               chainEnum={chainItem?.enum}
               addressSuffix={
-                <span className="contract-name ml-[4px]">
-                  ({protocol?.name || 'Unknown'})
-                </span>
+                <Tooltip
+                  overlayClassName="J-table__tooltip disable-ant-overwrite"
+                  overlay={protocolName}
+                >
+                  <span className="contract-name ml-[4px]">
+                    ({protocolName})
+                  </span>
+                </Tooltip>
               }
               openExternal={false}
             />

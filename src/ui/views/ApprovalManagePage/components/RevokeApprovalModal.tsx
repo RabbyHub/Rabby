@@ -13,19 +13,75 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { ApprovalItem, ApprovalSpenderItemToBeRevoked } from '@/utils/approval';
-import { detectClientOS } from '@/ui/utils/os';
+import {
+  ApprovalItem,
+  ApprovalSpenderItemToBeRevoked,
+  ContractApprovalItem,
+  SpenderInNFTApproval,
+} from '@/utils/approval';
 import styled from 'styled-components';
-import { findIndexRevokeList, toRevokeItem } from '../utils';
+import {
+  findIndexRevokeList,
+  maybeNFTLikeItem,
+  openScanLinkFromChainItem,
+  toRevokeItem,
+} from '../utils';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
+
+import IconExternal from 'ui/assets/icon-share.svg';
+import IconBadgeCollection from '../icons/modal-badge-collection.svg';
+import IconBadgeNFT from '../icons/modal-badge-nft.svg';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
     border-bottom: none;
   }
 `;
+
+function NFTItemBadge({
+  className,
+  contract,
+  contractListItem,
+}: {
+  className?: string;
+  contract: ContractApprovalItem;
+  contractListItem: ContractApprovalItem['list'][number];
+}) {
+  const { isNFTToken, isNFTCollection } = useMemo(() => {
+    const result = {
+      isNFTToken: false,
+      isNFTCollection: false,
+    };
+
+    if ('spender' in contractListItem) {
+      const maybeNFTSpender = contractListItem.spender as SpenderInNFTApproval;
+
+      result.isNFTCollection = !!maybeNFTSpender.$assetParent?.nftContract;
+      result.isNFTToken =
+        !result.isNFTCollection && !!maybeNFTSpender.$assetParent?.nftToken;
+    }
+
+    return result;
+  }, [contract, contractListItem]);
+
+  if (isNFTCollection) {
+    return (
+      <div className={className}>
+        <img className="w-[54px] h-[13px]" src={IconBadgeCollection} />
+      </div>
+    );
+  } else if (isNFTToken) {
+    return (
+      <div className={className}>
+        <img className="w-[26px] h-[13px]" src={IconBadgeNFT} />
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export const RevokeApprovalModal = (props: {
   item?: ApprovalItem;
@@ -77,6 +133,8 @@ export const RevokeApprovalModal = (props: {
     if (!item) return null;
     if (item?.type === 'contract') {
       return item?.list.map((e, index) => {
+        const chainItem = findChainByServerID(e.chain);
+
         return (
           <div
             key={index}
@@ -117,15 +175,26 @@ export const RevokeApprovalModal = (props: {
                 unknown={IconUnknownNFT}
               />
             )}
-            {/* <div className=""> */}
             {'spender' in e ? (
               <div className="flex flex-col ml-[8px]">
-                <div className="text-13 font-medium leading-[15px] mb-2">
-                  {e.contract_name}
+                <div className="text-13 font-medium leading-[15px] inline-flex items-center justify-start">
+                  {e.contract_name || 'Unknown'}
+
+                  {maybeNFTLikeItem(e) && (
+                    <img
+                      onClick={(evt) => {
+                        evt.stopPropagation();
+                        openScanLinkFromChainItem(chainItem, e.spender.id);
+                      }}
+                      src={IconExternal}
+                      className={clsx('w-[12px] h-[12px] ml-6 cursor-pointer')}
+                    />
+                  )}
                 </div>
-                <NameAndAddress.SafeCopy
-                  className="justify-start"
-                  address={e.contract_id || (e as NFTApproval).id}
+                <NFTItemBadge
+                  className="mt-2"
+                  contractListItem={e}
+                  contract={item as ContractApprovalItem}
                 />
               </div>
             ) : (
@@ -287,9 +356,11 @@ export const RevokeApprovalModal = (props: {
 
         <section
           className={clsx(
-            'max-h-[424px] overflow-hidden rounded-[6px] pb-[60px]',
-            'overflow-y-overlay'
+            'max-h-[424px] overflow-x-hidden rounded-[6px] pb-[60px] approval-list'
           )}
+          style={{
+            overflowY: 'overlay',
+          }}
         >
           {displayList}
         </section>
