@@ -122,10 +122,6 @@
   margin-top: @table-mt;
 }
 
-@table-head-height: 48px;
-// @table-row-height: 54px;
-@table-body-row-gap: 8px;
-
 .am-virtual-table {
   max-width: @main-w;
   margin: 0 auto;
@@ -140,12 +136,15 @@
   }
 
   .ant-table-header, .ant-table-header > table {
-    height: @table-head-height;
+    height: @table-header-h;
   }
 
   thead.ant-table-thead > tr > th.am-virtual-table-head-cell {
-    padding-left: 0;
-    padding-right: 0;
+    /**
+      we need fix the vertical expansion value from <th> element
+      */
+    padding: 0;
+
     background-color: transparent;
     font-size: 13px;
     user-select: none;
@@ -210,6 +209,7 @@
   }
 
   .am-virtual-table-cell {
+    @table-body-row-gap: 8px;
     @cell-padding-y: @table-body-row-gap;
 
     background: transparent;
