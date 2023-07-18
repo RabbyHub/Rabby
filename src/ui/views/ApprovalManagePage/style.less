@@ -485,3 +485,15 @@
 .am-revoke-btn.ant-btn-primary[disabled] {
   .light-style-disabled-btn();
 }
+
+.contract-approval-item .token-approval-item-desc {
+  &, .address {
+    color: @color-title;
+  }
+
+  .contract-name {
+    color: @color-body;
+    max-width: 10em;
+    .ellipsis();
+  }
+}

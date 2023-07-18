@@ -18,6 +18,8 @@ import { detectClientOS } from '@/ui/utils/os';
 import styled from 'styled-components';
 import { findIndexRevokeList, toRevokeItem } from '../utils';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
+import { findChainByServerID } from '@/utils/chain';
+import { Chain } from '@debank/common';
 
 const IS_WINDOWS = detectClientOS() === 'win32';
 
@@ -98,7 +100,10 @@ export const RevokeApprovalModal = (props: {
             }}
           >
             {'logo_url' in e ? (
-              <TokenWithChain token={(e as unknown) as TokenItem} />
+              <TokenWithChain
+                hideChainIcon
+                token={(e as unknown) as TokenItem}
+              />
             ) : (
               <NFTAvatar
                 className="w-[24px] h-[24px]"
@@ -150,6 +155,7 @@ export const RevokeApprovalModal = (props: {
         : splitNumberByStep(value.toFixed(2));
 
       const risky = ['danger', 'warning'].includes(spender.risk_level);
+      const chainItem = findChainByServerID(spender.chain as Chain['serverId']);
 
       return (
         <div
@@ -171,7 +177,10 @@ export const RevokeApprovalModal = (props: {
         >
           <div className="flex w-full justify-between items-center">
             <IconWithChain
-              iconUrl={spender.protocol?.logo_url || IconUnknown}
+              width="16px"
+              height="16px"
+              hideChainIcon
+              iconUrl={chainItem?.logo || IconUnknown}
               chainServerId={item.chain}
             />
             <div className="flex flex-col ml-[12px]">
