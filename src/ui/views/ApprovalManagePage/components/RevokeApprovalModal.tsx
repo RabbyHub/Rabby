@@ -21,8 +21,6 @@ import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 
-const IS_WINDOWS = detectClientOS() === 'win32';
-
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
     border-bottom: none;
@@ -262,10 +260,7 @@ export const RevokeApprovalModal = (props: {
       width={400}
       visible={visible}
       onCancel={onClose}
-      className={clsx(
-        IS_WINDOWS && 'revoke-approval-modal__windows',
-        className
-      )}
+      className={clsx('revoke-approval-modal', className)}
       bodyStyle={{
         height: '640px',
         maxHeight: '640px',
@@ -293,7 +288,7 @@ export const RevokeApprovalModal = (props: {
         <section
           className={clsx(
             'max-h-[424px] overflow-hidden rounded-[6px] pb-[60px]',
-            !IS_WINDOWS ? 'overflow-y-scroll' : 'overflow-y-overlay'
+            'overflow-y-overlay'
           )}
         >
           {displayList}
