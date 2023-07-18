@@ -80,6 +80,7 @@ import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTran
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
+import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
@@ -2913,18 +2914,35 @@ export class WalletController extends BaseController {
   }: {
     list: import('@/utils/approval').ApprovalSpenderItemToBeRevoked[];
   }) => {
-    list.forEach((e) => {
-      if ('tokenId' in e) {
-        this.revokeNFTApprove(e);
-      } else {
-        this.approveToken(e.chainServerId, e.id, e.spender, 0, {
-          ga: {
-            category: 'Security',
-            source: 'tokenApproval',
-          },
-        });
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
+    const revokeList = list.map((e) => async () => {
+      try {
+        if ('tokenId' in e) {
+          await this.revokeNFTApprove(e);
+        } else {
+          await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          });
+        }
+      } catch (error) {
+        queue.clear();
+        console.error('revoke error', e);
       }
     });
+
+    try {
+      await queue.addAll(revokeList);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
   };
 
   getRecommendNonce = async ({
