@@ -52,6 +52,12 @@ const AccountItem = ({
     )!;
     setNativeTokenSymbol(chain.nativeTokenSymbol);
     setAlianName(name);
+  };
+
+  const fetchNativeTokenBalance = async () => {
+    const chain = Object.values(CHAINS).find(
+      (item) => item.id.toString() === networkId + ''
+    )!;
     const balanceInWei = await wallet.requestETHRpc(
       {
         method: 'eth_getBalance',
@@ -61,6 +67,12 @@ const AccountItem = ({
     );
     setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
   };
+
+  useEffect(() => {
+    if (checked && nativeTokenBalance === null) {
+      fetchNativeTokenBalance();
+    }
+  }, [checked]);
 
   useEffect(() => {
     init(networkId);
@@ -98,8 +110,8 @@ const AccountItem = ({
           <AddressViewer address={account.address} showArrow={false} />
         </div>
         <div className="text-12 text-gray-light native-token-balance">
-          {nativeTokenBalance ? formatTokenAmount(nativeTokenBalance) : 0}{' '}
-          {nativeTokenSymbol}
+          {nativeTokenBalance !== null &&
+            `${formatTokenAmount(nativeTokenBalance)} ${nativeTokenSymbol}`}
         </div>
       </div>
     </FieldCheckbox>
