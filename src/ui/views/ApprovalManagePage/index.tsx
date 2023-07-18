@@ -44,6 +44,7 @@ import {
   getSpenderApprovalAmount,
   RiskNumMap,
   ApprovalSpenderItemToBeRevoked,
+  compareAssetSpenderByAmount,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
@@ -55,12 +56,18 @@ import {
   toRevokeItem,
   encodeRevokeItemIndex,
 } from './utils';
+import { appIsDev } from '@/utils/env';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
 import { RevokeApprovalModal } from './components/RevokeApprovalModal';
 import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
+import {
+  ModalInspectSpender,
+  ModalInspectContract,
+  useInspectRowItem,
+} from './components/ModalDebugRowItem';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -351,14 +358,14 @@ function getColumnsForContract({
               <div className="text-[12px]">
                 {isWarning && (
                   <p>
-                    Warning: Recent revokes are double of newly approved users
-                    in the last 24 hours.
+                    Warning: Recent revokes are greater than double the number
+                    of newly approved users.
                   </p>
                 )}
                 {isDanger && (
                   <p>
-                    Danger: Recent revokes are 4 times the number of newly
-                    approved users.
+                    Danger: Recent revokes are greater than 4 times the number
+                    of newly approved users.
                   </p>
                 )}
                 <p>
@@ -593,30 +600,16 @@ function getColumnsForAsset({
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       showSorterTooltip: false,
-      sorter: (a, b) =>
-        getSpenderApprovalAmount(a).bigValue.gte(
-          getSpenderApprovalAmount(b).bigValue
-        )
-          ? 1
-          : -1,
+      sorter: (a, b) => compareAssetSpenderByAmount(a, b),
       sortOrder:
         sortedInfo.columnKey === 'approvedAmount' ? sortedInfo.order : null,
       render: (_, spender) => {
         const asset = spender.$assetParent;
         if (!asset) return null;
 
-        if (asset.type === 'token') {
-          const spendValues = getSpenderApprovalAmount(spender);
-          return spendValues.isUnlimited
-            ? 'Unlimited'
-            : `${spendValues.stepNumberText} ${asset.name}`;
-        }
+        const spendValues = getSpenderApprovalAmount(spender);
 
-        if (asset.type === 'nft' && asset.nftContract) {
-          return '1 Collection';
-        }
-
-        return `${asset.nftToken?.is_erc721 ? 1 : 1} NFT`;
+        return spendValues.displayText;
       },
       width: 160,
     },
@@ -737,6 +730,8 @@ function TableByContracts({
     []
   );
 
+  const { onClickRowDebug } = useInspectRowItem(onClickRow);
+
   return (
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
@@ -751,7 +746,7 @@ function TableByContracts({
       sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
-      onClickRow={onClickRow}
+      onClickRow={!appIsDev ? onClickRow : onClickRowDebug}
       getTotalHeight={getContractListTotalHeight}
       getRowHeight={(row) => {
         if (isRiskyContract(row)) return RISKY_ROW_HEIGHT;
@@ -792,6 +787,8 @@ function TableByAssetSpenders({
     []
   );
 
+  const { onClickRowDebug } = useInspectRowItem(onClickRow);
+
   return (
     <VirtualTable<AssetApprovalSpender>
       loading={isLoading}
@@ -805,7 +802,7 @@ function TableByAssetSpenders({
       sortedInfo={sortedInfo}
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
-      onClickRow={onClickRow}
+      onClickRow={!appIsDev ? onClickRow : onClickRowDebug}
       getRowHeight={(row) => ROW_HEIGHT}
       onChange={handleChange}
     />

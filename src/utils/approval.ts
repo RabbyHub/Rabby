@@ -6,6 +6,7 @@ import {
 } from '@/background/service/openapi';
 import { coerceFloat, coerceInteger, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
+import { appIsDev } from './env';
 
 export type ApprovalSpenderItemToBeRevoked = {
   chainServerId: ApprovalItem['chain'];
@@ -316,31 +317,81 @@ export function markParentForAssetItemSpender(
   return spender;
 }
 
+/**
+ * @debug test account 0x364acfceaf895aa369170f2b2237695e342e15aa
+ */
 export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let absValue = spender.value || 0;
   let bigValue = new BigNumber(absValue);
 
   const isUnlimited = bigValue.gte(10 ** 9);
-  const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
-  let displayText = stepNumberText;
+  let displayText = '';
+  let nftOrderScore = 0;
 
   if (spender.$assetParent?.type === 'nft') {
-    if (spender.$assetParent?.nftContract?.is_erc721) {
-      absValue = 1;
-      bigValue = new BigNumber(absValue);
+    absValue = 1;
+    bigValue = new BigNumber(absValue);
+
+    if (spender.$assetParent?.nftContract) {
       displayText = '1 Collection';
+
+      if (spender.$assetParent?.nftContract?.is_erc1155) {
+        nftOrderScore = 102;
+      } else if (spender.$assetParent?.nftContract?.is_erc721) {
+        nftOrderScore = 101;
+      }
     } else if (spender.$assetParent?.nftToken) {
-      // TODO: is that right?
-      absValue = 1;
-      bigValue = new BigNumber(absValue);
-      displayText = '1 NFT';
+      if (spender.$assetParent?.nftToken?.is_erc1155) {
+        displayText = '1 Collection';
+        nftOrderScore = 202;
+      } else if (spender.$assetParent?.nftToken?.is_erc721) {
+        displayText = '1 NFT';
+        nftOrderScore = 201;
+      }
     }
+  } else if (spender.$assetParent?.type === 'token') {
+    const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
+    displayText = isUnlimited
+      ? 'Unlimited'
+      : `${stepNumberText} ${spender.$assetParent?.name || ''}`;
+  } else if (appIsDev) {
+    console.debug('unknown type spender', spender);
   }
 
   return {
     bigValue,
     isUnlimited,
-    stepNumberText,
     displayText,
+    nftOrderScore,
+    get spender() {
+      return spender;
+    },
   };
+}
+
+/**
+ * @description compare contract approval item by approved amount,
+ * it's supposed to make descending order
+ *
+ * if a's risk score greater than b's, return 1
+ * if a's risk score less than b's, return -1
+ * if a's risk score equal to b's, return 0
+ *
+ * @param a
+ * @param b
+ */
+export function compareAssetSpenderByAmount(
+  a: AssetApprovalSpender,
+  b: AssetApprovalSpender
+) {
+  const aApprovedAmount = getSpenderApprovalAmount(a);
+  const bApprovedAmount = getSpenderApprovalAmount(b);
+
+  if (!aApprovedAmount.bigValue.eq(bApprovedAmount.bigValue)) {
+    return aApprovedAmount.bigValue.gte(bApprovedAmount.bigValue) ? 1 : -1;
+  }
+
+  return aApprovedAmount.nftOrderScore >= bApprovedAmount.nftOrderScore
+    ? 1
+    : -1;
 }
