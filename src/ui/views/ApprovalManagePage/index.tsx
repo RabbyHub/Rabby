@@ -809,7 +809,7 @@ function TableByContracts({
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts')}
-      markHoverRow
+      markHoverRow={false}
       columns={columnsForContracts}
       sortedInfo={sortedInfo}
       dataSource={dataSource}

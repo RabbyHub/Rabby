@@ -278,6 +278,8 @@ export function VirtualTable<RecordType extends object>({
       return <TableBodyEmpty isLoading={isLoading} />;
     }
 
+    console.log('[feat] hoveredRowIndex', hoveredRowIndex);
+
     return (
       <VGrid<IVGridItemDataType<RecordType>>
         ref={gridRef}
@@ -319,8 +321,8 @@ export function VirtualTable<RecordType extends object>({
           sortingKey: sortedInfo?.columnKey,
           onClickRow,
           hoveredRowIndex: !markHoverRow ? -1 : hoveredRowIndex,
-          onMouseEnterCell: () => {
-            setHoveredRowIndex(null);
+          onMouseEnterCell: (ctx) => {
+            setHoveredRowIndex(ctx.rowIndex);
           },
           getCellClassName,
         }}
