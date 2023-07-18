@@ -16,6 +16,7 @@ import { findChainByServerID } from '@/utils/chain';
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
 import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
+import { isNil } from 'lodash';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -292,7 +293,22 @@ const TokenSelector = ({
                       </div>
                     </div>
 
-                    <div>{formatUsdValue(token.price)}</div>
+                    <div className="flex flex-col gap-4">
+                      <div>{formatUsdValue(token.price)}</div>
+                      <div>
+                        {isNil(token._usdValueChange) ? null : (
+                          <div
+                            className={clsx('font-normal', {
+                              'text-green': token._usdValueChange > 0,
+                              'text-red': token._usdValueChange < 0,
+                            })}
+                          >
+                            {token._usdValueChange > 0 ? '+' : '-'}
+                            8.32%
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
                     <div className="flex flex-col text-right items-end">
                       <div

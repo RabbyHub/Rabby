@@ -5,6 +5,7 @@ import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
+import { isNil } from 'lodash';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -45,8 +46,24 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
 
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-gray-subTitle text-12 w-1/4">
-      ${item._priceStr}
+    <TCell
+      className={clsx(
+        'py-8 text-gray-subTitle text-12 w-1/4',
+        'flex flex-col gap-4'
+      )}
+    >
+      <div>${item._priceStr}</div>
+      {isNil(item._usdValueChange) ? null : (
+        <div
+          className={clsx('font-normal', {
+            'text-green': item._usdValueChange > 0,
+            'text-red': item._usdValueChange < 0,
+          })}
+        >
+          {item._usdValueChange > 0 ? '+' : '-'}
+          8.32%
+        </div>
+      )}
     </TCell>
   );
 };
