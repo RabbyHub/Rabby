@@ -11,7 +11,11 @@ import { Chain } from '@debank/common';
 import NameAndAddress from '@/ui/component/NameAndAddress';
 import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
 
-import { HandleClickTableRow, VirtualTable } from './components/Table';
+import {
+  HandleClickTableRow,
+  IVGridContextualPayload,
+  VirtualTable,
+} from './components/Table';
 import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from './components/SwitchPills';
 
@@ -722,20 +726,14 @@ const getRowHeight = (row: ContractApprovalItem) => {
   return ROW_HEIGHT;
 };
 
-type CellHandlerPayload = {
-  columnIndex: number;
-  rowIndex: number;
-  data: ContractApprovalItem;
+const getCellKey = (params: IVGridContextualPayload<ContractApprovalItem>) => {
+  return `${params.rowIndex}-${params.columnIndex}-${params.record.id}`;
 };
 
-const getCellKey = (params: CellHandlerPayload) => {
-  return `${params.rowIndex}-${params.columnIndex}`;
-};
-
-const getCellClassName = (ctx: CellHandlerPayload) => {
-  const rowData = ctx.data;
-
-  const riskResult = getFinalRiskInfo(rowData);
+const getCellClassName = (
+  ctx: IVGridContextualPayload<ContractApprovalItem>
+) => {
+  const riskResult = getFinalRiskInfo(ctx.record);
 
   return clsx(
     riskResult.isDanger && 'is-contract-row__danger',
@@ -811,7 +809,7 @@ function TableByContracts({
       loading={isLoading}
       vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts')}
-      markHoverRow={false}
+      markHoverRow
       columns={columnsForContracts}
       sortedInfo={sortedInfo}
       dataSource={dataSource}
