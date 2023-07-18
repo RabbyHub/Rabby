@@ -190,13 +190,8 @@ export function getContractRiskEvaluation(
   ) as RiskLevelScore;
 
   const exposureValue = coerceFloat(riskValues.risk_exposure_usd_value);
-  const clientExposureLevel: ApprovalRiskLevel = riskValues?.is_exposure_usd_value_unknown
-    ? 'safe'
-    : exposureValue < 1e4
-    ? 'danger'
-    : exposureValue < 1e5
-    ? 'warning'
-    : 'safe';
+  const clientExposureLevel: ApprovalRiskLevel =
+    exposureValue < 1e4 ? 'danger' : exposureValue < 1e5 ? 'warning' : 'safe';
   const clientExposureScore = coerceInteger(
     RiskNumMap[clientExposureLevel],
     0
