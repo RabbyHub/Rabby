@@ -260,7 +260,7 @@ const Swap = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1069']}
                   id="1069"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

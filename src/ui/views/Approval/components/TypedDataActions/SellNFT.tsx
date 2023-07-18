@@ -212,7 +212,7 @@ const ApproveNFT = ({
                 <SecurityListItem
                   id="1082"
                   engineResult={engineResultMap['1082']}
-                  dangerText="not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>
