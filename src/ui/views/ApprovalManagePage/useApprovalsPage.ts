@@ -172,7 +172,7 @@ export function useApprovalsPage() {
                 risk_level: spender.risk_level,
                 risk_alert: spender.risk_alert,
                 id: spender.id,
-                name: spender?.protocol?.name || 'Unknown Contract',
+                name: spender?.protocol?.name || 'Unknown',
                 logo_url: spender.protocol?.logo_url,
               };
             }
@@ -222,7 +222,7 @@ export function useApprovalsPage() {
                 risk_level: spender.risk_level,
                 risk_alert: spender.risk_alert,
                 id: spender.id,
-                name: spender?.protocol?.name || 'Unknown Contract',
+                name: spender?.protocol?.name || 'Unknown',
                 logo_url: spender.protocol?.logo_url || IconUnknownNFT,
                 type: 'contract',
                 contractFor: 'nft',
@@ -287,7 +287,7 @@ export function useApprovalsPage() {
                   risk_level: spender.risk_level,
                   risk_alert: spender.risk_alert,
                   id: spender.id,
-                  name: spender?.protocol?.name || 'Unknown Contract',
+                  name: spender?.protocol?.name || 'Unknown',
                   logo_url: spender.protocol?.logo_url,
                   type: 'contract',
                   contractFor: 'token',

@@ -159,11 +159,12 @@ function getColumnsForContract({
           <div className="flex flex-col justify-between">
             <div className="contract-basic-info flex items-center">
               <IconWithChain
-                width="24px"
-                height="24px"
+                width="16px"
+                height="16px"
                 hideConer
-                iconUrl={row?.logo_url || IconUnknown}
-                chainServerId={row.chain}
+                hideChainIcon
+                iconUrl={chainItem?.logo || IconUnknown}
+                chainServerId={chainItem.serverId}
                 noRound={false}
               />
 
@@ -642,10 +643,11 @@ function getColumnsForAsset({
         return (
           <div className="flex items-center">
             <IconWithChain
-              width="24px"
-              height="24px"
+              width="16px"
+              height="16px"
               hideConer
-              iconUrl={protocol?.logo_url || IconUnknown}
+              hideChainIcon
+              iconUrl={chainItem?.logo || IconUnknown}
               chainServerId={asset?.chain}
               noRound={asset.type === 'nft'}
             />
