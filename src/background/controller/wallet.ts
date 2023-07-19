@@ -1,4 +1,3 @@
-import { account } from './../../ui/models/account';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
@@ -81,6 +80,7 @@ import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTran
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
+import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
@@ -2939,34 +2939,37 @@ export class WalletController extends BaseController {
   revoke = async ({
     list,
   }: {
-    list: (
-      | {
-          chainServerId: string;
-          contractId: string;
-          spender: string;
-          abi: 'ERC721' | 'ERC1155' | '';
-          tokenId: string | null | undefined;
-          isApprovedForAll: boolean;
-        }
-      | {
-          chainServerId: string;
-          id: string;
-          spender: string;
-        }
-    )[];
+    list: import('@/utils/approval').ApprovalSpenderItemToBeRevoked[];
   }) => {
-    list.forEach((e) => {
-      if ('tokenId' in e) {
-        this.revokeNFTApprove(e);
-      } else {
-        this.approveToken(e.chainServerId, e.id, e.spender, 0, {
-          ga: {
-            category: 'Security',
-            source: 'tokenApproval',
-          },
-        });
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
+    const revokeList = list.map((e) => async () => {
+      try {
+        if ('tokenId' in e) {
+          await this.revokeNFTApprove(e);
+        } else {
+          await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          });
+        }
+      } catch (error) {
+        queue.clear();
+        console.error('revoke error', e);
       }
     });
+
+    try {
+      await queue.addAll(revokeList);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
   };
 
   getRecommendNonce = async ({

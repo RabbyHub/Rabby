@@ -17,7 +17,11 @@ import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import IconFeedback from 'ui/assets/dashboard/feedback.svg';
 import IconMoreSettings from 'ui/assets/dashboard/more-settings.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import { getCurrentConnectSite, useWallet } from 'ui/utils';
+import {
+  getCurrentConnectSite,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
@@ -193,8 +197,14 @@ export default ({
     security: {
       icon: IconSecurity,
       content: 'Approvals',
-      onClick: () => {
-        history.push('/approval-manage');
+      onClick: async (evt) => {
+        // history.push('/popup/approval-manage');
+        if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
+          history.push('/popup/approval-manage');
+          return;
+        }
+
+        openInternalPageInTab('approval-manage');
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,

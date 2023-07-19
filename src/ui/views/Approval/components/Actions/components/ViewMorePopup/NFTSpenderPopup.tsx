@@ -59,7 +59,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
         </Col>
         <Col>
           <Row
-            tip="Trust value refers to the top NFT approved and exposed to this contract. When trust value is low, it's more likely to be risky."
+            tip="Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
             className="bg-[#F6F8FF]"
           >
             Trust value

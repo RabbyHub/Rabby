@@ -171,7 +171,7 @@ const AddressList: any = forwardRef(
           itemCount={combinedList.length}
           itemSize={64}
           itemKey={itemKey}
-          ref={fixedList}
+          ref={fixedList as React.MutableRefObject<FixedSizeList<any>>}
           onItemsRendered={onItemsRendered}
         >
           {Row}

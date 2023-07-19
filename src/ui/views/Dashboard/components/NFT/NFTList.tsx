@@ -59,7 +59,7 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
           itemData={data}
           itemCount={data?.length}
           itemSize={52}
-          ref={fixedList}
+          ref={fixedList as React.MutableRefObject<FixedSizeList<any>>}
           style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
         >
           {NFTListRow}

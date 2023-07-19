@@ -1,0 +1,510 @@
+@import "@/ui/style/mixin.less";
+
+@radius-value: 6px;
+
+@main-w: 1040px;
+
+@page-padding-top: 40px;
+@page-header-h: 24px;
+@page-header-bottom-offset: 20px;
+@tools-h: 48px;
+@table-mt: 20px;
+@table-header-h: 48px;
+
+// value of `@sticky-top-height` is 200px
+@sticky-top-height: @page-padding-top + @page-header-h + @page-header-bottom-offset + @tools-h + @table-mt + @table-header-h;
+
+/* pt + height + pb */
+@sticky-footer-textarea: 16px + 16px + 16px;
+@sticky-btn-height: 60px;
+@sticky-btn-bottom-offset: 40px;
+// value of `@sticky-footer-height` is 148px
+@sticky-footer-height: @sticky-footer-textarea + @sticky-btn-height + @sticky-btn-bottom-offset;
+
+@table-scoller-reserve-w: 4px;
+@table-last-cell-pr: @table-scoller-reserve-w;
+
+.approvals-manager-page {
+  width: 100vw;
+  min-width: @main-w;
+  height: 100vh;
+  padding-top: @page-padding-top;
+  padding-bottom: @sticky-footer-height;
+  background: @color-bg;
+
+  .child-has-chromelike-scrollbar();
+}
+
+.revoke-approval-modal {
+  .child-has-chromelike-scrollbar();
+  .approval-list {
+    .chromelike-scrollbar(0);
+  }
+}
+
+.approvals-manager {
+  overflow: hidden;
+  height: 100%;
+  min-width: @main-w;
+  width: @main-w;
+  max-width: 1280px;
+  // width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  > .approvals-manager__header {
+    flex-shrink: 0;
+  }
+
+  > main {
+    flex-shrink: 1;
+    height: 100%;
+  }
+}
+
+.approvals-manager__header {
+  height: @page-header-h;
+  box-sizing: content-box;
+  padding-bottom: @page-header-bottom-offset;
+  display: inline-block;
+  text-align: center;
+  width: @main-w;
+  margin: 0 auto;
+  font-size: 20px;
+  font-weight: 500;
+
+  > .title {
+    text-align: center;
+    color: @color-title;
+    vertical-align: baseline;
+    height: 100%;
+    display: inline-block;
+  }
+}
+
+.approvals-manager__table-tools {
+  width: @main-w;
+  margin: 0 auto;
+  height: @tools-h;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  > .search-input-wrapper {
+    height: @tools-h;
+    background-color: white;
+    border-radius: @radius-value;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: ease-in 0.2s border-color;
+
+    &.is-focusing, &:hover {
+      border-color: @primary-color;
+    }
+  }
+
+  .search-input {
+    height: 100%;
+    width: 380px;
+    border-width: 0;
+    border-color: transparent !important;
+  }
+
+  .search-input .ant-input-prefix {
+    margin-right: 12px;
+  }
+}
+
+.approvals-manager__table-wrapper {
+  margin-top: @table-mt;
+}
+
+.am-virtual-table {
+  max-width: @main-w;
+  margin: 0 auto;
+
+  .ant-table {
+    background: transparent;
+  }
+
+  .ant-table-header {
+    border-radius: @radius-value;
+    background-color: white;
+  }
+
+  .ant-table-header, .ant-table-header > table {
+    height: @table-header-h;
+  }
+
+  thead.ant-table-thead > tr > th.am-virtual-table-head-cell {
+    /**
+      we need fix the vertical expansion value from <th> element
+      */
+    padding: 0;
+
+    background-color: transparent;
+    font-size: 13px;
+    user-select: none;
+    border-bottom: transparent;
+
+    // override default head cell style
+    &.ant-table-column-has-sorters:hover {
+      background-color: transparent;
+    }
+    // ant-table-column-sort means current sorter
+    &.ant-table-column-has-sorters.ant-table-column-sort {
+      background: transparent;
+
+      .ant-table-column-sorters {
+        color: @primary-text-color;
+      }
+    }
+
+    &.ant-table-cell-scrollbar:last-child {
+      box-shadow: none;
+      width: 0;
+      // display: none;
+    }
+
+    .ant-table-column-sorters {
+      padding: 0;
+    }
+
+    .ant-table-column-sorters-with-tooltip {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .ant-table-column-sorter-full {
+      margin-top: 0;
+      position: relative;
+      top: -3px;
+      margin-left: 2px;
+    }
+    
+    &.J_contracts_last_column {
+      padding-right: 14px;
+    }
+  }
+
+  thead.ant-table-thead > tr {
+    border-radius: @radius-value;
+  }
+
+  .ant-table-container:before,
+  .ant-table-container:after {
+    display: none;
+  }
+
+  .am-virtual-grid {
+    overflow-y: overlay !important;
+    overflow-x: hidden !important;
+
+    .chromelike-scrollbar(@table-scoller-reserve-w);
+
+    .am-virtual-table-cell-inner {
+      cursor: pointer;
+    }
+  }
+
+  .am-virtual-table-cell {
+    @table-body-row-gap: 8px;
+    @cell-padding-y: @table-body-row-gap;
+
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: @cell-padding-y;
+
+    &.J_selection .am-virtual-table-cell-inner {
+      padding-top: 0;
+      padding-bottom: 0;
+      height: 100%;
+    }
+
+    &.is-last-row {
+      padding-bottom: @cell-padding-y;
+    }
+
+    &.is-first-cell > .am-virtual-table-cell-inner {
+      border-left: 1px solid transparent;
+      border-top-left-radius: @radius-value;
+      border-bottom-left-radius: @radius-value;
+    }
+
+    &.is-last-cell > .am-virtual-table-cell-inner {
+      border-right: 1px solid transparent;
+      border-top-right-radius: @radius-value;
+      border-bottom-right-radius: @radius-value;
+
+      padding-right: @table-last-cell-pr;
+    }
+
+    &.is-sorting-cell > .am-virtual-table-cell-inner {
+      font-weight: 500;
+    }
+
+    &.is-hovered-row-cell {
+      .am-virtual-table-cell-inner {
+        border-top: 1px solid @primary-color;
+        border-bottom: 1px solid @primary-color;
+        background: rgba(134, 151, 255, 0.10);
+      }
+
+      &.is-first-cell > .am-virtual-table-cell-inner {
+        border-left: 1px solid @primary-color;
+        border-top-left-radius: @radius-value;
+        border-bottom-left-radius: @radius-value;
+      }
+
+      &.is-last-cell > .am-virtual-table-cell-inner {
+        border-right: 1px solid @primary-color;
+        border-top-right-radius: @radius-value;
+        border-bottom-right-radius: @radius-value;
+      }
+    }
+
+    &.is-contract-row__danger > .am-virtual-table-cell-inner {
+      background: #fefafa;
+    }
+
+    &.is-contract-row__warning > .am-virtual-table-cell-inner {
+      background: #fffdf8;
+    }
+  }
+
+  &.J_table_by_contracts .am-virtual-table-cell.is-last-cell > .am-virtual-table-cell-inner {
+    padding-right: 20px;
+  }
+
+  .am-virtual-table-cell-inner {
+    box-sizing: border-box;
+    padding: 16px 0;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  [data-theme="dark"]  .am-virtual-table-cell-inner {
+    background: #141414;
+  }
+
+  .am-virtual-table-cell-inner .spender-address {
+    font-weight: 500;
+  }
+
+  .am-virtual-table-cell-inner .name-and-address {
+    &, .address {
+      color: @color-title;
+    }
+
+    .contract-name {
+      color: @color-body;
+      max-width: 10em;
+      .ellipsis();
+    }
+  }
+
+  .am-virtual-table-cell-inner .token-with-chain + .asset-name {
+    max-width: 10em;
+    .ellipsis();
+  } 
+}
+
+.am-virtual-table-empty {
+  @mt-offset: 12px;
+
+  height: 320px + @mt-offset;
+  margin: 0;
+  margin-top: -@mt-offset;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  border-bottom-left-radius: @radius-value;
+  border-bottom-right-radius: @radius-value;
+
+  background: white;
+
+  .ant-empty-image {
+    height: initial;
+    margin-bottom: 10px;
+
+    > img {
+      width: 52px;
+      height: 52px;
+    }
+  }
+
+  .ant-empty-description {
+    margin-top: 0;
+    border-bottom-left-radius: @mt-offset;
+    border-bottom-right-radius: @mt-offset;
+    color: @color-body;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.pills-switch {
+  background-color: @color-border;
+  // min-height: 48px;
+  height: 100%;
+  padding: 4px;
+  border-radius: @radius-value;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pills-switch__item {
+  color: @color-comment;
+  text-align: center;
+  // font-family: Roboto;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  width: 148px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+
+  &.is-active {
+    border-radius: 4px;
+    background: #fff;
+    color: @primary-color;
+  }
+}
+.approvals-manager .alert-with-caret {
+  position: relative;
+
+  &:before {
+    content: " ";
+    position: absolute;
+    top: -16px;
+    left: 68px;
+    border: 8px solid transparent;
+    border-bottom: 12px solid #ec5151;
+  }
+
+  &.J_risky_danger &::before {
+    border-bottom-color: #ec5151;
+  }
+
+  &.J_risky_warning &::before {
+    border-bottom-color: @color-orange;
+  }
+}
+
+.J-risk-cell__text {
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+
+  &::before {
+    display: block;
+    content: " ";
+    top: 2px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    border-bottom: 1px dashed transparent;
+  }
+
+  &.is-warning {
+    color: #ffb020;
+    &::before {
+      display: block;
+      border-bottom-color: #ffb020;
+    }
+  }
+  &.is-danger {
+    color: #ec5151;
+    &::before {
+      display: block;
+      border-bottom-color: #ec5151;
+    }
+  }
+}
+
+.J-risk-cell__tooltip, .J-table__tooltip {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+
+  .ant-tooltip-inner {
+    line-height: 18px;
+    border-radius: 2px;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  &.tip-column-contract-trust-value .ant-tooltip-inner {
+    width: 350px;
+  }
+}
+
+.J-risk-cell__tooltip {
+  &.tip-trust-value .ant-tooltip-inner {
+    width: 210px;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  &.is-danger.tip-recent-revokes .ant-tooltip-inner {
+    min-width: 440px;
+  }
+  &.is-warning.tip-recent-revokes .ant-tooltip-inner {
+    min-width: 440px;
+  }
+}
+
+.J_selected_count_text {
+  color: @primary-color;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.sticky-footer {
+  text-align: center;
+  position: absolute;
+  height: @sticky-footer-height;
+  bottom: 0;
+  padding-bottom: @sticky-btn-bottom-offset;
+}
+
+.modal-debug-row-item {
+  .child-has-chromelike-scrollbar(6px);
+}
+
+.am-revoke-btn.ant-btn-primary[disabled] {
+  .light-style-disabled-btn();
+}
+
+.contract-approval-item .token-approval-item-desc {
+  &, .address {
+    color: @color-title;
+  }
+
+  .contract-name {
+    color: @color-body;
+    max-width: 10em;
+    .ellipsis();
+  }
+}

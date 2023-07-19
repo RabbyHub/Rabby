@@ -7,11 +7,9 @@ import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval-management/right.svg';
 import { Alert } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { openInTab, splitNumberByStep } from '@/ui/utils';
-import { CHAINS } from '@debank/common';
-import { ReactComponent as IconExternalLink } from 'ui/assets/open-external-gray.svg';
 
 import { ApprovalItem } from '@/utils/approval';
+import { findChainByServerID } from '@/utils/chain';
 
 type Props = {
   data: ApprovalItem[];
@@ -38,87 +36,6 @@ export const ApprovalContractItem = ({
     }
   };
 
-  const title = useMemo(() => {
-    if (item.type === 'token') {
-      return splitNumberByStep(item.balance.toFixed(2));
-    }
-    return item?.name;
-  }, [item.type]);
-
-  const desc = useMemo(() => {
-    if (item.type === 'contract') {
-      return (
-        <NameAndAddress
-          address={item.id}
-          chainEnum={
-            Object.values(CHAINS).find((i) => i.serverId === item.chain)?.enum
-          }
-          openExternal
-        />
-      );
-    }
-    if (item.type === 'token') {
-      return item.name;
-    }
-    if (item.nftContract) {
-      const chain = item.chain;
-      const scanLink = Object.values(CHAINS)
-        .find((e) => e.serverId === chain)
-        ?.scanLink?.replace('/tx/_s_', '');
-      return (
-        <div className="flex items-center text-gray-subTitle">
-          <span
-            className="flex items-center cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              !!scanLink &&
-                openInTab(
-                  `${scanLink}/address/${item.nftContract?.contract_id}`
-                );
-            }}
-          >
-            <span>Collection</span>
-            <IconExternalLink
-              width={14}
-              height={14}
-              viewBox="0 0 14 14"
-              className="ml-[4px] text-gray-subTitle"
-            />
-          </span>
-
-          <span
-            className={clsx(
-              'ml-[6px] text-12 text-white bg-blue-light  rounded-[2px]',
-              !showNFTAmount && 'hidden'
-            )}
-            style={{
-              padding: '1px 4px',
-            }}
-          >
-            You currently have{' '}
-            {item?.nftContract?.amount || item?.nftToken?.amount}
-          </span>
-        </div>
-      );
-    }
-    return (
-      <div className="flex items-center">
-        <span>NFT</span>{' '}
-        <span
-          className={clsx(
-            'ml-[6px] text-12 text-white bg-blue-light  rounded-[2px]',
-            !showNFTAmount && 'hidden'
-          )}
-          style={{
-            padding: '1px 4px',
-          }}
-        >
-          You currently have {item?.nftToken?.amount}
-        </span>
-      </div>
-    );
-  }, [item.type]);
-
   const risky = useMemo(() => ['danger', 'warning'].includes(item.risk_level), [
     item.risk_level,
   ]);
@@ -129,11 +46,15 @@ export const ApprovalContractItem = ({
     }
   }, [item, setSize, index]);
 
+  const chainItem = useMemo(() => findChainByServerID(item.chain), [
+    item.chain,
+  ]);
+
   return (
     <div
       ref={rowRef}
       className={clsx(
-        'bg-white mb-[12px] rounded-[6px] border border-transparent',
+        'bg-white mb-[12px] rounded-[6px] border border-transparent contract-approval-item',
         onSelect &&
           'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-[0.1] cursor-pointer'
       )}
@@ -147,32 +68,36 @@ export const ApprovalContractItem = ({
         )}
       >
         <IconWithChain
-          width="32px"
-          height="32px"
+          width="18px"
+          height="18px"
           hideConer
-          iconUrl={item?.logo_url || IconUnknown}
+          hideChainIcon
+          iconUrl={chainItem?.logo || IconUnknown}
           chainServerId={item.chain}
           noRound={item.type === 'nft'}
         />
 
-        <div className="ml-2">
-          <div
-            className={clsx('token-approval-item-title', {
-              'text-15': item.type === 'token',
-            })}
-          >
-            {title}
-          </div>
+        <div className="ml-2 flex">
           <div
             className={clsx('token-approval-item-desc', {
               'text-13': item.type === 'token',
             })}
           >
-            {desc}
+            <NameAndAddress.SafeCopy
+              addressClass="spender-address font-medium"
+              address={item.id}
+              chainEnum={chainItem?.enum}
+              addressSuffix={
+                <span className="contract-name ml-[4px]">
+                  ({item.name || 'Unknown'})
+                </span>
+              }
+              openExternal={false}
+            />
           </div>
         </div>
 
-        <span className="text-[13px] text-gray-subTitle ml-auto ">
+        <span className="text-[13px] text-gray-subTitle flex-shrink-0 ml-auto font-medium">
           {item.list.length}{' '}
           {!onSelect && 'Approval' + (item.list.length > 1 ? 's' : '')}
           {}
