@@ -1519,7 +1519,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         const target = gasList.find(
           (item) => item.level === lastTimeGas?.gasLevel
         )!;
-        gas = target;
+        if (target) {
+          gas = target;
+        } else {
+          gas = gasList.find((item) => item.level === 'normal')!;
+        }
       } else {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
