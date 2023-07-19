@@ -985,6 +985,10 @@ export class WalletController extends BaseController {
     return preferenceService.setHiddenBalance(isHidden);
   };
 
+  getIsShowTestnet = () => {
+    return preferenceService.getIsShowTestnet();
+  };
+
   setIsShowTestnet = (value: boolean) => {
     return preferenceService.setIsShowTestnet(value);
   };

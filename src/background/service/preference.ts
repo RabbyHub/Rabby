@@ -635,6 +635,9 @@ class PreferenceService {
   setHiddenBalance = (value: boolean) => {
     this.store.hiddenBalance = value;
   };
+  getIsShowTestnet = () => {
+    return this.store.isShowTestnet;
+  };
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
   };
