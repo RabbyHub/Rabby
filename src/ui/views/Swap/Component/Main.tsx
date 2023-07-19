@@ -23,6 +23,7 @@ import { DEX, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
+import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -59,6 +60,14 @@ const StyledInput = styled(Input)`
     margin: 0;
   }
 `;
+
+const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
+  const chainItem = findChainByServerID(ctx.chain.serverId);
+
+  if (chainItem?.isTestnet) return 'Testnet is not supported';
+
+  return 'Not supported';
+};
 
 export const Main = () => {
   const { userAddress, unlimitedAllowance } = useRabbySelector((state) => ({
@@ -272,7 +281,7 @@ export const Main = () => {
         <ChainSelectorInForm
           value={chain}
           onChange={switchChain}
-          disabledTips={'Not supported'}
+          disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
         />
 
