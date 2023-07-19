@@ -50,7 +50,7 @@ import {
 import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { TokenItem, Tx } from '../service/openapi';
+import { TokenItem, Tx, testnetOpenapiService } from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -99,6 +99,7 @@ const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
 export class WalletController extends BaseController {
   openapi = openapiService;
+  testnetOpenapi = testnetOpenapiService;
 
   /* wallet */
   boot = (password) => keyringService.boot(password);
@@ -982,6 +983,10 @@ export class WalletController extends BaseController {
 
   setHiddenBalance = (isHidden: boolean) => {
     return preferenceService.setHiddenBalance(isHidden);
+  };
+
+  setIsShowTestnet = (value: boolean) => {
+    return preferenceService.setIsShowTestnet(value);
   };
 
   setPopupOpen = (isOpen) => {

@@ -21,7 +21,8 @@ const createPersistStore = async <T extends object>({
 
   if (fromStorage) {
     const storageCache = await storage.get(name);
-    tpl = storageCache || template;
+    tpl = Object.assign({}, template, storageCache);
+    // tpl = storageCache || template;
     if (!storageCache) {
       await storage.set(name, tpl);
     }

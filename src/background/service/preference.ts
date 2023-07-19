@@ -87,6 +87,7 @@ export interface PreferenceStore {
    */
   autoLockTime?: number;
   hiddenBalance?: boolean;
+  isShowTestnet?: boolean;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -128,6 +129,7 @@ class PreferenceService {
         blockedToken: [],
         collectionStarred: [],
         hiddenBalance: false,
+        isShowTestnet: false,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -202,6 +204,9 @@ class PreferenceService {
     }
     if (!this.store.hiddenBalance) {
       this.store.hiddenBalance = false;
+    }
+    if (!this.store.isShowTestnet) {
+      this.store.isShowTestnet = false;
     }
   };
 
@@ -629,6 +634,9 @@ class PreferenceService {
   };
   setHiddenBalance = (value: boolean) => {
     this.store.hiddenBalance = value;
+  };
+  setIsShowTestnet = (value: boolean) => {
+    this.store.isShowTestnet = value;
   };
 }
 
