@@ -20,6 +20,7 @@ import {
 } from './components/SelectChainList';
 import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
 import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
+import NetSwitchTabs, { useSwitchNetTab } from '../PillsSwitch/NetSwitchTabs';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -136,6 +137,8 @@ const ChainSelectorModal = ({
     }
   }, [visible, rDispatch]);
 
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+
   return (
     <Drawer
       title={title}
@@ -153,6 +156,13 @@ const ChainSelectorModal = ({
       destroyOnClose
     >
       <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+        {isShowTestnet && (
+          <NetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+            className="h-[28px] box-content mt-[20px] mb-[20px]"
+          />
+        )}
         <Input
           prefix={<img src={IconSearch} />}
           placeholder="Search chain"
