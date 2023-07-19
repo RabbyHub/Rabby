@@ -218,7 +218,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             <ChainCard chain={state.nextChain}></ChainCard>
           </div>
         </div>
-        <Footer>
+        <Footer className="border-0">
           <Button
             type="primary"
             size="large"
