@@ -52,7 +52,7 @@ export const useTokens = (
   timeAt?: Dayjs,
   visible = true,
   updateNonce = 0,
-  chainId?: string
+  chainServerId?: string
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -78,17 +78,17 @@ export const useTokens = (
       if (
         visible &&
         (!isSameAddress(userAddr, userAddrRef.current) ||
-          chainId !== chainIdRef.current)
+          chainServerId !== chainIdRef.current)
       ) {
         loadProcess().then(() => {
           userAddrRef.current = userAddr;
-          chainIdRef.current = chainId;
+          chainIdRef.current = chainServerId;
         });
       }
     } else {
       setData(undefined);
     }
-  }, [userAddr, visible, chainId]);
+  }, [userAddr, visible, chainServerId]);
 
   useEffect(() => {
     if (timeAt) {
@@ -124,7 +124,6 @@ export const useTokens = (
 
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
-
     const snapshot = await queryTokensCache(userAddr, wallet);
     const blocked = await wallet.getBlockedToken();
     if (snapshot?.length) {
@@ -145,7 +144,7 @@ export const useTokens = (
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
-    const tokenRes = await batchQueryTokens(userAddr, wallet, chainId);
+    const tokenRes = await batchQueryTokens(userAddr, wallet, chainServerId);
     // customize and blocked tokens
     const customizeTokens = await wallet.getCustomizedToken();
     const customTokenList: TokenItem[] = [];

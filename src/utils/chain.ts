@@ -6,6 +6,18 @@ import {
 import { CHAINS, CHAINS_ENUM } from 'consts';
 
 const ALL_CHAINS = Object.values(CHAINS);
+const ALL_CHAINS_TESTNET = [] as Chain[];
+const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
+  if (chain.isTestnet) {
+    ALL_CHAINS_TESTNET.push(chain);
+  }
+  return !chain.isTestnet;
+});
+
+const CHAINS_BY_NET = {
+  mainnet: ALL_CHAINS_MAINNET,
+  testnet: ALL_CHAINS_TESTNET,
+};
 
 /**
  * @description safe find chain, if not found, return fallback(if provided) or null
@@ -156,12 +168,14 @@ export function varyAndSortChainItems(deps: {
   matteredChainBalances: {
     [x: string]: DisplayChainWithWhiteLogo | undefined;
   };
+  netTabKey?: import('@/ui/component/PillsSwitch/NetSwitchTabs').NetSwitchTabsKey;
 }) {
   const {
     supportChains,
     searchKeyword = '',
     pinned,
     matteredChainBalances,
+    netTabKey,
   } = deps;
 
   const unpinnedListGroup = {
@@ -175,9 +189,10 @@ export function varyAndSortChainItems(deps: {
     disabled: [] as Chain[],
   };
 
-  const _all = Object.values(CHAINS).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  const _all = (
+    (netTabKey ? CHAINS_BY_NET[netTabKey] : CHAINS_BY_NET.mainnet) ||
+    CHAINS_BY_NET.mainnet
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   _all.forEach((item) => {
     const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);

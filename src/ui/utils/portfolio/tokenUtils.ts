@@ -5,12 +5,31 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
+import {
+  requestOpenApiMultipleNets,
+  requestOpenApiWithChainId,
+} from '@/ui/utils/openapi';
+import { findChainByServerID } from '@/utils/chain';
 export const queryTokensCache = async (
   user_id: string,
   wallet: WalletControllerType
 ) => {
-  // getCachedTokenList
-  return wallet.openapi.getCachedTokenList(user_id);
+  const isShowTestnet = await wallet.getIsShowTestnet();
+
+  return requestOpenApiMultipleNets(
+    ({ openapi }) => openapi.getCachedTokenList(user_id),
+    {
+      needTestnetResult: isShowTestnet,
+      wallet,
+      processResults: ({ mainnet, testnet }) => {
+        return mainnet.concat(testnet);
+      },
+      fallbackValues: {
+        mainnet: [],
+        testnet: [],
+      },
+    }
+  );
 };
 
 export const batchQueryTokens = async (
@@ -18,7 +37,33 @@ export const batchQueryTokens = async (
   wallet: WalletControllerType,
   chainId?: string
 ) => {
-  return wallet.openapi.listToken(user_id, chainId, true);
+  const isShowTestnet = await wallet.getIsShowTestnet();
+  const chainItem = chainId ? findChainByServerID(chainId) : null;
+
+  if (chainItem) {
+    return requestOpenApiWithChainId(
+      ({ openapi }) => openapi.listToken(user_id, chainId, true),
+      {
+        wallet,
+        isTestnet: chainItem.isTestnet,
+      }
+    );
+  }
+
+  return requestOpenApiMultipleNets(
+    ({ openapi }) => openapi.listToken(user_id, chainId, true),
+    {
+      needTestnetResult: isShowTestnet,
+      wallet,
+      processResults: ({ mainnet, testnet }) => {
+        return mainnet.concat(testnet);
+      },
+      fallbackValues: {
+        mainnet: [],
+        testnet: [],
+      },
+    }
+  );
 };
 
 export const batchQueryHistoryTokens = async (
@@ -26,10 +71,23 @@ export const batchQueryHistoryTokens = async (
   time_at: number,
   wallet: WalletControllerType
 ) => {
-  return wallet.openapi.getHistoryTokenList({
-    id: user_id,
-    timeAt: time_at,
-  });
+  const isShowTestnet = await wallet.getIsShowTestnet();
+
+  return requestOpenApiMultipleNets(
+    ({ openapi }) =>
+      openapi.getHistoryTokenList({ id: user_id, timeAt: time_at }),
+    {
+      needTestnetResult: isShowTestnet,
+      wallet,
+      processResults: ({ mainnet, testnet }) => {
+        return mainnet.concat(testnet);
+      },
+      fallbackValues: {
+        mainnet: [],
+        testnet: [],
+      },
+    }
+  );
 };
 
 export const walletProject = new DisplayedProject({

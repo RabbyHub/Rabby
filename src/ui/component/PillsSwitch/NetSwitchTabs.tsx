@@ -20,6 +20,7 @@ export const switchOptions = [
 ] as const;
 
 type OptionType = typeof switchOptions[number];
+export type NetSwitchTabsKey = OptionType['key'];
 type SwitchTabProps = Omit<PillsSwitchProps<OptionType[]>, 'options'>;
 
 export function useSwitchNetTab() {
