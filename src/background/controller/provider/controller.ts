@@ -899,7 +899,7 @@ class ProviderController extends BaseController {
         }
       }
     },
-    { height: 390 },
+    { height: 650 },
   ])
   walletAddEthereumChain = ({
     data: {
@@ -975,7 +975,7 @@ class ProviderController extends BaseController {
         }
       }
     },
-    { height: 390 },
+    { height: 650 },
   ])
   walletSwitchEthereumChain = ({
     data: {
