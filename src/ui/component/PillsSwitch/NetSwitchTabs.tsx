@@ -29,9 +29,7 @@ export function useSwitchNetTab() {
   const [selectedTab, setSelectedTab] = useState<OptionType['key']>('mainnet');
   const onTabChange = useCallback(
     (key: OptionType['key']) => {
-      if (!isShowTestnet) return;
-
-      setSelectedTab(key);
+      setSelectedTab(!isShowTestnet ? 'mainnet' : key);
     },
     [isShowTestnet]
   );

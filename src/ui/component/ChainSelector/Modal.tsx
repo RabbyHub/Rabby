@@ -139,12 +139,23 @@ const ChainSelectorModal = ({
     netTabKey: selectedTab,
   });
 
+  useEffect(() => {
+    if (!value || !visible) return;
+
+    const chainItem = findChainByEnum(value);
+    onTabChange(chainItem?.isTestnet ? 'testnet' : 'mainnet');
+  }, [value, visible, onTabChange]);
+
   const rDispatch = useRabbyDispatch();
 
   useEffect(() => {
     if (!visible) {
       setSearch('');
     } else {
+      // (async () => {
+      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
+      //   rDispatch.account.getMatteredChainBalance();
+      // })();
       rDispatch.account.getMatteredChainBalance();
     }
   }, [visible, rDispatch]);

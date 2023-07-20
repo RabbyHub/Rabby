@@ -9,7 +9,8 @@ import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat } from '../utils';
-import { isTestnet } from '@/utils/chain';
+import { isTestnet as checkIsTestnet } from '@/utils/chain';
+import { requestOpenApiMultipleNets } from '../utils/openapi';
 
 export interface AccountState {
   currentAccount: null | Account;
@@ -220,7 +221,7 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const isTestnetToken = isTestnet(token.chain);
+      const isTestnetToken = checkIsTestnet(token.chain);
       const currentList = isTestnetToken
         ? store.account.testnetTokens.customize
         : store.account.tokens.customize;
@@ -241,7 +242,7 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const isTestnetToken = isTestnet(token.chain);
+      const isTestnetToken = checkIsTestnet(token.chain);
       const currentList = isTestnetToken
         ? store.account.testnetTokens.customize
         : store.account.tokens.customize;
@@ -266,7 +267,7 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const isTestnetToken = isTestnet(token.chain);
+      const isTestnetToken = checkIsTestnet(token.chain);
       const currentList = isTestnetToken
         ? store.account.testnetTokens.blocked
         : store.account.tokens.blocked;
@@ -287,7 +288,7 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const isTestnetToken = isTestnet(token.chain);
+      const isTestnetToken = checkIsTestnet(token.chain);
       const currentList = isTestnetToken
         ? store.account.testnetTokens.blocked
         : store.account.tokens.blocked;
@@ -307,17 +308,72 @@ export const account = createModel<RootModel>()({
       }
     },
 
+    async triggerFetchBalanceOnBackground(
+      options?: {
+        forceUpdate?: boolean;
+      },
+      store?
+    ) {
+      const currentAccount = store.account.currentAccount;
+
+      if (!currentAccount?.address) return;
+      const wallet = store.app.wallet;
+
+      const isShowTestnet = store.preference.isShowTestnet;
+
+      await requestOpenApiMultipleNets<TotalBalanceResponse | null, void>(
+        (ctx) => {
+          return wallet.getAddressBalance(
+            currentAccount.address,
+            true /* force */,
+            ctx.isTestnetTask
+          );
+        },
+        {
+          wallet,
+          needTestnetResult: isShowTestnet,
+          processResults: () => null,
+          fallbackValues: {
+            mainnet: null,
+            testnet: null,
+          },
+        }
+      );
+    },
+
     async getMatteredChainBalance(
-      _?: any,
-      store?,
-      isTestnet = false
+      options?: { isTestnet?: boolean },
+      store?
     ): Promise<AccountState['matteredChainBalances']> {
       const wallet = store.app.wallet;
+      const isShowTestnet = store.preference.isShowTestnet;
+
       const currentAccountAddr = store.account.currentAccount?.address;
 
-      const cachedBalance: TotalBalanceResponse | null = await wallet.getAddressCacheBalance(
-        currentAccountAddr,
-        isTestnet
+      const cachedBalance = await requestOpenApiMultipleNets<TotalBalanceResponse | null>(
+        (ctx) => {
+          return wallet.getAddressCacheBalance(
+            currentAccountAddr,
+            ctx.isTestnetTask
+          );
+        },
+        {
+          wallet,
+          needTestnetResult: isShowTestnet,
+          processResults: ({ mainnet, testnet }) => {
+            if (!mainnet) return null;
+
+            return {
+              chain_list: mainnet.chain_list.concat(testnet?.chain_list || []),
+              // pointless here, just for type check
+              total_usd_value: mainnet.total_usd_value,
+            };
+          },
+          fallbackValues: {
+            mainnet: null,
+            testnet: null,
+          },
+        }
       );
 
       const totalUsdValue = (cachedBalance?.chain_list || []).reduce(

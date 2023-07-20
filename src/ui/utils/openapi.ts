@@ -23,9 +23,11 @@ const defaultProcessResults = <T>(ctx: ResultType<T>) => {
 };
 
 export async function requestOpenApiMultipleNets<
-  T extends IExtractFromPromise<
-    ReturnType<Exclude<IOpenAPIClient[AllMethodNamesOnOpenAPI], undefined>>
-  >,
+  T extends
+    | IExtractFromPromise<
+        ReturnType<Exclude<IOpenAPIClient[AllMethodNamesOnOpenAPI], undefined>>
+      >
+    | any,
   R = T
 >(
   request: (ctx: {
@@ -38,6 +40,7 @@ export async function requestOpenApiMultipleNets<
      *
      */
     openapi: IOpenAPIClient;
+    isTestnetTask?: boolean;
   }) => Promise<T>,
   options: {
     wallet: WalletControllerType;
@@ -61,7 +64,11 @@ export async function requestOpenApiMultipleNets<
   }
 
   const mainnetP = request({ wallet, openapi: mainnetOpenapi });
-  const testnetP = request({ wallet, openapi: testnetOpenapi });
+  const testnetP = request({
+    wallet,
+    openapi: testnetOpenapi,
+    isTestnetTask: true,
+  });
 
   return Promise.allSettled([mainnetP, testnetP]).then(([mainnet, testnet]) => {
     const mainResult =
