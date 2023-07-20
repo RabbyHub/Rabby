@@ -172,7 +172,7 @@ function getColumnsForContract({
 
               <ApprovalsNameAndAddr
                 className="ml-[6px]"
-                addressClass="font-medium"
+                addressClass=""
                 address={row.id}
                 chainEnum={chainItem.enum}
                 addressSuffix={
@@ -686,7 +686,7 @@ function getColumnsForAsset({
             />
             <ApprovalsNameAndAddr
               className="ml-[6px]"
-              addressClass="font-medium"
+              addressClass=""
               address={spender.id || ''}
               chainEnum={chainItem?.enum}
               addressSuffix={
@@ -718,7 +718,7 @@ function getColumnsForAsset({
     },
     // Approve Time
     {
-      title: () => <span>{'Approve Time'}</span>,
+      title: () => <span className="pl-[20px]">{'Approve Time'}</span>,
       key: 'approveTime',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
