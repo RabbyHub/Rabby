@@ -54,6 +54,7 @@ const data: { preference: PreferenceStore; contactBook } = {
     highligtedAddresses: [],
     walletSavedList: [],
     watchAddressPreference: {},
+    testnetBalanceMap: {},
   },
   contactBook: {
     '0x10b26700b0a2d3f5ef12fa250aba818ee3b43bf4': {
@@ -186,6 +187,7 @@ test('should migrate when no alians', () => {
       highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
+      testnetBalanceMap: {},
     },
     contactBook: {
       '0x10b26700b0a2d3f5ef12fa250aba818ee3b43bf4': {
@@ -313,6 +315,7 @@ test('should migrate when no contacts', () => {
       highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
+      testnetBalanceMap: {},
     },
     contactBook: {},
   };

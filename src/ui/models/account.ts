@@ -9,6 +9,7 @@ import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat } from '../utils';
+import { isTestnet } from '@/utils/chain';
 
 export interface AccountState {
   currentAccount: null | Account;
@@ -23,6 +24,11 @@ export interface AccountState {
     [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
   };
   tokens: {
+    list: AbstractPortfolioToken[];
+    customize: AbstractPortfolioToken[];
+    blocked: AbstractPortfolioToken[];
+  };
+  testnetTokens: {
     list: AbstractPortfolioToken[];
     customize: AbstractPortfolioToken[];
     blocked: AbstractPortfolioToken[];
@@ -48,6 +54,11 @@ export const account = createModel<RootModel>()({
       customize: [],
       blocked: [],
     },
+    testnetTokens: {
+      list: [],
+      customize: [],
+      blocked: [],
+    },
   } as AccountState,
 
   reducers: {
@@ -61,12 +72,32 @@ export const account = createModel<RootModel>()({
       );
     },
 
+    setTestnetTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
+          list: payload,
+        },
+      };
+    },
+
     setTokenList(state, payload: AbstractPortfolioToken[]) {
       return {
         ...state,
         tokens: {
           ...state.tokens,
           list: payload,
+        },
+      };
+    },
+
+    setTestnetCustomizeTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
+          customize: payload,
         },
       };
     },
@@ -86,6 +117,16 @@ export const account = createModel<RootModel>()({
         ...state,
         tokens: {
           ...state.tokens,
+          blocked: payload,
+        },
+      };
+    },
+
+    setTestnetBlockedTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
           blocked: payload,
         },
       };
@@ -133,6 +174,9 @@ export const account = createModel<RootModel>()({
       dispatch.account.setTokenList([]);
       dispatch.account.setBlockedTokenList([]);
       dispatch.account.setCustomizeTokenList([]);
+      dispatch.account.setTestnetTokenList([]);
+      dispatch.account.setTestnetBlockedTokenList([]);
+      dispatch.account.setTestnetCustomizeTokenList([]);
     },
 
     async getAlianNameAsync(address: string, store) {
@@ -176,10 +220,19 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const currentList = store.account.tokens.customize;
-      dispatch.account.setCustomizeTokenList([...currentList, token]);
+      const isTestnetToken = isTestnet(token.chain);
+      const currentList = isTestnetToken
+        ? store.account.testnetTokens.customize
+        : store.account.tokens.customize;
+      const setCustomizeTokenList = isTestnetToken
+        ? dispatch.account.setTestnetCustomizeTokenList
+        : dispatch.account.setCustomizeTokenList;
+      const setTokenList = isTestnetToken
+        ? dispatch.account.setTestnetTokenList
+        : dispatch.account.setTokenList;
+      setCustomizeTokenList([...currentList, token]);
       if (token.amount > 0) {
-        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+        setTokenList([...store.account.tokens.list, token]);
       }
     },
 
@@ -188,13 +241,22 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const currentList = store.account.tokens.customize;
-      dispatch.account.setCustomizeTokenList(
+      const isTestnetToken = isTestnet(token.chain);
+      const currentList = isTestnetToken
+        ? store.account.testnetTokens.customize
+        : store.account.tokens.customize;
+      const setCustomizeTokenList = isTestnetToken
+        ? dispatch.account.setTestnetCustomizeTokenList
+        : dispatch.account.setCustomizeTokenList;
+      const setTokenList = isTestnetToken
+        ? dispatch.account.setTestnetTokenList
+        : dispatch.account.setTokenList;
+      setCustomizeTokenList(
         currentList.filter((item) => {
           return item.id !== token.id;
         })
       );
-      dispatch.account.setTokenList(
+      setTokenList(
         store.account.tokens.list.filter((item) => item.id !== token.id)
       );
     },
@@ -204,9 +266,18 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const currentList = store.account.tokens.blocked;
-      dispatch.account.setBlockedTokenList([...currentList, token]);
-      dispatch.account.setTokenList(
+      const isTestnetToken = isTestnet(token.chain);
+      const currentList = isTestnetToken
+        ? store.account.testnetTokens.blocked
+        : store.account.tokens.blocked;
+      const setBlockedTokenList = isTestnetToken
+        ? dispatch.account.setTestnetBlockedTokenList
+        : dispatch.account.setBlockedTokenList;
+      const setTokenList = isTestnetToken
+        ? dispatch.account.setTestnetTokenList
+        : dispatch.account.setTokenList;
+      setBlockedTokenList([...currentList, token]);
+      setTokenList(
         store.account.tokens.list.filter((item) => item.id !== token.id)
       );
     },
@@ -216,26 +287,37 @@ export const account = createModel<RootModel>()({
         address: token._tokenId,
         chain: token.chain,
       });
-      const currentList = store.account.tokens.blocked;
-      dispatch.account.setBlockedTokenList(
+      const isTestnetToken = isTestnet(token.chain);
+      const currentList = isTestnetToken
+        ? store.account.testnetTokens.blocked
+        : store.account.tokens.blocked;
+      const setBlockedTokenList = isTestnetToken
+        ? dispatch.account.setTestnetBlockedTokenList
+        : dispatch.account.setBlockedTokenList;
+      const setTokenList = isTestnetToken
+        ? dispatch.account.setTestnetTokenList
+        : dispatch.account.setTokenList;
+      setBlockedTokenList(
         currentList.filter((item) => {
           return item.id !== token.id;
         })
       );
       if (token.amount > 0) {
-        dispatch.account.setTokenList([...store.account.tokens.list, token]);
+        setTokenList([...store.account.tokens.list, token]);
       }
     },
 
     async getMatteredChainBalance(
       _?: any,
-      store?
+      store?,
+      isTestnet = false
     ): Promise<AccountState['matteredChainBalances']> {
       const wallet = store.app.wallet;
       const currentAccountAddr = store.account.currentAccount?.address;
 
-      const cachedBalance = await wallet.getAddressCacheBalance(
-        currentAccountAddr
+      const cachedBalance: TotalBalanceResponse | null = await wallet.getAddressCacheBalance(
+        currentAccountAddr,
+        isTestnet
       );
 
       const totalUsdValue = (cachedBalance?.chain_list || []).reduce(

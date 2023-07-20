@@ -55,6 +55,9 @@ export interface PreferenceStore {
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  testnetBalanceMap: {
+    [address: string]: TotalBalanceResponse;
+  };
   useLedgerLive: boolean;
   locale: string;
   watchAddressPreference: Record<string, number>;
@@ -106,6 +109,7 @@ class PreferenceService {
         externalLinkAck: false,
         hiddenAddresses: [],
         balanceMap: {},
+        testnetBalanceMap: {},
         useLedgerLive: false,
         locale: defaultLang,
         watchAddressPreference: {},
@@ -165,6 +169,9 @@ class PreferenceService {
     }
     if (!this.store.balanceMap) {
       this.store.balanceMap = {};
+    }
+    if (!this.store.testnetBalanceMap) {
+      this.store.testnetBalanceMap = {};
     }
     if (!this.store.useLedgerLive) {
       this.store.useLedgerLive = false;
@@ -381,12 +388,32 @@ class PreferenceService {
 
   getPopupOpen = () => this.popupOpen;
 
+  updateTestnetAddressBalance = (
+    address: string,
+    data: TotalBalanceResponse
+  ) => {
+    const balanceMap = this.store.testnetBalanceMap || {};
+    this.store.balanceMap = {
+      ...balanceMap,
+      [address.toLowerCase()]: data,
+    };
+  };
+
   updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
     this.store.balanceMap = {
       ...balanceMap,
       [address.toLowerCase()]: data,
     };
+  };
+
+  removeTestnetAddressBalance = (address: string) => {
+    const key = address.toLowerCase();
+    if (key in this.store.testnetBalanceMap) {
+      const map = this.store.testnetBalanceMap;
+      delete map[key];
+      this.store.testnetBalanceMap = map;
+    }
   };
 
   removeAddressBalance = (address: string) => {
@@ -399,6 +426,11 @@ class PreferenceService {
   };
 
   getAddressBalance = (address: string): TotalBalanceResponse | null => {
+    const balanceMap = this.store.balanceMap || {};
+    return balanceMap[address.toLowerCase()] || null;
+  };
+
+  getTestnetAddressBalance = (address: string): TotalBalanceResponse | null => {
     const balanceMap = this.store.balanceMap || {};
     return balanceMap[address.toLowerCase()] || null;
   };

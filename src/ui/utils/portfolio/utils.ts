@@ -4,6 +4,7 @@ import { WalletControllerType } from '../WalletContext';
 import { PortfolioProject } from './types';
 import { DisplayedProject } from './project';
 import { getTokenHistoryPrice } from './price';
+import { isTestnet } from '@/utils/chain';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export interface PortfolioItemToken extends TokenItem {
@@ -80,14 +81,28 @@ export const loadPortfolioSnapshot = (
   });
 };
 
+export const loadTestnetPortfolioSnapshot = (
+  userAddr: string,
+  wallet: WalletControllerType
+) => {
+  return pQueue.add(() => {
+    return wallet.testnetOpenapi.getComplexProtocolList(userAddr);
+  });
+};
+
 export const batchLoadProjects = async (
   user_id: string,
   projectIds: string[],
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
   const queues = projectIds.map((id) =>
     pQueue.add(() => {
-      return wallet.openapi.getProtocol({ addr: user_id, id });
+      if (isTestnet) {
+        return wallet.testnetOpenapi.getProtocol({ addr: user_id, id });
+      } else {
+        return wallet.openapi.getProtocol({ addr: user_id, id });
+      }
     })
   );
   return await Promise.all(queues);
@@ -97,10 +112,18 @@ export const batchLoadHistoryProjects = async (
   user_id: string,
   projectIds: string[],
   wallet: WalletControllerType,
-  time_at?: number
+  time_at?: number,
+  isTestnet = false
 ) => {
   const queues = projectIds.map((id) => {
     return pQueue.add(() => {
+      if (isTestnet) {
+        return wallet.testnetOpenapi.getHistoryProtocol({
+          addr: user_id,
+          id,
+          timeAt: time_at,
+        });
+      }
       return wallet.openapi.getHistoryProtocol({
         addr: user_id,
         id,
@@ -115,7 +138,8 @@ export const batchLoadHistoryProjects = async (
 export const getMissedTokenPrice = async (
   missedTokens: Record<string, Set<string>>,
   timeAt: number,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
   const tokens = missedTokens && Object.entries(missedTokens);
 
@@ -125,7 +149,7 @@ export const getMissedTokenPrice = async (
 
   return Promise.all(
     tokens.map(([chain, missed]) =>
-      getTokenHistoryPrice(chain, [...missed], timeAt, wallet)
+      getTokenHistoryPrice(chain, [...missed], timeAt, wallet, isTestnet)
         .then((dict) => [chain, dict] as const)
         .catch(() => [chain] as const)
     )

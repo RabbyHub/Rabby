@@ -10,7 +10,8 @@ const useSearchToken = (
   address: string | undefined,
   kw: string,
   chainServerId?: string,
-  withBalance = false
+  withBalance = false,
+  isTestnet = false
 ) => {
   const wallet = useWallet();
   const [result, setResult] = useState<AbstractPortfolioToken[]>([]);
@@ -32,11 +33,12 @@ const useSearchToken = (
       chainId?: string;
     }) => {
       let list: TokenItem[] = [];
+      const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
       setIsLoading(true);
       if (q.length === 42 && q.toLowerCase().startsWith('0x')) {
-        list = await wallet.openapi.searchToken(address, q, chainId, true);
+        list = await apiProvider.searchToken(address, q, chainId, true);
       } else {
-        list = await wallet.openapi.searchToken(address, q, chainId);
+        list = await apiProvider.searchToken(address, q, chainId);
         if (withBalance) {
           list = list.filter((item) => item.amount > 0);
         }
@@ -66,7 +68,7 @@ const useSearchToken = (
         );
       }
     },
-    [customize, blocked]
+    [customize, blocked, isTestnet]
   );
 
   useEffect(() => {
