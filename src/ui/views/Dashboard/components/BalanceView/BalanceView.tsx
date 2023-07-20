@@ -206,7 +206,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           {currentHover ? (
             <img
               src={ArrowNextSVG}
-              className="absolute top-[10px] right-[12px]"
+              className="absolute w-[20px] h-[20px] top-[8px] right-[10px]"
             />
           ) : null}
           <div
@@ -227,7 +227,12 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                 </span>
               </>
             ) : hasValueChainBalances.length > 0 ? (
-              <div className="flex space-x-4">
+              <div
+                className={clsx(
+                  'flex space-x-4',
+                  !currentHover && 'opacity-70'
+                )}
+              >
                 <ChainList
                   isGnosis={isGnosis}
                   matteredChainBalances={hasValueChainBalances}
