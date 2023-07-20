@@ -12,7 +12,8 @@ const useSearchToken = (
   address: string | undefined,
   kw: string,
   chainServerId?: string,
-  withBalance = false
+  withBalance = false,
+  isTestnet = false
 ) => {
   const wallet = useWallet();
   const [result, setResult] = useState<AbstractPortfolioToken[]>([]);
@@ -41,7 +42,7 @@ const useSearchToken = (
         list = await requestOpenApiWithChainId(
           (ctx) => ctx.openapi.searchToken(address, q, chainId, true),
           {
-            isTestnet: chainItem?.isTestnet,
+            isTestnet: isTestnet !== false || chainItem?.isTestnet,
             wallet,
           }
         );
@@ -49,7 +50,7 @@ const useSearchToken = (
         list = await requestOpenApiWithChainId(
           (ctx) => ctx.openapi.searchToken(address, q, chainId),
           {
-            isTestnet: chainItem?.isTestnet,
+            isTestnet: isTestnet !== false || chainItem?.isTestnet,
             wallet,
           }
         );
@@ -82,7 +83,7 @@ const useSearchToken = (
         );
       }
     },
-    [customize, blocked]
+    [customize, blocked, isTestnet]
   );
 
   useEffect(() => {

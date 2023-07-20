@@ -4,7 +4,7 @@ import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, isTestnet as checkIsTestnet, findChainByServerID } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -52,7 +52,8 @@ export const useTokens = (
   timeAt?: Dayjs,
   visible = true,
   updateNonce = 0,
-  chainServerId?: string
+  chainServerId?: string,
+  isTestnet: boolean = chainServerId ? !!findChainByServerID(chainServerId)?.isTestnet : false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -61,9 +62,10 @@ export const useTokens = (
   const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
-  const { customize, list, blocked } = useRabbySelector(
-    (store) => store.account.tokens
-  );
+  const { mainnetTokens, testnetTokens } = useRabbySelector((store) => ({
+    mainnetTokens: store.account.tokens,
+    testnetTokens: store.account.testnetTokens,
+  }));
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
@@ -124,8 +126,15 @@ export const useTokens = (
 
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
-    const snapshot = await queryTokensCache(userAddr, wallet);
-    const blocked = await wallet.getBlockedToken();
+    const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
+
+    const blocked = (await wallet.getBlockedToken()).filter((token) => {
+      if (isTestnet) {
+        return checkIsTestnet(token.chain);
+      } else {
+        return !checkIsTestnet(token.chain);
+      }
+    });
     if (snapshot?.length) {
       const chainTokens = snapshot.reduce((m, n) => {
         m[n.chain] = m[n.chain] || [];
@@ -139,14 +148,34 @@ export const useTokens = (
 
       setData(_data);
       _tokens = sortWalletTokens(_data);
-      dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      if (isTestnet) {
+        dispatch.account.setTestnetTokenList(
+          filterDisplayToken(_tokens, blocked)
+        );
+      } else {
+        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+      }
       setLoading(false);
       // setTokens(filterDisplayToken(_tokens, blocked));
     }
 
-    const tokenRes = await batchQueryTokens(userAddr, wallet, chainServerId);
+    const tokenRes = await batchQueryTokens(
+      userAddr,
+      wallet,
+      chainServerId,
+      isTestnet
+    );
     // customize and blocked tokens
-    const customizeTokens = await wallet.getCustomizedToken();
+
+    const customizeTokens = (await wallet.getCustomizedToken()).filter(
+      (token) => {
+        if (isTestnet) {
+          return checkIsTestnet(token.chain);
+        } else {
+          return !checkIsTestnet(token.chain);
+        }
+      }
+    );
     const customTokenList: TokenItem[] = [];
     const blockedTokenList: TokenItem[] = [];
     tokenRes.forEach((token) => {
@@ -172,6 +201,7 @@ export const useTokens = (
         blockedTokenList.push(token);
       }
     });
+    const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
     const noBalanceBlockedTokens = blocked.filter((token) => {
       return !blockedTokenList.find(
         (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
@@ -183,7 +213,7 @@ export const useTokens = (
       );
     });
     if (noBalanceCustomizeTokens.length > 0) {
-      const noBalanceCustomTokens = await wallet.openapi.customListToken(
+      const noBalanceCustomTokens = await apiProvider.customListToken(
         noBalanceCustomizeTokens.map((item) => `${item.chain}:${item.address}`),
         userAddr
       );
@@ -192,7 +222,7 @@ export const useTokens = (
       );
     }
     if (noBalanceBlockedTokens.length > 0) {
-      const blockedTokens = await wallet.openapi.customListToken(
+      const blockedTokens = await apiProvider.customListToken(
         noBalanceBlockedTokens.map((item) => `${item.chain}:${item.address}`),
         userAddr
       );
@@ -204,8 +234,13 @@ export const useTokens = (
     const formattedBlockedTokenList = blockedTokenList.map(
       (token) => new DisplayedToken(token) as AbstractPortfolioToken
     );
-    dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
-    dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
+    if (isTestnet) {
+      dispatch.account.setTestnetBlockedTokenList(formattedBlockedTokenList);
+      dispatch.account.setTestnetCustomizeTokenList(formattedCustomTokenList);
+    } else {
+      dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
+      dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
+    }
 
     const tokensDict: Record<string, TokenItem[]> = {};
     tokenRes.forEach((token) => {
@@ -221,10 +256,17 @@ export const useTokens = (
 
     setData(_data);
     _tokens = sortWalletTokens(_data);
-    dispatch.account.setTokenList([
-      ...filterDisplayToken(_tokens, blocked),
-      ...formattedCustomTokenList,
-    ]);
+    if (isTestnet) {
+      dispatch.account.setTestnetTokenList([
+        ...filterDisplayToken(_tokens, blocked),
+        ...formattedCustomTokenList,
+      ]);
+    } else {
+      dispatch.account.setTokenList([
+        ...filterDisplayToken(_tokens, blocked),
+        ...formattedCustomTokenList,
+      ]);
+    }
     setLoading(false);
 
     loadHistory(_data, currentAbort);
@@ -257,7 +299,8 @@ export const useTokens = (
     const historyTokenRes = await batchQueryHistoryTokens(
       userAddr,
       historyTime.current,
-      wallet
+      wallet,
+      isTestnet
     );
 
     if (currentAbort.signal.aborted) {
@@ -289,7 +332,11 @@ export const useTokens = (
     });
 
     const tokenList = sortWalletTokens(_data);
-    dispatch.account.setTokenList(tokenList);
+    if (isTestnet) {
+      dispatch.account.setTestnetTokenList(tokenList);
+    } else {
+      dispatch.account.setTokenList(tokenList);
+    }
     setData(_data);
 
     if (currentAbort.signal.aborted) {
@@ -335,7 +382,11 @@ export const useTokens = (
     }
 
     setData(_data);
-    dispatch.account.setTokenList(sortWalletTokens(_data));
+    if (isTestnet) {
+      dispatch.account.setTestnetTokenList(sortWalletTokens(_data));
+    } else {
+      dispatch.account.setTokenList(sortWalletTokens(_data));
+    }
   };
 
   useEffect(() => {
@@ -347,9 +398,11 @@ export const useTokens = (
   return {
     netWorth: data?.netWorth || 0,
     isLoading,
-    tokens: list,
-    customizeTokens: customize,
-    blockedTokens: blocked,
+    tokens: isTestnet ? testnetTokens.list : mainnetTokens.list,
+    customizeTokens: isTestnet
+      ? testnetTokens.customize
+      : mainnetTokens.customize,
+    blockedTokens: isTestnet ? testnetTokens.blocked : mainnetTokens.blocked,
     hasValue: !!data?._portfolios?.length,
     updateData: loadProcess,
     walletProject: data,

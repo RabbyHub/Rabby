@@ -10,16 +10,16 @@ import {
   requestOpenApiWithChainId,
 } from '@/ui/utils/openapi';
 import { findChainByServerID } from '@/utils/chain';
+
 export const queryTokensCache = async (
   user_id: string,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false,
 ) => {
-  const isShowTestnet = await wallet.getIsShowTestnet();
-
   return requestOpenApiMultipleNets(
     ({ openapi }) => openapi.getCachedTokenList(user_id),
     {
-      needTestnetResult: isShowTestnet,
+      needTestnetResult: isTestnet,
       wallet,
       processResults: ({ mainnet, testnet }) => {
         return mainnet.concat(testnet);
@@ -35,7 +35,8 @@ export const queryTokensCache = async (
 export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
-  chainId?: string
+  chainId?: string,
+  isTestnet?: boolean
 ) => {
   const isShowTestnet = await wallet.getIsShowTestnet();
   const chainItem = chainId ? findChainByServerID(chainId) : null;
@@ -45,7 +46,7 @@ export const batchQueryTokens = async (
       ({ openapi }) => openapi.listToken(user_id, chainId, true),
       {
         wallet,
-        isTestnet: chainItem.isTestnet,
+        isTestnet: isTestnet === undefined ? chainItem.isTestnet : isTestnet,
       }
     );
   }
@@ -69,15 +70,14 @@ export const batchQueryTokens = async (
 export const batchQueryHistoryTokens = async (
   user_id: string,
   time_at: number,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
-  const isShowTestnet = await wallet.getIsShowTestnet();
-
   return requestOpenApiMultipleNets(
     ({ openapi }) =>
       openapi.getHistoryTokenList({ id: user_id, timeAt: time_at }),
     {
-      needTestnetResult: isShowTestnet,
+      needTestnetResult: isTestnet,
       wallet,
       processResults: ({ mainnet, testnet }) => {
         return mainnet.concat(testnet);

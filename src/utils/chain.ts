@@ -84,6 +84,13 @@ export function findChainByServerID(chainId: Chain['serverId']): Chain | null {
     : ALL_CHAINS.find((chain) => chain.serverId === chainId) || null;
 }
 
+export function isTestnet(chainServerId?: string) {
+  if (!chainServerId) return false;
+  const chain = findChainByServerID(chainServerId);
+  if (!chain) return false;
+  return !!chain.isTestnet;
+}
+
 export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;

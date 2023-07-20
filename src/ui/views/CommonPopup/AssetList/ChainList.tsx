@@ -1,19 +1,24 @@
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChainItem, ChainItemType } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 
 export const ChainList = ({
   onChange,
+  isTestnet = false,
 }: {
   onChange(id: string | null): void;
+  isTestnet?: boolean;
 }) => {
   const { data, visible } = useCommonPopupView();
-  const chainList =
-    (data?.matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [];
-  const balance = (data?.balance as number) ?? 0;
+  const chainList = isTestnet
+    ? (data?.matteredTestnetChainBalances as DisplayChainWithWhiteLogo[]) ?? []
+    : (data?.matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [];
+  const balance = isTestnet
+    ? (data?.testnetBalance as number) ?? 0
+    : (data?.balance as number) ?? 0;
   const balanceLoading = (data?.balanceLoading as boolean) ?? false;
   const [currentChainList, setCurrentChainList] = React.useState<
     ChainItemType[]
