@@ -198,10 +198,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseLeave={onMouseLeave}
           className={clsx(
             'mt-[4px] mx-10 mb-10',
-            // currentHover && 'bg-[#000] bg-opacity-10',
-            // currentHover &&
-            'bg-[#000] bg-opacity-10',
-
+            currentHover && 'bg-[#000] bg-opacity-10',
             'rounded-[4px] relative cursor-pointer',
             'overflow-hidden'
           )}
