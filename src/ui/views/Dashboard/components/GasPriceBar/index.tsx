@@ -129,7 +129,7 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
         )}
       </div>
       <div className="gas-container">
-        <img src={IconGas} className="w-[16px] h-[16px]" />
+        <img src={IconGas} className="w-[16px] h-[16px] relative -top-1" />
         {gasPriceLoading ? (
           <Skeleton.Button className="h-[14px]" active={true} />
         ) : (

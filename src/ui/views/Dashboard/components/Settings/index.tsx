@@ -618,13 +618,19 @@ const Settings = ({
                 {process.env.release}
                 <span
                   className={clsx(
-                    'text-[#ec5151] underline',
+                    'text-[#ec5151] ml-2',
                     !hasNewVersion && 'hidden'
                   )}
-                  role="button"
-                  onClick={updateVersion}
                 >
-                  &nbsp;(Update Available)&nbsp;
+                  (
+                  <span
+                    className={clsx('underline')}
+                    role="button"
+                    onClick={updateVersion}
+                  >
+                    Update Available
+                  </span>
+                  )
                 </span>
               </span>
               <img src={IconArrowRight} className="icon icon-arrow-right" />

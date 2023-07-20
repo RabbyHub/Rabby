@@ -150,7 +150,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left">
-        <div className={clsx('amount group', 'text-32')}>
+        <div className={clsx('amount group', 'text-32 mt-6')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
             (balanceLoading && !balanceFromCache) ||
@@ -197,8 +197,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-[3px] mx-10 mb-10',
-            currentHover && 'bg-[#00000033] card',
+            'mt-[4px] mx-10 mb-10',
+            // currentHover && 'bg-[#000] bg-opacity-10',
+            // currentHover &&
+            'bg-[#000] bg-opacity-10',
+
             'rounded-[4px] relative cursor-pointer',
             'overflow-hidden'
           )}
@@ -209,8 +212,13 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               className="absolute top-[10px] right-[12px]"
             />
           ) : null}
-          <div className={clsx('extra flex h-[28px]', 'mx-[10px] pt-[8px]')}>
-            {startRefresh || currentBalance === null ? (
+          <div
+            className={clsx(
+              'extra flex h-[28px]',
+              'mx-[10px] pt-[8px] mb-[8px]'
+            )}
+          >
+            {startRefresh || balanceLoading || currentBalance === null ? (
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
               </>
