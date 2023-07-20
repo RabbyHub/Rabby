@@ -145,7 +145,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         )
       ) : (
         <div className="site is-empty">
-          <img src={IconDapps} className="site-icon" alt="" />
+          <img src={IconDapps} className="site-icon ml-6" alt="" />
           <div className="site-content">No Dapp found</div>
         </div>
       )}

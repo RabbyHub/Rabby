@@ -498,7 +498,7 @@ const Settings = ({
         },
         {
           leftIcon: IconSettingsFeatureConnectedDapps,
-          content: t('Connected Dapps'),
+          content: t('Connected Dapp'),
           onClick: () => {
             onOpenConnectedDapps?.();
             matomoRequestEvent({

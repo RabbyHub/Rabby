@@ -103,10 +103,10 @@
     display: flex;
     padding: 8px 12px;
     position: relative;
-    background: rgba(245, 246, 250, 0.80);
+    background: rgba(245, 246, 250, 0.8);
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
-    border-top: 0.5px solid var(--line, #E5E9EF);
+    border-top: 0.5px solid var(--line, #e5e9ef);
 
     .eth-price,
     .gas-container {
@@ -120,7 +120,7 @@
         line-height: 15px;
         font-weight: 500;
         margin-left: 6px;
-        color: #13141A;
+        color: #13141a;
       }
 
       .positive {
@@ -157,7 +157,19 @@
 
     .gas-container {
       position: relative;
-      justify-content: flex-end;
+      margin-left: auto;
+      flex: initial;
+      &::after {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 20px;
+        left: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #e5e9ef;
+        border-left: 0.5px solid #e5e9ef;
+      }
 
       .gasprice {
         padding: 0 2px 0 3px;
