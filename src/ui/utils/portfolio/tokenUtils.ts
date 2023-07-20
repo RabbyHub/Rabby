@@ -14,7 +14,7 @@ import { findChainByServerID } from '@/utils/chain';
 export const queryTokensCache = async (
   user_id: string,
   wallet: WalletControllerType,
-  isTestnet = false,
+  isTestnet = false
 ) => {
   return requestOpenApiMultipleNets(
     ({ openapi }) => openapi.getCachedTokenList(user_id),
@@ -38,7 +38,6 @@ export const batchQueryTokens = async (
   chainId?: string,
   isTestnet?: boolean
 ) => {
-  const isShowTestnet = await wallet.getIsShowTestnet();
   const chainItem = chainId ? findChainByServerID(chainId) : null;
 
   if (chainItem) {
@@ -54,7 +53,7 @@ export const batchQueryTokens = async (
   return requestOpenApiMultipleNets(
     ({ openapi }) => openapi.listToken(user_id, chainId, true),
     {
-      needTestnetResult: isShowTestnet,
+      needTestnetResult: isTestnet,
       wallet,
       processResults: ({ mainnet, testnet }) => {
         return mainnet.concat(testnet);

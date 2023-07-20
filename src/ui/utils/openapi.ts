@@ -30,6 +30,13 @@ export async function requestOpenApiMultipleNets<
 >(
   request: (ctx: {
     wallet: WalletControllerType;
+    /**
+     * @description openapi instance for every request task
+     *
+     * one request to mainnet would be always sent, if `options.needTestnetResult`
+     * is true, then another request to testnet would be also sent.
+     *
+     */
     openapi: IOpenAPIClient;
   }) => Promise<T>,
   options: {
@@ -76,6 +83,9 @@ export async function requestOpenApiWithChainId<
 >(
   request: (ctx: {
     wallet: WalletControllerType;
+    /**
+     * @description final openapi instance, determined by options.isTestnet
+     */
     openapi: IOpenAPIClient;
   }) => Promise<T>,
   options: {

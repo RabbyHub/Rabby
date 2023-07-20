@@ -4,7 +4,11 @@ import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { findChainByEnum, isTestnet as checkIsTestnet, findChainByServerID } from '@/utils/chain';
+import {
+  findChainByEnum,
+  isTestnet as checkIsTestnet,
+  findChainByServerID,
+} from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -53,7 +57,9 @@ export const useTokens = (
   visible = true,
   updateNonce = 0,
   chainServerId?: string,
-  isTestnet: boolean = chainServerId ? !!findChainByServerID(chainServerId)?.isTestnet : false
+  isTestnet: boolean = chainServerId
+    ? !!findChainByServerID(chainServerId)?.isTestnet
+    : false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);

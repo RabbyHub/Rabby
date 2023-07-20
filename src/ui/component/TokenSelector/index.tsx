@@ -121,8 +121,6 @@ const TokenSelector = ({
       }
     );
 
-    console.log('[feat] varied', varied);
-
     return [...varied.natural, ...varied.disabled];
   }, [list, supportChains, chainServerId]);
 
