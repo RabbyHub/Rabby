@@ -5,29 +5,19 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
-import {
-  requestOpenApiMultipleNets,
-  requestOpenApiWithChainId,
-} from '@/ui/utils/openapi';
-import { findChainByServerID } from '@/utils/chain';
+import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
+import { isTestnet as checkIsTestnet } from '@/utils/chain';
 
 export const queryTokensCache = async (
   user_id: string,
   wallet: WalletControllerType,
   isTestnet = false
 ) => {
-  return requestOpenApiMultipleNets(
+  return requestOpenApiWithChainId(
     ({ openapi }) => openapi.getCachedTokenList(user_id),
     {
-      needTestnetResult: isTestnet,
+      isTestnet,
       wallet,
-      processResults: ({ mainnet, testnet }) => {
-        return mainnet.concat(testnet);
-      },
-      fallbackValues: {
-        mainnet: [],
-        testnet: [],
-      },
     }
   );
 };
@@ -36,32 +26,13 @@ export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
   chainId?: string,
-  isTestnet?: boolean
+  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId)
 ) => {
-  const chainItem = chainId ? findChainByServerID(chainId) : null;
-
-  if (chainItem) {
-    return requestOpenApiWithChainId(
-      ({ openapi }) => openapi.listToken(user_id, chainId, true),
-      {
-        wallet,
-        isTestnet: isTestnet === undefined ? chainItem.isTestnet : isTestnet,
-      }
-    );
-  }
-
-  return requestOpenApiMultipleNets(
+  return requestOpenApiWithChainId(
     ({ openapi }) => openapi.listToken(user_id, chainId, true),
     {
-      needTestnetResult: isTestnet,
       wallet,
-      processResults: ({ mainnet, testnet }) => {
-        return mainnet.concat(testnet);
-      },
-      fallbackValues: {
-        mainnet: [],
-        testnet: [],
-      },
+      isTestnet,
     }
   );
 };
@@ -72,19 +43,12 @@ export const batchQueryHistoryTokens = async (
   wallet: WalletControllerType,
   isTestnet = false
 ) => {
-  return requestOpenApiMultipleNets(
+  return requestOpenApiWithChainId(
     ({ openapi }) =>
       openapi.getHistoryTokenList({ id: user_id, timeAt: time_at }),
     {
-      needTestnetResult: isTestnet,
       wallet,
-      processResults: ({ mainnet, testnet }) => {
-        return mainnet.concat(testnet);
-      },
-      fallbackValues: {
-        mainnet: [],
-        testnet: [],
-      },
+      isTestnet,
     }
   );
 };
