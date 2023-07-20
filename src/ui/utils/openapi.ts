@@ -72,8 +72,7 @@ export async function requestOpenApiMultipleNets<
 export async function requestOpenApiWithChainId<
   T extends IExtractFromPromise<
     ReturnType<Exclude<IOpenAPIClient[AllMethodNamesOnOpenAPI], undefined>>
-  >,
-  R = T
+  >
 >(
   request: (ctx: {
     wallet: WalletControllerType;
