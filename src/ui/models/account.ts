@@ -27,6 +27,11 @@ export interface AccountState {
     customize: AbstractPortfolioToken[];
     blocked: AbstractPortfolioToken[];
   };
+  testnetTokens: {
+    list: AbstractPortfolioToken[];
+    customize: AbstractPortfolioToken[];
+    blocked: AbstractPortfolioToken[];
+  };
 
   mnemonicAccounts: DisplayedKeryring[];
 }
@@ -48,6 +53,11 @@ export const account = createModel<RootModel>()({
       customize: [],
       blocked: [],
     },
+    testnetTokens: {
+      list: [],
+      customize: [],
+      blocked: [],
+    },
   } as AccountState,
 
   reducers: {
@@ -61,12 +71,32 @@ export const account = createModel<RootModel>()({
       );
     },
 
+    setTestnetTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
+          list: payload,
+        },
+      };
+    },
+
     setTokenList(state, payload: AbstractPortfolioToken[]) {
       return {
         ...state,
         tokens: {
           ...state.tokens,
           list: payload,
+        },
+      };
+    },
+
+    setTestnetCustomizeTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
+          customize: payload,
         },
       };
     },
@@ -86,6 +116,16 @@ export const account = createModel<RootModel>()({
         ...state,
         tokens: {
           ...state.tokens,
+          blocked: payload,
+        },
+      };
+    },
+
+    setTestnetBlockedTokenList(state, payload: AbstractPortfolioToken[]) {
+      return {
+        ...state,
+        testnetTokens: {
+          ...state.testnetTokens,
           blocked: payload,
         },
       };
@@ -133,6 +173,9 @@ export const account = createModel<RootModel>()({
       dispatch.account.setTokenList([]);
       dispatch.account.setBlockedTokenList([]);
       dispatch.account.setCustomizeTokenList([]);
+      dispatch.account.setTestnetTokenList([]);
+      dispatch.account.setTestnetBlockedTokenList([]);
+      dispatch.account.setTestnetCustomizeTokenList([]);
     },
 
     async getAlianNameAsync(address: string, store) {
@@ -229,13 +272,15 @@ export const account = createModel<RootModel>()({
 
     async getMatteredChainBalance(
       _?: any,
-      store?
+      store?,
+      isTestnet = false
     ): Promise<AccountState['matteredChainBalances']> {
       const wallet = store.app.wallet;
       const currentAccountAddr = store.account.currentAccount?.address;
 
-      const cachedBalance = await wallet.getAddressCacheBalance(
-        currentAccountAddr
+      const cachedBalance: TotalBalanceResponse | null = await wallet.getAddressCacheBalance(
+        currentAccountAddr,
+        isTestnet
       );
 
       const totalUsdValue = (cachedBalance?.chain_list || []).reduce(

@@ -5,27 +5,42 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
+
+export const queryTestnetTokensCache = async (
+  user_id: string,
+  wallet: WalletControllerType
+) => {
+  return wallet.testnetOpenapi.getCachedTokenList(user_id);
+};
+
 export const queryTokensCache = async (
   user_id: string,
   wallet: WalletControllerType
 ) => {
-  // getCachedTokenList
   return wallet.openapi.getCachedTokenList(user_id);
 };
 
 export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
-  chainId?: string
+  chainId?: string,
+  isTestnet = false
 ) => {
+  if (isTestnet) return wallet.testnetOpenapi.listToken(user_id, chainId, true);
   return wallet.openapi.listToken(user_id, chainId, true);
 };
 
 export const batchQueryHistoryTokens = async (
   user_id: string,
   time_at: number,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
+  if (isTestnet)
+    return wallet.testnetOpenapi.getHistoryTokenList({
+      id: user_id,
+      timeAt: time_at,
+    });
   return wallet.openapi.getHistoryTokenList({
     id: user_id,
     timeAt: time_at,

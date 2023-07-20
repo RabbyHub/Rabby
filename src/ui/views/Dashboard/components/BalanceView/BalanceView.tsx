@@ -16,6 +16,9 @@ import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
+  const isShowTestnet = useRabbySelector(
+    (state) => state.preference.isShowTestnet
+  );
   const [
     balance,
     matteredChainBalances,
@@ -25,11 +28,19 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     balanceFromCache,
     refreshBalance,
     hasValueChainBalances,
+    testnetBalance,
+    testnetMatteredChainBalances,
+    _1,
+    testnetSuccess,
+    testnetBalanceLoading,
+    _2,
+    hasTestnetValueChainBalances,
   ] = useCurrentBalance(
     currentAccount?.address,
     true,
     false,
-    accountBalanceUpdateNonce
+    accountBalanceUpdateNonce,
+    isShowTestnet
   );
   const {
     result: curveData,
@@ -85,10 +96,20 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
         isOffline: !success,
+        testnetBalance,
+        testnetBalanceLoading,
+        testnetIsEmptyAssets: !testnetMatteredChainBalances.length,
+        isTestnetOffline: !testnetSuccess,
+        matteredTestnetChainBalances: hasTestnetValueChainBalances,
       });
     }
   }, [
     matteredChainBalances,
+    testnetMatteredChainBalances,
+    hasTestnetValueChainBalances,
+    testnetBalance,
+    testnetSuccess,
+    testnetBalanceLoading,
     balance,
     balanceLoading,
     componentName,

@@ -3,7 +3,7 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isNil, uniq } from 'lodash';
+import { groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -30,10 +30,7 @@ import buildinProvider, {
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import keyring, {
-  KEYRING_CLASS,
-  DisplayedKeryring,
-} from 'background/service/keyring';
+import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -47,10 +44,15 @@ import {
   KEYRING_TYPE,
   GNOSIS_SUPPORT_CHAINS,
 } from 'consts';
-import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
+import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { TokenItem, Tx, testnetOpenapiService } from '../service/openapi';
+import {
+  TokenItem,
+  TotalBalanceResponse,
+  Tx,
+  testnetOpenapiService,
+} from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -86,7 +88,7 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { AbiItem, isAddress } from 'web3-utils';
+import { isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
@@ -1037,12 +1039,28 @@ export class WalletController extends BaseController {
     // 3 mins
   });
 
-  getAddressBalance = async (address: string, force = false) => {
+  private getTestnetTotalBalanceCached = cached(async (address) => {
+    const testnetData = await testnetOpenapiService.getTotalBalance(address);
+    preferenceService.updateTestnetAddressBalance(address, testnetData);
+    return testnetData;
+  });
+
+  getAddressBalance = async (
+    address: string,
+    force = false,
+    isTestnet = false
+  ) => {
+    if (isTestnet) {
+      return this.getTestnetTotalBalanceCached([address], address, force);
+    }
     return this.getTotalBalanceCached([address], address, force);
   };
 
-  getAddressCacheBalance = (address: string | undefined) => {
+  getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
     if (!address) return null;
+    if (isTestnet) {
+      return preferenceService.getTestnetAddressBalance(address);
+    }
     return preferenceService.getAddressBalance(address);
   };
 

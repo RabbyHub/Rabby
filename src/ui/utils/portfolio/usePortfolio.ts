@@ -5,10 +5,9 @@ import { Dayjs } from 'dayjs';
 
 import { CHAIN_ID_LIST } from 'consts';
 import { useWallet } from '../WalletContext';
-import { chunk } from './utils';
+import { chunk, loadTestnetPortfolioSnapshot } from './utils';
 import { useSafeState } from '../safeState';
 import { getExpandListSwitch } from './expandList';
-
 import {
   batchLoadProjects,
   batchLoadHistoryProjects,
@@ -20,6 +19,7 @@ import {
 } from './utils';
 import { DisplayedProject } from './project';
 import { isSameAddress } from '..';
+import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const chunkSize = 5;
 
@@ -32,7 +32,8 @@ export const log = (...args: any) => {
 export const usePortfolios = (
   userAddr: string | undefined,
   timeAt?: Dayjs,
-  visible = true
+  visible = true,
+  isTestnet = false
 ) => {
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
@@ -102,7 +103,12 @@ export const usePortfolios = (
     setData([]);
     setHasValue(false);
 
-    const snapshotRes = await loadPortfolioSnapshot(userAddr, wallet);
+    let snapshotRes: ComplexProtocol[] = [];
+    if (isTestnet) {
+      snapshotRes = await loadTestnetPortfolioSnapshot(userAddr, wallet);
+    } else {
+      snapshotRes = await loadPortfolioSnapshot(userAddr, wallet);
+    }
 
     if (currentAbort.signal.aborted || !snapshotRes) {
       log('--Terminate-portfolio-snapshot-', userAddr);
@@ -154,7 +160,12 @@ export const usePortfolios = (
           return;
         }
 
-        const projectListRes = await batchLoadProjects(userAddr, ids, wallet);
+        const projectListRes = await batchLoadProjects(
+          userAddr,
+          ids,
+          wallet,
+          isTestnet
+        );
 
         const projects = projectListRes;
 
@@ -214,7 +225,8 @@ export const usePortfolios = (
           userAddr,
           ids,
           wallet,
-          historyTime.current
+          historyTime.current,
+          isTestnet
         );
         const projects = historyProjectListRes;
 
@@ -272,7 +284,8 @@ export const usePortfolios = (
     const priceDicts = await getMissedTokenPrice(
       missedTokens,
       historyTime.current,
-      wallet
+      wallet,
+      isTestnet
     );
 
     if (currentAbort.signal.aborted || !projectDict.current || !priceDicts) {
