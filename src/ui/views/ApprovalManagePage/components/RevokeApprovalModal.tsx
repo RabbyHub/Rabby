@@ -1,5 +1,5 @@
 import { NFTApproval, TokenItem } from '@/background/service/openapi';
-import { NameAndAddress, TokenWithChain } from '@/ui/component';
+import { TokenWithChain } from '@/ui/component';
 import { Alert, Button, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,19 +20,21 @@ import {
   SpenderInNFTApproval,
 } from '@/utils/approval';
 import styled from 'styled-components';
+import ApprovalsNameAndAddr from './NameAndAddr';
 import {
   findIndexRevokeList,
   maybeNFTLikeItem,
   openScanLinkFromChainItem,
   toRevokeItem,
 } from '../utils';
-import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
+import IconExternal from '../icons/icon-share.svg';
 import IconBadgeCollection from '../icons/modal-badge-collection.svg';
 import IconBadgeNFT from '../icons/modal-badge-nft.svg';
+import { ensureSuffix } from '@/utils/string';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -135,6 +137,14 @@ export const RevokeApprovalModal = (props: {
       return item?.list.map((e, index) => {
         const chainItem = findChainByServerID(e.chain);
 
+        const maybeContractForNFT = maybeNFTLikeItem(e);
+
+        const itemName = !maybeContractForNFT
+          ? e.symbol
+          : 'inner_id' in e
+          ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
+          : e.contract_name || 'Unknown';
+
         return (
           <div
             key={index}
@@ -178,13 +188,16 @@ export const RevokeApprovalModal = (props: {
             {'spender' in e ? (
               <div className="flex flex-col ml-[8px]">
                 <div className="text-13 font-medium leading-[15px] inline-flex items-center justify-start">
-                  {e.contract_name || 'Unknown'}
+                  {itemName}
 
-                  {maybeNFTLikeItem(e) && (
+                  {maybeContractForNFT && (
                     <img
                       onClick={(evt) => {
                         evt.stopPropagation();
-                        openScanLinkFromChainItem(chainItem, e.spender.id);
+                        openScanLinkFromChainItem(
+                          chainItem?.scanLink,
+                          e.spender.id
+                        );
                       }}
                       src={IconExternal}
                       className={clsx('w-[12px] h-[12px] ml-6 cursor-pointer')}
@@ -226,6 +239,14 @@ export const RevokeApprovalModal = (props: {
       const risky = ['danger', 'warning'].includes(spender.risk_level);
       const chainItem = findChainByServerID(spender.chain as Chain['serverId']);
 
+      const fullName =
+        spender.type === 'nft' && spender.nftToken
+          ? ensureSuffix(
+              spender.name || 'Unknown',
+              ` #${spender.nftToken.inner_id}`
+            )
+          : spender.name || 'Unknown';
+
       return (
         <div
           key={spender.id}
@@ -254,9 +275,9 @@ export const RevokeApprovalModal = (props: {
             />
             <div className="flex flex-col ml-[12px]">
               <div className="text-13 font-medium leading-[15px] mb-2">
-                {spender.protocol?.name || 'Unknown Contract'}
+                {fullName}
               </div>
-              <NameAndAddress.SafeCopy
+              <ApprovalsNameAndAddr
                 className="justify-start"
                 addressClass="text-12"
                 copyIconClass="w-[14px] h-[14px]"

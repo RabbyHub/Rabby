@@ -13,7 +13,7 @@ import { useAsync, useThrottleFn } from 'react-use';
 import { VariableSizeGrid } from 'react-window';
 import PQueue from 'p-queue';
 
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import {
@@ -95,6 +95,8 @@ function sortTokenOrNFTApprovalsSpenderList(
 export function useApprovalsPage() {
   const wallet = useWallet();
 
+  const dispatch = useRabbyDispatch();
+
   const account = useRabbySelector((state) => state.account.currentAccount);
   const chain = useRabbySelector(
     (state) =>
@@ -102,6 +104,10 @@ export function useApprovalsPage() {
         account?.address?.toLowerCase() || ''
       ] || CHAINS_ENUM.ETH
   );
+
+  useEffect(() => {
+    dispatch.account.fetchCurrentAccountAliasNameAsync();
+  }, [account?.address]);
 
   const [filterType, setFilterType] = useState<keyof typeof FILTER_TYPES>(
     'contract'

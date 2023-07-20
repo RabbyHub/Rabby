@@ -8,7 +8,6 @@ import './style.less';
 import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
-import NameAndAddress from '@/ui/component/NameAndAddress';
 import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
 
 import {
@@ -20,7 +19,6 @@ import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from './components/SwitchPills';
 
 import IconSearch from 'ui/assets/search.svg';
-import IconExternal from 'ui/assets/icon-share.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 
 import IconQuestion from './icons/question.svg';
@@ -28,6 +26,7 @@ import IconRowArrowRight from './icons/row-arrow-right.svg';
 import IconCheckboxChecked from './icons/check-checked.svg';
 import IconCheckboxIndeterminate from './icons/check-indeterminate.svg';
 import IconCheckboxUnchecked from './icons/check-unchecked.svg';
+import IconExternal from './icons/icon-share.svg';
 
 import {
   SwitchPills,
@@ -65,6 +64,7 @@ import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
 import { IS_WINDOWS } from '@/constant';
 import { ensureSuffix } from '@/utils/string';
+import ApprovalsNameAndAddr from './components/NameAndAddr';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -170,20 +170,30 @@ function getColumnsForContract({
                 noRound={false}
               />
 
-              <NameAndAddress.SafeCopy
+              <ApprovalsNameAndAddr
                 className="ml-[6px]"
-                addressClass="spender-address"
+                addressClass="font-medium"
                 address={row.id}
                 chainEnum={chainItem.enum}
                 addressSuffix={
-                  <Tooltip
-                    overlayClassName="J-table__tooltip disable-ant-overwrite"
-                    overlay={contractName}
-                  >
-                    <span className="contract-name ml-[4px]">
-                      ({row.name || 'Unknown'})
-                    </span>
-                  </Tooltip>
+                  <>
+                    <Tooltip
+                      overlayClassName="J-table__tooltip disable-ant-overwrite"
+                      overlay={contractName}
+                    >
+                      <span className="contract-name ml-[4px]">
+                        ({row.name || 'Unknown'})
+                      </span>
+                    </Tooltip>
+                    <img
+                      onClick={(evt) => {
+                        evt.stopPropagation();
+                        openScanLinkFromChainItem(chainItem?.scanLink, row.id);
+                      }}
+                      src={IconExternal}
+                      className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+                    />
+                  </>
                 }
                 openExternal={false}
               />
@@ -599,12 +609,10 @@ function getColumnsForAsset({
             <img
               onClick={(evt) => {
                 evt.stopPropagation();
-                openScanLinkFromChainItem(chainItem, asset.id);
+                openScanLinkFromChainItem(chainItem?.scanLink, asset.id);
               }}
               src={IconExternal}
-              width={16}
-              height={16}
-              className={clsx('ml-6 cursor-pointer')}
+              className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
             />
           );
 
@@ -676,20 +684,30 @@ function getColumnsForAsset({
               chainServerId={asset?.chain}
               noRound={asset.type === 'nft'}
             />
-            <NameAndAddress.SafeCopy
+            <ApprovalsNameAndAddr
               className="ml-[6px]"
-              addressClass="spender-address"
+              addressClass="font-medium"
               address={spender.id || ''}
               chainEnum={chainItem?.enum}
               addressSuffix={
-                <Tooltip
-                  overlayClassName="J-table__tooltip disable-ant-overwrite"
-                  overlay={protocolName}
-                >
-                  <span className="contract-name ml-[4px]">
-                    ({protocolName})
-                  </span>
-                </Tooltip>
+                <>
+                  <Tooltip
+                    overlayClassName="J-table__tooltip disable-ant-overwrite"
+                    overlay={protocolName}
+                  >
+                    <span className="contract-name ml-[4px]">
+                      ({protocolName})
+                    </span>
+                  </Tooltip>
+                  <img
+                    onClick={(evt) => {
+                      evt.stopPropagation();
+                      openScanLinkFromChainItem(chainItem?.scanLink, asset.id);
+                    }}
+                    src={IconExternal}
+                    className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+                  />
+                </>
               }
               openExternal={false}
             />
@@ -736,8 +754,9 @@ const getCellClassName = (
   const riskResult = getFinalRiskInfo(ctx.record);
 
   return clsx(
-    riskResult.isDanger && 'is-contract-row__danger',
-    riskResult.isWarning && 'is-contract-row__warning'
+    riskResult.isServerRisk && 'is-contract-row__risky'
+    // riskResult.isServerDanger && 'is-contract-row__danger',
+    // riskResult.isServerWarning && 'is-contract-row__warning'
   );
 };
 
@@ -998,6 +1017,12 @@ const ApprovalManagePage = () => {
         <header className="approvals-manager__header">
           <div className="title">
             Approvals on {ellipsisAddress(account?.address || '')}
+            {account?.alianName && (
+              <span className="text-[#4b4d59] text-[20px] font-normal">
+                {' '}
+                ({account?.alianName})
+              </span>
+            )}
           </div>
         </header>
 

@@ -1,15 +1,17 @@
-import { NameAndAddress } from '@/ui/component';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import clsx from 'clsx';
 import React, { MouseEventHandler, useMemo } from 'react';
 import { useEffect, useRef } from 'react';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
+import IconExternal from '../icons/icon-share.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval-management/right.svg';
 import { Alert } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { ApprovalItem } from '@/utils/approval';
 import { findChainByServerID } from '@/utils/chain';
+import { openScanLinkFromChainItem } from '../utils';
+import ApprovalsNameAndAddr from './NameAndAddr';
 
 type Props = {
   data: ApprovalItem[];
@@ -83,14 +85,25 @@ export const ApprovalContractItem = ({
               'text-13': item.type === 'token',
             })}
           >
-            <NameAndAddress.SafeCopy
-              addressClass="spender-address font-medium"
+            <ApprovalsNameAndAddr
+              addressClass="font-medium"
               address={item.id}
               chainEnum={chainItem?.enum}
               addressSuffix={
-                <span className="contract-name ml-[4px]">
-                  ({item.name || 'Unknown'})
-                </span>
+                <>
+                  <span className="contract-name ml-[4px]">
+                    ({item.name || 'Unknown'})
+                  </span>
+
+                  <img
+                    onClick={(evt) => {
+                      evt.stopPropagation();
+                      openScanLinkFromChainItem(chainItem?.scanLink, item.id);
+                    }}
+                    src={IconExternal}
+                    className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+                  />
+                </>
               }
               openExternal={false}
             />
