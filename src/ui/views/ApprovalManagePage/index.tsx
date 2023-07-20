@@ -414,10 +414,10 @@ function getColumnsForContract({
       },
       width: 160,
     },
-    // Approval Time
+    // My Approval Time
     {
-      title: () => <span>{'Approval Time'}</span>,
-      key: 'approvalTime',
+      title: () => <span>{'My Approval Time'}</span>,
+      key: 'contractApprovalTime',
       dataIndex: 'last_approve_at',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       showSorterTooltip: false,
@@ -426,7 +426,7 @@ function getColumnsForContract({
           a,
           b,
           sortedInfo,
-          'approvalTime'
+          'contractApprovalTime'
         );
         if (checkResult.shouldEarlyReturn)
           return checkResult.keepRiskFirstReturnValue;
@@ -437,7 +437,9 @@ function getColumnsForContract({
         );
       },
       sortOrder:
-        sortedInfo.columnKey === 'approvalTime' ? sortedInfo.order : null,
+        sortedInfo.columnKey === 'contractApprovalTime'
+          ? sortedInfo.order
+          : null,
       render: (_, row) => {
         const time = row.$riskAboutValues.last_approve_at;
 
@@ -716,16 +718,16 @@ function getColumnsForAsset({
       },
       width: 300,
     },
-    // Approve Time
+    // My Approval Time
     {
-      title: () => <span className="pl-[20px]">{'Approve Time'}</span>,
-      key: 'approveTime',
+      title: () => <span className="pl-[20px]">{'My Approval Time'}</span>,
+      key: 'assetApproveTime',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
       showSorterTooltip: false,
       sorter: (a, b) => (a.last_approve_at || 0) - (b.last_approve_at || 0),
       sortOrder:
-        sortedInfo.columnKey === 'approveTime' ? sortedInfo.order : null,
+        sortedInfo.columnKey === 'assetApproveTime' ? sortedInfo.order : null,
       render: (_, row) => {
         const time = row.last_approve_at;
 
@@ -784,8 +786,8 @@ function TableByContracts({
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<ContractApprovalItem>
   >({
-    columnKey: 'approvalTime',
-    order: DEFAULT_SORT_ORDER,
+    columnKey: 'contractTrustValue',
+    order: 'ascend',
   });
 
   const handleChange: TableProps<ContractApprovalItem>['onChange'] = useCallback(
@@ -855,7 +857,7 @@ function TableByAssetSpenders({
   const [sortedInfo, setSortedInfo] = useState<
     SorterResult<AssetApprovalSpender>
   >({
-    columnKey: 'approveTime',
+    columnKey: 'assetApproveTime',
     order: DEFAULT_SORT_ORDER,
   });
 
