@@ -67,7 +67,8 @@ export const AssetListContainer: React.FC<Props> = ({
     currentAccount?.address,
     search,
     selectChainId ? selectChainId : undefined,
-    true
+    true,
+    isTestnet
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;
