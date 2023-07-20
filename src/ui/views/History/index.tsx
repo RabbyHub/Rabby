@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { last } from 'lodash';
+import { Tabs } from 'antd';
 
 import { connectStore } from '@/ui/store';
 import { useAccount } from '@/ui/store-hooks';
@@ -12,10 +13,15 @@ import { useWallet } from 'ui/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
+import NetSwitchTabs, {
+  useSwitchNetTab,
+} from '@/ui/component/PillsSwitch/NetSwitchTabs';
 
 const PAGE_COUNT = 10;
 
-const History = () => {
+const Null = () => null;
+
+const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
@@ -24,8 +30,11 @@ const History = () => {
 
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
+    const getHistory = isMainnet
+      ? wallet.openapi.listTxHisotry
+      : wallet.testnetOpenapi.listTxHisotry;
 
-    const res: TxHistoryResult = await wallet.openapi.listTxHisotry({
+    const res: TxHistoryResult = await getHistory({
       id: address,
       start_time: startTime,
       page_count: PAGE_COUNT,
@@ -58,8 +67,7 @@ const History = () => {
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   return (
-    <div className="txs-history" ref={ref}>
-      <PageHeader fixed>{t('Transactions')}</PageHeader>
+    <div className="overflow-scroll h-full" ref={ref}>
       {data?.list.map((item) => (
         <HistoryItem
           data={item}
@@ -84,6 +92,37 @@ const History = () => {
           className="pt-[108px]"
         ></Empty>
       )}
+    </div>
+  );
+};
+
+const History = () => {
+  const { t } = useTranslation();
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+  const renderTabBar = React.useCallback(() => <Null />, []);
+
+  return (
+    <div className="txs-history">
+      <PageHeader fixed>{t('Transactions')}</PageHeader>
+      {isShowTestnet && (
+        <NetSwitchTabs
+          value={selectedTab}
+          onTabChange={onTabChange}
+          className="h-[28px] box-content mt-[20px] mb-[20px]"
+        />
+      )}
+      <Tabs
+        className="h-full"
+        renderTabBar={renderTabBar}
+        activeKey={selectedTab}
+      >
+        <Tabs.TabPane key="mainnet" destroyInactiveTabPane={false}>
+          <HistoryList isMainnet />
+        </Tabs.TabPane>
+        <Tabs.TabPane key="testnet">
+          <HistoryList isMainnet={false} />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   );
 };
