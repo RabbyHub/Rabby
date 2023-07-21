@@ -1,16 +1,23 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { useWallet } from 'ui/utils';
-import IconSuccess from 'ui/assets/success.svg';
-import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
-import './index.less';
 import clsx from 'clsx';
-import { ALIAS_ADDRESS, CHAINS, CHAINS_ENUM } from '@/constant';
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ALIAS_ADDRESS, CHAINS_ENUM } from '@/constant';
 import { openInTab } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
+
+import IconSuccess from 'ui/assets/success.svg';
+import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
+import './index.less';
 
 function tipCopied(addr: string) {
   message.success({
@@ -37,7 +44,7 @@ interface NameAndAddressProps {
   copyIconClass?: string;
   openExternal?: boolean;
   chainEnum?: CHAINS_ENUM;
-  isShowCopyIcon?: boolean;
+  copyIcon?: boolean | string;
   addressSuffix?: React.ReactNode;
   /**
    * @description don't know why click event not be stopped when click copy icon,
@@ -55,7 +62,7 @@ const NameAndAddress = ({
   copyIconClass = '',
   openExternal = false,
   chainEnum,
-  isShowCopyIcon = true,
+  copyIcon = true,
   addressSuffix = null,
   __internalRestrainClickEventOnCopyIcon = false,
 }: NameAndAddressProps) => {
@@ -117,6 +124,17 @@ const NameAndAddress = ({
       mountedRef.current = false;
     };
   }, [address]);
+
+  const { isShowCopyIcon, iconCopySrc } = useMemo(() => {
+    return {
+      isShowCopyIcon: !!copyIcon,
+      iconCopySrc:
+        typeof copyIcon === 'string'
+          ? copyIcon.trim() || IconAddressCopy
+          : IconAddressCopy,
+    };
+  }, [copyIcon]);
+
   return (
     <div className={clsx('name-and-address', className)}>
       {localName && (
@@ -153,7 +171,7 @@ const NameAndAddress = ({
               ? handleClickCopyIcon
               : handleCopyContractAddress
           }
-          src={IconAddressCopy}
+          src={iconCopySrc}
           width={16}
           height={16}
           className={clsx('ml-6 cursor-pointer', copyIconClass, {
