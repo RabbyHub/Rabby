@@ -323,9 +323,9 @@ function getColumnsForContract({
       },
       width: 180,
     },
-    // 24h revoke users
+    // 24h Revoke Trends
     {
-      title: () => <span>{'24h revoke users'}</span>,
+      title: () => <span>{'24h Revoke Trends'}</span>,
       key: 'recentRevokes',
       dataIndex: 'revoke_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -659,9 +659,9 @@ function getColumnsForAsset({
       },
       width: 160,
     },
-    // Approve Spender
+    // Approved Spender
     {
-      title: () => <span>{'Approve Spender'}</span>,
+      title: () => <span>{'Approved Spender'}</span>,
       key: 'approveSpender',
       dataIndex: 'key',
       render: (_, spender) => {
