@@ -230,7 +230,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               <div
                 className={clsx(
                   'flex space-x-4',
-                  !currentHover && 'opacity-70'
+                  !currentHover && 'opacity-80'
                 )}
               >
                 <ChainList
