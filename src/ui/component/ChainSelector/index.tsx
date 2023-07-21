@@ -65,11 +65,7 @@ const ChainSelector = ({
   return (
     <>
       <div
-        className={clsx(
-          'chain-selector',
-          className,
-          !className && isHovering && 'hover'
-        )}
+        className={clsx('chain-selector', className, isHovering && 'hover')}
         onClick={handleClickSelector}
         {...hoverProps}
       >

@@ -30,6 +30,7 @@ import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import FeedbackPopup from '../Feedback';
+import { GasPriceBar } from '../GasPriceBar';
 
 export default ({
   gnosisPendingCount,
@@ -52,6 +53,9 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
+  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
+    CHAINS_ENUM.ETH
+  );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
@@ -116,11 +120,11 @@ export default ({
     getCurrentSite();
   }, []);
 
-  // useEffect(() => {
-  //   if (currentConnect?.chain) {
-  //     setCurrentConnectedSiteChain(currentConnect?.chain);
-  //   }
-  // }, [currentConnect?.chain]);
+  useEffect(() => {
+    if (currentConnect?.chain) {
+      setCurrentConnectedSiteChain(currentConnect?.chain);
+    }
+  }, [currentConnect?.chain]);
 
   useEffect(() => {
     onChange(currentConnect);
@@ -333,9 +337,11 @@ export default ({
           })}
         </div>
       </div>
+      <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
+
       <CurrentConnection
         onChainChange={(chain) => {
-          // setCurrentConnectedSiteChain(chain);
+          setCurrentConnectedSiteChain(chain);
           if (currentConnect) {
             onChange({
               ...currentConnect,
