@@ -296,15 +296,15 @@ const TokenSelector = ({
                     <div className="flex flex-col gap-4">
                       <div>{formatUsdValue(token.price)}</div>
                       <div>
-                        {isNil(token._usdValueChange) ? null : (
+                        {isNil(token.price_24h_change) ? null : (
                           <div
                             className={clsx('font-normal', {
-                              'text-green': token._usdValueChange > 0,
-                              'text-red': token._usdValueChange < 0,
+                              'text-green': token.price_24h_change > 0,
+                              'text-red-forbidden': token.price_24h_change < 0,
                             })}
                           >
-                            {token._usdValueChange > 0 ? '+' : '-'}
-                            8.32%
+                            {token.price_24h_change > 0 ? '+' : ''}
+                            {(token.price_24h_change * 100).toFixed(2)}%
                           </div>
                         )}
                       </div>

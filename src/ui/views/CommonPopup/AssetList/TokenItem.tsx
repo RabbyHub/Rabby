@@ -53,15 +53,15 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       )}
     >
       <div>${item._priceStr}</div>
-      {isNil(item._usdValueChange) ? null : (
+      {isNil(item.price_24h_change) ? null : (
         <div
           className={clsx('font-normal', {
-            'text-green': item._usdValueChange > 0,
-            'text-red': item._usdValueChange < 0,
+            'text-green': item.price_24h_change > 0,
+            'text-red-forbidden': item.price_24h_change < 0,
           })}
         >
-          {item._usdValueChange > 0 ? '+' : '-'}
-          8.32%
+          {item.price_24h_change > 0 ? '+' : ''}
+          {(item.price_24h_change * 100).toFixed(2)}%
         </div>
       )}
     </TCell>
