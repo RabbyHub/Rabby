@@ -150,7 +150,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-14 text-gray-subTitle font-normal">
+                <span className="text-15 text-gray-title font-medium">
                   Transaction Simulation Not Supported
                 </span>
               </Row>

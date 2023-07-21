@@ -1,7 +1,7 @@
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, Tx } from 'background/service/openapi';
+import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
@@ -19,6 +19,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import { Chain } from '@debank/common';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -39,7 +40,6 @@ interface GasSelectorProps {
   };
   version: 'v0' | 'v1' | 'v2';
   chainId: number;
-  tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
   recommendGasLimit: number | string | BigNumber;
@@ -65,6 +65,8 @@ interface GasSelectorProps {
     level?: 'warn' | 'danger' | 'forbidden';
   }[];
   engineResults?: Result[];
+  nativeTokenBalance: string;
+  gasPriceMedian: number | null;
 }
 
 const useExplainGas = ({
@@ -202,7 +204,6 @@ const GasSelector = ({
   gasLimit,
   gas,
   chainId,
-  tx,
   onChange,
   isReady,
   recommendGasLimit,
@@ -219,6 +220,8 @@ const GasSelector = ({
   manuallyChangeGasLimit,
   errors,
   engineResults = [],
+  nativeTokenBalance,
+  gasPriceMedian,
 }: GasSelectorProps) => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -606,7 +609,7 @@ const GasSelector = ({
         <div
           className={clsx(
             'gas-selector-card',
-            gas.error || !gas.success ? 'items-start mb-12' : 'mb-14'
+            gas.error || !gas.success ? 'items-start mb-12' : 'mb-12'
           )}
         >
           <div className="relative flex">
@@ -665,6 +668,9 @@ const GasSelector = ({
           customGas={customGas}
           handleCustomGasChange={externalHandleCustomGasChange}
           isGnosisAccount={isGnosisAccount}
+          chain={chain}
+          nativeTokenBalance={nativeTokenBalance}
+          gasPriceMedian={gasPriceMedian}
         />
         {manuallyChangeGasLimit && (
           <ManuallySetGasLimitAlert>
@@ -924,6 +930,31 @@ const GasSelector = ({
   );
 };
 
+const GasPriceDesc = styled.ul`
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 13px;
+  color: #4b4d59;
+  li {
+    position: relative;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 100%;
+      background-color: #4b4d59;
+      left: 6px;
+      top: 8px;
+    }
+  }
+`;
+
 const GasSelectPanel = ({
   gasList,
   selectedGas,
@@ -932,6 +963,9 @@ const GasSelectPanel = ({
   customGasConfirm = () => null,
   handleCustomGasChange,
   isGnosisAccount,
+  chain,
+  nativeTokenBalance,
+  gasPriceMedian,
 }: {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
@@ -943,6 +977,9 @@ const GasSelectPanel = ({
   customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isGnosisAccount?: boolean;
+  chain: Chain;
+  nativeTokenBalance: string;
+  gasPriceMedian: number | null;
 }) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -999,6 +1036,21 @@ const GasSelectPanel = ({
           </div>
         ))}
       </CardBody>
+      <GasPriceDesc>
+        <li>
+          My {chain.nativeTokenSymbol} balance:{' '}
+          {formatTokenAmount(
+            new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+          )}{' '}
+          {chain.nativeTokenSymbol}
+        </li>
+        {gasPriceMedian !== null && (
+          <li>
+            Median of last 100 on-chain transactions:{' '}
+            {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
+          </li>
+        )}
+      </GasPriceDesc>
     </Tooltip>
   );
 };

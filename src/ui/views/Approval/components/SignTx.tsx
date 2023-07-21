@@ -590,6 +590,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [gasPriceMedian, setGasPriceMedian] = useState<null | number>(null);
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
   const [gasUsed, setGasUsed] = useState(0);
@@ -1324,6 +1325,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return list;
   };
 
+  const loadGasMedian = async (chain: Chain) => {
+    const { median } = await wallet.openapi.gasPriceStats(chain.serverId);
+    setGasPriceMedian(median);
+    return median;
+  };
+
   const checkCanProcess = async () => {
     const session = params.session;
     const currentAccount =
@@ -1503,6 +1510,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         customGasPrice = parseInt(tx.gasPrice!);
       }
       const gasList = await loadGasMarket(chain, customGasPrice);
+      loadGasMedian(chain);
       let gas: GasLevel | null = null;
 
       if (
@@ -1709,7 +1717,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             <GasSelector
               isGnosisAccount={isGnosisAccount}
               isReady={isReady}
-              tx={tx}
               gasLimit={gasLimit}
               noUpdate={isCancel || isSpeedUp}
               gasList={gasList}
@@ -1743,6 +1750,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               manuallyChangeGasLimit={manuallyChangeGasLimit}
               errors={checkErrors}
               engineResults={engineResults}
+              nativeTokenBalance={nativeTokenBalance}
+              gasPriceMedian={gasPriceMedian}
             />
           </>
         )}
