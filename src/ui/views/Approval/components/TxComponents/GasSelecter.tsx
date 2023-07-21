@@ -938,7 +938,7 @@ const GasPriceDesc = styled.ul`
   li {
     position: relative;
     margin-bottom: 8px;
-    padding-left: 20px;
+    padding-left: 12px;
     &:nth-last-child(1) {
       margin-bottom: 0;
     }
@@ -949,7 +949,7 @@ const GasPriceDesc = styled.ul`
       height: 4px;
       border-radius: 100%;
       background-color: #4b4d59;
-      left: 6px;
+      left: 0;
       top: 8px;
     }
   }
