@@ -362,7 +362,7 @@ export const ReceiveDetails = (
           </SkeletonChildren>
         </div>
       </div>
-      {DEX[activeProvider.name] && receiveToken ? (
+      {activeProvider.name && receiveToken ? (
         <div
           className="quote-provider"
           onClick={() => {
