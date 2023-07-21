@@ -17,7 +17,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
   const chain = CHAINS_LIST.find((c) => c.serverId === item.chain);
 
   return (
-    <TCell className="py-8 flex gap-12 w-1/2 items-center">
+    <TCell className="py-8 flex gap-12 w-[160px] items-center">
       <div className="relative">
         <Image
           className="w-24 h-24 rounded-full"
@@ -48,7 +48,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
     <TCell
       className={clsx(
-        'py-8 text-gray-subTitle text-12 w-1/4',
+        'py-8 text-gray-subTitle text-12 w-[90px]',
         'flex flex-col gap-4'
       )}
     >
@@ -70,7 +70,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
-    <TCell className="py-8 text-gray-title text-13 font-medium text-right w-1/4">
+    <TCell className="py-8 text-gray-title text-13 font-medium text-right w-[110px]">
       {item._usdValueStr || '<$0.01'}
     </TCell>
   );
