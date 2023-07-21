@@ -171,7 +171,7 @@ const Actions = ({
         <div className="action-header">
           <div className="left">{actionName}</div>
           <div className="right">
-            {data.contractCall ? (
+            {data.contractCall && (
               <span className="flex items-center relative">
                 Unknown action type{' '}
                 <TooltipWithMagnetArrow
@@ -182,8 +182,6 @@ const Actions = ({
                   <IconQuestionMark className="icon icon-tip" />
                 </TooltipWithMagnetArrow>
               </span>
-            ) : (
-              'action type'
             )}
           </div>
         </div>
@@ -334,12 +332,12 @@ const Actions = ({
               raw={raw}
             />
           )}
-          <BalanceChange
-            version={txDetail.pre_exec_version}
-            data={txDetail.balance_change}
-          />
         </div>
       </ActionWrapper>
+      <BalanceChange
+        version={txDetail.pre_exec_version}
+        data={txDetail.balance_change}
+      />
     </>
   );
 };

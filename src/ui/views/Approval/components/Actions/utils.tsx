@@ -36,6 +36,7 @@ import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
+import { findChainByID, findChainByServerID } from '@/utils/chain';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -497,6 +498,8 @@ export interface ContractCallRequireData {
     logo_url: string;
   } | null;
   call: NonNullable<ParseTxResponse['contract_call']>;
+  payNativeTokenAmount: string;
+  nativeTokenSymbol: string;
 }
 
 export interface ApproveNFTRequireData {
@@ -1009,6 +1012,7 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.contractCall && contractCall) {
+    const chain = findChainByServerID(chainId);
     const result: ContractCallRequireData = {
       contract: null,
       rank: null,
@@ -1017,6 +1021,8 @@ export const fetchActionRequiredData = async ({
       protocol: null,
       call: contractCall,
       id: contractCall.contract.id,
+      payNativeTokenAmount: tx.value || '0x0',
+      nativeTokenSymbol: chain?.nativeTokenSymbol || 'ETH',
     };
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(

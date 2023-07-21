@@ -90,7 +90,7 @@ const Permit = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
