@@ -2,7 +2,7 @@
 
 @radius-value: 6px;
 
-@main-w: 1040px;
+@main-w: 1060px;
 
 @page-padding-top: 40px;
 @page-header-h: 24px;
@@ -268,6 +268,7 @@
       }
     }
 
+    &.is-contract-row__risky > .am-virtual-table-cell-inner,
     &.is-contract-row__danger > .am-virtual-table-cell-inner {
       background: #fefafa;
     }
@@ -277,8 +278,26 @@
     }
   }
 
-  &.J_table_by_contracts .am-virtual-table-cell.is-last-cell > .am-virtual-table-cell-inner {
-    padding-right: 20px;
+  &.J_table_by_contracts .am-virtual-table-cell {
+    &.is-last-cell > .am-virtual-table-cell-inner {
+      padding-right: 20px;
+    }
+
+    //------------ special column customizations ------------
+    &.column-cell-J_key-contract > .am-virtual-table-cell-inner {
+      padding-right: 4px;
+    }
+  }
+
+  &.J_table_by_assets .am-virtual-table-cell {
+    //------------ special column customizations ------------
+    &.column-cell-J_key-approveSpender > .am-virtual-table-cell-inner {
+      padding-right: 4px;
+    }
+
+    &.column-cell-J_key-assetApproveTime > .am-virtual-table-cell-inner {
+      padding-left: 20px;
+    }
   }
 
   .am-virtual-table-cell-inner {
@@ -292,10 +311,6 @@
 
   [data-theme="dark"]  .am-virtual-table-cell-inner {
     background: #141414;
-  }
-
-  .am-virtual-table-cell-inner .spender-address {
-    font-weight: 500;
   }
 
   .am-virtual-table-cell-inner .name-and-address {

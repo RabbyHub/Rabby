@@ -120,6 +120,7 @@ const TableCellProto = <RecordType extends object = any>({
         'am-virtual-table-cell',
         columnConfig.className,
         cellClassName,
+        `column-cell-J_key-${columnConfig.key}`,
         {
           'is-first-row': rowIndex === 0,
           'is-last-row': rowIndex === rowList.length - 1,
