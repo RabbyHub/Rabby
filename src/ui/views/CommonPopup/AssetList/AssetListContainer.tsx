@@ -135,6 +135,7 @@ export const AssetListContainer: React.FC<Props> = ({
               isNoResults={isNoResults}
               blockedTokens={blockedTokens}
               customizeTokens={customizeTokens}
+              isTestnet={isTestnet}
             />
           )}
           {activeTab === TokenTabEnum.Summary && !search && (
