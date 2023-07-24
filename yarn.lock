@@ -3679,17 +3679,7 @@
     "@noble/hashes" "~1.2.0"
     "@scure/base" "~1.1.0"
 
-"@sentry/browser@6.7.2", "@sentry/browser@^6.7.2":
-  version "6.7.2"
-  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-6.7.2.tgz#cfbe060de5a9694617f175a6bde469e5e266792e"
-  integrity sha512-Lv0Ne1QcesyGAhVcQDfQa3hDPR/MhPSDTMg3xFi+LxqztchVc4w/ynzR0wCZFb8KIHpTj5SpJHfxpDhXYMtS9g==
-  dependencies:
-    "@sentry/core" "6.7.2"
-    "@sentry/types" "6.7.2"
-    "@sentry/utils" "6.7.2"
-    tslib "^1.9.3"
-
-"@sentry/browser@^6.4.0":
+"@sentry/browser@6.19.7", "@sentry/browser@^6.4.0":
   version "6.19.7"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-6.19.7.tgz#a40b6b72d911b5f1ed70ed3b4e7d4d4e625c0b5f"
   integrity sha512-oDbklp4O3MtAM4mtuwyZLrgO1qDVYIujzNJQzXmi9YzymJCuzMLSRDvhY83NNDCRxf0pds4DShgYeZdbSyKraA==
@@ -3697,6 +3687,16 @@
     "@sentry/core" "6.19.7"
     "@sentry/types" "6.19.7"
     "@sentry/utils" "6.19.7"
+    tslib "^1.9.3"
+
+"@sentry/browser@^6.7.2":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-6.7.2.tgz#cfbe060de5a9694617f175a6bde469e5e266792e"
+  integrity sha512-Lv0Ne1QcesyGAhVcQDfQa3hDPR/MhPSDTMg3xFi+LxqztchVc4w/ynzR0wCZFb8KIHpTj5SpJHfxpDhXYMtS9g==
+  dependencies:
+    "@sentry/core" "6.7.2"
+    "@sentry/types" "6.7.2"
+    "@sentry/utils" "6.7.2"
     tslib "^1.9.3"
 
 "@sentry/cli@^1.74.4":
@@ -3780,15 +3780,15 @@
     "@sentry/types" "6.7.2"
     tslib "^1.9.3"
 
-"@sentry/react@^6.7.2":
-  version "6.7.2"
-  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-6.7.2.tgz#68edb082ea42cabcf86939f254457436b82b4a0a"
-  integrity sha512-gjXRuhgd3l2s18Y4dw9ZMWCiFKyeAU79fBiYdv8lqu9EFPFquU0qkZbgep8D37Xq2GWjQM0qEBmD758L6bUwvQ==
+"@sentry/react@^6.19.7":
+  version "6.19.7"
+  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-6.19.7.tgz#58cc2d6da20f7d3b0df40638dfbbbc86c9c85caf"
+  integrity sha512-VzJeBg/v41jfxUYPkH2WYrKjWc4YiMLzDX0f4Zf6WkJ4v3IlDDSkX6DfmWekjTKBho6wiMkSNy2hJ1dHfGZ9jA==
   dependencies:
-    "@sentry/browser" "6.7.2"
-    "@sentry/minimal" "6.7.2"
-    "@sentry/types" "6.7.2"
-    "@sentry/utils" "6.7.2"
+    "@sentry/browser" "6.19.7"
+    "@sentry/minimal" "6.19.7"
+    "@sentry/types" "6.19.7"
+    "@sentry/utils" "6.19.7"
     hoist-non-react-statics "^3.3.2"
     tslib "^1.9.3"
 
