@@ -29,6 +29,12 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
     setHeight(488);
   }, []);
 
+  React.useEffect(() => {
+    if (visible) {
+      onTabChange('mainnet');
+    }
+  }, [visible]);
+
   return (
     <>
       {isShowTestnet && (
