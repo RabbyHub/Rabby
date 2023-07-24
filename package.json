@@ -27,7 +27,7 @@
     "@keystonehq/metamask-airgapped-keyring": "^0.2.5-alpha.0",
     "@ledgerhq/devices": "^7.0.5",
     "@ledgerhq/hw-app-eth": "^6.25.0",
-    "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "@ledgerhq/hw-transport-webhid": "^6.27.16",
     "@metamask/eth-sig-util": "^4.0.0",
     "@metamask/obs-store": "^6.0.2",
     "@ngraveio/bc-ur": "^1.1.6",
