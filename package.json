@@ -60,7 +60,7 @@
     "@zxing/browser": "^0.0.10",
     "@zxing/library": "0.8.0",
     "ahooks": "^3.1.5",
-    "antd": "^4.15.3",
+    "antd": "^4.24.12",
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.3",
     "bitbox02-api": "0.15.0",
