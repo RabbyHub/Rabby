@@ -24,6 +24,7 @@ import {
 } from '../Actions/utils';
 import { CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
+import { isTestnet } from '@/utils/chain';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -543,6 +544,9 @@ export const formatSecurityEngineCtx = ({
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
 }): ContextActionData => {
+  if (actionData.chainId && isTestnet(actionData.chainId)) {
+    return {};
+  }
   if (actionData?.permit) {
     const data = requireData as ApproveTokenRequireData;
     return {

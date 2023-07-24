@@ -36,6 +36,7 @@ import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
+import { isTestnet } from '@/utils/chain';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -1058,6 +1059,9 @@ export const formatSecurityEngineCtx = ({
   requireData: ActionRequireData;
   chainId: string;
 }): ContextActionData => {
+  if (isTestnet(chainId)) {
+    return {};
+  }
   if (actionData.swap) {
     const data = requireData as SwapRequireData;
     const {
