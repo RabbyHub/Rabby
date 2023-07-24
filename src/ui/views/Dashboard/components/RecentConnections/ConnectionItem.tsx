@@ -9,6 +9,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import { findChainByEnum } from '@/utils/chain';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 interface ConnectionItemProps {
   className?: string;
@@ -59,11 +60,16 @@ export const Item = memo(
                 borderRadius: '4px',
               }}
             />
-            <img
-              className="connect-chain"
-              src={chainItem?.logo}
-              alt={chainItem?.name}
-            />
+            <TooltipWithMagnetArrow
+              title={chainItem?.name}
+              className="rectangle w-[max-content]"
+            >
+              <img
+                className="connect-chain"
+                src={chainItem?.logo}
+                alt={chainItem?.name}
+              />
+            </TooltipWithMagnetArrow>
           </div>
           <span className="item-content">{item.origin}</span>
           <div
