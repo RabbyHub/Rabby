@@ -392,9 +392,9 @@ class PreferenceService {
     address: string,
     data: TotalBalanceResponse
   ) => {
-    const balanceMap = this.store.testnetBalanceMap || {};
-    this.store.balanceMap = {
-      ...balanceMap,
+    const testnetBalanceMap = this.store.testnetBalanceMap || {};
+    this.store.testnetBalanceMap = {
+      ...testnetBalanceMap,
       [address.toLowerCase()]: data,
     };
   };
@@ -431,7 +431,7 @@ class PreferenceService {
   };
 
   getTestnetAddressBalance = (address: string): TotalBalanceResponse | null => {
-    const balanceMap = this.store.balanceMap || {};
+    const balanceMap = this.store.testnetBalanceMap || {};
     return balanceMap[address.toLowerCase()] || null;
   };
 

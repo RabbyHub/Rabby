@@ -5,6 +5,8 @@ import { DisplayedToken } from '../utils/portfolio/project';
 import { AbstractPortfolioToken } from '../utils/portfolio/types';
 import { useRabbySelector } from 'ui/store';
 import { isSameAddress } from '../utils';
+import { requestOpenApiWithChainId } from '../utils/openapi';
+import { findChainByServerID } from '@/utils/chain';
 
 const useSearchToken = (
   address: string | undefined,
@@ -33,12 +35,25 @@ const useSearchToken = (
       chainId?: string;
     }) => {
       let list: TokenItem[] = [];
-      const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
       setIsLoading(true);
+      const chainItem = !chainId ? null : findChainByServerID(chainId);
+
       if (q.length === 42 && q.toLowerCase().startsWith('0x')) {
-        list = await apiProvider.searchToken(address, q, chainId, true);
+        list = await requestOpenApiWithChainId(
+          (ctx) => ctx.openapi.searchToken(address, q, chainId, true),
+          {
+            isTestnet: isTestnet !== false || chainItem?.isTestnet,
+            wallet,
+          }
+        );
       } else {
-        list = await apiProvider.searchToken(address, q, chainId);
+        list = await requestOpenApiWithChainId(
+          (ctx) => ctx.openapi.searchToken(address, q, chainId),
+          {
+            isTestnet: isTestnet !== false || chainItem?.isTestnet,
+            wallet,
+          }
+        );
         if (withBalance) {
           list = list.filter((item) => item.amount > 0);
         }

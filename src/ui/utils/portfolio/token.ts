@@ -4,7 +4,11 @@ import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { findChainByEnum, isTestnet as checkIsTestnet } from '@/utils/chain';
+import {
+  findChainByEnum,
+  isTestnet as checkIsTestnet,
+  findChainByServerID,
+} from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
@@ -22,7 +26,6 @@ import {
   setWalletTokens,
   queryTokensCache,
   sortWalletTokens,
-  queryTestnetTokensCache,
 } from './tokenUtils';
 import { isSameAddress } from '..';
 import { Token } from 'background/service/preference';
@@ -53,8 +56,10 @@ export const useTokens = (
   timeAt?: Dayjs,
   visible = true,
   updateNonce = 0,
-  chainId?: string,
-  isTestnet = false
+  chainServerId?: string,
+  isTestnet: boolean = chainServerId
+    ? !!findChainByServerID(chainServerId)?.isTestnet
+    : false
 ) => {
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
@@ -81,17 +86,17 @@ export const useTokens = (
       if (
         visible &&
         (!isSameAddress(userAddr, userAddrRef.current) ||
-          chainId !== chainIdRef.current)
+          chainServerId !== chainIdRef.current)
       ) {
         loadProcess().then(() => {
           userAddrRef.current = userAddr;
-          chainIdRef.current = chainId;
+          chainIdRef.current = chainServerId;
         });
       }
     } else {
       setData(undefined);
     }
-  }, [userAddr, visible, chainId]);
+  }, [userAddr, visible, chainServerId]);
 
   useEffect(() => {
     if (timeAt) {
@@ -127,12 +132,7 @@ export const useTokens = (
 
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
-    let snapshot: TokenItem[] = [];
-    if (isTestnet) {
-      snapshot = await queryTestnetTokensCache(userAddr, wallet);
-    } else {
-      snapshot = await queryTokensCache(userAddr, wallet);
-    }
+    const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
     const blocked = (await wallet.getBlockedToken()).filter((token) => {
       if (isTestnet) {
@@ -168,7 +168,7 @@ export const useTokens = (
     const tokenRes = await batchQueryTokens(
       userAddr,
       wallet,
-      chainId,
+      chainServerId,
       isTestnet
     );
     // customize and blocked tokens

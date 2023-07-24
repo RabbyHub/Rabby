@@ -19,8 +19,10 @@ import {
   SelectChainListProps,
 } from './components/SelectChainList';
 import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
-import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
-import NetSwitchTabs, { useSwitchNetTab } from '../PillsSwitch/NetSwitchTabs';
+import NetSwitchTabs, {
+  NetSwitchTabsKey,
+  useSwitchNetTab,
+} from '../PillsSwitch/NetSwitchTabs';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -38,18 +40,24 @@ interface ChainSelectorModalProps {
 
 const useChainSeletorList = ({
   supportChains,
+  netTabKey,
 }: {
   supportChains?: Chain['enum'][];
+  netTabKey?: NetSwitchTabsKey;
 }) => {
   const [search, setSearch] = useState('');
-  const { pinned, matteredChainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChainByEnum(item)
-      ) || []) as CHAINS_ENUM[],
-      matteredChainBalances: state.account.matteredChainBalances,
-    };
-  });
+  const { pinned, matteredChainBalances, isShowTestnet } = useRabbySelector(
+    (state) => {
+      return {
+        pinned: (state.preference.pinnedChain?.filter((item) =>
+          findChainByEnum(item)
+        ) || []) as CHAINS_ENUM[],
+        matteredChainBalances: state.account.matteredChainBalances,
+        isShowTestnet: state.preference.isShowTestnet,
+      };
+    }
+  );
+
   const dispatch = useRabbyDispatch();
 
   const handleStarChange = (chain: CHAINS_ENUM, value) => {
@@ -69,6 +77,7 @@ const useChainSeletorList = ({
       searchKeyword: searchKw,
       matteredChainBalances,
       pinned,
+      netTabKey,
     });
 
     return {
@@ -76,7 +85,7 @@ const useChainSeletorList = ({
       matteredList: searchKw ? [] : result.matteredList,
       unmatteredList: searchKw ? [] : result.unmatteredList,
     };
-  }, [search, pinned, supportChains, matteredChainBalances]);
+  }, [search, pinned, supportChains, matteredChainBalances, netTabKey]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
@@ -115,6 +124,8 @@ const ChainSelectorModal = ({
     onChange(val);
   };
 
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+
   const {
     matteredList,
     unmatteredList,
@@ -125,7 +136,15 @@ const ChainSelectorModal = ({
     pinned,
   } = useChainSeletorList({
     supportChains,
+    netTabKey: selectedTab,
   });
+
+  useEffect(() => {
+    if (!value || !visible) return;
+
+    const chainItem = findChainByEnum(value);
+    onTabChange(chainItem?.isTestnet ? 'testnet' : 'mainnet');
+  }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
 
@@ -133,11 +152,13 @@ const ChainSelectorModal = ({
     if (!visible) {
       setSearch('');
     } else {
+      // (async () => {
+      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
+      //   rDispatch.account.getMatteredChainBalance();
+      // })();
       rDispatch.account.getMatteredChainBalance();
     }
   }, [visible, rDispatch]);
-
-  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
   return (
     <Drawer
