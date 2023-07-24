@@ -47,7 +47,7 @@
     "@rabby-wallet/widgets": "^1.0.9",
     "@rematch/core": "^2.2.0",
     "@rematch/select": "^3.1.2",
-    "@sentry/browser": "^6.7.2",
+    "@sentry/browser": "^6.19.7",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",
     "@spruceid/siwe-parser": "^2.0.2",
