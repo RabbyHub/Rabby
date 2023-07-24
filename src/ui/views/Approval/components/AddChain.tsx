@@ -3,6 +3,7 @@ import { CHAINS_LIST } from '@debank/common';
 import { useSetState } from 'ahooks';
 import { Button } from 'antd';
 import { Chain } from 'background/service/openapi';
+import BigNumber from 'bignumber.js';
 import { CHAINS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -140,7 +141,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     const site = await wallet.getConnectedSite(session.origin)!;
 
     const currentChain = site ? CHAINS[site.chain] : null;
-    const nextChain = CHAINS_LIST.find((item) => item.hex === chainId) || null;
+    const nextChain =
+      CHAINS_LIST.find((item) => new BigNumber(item.hex).isEqualTo(chainId)) ||
+      null;
 
     const isSwitchToMainnet =
       currentChain &&
