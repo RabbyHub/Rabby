@@ -233,7 +233,10 @@ export const account = createModel<RootModel>()({
         : dispatch.account.setTokenList;
       setCustomizeTokenList([...currentList, token]);
       if (token.amount > 0) {
-        setTokenList([...store.account.tokens.list, token]);
+        const tokenList = isTestnetToken
+          ? store.account.testnetTokens.list
+          : store.account.tokens.list;
+        setTokenList([...tokenList, token]);
       }
     },
 
@@ -257,9 +260,10 @@ export const account = createModel<RootModel>()({
           return item.id !== token.id;
         })
       );
-      setTokenList(
-        store.account.tokens.list.filter((item) => item.id !== token.id)
-      );
+      const tokenList = isTestnetToken
+        ? store.account.testnetTokens.list
+        : store.account.tokens.list;
+      setTokenList(tokenList.filter((item) => item.id !== token.id));
     },
 
     async addBlockedToken(token: AbstractPortfolioToken, store?) {
@@ -278,9 +282,10 @@ export const account = createModel<RootModel>()({
         ? dispatch.account.setTestnetTokenList
         : dispatch.account.setTokenList;
       setBlockedTokenList([...currentList, token]);
-      setTokenList(
-        store.account.tokens.list.filter((item) => item.id !== token.id)
-      );
+      const tokenList = isTestnetToken
+        ? store.account.testnetTokens.list
+        : store.account.tokens.list;
+      setTokenList(tokenList.filter((item) => item.id !== token.id));
     },
 
     async removeBlockedToken(token: AbstractPortfolioToken, store?) {
@@ -304,7 +309,10 @@ export const account = createModel<RootModel>()({
         })
       );
       if (token.amount > 0) {
-        setTokenList([...store.account.tokens.list, token]);
+        const tokenList = isTestnetToken
+          ? store.account.testnetTokens.list
+          : store.account.tokens.list;
+        setTokenList([...tokenList, token]);
       }
     },
 
