@@ -14,7 +14,7 @@ const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
   return !chain.isTestnet;
 });
 
-const CHAINS_BY_NET = {
+export const CHAINS_BY_NET = {
   mainnet: ALL_CHAINS_MAINNET,
   testnet: ALL_CHAINS_TESTNET,
 };
