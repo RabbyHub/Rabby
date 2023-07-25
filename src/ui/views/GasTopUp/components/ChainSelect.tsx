@@ -104,7 +104,6 @@ export const ChainSelect = ({
           onCancel={handleCancel}
           disabledTips={getDisabledTips}
           supportChains={allMainnetChainEnums}
-          hideTestnetTab
         />
       )}
     </>
