@@ -22,6 +22,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
   hasShadow?: boolean;
+  isTestnet?: boolean;
   engineResults?: Result[];
   onIgnoreAllRules(): void;
 }
@@ -241,7 +242,11 @@ export const FooterBar: React.FC<Props> = ({
             )}
           </div>
         )}
-        <AccountInfo chain={props.chain} account={account} />
+        <AccountInfo
+          chain={props.chain}
+          account={account}
+          isTestnet={props.isTestnet}
+        />
         <ActionGroup account={account} {...props} />
         {securityLevel && hasUnProcessSecurityResult && (
           <div

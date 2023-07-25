@@ -478,6 +478,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             isWatch ||
             hasUnProcessSecurityResult
           }
+          isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />
       </footer>

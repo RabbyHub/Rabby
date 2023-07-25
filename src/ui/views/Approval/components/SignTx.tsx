@@ -1781,6 +1781,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             securityLevel={securityLevel}
             gnosisAccount={isGnosis ? account : undefined}
             chain={chain}
+            isTestnet={chain.isTestnet}
             onCancel={handleCancel}
             onSubmit={() => handleAllow()}
             onIgnoreAllRules={handleIgnoreAllRules}
