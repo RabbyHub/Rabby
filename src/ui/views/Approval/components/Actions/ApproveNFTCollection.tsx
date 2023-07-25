@@ -111,7 +111,9 @@ const ApproveNFTCollection = ({
                 id="1056"
                 engineResult={engineResultMap['1056']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem
