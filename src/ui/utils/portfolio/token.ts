@@ -170,7 +170,7 @@ export const useTokens = (
     const tokenRes = await batchQueryTokens(userAddr, wallet, chainId);
 
     if (currentAbort.signal.aborted || !tokenRes) {
-      log('--Terminate-tokens-loadProjectIds-', userAddr);
+      log('--Terminate-tokens-', userAddr);
       setLoading(false);
       return;
     }
