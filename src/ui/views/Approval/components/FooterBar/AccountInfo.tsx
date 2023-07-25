@@ -19,10 +19,15 @@ import { Tooltip } from 'antd';
 
 export interface Props {
   account: Account;
+  isTestnet?: boolean;
   chain?: Chain;
 }
 
-export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
+export const AccountInfo: React.FC<Props> = ({
+  account,
+  chain,
+  isTestnet = false,
+}) => {
   const [nickname, setNickname] = React.useState<string>();
   const [balance] = useCurrentBalance(account?.address);
   const displayBalance = splitNumberByStep((balance || 0).toFixed(2));
@@ -66,12 +71,14 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
             className={clsx('text-13 text-black mt-[4px]')}
           />
         </div>
-        <div
-          className="text-13 font-medium text-black mt-[4px]"
-          title={displayBalance}
-        >
-          ${displayBalance}
-        </div>
+        {isTestnet ? null : (
+          <div
+            className="text-13 font-medium text-black mt-[4px]"
+            title={displayBalance}
+          >
+            ${displayBalance}
+          </div>
+        )}
       </div>
       {account?.type === KEYRING_CLASS.WALLETCONNECT && (
         <WalletConnectAccount chain={chain} account={account} />

@@ -91,6 +91,13 @@ export function isTestnet(chainServerId?: string) {
   return !!chain.isTestnet;
 }
 
+export function isTestnetChainId(chainId?: string | number) {
+  if (!chainId) return false;
+  const chain = findChainByID(Number(chainId));
+  if (!chain) return false;
+  return !!chain.isTestnet;
+}
+
 export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
