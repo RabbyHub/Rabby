@@ -4,7 +4,16 @@ import styled from 'styled-components';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import Modal from '@/ui/component/ChainSelector/Modal';
 import { CHAINS, CHAINS_ENUM } from '@/constant';
-import { findChainByEnum } from '@/utils/chain';
+import {
+  CHAINS_BY_NET,
+  findChainByEnum,
+  findChainByServerID,
+} from '@/utils/chain';
+import { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
+
+const allMainnetChainEnums = Object.values(CHAINS_BY_NET.mainnet).map(
+  (item) => item.enum
+);
 
 export const ChainWrapper = styled.div`
   background: ${LessPalette['@color-bg']};
@@ -33,6 +42,14 @@ export const ChainWrapper = styled.div`
     color: #13141a;
   }
 `;
+
+const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
+  const chainItem = findChainByServerID(ctx.chain.serverId);
+
+  if (chainItem?.isTestnet) return 'Testnet is not supported';
+
+  return 'Coming Soon';
+};
 
 interface ChainSelectProps {
   value: CHAINS_ENUM;
@@ -85,6 +102,9 @@ export const ChainSelect = ({
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
+          disabledTips={getDisabledTips}
+          supportChains={allMainnetChainEnums}
+          hideTestnetTab
         />
       )}
     </>

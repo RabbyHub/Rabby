@@ -34,6 +34,7 @@ interface ChainSelectorModalProps {
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  hideTestnetTab?: boolean;
   showRPCStatus?: boolean;
   height?: number;
 }
@@ -113,6 +114,7 @@ const ChainSelectorModal = ({
   className,
   supportChains,
   disabledTips,
+  hideTestnetTab = false,
   showRPCStatus = false,
   height = 494,
 }: ChainSelectorModalProps) => {
@@ -124,7 +126,9 @@ const ChainSelectorModal = ({
     onChange(val);
   };
 
-  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
+    hideTestnetTab,
+  });
 
   const {
     matteredList,

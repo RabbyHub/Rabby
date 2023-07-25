@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import PillsSwitch, { PillsSwitchProps } from '@/ui/component/PillsSwitch';
 import { useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
@@ -23,20 +23,26 @@ type OptionType = typeof switchOptions[number];
 export type NetSwitchTabsKey = OptionType['key'];
 type SwitchTabProps = Omit<PillsSwitchProps<OptionType[]>, 'options'>;
 
-export function useSwitchNetTab() {
+export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
   const isShowTestnet = useRabbySelector((s) => s.preference.isShowTestnet);
+  const { hideTestnetTab = false } = options || {};
 
   const [selectedTab, setSelectedTab] = useState<OptionType['key']>('mainnet');
+  const alwaysMain = useMemo(() => !isShowTestnet || hideTestnetTab, [
+    isShowTestnet,
+    hideTestnetTab,
+  ]);
+
   const onTabChange = useCallback(
     (key: OptionType['key']) => {
-      setSelectedTab(!isShowTestnet ? 'mainnet' : key);
+      setSelectedTab(alwaysMain ? 'mainnet' : key);
     },
-    [isShowTestnet]
+    [alwaysMain]
   );
 
   return {
-    isShowTestnet,
-    selectedTab: !isShowTestnet ? 'mainnet' : selectedTab,
+    isShowTestnet: isShowTestnet && !hideTestnetTab,
+    selectedTab: alwaysMain ? 'mainnet' : selectedTab,
     onTabChange,
   };
 }
