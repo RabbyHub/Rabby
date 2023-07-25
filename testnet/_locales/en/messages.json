@@ -1,0 +1,1147 @@
+{
+  "appName": {
+    "message": "Rabby Wallet",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "The game-changing wallet for Ethereum and all EVM chains",
+    "description": "The description of the application"
+  },
+  "Send": {
+    "message": "Send"
+  },
+  "Swap": {
+    "message": "Swap"
+  },
+  "History": {
+    "message": "History"
+  },
+  "Set__Unlock__Password": {
+    "message": "Set Unlock Password"
+  },
+  "Set__Current__Address": {
+    "message": "Set Current Address",
+    "description": "Switch modal title in dashboard"
+  },
+  "Manage__addresses": {
+    "message": "Manage addresses"
+  },
+  "View__Mnemonic": {
+    "message": "View Mnemonic"
+  },
+  "Created__by__Mnemonic": {
+    "message": "Created by Mnemonic"
+  },
+  "Imported__by__Private__Key": {
+    "message": "Imported by Private Key"
+  },
+  "Watch__Mode": {
+    "message": "Watch Mode"
+  },
+  "Copied": {
+    "message": "Copied"
+  },
+  "connected": {
+    "message": "connected"
+  },
+  "Not__connected__to__current__website": {
+    "message": "Not connected to current website"
+  },
+  "Please__input__openapi__host": {
+    "message": "Please input openapi host"
+  },
+  "Please__check__your__host": {
+    "message": "Please check your host"
+  },
+  "Save": {
+    "message": "Save"
+  },
+  "AddressManagement": {
+    "message": "Address Management"
+  },
+  "ChainManagement": {
+    "message": "Chain management"
+  },
+  "Chain__Management": {
+    "message": "Chain Management"
+  },
+  "Connected__websites": {
+    "message": "Connected websites"
+  },
+  "Backend__Service__URL": {
+    "message": "Backend Service URL"
+  },
+  "Settings": {
+    "message": "Settings"
+  },
+  "Lock": {
+    "message": "Lock"
+  },
+  "Mnemonic": {
+    "message": "Seed Phrase"
+  },
+  "Private__Key": {
+    "message": "Private Key"
+  },
+  "removed": {
+    "message": "removed"
+  },
+  "Keep__at__least__one__address__visible": {
+    "message": "Keep at least one address visible"
+  },
+  "Show__address": {
+    "message": "Show address"
+  },
+  "Hide__address": {
+    "message": "Hide address"
+  },
+  "Delete__address": {
+    "message": "Delete address"
+  },
+  "NoAddress": {
+    "message": "No address"
+  },
+  "Add__addresses": {
+    "message": "Add address"
+  },
+  "Address__Management": {
+    "message": "Address Management"
+  },
+  "Add__Address": {
+    "message": "Add Address"
+  },
+  "incorrect__password": {
+    "message": "incorrect password"
+  },
+  "Password": {
+    "message": "Password"
+  },
+  "Please__input__Password": {
+    "message": "Please input Password"
+  },
+  "Unlock": {
+    "message": "Unlock"
+  },
+  "Get__Started": {
+    "message": "Get Started"
+  },
+  "Successfully__created": {
+    "message": "Successfully created"
+  },
+  "Not__a__valid__address": {
+    "message": "Not a valid address"
+  },
+  "Enter__an__address__without__providing__private__key": {
+    "message": "Enter an address without providing private key"
+  },
+  "Please__input__address": {
+    "message": "Please input address"
+  },
+  "Address": {
+    "message": "Address"
+  },
+  "AddressCount": {
+    "message": "{{count}} addresses"
+  },
+  "Not__a__valid__private__key": {
+    "message": "Not a valid private key"
+  },
+  "Enter__Your__Private__Key": {
+    "message": "Enter Your Private Key"
+  },
+  "Please__input__Private__key": {
+    "message": "Please input Private key"
+  },
+  "Import__via__Private__Key": {
+    "message": "Import via Private Key"
+  },
+  "Import__via__Keystore": {
+    "message": "Import via Keystore"
+  },
+  "Import__via__Mnemonic": {
+    "message": "Import via Mnemonic"
+  },
+  "Not__a__valid__mnemonic": {
+    "message": "Not a valid mnemonic"
+  },
+  "Enter__Your__Mnemonic": {
+    "message": "Enter Your Mnemonic"
+  },
+  "Please__input__Seed__Phrase": {
+    "message": "Please input Seed Phrase"
+  },
+  "Select__the__keystore__file__you__want__to__import__and__enter__the__corresponding__password": {
+    "message": "Select the keystore file you want to import and enter the corresponding password"
+  },
+  "Click__to__upload__again": {
+    "message": "Click to upload again"
+  },
+  "Import__Your__Keystore": {
+    "message": "Import Your Store"
+  },
+  "passwordMinimumLengthAlert": {
+    "message": "Password can’t be less than {{length}} letters"
+  },
+  "passwordMaximumLengthAlert": {
+    "message": "Password can’t be more than {{length}} letters"
+  },
+  "Please__confirm__Password": {
+    "message": "Please confirm Password"
+  },
+  "Two__inputs__do__not__match": {
+    "message": "Two inputs do not match"
+  },
+  "Repeat__Password": {
+    "message": "Repeat Password"
+  },
+  "Back__Up__Your__Mnemonic": {
+    "message": "Back Up Your Mnemonic"
+  },
+  "Verify__Mnemonic": {
+    "message": "Verify Mnemonic"
+  },
+  "Please__select__the__mnemonic__words__in__order": {
+    "message": "Please select the mnemonic words in order"
+  },
+  "Verification__failed": {
+    "message": "Verification failed"
+  },
+  "Please__select__words": {
+    "message": "Please select words"
+  },
+  "You__need__to__make__use__your__last__account__before__you__can__add__a__new__one": {
+    "message": "You need to make use your last account before you can add a new one."
+  },
+  "Import__More__Addresses": {
+    "message": "Import more address"
+  },
+  "Select__the__addresses__you__want__to__import": {
+    "message": "Select the addresses you want to import"
+  },
+  "Select__the__addresses__you__to__use__in__Rabby": {
+    "message": "Select the addresses to use in Rabby"
+  },
+
+  "Load__More": {
+    "message": "Load More..."
+  },
+  "Please__add__your__address__via__one__of__the__following__methods": {
+    "message": "Please add your address via one of the following methods"
+  },
+  "No__Address": {
+    "message": "No Address"
+  },
+  "hardwareImportTip": {
+    "message": "If you are using a hardware wallet with a camera on it, you should use watch address instead."
+  },
+  "Connect__Hardware__Wallet": {
+    "message": "Connect Hardware Wallet"
+  },
+  "Select__the__hardware__wallet__you__are__using": {
+    "message": "Select the hardware wallet you are using"
+  },
+  "Select__Connect__Method": {
+    "message": "Select Connect Method"
+  },
+  "Ledger__Blue__is__not__supported__by__Chrome__91__and__above__versions": {
+    "message": "Ledger Blue is not supported by Chrome 91 and above versions"
+  },
+  "Connect__through__Ledger__Live__app": {
+    "message": "Connect through Ledger Live app"
+  },
+  "Connect__hardware__wallet__directly": {
+    "message": "Connect hardware wallet directly"
+  },
+  "dontRemind": {
+    "message": "Don't remind me anymore"
+  },
+  "You__will__be__visiting": {
+    "message": "You will be visiting"
+  },
+  "debankExternalLinkAlert": {
+    "message": "Rabby uses DeBank's well-established features to provide you with better service"
+  },
+  "Asset__data__loading": {
+    "message": "Asset data loading"
+  },
+  "The__network__is__disconnected__and__no__data__is__obtained": {
+    "message": "The network is disconnected and no data is obtained"
+  },
+  "No__assets": {
+    "message": "No assets"
+  },
+  "No__data": {
+    "message": "No data"
+  },
+  "Connected__Sites": {
+    "message": "Connected Sites"
+  },
+  "disableChainAlert": {
+    "message": "After disabling a chain, all websites connected using this chain will also be deleted"
+  },
+  "Disable": {
+    "message": "Disable"
+  },
+  "Cancel": {
+    "message": "Cancel"
+  },
+  "At__least__one__enabled__chain__is__required": {
+    "message": "At least one enabled chain is required"
+  },
+  "Chain__ID": {
+    "message": "Chain ID"
+  },
+  "Enable__Chains": {
+    "message": "Enable Chains"
+  },
+  "createAddress": {
+    "message": "Create New Address"
+  },
+  "Import": {
+    "message": "Import"
+  },
+  "Hardware__Wallet": {
+    "message": "Hardware Wallet"
+  },
+  "Imported": {
+    "message": "Imported"
+  },
+  "Select__a__JSON__file": {
+    "message": "Select a JSON file"
+  },
+  "Current__account": {
+    "message": "Current account"
+  },
+  "enableChainContent": {
+    "message": "By enabling a chain, you’ll be able to make transactions on it."
+  },
+  "switchChainDesc": {
+    "message": "Next time you visit, this site will be connected to {{name}}"
+  },
+  "Change": {
+    "message": "Change",
+    "description": "Switch chain confirm button text"
+  },
+  "Switch__a__Chain": {
+    "message": "Switch a Chain"
+  },
+  "Enable": {
+    "message": "Enable"
+  },
+  "Enable__a__Chain": {
+    "message": "Enable a Chain"
+  },
+  "The__requested__chain__is__not__supported__by__Rabby__yet": {
+    "message": "The requested chain is not supported by Rabby yet"
+  },
+  "OK": {
+    "message": "OK"
+  },
+  "Website__Wants__to__Connect": {
+    "message": "Website Wants to Connect"
+  },
+  "On__this__site__use__chain": {
+    "message": "On this site use chain"
+  },
+  "Connect": {
+    "message": "Connect",
+    "description": "Website connect confirm button text"
+  },
+  "ledgerWebUSBSignAlertPart1": {
+    "message": "If unable to proceed due to a Chrome issue."
+  },
+  "ledgerWebUSBSignAlertPart2": {
+    "message": "Please delete and re-connect this address."
+  },
+  "Please__proceed__in__your__hardware__wallet": {
+    "message": "Please proceed in your hardware wallet"
+  },
+  "Security__checks__have__not__been__executed": {
+    "message": "Security checks have not been executed"
+  },
+  "Checking": {
+    "message": "Checking..."
+  },
+  "No__risk__found": {
+    "message": "No risk found"
+  },
+  "Check": {
+    "message": "Check",
+    "description": "Security check action button text"
+  },
+  "processAnyway": {
+    "message": "I'm sure I want to proceed anyway."
+  },
+  "Forbidden": {
+    "message": "Forbidden"
+  },
+  "Danger": {
+    "message": "Danger"
+  },
+  "Warning": {
+    "message": "Warning"
+  },
+  "Enter__password__to__continue__your__transaction": {
+    "message": "Enter password to continue your transaction"
+  },
+  "Confirm": {
+    "message": "Confirm"
+  },
+  "Please__enter__the__password": {
+    "message": "Please enter the password"
+  },
+  "Transaction__detail": {
+    "message": "Transaction detail"
+  },
+  "Sign__Text": {
+    "message": "Sign Text"
+  },
+  "view__Raw": {
+    "message": "View Raw"
+  },
+  "This__summary__information__is__provide__by__DeBank__OpenAPI": {
+    "message": "This summary information is provide by DeBank OpenAPI"
+  },
+  "Sign": {
+    "message": "Sign"
+  },
+  "Continue": {
+    "message": "Continue"
+  },
+  "Preexecution__failed": {
+    "message": "Pre-execution failed"
+  },
+  "Error": {
+    "message": "Error"
+  },
+  "Sign__Typed__Message": {
+    "message": "Sign Typed Message"
+  },
+  "Cannot__sign__using__a__watch__mode__address__at__this__moment": {
+    "message": "Cannot sign using a watch mode address at this moment"
+  },
+  "Sign__via__phone__scanning__coming__soon": {
+    "message": "Sign via phone scanning coming soon"
+  },
+  "signTransactionWithChain": {
+    "message": "Sign {{name}} transaction"
+  },
+  "Approve": {
+    "message": "Approve",
+    "description": "Approve token tx title"
+  },
+  "unlimited": {
+    "message": "unlimited"
+  },
+  "UnknownProtocol": {
+    "message": "Unknown protocol"
+  },
+  "token__balance__change": {
+    "message": "Est. token balance change"
+  },
+  "nft__balance__change": {
+    "message": "Est. NFT balance change"
+  },
+  "no__token__balance__change__detected": {
+    "message": "No token balance change detected"
+  },
+  "no__nft__balance__change__detected": {
+    "message": "No NFT balance change detected"
+  },
+  "Total__value__change": {
+    "message": "Total value change"
+  },
+  "balanceChangeNotSupport": {
+    "message": "Not supported on {{name}}"
+  },
+  "No__Changes": {
+    "message": "No Changes"
+  },
+  "ntfWillBeReceived": {
+    "message": "{{countDesc}} will be received"
+  },
+  "ntfWillBeTransferedOut": {
+    "message": "{{countDesc}} will be transferred out"
+  },
+  "cancelApprovalTitle": {
+    "message": "Cancel {{symbol}} Approval for"
+  },
+  "Cancel__Pending__Transaction": {
+    "message": "Cancel Pending Transaction"
+  },
+  "One__pending__transaction__will__be__canceled": {
+    "message": "One pending transaction will be canceled"
+  },
+  "Deploy__a__Contract": {
+    "message": "Deploy a Contract"
+  },
+  "You__are__deploying__a__smart__contract": {
+    "message": "You are deploying a smart contract"
+  },
+  "sendTokenTo": {
+    "message": "Send {{amount}} {{symbol}} to"
+  },
+  "Protocol": {
+    "message": "Protocol"
+  },
+  "Unknown__Protocol": {
+    "message": "Unknown Protocol"
+  },
+  "Action": {
+    "message": "Action"
+  },
+  "Unknown__Action": {
+    "message": "Unknown Action"
+  },
+  "Contract": {
+    "message": "Contract"
+  },
+  "gasCostTitle": {
+    "message": "Est. gas cost (gwei)"
+  },
+  "gasPriceTitle": {
+    "message": "Gas price (Gwei)"
+  },
+  "txn__ahead": {
+    "message": "txn ahead"
+  },
+  "Select__Gas__Setting": {
+    "message": "Select Gas Setting"
+  },
+  "Standard": {
+    "message": "Standard"
+  },
+  "Fast": {
+    "message": "Fast"
+  },
+  "Instant": {
+    "message": "Instant"
+  },
+  "Custom": {
+    "message": "Custom"
+  },
+  "Enter__Password": {
+    "message": "Enter Password"
+  },
+  "View": {
+    "message": "View"
+  },
+  "Languages": {
+    "message": "Languages"
+  },
+  "Switching__languages": {
+    "message": "Switching languages"
+  },
+  "This__password__will__be__used__to__unlock__your__wallet": {
+    "message": "This password will be used to unlock your wallet"
+  },
+  "Pin__Website": {
+    "message": "Pin Website"
+  },
+  "UnPin__Website": {
+    "message": "UnPin Website"
+  },
+  "Select__HD__Path": {
+    "message": "Select HD Path"
+  },
+  "Next": {
+    "message": "Next"
+  },
+  "Back": {
+    "message": "Back"
+  },
+  "View__private__key": {
+    "message": "View private key"
+  },
+  "otherWalletConflictAlert": {
+    "message": "Disable other browser wallet to avoid conflicts"
+  },
+  "GasLimitMinimumValueAlert": {
+    "message": "Gas limit should be more than 21000"
+  },
+  "GasLimitEmptyAlert": {
+    "message": "Please input gas limit"
+  },
+  "RecommendGasLimitTip": {
+    "message": "Est. {{est}}. Current {{current}}x, recommend "
+  },
+  "Advanced__Options": {
+    "message": "Advanced Options"
+  },
+  "GasLimit": {
+    "message": "Gas limit"
+  },
+  "MnemonicDisableTip": {
+    "message": "Cannot Import via Seed Phrase for there is already one in the wallet"
+  },
+  "Token__Approval": {
+    "message": "Token Approval"
+  },
+  "Amount": {
+    "message": "Amount"
+  },
+  "Edit": {
+    "message": "Edit"
+  },
+  "Approve__to": {
+    "message": "Approve to"
+  },
+  "Send__Token": {
+    "message": "Send Token"
+  },
+  "To__address": {
+    "message": "To address"
+  },
+  "Transaction__submitted": {
+    "message": "📥 Transaction submitted"
+  },
+  "Transaction__completed": {
+    "message": "🎉 Transaction completed"
+  },
+  "Transaction__failed": {
+    "message": "❌ Transaction failed"
+  },
+  "Transaction__push__failed": {
+    "message": "❌ Transaction push failed"
+  },
+  "click__to__view__more__information": {
+    "message": "click to view more information"
+  },
+  "you__need__to__unlock__wallet__first": {
+    "message": "you need to unlock wallet first!"
+  },
+  "mnemonic__phrase__is__invalid": {
+    "message": "mnemonic phrase is invalid."
+  },
+  "Cannot__unlock__without__a__previous__vault": {
+    "message": "Cannot unlock without a previous vault."
+  },
+  "duplicateAccount": {
+    "message": "The account you're are trying to import is duplicate"
+  },
+  "the__private__key__is__invalid": {
+    "message": "the private key is invalid"
+  },
+  "the__input__file__is__invalid": {
+    "message": "the input file is invalid"
+  },
+  "Gas__price__too__low": {
+    "message": "Gas price too low"
+  },
+  "WatchGuideStep1": {
+    "message": "Open <1>{{name}}</1>"
+  },
+  "WatchGuideStep2": {
+    "message": "Make sure you are using address <1>{{address}}</1> on <1>{{chainName}}</1>"
+  },
+  "WatchGuideStep2JADE": {
+    "message": "Goes to the <strong>Discover</strong> page on Jade Wallet and clicks <strong>WalletConnect</strong> to scan the code."
+  },
+  "WatchGuideStep3": {
+    "message": "Scan the QR code above"
+  },
+  "ChooseCorrectAddress": {
+    "message": "Choose <1>{{address}}</1> on your phone"
+  },
+  "ChooseCorrectChain": {
+    "message": "Set your wallet to {{chain}}"
+  },
+  "Connected__successfully": {
+    "message": "Connected successfully"
+  },
+  "Waiting__for__signature": {
+    "message": "Waiting for signature"
+  },
+  "Please__sign__on__your__phone": {
+    "message": "Please sign on your phone"
+  },
+  "Connection__failed": {
+    "message": "Connection failed"
+  },
+  "Wrong__chain": {
+    "message": "Wrong chain"
+  },
+  "Wrong__address": {
+    "message": "Wrong address"
+  },
+  "No__longer__connected__to__the__phone": {
+    "message": "No longer connected to the phone"
+  },
+  "watch__Transaction__submitted": {
+    "message": "Transaction submitted"
+  },
+  "Your__transaction__has__been__submitted": {
+    "message": "Your transaction has been submitted"
+  },
+  "You__have__refused__to__sign__the__transaction": {
+    "message": "You have refused to sign"
+  },
+  "Retry": {
+    "message": "Retry"
+  },
+  "Choose__your__mobile__wallet": {
+    "message": "Choose your mobile wallet"
+  },
+  "Transaction__rejected": {
+    "message": "Transaction rejected"
+  },
+  "ConnectedCannotSwitch": {
+    "message": "Cannot switch wallet while connected"
+  },
+  "Sending__transaction__to__your__phone": {
+    "message": "Sending data to your phone"
+  },
+  "Modify__only__when__necessary": {
+    "message": "Modify only when necessary"
+  },
+  "Refresh__QR__Code": {
+    "message": "Refresh QR Code"
+  },
+  "CancelExplain": {
+    "message": "Cancel {{token}} Approve for {{protocol}}"
+  },
+  "ApproveExplain": {
+    "message": "Approve {{count}} {{token}} for {{protocol}}"
+  },
+  "CancelNFTCollectionApprovalExplain": {
+    "message": "Cancel NFT Collection Approval for {{protocol}}"
+  },
+  "CancelSingleNFTApprovalExplain": {
+    "message": "Cancel Single NFT Approval for {{protocol}}"
+  },
+  "SingleNFTApprovalExplain": {
+    "message": "Single NFT Approval for {{protocol}}"
+  },
+  "NFTCollectionApprovalExplain": {
+    "message": "NFT Collection Approval for {{protocol}}"
+  },
+  "PendingDetailTip": {
+    "message": "Only one transaction will be completed, and it is almost always the one with the highest gas price"
+  },
+  "CanNotCancelTip": {
+    "message": "Cannot speed up or cancel: Not the first pending txn"
+  },
+  "SpeedUpTooltip": {
+    "message": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+  },
+  "View__all__history__on__DeBank": {
+    "message": "View all history on DeBank"
+  },
+  "View__all": {
+    "message": "View all"
+  },
+  "Pending__detail": {
+    "message": "Pending detail"
+  },
+  "Pending": {
+    "message": "Pending"
+  },
+  "tx__ahead": {
+    "message": "tx ahead"
+  },
+  "Initial__tx": {
+    "message": "Initial tx"
+  },
+  "Cancel__tx": {
+    "message": "Cancel tx"
+  },
+  "Speed__up__tx": {
+    "message": "Speed up tx"
+  },
+  "Completed__transactions": {
+    "message": "Completed transactions"
+  },
+  "hour": {
+    "message": "hour"
+  },
+  "min": {
+    "message": "min"
+  },
+  "ago": {
+    "message": "ago"
+  },
+  "Unknown__Transaction": {
+    "message": "Unknown Transaction"
+  },
+  "Unknown": {
+    "message": "Unknown"
+  },
+  "Canceled": {
+    "message": "Canceled"
+  },
+  "Failed": {
+    "message": "Failed"
+  },
+  "No__transaction": {
+    "message": "No transaction"
+  },
+  "importAddressInvalid": {
+    "message": "The address you're are trying to import is invalid"
+  },
+  "importAddressDuplicate": {
+    "message": "The address you're are trying to import is already in Rabby"
+  },
+  "Scan__via__mobile__wallet": {
+    "message": "Scan via mobile wallet"
+  },
+  "Scan__via__PC__camera": {
+    "message": "Scan via PC camera"
+  },
+  "ScanQRcodesWithWalletConnect": {
+    "message": "Scan the QR code with a WalletConnect-compatible wallet"
+  },
+  "Please__point__the__QR__code__in__your__phone__at__the__screen": {
+    "message": "Please put your address QR code towards the camera on your computer"
+  },
+  "Whether__to__add__scanned__address": {
+    "message": "Add Watch Mode address"
+  },
+  "Scan__to__add__address": {
+    "message": "Add Watch Mode address"
+  },
+  "Restore__initial__setting": {
+    "message": "Restore initial setting"
+  },
+  "SetDefaultWalletAlert": {
+    "message": "Set Rabby as default wallet?"
+  },
+  "Set__Rabby__as__default__wallet": {
+    "message": "Set Rabby as default wallet"
+  },
+  "Please__refresh__the__website__your__are__viewing": {
+    "message": "Please refresh the website you are viewing"
+  },
+  "CameraPermissionTitle": {
+    "message": "Allow Rabby to access the camera"
+  },
+  "CameraPermission1": {
+    "message": "Allow Rabby to access the camera in the browser pop-up"
+  },
+  "CameraPermission2": {
+    "message": "Open Rabby and try import again"
+  },
+  "From": {
+    "message": "From"
+  },
+  "To": {
+    "message": "To"
+  },
+  "Enter__the__address": {
+    "message": "Enter address"
+  },
+  "This__address__is__invalid": {
+    "message": "This address is invalid"
+  },
+  "Balance": {
+    "message": "Balance"
+  },
+  "Contract__Address": {
+    "message": "Contract Address"
+  },
+  "Chain": {
+    "message": "Chain"
+  },
+  "Price": {
+    "message": "Price"
+  },
+  "Add__contact": {
+    "message": "Add contact"
+  },
+  "Select__a__token": {
+    "message": "Select a token"
+  },
+  "Search__name__or__paste__address": {
+    "message": "Search name or paste address"
+  },
+  "Search__by__Name__Address": {
+    "message": "Search by Name / Address"
+  },
+  "Common": {
+    "message": "Common"
+  },
+  "All": {
+    "message": "All"
+  },
+  "Token": {
+    "message": "Token"
+  },
+  "No__Tokens": {
+    "message": "No Tokens"
+  },
+  "Edit__address__memo": {
+    "message": "Edit address memo"
+  },
+  "Add__address__memo": {
+    "message": "Add address memo"
+  },
+  "Remove__from__Contacts": {
+    "message": "Remove from Contacts"
+  },
+  "Contacts": {
+    "message": "Contacts"
+  },
+  "Gas__fee__reservation__required": {
+    "message": "Gas fee reservation required"
+  },
+  "Insufficient__balance": {
+    "message": "Insufficient balance"
+  },
+  "AllowRabbyPermissionsTitle": {
+    "message": "Allow Rabby permissions to:"
+  },
+  "LedgerPermission1": {
+    "message": "Connect to an HID device"
+  },
+  "LedgerPermissionTip": {
+    "message": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window."
+  },
+  "Allow": {
+    "message": "Allow"
+  },
+  "No__contacts": {
+    "message": "No contacts"
+  },
+  "Loading__Tokens": {
+    "message": "Loading Tokens..."
+  },
+  "Added__to__Contact": {
+    "message": "Added to Contact"
+  },
+  "Add__Watch__Mode__Address": {
+    "message": "Add Watch Mode Address"
+  },
+  "Add__address__without__private__keys": {
+    "message": "Full experience without importing private keys"
+  },
+  "Import__Private__Key": {
+    "message": "Import Private Key"
+  },
+  "Connect__with": {
+    "message": "Connect with"
+  },
+  "Use_other_methods": {
+    "message": "Cannot sign using current address(Watch Mode / Safe)"
+  },
+  "Proceed": {
+    "message": "Proceed"
+  },
+  "Change__bridge__server": {
+    "message": "Change bridge server"
+  },
+  "Scan__with__your__wallet__app": {
+    "message": "Scan with your wallet app"
+  },
+  "QR__code": {
+    "message": "QR code"
+  },
+  "Get__Signature": {
+    "message": "Get Signature"
+  },
+  "KesytoneMismatchedSignId": {
+    "message": "Incongruent transaction data. Please check the transaction details."
+  },
+  "KeystoneSignRequestSubtitle": {
+    "message": "Scan the QR code on the Keystone hardware wallet"
+  },
+  "unknownQrCode": {
+    "message": "Error: We couldn't identify that QR code"
+  },
+  "KeystoneUnknownWalletQRCode": {
+    "message": "Invalid QR code. Please scan the sync QR code of the hardware wallet."
+  },
+  "KeystoneSignRequestDescription": {
+    "message": "After you’ve signed with your wallet, click on 'Get Signature' to receive the signature"
+  },
+  "URL": {
+    "message": "URL"
+  },
+  "Please__add__an__address": {
+    "message": "Please add an address"
+  },
+  "Bridge__Service__URL": {
+    "message": "Bridge Service URL"
+  },
+  "Imported__successfully": {
+    "message": "Imported successfully"
+  },
+  "addressTypeTip": {
+    "message": "Imported by {{type}}"
+  },
+  "Imported__by__Ledger": {
+    "message": "Imported by Ledger"
+  },
+  "Imported__by__Trezor": {
+    "message": "Imported by Trezor"
+  },
+  "Imported__by__Onekey": {
+    "message": "Imported by Onekey"
+  },
+  "Imported__by__BitBox02": {
+    "message": "Imported by BitBox02"
+  },
+  "Disconnect": {
+    "message": "Disconnect"
+  },
+  "My__accounts": {
+    "message": "My accounts"
+  },
+  "No__other__address": {
+    "message": "No other address"
+  },
+  "Start__from__address": {
+    "message": "Start from address #"
+  },
+  "addresses__selected": {
+    "message": "addresses selected"
+  },
+  "Profile": {
+    "message": "Profile"
+  },
+  "Coming__soon": {
+    "message": "Coming soon"
+  },
+  "Portfolio": {
+    "message": "Portfolio"
+  },
+  "multiSignChainNotMatch": {
+    "message": "Multi-signature addresses are not on this chain and cannot initiate transactions"
+  },
+  "GnosisLoadFaildDescription": {
+    "message": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
+  },
+  "GnosisLowerNonceNeedExcute": {
+    "message": "Transaction with nonce {{nonce}} needs to be executed first"
+  },
+  "GnosisSwitchChainWarning": {
+    "message": "No connected to the right chain of this Safe address"
+  },
+  "ResetAccountDescription1": {
+    "message": "Resetting your account will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain."
+  },
+  "ResetAccountDescription2": {
+    "message": "This will not change the balances in your accounts or require you to re-enter your Secret Recovery Phrase. All your assets and accounts information will remain secure."
+  },
+  "ResetAccountWarn": {
+    "message": "Reset account only when necessary"
+  },
+  "SelectHDPath": {
+    "message": "If you don't see the addresses you expect, try switching the HD path:"
+  },
+  "ConfirmTheTokenOn": {
+    "message": "Confirm the token on"
+  },
+  "Etherscan": {
+    "message": "Etherscan"
+  },
+  "SwapCheckEtherscanToken": {
+    "message": "Different tokens may use the same name and symbol. Check {{scan}} to verify this is the token you're looking for. "
+  },
+  "AdvancedSettings": {
+    "message": "Advanced Settings"
+  },
+  "Slippage__tolerance": {
+    "message": "Slippage tolerance"
+  },
+  "SlippageTip": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting."
+  },
+  "LowSlippageToleranceWarn": {
+    "message": "Transaction may fail due to low slippage tolerance."
+  },
+  "HighSlippageToleranceWarn": {
+    "message": "High slippage tolerance may result in uneconomic trading. "
+  },
+  "HighSlippageToleranceError": {
+    "message": "High slippage tolerance may result in large losses. Please set your max slippage below 15%. "
+  },
+  "GetQuotes": {
+    "message": "Get Quotes"
+  },
+  "FailGetQuote": {
+    "message": "Can't get a quote due to bad internet status. Please try again later."
+  },
+  "NoAvailableQuote": {
+    "message": "Sorry, no available quotes were found. "
+  },
+  "FetchingQuotes": {
+    "message": "Fetching Quotes"
+  },
+  "AllQuotes": {
+    "message": "All quotes"
+  },
+  "QuoteDetails": {
+    "message": "Quote Details"
+  },
+  "BestQuote": {
+    "message": "Best Quote"
+  },
+  "SelectedQuote": {
+    "message": "Selected quote"
+  },
+  "Minimum__receive__minReceive__symbol__under__slippage": {
+    "message": "Minimum receive {{minReceive}} {{symbol}} under {{slippage}}% slippage"
+  },
+  "ChangeSlippage": {
+    "message": "Do you want to go back and change the max slippage to get new quotes?"
+  },
+  "QuoteDesc": {
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees. A fee of {{feeRatio}}% has been deducted from all quotes."
+  },
+  "ReceivingAmountDesc": {
+    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted {{feeRatio}}% as a service fee for Rabby."
+  },
+  "EstGasFeeDesc": {
+    "message": "This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions. "
+  },
+  "MaxSlippageDesc": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting. "
+  },
+  "LiquiditySourceDesc": {
+    "message": "Available liquidity sources are dexes, aggregators, and professional market makers."
+  },
+  "useThisQuote": {
+    "message": "Use this quote"
+  },
+  "Approve__and__Swap": {
+    "message": "Approve and Swap"
+  },
+  "Please__input__the__custom__slippage": {
+    "message": "Please input the custom slippage"
+  },
+  "Slippage__cant__be__0": {
+    "message": "Slippage can't be 0"
+  },
+  "The__token__on__this__chain__is__not__supported__for__swap": {
+    "message": "The token on this chain is not supported for swap"
+  },
+  "The__minimum__amount__received__under__the__current__slippage__tolerance": {
+    "message": "The minimum amount received under the current slippage tolerance"
+  },
+  "Widget": {
+    "message": "Widget"
+  },
+  "Instant__Gas__Top__Up": {
+    "message": "Instant Gas Top Up"
+  },
+  "gasTopUpDescribe": {
+    "message": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible."
+  },
+  "Including__service__fee": {
+    "message": "Including ${{fee}} service fee"
+  },
+  "Payment__Token": {
+    "message": "Payment Token"
+  },
+  "service__fee__tip": {
+    "message": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged."
+  },
+  "Contact__up__on__Discord": {
+    "message": "Contact us on Discord"
+  },
+  "Gas__Top__Up__Insufficient__Balance": {
+    "message": "There is not enough balance in Rabby's contract address for the current chain. Please try again later."
+  },
+  "Gas__Top__Up__hight__gas__fees": {
+    "message": "This top up amount is too small because the target network requires high gas fees."
+  }
+}
