@@ -13783,9 +13783,9 @@ sha.js@^2.4.0, sha.js@^2.4.11, sha.js@^2.4.8:
     safe-buffer "^5.0.1"
 
 sha256-uint8array@^0.10.3:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/sha256-uint8array/-/sha256-uint8array-0.10.3.tgz#322a91413f78f518e0b9c8f8e982cc2e629b59c7"
-  integrity sha512-SFTs87RfXVulKrhhP6B5/qcFruOKQZaKf6jY9V4PJ7NOG0qIlQP6XL4pQq5xagsuP/Wd55S7tUBJpRajEsDUEQ==
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/sha256-uint8array/-/sha256-uint8array-0.10.5.tgz#a8ca295fda3bd444cb32c0fe784819bd614fe6e2"
+  integrity sha512-KjYP8M6y8VvV62lnSSZwzutuwqphVOOVQamP+GmmClZcYhbq1HSIw/M2tlKgHndiaIwe3tFG5X38YYsQfUdItw==
 
 shallow-clone@^3.0.0:
   version "3.0.1"
@@ -15683,9 +15683,9 @@ wildcard@^2.0.0:
   integrity sha512-JcKqAHLPxcdb9KM49dufGXn2x3ssnfjbcaQdLlfZsL9rH9wgDQjUtDxbo8NE0F6SFvydeu1VhZe7hZuHsB2/pw==
 
 word-wrap@^1.2.3, word-wrap@~1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
-  integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.4.tgz#cb4b50ec9aca570abd1f52f33cd45b6c61739a9f"
+  integrity sha512-2V81OA4ugVo5pRo46hAoD2ivUJx8jXmWXfUkY4KFNw0hEptvN0QfH3K4nHiwzGeKl5rFKedV48QVoqYavy4YpA==
 
 wrap-ansi@^7.0.0:
   version "7.0.0"

@@ -166,5 +166,6 @@ export const abstractTokenToTokenItem = (
     price: token.price,
     symbol: token.symbol,
     time_at: token.time_at,
+    price_24h_change: token.price_24h_change,
   };
 };

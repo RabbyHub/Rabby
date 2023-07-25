@@ -14,9 +14,12 @@ import { requestOpenApiMultipleNets } from '../utils/openapi';
 
 export interface AccountState {
   currentAccount: null | Account;
+  /**
+   * @description alias name of CURRENT account
+   */
+  alianName: string;
   visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
-  alianName: string;
   keyrings: DisplayedKeryring[];
   balanceMap: {
     [address: string]: TotalBalanceResponse;
@@ -180,11 +183,21 @@ export const account = createModel<RootModel>()({
       dispatch.account.setTestnetCustomizeTokenList([]);
     },
 
-    async getAlianNameAsync(address: string, store) {
-      const name = await store.app.wallet.getAlianName<string>(address);
+    async fetchCurrentAccountAliasNameAsync(_?: any, store?) {
+      const currentAccount = store.account.currentAccount;
+      if (!currentAccount?.address) return '';
 
-      dispatch.account.setField({ alianName: name });
-      return name;
+      const alianName: string = await store.app.wallet.getAlianName<string>(
+        currentAccount?.address
+      );
+      currentAccount.alianName = alianName;
+
+      dispatch.account.setField({
+        alianName,
+        currentAccount: { ...currentAccount },
+      });
+
+      return alianName;
     },
 
     async getAllClassAccountsAsync(_?, store?) {

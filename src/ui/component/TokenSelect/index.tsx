@@ -75,12 +75,14 @@ export interface TokenSelectProps {
     | React.ReactNode;
 }
 
+const defaultExcludeTokens = [];
+
 const TokenSelect = ({
   token,
   onChange,
   onTokenChange,
   chainId,
-  excludeTokens = [],
+  excludeTokens = defaultExcludeTokens,
   type = 'default',
   placeholder,
   hideChainIcon = true,

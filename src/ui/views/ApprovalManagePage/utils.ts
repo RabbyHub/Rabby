@@ -1,28 +1,49 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import updateLocale from 'dayjs/plugin/updateLocale';
 
 dayjs.extend(relativeTime);
+dayjs.extend(updateLocale);
 
 import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
-  NftApprovalItem,
   RiskNumMap,
-  TokenApprovalItem,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
 import { SorterResult } from 'antd/lib/table/interface';
-import { NFTApproval, Spender } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  NFTApproval,
+  NFTApprovalContract,
+  Spender,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Chain } from '@debank/common';
 import { openInTab } from '@/ui/utils';
-import { findChainByServerID } from '@/utils/chain';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
 
   const obj = dayjs(time);
   if (!obj.isValid()) return '';
+
+  dayjs.updateLocale('en', {
+    relativeTime: {
+      future: 'in %s',
+      past: '%s ago',
+      s: 'a few seconds',
+      m: '1 minute',
+      mm: '%d minutes',
+      h: '1 hour',
+      hh: '%d hours',
+      d: '1 day',
+      dd: '%d days',
+      M: '1 month',
+      MM: '%d months',
+      y: '1 year',
+      yy: '%d years',
+    },
+  });
 
   return dayjs(time).fromNow();
 }
@@ -198,24 +219,27 @@ export function getFinalRiskInfo(contract: ContractApprovalItem) {
   const isDanger = finalMaxScore >= RiskNumMap.danger;
   const isWarning = !isDanger && finalMaxScore >= RiskNumMap.warning;
 
-  return { isDanger, isWarning };
+  return {
+    isServerRisk: eva.serverRiskScore >= RiskNumMap.warning,
+    // isServerDanger: eva.serverRiskScore >= RiskNumMap.danger,
+    // isServerWarning: eva.serverRiskScore >= RiskNumMap.warning,
+    isDanger,
+    isWarning,
+  };
 }
 
 export function openScanLinkFromChainItem(
-  chainItem: Chain | null | undefined,
+  spanLink: Chain['scanLink'] | null | undefined,
   address: string
 ) {
-  if (!chainItem) return;
+  if (!spanLink) return;
 
-  openInTab(
-    chainItem?.scanLink.replace(/tx\/_s_/, `address/${address}`),
-    false
-  );
+  openInTab(spanLink.replace(/tx\/_s_/, `address/${address}`), false);
 }
 
 export function maybeNFTLikeItem(
   contractListItem: ContractApprovalItem['list'][number]
-) {
+): contractListItem is NFTApproval | NFTApprovalContract {
   return (
     'spender' in contractListItem &&
     (contractListItem.is_erc1155 || contractListItem.is_erc721)

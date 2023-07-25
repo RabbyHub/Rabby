@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
+import { formatTokenAmount } from 'ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
@@ -112,6 +114,21 @@ const ContractCall = ({
             </div>
           </Row>
         </Col>
+        {new BigNumber(requireData.payNativeTokenAmount).gt(0) && (
+          <Col>
+            <Row isTitle>Pay {requireData.nativeTokenSymbol}</Row>
+            {
+              <Row>
+                {formatTokenAmount(
+                  new BigNumber(requireData.payNativeTokenAmount)
+                    .div(1e18)
+                    .toFixed()
+                )}{' '}
+                {requireData.nativeTokenSymbol}
+              </Row>
+            }
+          </Col>
+        )}
       </Table>
     </Wrapper>
   );

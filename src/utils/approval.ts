@@ -278,13 +278,13 @@ export function compareContractApprovalItemByRiskLevel(
     return aRisk.serverRiskScore > bRisk.serverRiskScore ? 1 : -1;
   }
 
-  if (aRisk.clientTotalRiskScore !== bRisk.clientTotalRiskScore) {
-    return aRisk.clientTotalRiskScore > bRisk.clientTotalRiskScore ? 1 : -1;
-  }
+  // if (aRisk.clientTotalRiskScore !== bRisk.clientTotalRiskScore) {
+  //   return aRisk.clientTotalRiskScore > bRisk.clientTotalRiskScore ? 1 : -1;
+  // }
 
-  if (aRisk.clientMaxRiskScore !== bRisk.clientMaxRiskScore) {
-    return aRisk.clientMaxRiskScore > bRisk.clientMaxRiskScore ? 1 : -1;
-  }
+  // if (aRisk.clientMaxRiskScore !== bRisk.clientMaxRiskScore) {
+  //   return aRisk.clientMaxRiskScore > bRisk.clientMaxRiskScore ? 1 : -1;
+  // }
 
   return 0;
 }
