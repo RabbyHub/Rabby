@@ -56,7 +56,7 @@ export function useAsyncInitializeChainList({
     updateInitStage('fetching');
 
     await dispatch.preference.getPreference('pinnedChain');
-    await dispatch.account.getMatteredChainBalance();
+    await dispatch.account.getMatteredChainBalance({});
     updateInitStage('fetched');
   }, [updateInitStage]);
 

@@ -1,8 +1,8 @@
+import React, { useMemo, forwardRef, HTMLAttributes, useEffect } from 'react';
 import { Chain } from '@/background/service/openapi';
 import { CHAINS_ENUM } from '@debank/common';
 import { Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { forwardRef, HTMLAttributes, useEffect } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import ChainIcon from '../../ChainIcon';
 import IconCheck from 'ui/assets/check-2.svg';
@@ -18,7 +18,7 @@ export type SelectChainItemProps = {
   onStarChange?: (value: boolean) => void;
   onChange?: (value: CHAINS_ENUM) => void;
   disabled?: boolean;
-  disabledTips?: string;
+  disabledTips?: string | ((ctx: { chain: Chain }) => string);
   showRPCStatus?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
@@ -48,13 +48,21 @@ export const SelectChainItem = forwardRef(
       dispatch.customRPC.getAllRPC();
     }, []);
 
+    const finalDisabledTips = useMemo(() => {
+      if (typeof disabledTips === 'function') {
+        return disabledTips({ chain: data });
+      }
+
+      return disabledTips;
+    }, [disabledTips]);
+
     return (
       <Tooltip
         trigger={['click', 'hover']}
         mouseEnterDelay={3}
         overlayClassName={clsx('rectangle left-[20px]')}
         placement="top"
-        title={disabledTips}
+        title={finalDisabledTips}
         visible={disabled ? undefined : false}
       >
         <div

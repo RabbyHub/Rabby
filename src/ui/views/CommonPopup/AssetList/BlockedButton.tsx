@@ -5,10 +5,13 @@ import useSortToken from '@/ui/hooks/useSortTokens';
 
 interface Props {
   onClickLink: () => void;
+  isTestnet: boolean;
 }
 
-export const BlockedButton: React.FC<Props> = ({ onClickLink }) => {
-  const { blocked } = useRabbySelector((store) => store.account.tokens);
+export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
+  const { blocked } = useRabbySelector((store) =>
+    isTestnet ? store.account.testnetTokens : store.account.tokens
+  );
   const list = useSortToken(blocked);
 
   return (

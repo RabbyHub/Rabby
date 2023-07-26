@@ -16,7 +16,7 @@ import {
   VirtualTable,
 } from './components/Table';
 import { VariableSizeGrid as VGrid } from 'react-window';
-import PillsSwitch from './components/SwitchPills';
+import PillsSwitch from '@/ui/component/PillsSwitch';
 
 import IconSearch from 'ui/assets/search.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -1033,7 +1033,9 @@ const ApprovalManagePage = () => {
             <PillsSwitch
               value={filterType}
               options={SwitchPills}
-              onChange={(key) => setFilterType(key)}
+              onTabChange={(key) => setFilterType(key)}
+              itemClassname="text-[15px] w-[148px] h-[40px]"
+              itemClassnameInActive="text-[#707280]"
             />
 
             <SearchInput

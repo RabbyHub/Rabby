@@ -810,6 +810,7 @@ const SendToken = () => {
                 watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
               }}
               alianName={sendAlianName}
+              isHideAmount={CHAINS[chain]?.isTestnet}
             />
             <div className="section-title">
               <span className="section-title__to">{t('To')}</span>

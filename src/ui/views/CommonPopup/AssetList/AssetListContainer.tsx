@@ -21,6 +21,7 @@ interface Props {
   selectChainId: string | null;
   visible: boolean;
   onEmptyAssets: (isEmpty: boolean) => void;
+  isTestnet?: boolean;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
@@ -28,6 +29,7 @@ export const AssetListContainer: React.FC<Props> = ({
   selectChainId,
   visible,
   onEmptyAssets,
+  isTestnet = false,
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
@@ -44,7 +46,7 @@ export const AssetListContainer: React.FC<Props> = ({
     hasTokens,
     blockedTokens,
     customizeTokens,
-  } = useQueryProjects(currentAccount?.address, false, visible);
+  } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
@@ -65,7 +67,8 @@ export const AssetListContainer: React.FC<Props> = ({
     currentAccount?.address,
     search,
     selectChainId ? selectChainId : undefined,
-    true
+    true,
+    isTestnet
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;
@@ -132,6 +135,7 @@ export const AssetListContainer: React.FC<Props> = ({
               isNoResults={isNoResults}
               blockedTokens={blockedTokens}
               customizeTokens={customizeTokens}
+              isTestnet={isTestnet}
             />
           )}
           {activeTab === TokenTabEnum.Summary && !search && (

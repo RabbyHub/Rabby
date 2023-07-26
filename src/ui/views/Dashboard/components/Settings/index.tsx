@@ -1,7 +1,11 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
-import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
+import {
+  CHAINS,
+  INITIAL_OPENAPI_URL,
+  INITIAL_TESTNET_OPENAPI_URL,
+} from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -23,6 +27,7 @@ import IconServer from 'ui/assets/server.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import IconTwitter from 'ui/assets/twitter.svg';
+import IconTestnet from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, useWallet } from 'ui/utils';
@@ -78,9 +83,15 @@ const OpenApiModal = ({
   visible,
   onFinish,
   onCancel,
+  value,
+  title = 'Backend Service URL',
+  defaultValue = INITIAL_OPENAPI_URL,
 }: {
+  title?: string;
   visible: boolean;
-  onFinish(): void;
+  onFinish(host: string): void;
+  value: string;
+  defaultValue: string;
   onCancel(): void;
 }) => {
   const { useForm } = Form;
@@ -88,20 +99,18 @@ const OpenApiModal = ({
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
 
-  const host = useRabbySelector((state) => state.openapi.host);
   const dispatch = useRabbyDispatch();
 
   const handleSubmit = async ({ host }: { host: string }) => {
-    await dispatch.openapi.setHost(host);
     setIsVisible(false);
     setTimeout(() => {
-      onFinish();
+      onFinish(host);
     }, 500);
   };
 
   const restoreInitial = () => {
     form.setFieldsValue({
-      host: INITIAL_OPENAPI_URL,
+      host: defaultValue,
     });
   };
 
@@ -114,13 +123,9 @@ const OpenApiModal = ({
 
   useEffect(() => {
     form.setFieldsValue({
-      host,
+      host: value,
     });
-  }, [form, host]);
-
-  useEffect(() => {
-    dispatch.openapi.getHost();
-  }, [dispatch]);
+  }, [form, value]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -133,7 +138,7 @@ const OpenApiModal = ({
       className={clsx('openapi-modal', { show: isVisible, hidden: !visible })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Backend Service URL')}
+        {title}
       </PageHeader>
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
@@ -344,6 +349,7 @@ const Settings = ({
   const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
+  const [showTestnetOpenApiModal, setShowTestnetOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
@@ -351,6 +357,14 @@ const Settings = ({
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
+
+  const isShowTestnet = useRabbySelector(
+    (state) => state.preference.isShowTestnet
+  );
+
+  const openapiStore = useRabbySelector((state) => state.openapi);
+
+  const dispatch = useRabbyDispatch();
 
   const autoLockTimeLabel = useMemo(() => {
     return (
@@ -404,6 +418,10 @@ const Settings = ({
 
     return semver(process.env.release || '0.0.0', data.version_tag) === -1;
   });
+
+  const handleSwitchIsShowTestnet = (value: boolean) => {
+    dispatch.preference.setIsShowTestnet(value);
+  };
 
   const updateVersionClassName = useCss({
     '& .ant-modal-content': {
@@ -521,6 +539,16 @@ const Settings = ({
             <Switch
               checked={whitelistEnable}
               onChange={handleSwitchWhitelistEnable}
+            />
+          ),
+        },
+        {
+          leftIcon: IconTestnet,
+          content: t('Show Testnets'),
+          rightIcon: (
+            <Switch
+              checked={isShowTestnet}
+              onChange={handleSwitchIsShowTestnet}
             />
           ),
         },
@@ -722,12 +750,26 @@ const Settings = ({
   };
 
   if (process.env.DEBUG) {
-    renderData.features.items.splice(-1, 0, {
-      leftIcon: IconServer,
-      content: t('Backend Service URL'),
-      onClick: () => setShowOpenApiModal(true),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    } as typeof renderData.features.items[0]);
+    renderData.features.items.splice(
+      -1,
+      0,
+      {
+        leftIcon: IconServer,
+        content: t('Backend Service URL'),
+        onClick: () => setShowOpenApiModal(true),
+        rightIcon: (
+          <img src={IconArrowRight} className="icon icon-arrow-right" />
+        ),
+      } as typeof renderData.features.items[0],
+      {
+        leftIcon: IconServer,
+        content: t('Testnet Backend Service URL'),
+        onClick: () => setShowTestnetOpenApiModal(true),
+        rightIcon: (
+          <img src={IconArrowRight} className="icon icon-arrow-right" />
+        ),
+      } as typeof renderData.features.items[0]
+    );
   }
 
   if (process.env.DEBUG) {
@@ -761,6 +803,8 @@ const Settings = ({
 
   useEffect(() => {
     initWhitelistEnabled();
+    dispatch.openapi.getHost();
+    dispatch.openapi.getTestnetHost();
   }, []);
 
   return (
@@ -826,8 +870,24 @@ const Settings = ({
 
           <OpenApiModal
             visible={showOpenApiModal}
-            onFinish={() => setShowOpenApiModal(false)}
+            value={openapiStore.host}
+            defaultValue={INITIAL_OPENAPI_URL}
+            onFinish={(host) => {
+              dispatch.openapi.setHost(host);
+              setShowOpenApiModal(false);
+            }}
             onCancel={() => setShowOpenApiModal(false)}
+          />
+          <OpenApiModal
+            visible={showTestnetOpenApiModal}
+            value={openapiStore.testnetHost}
+            defaultValue={INITIAL_TESTNET_OPENAPI_URL}
+            title="Testnet Backend Service URL"
+            onFinish={(host) => {
+              dispatch.openapi.setTestnetHost(host);
+              setShowTestnetOpenApiModal(false);
+            }}
+            onCancel={() => setShowTestnetOpenApiModal(false)}
           />
           <ResetAccountModal
             visible={showResetAccountModal}

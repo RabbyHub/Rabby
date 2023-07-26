@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import clsx from 'clsx';
-import { Button, Input } from 'antd';
-import { useTranslation } from 'react-i18next';
-import { intToHex } from 'ethereumjs-util';
-import BigNumber from 'bignumber.js';
-import styled from 'styled-components';
-import { useDebounce } from 'react-use';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import IconArrowDown from '@/ui/assets/approval/icon-arrow-down.svg';
+import { CHAINS_LIST } from '@debank/common';
+import { useSetState } from 'ahooks';
+import { Button } from 'antd';
 import { Chain } from 'background/service/openapi';
-import { useWallet, useApproval } from 'ui/utils';
-import { isValidateUrl } from 'ui/utils/url';
-import { FieldCheckbox } from 'ui/component';
+import BigNumber from 'bignumber.js';
+import { CHAINS } from 'consts';
+import { intToHex } from 'ethereumjs-util';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import IconWarning from 'ui/assets/warning.svg';
+import { FallbackSiteLogo } from 'ui/component';
+import { useApproval, useWallet } from 'ui/utils';
 
 export interface AddEthereumChainParams {
   chainId: string;
@@ -34,55 +34,77 @@ interface AddChainProps {
   };
 }
 
-const UnknownLogo = styled.div`
-  width: 56px;
-  height: 56px;
-  background: #e5e9ef;
-  border-radius: 100%;
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 56px;
-  text-align: center;
-  color: #707280;
-`;
-
-const ErrorMsg = styled.div`
-  color: #ec5151;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  margin-top: 8px;
-`;
-
 const OptionsWrapper = styled.div`
   height: 100%;
-  padding-top: 16px;
   display: flex;
   flex-direction: column;
-  .field {
-    background-color: #f5f6fa !important;
-    flex-flow: row-reverse;
-    .right-icon {
-      margin-right: 12px;
+
+  .content {
+    padding: 20px;
+  }
+
+  .title {
+    color: #13141a;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-bottom: 40px;
+  }
+  .connect-site-card {
+    border-radius: 8px;
+    background: #f5f6fa;
+    display: inline-flex;
+    padding: 28px 28px 32px 28px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 40px;
+
+    .site-origin {
+      color: #13141a;
+      text-align: center;
+      font-size: 22px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
     }
-    .field-slot {
-      span {
-        max-width: 100px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-    &.checked {
-      background-color: #f3f5ff !important;
-      .rabby-checkbox {
-        background-color: #8697ff !important;
-      }
+  }
+  .switch-chain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .chain-card {
+    display: flex;
+    width: 260px;
+    padding: 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px;
+    border: 1px solid #e5e9ef;
+
+    color: #13141a;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
   }
 `;
 
 const Footer = styled.div`
+  margin-top: auto;
   height: 76px;
   border-top: 1px solid #e5e9ef;
   padding: 16px 20px;
@@ -96,130 +118,69 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const { t } = useTranslation();
 
   const { data, session } = params;
-  // eslint-disable-next-line prefer-const
-  let [{ chainId, chainName, rpcUrls }] = data;
-  if (typeof chainId === 'number') {
-    chainId = intToHex(chainId).toLowerCase();
-  } else {
-    chainId = chainId.toLowerCase();
-  }
 
-  const [showChain, setShowChain] = useState<Chain | undefined>(undefined);
-  const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
+  const chainId = useMemo(() => {
+    const chainId = data?.[0]?.chainId;
+    if (typeof chainId === 'number') {
+      return intToHex(chainId).toLowerCase();
+    } else {
+      return chainId.toLowerCase();
+    }
+  }, [data]);
+
   const [inited, setInited] = useState(false);
-  const [isSupported, setIsSupported] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [rpcUrl, setRpcUrl] = useState('');
-  const [rpcErrorMsg, setRpcErrorMsg] = useState('');
-  const [showOptions, setShowOptions] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(0);
-  const [showUnsupportAlert, setShowUnsupportAlert] = useState(false);
-  const canSave = useMemo(() => {
-    return rpcUrl && !rpcErrorMsg && isSupported && !isLoading;
-  }, [rpcErrorMsg, isSupported, rpcUrl, isLoading]);
+  const [state, setState] = useSetState({
+    currentChain: null as Chain | null,
+    nextChain: null as Chain | null,
+    isSwitchToMainnet: false,
+    isSwitchToTestnet: false,
+    isShowUnsupportAlert: false,
+  });
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
-    setDefaultChain(site?.chain || null);
-    if (rpcUrls?.length > 0) {
-      setRpcUrl(rpcUrls[0]);
-    }
+
+    const currentChain = site ? CHAINS[site.chain] : null;
+    const nextChain =
+      CHAINS_LIST.find((item) => new BigNumber(item.hex).isEqualTo(chainId)) ||
+      null;
+
+    const isSwitchToMainnet =
+      currentChain &&
+      nextChain &&
+      currentChain.isTestnet &&
+      !nextChain.isTestnet;
+    const isSwitchToTestnet =
+      currentChain &&
+      nextChain &&
+      !currentChain.isTestnet &&
+      nextChain.isTestnet;
+
+    setState({
+      isShowUnsupportAlert: !nextChain,
+      isSwitchToMainnet: !!isSwitchToMainnet,
+      isSwitchToTestnet: !!isSwitchToTestnet,
+      currentChain,
+      nextChain,
+    });
+
     setInited(true);
   };
-
-  const handleRPCChanged = (rpc: string) => {
-    setRpcUrl(rpc);
-    setIsLoading(true);
-    if (!isValidateUrl(rpc)) {
-      setRpcErrorMsg('Invalid RPC URL');
-    }
-  };
-
-  const rpcValidation = async () => {
-    if (!isValidateUrl(rpcUrl)) {
-      setRpcErrorMsg('Invalid RPC URL');
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const isValid = await wallet.validateRPC(rpcUrl, Number(chainId));
-      setIsLoading(false);
-      if (!isValid) {
-        setRpcErrorMsg('Invalid Chain ID');
-      } else {
-        setRpcErrorMsg('');
-      }
-    } catch (e) {
-      setIsLoading(false);
-      setRpcErrorMsg('RPC authentication failed');
-    }
-  };
-
-  useEffect(() => {
-    const chain = Object.values(CHAINS).find((chain) =>
-      new BigNumber(chain.hex).isEqualTo(chainId)
-    );
-    if (chain) {
-      setShowChain(chain);
-    } else {
-      setIsSupported(false);
-      setShowChain({
-        id: Number(chainId),
-        name: chainName || 'Unknown',
-        hex: `0x${Number(chainId).toString(16)}`,
-        logo: '',
-        enum: CHAINS_ENUM.ETH,
-        serverId: '',
-        network: '',
-        nativeTokenSymbol: '',
-        nativeTokenLogo: '',
-        nativeTokenAddress: '',
-        scanLink: '',
-        nativeTokenDecimals: 18,
-        selectChainLogo: '',
-        eip: {},
-      });
-      setShowUnsupportAlert(true);
-      setShowOptions(false);
-    }
-  }, [defaultChain]);
-
-  useDebounce(rpcValidation, 200, [rpcUrl]);
 
   useEffect(() => {
     init();
   }, []);
 
   const handleConfirm = () => {
-    resolveApproval({
-      chain: showChain?.enum,
-      rpcUrl,
-    });
-  };
-
-  const handleSelectOption = (id: number) => {
-    setSelectedOption(id);
-  };
-
-  const handleClickContinue = () => {
-    if (selectedOption === 0) {
-      if (isSupported) {
-        resolveApproval();
-      } else {
-        setShowUnsupportAlert(true);
-        setShowOptions(false);
-      }
-    } else {
-      setShowOptions(false);
-    }
+    resolveApproval();
   };
 
   if (!inited) return <></>;
 
-  if (showUnsupportAlert) {
+  if (state.isShowUnsupportAlert) {
     return (
       <OptionsWrapper>
-        <div className="flex-1 px-28 pt-60">
+        <div className="flex-1 px-28 pt-80">
           <img src={IconWarning} className="w-[68px] h-[68px] mb-28 mx-auto" />
           <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
             {t('The requested chain is not supported by Rabby yet')}
@@ -239,43 +200,28 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     );
   }
 
-  if (showOptions) {
+  if (state.isSwitchToMainnet || state.isSwitchToTestnet) {
     return (
       <OptionsWrapper>
-        <div className="flex-1 px-20">
-          <div className="mb-12 text-center text-18 font-medium">
-            Dapp attempts to add custom RPC
+        <div className="content">
+          <div className="title">
+            Switching to {state.isSwitchToMainnet ? 'Mainnet' : 'Testnet'}
           </div>
-          <p className="mb-28 text-gray-subTitle">
-            Rabby can't verify the security of custom RPC. The custom RPC will
-            replace Rabby's node. It can be deleted later in "Settings" -
-            "Custom RPC"
-          </p>
-          <FieldCheckbox
-            defaultChecked
-            checked={selectedOption === 0}
-            className={clsx({ checked: selectedOption === 0 })}
-            onChange={(checked) => {
-              if (checked) handleSelectOption(0);
-            }}
-          >
-            Switch to
-            <span className="text-gray-title font-bold mx-4">
-              {showChain ? showChain.name : 'Unknown'}
-            </span>
-            without adding RPC
-          </FieldCheckbox>
-          <FieldCheckbox
-            className={clsx({ checked: selectedOption === 1 })}
-            checked={selectedOption === 1}
-            onChange={(checked) => {
-              if (checked) handleSelectOption(1);
-            }}
-          >
-            Allow this site to add custom RPC
-          </FieldCheckbox>
+          <div className="connect-site-card">
+            <FallbackSiteLogo
+              url={session.icon}
+              origin={session.origin}
+              width="40px"
+            />
+            <p className="site-origin">{session.origin}</p>
+          </div>
+          <div className="switch-chain">
+            <ChainCard chain={state.currentChain}></ChainCard>
+            <img src={IconArrowDown} alt="" />
+            <ChainCard chain={state.nextChain}></ChainCard>
+          </div>
         </div>
-        <Footer>
+        <Footer className="border-0">
           <Button
             type="primary"
             size="large"
@@ -289,77 +235,27 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             type="primary"
             className="w-[172px]"
             size="large"
-            onClick={handleClickContinue}
+            onClick={handleConfirm}
           >
-            Continue
+            Confirm
           </Button>
         </Footer>
       </OptionsWrapper>
     );
   }
 
+  return null;
+};
+
+const ChainCard = ({ chain }: { chain?: Chain | null }) => {
+  if (!chain) {
+    return null;
+  }
   return (
-    <>
-      <div className="approval-chain">
-        <div className="text-center mb-12 text-18 font-medium">Edit RPC</div>
-        <div className="text-center">
-          {showChain?.logo ? (
-            <img
-              className="w-[56px] h-[56px] mx-auto mb-12"
-              src={showChain?.logo}
-            />
-          ) : (
-            <UnknownLogo className="mx-auto mb-12">
-              {showChain?.name[0].toUpperCase()}
-            </UnknownLogo>
-          )}
-          <div className="mb-8 text-20 text-gray-title leading-none">
-            {showChain?.name}
-          </div>
-          <div className="mb-8 text-14 text-gray-title text-left">RPC URL</div>
-        </div>
-        <Input
-          className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
-          value={rpcUrl}
-          disabled={!isSupported}
-          placeholder="Enter the RPC URL"
-          onChange={(e) => handleRPCChanged(e.target.value)}
-        />
-        {isSupported ? (
-          rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>
-        ) : (
-          <ErrorMsg>The requested chain is not supported by Rabby yet</ErrorMsg>
-        )}
-      </div>
-      <footer className="add-rpc-footer">
-        <div
-          className={clsx([
-            'action-buttons flex',
-            showChain ? 'justify-between' : 'justify-center',
-          ])}
-        >
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px] rabby-btn-ghost"
-            onClick={() => rejectApproval()}
-            ghost
-          >
-            {t('Cancel')}
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={handleConfirm}
-            disabled={!canSave}
-            loading={isLoading}
-          >
-            Save
-          </Button>
-        </div>
-      </footer>
-    </>
+    <div className="chain-card">
+      <img src={chain.logo} alt="" />
+      {chain.name}
+    </div>
   );
 };
 

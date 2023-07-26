@@ -44,6 +44,10 @@ export interface TokenSelectorProps {
   supportChains?: CHAINS_ENUM[] | undefined;
 }
 
+const filterTestnetTokenItem = (token: TokenItem) => {
+  return !findChainByServerID(token.chain)?.isTestnet;
+};
+
 const TokenSelector = ({
   visible,
   list,
@@ -86,7 +90,12 @@ const TokenSelector = ({
   };
 
   const displayList = useMemo(() => {
-    if (!supportChains?.length) return list || [];
+    if (!supportChains?.length) {
+      const resultList = list || [];
+      if (!chainServerId) return resultList.filter(filterTestnetTokenItem);
+
+      return resultList;
+    }
 
     const varied = (list || []).reduce(
       (accu, token) => {
@@ -98,6 +107,8 @@ const TokenSelector = ({
 
         if (!disabled) {
           accu.natural.push(token);
+        } else if (chainItem?.isTestnet && !chainServerId) {
+          accu.ignored.push(token);
         } else {
           accu.disabled.push(token);
         }
@@ -107,11 +118,12 @@ const TokenSelector = ({
       {
         natural: [] as TokenItem[],
         disabled: [] as TokenItem[],
+        ignored: [] as TokenItem[],
       }
     );
 
     return [...varied.natural, ...varied.disabled];
-  }, [list, supportChains]);
+  }, [list, supportChains, chainServerId]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);

@@ -2,13 +2,35 @@
 
 .page-chain-list {
   .page();
-  padding: 0 20px 20px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+
+  .page-header-container {
+    height: 58px;
+    .page-header {
+      padding-top: 20px;
+      margin-bottom: 0;
+    }
+  }
+
+  .ant-tabs,
+  .ant-tabs-content-holder,
+  .ant-tabs-content,
+  .tabpanel {
+    height: 100%;
+  }
 
   .chain-list {
+    height: 100%;
+    overflow: auto;
     display: flex;
     background: #fff;
     flex-wrap: wrap;
     border-radius: 4px;
+    margin-bottom: 20px;
 
     &-item {
       display: flex;
@@ -20,9 +42,10 @@
       padding: 14px 16px;
       width: 50%;
       gap: 12px;
-      border-bottom: 1px solid #e5e9ef;
+      white-space: nowrap;
+      border-bottom: 0.5px solid #e5e9ef;
       &:nth-child(2n + 1) {
-        border-right: 1px solid #e5e9ef;
+        border-right: 0.5px solid #e5e9ef;
       }
       &:nth-last-child(1),
       &:nth-last-child(2) {
