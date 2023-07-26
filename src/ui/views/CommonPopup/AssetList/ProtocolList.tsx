@@ -129,6 +129,7 @@ const ProtocolItem = ({
             chainServerId={protocol.chain || 'eth'}
             width="24px"
             height="24px"
+            isShowChainTooltip={true}
           />
           <span className="name">{protocol.name}</span>
           <span className="net-worth">{protocol._netWorth}</span>

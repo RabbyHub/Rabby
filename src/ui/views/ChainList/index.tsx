@@ -4,10 +4,10 @@ import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
 import { Chain } from '@debank/common';
-import NetSwitchTabs, {
-  useSwitchNetTab,
-} from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { Tabs } from 'antd';
+import PillsSwitch from '@/ui/component/PillsSwitch';
+import clsx from 'clsx';
 
 const Null = () => null;
 
@@ -59,10 +59,24 @@ const ChainList = () => {
       <PageHeader onBack={goBack} fixed>
         {list.length} chains supported
       </PageHeader>
-      <NetSwitchTabs
+      <PillsSwitch
         value={selectedTab}
         onTabChange={onTabChange}
-        className="h-[28px] box-content  mb-[14px]"
+        className="flex bg-[#e2e6ec] w-[228px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[14px]"
+        itemClassname={clsx('w-[112px] py-[7px] text-[12px]')}
+        itemClassnameInActive={clsx('text-[#4B4d59]')}
+        options={
+          [
+            {
+              key: 'mainnet',
+              label: `Mainnets (${mainnet.length})`,
+            },
+            {
+              key: 'testnet',
+              label: `Testnets (${testnet.length})`,
+            },
+          ] as const
+        }
       />
       <Tabs
         className="h-full"

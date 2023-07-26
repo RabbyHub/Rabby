@@ -67,7 +67,7 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   return (
-    <div className="overflow-scroll h-full" ref={ref}>
+    <div className="overflow-auto h-full" ref={ref}>
       {data?.list.map((item) => (
         <HistoryItem
           data={item}
