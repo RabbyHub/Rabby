@@ -53,8 +53,23 @@ export default function NetSwitchTabs(props: SwitchTabProps) {
       {...props}
       className="flex bg-[#e2e6ec] w-[228px] mx-[auto] my-[0] h-[36px] p-[2px] mb-[14px]"
       itemClassname={clsx('w-[112px]')}
-      itemClassnameInActive={clsx('text-[#4B4d59]')}
+      itemClassnameInActive={clsx('text-[#4b4d59]')}
       options={switchOptions}
     />
   );
 }
+
+NetSwitchTabs.ApprovalsPage = function ApprovalsPage(props: SwitchTabProps) {
+  return (
+    <PillsSwitch
+      {...props}
+      className={clsx(
+        'flex bg-[#e2e6ec] w-[228px] h-[32px] p-[2px]',
+        props.className
+      )}
+      itemClassname={clsx('w-[112px]')}
+      itemClassnameInActive={clsx('text-[#4b4d59]')}
+      options={switchOptions}
+    />
+  );
+};

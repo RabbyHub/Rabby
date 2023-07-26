@@ -4,9 +4,14 @@
 
 @main-w: 1060px;
 
-@page-padding-top: 40px;
-@page-header-h: 24px;
+@page-padding-top: 0;
+
+/* pt + h + pb*/
+@page-header__tabs-h: 30px + 30px + 30px;
+@page-header__title-h: 24px;
+@page-header-h: @page-header__tabs-h + @page-header__title-h;
 @page-header-bottom-offset: 20px;
+
 @tools-h: 48px;
 @table-mt: 20px;
 @table-header-h: 48px;
@@ -66,21 +71,31 @@
 }
 
 .approvals-manager__header {
-  height: @page-header-h;
+  min-height: @page-header-h;
   box-sizing: content-box;
   padding-bottom: @page-header-bottom-offset;
-  display: inline-block;
+  display: block;
+  width: 100%;
   text-align: center;
   width: @main-w;
   margin: 0 auto;
   font-size: 20px;
   font-weight: 500;
 
+  > .tabs {
+    height: @page-header__tabs-h;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   > .title {
+    height: 100%;
+    max-height: @page-header__title-h;
     text-align: center;
     color: @color-title;
     vertical-align: baseline;
-    height: 100%;
     display: inline-block;
   }
 }
