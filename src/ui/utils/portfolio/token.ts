@@ -71,23 +71,38 @@ export const useTokens = (
   useEffect(() => {
     if (updateNonce === 0) return;
     loadProcess();
+    return () => {
+      abortProcess.current?.abort();
+    };
   }, [updateNonce]);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     if (userAddr) {
-      if (
-        visible &&
-        (!isSameAddress(userAddr, userAddrRef.current) ||
-          chainId !== chainIdRef.current)
-      ) {
-        loadProcess().then(() => {
-          userAddrRef.current = userAddr;
-          chainIdRef.current = chainId;
-        });
-      }
+      timer = setTimeout(() => {
+        if (
+          visible &&
+          (!isSameAddress(userAddr, userAddrRef.current) ||
+            chainId !== chainIdRef.current)
+        ) {
+          loadProcess().then(() => {
+            userAddrRef.current = userAddr;
+            chainIdRef.current = chainId;
+          });
+        }
+      });
     } else {
       setData(undefined);
     }
+
+    return () => {
+      abortProcess.current?.abort();
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
   }, [userAddr, visible, chainId]);
 
   useEffect(() => {
@@ -127,6 +142,13 @@ export const useTokens = (
 
     const snapshot = await queryTokensCache(userAddr, wallet);
     const blocked = await wallet.getBlockedToken();
+
+    if (currentAbort.signal.aborted || !snapshot) {
+      log('--Terminate-tokens-snapshot-', userAddr);
+      setLoading(false);
+      return;
+    }
+
     if (snapshot?.length) {
       const chainTokens = snapshot.reduce((m, n) => {
         m[n.chain] = m[n.chain] || [];
@@ -146,6 +168,13 @@ export const useTokens = (
     }
 
     const tokenRes = await batchQueryTokens(userAddr, wallet, chainId);
+
+    if (currentAbort.signal.aborted || !tokenRes) {
+      log('--Terminate-tokens-', userAddr);
+      setLoading(false);
+      return;
+    }
+
     // customize and blocked tokens
     const customizeTokens = await wallet.getCustomizedToken();
     const customTokenList: TokenItem[] = [];
