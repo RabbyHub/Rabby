@@ -197,7 +197,7 @@ browser.runtime.onConnect.addListener((port) => {
             }
             break;
           case 'testnetOpenapi':
-            if (walletController.openapi[data.method]) {
+            if (walletController.testnetOpenapi[data.method]) {
               return walletController.testnetOpenapi[data.method].apply(
                 null,
                 data.params
