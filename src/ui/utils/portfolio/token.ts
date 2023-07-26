@@ -92,7 +92,7 @@ export const useTokens = (
         if (
           visible &&
           (!isSameAddress(userAddr, userAddrRef.current) ||
-          chainServerId !== chainIdRef.current)
+            chainServerId !== chainIdRef.current)
         ) {
           loadProcess().then(() => {
             userAddrRef.current = userAddr;

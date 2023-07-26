@@ -10,9 +10,6 @@ const store = await createPersistStore({
     testnetHost: INITIAL_TESTNET_OPENAPI_URL,
   },
 });
-const service = new OpenApiService({
-  store,
-});
 
 const testnetStore = new (class TestnetStore {
   get host() {
@@ -22,6 +19,16 @@ const testnetStore = new (class TestnetStore {
     store.testnetHost = value;
   }
 })();
+
+if (!process.env.DEBUG) {
+  store.host = INITIAL_OPENAPI_URL;
+  store.testnetHost = INITIAL_TESTNET_OPENAPI_URL;
+  testnetStore.host = INITIAL_TESTNET_OPENAPI_URL;
+}
+
+const service = new OpenApiService({
+  store,
+});
 
 export const testnetOpenapiService = new OpenApiService({
   store: testnetStore,
