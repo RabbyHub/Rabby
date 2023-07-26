@@ -18,7 +18,7 @@ const Activities = () => {
   return (
     <div className="activities">
       <PageHeader fixed>{t('Signature Record')}</PageHeader>
-      <div className="bg-[#f5f6fa] sticky top-[72px] z-10">
+      <div className="bg-[#f5f6fa] sticky top-[64px] z-10">
         <PillsSwitch
           value={selectedTab}
           onTabChange={(v) => {

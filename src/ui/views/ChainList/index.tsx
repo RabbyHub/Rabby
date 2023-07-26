@@ -1,13 +1,12 @@
+import PillsSwitch from '@/ui/component/PillsSwitch';
+import { Chain } from '@debank/common';
+import { Tabs } from 'antd';
+import clsx from 'clsx';
 import { CHAINS } from 'consts';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
-import { Chain } from '@debank/common';
-import { useSwitchNetTab } from '@/ui/component/PillsSwitch/NetSwitchTabs';
-import { Tabs } from 'antd';
-import PillsSwitch from '@/ui/component/PillsSwitch';
-import clsx from 'clsx';
 
 const Null = () => null;
 
@@ -35,7 +34,7 @@ const ChainList = () => {
     history.goBack();
   };
 
-  const { selectedTab, onTabChange } = useSwitchNetTab();
+  const [selectedTab, onTabChange] = useState<'mainnet' | 'testnet'>('mainnet');
 
   const list = useMemo(
     () =>
