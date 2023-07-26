@@ -944,7 +944,7 @@ const ApprovalManagePage = () => {
     vGridRefAsset,
   } = useApprovalsPage({ isTestnet: selectedTab === 'testnet' });
 
-  const { yValue } = useTableScrollableHeight();
+  const { yValue } = useTableScrollableHeight({ isShowTestnet });
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
@@ -1026,17 +1026,22 @@ const ApprovalManagePage = () => {
   );
 
   return (
-    <div className="approvals-manager-page">
+    <div
+      className={clsx(
+        'approvals-manager-page',
+        isShowTestnet && 'with-switchnet-tabs'
+      )}
+    >
       <div className="approvals-manager">
         <header className="approvals-manager__header">
-          <div className="tabs">
-            {isShowTestnet && (
+          {isShowTestnet && (
+            <div className="tabs">
               <NetSwitchTabs.ApprovalsPage
                 value={selectedTab}
                 onTabChange={onTabChange}
               />
-            )}
-          </div>
+            </div>
+          )}
           <div className="title">
             Approvals on {ellipsisAddress(account?.address || '')}
             {account?.alianName && (

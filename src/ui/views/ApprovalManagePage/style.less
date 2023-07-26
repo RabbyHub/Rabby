@@ -4,20 +4,25 @@
 
 @main-w: 1060px;
 
-@page-padding-top: 0;
+@page-pt-without-switchnet-tabs: 40px;
 
 /* pt + h + pb*/
 @page-header__tabs-h: 30px + 30px + 30px;
 @page-header__title-h: 24px;
+
 @page-header-h: @page-header__tabs-h + @page-header__title-h;
+@page-header-h-without-tabs: @page-header-h - @page-header__tabs-h;
 @page-header-bottom-offset: 20px;
 
 @tools-h: 48px;
 @table-mt: 20px;
 @table-header-h: 48px;
 
-// value of `@sticky-top-height` is 200px
-@sticky-top-height: @page-padding-top + @page-header-h + @page-header-bottom-offset + @tools-h + @table-mt + @table-header-h;
+@sticky-top-height-common: @page-header__title-h + @page-header-bottom-offset + @tools-h + @table-mt + @table-header-h;
+// value of `@sticky-top-height-without-tabs` is 200px
+@sticky-top-height-without-tabs: @page-pt-without-switchnet-tabs + @sticky-top-height-common + @page-header-h-without-tabs;
+// value of `@sticky-top-height` is 250px
+@sticky-top-height: @sticky-top-height-common + @page-header-h;
 
 /* pt + height + pb */
 @sticky-footer-textarea: 16px + 16px + 16px;
@@ -33,11 +38,18 @@
   width: 100vw;
   min-width: @main-w;
   height: 100vh;
-  padding-top: @page-padding-top;
+  padding-top: @page-pt-without-switchnet-tabs;
   padding-bottom: @sticky-footer-height;
   background: @color-bg;
 
   .child-has-chromelike-scrollbar();
+
+  &.with-switchnet-tabs {
+    padding-top: 0;
+    .approvals-manager__header {
+      min-height: @page-header-h;
+    }
+  }
 }
 
 .revoke-approval-modal {
@@ -71,7 +83,7 @@
 }
 
 .approvals-manager__header {
-  min-height: @page-header-h;
+  min-height: @page-header-h-without-tabs;
   box-sizing: content-box;
   padding-bottom: @page-header-bottom-offset;
   display: block;

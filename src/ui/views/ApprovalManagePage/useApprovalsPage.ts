@@ -31,18 +31,18 @@ import IconUnknownToken from 'ui/assets/token-default.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 /**
- * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
+ * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
  */
-function getYValue() {
-  return window.innerHeight - 252 - 148;
+function getYValue(isShowTestnet = false) {
+  return window.innerHeight - (isShowTestnet ? 250 : 200) - 148;
 }
 
-export function useTableScrollableHeight() {
-  const [yValue, setYValue] = useState(getYValue);
+export function useTableScrollableHeight({ isShowTestnet = false }) {
+  const [yValue, setYValue] = useState(getYValue(isShowTestnet));
 
   useLayoutEffect(() => {
     const listener = debounce(() => {
-      setYValue(getYValue());
+      setYValue(getYValue(isShowTestnet));
     }, 500);
 
     window.addEventListener('resize', listener);
@@ -50,7 +50,7 @@ export function useTableScrollableHeight() {
     return () => {
       window.removeEventListener('resize', listener);
     };
-  });
+  }, [isShowTestnet]);
 
   return {
     yValue,
