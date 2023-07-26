@@ -3511,10 +3511,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.19":
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.19.tgz#615b8369c4a407e204659fcd2a81e19e5ce47501"
-  integrity sha512-8Yrgu4sLH3jVUXTln1Baq0ZFwPw/9YW0swj6AM9J5yewT/lU7eTUP78aT2jUHVapHdGxC+EJtYjzDakZTQcnfg==
+"@rabby-wallet/page-provider@^0.1.20":
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.20.tgz#6f2455273be15bf2f3c03b9cd9a947214f3d25ed"
+  integrity sha512-4j2eggrmXQ3OQ9/N36f2hI/qsQYM3UrUEKS5t0x/jRJuG2flj3x5OB8NBsJ/e5QSpDWhOJm0TXk+GCODVuZLQQ==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3527,10 +3527,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.15-alpha.5":
-  version "0.6.15-alpha.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.15-alpha.5.tgz#8c9509bce4af70c20cf84f990fa5b3509fae5e96"
-  integrity sha512-F/EC/0JUoHcfJXpXlUMtF8GTRciH+pSU7jZ9mznxtatByPhPaZ+lB2n57bQ4mu2GDclb0GK3DWtDzyFR/QSA8g==
+"@rabby-wallet/rabby-api@^0.6.16":
+  version "0.6.16"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.16.tgz#f9291bc70bdabbe437200f567bcf6a6359490d4b"
+  integrity sha512-rdKHfXA1VUGb20yslLloWsbtPLsGdcTgYXBSHVnvTLP77XTqTq8uxjIK1QxKNis6wRoTJpz0pVaMrQDmC3CHBA==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"

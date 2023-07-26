@@ -173,7 +173,7 @@ const TokenApprove = ({
   }, [engineResults]);
 
   const tokenBalance = useMemo(() => {
-    return new BigNumber(requireData.token.raw_amount || '0')
+    return new BigNumber(requireData.token.raw_amount_hex_str || '0')
       .div(10 ** requireData.token.decimals)
       .toFixed();
   }, [requireData]);
