@@ -175,12 +175,12 @@ export const account = createModel<RootModel>()({
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
       // clear store tokenList when account changed
-      dispatch.account.setTokenList([]);
-      dispatch.account.setBlockedTokenList([]);
-      dispatch.account.setCustomizeTokenList([]);
-      dispatch.account.setTestnetTokenList([]);
-      dispatch.account.setTestnetBlockedTokenList([]);
-      dispatch.account.setTestnetCustomizeTokenList([]);
+      // dispatch.account.setTokenList([]);
+      // dispatch.account.setBlockedTokenList([]);
+      // dispatch.account.setCustomizeTokenList([]);
+      // dispatch.account.setTestnetTokenList([]);
+      // dispatch.account.setTestnetBlockedTokenList([]);
+      // dispatch.account.setTestnetCustomizeTokenList([]);
     },
 
     async fetchCurrentAccountAliasNameAsync(_?: any, store?) {
