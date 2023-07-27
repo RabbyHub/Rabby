@@ -2039,8 +2039,13 @@ export class WalletController extends BaseController {
       removeEmptyKeyrings
     );
     if (!(await keyringService.hasAddress(address))) {
-      contactBookService.removeAlias(address);
+      // contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
+      transactionHistoryService.removeList(address);
+      preferenceService.removeHighlightedAddress({
+        address,
+        brandName: brand || type,
+      });
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();

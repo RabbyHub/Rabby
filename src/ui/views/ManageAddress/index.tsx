@@ -6,6 +6,7 @@ import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { ReactComponent as IconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
 import { ReactComponent as IconDelete } from '@/ui/assets/address/delete-current-color.svg';
 import { ReactComponent as IconPlus } from '@/ui/assets/address/plus.svg';
+import { ReactComponent as IconPlusButton } from '@/ui/assets/import/plus.svg';
 
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 
@@ -258,6 +259,10 @@ const ManageAddress = () => {
                   {TypedWalletObj?.[activeIndex]?.name}
                 </div>
                 <div className="flex items-center gap-16">
+                  <IconPlusButton
+                    onClick={handleAddSeedPhraseAddress}
+                    className="cursor-pointer"
+                  />
                   {isSeedPhrase && (
                     <IconShowSeedPhrase
                       className="cursor-pointer"
@@ -311,8 +316,7 @@ const ManageAddress = () => {
               <Empty
                 desc={
                   <div className="text-gray-content text-14 max-w-[352px] mt-12">
-                    Your seed phrase is not deleted. You can choose to delete
-                    the seed phrase or add address again{' '}
+                    You haven't imported any addresses under this seed phrase.
                   </div>
                 }
               />

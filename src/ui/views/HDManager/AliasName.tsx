@@ -7,6 +7,7 @@ interface Props {
   address: string;
   aliasName?: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
 const cachedName = new Map<string, string>();
@@ -15,6 +16,7 @@ export const AliasName: React.FC<Props> = ({
   address,
   aliasName,
   onChange,
+  disabled,
 }) => {
   const [hover, setHover] = React.useState(false);
   const [value, setValue] = React.useState(aliasName);
@@ -50,7 +52,7 @@ export const AliasName: React.FC<Props> = ({
     }
   }, [aliasName]);
 
-  if (!value) {
+  if (!value || disabled) {
     if (cachedName[address]) {
       return (
         <div className="AliasName AliasName--disabled">
