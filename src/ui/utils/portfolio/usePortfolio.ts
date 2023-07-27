@@ -53,20 +53,19 @@ export const usePortfolios = (
     if (userAddr && !isSameAddress(userAddr, userAddrRef.current)) {
       setData([]);
       setNetWorth(0);
+      abortProcess.current?.abort();
     }
 
     if (userAddr) {
       timer = setTimeout(() => {
         if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
-          loadProcess().then(() => {
-            userAddrRef.current = userAddr;
-          });
+          userAddrRef.current = userAddr;
+          loadProcess();
         }
       });
     }
 
     return () => {
-      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
         timer = null;

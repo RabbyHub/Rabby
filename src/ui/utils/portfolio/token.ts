@@ -87,6 +87,13 @@ export const useTokens = (
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
 
+    if (
+      (userAddr && !isSameAddress(userAddr, userAddrRef.current)) ||
+      chainServerId !== chainIdRef.current
+    ) {
+      abortProcess.current?.abort();
+    }
+
     if (userAddr) {
       timer = setTimeout(() => {
         if (
@@ -94,10 +101,9 @@ export const useTokens = (
           (!isSameAddress(userAddr, userAddrRef.current) ||
             chainServerId !== chainIdRef.current)
         ) {
-          loadProcess().then(() => {
-            userAddrRef.current = userAddr;
-            chainIdRef.current = chainServerId;
-          });
+          userAddrRef.current = userAddr;
+          chainIdRef.current = chainServerId;
+          loadProcess();
         }
       });
     } else {
@@ -105,7 +111,6 @@ export const useTokens = (
     }
 
     return () => {
-      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
         timer = null;
