@@ -24,7 +24,7 @@ import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 const chunkSize = 5;
 
 export const log = (...args: any) => {
-  // console.log(...args);
+  console.log(...args);
 };
 
 // export const portfolioChangeLoadingAtom = atom(true);
@@ -53,12 +53,12 @@ export const usePortfolios = (
     if (userAddr && !isSameAddress(userAddr, userAddrRef.current)) {
       setData([]);
       setNetWorth(0);
-      abortProcess.current?.abort();
     }
 
     if (userAddr) {
       timer = setTimeout(() => {
         if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
+          abortProcess.current?.abort();
           userAddrRef.current = userAddr;
           loadProcess();
         }
