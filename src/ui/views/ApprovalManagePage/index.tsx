@@ -68,6 +68,7 @@ import ApprovalsNameAndAddr from './components/NameAndAddr';
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -900,27 +901,13 @@ function TableByAssetSpenders({
 }
 
 const ApprovalManagePage = () => {
-  useEffect(() => {
-    const listener = (payload: any) => {
-      // message.info({
-      //   type: 'info',
-      //   content: (
-      //     <span className="text-white">
-      //       Switching to a new address. Please wait for the page to refresh.
-      //     </span>
-      //   ),
-      // });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 1200);
-      window.location.reload();
-    };
-    eventBus.addEventListener('accountsChanged', listener);
-
-    return () => {
-      eventBus.removeEventListener('accountsChanged', listener);
-    };
-  }, []);
+  useCurrentAccount({
+    onChanged: useCallback((ctx) => {
+      if (ctx.reason === 'currentAccount') {
+        window.location.reload();
+      }
+    }, []),
+  });
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 

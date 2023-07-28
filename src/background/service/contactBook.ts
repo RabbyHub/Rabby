@@ -1,4 +1,6 @@
 import { createPersistStore } from 'background/utils';
+import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
+import { syncStateToUI } from '../utils/broadcastToUI';
 
 export interface ContactBookItem {
   name: string;
@@ -62,17 +64,22 @@ class ContactBook {
     if (this.store[key]) {
       this.store[key] = Object.assign({}, this.store[key], {
         name: data.name,
-        address: data.address.toLowerCase(),
+        address: key,
         isAlias: true,
       });
     } else {
       this.store[key] = {
         name: data.name,
-        address: data.address.toLowerCase(),
+        address: key,
         isAlias: true,
         isContact: false,
       };
     }
+
+    syncStateToUI(BROADCAST_TO_UI_EVENTS.accountAliasNameChanged, {
+      address: key,
+      name: data.name,
+    });
   };
 
   addAlias = this.updateAlias;
