@@ -269,7 +269,13 @@ const ClaimRabbyBadge = () => {
   }
 
   if (mintResult?.is_success || mintInfo?.has_minted) {
-    return <ClaimSuccess />;
+    return (
+      <ClaimSuccess
+        num={
+          mintInfo?.has_minted ? mintInfo?.inner_id : mintResult?.inner_id || 0
+        }
+      />
+    );
   }
 
   return (
@@ -378,7 +384,7 @@ const ClaimSuccessWrapper = styled.div`
   }
 `;
 
-const ClaimSuccess = () => {
+const ClaimSuccess = ({ num }: { num: number }) => {
   const goto = useCallback(() => {
     openInTab(RABBY_BADGE_URL);
   }, []);
@@ -386,7 +392,7 @@ const ClaimSuccess = () => {
     <ClaimSuccessWrapper>
       <img src={ImgRabbyBadgeL} className="badge" alt="rabby badge" />
       <div className="title">Claim Success</div>
-      <div className="desc">Rabby Valued User No.112</div>
+      <div className="desc">Rabby Valued User No.{num}</div>
       <CurrentAccount className="account" isSuccess />
       <Button type="primary" className="btn" onClick={goto}>
         <span>Learn more on DeBank</span>
