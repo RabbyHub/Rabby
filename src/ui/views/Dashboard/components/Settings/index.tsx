@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
+import IconArrowBlueRight from 'ui/assets/dashboard/settings/icon-right-arrow-blue.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
@@ -38,6 +39,7 @@ import IconSettingsFeatureConnectedDapps from 'ui/assets/dashboard/settings/conn
 import IconSettingsAboutFollowUs from 'ui/assets/dashboard/settings/follow-us.svg';
 import IconSettingsAboutSupporetedChains from 'ui/assets/dashboard/settings/supported-chains.svg';
 import IconSettingsAboutVersion from 'ui/assets/dashboard/settings/version.svg';
+import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -75,6 +77,7 @@ interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
   onOpenConnectedDapps?: () => void;
+  onOpenBadgeModal: () => void;
 }
 
 const { confirm } = Modal;
@@ -332,6 +335,25 @@ const AutoLockModal = ({
   );
 };
 
+const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <div className="setting-block">
+      <div className="setting-items">
+        <Field
+          leftIcon={<img src={IconSettingsRabbyBadge} className="w-28 h-28" />}
+          rightIcon={
+            <img src={IconArrowBlueRight} className="icon icon-arrow-right" />
+          }
+          onClick={onClick}
+          className="text-blue-light bg-[#f5f7ff]"
+        >
+          Claim Rabby Badge!
+        </Field>
+      </div>
+    </div>
+  );
+};
+
 type SettingItem = {
   leftIcon: string;
   content: React.ReactNode;
@@ -344,6 +366,7 @@ const Settings = ({
   visible,
   onClose,
   onOpenConnectedDapps,
+  onOpenBadgeModal,
 }: SettingsProps) => {
   const wallet = useWallet();
   const history = useHistory();
@@ -827,6 +850,7 @@ const Settings = ({
               <img src={IconLock} className="icon icon-lock" />{' '}
               {t('Lock Wallet')}
             </Button> */}
+            <ClaimRabbyBadge onClick={onOpenBadgeModal} />
             {Object.values(renderData).map((group, idxl1) => {
               return (
                 <div key={`g-${idxl1}`} className="setting-block">

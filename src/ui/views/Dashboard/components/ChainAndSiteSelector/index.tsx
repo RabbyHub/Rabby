@@ -31,6 +31,7 @@ import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import FeedbackPopup from '../Feedback';
 import { GasPriceBar } from '../GasPriceBar';
+import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
 
 export default ({
   gnosisPendingCount,
@@ -58,6 +59,8 @@ export default ({
   );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
+  const [badgeModalVisible, setBadgeModalVisible] = useState(false);
+
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
@@ -362,6 +365,7 @@ export default ({
           setIsShowReceiveModal(false);
         }}
       />
+
       <Settings
         visible={settingVisible}
         onClose={toggleShowMoreSettings}
@@ -369,7 +373,18 @@ export default ({
           setConnectedDappsVisible(true);
           setSettingVisible(false);
         }}
+        onOpenBadgeModal={() => {
+          setBadgeModalVisible(true);
+          setSettingVisible(false);
+        }}
       />
+      <ClaimRabbyBadgeModal
+        visible={badgeModalVisible}
+        onCancel={() => {
+          setBadgeModalVisible(false);
+        }}
+      />
+
       <FeedbackPopup
         visible={feedbackVisible}
         onClose={() => showFeedbackModal(false)}
