@@ -78,42 +78,18 @@ const DisplayMnemonic = () => {
   }, [mnemonics]);
 
   const onSubmit = React.useCallback(() => {
-    wallet
-      .createKeyringWithMnemonics(mnemonics)
-      .then(async (accounts: Account[]) => {
-        const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+    wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
+      const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+      const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
+        keyring!.publicKey!
+      );
 
-        const newAccounts = await Promise.all(
-          accounts.map(async (account) => {
-            const alianName = generateAliasName({
-              keyringType: KEYRING_TYPE.HdKeyring,
-              brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-              keyringCount: Math.max(keyring!.index, 0),
-              addressCount: 0,
-            });
+      openInternalPageInTab(
+        `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
+      );
 
-            await wallet.updateAlianName(
-              account?.address?.toLowerCase(),
-              alianName
-            );
-
-            return {
-              ...account,
-              alianName,
-            };
-          })
-        );
-
-        const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
-          keyring!.publicKey!
-        );
-
-        openInternalPageInTab(
-          `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
-        );
-
-        dispatch.createMnemonics.reset();
-      });
+      dispatch.createMnemonics.reset();
+    });
   }, [mnemonics]);
 
   return (

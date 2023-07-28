@@ -242,27 +242,29 @@ export class KeyringService extends EventEmitter {
     }
 
     let keyring;
-    return this.persistAllKeyrings()
-      .then(() => {
-        return this.addNewKeyring('HD Key Tree', {
-          mnemonic: seed,
-          activeIndexes: [0],
-        });
-      })
-      .then((firstKeyring) => {
-        keyring = firstKeyring;
-        return firstKeyring.getAccounts();
-      })
-      .then(([firstAccount]) => {
-        if (!firstAccount) {
-          throw new Error('KeyringController - First Account not found.');
-        }
-        return null;
-      })
-      .then(this.persistAllKeyrings.bind(this))
-      .then(this.setUnlocked.bind(this))
-      .then(this.fullUpdate.bind(this))
-      .then(() => keyring);
+    return (
+      this.persistAllKeyrings()
+        .then(() => {
+          return this.addNewKeyring('HD Key Tree', {
+            mnemonic: seed,
+            activeIndexes: [],
+          });
+        })
+        .then((firstKeyring) => {
+          keyring = firstKeyring;
+          return firstKeyring.getAccounts();
+        })
+        // .then(([firstAccount]) => {
+        //   if (!firstAccount) {
+        //     throw new Error('KeyringController - First Account not found.');
+        //   }
+        //   return null;
+        // })
+        .then(this.persistAllKeyrings.bind(this))
+        .then(this.setUnlocked.bind(this))
+        .then(this.fullUpdate.bind(this))
+        .then(() => keyring)
+    );
   }
 
   addKeyring(keyring) {

@@ -1995,7 +1995,7 @@ export class WalletController extends BaseController {
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     keyringService.removePreMnemonics();
-    return this._setCurrentAccountFromKeyring(keyring);
+    // return this._setCurrentAccountFromKeyring(keyring);
   };
 
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
