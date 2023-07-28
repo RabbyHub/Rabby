@@ -342,10 +342,13 @@ const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
         <Field
           leftIcon={<img src={IconSettingsRabbyBadge} className="w-28 h-28" />}
           rightIcon={
-            <img src={IconArrowBlueRight} className="icon icon-arrow-right" />
+            <img
+              src={IconArrowBlueRight}
+              className="icon icon-arrow-right w-20 h-20"
+            />
           }
           onClick={onClick}
-          className="text-blue-light bg-[#f5f7ff]"
+          className="text-blue-light bg-[#f5f7ff] font-medium"
         >
           Claim Rabby Badge!
         </Field>

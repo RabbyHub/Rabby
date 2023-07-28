@@ -2,8 +2,12 @@ import { Modal, NameAndAddress } from '@/ui/component';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ImgRabbyBadgeBg from '@/ui/assets/badge/bg.svg';
+import ImgRabbyBadgeBg2 from '@/ui/assets/badge/bg2.svg';
+
 import ImgRabbyBadgeM from '@/ui/assets/badge/rabby-badge-m.svg';
 import ImgRabbyBadgeL from '@/ui/assets/badge/rabby-badge-l.svg';
+import ImgInfo from '@/ui/assets/badge/info.svg';
+
 import { ReactComponent as RcIconClose } from '@/ui/assets/badge/close.svg';
 
 import ImgLink from '@/ui/assets/badge/link.svg';
@@ -25,24 +29,33 @@ import Lottie from 'lottie-react';
 import * as animationData from './success.json';
 import { useAsync, useAsyncFn } from 'react-use';
 import { openInTab, useWallet } from '@/ui/utils';
+import { useHistory } from 'react-router';
 
 const RABBY_BADGE_URL = 'https://debank.com/official-badge/1';
+
+const gotoDeBankRabbyBadge = () => {
+  openInTab(RABBY_BADGE_URL);
+};
 
 const CurrentAccountWrapper = styled.div`
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.13);
   display: inline-flex;
-  padding: 8px 15px;
   justify-content: center;
   gap: 6px;
+  height: 36px;
+  align-items: center;
+  padding: 0 15px;
+
   .icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
   .name {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
     color: #fff;
+    max-width: 112px;
   }
   .addr {
     font-size: 13px;
@@ -106,7 +119,8 @@ const Wrapper = styled.div`
   align-items: center;
 
   &.noCode {
-    background-size: 360px 301px;
+    background-image: url(${ImgRabbyBadgeBg2});
+    background-size: 360px 300px;
 
     .badge {
       width: 160px;
@@ -124,7 +138,7 @@ const Wrapper = styled.div`
 
   .title {
     margin-top: 14px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     color: #fff;
     text-align: center;
     font-size: 20px;
@@ -133,7 +147,7 @@ const Wrapper = styled.div`
     line-height: normal;
   }
   .account {
-    margin-bottom: 63px;
+    margin-bottom: 67px;
   }
   .codeInput {
     width: 320px;
@@ -156,9 +170,19 @@ const Wrapper = styled.div`
     &:focus {
       border-color: #8697ff;
     }
+
+    &.red,
+    &.red:hover,
+    &.red:focus {
+      border-color: #ec5151;
+    }
   }
+
   .box {
     position: relative;
+    &.swap {
+      top: -20px;
+    }
     .error {
       position: absolute;
       bottom: -30px;
@@ -171,10 +195,38 @@ const Wrapper = styled.div`
       font-weight: 400;
       line-height: 18px;
     }
+
+    .swapTips {
+      position: absolute;
+      bottom: -64px;
+      left: 0;
+      margin-top: 12px;
+      position: absolute;
+      border-radius: 4px;
+      background: #f2f4f7;
+      height: 52px;
+      padding: 8px 12px;
+      padding-left: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 18px;
+
+      .toSwap {
+        cursor: pointer;
+        color: #7084ff;
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration-line: underline;
+      }
+    }
   }
 
   .btn {
-    margin-top: 55px;
+    margin-top: 58px;
     width: 200px;
     height: 48px;
     font-size: 15px;
@@ -206,12 +258,15 @@ const Wrapper = styled.div`
     font-weight: 400;
     line-height: 18px;
     text-decoration-line: underline;
+    cursor: pointer;
   }
 `;
 
 const ClaimRabbyBadge = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const [swapTips, setSwapTips] = useState(false);
+
   const [currentAccount] = useAccount();
 
   const wallet = useWallet();
@@ -255,16 +310,23 @@ const ClaimRabbyBadge = () => {
 
   const onInputChange = useCallback((e) => {
     setError('');
+    setSwapTips(false);
     setCode(e.target.value);
     lockErrorRef.current = true;
   }, []);
 
-  const goto = useCallback(() => {
-    openInTab(RABBY_BADGE_URL);
+  const history = useHistory();
+
+  const gotoSwap = useCallback(() => {
+    history.push('/dex-swap');
   }, []);
 
   if (!lockErrorRef.current && !mintLoading && mintError?.message) {
-    setError(mintError?.message);
+    if (mintError?.message.includes('swap')) {
+      setSwapTips(true);
+    } else {
+      setError(mintError?.message);
+    }
     lockErrorRef.current = true;
   }
 
@@ -285,27 +347,40 @@ const ClaimRabbyBadge = () => {
       <CurrentAccount className="account" />
       {!noCode && (
         <>
-          <div className="box">
+          <div className={clsx('box', swapTips && 'swap')}>
             <Input
-              className="codeInput"
+              className={clsx('codeInput', error && 'red')}
               placeholder="Enter claim code"
               value={code}
               onChange={onInputChange}
               autoFocus
             />
             {error && <div className="error">{error}</div>}
+            {swapTips && (
+              <div className="swapTips">
+                <img src={ImgInfo} className="w-12 h-12 self-start mt-[3px]" />
+                <span>
+                  Complete a swap with notable dex within Rabby Wallet first.{' '}
+                  <span onClick={gotoSwap} className="toSwap">
+                    Go to Swap
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
           <Button
             type="primary"
             size="large"
             className="btn"
-            disabled={!code}
+            disabled={!code || !!error || swapTips}
             onClick={handleClaim}
             loading={mintLoading}
           >
             Claim
           </Button>
-          <div className="tips">View your claim code on Debank</div>
+          <div className="tips" onClick={gotoDeBankRabbyBadge}>
+            View your claim code
+          </div>
         </>
       )}
       {noCode ? (
@@ -317,7 +392,11 @@ const ClaimRabbyBadge = () => {
         ) : (
           <>
             <div>You haven’t activated claim code for this address </div>
-            <Button type="primary" className="btn more" onClick={goto}>
+            <Button
+              type="primary"
+              className="btn more"
+              onClick={gotoDeBankRabbyBadge}
+            >
               <span>Learn more on DeBank</span>
               <img src={ImgLink} className="ml-4 w-20 h-20" />
             </Button>
@@ -349,16 +428,19 @@ const ClaimSuccessWrapper = styled.div`
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin-top: 26px;
-    margin-bottom: 32px;
   }
+
   .desc {
     font-size: 17px;
-    margin-top: 0;
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+  .title {
     margin-bottom: 16px;
   }
+
   .account {
-    margin-bottom: 68px;
+    margin-bottom: 54px;
     background: #f5f6fa;
   }
   .btn {
@@ -385,17 +467,14 @@ const ClaimSuccessWrapper = styled.div`
 `;
 
 const ClaimSuccess = ({ num }: { num: number }) => {
-  const goto = useCallback(() => {
-    openInTab(RABBY_BADGE_URL);
-  }, []);
   return (
     <ClaimSuccessWrapper>
       <img src={ImgRabbyBadgeL} className="badge" alt="rabby badge" />
-      <div className="title">Claim Success</div>
       <div className="desc">Rabby Valued User No.{num}</div>
+      <div className="title">Claim Success</div>
       <CurrentAccount className="account" isSuccess />
-      <Button type="primary" className="btn" onClick={goto}>
-        <span>Learn more on DeBank</span>
+      <Button type="primary" className="btn" onClick={gotoDeBankRabbyBadge}>
+        <span>View on DeBank</span>
         <img src={ImgLink} className="ml-4 w-20 h-20" />
       </Button>
       <div className="confetti">
@@ -406,6 +485,7 @@ const ClaimSuccess = ({ num }: { num: number }) => {
 };
 
 const StyledModal = styled(Modal)`
+  padding-bottom: 0;
   .ant-modal-content {
     border-radius: 16px;
     overflow: initial;
