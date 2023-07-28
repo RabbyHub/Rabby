@@ -294,7 +294,8 @@ export const AccountList: React.FC<Props> = ({
             ) : (
               <AliasName
                 address={record.address}
-                aliasName={record?.aliasName || account?.aliasName}
+                aliasName={account?.aliasName}
+                cacheAliasName={record?.aliasName}
                 disabled={!account}
                 onChange={(val) => handleChangeAliasName(val, record)}
               />

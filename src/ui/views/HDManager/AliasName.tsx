@@ -6,6 +6,7 @@ import { ReactComponent as CheckSVG } from 'ui/assets/check-2.svg';
 interface Props {
   address: string;
   aliasName?: string;
+  cacheAliasName?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
 }
@@ -15,6 +16,7 @@ const cachedName = new Map<string, string>();
 export const AliasName: React.FC<Props> = ({
   address,
   aliasName,
+  cacheAliasName,
   onChange,
   disabled,
 }) => {
@@ -44,20 +46,19 @@ export const AliasName: React.FC<Props> = ({
   React.useEffect(() => {
     setValue(aliasName);
 
-    if (aliasName && cachedName[address] && cachedName[address] !== aliasName) {
-      setValue(cachedName[address]);
-      onChange(cachedName[address]);
-    } else if (aliasName) {
+    if (aliasName) {
       cachedName[address] = aliasName;
     }
   }, [aliasName]);
 
   if (!value || disabled) {
-    if (cachedName[address]) {
+    if (cachedName[address] ?? cacheAliasName) {
       return (
         <div className="AliasName AliasName--disabled">
           <div className="label">
-            <span className="text">{cachedName[address]}</span>
+            <span className="text">
+              {cachedName[address] ?? cacheAliasName}
+            </span>
           </div>
         </div>
       );

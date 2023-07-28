@@ -156,7 +156,7 @@
     "message": "Import via Private Key"
   },
   "Import__via__Keystore": {
-    "message": "Import via Keystore"
+    "message": "Import via KeyStore"
   },
   "Import__via__Mnemonic": {
     "message": "Import via Mnemonic"
