@@ -259,10 +259,12 @@ const ManageAddress = () => {
                   {TypedWalletObj?.[activeIndex]?.name}
                 </div>
                 <div className="flex items-center gap-16">
-                  <IconPlusButton
-                    onClick={handleAddSeedPhraseAddress}
-                    className="cursor-pointer"
-                  />
+                  {isSeedPhrase && (
+                    <IconPlusButton
+                      onClick={handleAddSeedPhraseAddress}
+                      className="cursor-pointer"
+                    />
+                  )}
                   {isSeedPhrase && (
                     <IconShowSeedPhrase
                       className="cursor-pointer"

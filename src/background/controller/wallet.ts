@@ -2198,7 +2198,7 @@ export class WalletController extends BaseController {
       } else {
         await keyringService.addKeyring(keyring);
       }
-      this._setCurrentAccountFromKeyring(keyring);
+      this._setCurrentAccountFromKeyring(keyring, -1);
     } else {
       throw new Error('failed to addKeyring, keyring is undefined');
     }
@@ -2613,7 +2613,7 @@ export class WalletController extends BaseController {
       await keyringService.addNewAccount(keyringInstance);
     }
 
-    return this._setCurrentAccountFromKeyring(keyringInstance);
+    return this._setCurrentAccountFromKeyring(keyringInstance, -1);
   };
 
   getSignTextHistory = (address: string) => {
