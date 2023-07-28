@@ -295,7 +295,7 @@
     "message": "Enable Chains"
   },
   "createAddress": {
-    "message": "Create New Address"
+    "message": "Create New Seed Phrase"
   },
   "Import": {
     "message": "Import"

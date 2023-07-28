@@ -237,7 +237,7 @@ const AddAddressOptions = () => {
   return (
     <div className="rabby-container" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
-        <div className="bg-white rounded-[6px] mb-[20px]" key={index}>
+        <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
@@ -250,7 +250,7 @@ const AddAddressOptions = () => {
         </div>
       ))}
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {renderList.map((item) => {
           const isSelected = selectedWalletType === item.key;
           return (
@@ -332,7 +332,7 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {bottomList.map((e) => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
