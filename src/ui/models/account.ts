@@ -174,6 +174,9 @@ export const account = createModel<RootModel>()({
 
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
+    },
+
+    async resetTokenList() {
       // clear store tokenList when account changed
       dispatch.account.setTokenList([]);
       dispatch.account.setBlockedTokenList([]);

@@ -58,15 +58,14 @@ export const usePortfolios = (
     if (userAddr) {
       timer = setTimeout(() => {
         if (visible && !isSameAddress(userAddr, userAddrRef.current)) {
-          loadProcess().then(() => {
-            userAddrRef.current = userAddr;
-          });
+          abortProcess.current?.abort();
+          userAddrRef.current = userAddr;
+          loadProcess();
         }
       });
     }
 
     return () => {
-      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
         timer = null;

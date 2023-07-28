@@ -94,10 +94,10 @@ export const useTokens = (
           (!isSameAddress(userAddr, userAddrRef.current) ||
             chainServerId !== chainIdRef.current)
         ) {
-          loadProcess().then(() => {
-            userAddrRef.current = userAddr;
-            chainIdRef.current = chainServerId;
-          });
+          abortProcess.current?.abort();
+          userAddrRef.current = userAddr;
+          chainIdRef.current = chainServerId;
+          loadProcess();
         }
       });
     } else {
@@ -105,7 +105,6 @@ export const useTokens = (
     }
 
     return () => {
-      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
         timer = null;
@@ -131,6 +130,7 @@ export const useTokens = (
       return;
     }
 
+    await dispatch.account.resetTokenList();
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
