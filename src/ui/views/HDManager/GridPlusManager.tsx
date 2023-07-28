@@ -140,6 +140,7 @@ export const GridPlusManager: React.FC = () => {
             wallet.removeAddress(account, GRIDPLUS_TYPE, undefined, true)
           )
         );
+        await wallet.requestKeyring(GRIDPLUS_TYPE, 'forgetDevice', keyringId);
         window.location.reload();
       },
       okCancel: false,
