@@ -228,6 +228,10 @@ const config = {
     fallback: {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
+      http: false,
+      https: false,
+      url: false,
+      zlib: false,
     },
     extensions: ['.js', 'jsx', '.ts', '.tsx'],
   },
