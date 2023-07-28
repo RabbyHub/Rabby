@@ -317,7 +317,7 @@ const ManageAddress = () => {
             <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
               <Empty
                 desc={
-                  <div className="text-gray-content text-14 max-w-[352px] mt-12">
+                  <div className="text-gray-content text-14 max-w-[296px] mt-12">
                     You haven't imported any addresses under this seed phrase.
                   </div>
                 }
