@@ -187,7 +187,7 @@ const AddAddressOptions = () => {
         content: t('createAddress'),
         brand: 'createAddress',
         onClick: () => {
-          openInternalPageInTab('mnemonics/create');
+          handleRouter(() => openInternalPageInTab('mnemonics/create'));
         },
       },
     ],
@@ -200,7 +200,8 @@ const AddAddressOptions = () => {
         leftIcon: IconMnemonics,
         brand: 'importSeedPhrase',
         content: 'Import Seed Phrase',
-        onClick: () => openInternalPageInTab('import/mnemonics'),
+        onClick: () =>
+          handleRouter(() => openInternalPageInTab('import/mnemonics')),
       },
       {
         leftIcon: IconPrivatekey,
