@@ -130,6 +130,7 @@ export const useTokens = (
       return;
     }
 
+    await dispatch.account.resetTokenList();
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
     historyLoad.current = false;
