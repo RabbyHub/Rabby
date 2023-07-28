@@ -2042,6 +2042,7 @@ export class WalletController extends BaseController {
       // contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
       transactionHistoryService.removeList(address);
+      signTextHistoryService.removeList(address);
       preferenceService.removeHighlightedAddress({
         address,
         brandName: brand || type,
