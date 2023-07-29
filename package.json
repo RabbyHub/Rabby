@@ -58,7 +58,7 @@
     "@types/styled-components": "^5.1.25",
     "@types/w3c-web-hid": "^1.0.3",
     "@zxing/browser": "^0.0.10",
-    "@zxing/library": "0.8.0",
+    "@zxing/library": "0.20.0",
     "ahooks": "^3.1.5",
     "antd": "^4.15.3",
     "bignumber.js": "^9.0.1",
