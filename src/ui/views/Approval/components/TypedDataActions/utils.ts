@@ -543,6 +543,12 @@ export const formatSecurityEngineCtx = ({
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
 }): ContextActionData => {
+  let chain: Chain | undefined;
+  if (actionData?.chainId) {
+    chain = Object.values(CHAINS).find(
+      (item) => item.id === Number(actionData.chainId)
+    );
+  }
   if (actionData?.permit) {
     const data = requireData as ApproveTokenRequireData;
     return {
@@ -553,6 +559,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -566,6 +573,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -579,6 +587,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -594,6 +603,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.buyNFT.receiver,
         receiveNFTIsFake,
         receiveNFTIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -610,6 +621,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.sellNFT.receiver,
         receiveTokenIsFake,
         receiveTokenIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -626,6 +639,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.batchSellNFT.receiver,
         receiveTokenHasFake: receiveTokenIsFake,
         receiveTokenHasScam: receiveTokenIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -642,6 +657,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.swapTokenOrder.receiver,
         from: actionData.sender,
         usdValuePercentage: actionData.swapTokenOrder.usdValuePercentage,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -658,6 +675,14 @@ export const formatSecurityEngineCtx = ({
       verifyAddress: {
         allowOrigins: actionData.verifyAddress.allow_origins,
         origin,
+      },
+    };
+  }
+  if (actionData.contractCall && actionData.contractId && chain) {
+    return {
+      contractCall: {
+        id: actionData.contractId,
+        chainId: chain.serverId,
       },
     };
   }

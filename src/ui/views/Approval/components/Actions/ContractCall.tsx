@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
 import { formatTokenAmount } from 'ui/utils/number';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ProtocolListItem } from './components/ProtocolListItem';
+import { SecurityListItem } from './components/SecurityListItem';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -52,6 +54,7 @@ const Wrapper = styled.div`
 const ContractCall = ({
   requireData,
   chain,
+  engineResults,
 }: {
   data: ParsedActionData['contractCall'];
   requireData: ContractCallRequireData;
@@ -61,6 +64,25 @@ const ContractCall = ({
   onChange(tx: Record<string, any>): void;
 }) => {
   const dispatch = useRabbyDispatch();
+  const { contractWhitelist } = useRabbySelector((state) => {
+    return state.securityEngine.userData;
+  });
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -80,6 +102,20 @@ const ContractCall = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"

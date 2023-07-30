@@ -6,13 +6,14 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { formatAmount } from '@/ui/utils/number';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .header {
@@ -167,6 +168,24 @@ const Permit2 = ({
                 id="1113"
                 engineResult={engineResultMap['1113']}
                 dangerText="Flagged by Rabby"
+              />
+
+              <SecurityListItem
+                id="1134"
+                engineResult={engineResultMap['1134']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1136"
+                engineResult={engineResultMap['1136']}
+                warningText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1133"
+                engineResult={engineResultMap['1133']}
+                safeText="Marked as trusted"
               />
 
               <li>

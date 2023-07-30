@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
+import { useRabbySelector } from '@/ui/store';
+import { isSameAddress } from '@/ui/utils';
 
 interface NFTSpenderData {
   spender: string;
@@ -28,6 +30,20 @@ export interface NFTSpenderPopupProps extends Props {
 }
 
 export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
+  const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
+    return state.securityEngine.userData;
+  });
+
+  const { isInBlackList, isInWhiteList } = useMemo(() => {
+    return {
+      isInBlackList: contractBlacklist.some(({ address }) =>
+        isSameAddress(address, data.spender)
+      ),
+      isInWhiteList: contractWhitelist.some(({ address }) =>
+        isSameAddress(address, data.spender)
+      ),
+    };
+  }, [data.spender, contractBlacklist, contractWhitelist]);
   return (
     <div>
       <div className="title">
@@ -86,6 +102,19 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
           <Row className="bg-[#F6F8FF]">Address note</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
+          </Row>
+        </Col>
+        <Col>
+          <Row className="bg-[#F6F8FF]">My mark</Row>
+          <Row>
+            <Values.AddressMark
+              isContract
+              address={data.spender}
+              chain={data.chain}
+              onBlacklist={isInBlackList}
+              onWhitelist={isInWhiteList}
+              onChange={() => null}
+            />
           </Row>
         </Col>
         {data.isDanger && (

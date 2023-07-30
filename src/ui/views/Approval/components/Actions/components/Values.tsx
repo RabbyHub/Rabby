@@ -21,6 +21,7 @@ import IconExternal from 'ui/assets/icon-share.svg';
 import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
 import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useRabbyDispatch } from '@/ui/store';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -121,6 +122,7 @@ const AddressMark = ({
 }) => {
   const chainId = chain.serverId;
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const handleEditMark = () => {
     userDataDrawer({
       address: address,
@@ -203,6 +205,7 @@ const AddressMark = ({
             ),
           });
         }
+        dispatch.securityEngine.init();
         onChange();
       },
     });

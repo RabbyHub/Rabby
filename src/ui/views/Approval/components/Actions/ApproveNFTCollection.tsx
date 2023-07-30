@@ -3,10 +3,8 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
-import { formatAmount } from 'ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
-import { NameAndAddress } from '@/ui/component';
 import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SecurityListItem } from './components/SecurityListItem';
@@ -131,6 +129,24 @@ const ApproveNFTCollection = ({
                 id="1060"
                 engineResult={engineResultMap['1060']}
                 dangerText="Flagged by Rabby"
+              />
+
+              <SecurityListItem
+                id="1134"
+                engineResult={engineResultMap['1134']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1136"
+                engineResult={engineResultMap['1136']}
+                warningText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1133"
+                engineResult={engineResultMap['1133']}
+                safeText="Marked as trusted"
               />
 
               <li>

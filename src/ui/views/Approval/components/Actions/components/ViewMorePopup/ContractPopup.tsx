@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
+import { useRabbySelector } from '@/ui/store';
+import { isSameAddress } from '@/ui/utils';
 
 interface ContractData {
   address: string;
@@ -25,6 +27,24 @@ export interface ContractPopupProps extends Props {
 }
 
 export const ContractPopup: React.FC<Props> = ({ data }) => {
+  const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
+    return state.securityEngine.userData;
+  });
+
+  const { isInBlackList, isInWhiteList } = useMemo(() => {
+    return {
+      isInBlackList: contractBlacklist.some(
+        ({ address, chainId }) =>
+          isSameAddress(address, data.address) &&
+          chainId === data.chain.serverId
+      ),
+      isInWhiteList: contractWhitelist.some(
+        ({ address, chainId }) =>
+          isSameAddress(address, data.address) &&
+          chainId === data.chain.serverId
+      ),
+    };
+  }, [data.address, contractBlacklist, contractWhitelist]);
   return (
     <div>
       <div className="title">
@@ -62,6 +82,19 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
           <Row className="bg-[#F6F8FF]">Address note</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
+          </Row>
+        </Col>
+        <Col>
+          <Row className="bg-[#F6F8FF]">My mark</Row>
+          <Row>
+            <Values.AddressMark
+              isContract
+              address={data.address}
+              chain={data.chain}
+              onBlacklist={isInBlackList}
+              onWhitelist={isInWhiteList}
+              onChange={() => null}
+            />
           </Row>
         </Col>
       </Table>
