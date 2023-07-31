@@ -31,7 +31,7 @@ import { useAsync, useAsyncFn } from 'react-use';
 import { openInTab, useWallet } from '@/ui/utils';
 import { useHistory } from 'react-router';
 
-const RABBY_BADGE_URL = 'https://debank.com/official-badge/1';
+const RABBY_BADGE_URL = 'https://debank.com/official-badge/2';
 
 const gotoDeBankRabbyBadge = () => {
   openInTab(RABBY_BADGE_URL);
