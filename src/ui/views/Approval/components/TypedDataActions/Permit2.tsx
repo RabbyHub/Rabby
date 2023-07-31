@@ -137,7 +137,9 @@ const Permit2 = ({
                 id="1074"
                 engineResult={engineResultMap['1074']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem

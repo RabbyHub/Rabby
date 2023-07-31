@@ -16,7 +16,7 @@ import {
   VirtualTable,
 } from './components/Table';
 import { VariableSizeGrid as VGrid } from 'react-window';
-import PillsSwitch from './components/SwitchPills';
+import PillsSwitch from '@/ui/component/PillsSwitch';
 
 import IconSearch from 'ui/assets/search.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -29,7 +29,7 @@ import IconCheckboxUnchecked from './icons/check-unchecked.svg';
 import IconExternal from './icons/icon-share.svg';
 
 import {
-  SwitchPills,
+  TableViewOptions,
   useApprovalsPage,
   useTableScrollableHeight,
 } from './useApprovalsPage';
@@ -65,6 +65,9 @@ import { useInspectRowItem } from './components/ModalDebugRowItem';
 import { IS_WINDOWS } from '@/constant';
 import { ensureSuffix } from '@/utils/string';
 import ApprovalsNameAndAddr from './components/NameAndAddr';
+import NetSwitchTabs, {
+  useSwitchNetTab,
+} from '@/ui/component/PillsSwitch/NetSwitchTabs';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -244,7 +247,10 @@ function getColumnsForContract({
               // visible
             >
               <img
-                className="ml-[4px] w-[12px] h-[12px] relative top-[1px]"
+                className={clsx(
+                  'ml-[4px] w-[12px] h-[12px] relative',
+                  IS_WINDOWS && 'top-[1px]'
+                )}
                 src={IconQuestion}
               />
             </Tooltip>
@@ -916,9 +922,15 @@ const ApprovalManagePage = () => {
     };
   }, []);
 
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+
+  useEffect(() => {
+    loadApprovals();
+  }, [selectedTab]);
+
   const {
     isLoading,
-
+    loadApprovals,
     searchKw,
     setSearchKw,
     account,
@@ -930,9 +942,9 @@ const ApprovalManagePage = () => {
 
     vGridRefContracts,
     vGridRefAsset,
-  } = useApprovalsPage();
+  } = useApprovalsPage({ isTestnet: selectedTab === 'testnet' });
 
-  const { yValue } = useTableScrollableHeight();
+  const { yValue } = useTableScrollableHeight({ isShowTestnet });
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
@@ -1014,9 +1026,22 @@ const ApprovalManagePage = () => {
   );
 
   return (
-    <div className="approvals-manager-page">
+    <div
+      className={clsx(
+        'approvals-manager-page',
+        isShowTestnet && 'with-switchnet-tabs'
+      )}
+    >
       <div className="approvals-manager">
         <header className="approvals-manager__header">
+          {isShowTestnet && (
+            <div className="tabs">
+              <NetSwitchTabs.ApprovalsPage
+                value={selectedTab}
+                onTabChange={onTabChange}
+              />
+            </div>
+          )}
           <div className="title">
             Approvals on {ellipsisAddress(account?.address || '')}
             {account?.alianName && (
@@ -1032,8 +1057,10 @@ const ApprovalManagePage = () => {
           <div className="approvals-manager__table-tools">
             <PillsSwitch
               value={filterType}
-              options={SwitchPills}
-              onChange={(key) => setFilterType(key)}
+              options={TableViewOptions}
+              onTabChange={(key) => setFilterType(key)}
+              itemClassname="text-[15px] w-[148px] h-[40px]"
+              itemClassnameInActive="text-[#707280]"
             />
 
             <SearchInput

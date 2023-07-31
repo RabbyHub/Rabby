@@ -55,13 +55,11 @@ const TokenDetail = ({
   const [tokenWithAmount, setTokenWithAmount] = React.useState<TokenItem>(
     token
   );
-  const shouldSelectDex = false;
 
   const tokenSupportSwap = useMemo(() => {
-    if (shouldSelectDex || !token.is_core) return false;
     const tokenChain = getChain(token?.chain)?.enum;
     return !!tokenChain && SWAP_SUPPORT_CHAINS.includes(tokenChain as any);
-  }, [token, shouldSelectDex]);
+  }, [token]);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -276,11 +274,7 @@ const TokenDetail = ({
             <Tooltip
               overlayClassName="rectangle token_swap__tooltip"
               placement="topLeft"
-              title={
-                shouldSelectDex
-                  ? 'Please select the dex in swap first'
-                  : t('The token on this chain is not supported')
-              }
+              title={t('The token on this chain is not supported')}
               visible={tokenSupportSwap ? false : undefined}
             >
               <Button

@@ -15,6 +15,7 @@ import { ReactComponent as RcIconSwapArrow } from 'ui/assets/swap/arrow-right.sv
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ellipsis } from '@/ui/utils/address';
+import BigNumber from 'bignumber.js';
 
 const TokenCost = ({
   payToken,
@@ -104,6 +105,15 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       }
     }, []);
 
+    const slippagePercent = useMemo(
+      () => new BigNumber(data.quote.slippage).times(100).toString(10) + '%',
+      [data?.quote?.slippage]
+    );
+    const actualSlippagePercent = useMemo(
+      () => new BigNumber(data?.actual?.slippage).times(100).toString(10) + '%',
+      [data?.quote?.slippage]
+    );
+
     return (
       <div
         className={clsx(
@@ -170,14 +180,14 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
         <div className="flex justify-between items-center mt-[15px] mb-12">
           <div>
-            Slippage tolerance: <span>{data.quote.slippage}</span>
+            Slippage tolerance: <span>{slippagePercent}</span>
           </div>
           <div className="flex items-center">
             <span>Actual Slippage: </span>
             {loading ? (
               <SkeletonInput className="w-[52px] h-[18px]" active />
             ) : (
-              <span>{data.quote.slippage}</span>
+              <span>{actualSlippagePercent}</span>
             )}
           </div>
         </div>

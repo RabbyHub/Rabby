@@ -92,12 +92,16 @@ export const HDManager: React.FC<StateProviderProps> = ({
         })
         .catch((e) => {
           console.error(e);
-          setInitialed(false);
-          message.error({
-            content:
-              'Connect has stopped. Please refresh the page to connect again.',
-            key: 'ledger-error',
-          });
+          if (keyring === KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+            setInitialed(true);
+          } else {
+            setInitialed(false);
+            message.error({
+              content:
+                'Connect has stopped. Please refresh the page to connect again.',
+              key: 'ledger-error',
+            });
+          }
         });
     }
 

@@ -31,6 +31,7 @@ import {
   formatSecurityEngineCtx,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { isTestnetChainId } from '@/utils/chain';
 
 interface SignTypedDataProps {
   method: string;
@@ -172,8 +173,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       const currentAccount = isGnosis
         ? account
         : await wallet.getCurrentAccount();
-
-      return await wallet.openapi.parseTypedData({
+      const chainId = signTypedData?.domain?.chainId;
+      const apiProvider = isTestnetChainId(chainId)
+        ? wallet.testnetOpenapi
+        : wallet.openapi;
+      return await apiProvider.parseTypedData({
         typedData: signTypedData,
         address: currentAccount!.address,
         origin: session.origin,
@@ -476,6 +480,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             isWatch ||
             hasUnProcessSecurityResult
           }
+          isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />
       </footer>

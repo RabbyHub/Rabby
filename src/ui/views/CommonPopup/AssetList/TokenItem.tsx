@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
 import { isNil } from 'lodash';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -26,11 +27,16 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           fallback={IconUnknown}
           preview={false}
         />
-        <img
-          className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
-          src={chain?.logo || IconUnknown}
-          alt={item.chain}
-        />
+        <TooltipWithMagnetArrow
+          title={chain?.name}
+          className="rectangle w-[max-content]"
+        >
+          <img
+            className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+            src={chain?.logo || IconUnknown}
+            alt={item.chain}
+          />
+        </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-col gap-4 overflow-hidden">
         <span className="text-gray-title text-13 font-medium leading-[15px]">

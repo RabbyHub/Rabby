@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.7",
+  "version": "0.92.9",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
@@ -14,7 +14,7 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@debank/common": "^0.3.8",
+    "@debank/common": "^0.3.11",
     "@debank/festats": "1.0.0",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
@@ -40,16 +40,22 @@
     "@rabby-wallet/eth-walletconnect-keyring": "^1.7.21",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.3.4",
+<<<<<<< HEAD
     "@rabby-wallet/page-provider": "^0.1.19",
     "@rabby-wallet/rabby-api": "^0.6.16",
     "@rabby-wallet/rabby-security-engine": "^1.1.14",
+=======
+    "@rabby-wallet/page-provider": "^0.1.20",
+    "@rabby-wallet/rabby-api": "^0.6.17",
+    "@rabby-wallet/rabby-security-engine": "1.1.13",
+>>>>>>> develop
     "@rabby-wallet/rabby-swap": "^0.0.26",
     "@rabby-wallet/widgets": "^1.0.9",
     "@rematch/core": "^2.2.0",
     "@rematch/select": "^3.1.2",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
-    "@sentry/tracing": "^6.7.2",
+    "@sentry/tracing": "^6.19.7",
     "@spruceid/siwe-parser": "^2.0.2",
     "@trezor/connect-plugin-ethereum": "^9.0.1",
     "@types/bignumber.js": "^5.0.0",

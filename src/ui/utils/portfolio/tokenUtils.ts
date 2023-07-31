@@ -5,31 +5,52 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
+import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
+import { isTestnet as checkIsTestnet } from '@/utils/chain';
+
 export const queryTokensCache = async (
   user_id: string,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
-  // getCachedTokenList
-  return wallet.openapi.getCachedTokenList(user_id);
+  return requestOpenApiWithChainId(
+    ({ openapi }) => openapi.getCachedTokenList(user_id),
+    {
+      isTestnet,
+      wallet,
+    }
+  );
 };
 
 export const batchQueryTokens = async (
   user_id: string,
   wallet: WalletControllerType,
-  chainId?: string
+  chainId?: string,
+  isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId)
 ) => {
-  return wallet.openapi.listToken(user_id, chainId, true);
+  return requestOpenApiWithChainId(
+    ({ openapi }) => openapi.listToken(user_id, chainId, true),
+    {
+      wallet,
+      isTestnet,
+    }
+  );
 };
 
 export const batchQueryHistoryTokens = async (
   user_id: string,
   time_at: number,
-  wallet: WalletControllerType
+  wallet: WalletControllerType,
+  isTestnet = false
 ) => {
-  return wallet.openapi.getHistoryTokenList({
-    id: user_id,
-    timeAt: time_at,
-  });
+  return requestOpenApiWithChainId(
+    ({ openapi }) =>
+      openapi.getHistoryTokenList({ id: user_id, timeAt: time_at }),
+    {
+      wallet,
+      isTestnet,
+    }
+  );
 };
 
 export const walletProject = new DisplayedProject({

@@ -36,6 +36,7 @@ import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
+import { isTestnet } from '@/utils/chain';
 import { findChainByID, findChainByServerID } from '@/utils/chain';
 
 export interface ReceiveTokenItem extends TokenItem {
@@ -554,12 +555,14 @@ const fetchNFTApproveRequiredData = async ({
   spender,
   address,
   chainId,
-  wallet,
+  apiProvider,
 }: {
   spender: string;
   address: string;
   chainId: string;
-  wallet: WalletControllerType;
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi'];
 }) => {
   const queue = new PQueue();
   const result: ApproveNFTRequireData = {
@@ -575,12 +578,12 @@ const fetchNFTApproveRequiredData = async ({
   };
 
   queue.add(async () => {
-    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    const credit = await apiProvider.getContractCredit(spender, chainId);
     result.rank = credit.rank_at;
   });
 
   queue.add(async () => {
-    const { desc } = await wallet.openapi.addrDesc(spender);
+    const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
       result.bornAt = desc.contract[chainId].create_at;
     }
@@ -592,7 +595,7 @@ const fetchNFTApproveRequiredData = async ({
     result.isDanger = desc.is_danger;
   });
   queue.add(async () => {
-    const hasInteraction = await wallet.openapi.hasInteraction(
+    const hasInteraction = await apiProvider.hasInteraction(
       address,
       chainId,
       spender
@@ -600,7 +603,7 @@ const fetchNFTApproveRequiredData = async ({
     result.hasInteraction = hasInteraction.has_interaction;
   });
   queue.add(async () => {
-    const { usd_value } = await wallet.openapi.getTokenNFTExposure(
+    const { usd_value } = await apiProvider.getTokenNFTExposure(
       chainId,
       spender
     );
@@ -613,7 +616,7 @@ const fetchNFTApproveRequiredData = async ({
 const fetchTokenApproveRequireData = async ({
   spender,
   token,
-  wallet,
+  apiProvider,
   address,
   chainId,
 }: {
@@ -621,7 +624,9 @@ const fetchTokenApproveRequireData = async ({
   token: TokenItem;
   address: string;
   chainId: string;
-  wallet: WalletControllerType;
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi'];
 }) => {
   const queue = new PQueue();
   const result: ApproveTokenRequireData = {
@@ -640,22 +645,22 @@ const fetchTokenApproveRequireData = async ({
     },
   };
   queue.add(async () => {
-    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    const credit = await apiProvider.getContractCredit(spender, chainId);
     result.rank = credit.rank_at;
   });
   queue.add(async () => {
-    const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    const { usd_value } = await apiProvider.tokenApproveExposure(
       spender,
       chainId
     );
     result.riskExposure = usd_value;
   });
   queue.add(async () => {
-    const t = await wallet.openapi.getToken(address, chainId, token.id);
+    const t = await apiProvider.getToken(address, chainId, token.id);
     result.token = t;
   });
   queue.add(async () => {
-    const { desc } = await wallet.openapi.addrDesc(spender);
+    const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
       result.bornAt = desc.contract[chainId].create_at;
     }
@@ -667,7 +672,7 @@ const fetchTokenApproveRequireData = async ({
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
-    const hasInteraction = await wallet.openapi.hasInteraction(
+    const hasInteraction = await apiProvider.hasInteraction(
       address,
       chainId,
       spender
@@ -696,6 +701,8 @@ export const fetchActionRequiredData = async ({
   if (actionData.deployContract) {
     return {};
   }
+  const isTestnetTx = isTestnet(chainId);
+  const apiProvider = isTestnetTx ? wallet.testnetOpenapi : wallet.openapi;
   const queue = new PQueue();
   if (actionData.swap || actionData.crossToken || actionData.crossSwapToken) {
     const id = tx.to;
@@ -708,11 +715,11 @@ export const fetchActionRequiredData = async ({
       sender: address,
     };
     queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(id, chainId);
+      const credit = await apiProvider.getContractCredit(id, chainId);
       result.rank = credit.rank_at;
     });
     queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(id);
+      const { desc } = await apiProvider.addrDesc(id);
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
       } else {
@@ -721,7 +728,7 @@ export const fetchActionRequiredData = async ({
       result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
+      const hasInteraction = await apiProvider.hasInteraction(
         address,
         chainId,
         id
@@ -742,11 +749,11 @@ export const fetchActionRequiredData = async ({
       sender: address,
     };
     queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(id, chainId);
+      const credit = await apiProvider.getContractCredit(id, chainId);
       result.rank = credit.rank_at;
     });
     queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(id);
+      const { desc } = await apiProvider.addrDesc(id);
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
       } else {
@@ -755,7 +762,7 @@ export const fetchActionRequiredData = async ({
       result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
+      const hasInteraction = await apiProvider.hasInteraction(
         address,
         chainId,
         id
@@ -780,7 +787,7 @@ export const fetchActionRequiredData = async ({
       whitelistEnable: false,
     };
     queue.add(async () => {
-      const { has_transfer } = await wallet.openapi.hasTransfer(
+      const { has_transfer } = await apiProvider.hasTransfer(
         chainId,
         address,
         actionData.send!.to
@@ -788,7 +795,7 @@ export const fetchActionRequiredData = async ({
       result.hasTransfer = has_transfer;
     });
     queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(actionData.send!.to);
+      const { desc } = await apiProvider.addrDesc(actionData.send!.to);
       if (desc.cex?.id) {
         result.cex = {
           id: desc.cex.id,
@@ -809,7 +816,7 @@ export const fetchActionRequiredData = async ({
       }
       result.usd_value = desc.usd_value;
       if (result.cex) {
-        const { support } = await wallet.openapi.depositCexSupport(
+        const { support } = await apiProvider.depositCexSupport(
           actionData.send!.token.id,
           actionData.send!.token.chain,
           result.cex.id
@@ -817,7 +824,7 @@ export const fetchActionRequiredData = async ({
         result.cex.supportToken = support;
       }
       if (result.contract) {
-        const { is_token } = await wallet.openapi.isTokenContract(
+        const { is_token } = await apiProvider.isTokenContract(
           chainId,
           actionData.send!.to
         );
@@ -829,7 +836,7 @@ export const fetchActionRequiredData = async ({
       }
     });
     queue.add(async () => {
-      const usedChainList = await wallet.openapi.addrUsedChainList(
+      const usedChainList = await apiProvider.addrUsedChainList(
         actionData.send!.to
       );
       result.usedChains = usedChainList;
@@ -846,7 +853,7 @@ export const fetchActionRequiredData = async ({
   if (actionData.approveToken) {
     const { token, spender } = actionData.approveToken;
     return await fetchTokenApproveRequireData({
-      wallet,
+      apiProvider,
       chainId,
       address,
       token,
@@ -856,7 +863,7 @@ export const fetchActionRequiredData = async ({
   if (actionData.revokePermit2) {
     const { token, spender } = actionData.revokePermit2;
     return await fetchTokenApproveRequireData({
-      wallet,
+      apiProvider,
       chainId,
       address,
       token,
@@ -866,7 +873,7 @@ export const fetchActionRequiredData = async ({
   if (actionData.revokeToken) {
     const { token, spender } = actionData.revokeToken;
     return await fetchTokenApproveRequireData({
-      wallet,
+      apiProvider,
       chainId,
       address,
       token,
@@ -907,7 +914,7 @@ export const fetchActionRequiredData = async ({
       whitelistEnable: false,
     };
     queue.add(async () => {
-      const { has_transfer } = await wallet.openapi.hasTransfer(
+      const { has_transfer } = await apiProvider.hasTransfer(
         chainId,
         address,
         actionData.sendNFT!.to
@@ -915,7 +922,7 @@ export const fetchActionRequiredData = async ({
       result.hasTransfer = has_transfer;
     });
     queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(actionData.sendNFT!.to);
+      const { desc } = await apiProvider.addrDesc(actionData.sendNFT!.to);
       if (desc.cex?.id) {
         result.cex = {
           id: desc.cex.id,
@@ -936,7 +943,7 @@ export const fetchActionRequiredData = async ({
       }
       result.usd_value = desc.usd_value;
       if (result.cex) {
-        const { support } = await wallet.openapi.depositCexSupport(
+        const { support } = await apiProvider.depositCexSupport(
           actionData.sendNFT!.nft.contract_id,
           chainId,
           result.cex.id
@@ -944,7 +951,7 @@ export const fetchActionRequiredData = async ({
         result.cex.supportToken = support;
       }
       if (result.contract) {
-        const { is_token } = await wallet.openapi.isTokenContract(
+        const { is_token } = await apiProvider.isTokenContract(
           chainId,
           actionData.sendNFT!.to
         );
@@ -952,7 +959,7 @@ export const fetchActionRequiredData = async ({
       }
     });
     queue.add(async () => {
-      const usedChainList = await wallet.openapi.addrUsedChainList(
+      const usedChainList = await apiProvider.addrUsedChainList(
         actionData.sendNFT!.to
       );
       result.usedChains = usedChainList;
@@ -970,7 +977,7 @@ export const fetchActionRequiredData = async ({
     return fetchNFTApproveRequiredData({
       address,
       chainId,
-      wallet,
+      apiProvider,
       spender: actionData.approveNFT.spender,
     });
   }
@@ -978,7 +985,7 @@ export const fetchActionRequiredData = async ({
     return fetchNFTApproveRequiredData({
       address,
       chainId,
-      wallet,
+      apiProvider,
       spender: actionData.revokeNFT.spender,
     });
   }
@@ -986,7 +993,7 @@ export const fetchActionRequiredData = async ({
     return fetchNFTApproveRequiredData({
       address,
       chainId,
-      wallet,
+      apiProvider,
       spender: actionData.approveNFTCollection.spender,
     });
   }
@@ -994,7 +1001,7 @@ export const fetchActionRequiredData = async ({
     return fetchNFTApproveRequiredData({
       address,
       chainId,
-      wallet,
+      apiProvider,
       spender: actionData.revokeNFTCollection.spender,
     });
   }
@@ -1003,7 +1010,7 @@ export const fetchActionRequiredData = async ({
       contract: null,
       id: actionData.pushMultiSig.multisig_id,
     };
-    const { desc } = await wallet.openapi.addrDesc(
+    const { desc } = await apiProvider.addrDesc(
       actionData.pushMultiSig.multisig_id
     );
     if (desc.contract) {
@@ -1025,14 +1032,14 @@ export const fetchActionRequiredData = async ({
       nativeTokenSymbol: chain?.nativeTokenSymbol || 'ETH',
     };
     queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(
+      const credit = await apiProvider.getContractCredit(
         contractCall.contract.id,
         chainId
       );
       result.rank = credit.rank_at;
     });
     queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(contractCall.contract.id);
+      const { desc } = await apiProvider.addrDesc(contractCall.contract.id);
       if (desc.contract) {
         result.contract = desc.contract;
         if (desc.contract[chainId]) {
@@ -1042,7 +1049,7 @@ export const fetchActionRequiredData = async ({
       result.protocol = getProtocol(desc.protocol, chainId);
     });
     queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
+      const hasInteraction = await apiProvider.hasInteraction(
         address,
         chainId,
         contractCall.contract.id
@@ -1064,6 +1071,9 @@ export const formatSecurityEngineCtx = ({
   requireData: ActionRequireData;
   chainId: string;
 }): ContextActionData => {
+  if (isTestnet(chainId)) {
+    return {};
+  }
   if (actionData.swap) {
     const data = requireData as SwapRequireData;
     const {

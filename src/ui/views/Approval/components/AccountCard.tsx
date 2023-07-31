@@ -12,6 +12,7 @@ const AccountCard = ({
   icons,
   alianName,
   account,
+  isHideAmount,
 }: {
   icons?: {
     mnemonic: string;
@@ -20,6 +21,7 @@ const AccountCard = ({
   };
   alianName?: string | null;
   account?: Account;
+  isHideAmount?: boolean;
 }) => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
@@ -91,12 +93,14 @@ const AccountCard = ({
             />
           </div>
         )}
-        <span
-          className="amount truncate"
-          title={splitNumberByStep((balance || 0).toFixed(2))}
-        >
-          ${splitNumberByStep((balance || 0).toFixed(2))}
-        </span>
+        {!isHideAmount ? (
+          <span
+            className="amount truncate"
+            title={splitNumberByStep((balance || 0).toFixed(2))}
+          >
+            ${splitNumberByStep((balance || 0).toFixed(2))}
+          </span>
+        ) : null}
       </div>
     </div>
   );

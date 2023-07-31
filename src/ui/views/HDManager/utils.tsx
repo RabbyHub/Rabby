@@ -165,7 +165,7 @@ const useHiddenInfo = () => {
 
 // !IMPORTANT!: Ledger instance only allow one request at a time,
 // so we need a queue to control the request.
-const useTaskQueue = () => {
+const useTaskQueue = ({ keyring }) => {
   const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
   const history = useHistory();
 
@@ -182,7 +182,9 @@ const useTaskQueue = () => {
           'Unable to connect to Hardware wallet. Please try to re-connect.',
         key: 'ledger-error',
       });
-      history.goBack();
+      if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+        history.goBack();
+      }
     });
 
     return () => {
@@ -222,7 +224,7 @@ export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
         ...useGetCurrentAccounts({ keyringId, keyring }),
         ...useManagerTab(),
         ...useHiddenInfo(),
-        ...useTaskQueue(),
+        ...useTaskQueue({ keyring }),
         keyringId,
         keyring,
       }}

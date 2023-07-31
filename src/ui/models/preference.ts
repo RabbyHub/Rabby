@@ -20,6 +20,7 @@ interface PreferenceState {
   nftApprovalChain: Record<string, CHAINS_ENUM>;
   autoLockTime: number;
   hiddenBalance: boolean;
+  isShowTestnet: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -41,6 +42,7 @@ export const preference = createModel<RootModel>()({
     nftApprovalChain: {},
     autoLockTime: 0,
     hiddenBalance: false,
+    isShowTestnet: false,
   } as PreferenceState,
 
   reducers: {
@@ -159,5 +161,20 @@ export const preference = createModel<RootModel>()({
       await store.app.wallet.setHiddenBalance(hidden);
       dispatch.preference.getPreference('hiddenBalance');
     },
+    async setIsShowTestnet(value: boolean, store?) {
+      dispatch.preference.setField({
+        isShowTestnet: value,
+      });
+      await store.app.wallet.setIsShowTestnet(value);
+      dispatch.preference.getPreference('isShowTestnet');
+    },
+
+    // async setOpenapiHost(value: string, store?) {
+    //   dispatch.preference.setField({
+    //     isShowTestnet: value,
+    //   });
+    //   await store.app.wallet.setIsShowTestnet(value);
+    //   dispatch.preference.getPreference('isShowTestnet');
+    // },
   }),
 });

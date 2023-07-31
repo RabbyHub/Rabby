@@ -1322,10 +1322,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.8":
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.8.tgz#f7e90c6665061c86d3c07743ba4c685d9593b2bd"
-  integrity sha512-cY+cbb1j6qJL/zSp6XZkbABOn4P/kiz5PNwlvQvsmCFPsOYrF9S4KC3Y2Lowj7RUFzA4W35ZmRybyduBWKPcaA==
+"@debank/common@^0.3.11":
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.11.tgz#867cb7bfa1e745eb61b12d87c7e9af7a3b5162ed"
+  integrity sha512-+f3Ox4AtTH9LzqrDnd6AqCeaxeDPALAPTU8a/pt6C7UwlnzYCP3r1Cqc3blDIL3CNHcVGA/mUJ3EmQp+paxkOA==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3511,10 +3511,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.19":
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.19.tgz#615b8369c4a407e204659fcd2a81e19e5ce47501"
-  integrity sha512-8Yrgu4sLH3jVUXTln1Baq0ZFwPw/9YW0swj6AM9J5yewT/lU7eTUP78aT2jUHVapHdGxC+EJtYjzDakZTQcnfg==
+"@rabby-wallet/page-provider@^0.1.20":
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.20.tgz#6f2455273be15bf2f3c03b9cd9a947214f3d25ed"
+  integrity sha512-4j2eggrmXQ3OQ9/N36f2hI/qsQYM3UrUEKS5t0x/jRJuG2flj3x5OB8NBsJ/e5QSpDWhOJm0TXk+GCODVuZLQQ==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3527,10 +3527,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.16":
-  version "0.6.16"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.16.tgz#f9291bc70bdabbe437200f567bcf6a6359490d4b"
-  integrity sha512-rdKHfXA1VUGb20yslLloWsbtPLsGdcTgYXBSHVnvTLP77XTqTq8uxjIK1QxKNis6wRoTJpz0pVaMrQDmC3CHBA==
+"@rabby-wallet/rabby-api@^0.6.17":
+  version "0.6.17"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.17.tgz#a68003a92e7e0cef9cd2013bb06f6ac24114028f"
+  integrity sha512-U3F2WudXCCURY3/Bq1jOMASPy1+MNZ7HyK4HmAjf3ac1akw8dmsNAwJulSdZveVBdhaWV6+0ry2Q1/tN/Yb+hg==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -3792,7 +3792,7 @@
     hoist-non-react-statics "^3.3.2"
     tslib "^1.9.3"
 
-"@sentry/tracing@^6.4.0":
+"@sentry/tracing@^6.19.7", "@sentry/tracing@^6.4.0":
   version "6.19.7"
   resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.19.7.tgz#54bb99ed5705931cd33caf71da347af769f02a4c"
   integrity sha512-ol4TupNnv9Zd+bZei7B6Ygnr9N3Gp1PUrNI761QSlHtPC25xXC5ssSD3GMhBgyQrcvpuRcCFHVNNM97tN5cZiA==
@@ -3801,17 +3801,6 @@
     "@sentry/minimal" "6.19.7"
     "@sentry/types" "6.19.7"
     "@sentry/utils" "6.19.7"
-    tslib "^1.9.3"
-
-"@sentry/tracing@^6.7.2":
-  version "6.7.2"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.7.2.tgz#78a6934837143ae5e200b49bd256bc8a917477bc"
-  integrity sha512-juKlI7FICKONWJFJxDxerj0A+8mNRhmtrdR+OXFqOkqSAy/QXlSFZcA/j//O19k2CfwK1BrvoMcQ/4gnffUOVg==
-  dependencies:
-    "@sentry/hub" "6.7.2"
-    "@sentry/minimal" "6.7.2"
-    "@sentry/types" "6.7.2"
-    "@sentry/utils" "6.7.2"
     tslib "^1.9.3"
 
 "@sentry/types@6.19.7":
@@ -6589,7 +6578,7 @@ collect-v8-coverage@^1.0.0:
   resolved "https://registry.yarnpkg.com/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz#cc2c8e94fc18bbdffe64d6534570c8a673b27f59"
   integrity sha512-iBPtljfCNcTKNAto0KEtDfZ3qzjJvqE3aTGZsbhjSBlorqpXJlaWWtPO35D+ZImoC3KWejX64o+yPGxhWSTzfg==
 
-color-convert@^1.9.0, color-convert@^1.9.1:
+color-convert@^1.9.1:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
   integrity sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
