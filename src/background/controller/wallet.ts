@@ -2032,6 +2032,11 @@ export class WalletController extends BaseController {
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    if (removeEmptyKeyrings) {
+      const keyring = await keyringService.getKeyringForAccount(address, type);
+      this.removeKeyringFromStash(keyring);
+    }
+
     await keyringService.removeAccount(
       address,
       type,
@@ -2183,6 +2188,15 @@ export class WalletController extends BaseController {
     }
 
     return Number(keyringId);
+  };
+
+  removeKeyringFromStash = (keyring) => {
+    const keyringId = Object.keys(stashKeyrings).find((key) => {
+      return stashKeyrings[key].mnemonic === keyring.mnemonic;
+    });
+    if (keyringId) {
+      delete stashKeyrings[keyringId];
+    }
   };
 
   addKeyring = async (
