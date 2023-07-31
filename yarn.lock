@@ -3539,10 +3539,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@^1.1.14":
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.14.tgz#075103ca6f98873fdb79101025bcc90b8f90a715"
-  integrity sha512-3z1HZKKJ/P2B5rLKFBPSjGr/7F8BTHp6Q8JqLRAOYMqDYQD6OvfFeiEh5fkj1k+hwrFiHfvb7AZwUk2DoT9wHw==
+"@rabby-wallet/rabby-security-engine@^1.1.15":
+  version "1.1.15"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.15.tgz#0596f8eed27d7c7a7aa3cd270a8d4bfc39b4584d"
+  integrity sha512-uPTrTjTRzuqcXqCSCdU30+Su3RBpl6Y2Rk1p38loB1t+s24BES0j9WH6g7FnS6Io2c3etfL6rPPXdPVAAVD6hg==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
@@ -6578,7 +6578,7 @@ collect-v8-coverage@^1.0.0:
   resolved "https://registry.yarnpkg.com/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz#cc2c8e94fc18bbdffe64d6534570c8a673b27f59"
   integrity sha512-iBPtljfCNcTKNAto0KEtDfZ3qzjJvqE3aTGZsbhjSBlorqpXJlaWWtPO35D+ZImoC3KWejX64o+yPGxhWSTzfg==
 
-color-convert@^1.9.1:
+color-convert@^1.9.0, color-convert@^1.9.1:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
   integrity sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
