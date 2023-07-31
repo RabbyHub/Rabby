@@ -109,7 +109,7 @@ const AddressItem = memo(
         onDelete
           ? true
           : isCurrentAccount
-          ? ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type)
+          ? false
           : ![KEYRING_CLASS.PRIVATE_KEY].includes(type),
       [type, onDelete]
     );
