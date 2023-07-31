@@ -2164,12 +2164,12 @@ export class WalletController extends BaseController {
       keyring = new Keyring({ mnemonic });
       keyringService.updateHdKeyringIndex(keyring);
       result.keyringId = this.addKeyringToStash(keyring);
+      keyringService.addKeyring(keyring);
     } else {
       result.isExistedKR = true;
       result.keyringId = this.updateKeyringInStash(keyring);
     }
 
-    // await this.createKeyringWithMnemonics(mnemonic);
     return result;
   };
 
