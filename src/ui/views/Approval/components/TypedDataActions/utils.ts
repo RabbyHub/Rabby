@@ -678,7 +678,7 @@ export const formatSecurityEngineCtx = ({
       },
     };
   }
-  if (actionData.contractCall && actionData.contractId && chain) {
+  if (actionData?.contractCall && actionData?.contractId && chain) {
     return {
       contractCall: {
         id: actionData.contractId,
