@@ -312,10 +312,8 @@ export const importMnemonics = createModel<RootModel>()({
       const confirmingAccounts = await Promise.all(
         addressList.map(async (addr) => {
           const account = queriedAccountsByAddress[addr];
-          let alianName: string;
-          if (importedAddresses.has(addr)) {
-            alianName = (await store.app.wallet.getAlianName(addr))!;
-          } else {
+          let alianName = (await store.app.wallet.getAlianName(addr))!;
+          if (!alianName) {
             const draftContactItem = await store.app.wallet.getCacheAlias(
               account.address
             );

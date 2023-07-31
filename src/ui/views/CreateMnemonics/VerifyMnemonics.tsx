@@ -48,43 +48,41 @@ const VerifyMnemonics = () => {
         setErrMsg(t('Verification failed'));
         return;
       }
-      wallet
-        .createKeyringWithMnemonics(mnemonics)
-        .then(async (accounts: Account[]) => {
-          const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+      wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
+        const keyring = await wallet.getKeyringByMnemonic(mnemonics);
 
-          const newAccounts = await Promise.all(
-            accounts.map(async (account) => {
-              const alianName = generateAliasName({
-                keyringType: KEYRING_TYPE.HdKeyring,
-                brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-                keyringCount: Math.max(keyring!.index, 0),
-                addressCount: 0,
-              });
+        // const newAccounts = await Promise.all(
+        //   accounts.map(async (account) => {
+        //     const alianName = generateAliasName({
+        //       keyringType: KEYRING_TYPE.HdKeyring,
+        //       brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
+        //       keyringCount: Math.max(keyring!.index, 0),
+        //       addressCount: 0,
+        //     });
 
-              await wallet.updateAlianName(
-                account?.address?.toLowerCase(),
-                alianName
-              );
+        //     await wallet.updateAlianName(
+        //       account?.address?.toLowerCase(),
+        //       alianName
+        //     );
 
-              return {
-                ...account,
-                alianName,
-              };
-            })
-          );
+        //     return {
+        //       ...account,
+        //       alianName,
+        //     };
+        //   })
+        // );
 
-          history.replace({
-            pathname: '/popup/import/success',
-            state: {
-              accounts: newAccounts,
-              title: t('Created Successfully'),
-              editing: true,
-            },
-          });
-
-          dispatch.createMnemonics.reset();
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            // accounts: newAccounts,
+            title: t('Created Successfully'),
+            editing: true,
+          },
         });
+
+        dispatch.createMnemonics.reset();
+      });
     },
     [mnemonics]
   );

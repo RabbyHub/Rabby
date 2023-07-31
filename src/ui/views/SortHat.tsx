@@ -41,11 +41,6 @@ const SortHat = () => {
       return;
     }
 
-    if ((await wallet.getPreMnemonics()) && !isInNotification && !isInTab) {
-      setTo('/create-mnemonics');
-      return;
-    }
-
     const currentAccount = await wallet.getCurrentAccount();
 
     if (!currentAccount) {

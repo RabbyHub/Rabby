@@ -60,7 +60,7 @@ const ImportJson = () => {
         }}
         desc="Select the keystore file you want to import and enter the corresponding password"
       >
-        Import Your Keystore
+        Import Your KeyStore
       </Navbar>
       <div className="rabby-container">
         <div className="px-20">

@@ -18,17 +18,23 @@ const CreateMnemonic = () => {
   React.useEffect(() => {
     dispatch.createMnemonics.getAllHDKeyrings();
   }, []);
+  let node;
 
   switch (step) {
     case 'risk-check':
-      return <RiskCheck />;
+      node = <RiskCheck />;
+      break;
     case 'display':
-      return <DisplayMnemonic />;
+      node = <DisplayMnemonic />;
+      break;
     case 'verify':
-      return <VerifyMnemonics />;
+      node = <VerifyMnemonics />;
+      break;
     default:
       throw new Error(`[CreateMnemonics] unexpected step ${step}`);
   }
+
+  return <div className="w-screen h-screen bg-gray-bg">{node}</div>;
 };
 
 export default connectStore()(CreateMnemonic);

@@ -21,7 +21,7 @@ const ImportMode = () => {
     },
     {
       name: 'json',
-      label: t('Import via Keystore'),
+      label: t('Import via KeyStore'),
     },
   ]);
 
