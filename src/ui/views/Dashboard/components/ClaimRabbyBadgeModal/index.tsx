@@ -218,8 +218,6 @@ const Wrapper = styled.div`
       .toSwap {
         cursor: pointer;
         color: #7084ff;
-        font-size: 15px;
-        font-weight: 500;
         text-decoration-line: underline;
       }
     }
@@ -360,7 +358,8 @@ const ClaimRabbyBadge = () => {
               <div className="swapTips">
                 <img src={ImgInfo} className="w-12 h-12 self-start mt-[3px]" />
                 <span>
-                  Complete a swap with notable dex within Rabby Wallet first.{' '}
+                  You need to complete a swap with notable dex within Rabby
+                  Wallet first.{' '}
                   <span onClick={gotoSwap} className="toSwap">
                     Go to Swap
                   </span>
@@ -434,6 +433,7 @@ const ClaimSuccessWrapper = styled.div`
     font-size: 17px;
     margin-top: 24px;
     margin-bottom: 32px;
+    color: #546ce2;
   }
   .title {
     margin-bottom: 16px;
