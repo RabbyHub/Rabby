@@ -105,7 +105,12 @@ const AddressItem = memo(
 
     const canFastDeleteAccount = useMemo(
       // not privacy secret
-      () => (onDelete ? true : ![KEYRING_CLASS.PRIVATE_KEY].includes(type)),
+      () =>
+        onDelete
+          ? true
+          : isCurrentAccount
+          ? ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type)
+          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type),
       [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
