@@ -261,21 +261,17 @@ export const FooterBar: React.FC<Props> = ({
                 color: SecurityLevelTipColor[securityLevel].text,
               }}
             >
-              {securityLevel === Level.FORBIDDEN
-                ? 'Found forbidden risks. Unable to sign'
-                : 'Please process the alert before signing'}
+              Please process the alert before signing
             </span>
-            {securityLevel !== Level.FORBIDDEN && (
-              <span
-                className="underline text-13 font-medium cursor-pointer"
-                style={{
-                  color: SecurityLevelTipColor[securityLevel].text,
-                }}
-                onClick={onIgnoreAllRules}
-              >
-                Ignore all
-              </span>
-            )}
+            <span
+              className="underline text-13 font-medium cursor-pointer"
+              style={{
+                color: SecurityLevelTipColor[securityLevel].text,
+              }}
+              onClick={onIgnoreAllRules}
+            >
+              Ignore all
+            </span>
           </div>
         )}
       </Wrapper>
