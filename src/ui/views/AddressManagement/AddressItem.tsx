@@ -120,7 +120,8 @@ const AddressItem = memo(
           type,
           brandName,
           type !== KEYRING_CLASS.HARDWARE.GRIDPLUS &&
-            type !== KEYRING_CLASS.HARDWARE.KEYSTONE,
+            type !== KEYRING_CLASS.HARDWARE.KEYSTONE &&
+            type !== KEYRING_CLASS.MNEMONIC,
         ]);
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
