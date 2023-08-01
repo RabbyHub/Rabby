@@ -121,6 +121,9 @@ const ImportWatchAddress = () => {
         form.setFieldsValue({
           address: accounts[0],
         });
+        if (isValidAddress(accounts[0])) {
+          setIsValidAddr(true);
+        }
         await connector.current?.killSession();
         setWalletconnectModalVisible(false);
         setWalletconnectUri('');
@@ -175,6 +178,7 @@ const ImportWatchAddress = () => {
 
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
+    console.log('address', address);
     if (!isValidAddress(address)) {
       setIsValidAddr(false);
       try {
