@@ -1,27 +1,21 @@
 import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { InfoCircleOutlined } from '@ant-design/icons';
-
 import WordsMatrix from '@/ui/component/WordsMatrix';
-
-import { Navbar, StrayPageWithButton } from 'ui/component';
-import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import LessPalette from '@/ui/style/var-defs';
-import { fadeColor, styid } from '@/ui/utils/styled';
-import { useWallet } from 'ui/utils';
+import { styid } from '@/ui/utils/styled';
+import { openInternalPageInTab, useWallet } from 'ui/utils';
 import { Account } from '@/background/service/preference';
-
-import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import { generateAliasName } from '@/utils/account';
-import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
-import { useHistory } from 'react-router-dom';
+import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import LogoSVG from '@/ui/assets/logo.svg';
+import IconBack from 'ui/assets/back.svg';
 
 const AlertBlock = styled.div`
   padding: 10px 12px;
@@ -63,11 +57,8 @@ const MnemonicsWrapper = styled.div`
 `;
 
 const DisplayMnemonic = () => {
-  const { t } = useTranslation();
-  const isWide = useMedia('(min-width: 401px)');
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const history = useHistory();
   useEffect(() => {
     dispatch.createMnemonics.prepareMnemonicsAsync();
   }, []);
@@ -80,79 +71,58 @@ const DisplayMnemonic = () => {
     copyTextToClipboard(mnemonics).then(() => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
+        content: 'Copied',
         duration: 0.5,
       });
     });
   }, [mnemonics]);
 
   const onSubmit = React.useCallback(() => {
-    wallet
-      .createKeyringWithMnemonics(mnemonics)
-      .then(async (accounts: Account[]) => {
-        const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+    wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
+      const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+      const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
+        keyring!.publicKey!
+      );
 
-        const newAccounts = await Promise.all(
-          accounts.map(async (account) => {
-            const alianName = generateAliasName({
-              keyringType: KEYRING_TYPE.HdKeyring,
-              brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-              keyringCount: Math.max(keyring!.index, 0),
-              addressCount: 0,
-            });
+      openInternalPageInTab(
+        `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
+      );
 
-            await wallet.updateAlianName(
-              account?.address?.toLowerCase(),
-              alianName
-            );
-
-            return {
-              ...account,
-              alianName,
-            };
-          })
-        );
-
-        history.replace({
-          pathname: '/popup/import/success',
-          state: {
-            accounts: newAccounts,
-            title: t('Created Successfully'),
-            editing: true,
-          },
-        });
-
-        dispatch.createMnemonics.reset();
-      });
+      dispatch.createMnemonics.reset();
+    });
   }, [mnemonics]);
 
   return (
-    <StrayPageWithButton
-      custom={isWide}
-      className={clsx(isWide && 'rabby-stray-page')}
-      hasDivider
-      onSubmit={onSubmit}
-      onBackClick={async () => {
-        dispatch.createMnemonics.stepTo('risk-check');
-      }}
-      noPadding
-      NextButtonContent={"I've Saved the Phrase"}
-    >
-      <Navbar
-        onBack={async () => {
-          dispatch.createMnemonics.stepTo('risk-check');
-        }}
+    <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
+      <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
+      <div
+        className={clsx(
+          'px-[100px] pt-[32px] pb-[40px]',
+          'bg-white rounded-[12px]',
+          'relative'
+        )}
       >
-        {t('Backup Seed Phrase')}
-      </Navbar>
-      <div className="rabby-container">
+        <div
+          className="cursor-pointer absolute left-[100px] top-[32px]"
+          onClick={() => dispatch.createMnemonics.stepTo('risk-check')}
+        >
+          <img src={IconBack} />
+        </div>
+        <h1
+          className={clsx(
+            'flex items-center justify-center',
+            'space-x-[16px] mb-[14px]',
+            'text-[20px] text-gray-title'
+          )}
+        >
+          <span>Backup Seed Phrase</span>
+        </h1>
         <div className="px-20 pt-24">
-          <AlertBlock className="flex justify-center items-center mb-20 rounded-[4px]">
+          <AlertBlock className="flex justify-center items-center mb-[24px] rounded-[4px]">
             <InfoCircleOutlined className="mr-10" />
             <p className="mb-0">
-              {t(
-                'Make sure no one else is watching your screen when you back up the seed phrase'
-              )}
+              Make sure no one else is watching your screen when you back up the
+              seed phrase
             </p>
           </AlertBlock>
           <MnemonicsWrapper className="relative">
@@ -161,17 +131,30 @@ const DisplayMnemonic = () => {
                 focusable={false}
                 closable={false}
                 words={mnemonics.split(' ')}
+                className="bg-gray-bg border border-[#E1E5F2]"
               />
             </div>
           </MnemonicsWrapper>
-          <CopySection onClick={onCopyMnemonics} className="pt-16 pb-16">
+          <CopySection
+            onClick={onCopyMnemonics}
+            className="text-13 pt-16 pb-16 mt-8"
+          >
             <img className="mr-6" src={IconCopy} />
-
-            {'Copy seed phrase'}
+            Copy seed phrase
           </CopySection>
         </div>
+        <div className="text-center mt-[116px]">
+          <Button
+            type="primary"
+            size="large"
+            onClick={onSubmit}
+            className="py-[13px] px-[56px] h-auto"
+          >
+            I've Saved the Phrase
+          </Button>
+        </div>
       </div>
-    </StrayPageWithButton>
+    </div>
   );
 };
 

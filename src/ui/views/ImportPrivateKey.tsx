@@ -160,6 +160,19 @@ const ImportPrivateKey = () => {
                   accessible to you.{' '}
                 </p>
               </section>
+              <section>
+                <h3>Is it possible to import KeyStore?</h3>
+                <p>
+                  Yes, you can{' '}
+                  <a
+                    className="underline text-blue-light cursor-pointer"
+                    onClick={() => history.push('/import/json')}
+                  >
+                    import KeyStore
+                  </a>{' '}
+                  here.
+                </p>
+              </section>
             </TipTextList>
           </div>
         </div>

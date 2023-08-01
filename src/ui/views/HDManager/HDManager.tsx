@@ -2,7 +2,7 @@ import './index.less';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
 import { HDManagerStateProvider, StateProviderProps } from './utils';
-import { Spin, message } from 'antd';
+import { Button, Spin, message } from 'antd';
 import {
   HARDWARE_KEYRING_TYPES,
   KEYRING_CLASS,
@@ -92,12 +92,16 @@ export const HDManager: React.FC<StateProviderProps> = ({
         })
         .catch((e) => {
           console.error(e);
-          setInitialed(false);
-          message.error({
-            content:
-              'Connect has stopped. Please refresh the page to connect again.',
-            key: 'ledger-error',
-          });
+          if (keyring === KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+            setInitialed(true);
+          } else {
+            setInitialed(false);
+            message.error({
+              content:
+                'Connect has stopped. Please refresh the page to connect again.',
+              key: 'ledger-error',
+            });
+          }
         });
     }
 
@@ -108,6 +112,10 @@ export const HDManager: React.FC<StateProviderProps> = ({
     return () => {
       closeConnect();
     };
+  }, []);
+
+  const handleCloseWin = React.useCallback(() => {
+    window.close();
   }, []);
 
   if (!initialed) {
@@ -124,7 +132,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
 
   return (
     <HDManagerStateProvider keyringId={idRef.current} keyring={keyring}>
-      <div className="HDManager">
+      <div className="HDManager relative">
         <main>
           <div className="logo">
             <Logo className="icon" />
@@ -132,6 +140,14 @@ export const HDManager: React.FC<StateProviderProps> = ({
           </div>
           <Manager brand={brand} />
         </main>
+        <div
+          onClick={handleCloseWin}
+          className="absolute bottom-[40px] left-0 right-0 text-center"
+        >
+          <Button type="primary" className="w-[280px] h-[60px] text-20">
+            Done
+          </Button>
+        </div>
       </div>
     </HDManagerStateProvider>
   );

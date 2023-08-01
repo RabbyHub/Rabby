@@ -6,9 +6,7 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import { useAsync, useThrottleFn } from 'react-use';
+import { useAsyncFn } from 'react-use';
 
 import { VariableSizeGrid } from 'react-window';
 import PQueue from 'p-queue';
@@ -33,18 +31,18 @@ import IconUnknownToken from 'ui/assets/token-default.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 /**
- * @see `@sticky-top-height`, `@sticky-footer-height` in ./style.less
+ * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
  */
-function getYValue() {
-  return window.innerHeight - 200 - 148;
+function getYValue(isShowTestnet = false) {
+  return window.innerHeight - (isShowTestnet ? 250 : 200) - 148;
 }
 
-export function useTableScrollableHeight() {
-  const [yValue, setYValue] = useState(getYValue);
+export function useTableScrollableHeight({ isShowTestnet = false }) {
+  const [yValue, setYValue] = useState(getYValue(isShowTestnet));
 
   useLayoutEffect(() => {
     const listener = debounce(() => {
-      setYValue(getYValue());
+      setYValue(getYValue(isShowTestnet));
     }, 500);
 
     window.addEventListener('resize', listener);
@@ -52,7 +50,7 @@ export function useTableScrollableHeight() {
     return () => {
       window.removeEventListener('resize', listener);
     };
-  });
+  }, [isShowTestnet]);
 
   return {
     yValue,
@@ -64,7 +62,7 @@ const FILTER_TYPES = {
   assets: 'By Assets',
 } as const;
 
-export const SwitchPills = [
+export const TableViewOptions = [
   {
     key: 'contract',
     label: FILTER_TYPES.contract,
@@ -92,7 +90,21 @@ function sortTokenOrNFTApprovalsSpenderList(
   });
 }
 
-export function useApprovalsPage() {
+const resetTableRenderer = (
+  ref: React.MutableRefObject<VariableSizeGrid | null>
+) => {
+  if (ref.current) {
+    ref.current.scrollToItem({ columnIndex: 0 });
+    // ref.current.resetAfterRowIndex(0, true);
+    ref.current.resetAfterIndices({
+      columnIndex: 0,
+      rowIndex: 0,
+      shouldForceUpdate: true,
+    });
+  }
+};
+
+export function useApprovalsPage(options?: { isTestnet?: boolean }) {
   const wallet = useWallet();
 
   const dispatch = useRabbyDispatch();
@@ -134,15 +146,22 @@ export function useApprovalsPage() {
       filterType === 'contract' ? vGridRefContracts : vGridRefAsset;
     if (vGridRef.current) {
       vGridRef.current?.scrollToItem({ columnIndex: 0 });
-      vGridRef.current?.resetAfterColumnIndex(0);
+      vGridRef.current?.resetAfterRowIndex(0, true);
     }
   }, [debouncedSearchKw, filterType]);
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
-  const { value: allData, loading, error } = useAsync(async () => {
+  const [
+    { value: allData, loading, error },
+    loadData,
+  ] = useAsyncFn(async () => {
+    const openapiClient = options?.isTestnet
+      ? wallet.testnetOpenapi
+      : wallet.openapi;
+
     const userAddress = account!.address;
-    const usedChainList = await wallet.openapi.usedChainList(userAddress);
+    const usedChainList = await openapiClient.usedChainList(userAddress);
 
     const contractMap: Record<string, ContractApprovalItem> = {};
     const tokenMap: Record<string, TokenApprovalItem> = {};
@@ -150,7 +169,7 @@ export function useApprovalsPage() {
     await queueRef.current.clear();
     const nftAuthorizedQueryList = usedChainList.map((e) => async () => {
       try {
-        const data = await wallet.openapi.userNFTAuthorizedList(
+        const data = await openapiClient.userNFTAuthorizedList(
           userAddress,
           e.id
         );
@@ -273,10 +292,7 @@ export function useApprovalsPage() {
 
     const tokenAuthorizedQueryList = usedChainList.map((e) => async () => {
       try {
-        const data = await wallet.openapi.tokenAuthorizedList(
-          userAddress,
-          e.id
-        );
+        const data = await openapiClient.tokenAuthorizedList(userAddress, e.id);
         if (data.length) {
           data.forEach((token) => {
             token.spenders.forEach((spender) => {
@@ -348,7 +364,16 @@ export function useApprovalsPage() {
     sortTokenOrNFTApprovalsSpenderList(nftMap);
 
     return [contractMap, tokenMap, nftMap];
-  });
+  }, [account?.address, options?.isTestnet]);
+
+  const loadApprovals = useCallback(async () => {
+    await loadData();
+
+    setTimeout(() => {
+      resetTableRenderer(vGridRefContracts);
+      resetTableRenderer(vGridRefAsset);
+    }, 200);
+  }, [loadData]);
 
   const [contractMap, tokenMap, nftMap] = allData || [];
 
@@ -430,8 +455,13 @@ export function useApprovalsPage() {
     };
   }, [sortedContractList, debouncedSearchKw]);
 
+  useEffect(() => {
+    loadApprovals();
+  }, [loadApprovals]);
+
   return {
     isLoading: loading,
+    loadApprovals,
     searchKw,
     debouncedSearchKw,
     setSearchKw,
