@@ -148,6 +148,9 @@ const ImportWatchAddress = () => {
     form.setFieldsValue({
       address: data,
     });
+    if (isValidAddress(data)) {
+      setIsValidAddr(true);
+    }
     setQRScanModalVisible(false);
     wallet.clearPageStateCache();
   };
@@ -178,7 +181,6 @@ const ImportWatchAddress = () => {
 
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
-    console.log('address', address);
     if (!isValidAddress(address)) {
       setIsValidAddr(false);
       try {
