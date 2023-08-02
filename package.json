@@ -19,7 +19,7 @@
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
     "@dnd-kit/utilities": "^3.0.2",
-    "@eth-optimism/contracts": "^0.5.32",
+    "@eth-optimism/contracts": "^0.6.0",
     "@ethereumjs/common": "^2.5.0",
     "@ethereumjs/tx": "^3.3.2",
     "@gnosis.pm/safe-core-sdk": "^1.1.1",
