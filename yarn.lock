@@ -15350,7 +15350,7 @@ web3-providers-ws@1.6.1:
     web3-core-helpers "1.6.1"
     websocket "^1.0.32"
 
-web3-utils@1.10.0:
+web3-utils@1.10.0, web3-utils@^1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.10.0.tgz#ca4c1b431a765c14ac7f773e92e0fd9377ccf578"
   integrity sha512-kSaCM0uMcZTNUSmn5vMEhlo02RObGNRRCkdX0V9UTAU0+lrvn0HSaudyCo6CQzuXUsnuY2ERJGCGPfeWmv19Rg==
@@ -15376,7 +15376,7 @@ web3-utils@1.6.1, web3-utils@^1.6.1:
     randombytes "^2.1.0"
     utf8 "3.0.0"
 
-web3-utils@1.7.0, web3-utils@^1.7.0:
+web3-utils@1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.7.0.tgz#c59f0fd43b2449357296eb54541810b99b1c771c"
   integrity sha512-O8Tl4Ky40Sp6pe89Olk2FsaUkgHyb5QAXuaKo38ms3CxZZ4d3rPGfjP9DNKGm5+IUgAZBNpF1VmlSmNCqfDI1w==

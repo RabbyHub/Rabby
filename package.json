@@ -117,7 +117,7 @@
     "ts-toolbelt": "^9.6.0",
     "uuid": "^9.0.0",
     "web3-eth-abi": "^1.7.0",
-    "web3-utils": "^1.7.0",
+    "web3-utils": "^1.10.0",
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
