@@ -69,7 +69,7 @@
     "clipboard": "^2.0.8",
     "clsx": "^1.1.1",
     "crypto-browserify": "^3.12.0",
-    "dayjs": "^1.10.7",
+    "dayjs": "^1.11.9",
     "debounce": "^1.2.1",
     "eth-block-tracker": "^5.0.1",
     "eth-json-rpc-filters": "^6.0.0",
