@@ -121,6 +121,9 @@ const ImportWatchAddress = () => {
         form.setFieldsValue({
           address: accounts[0],
         });
+        if (isValidAddress(accounts[0])) {
+          setIsValidAddr(true);
+        }
         await connector.current?.killSession();
         setWalletconnectModalVisible(false);
         setWalletconnectUri('');
@@ -145,6 +148,9 @@ const ImportWatchAddress = () => {
     form.setFieldsValue({
       address: data,
     });
+    if (isValidAddress(data)) {
+      setIsValidAddr(true);
+    }
     setQRScanModalVisible(false);
     wallet.clearPageStateCache();
   };

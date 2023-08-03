@@ -1995,7 +1995,7 @@ export class WalletController extends BaseController {
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     keyringService.removePreMnemonics();
-    return this._setCurrentAccountFromKeyring(keyring);
+    // return this._setCurrentAccountFromKeyring(keyring);
   };
 
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
@@ -2032,6 +2032,11 @@ export class WalletController extends BaseController {
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    if (removeEmptyKeyrings) {
+      const keyring = await keyringService.getKeyringForAccount(address, type);
+      this.removeKeyringFromStash(keyring);
+    }
+
     await keyringService.removeAccount(
       address,
       type,
@@ -2039,8 +2044,14 @@ export class WalletController extends BaseController {
       removeEmptyKeyrings
     );
     if (!(await keyringService.hasAddress(address))) {
-      contactBookService.removeAlias(address);
+      // contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
+      transactionHistoryService.removeList(address);
+      signTextHistoryService.removeList(address);
+      preferenceService.removeHighlightedAddress({
+        address,
+        brandName: brand || type,
+      });
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
@@ -2085,6 +2096,7 @@ export class WalletController extends BaseController {
   };
 
   removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
+    this.removePublicKeyFromStash(publicKey);
     keyringService.removeKeyringByPublicKey(publicKey);
   };
 
@@ -2152,6 +2164,7 @@ export class WalletController extends BaseController {
       keyring = new Keyring({ mnemonic });
       keyringService.updateHdKeyringIndex(keyring);
       result.keyringId = this.addKeyringToStash(keyring);
+      keyringService.addKeyring(keyring);
     } else {
       result.isExistedKR = true;
       result.keyringId = this.updateKeyringInStash(keyring);
@@ -2179,6 +2192,22 @@ export class WalletController extends BaseController {
     return Number(keyringId);
   };
 
+  removeKeyringFromStash = (keyring) => {
+    const keyringId = Object.keys(stashKeyrings).find((key) => {
+      return stashKeyrings[key].mnemonic === keyring.mnemonic;
+    });
+    if (keyringId) {
+      delete stashKeyrings[keyringId];
+    }
+  };
+
+  removePublicKeyFromStash = (publicKey: string) => {
+    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    if (keyring) {
+      this.removeKeyringFromStash(keyring);
+    }
+  };
+
   addKeyring = async (
     keyringId: keyof typeof stashKeyrings,
     byImport = true
@@ -2192,7 +2221,7 @@ export class WalletController extends BaseController {
       } else {
         await keyringService.addKeyring(keyring);
       }
-      this._setCurrentAccountFromKeyring(keyring);
+      this._setCurrentAccountFromKeyring(keyring, -1);
     } else {
       throw new Error('failed to addKeyring, keyring is undefined');
     }
@@ -2607,7 +2636,7 @@ export class WalletController extends BaseController {
       await keyringService.addNewAccount(keyringInstance);
     }
 
-    return this._setCurrentAccountFromKeyring(keyringInstance);
+    return this._setCurrentAccountFromKeyring(keyringInstance, -1);
   };
 
   getSignTextHistory = (address: string) => {

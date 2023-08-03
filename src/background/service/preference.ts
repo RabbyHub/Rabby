@@ -477,6 +477,16 @@ class PreferenceService {
     this.store.highligtedAddresses = list;
   };
 
+  removeHighlightedAddress = (item: IHighlightedAddress) => {
+    this.store.highligtedAddresses = this.store.highligtedAddresses.filter(
+      (highlighted) =>
+        !(
+          isSameAddress(highlighted.address, item.address) &&
+          highlighted.brandName === item.brandName
+        )
+    );
+  };
+
   getWalletSavedList = () => {
     return this.store.walletSavedList || [];
   };

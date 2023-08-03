@@ -65,6 +65,10 @@ class PermissionService {
     const list = this.store.history[address.toLowerCase()] || [];
     return list.sort((a, b) => (a.createAt - b.createAt > 0 ? -1 : 1));
   };
+
+  removeList = (address: string) => {
+    delete this.store.history[address.toLowerCase()];
+  };
 }
 
 export default new PermissionService();

@@ -71,7 +71,16 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
             i + (oneByOne ? 1 : MAX_STEP_COUNT)
           );
         })) as Account[];
-        setAccountList((prev) => [...prev, ...accounts]);
+
+        const accountsWithAliasName = await Promise.all(
+          accounts.map(async (account) => {
+            const aliasName = await wallet.getAlianName(account.address);
+            account.aliasName = aliasName;
+            return account;
+          })
+        );
+
+        setAccountList((prev) => [...prev, ...accountsWithAliasName]);
         setLoading(false);
 
         // only ledger live need to fetch one by one
