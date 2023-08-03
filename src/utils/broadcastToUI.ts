@@ -6,6 +6,7 @@ import { DisplayedKeryring } from '@/background/service/keyring';
  * notice never send sensitive data in this event
  **/
 export const enum BROADCAST_TO_UI_EVENTS {
+  storeChanged = 'storeChanged',
   accountAliasNameChanged = 'accountAliasNameChanged',
   // legacy
   accountsChanged = 'accountsChanged',
@@ -17,6 +18,10 @@ export type BROADCAST_TO_UI_EVENTS_PAYLOAD = {
     name: string;
   };
   [BROADCAST_TO_UI_EVENTS.accountsChanged]: DisplayedKeryring['accounts'][number];
+  [BROADCAST_TO_UI_EVENTS.storeChanged]: {
+    bgStoreName: string;
+    partials: Record<string, any>;
+  };
 };
 
 export type IDisposeFunc = () => any;

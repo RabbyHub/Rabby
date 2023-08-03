@@ -78,6 +78,7 @@
     "ethereumjs-util": "^7.1.2",
     "ethereumjs-wallet": "^1.0.1",
     "ethers": "^5.4.2",
+    "eventemitter3": "4.x",
     "events": "^3.3.0",
     "hdkey": "0.8.0",
     "human-standard-token-abi": "^2.0.0",

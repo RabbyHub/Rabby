@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import eventBus from '@/eventBus';
 import { storage } from 'background/webapi';
 import { debounce } from 'debounce';
+import EventEmitter from 'eventemitter3';
+import { syncStateToUI } from './broadcastToUI';
+import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 
 const persistStorage = (name: string, obj: object) => {
   debounce(storage.set(name, obj), 1000);
@@ -28,27 +32,34 @@ const createPersistStore = async <T extends object>({
     }
   }
 
-  const createProxy = <A extends object>(obj: A): A =>
-    new Proxy(obj, {
-      set(target, prop, value) {
-        target[prop] = value;
+  const store = new Proxy(tpl, {
+    set(target, prop, value) {
+      target[prop] = value;
+
+      persistStorage(name, target);
+
+      syncStateToUI(BROADCAST_TO_UI_EVENTS.storeChanged, {
+        bgStoreName: name,
+        partials: {
+          [prop]: value,
+        },
+      });
+
+      return true;
+    },
+
+    deleteProperty(target, prop) {
+      if (Reflect.has(target, prop)) {
+        Reflect.deleteProperty(target, prop);
 
         persistStorage(name, target);
+      }
 
-        return true;
-      },
+      return true;
+    },
+  });
 
-      deleteProperty(target, prop) {
-        if (Reflect.has(target, prop)) {
-          Reflect.deleteProperty(target, prop);
-
-          persistStorage(name, target);
-        }
-
-        return true;
-      },
-    });
-  return createProxy<T>(tpl);
+  return store;
 };
 
 export default createPersistStore;

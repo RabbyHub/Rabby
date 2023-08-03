@@ -76,10 +76,10 @@ class ContactBook {
       };
     }
 
-    syncStateToUI(BROADCAST_TO_UI_EVENTS.accountAliasNameChanged, {
-      address: key,
-      name: data.name,
-    });
+    // syncStateToUI(BROADCAST_TO_UI_EVENTS.accountAliasNameChanged, {
+    //   address: key,
+    //   name: data.name,
+    // });
   };
 
   addAlias = this.updateAlias;

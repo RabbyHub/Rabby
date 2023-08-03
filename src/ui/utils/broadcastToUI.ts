@@ -15,3 +15,30 @@ export function onBroadcastToUI<T extends BROADCAST_TO_UI_EVENTS>(
     eventBus.removeEventListener(event, listener);
   };
 }
+
+type AllBackgroundStores = {
+  contactBook: import('@/background/service/contactBook').ContactBookStore;
+  preference: import('@/background/service/preference').PreferenceStore;
+};
+
+// type StoreRootModel = import('@/ui/models').RootModel;
+export function onBackgroundStoreChangedStore<
+  S extends keyof AllBackgroundStores
+>(
+  bgStoreName: S,
+  listener: (
+    payload: Omit<
+      BROADCAST_TO_UI_EVENTS_PAYLOAD['storeChanged'],
+      'partials'
+    > & {
+      bgStoreName: S;
+      partials: Partial<AllBackgroundStores[S]>;
+    }
+  ) => void
+) {
+  return onBroadcastToUI(BROADCAST_TO_UI_EVENTS.storeChanged, (payload) => {
+    if (payload?.bgStoreName !== bgStoreName) return;
+
+    listener?.(payload as any);
+  });
+}
