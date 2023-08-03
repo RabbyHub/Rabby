@@ -51,7 +51,7 @@ const AddressDetail = () => {
         }
       },
       onFinished() {
-        dispatch.whitelist.getWhitelist();
+        // dispatch.whitelist.getWhitelist();
       },
       onCancel() {
         // do nothing

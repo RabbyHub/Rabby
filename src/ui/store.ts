@@ -8,9 +8,11 @@ import {
 } from 'react-redux';
 import selectPlugin from '@rematch/select';
 
-import './models/_uistore';
+import onStoreInitialized from './models/_uistore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
+
+onStoreInitialized(store);
 
 export type { RabbyRootState };
 

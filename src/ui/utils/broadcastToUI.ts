@@ -19,19 +19,19 @@ export function onBroadcastToUI<T extends BROADCAST_TO_UI_EVENTS>(
 type AllBackgroundStores = {
   contactBook: import('@/background/service/contactBook').ContactBookStore;
   preference: import('@/background/service/preference').PreferenceStore;
+  whitelist: import('@/background/service/whitelist').WhitelistStore;
 };
 
 // type StoreRootModel = import('@/ui/models').RootModel;
-export function onBackgroundStoreChangedStore<
-  S extends keyof AllBackgroundStores
->(
+export function onBackgroundStoreChanged<S extends keyof AllBackgroundStores>(
   bgStoreName: S,
   listener: (
     payload: Omit<
       BROADCAST_TO_UI_EVENTS_PAYLOAD['storeChanged'],
-      'partials'
+      'partials' | 'changedKeys'
     > & {
       bgStoreName: S;
+      changedKeys: (keyof AllBackgroundStores[S])[];
       partials: Partial<AllBackgroundStores[S]>;
     }
   ) => void

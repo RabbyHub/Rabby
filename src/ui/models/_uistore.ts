@@ -1,31 +1,44 @@
-import store from '@/ui/store';
 import { RabbyRootState, RabbyDispatch } from '@/ui/models';
-import { onBackgroundStoreChangedStore } from '../utils/broadcastToUI';
+import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 
-const dispatch = store.dispatch as RabbyDispatch;
+export default (store: typeof import('@/ui/store').default) => {
+  const dispatch = store.dispatch as RabbyDispatch;
 
-onBackgroundStoreChangedStore('contactBook', (payload) => {
-  const state = store.getState() as RabbyRootState;
-  // console.log('[feat] payload, state', payload, state);
+  onBackgroundStoreChanged('contactBook', (payload) => {
+    const state = store.getState() as RabbyRootState;
 
-  const currentAccount = state.account.currentAccount;
-  state.account.currentAccount?.address;
+    const currentAccount = state.account.currentAccount;
 
-  const addr = currentAccount?.address;
+    const addr = currentAccount?.address;
 
-  if (addr && payload.partials[addr]) {
-    // dispatch.account.fetchCurrentAccountAliasNameAsync();
-    dispatch.account.setField({
-      alianName: payload.partials[addr]!.name,
-      currentAccount: { ...currentAccount },
-    });
-  }
-});
+    if (addr && payload.partials[addr]) {
+      const aliasName = payload.partials[addr]!.name;
+      currentAccount.alianName = aliasName;
+      dispatch.account.setField({
+        alianName: aliasName,
+        currentAccount: { ...currentAccount },
+      });
+    }
+  });
 
-onBackgroundStoreChangedStore('preference', (payload) => {
-  const state = store.getState() as RabbyRootState;
+  // onBackgroundStoreChanged('preference', (payload) => {
+  //   const state = store.getState() as RabbyRootState;
+  //   const preference = state.preference;
+  // });
 
-  console.log('[feat] payload, state', payload, state);
-});
+  onBackgroundStoreChanged('whitelist', payload => {
+    // const state = store.getState() as RabbyRootState;
 
-export default null;
+    if (payload.changedKeys.includes('whitelists')) {
+      dispatch.whitelist.setField({
+        whitelist: payload.partials.whitelists,
+      });
+    }
+
+    if (payload.changedKeys.includes('enabled')) {
+      dispatch.whitelist.setField({
+        enabled: payload.partials.enabled,
+      });
+    }
+  });
+};
