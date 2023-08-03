@@ -39,11 +39,13 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
       isInBlackList: contractBlacklist.some(({ address }) =>
         isSameAddress(address, data.spender)
       ),
-      isInWhiteList: contractWhitelist.some(({ address }) =>
-        isSameAddress(address, data.spender)
+      isInWhiteList: contractWhitelist.some(
+        ({ address, chainId }) =>
+          isSameAddress(address, data.spender) &&
+          chainId === data.chain.serverId
       ),
     };
-  }, [data.spender, contractBlacklist, contractWhitelist]);
+  }, [data.spender, data.chain, contractBlacklist, contractWhitelist]);
   return (
     <div>
       <div className="title">

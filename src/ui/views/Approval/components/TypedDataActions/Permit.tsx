@@ -79,7 +79,10 @@ const Permit = ({
               text={
                 <div className="overflow-hidden overflow-ellipsis flex">
                   <Values.TokenAmount value={actionData.token.amount} />
-                  <span className="mr-2">
+                  <span
+                    className="mr-2"
+                    title={getTokenSymbol(actionData.token)}
+                  >
                     {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
                   </span>
                 </div>
