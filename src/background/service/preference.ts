@@ -55,6 +55,9 @@ export interface PreferenceStore {
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  testnetBalanceMap: {
+    [address: string]: TotalBalanceResponse;
+  };
   useLedgerLive: boolean;
   locale: string;
   watchAddressPreference: Record<string, number>;
@@ -82,6 +85,12 @@ export interface PreferenceStore {
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
+  /**
+   * auto lock time in minutes
+   */
+  autoLockTime?: number;
+  hiddenBalance?: boolean;
+  isShowTestnet?: boolean;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -100,6 +109,7 @@ class PreferenceService {
         externalLinkAck: false,
         hiddenAddresses: [],
         balanceMap: {},
+        testnetBalanceMap: {},
         useLedgerLive: false,
         locale: defaultLang,
         watchAddressPreference: {},
@@ -122,6 +132,8 @@ class PreferenceService {
         customizedToken: [],
         blockedToken: [],
         collectionStarred: [],
+        hiddenBalance: false,
+        isShowTestnet: false,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -158,6 +170,9 @@ class PreferenceService {
     if (!this.store.balanceMap) {
       this.store.balanceMap = {};
     }
+    if (!this.store.testnetBalanceMap) {
+      this.store.testnetBalanceMap = {};
+    }
     if (!this.store.useLedgerLive) {
       this.store.useLedgerLive = false;
     }
@@ -190,6 +205,15 @@ class PreferenceService {
     }
     if (!this.store.collectionStarred) {
       this.store.collectionStarred = [];
+    }
+    if (!this.store.autoLockTime) {
+      this.store.autoLockTime = 0;
+    }
+    if (!this.store.hiddenBalance) {
+      this.store.hiddenBalance = false;
+    }
+    if (!this.store.isShowTestnet) {
+      this.store.isShowTestnet = false;
     }
   };
 
@@ -364,12 +388,32 @@ class PreferenceService {
 
   getPopupOpen = () => this.popupOpen;
 
+  updateTestnetAddressBalance = (
+    address: string,
+    data: TotalBalanceResponse
+  ) => {
+    const testnetBalanceMap = this.store.testnetBalanceMap || {};
+    this.store.testnetBalanceMap = {
+      ...testnetBalanceMap,
+      [address.toLowerCase()]: data,
+    };
+  };
+
   updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
     this.store.balanceMap = {
       ...balanceMap,
       [address.toLowerCase()]: data,
     };
+  };
+
+  removeTestnetAddressBalance = (address: string) => {
+    const key = address.toLowerCase();
+    if (key in this.store.testnetBalanceMap) {
+      const map = this.store.testnetBalanceMap;
+      delete map[key];
+      this.store.testnetBalanceMap = map;
+    }
   };
 
   removeAddressBalance = (address: string) => {
@@ -383,6 +427,11 @@ class PreferenceService {
 
   getAddressBalance = (address: string): TotalBalanceResponse | null => {
     const balanceMap = this.store.balanceMap || {};
+    return balanceMap[address.toLowerCase()] || null;
+  };
+
+  getTestnetAddressBalance = (address: string): TotalBalanceResponse | null => {
+    const balanceMap = this.store.testnetBalanceMap || {};
     return balanceMap[address.toLowerCase()] || null;
   };
 
@@ -427,6 +476,16 @@ class PreferenceService {
   };
   updateHighlightedAddresses = (list: IHighlightedAddress[]) => {
     this.store.highligtedAddresses = list;
+  };
+
+  removeHighlightedAddress = (item: IHighlightedAddress) => {
+    this.store.highligtedAddresses = this.store.highligtedAddresses.filter(
+      (highlighted) =>
+        !(
+          isSameAddress(highlighted.address, item.address) &&
+          highlighted.brandName === item.brandName
+        )
+    );
   };
 
   getWalletSavedList = () => {
@@ -610,6 +669,19 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
+  };
+
+  setAutoLockTime = (time: number) => {
+    this.store.autoLockTime = time;
+  };
+  setHiddenBalance = (value: boolean) => {
+    this.store.hiddenBalance = value;
+  };
+  getIsShowTestnet = () => {
+    return this.store.isShowTestnet;
+  };
+  setIsShowTestnet = (value: boolean) => {
+    this.store.isShowTestnet = value;
   };
 }
 

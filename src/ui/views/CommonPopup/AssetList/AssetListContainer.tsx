@@ -21,6 +21,7 @@ interface Props {
   selectChainId: string | null;
   visible: boolean;
   onEmptyAssets: (isEmpty: boolean) => void;
+  isTestnet?: boolean;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
@@ -28,6 +29,7 @@ export const AssetListContainer: React.FC<Props> = ({
   selectChainId,
   visible,
   onEmptyAssets,
+  isTestnet = false,
 }) => {
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
@@ -42,7 +44,9 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-  } = useQueryProjects(currentAccount?.address, false, visible);
+    blockedTokens,
+    customizeTokens,
+  } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
   const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
     TokenTabEnum.List
   );
@@ -50,7 +54,9 @@ export const AssetListContainer: React.FC<Props> = ({
     !isTokensLoading &&
     !tokenList.length &&
     !isPortfoliosLoading &&
-    !portfolios?.length;
+    !portfolios?.length &&
+    !blockedTokens?.length &&
+    !customizeTokens?.length;
 
   React.useEffect(() => {
     onEmptyAssets(isEmptyAssets);
@@ -61,7 +67,8 @@ export const AssetListContainer: React.FC<Props> = ({
     currentAccount?.address,
     search,
     selectChainId ? selectChainId : undefined,
-    true
+    true,
+    isTestnet
   );
   const displayTokenList = useMemo(() => {
     const result = search ? list : tokenList;
@@ -126,6 +133,9 @@ export const AssetListContainer: React.FC<Props> = ({
               onFocusInput={handleFocusInput}
               isSearch={!!search}
               isNoResults={isNoResults}
+              blockedTokens={blockedTokens}
+              customizeTokens={customizeTokens}
+              isTestnet={isTestnet}
             />
           )}
           {activeTab === TokenTabEnum.Summary && !search && (
@@ -148,7 +158,7 @@ export const AssetListContainer: React.FC<Props> = ({
         {isPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
-          <ProtocolList list={filteredPortfolios} />
+          <ProtocolList isSearch={!!search} list={filteredPortfolios} />
         )}
       </div>
     </div>

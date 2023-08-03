@@ -137,14 +137,16 @@ const Permit2 = ({
                 id="1074"
                 engineResult={engineResultMap['1074']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem
                 id="1072"
                 engineResult={engineResultMap['1072']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Trust value ≤ $10,000"
+                warningText="Trust value ≤ $100,000"
               />
 
               <SecurityListItem

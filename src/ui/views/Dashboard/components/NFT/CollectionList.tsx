@@ -69,7 +69,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
           itemCount={data?.length}
           estimatedItemSize={120}
           itemSize={itemSize}
-          ref={fixedList}
+          ref={fixedList as React.MutableRefObject<VariableSizeList<any>>}
           style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
         >
           {(props) => {
@@ -86,7 +86,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
                         [id]: v,
                       };
                     });
-                    fixedList.current.resetAfterIndex(props.index);
+                    fixedList.current?.resetAfterIndex(props.index);
                   }}
                 />
               </div>

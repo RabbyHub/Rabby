@@ -25,7 +25,7 @@
     align-items: center;
     margin: 0 auto 24px;
     .icon {
-      width: 32px;
+      max-width: 32px;
       margin-right: 12px;
     }
     .title {
@@ -35,6 +35,25 @@
     }
   }
 
+  .toolbar {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+    column-gap: 20px;
+    font-size: 12px;
+    line-height: 1;
+    color: @color-body;
+  }
+
+  .toolbar-item {
+    display: flex;
+    column-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+  }
+
   .setting {
     display: flex;
     align-items: center;
@@ -42,6 +61,9 @@
     right: 0;
     top: 0;
     cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
     .icon {
       width: 16px;
       margin-right: 4px;
@@ -378,3 +400,17 @@
     }
   }
 }
+
+.hd-manager-switch-modal {
+  width: 520px!important;
+
+  .ant-modal-confirm-body .ant-modal-confirm-content {
+    color: #4B4D59;
+    text-align: center;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+  }
+}
+  

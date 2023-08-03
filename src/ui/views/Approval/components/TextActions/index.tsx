@@ -204,7 +204,7 @@ const Actions = ({
         <ActionWrapper>
           <div className="action-header">
             <div className="left">{actionName}</div>
-            <div className="right">action type</div>
+            <div className="right"></div>
           </div>
           <div className="container">
             {data.createKey && (

@@ -7,9 +7,9 @@ import { KEYRING_TYPE } from 'consts';
 
 import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import { clearClipboard } from 'ui/utils/clipboard';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
-import LessPalette from 'ui/style/var-defs';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -48,6 +48,7 @@ const ImportPrivateKey = () => {
       const successShowAccounts = accounts.map((item, index) => {
         return { ...item, index: index + 1 };
       });
+      clearClipboard();
       history.replace({
         pathname: '/popup/import/success',
         state: {
@@ -157,6 +158,19 @@ const ImportPrivateKey = () => {
                 <p>
                   Yes, it will be stored locally on your browser and only
                   accessible to you.{' '}
+                </p>
+              </section>
+              <section>
+                <h3>Is it possible to import KeyStore?</h3>
+                <p>
+                  Yes, you can{' '}
+                  <a
+                    className="underline text-blue-light cursor-pointer"
+                    onClick={() => history.push('/import/json')}
+                  >
+                    import KeyStore
+                  </a>{' '}
+                  here.
                 </p>
               </section>
             </TipTextList>

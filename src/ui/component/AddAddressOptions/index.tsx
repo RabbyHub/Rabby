@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
 import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
 import IconHardWallet from 'ui/assets/address/hardwallet.svg';
 import IconMobileWallet from 'ui/assets/address/mobile-wallet.svg';
 import InstitutionalWallet from 'ui/assets/address/institutional-wallet.svg';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
+import IconMnemonics from 'ui/assets/import/mnemonics-light.svg';
+import IconPrivatekey from 'ui/assets/import/privatekey-light.svg';
 
 import './style.less';
 
@@ -28,6 +28,7 @@ import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
+import { Modal } from 'antd';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -66,6 +67,26 @@ const AddAddressOptions = () => {
     };
   }, []);
 
+  const checkQRBasedWallet = async (item: IWalletBrandContent) => {
+    const { allowed, brand } = await wallet.checkQRHardwareAllowImport(
+      item.brand
+    );
+
+    if (!allowed) {
+      Modal.error({
+        title: 'Unable to import',
+        content: `Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from ${brand} before importing another device.`,
+        okText: 'OK',
+        centered: true,
+        maskClosable: true,
+        className: 'text-center',
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (history, item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
@@ -88,11 +109,9 @@ const AddAddressOptions = () => {
           pathname: '/import/gnosis',
         });
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-        history.push({
-          pathname: '/import/qrcode',
-          state: {
-            brand: item.brand,
-          },
+        checkQRBasedWallet(item).then((success) => {
+          if (!success) return;
+          openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
         });
       } else {
         history.push({
@@ -168,17 +187,8 @@ const AddAddressOptions = () => {
         content: t('createAddress'),
         brand: 'createAddress',
         onClick: () => {
-          handleRouter((history) => history.push('/mnemonics/create'));
+          handleRouter(() => openInternalPageInTab('mnemonics/create'));
         },
-      },
-      {
-        leftIcon: IconImportAdress,
-        brand: 'importAddress',
-        content: 'Import Address',
-        onClick: () =>
-          handleRouter((history) =>
-            history.push('/import/entry-import-address')
-          ),
       },
     ],
     [t]
@@ -186,6 +196,19 @@ const AddAddressOptions = () => {
 
   const centerList = React.useMemo(
     () => [
+      {
+        leftIcon: IconMnemonics,
+        brand: 'importSeedPhrase',
+        content: 'Import Seed Phrase',
+        onClick: () =>
+          handleRouter(() => openInternalPageInTab('import/mnemonics')),
+      },
+      {
+        leftIcon: IconPrivatekey,
+        brand: 'importPrivatekey',
+        content: 'Import Private Key',
+        onClick: () => handleRouter((history) => history.push('/import/key')),
+      },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
@@ -214,7 +237,7 @@ const AddAddressOptions = () => {
   return (
     <div className="rabby-container" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
-        <div className="bg-white rounded-[6px] mb-[20px]" key={index}>
+        <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
@@ -227,7 +250,7 @@ const AddAddressOptions = () => {
         </div>
       ))}
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {renderList.map((item) => {
           const isSelected = selectedWalletType === item.key;
           return (
@@ -309,7 +332,7 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {bottomList.map((e) => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>

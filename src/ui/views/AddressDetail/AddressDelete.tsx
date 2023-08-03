@@ -10,6 +10,7 @@ import {
   KEYRING_TYPE,
   WALLET_BRAND_CONTENT,
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
 } from '@/constant';
 import IconSuccess from 'ui/assets/success.svg';
 import { useHistory } from 'react-router-dom';
@@ -36,7 +37,11 @@ export const AddressDelete = ({
       address,
       type,
       brandName,
-      type === KEYRING_TYPE.HdKeyring ? false : true
+      type === KEYRING_TYPE.HdKeyring ||
+        KEYRING_CLASS.HARDWARE.GRIDPLUS ||
+        KEYRING_CLASS.HARDWARE.KEYSTONE
+        ? false
+        : true
     );
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,

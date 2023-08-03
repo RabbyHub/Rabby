@@ -10,7 +10,7 @@ import React, {
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
 
 import Empty from '../Empty';
@@ -18,7 +18,12 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
-import { findChainByEnum, sortChainItems } from '@/utils/chain';
+import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import NetSwitchTabs, {
+  NetSwitchTabsKey,
+  useSwitchNetTab,
+} from '../PillsSwitch/NetSwitchTabs';
+
 interface ChainSelectorModalProps {
   visible: boolean;
   value?: CHAINS_ENUM;
@@ -29,24 +34,31 @@ interface ChainSelectorModalProps {
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  hideTestnetTab?: boolean;
   showRPCStatus?: boolean;
   height?: number;
 }
 
 const useChainSeletorList = ({
   supportChains,
+  netTabKey,
 }: {
   supportChains?: Chain['enum'][];
+  netTabKey?: NetSwitchTabsKey;
 }) => {
   const [search, setSearch] = useState('');
-  const { pinned, matteredChainBalances } = useRabbySelector((state) => {
-    return {
-      pinned:
-        state.preference.pinnedChain?.filter((item) => findChainByEnum(item)) ||
-        [],
-      matteredChainBalances: state.account.matteredChainBalances,
-    };
-  });
+  const { pinned, matteredChainBalances, isShowTestnet } = useRabbySelector(
+    (state) => {
+      return {
+        pinned: (state.preference.pinnedChain?.filter((item) =>
+          findChainByEnum(item)
+        ) || []) as CHAINS_ENUM[],
+        matteredChainBalances: state.account.matteredChainBalances,
+        isShowTestnet: state.preference.isShowTestnet,
+      };
+    }
+  );
+
   const dispatch = useRabbyDispatch();
 
   const handleStarChange = (chain: CHAINS_ENUM, value) => {
@@ -59,100 +71,22 @@ const useChainSeletorList = ({
   const handleSort = (chains: Chain[]) => {
     dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
   };
-  const searchChains = useCallback(
-    (list: Chain[], input: string) => {
-      input = input?.trim().toLowerCase();
-      if (!input) {
-        return list.filter((item) => !pinned.includes(item.enum));
-      }
-      const res = list.filter((item) =>
-        [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
-          item.toLowerCase().includes(input)
-        )
-      );
-      return res
-        .filter((item) => pinned.includes(item.enum))
-        .concat(res.filter((item) => !pinned.includes(item.enum)));
-    },
-    [pinned]
-  );
   const { allSearched, matteredList, unmatteredList } = useMemo(() => {
-    const unpinnedListGroup = {
-      withBalance: [] as Chain[],
-      withoutBalance: [] as Chain[],
-      disabled: [] as Chain[],
-    };
-    const pinnedListGroup = {
-      withBalance: [] as Chain[],
-      withoutBalance: [] as Chain[],
-      disabled: [] as Chain[],
-    };
-
-    const _all = Object.values(CHAINS).sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-
-    _all.forEach((item) => {
-      const inPinned = pinned.find((pinnedEnum) => pinnedEnum === item.enum);
-
-      if (!inPinned) {
-        if (supportChains?.length && !supportChains.includes(item.enum)) {
-          unpinnedListGroup.disabled.push(item);
-        } else if (!matteredChainBalances[item.serverId]) {
-          unpinnedListGroup.withoutBalance.push(item);
-        } else {
-          unpinnedListGroup.withBalance.push(item);
-        }
-      } else {
-        if (supportChains?.length && !supportChains.includes(item.enum)) {
-          pinnedListGroup.disabled.push(item);
-        } else if (!matteredChainBalances[item.serverId]) {
-          pinnedListGroup.withoutBalance.push(item);
-        } else {
-          pinnedListGroup.withBalance.push(item);
-        }
-      }
-    });
-
-    pinnedListGroup.withBalance = sortChainItems(pinnedListGroup.withBalance, {
+    const searchKw = search?.trim().toLowerCase();
+    const result = varyAndSortChainItems({
       supportChains,
-      cachedChainBalances: matteredChainBalances,
-    });
-    unpinnedListGroup.withBalance = sortChainItems(
-      unpinnedListGroup.withBalance,
-      {
-        supportChains,
-        cachedChainBalances: matteredChainBalances,
-      }
-    );
-    const searchKw = search?.trim();
-
-    const allSearched = searchChains(_all, search);
-
-    pinnedListGroup.disabled = sortChainItems(pinnedListGroup.disabled, {
-      supportChains,
-      cachedChainBalances: matteredChainBalances,
-    });
-    unpinnedListGroup.disabled = sortChainItems(unpinnedListGroup.disabled, {
-      supportChains,
-      cachedChainBalances: matteredChainBalances,
+      searchKeyword: searchKw,
+      matteredChainBalances,
+      pinned,
+      netTabKey,
     });
 
     return {
-      allSearched,
-      matteredList: searchKw
-        ? []
-        : [
-            ...pinnedListGroup.withBalance,
-            ...pinnedListGroup.withoutBalance,
-            ...unpinnedListGroup.withBalance,
-            ...pinnedListGroup.disabled,
-          ],
-      unmatteredList: searchKw
-        ? []
-        : [...unpinnedListGroup.withoutBalance, ...unpinnedListGroup.disabled],
+      allSearched: result.allSearched,
+      matteredList: searchKw ? [] : result.matteredList,
+      unmatteredList: searchKw ? [] : result.unmatteredList,
     };
-  }, [search, pinned, supportChains, matteredChainBalances]);
+  }, [search, pinned, supportChains, matteredChainBalances, netTabKey]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
@@ -180,6 +114,7 @@ const ChainSelectorModal = ({
   className,
   supportChains,
   disabledTips,
+  hideTestnetTab = false,
   showRPCStatus = false,
   height = 494,
 }: ChainSelectorModalProps) => {
@@ -191,6 +126,10 @@ const ChainSelectorModal = ({
     onChange(val);
   };
 
+  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
+    hideTestnetTab,
+  });
+
   const {
     matteredList,
     unmatteredList,
@@ -201,7 +140,15 @@ const ChainSelectorModal = ({
     pinned,
   } = useChainSeletorList({
     supportChains,
+    netTabKey: selectedTab,
   });
+
+  useEffect(() => {
+    if (!value || !visible) return;
+
+    const chainItem = findChainByEnum(value);
+    onTabChange(chainItem?.isTestnet ? 'testnet' : 'mainnet');
+  }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
 
@@ -209,6 +156,10 @@ const ChainSelectorModal = ({
     if (!visible) {
       setSearch('');
     } else {
+      // (async () => {
+      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
+      //   rDispatch.account.getMatteredChainBalance();
+      // })();
       rDispatch.account.getMatteredChainBalance();
     }
   }, [visible, rDispatch]);
@@ -230,6 +181,13 @@ const ChainSelectorModal = ({
       destroyOnClose
     >
       <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+        {isShowTestnet && (
+          <NetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+            className="h-[28px] box-content mt-[20px] mb-[20px]"
+          />
+        )}
         <Input
           prefix={<img src={IconSearch} />}
           placeholder="Search chain"

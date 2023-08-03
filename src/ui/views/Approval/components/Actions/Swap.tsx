@@ -96,7 +96,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -116,7 +116,7 @@ const Swap = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive token</Row>
+          <Row isTitle>Receive</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText
@@ -260,7 +260,7 @@ const Swap = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1069']}
                   id="1069"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

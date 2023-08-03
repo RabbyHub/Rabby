@@ -12,4 +12,5 @@ export const getSentryEnv = () => {
   return environment;
 };
 
-export const appIsDev = process.env.NODE_ENV !== 'production';
+export const appIsProd = process.env.NODE_ENV === 'production';
+export const appIsDev = !appIsProd;

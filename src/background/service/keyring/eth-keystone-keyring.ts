@@ -61,9 +61,22 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     });
   }
 
+  async getMaxAccountLimit() {
+    if (!this.initialized) {
+      await this.readKeyring();
+    }
+    if (this.keyringMode === 'pubkey') {
+      return Object.keys(this.paths).length;
+    }
+  }
+
   async getAddresses(start: number, end: number) {
     if (!this.initialized) {
       await this.readKeyring();
+    }
+    if (this.keyringMode === 'pubkey') {
+      end = Math.min(end, Object.keys(this.paths).length);
+      start = Math.min(start, end);
     }
     const accounts: {
       address: string;
@@ -120,5 +133,42 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   removeAccount = (address: string) => {
     super.removeAccount(address);
     delete this.brandsMap[address.toLowerCase()];
+  };
+
+  getCurrentAccounts = async () => {
+    const addrs = await this.getAccounts();
+
+    return addrs.map((address) => {
+      const checksummedAddress = toChecksumAddress(address);
+
+      return {
+        address,
+        index: this.indexes[checksummedAddress] + 1,
+      };
+    });
+  };
+
+  isReady = async () => {
+    return this.initialized;
+  };
+
+  getCurrentBrand = async () => {
+    return this.currentBrand;
+  };
+
+  checkAllowImport = async (brand: string) => {
+    const [account] = await this.getAccountsWithBrand();
+
+    if (!account) {
+      await this.forgetDevice();
+      return {
+        allowed: true,
+      };
+    }
+
+    return {
+      brand: account.brandName,
+      allowed: account.brandName === brand,
+    };
   };
 }

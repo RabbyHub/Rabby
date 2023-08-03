@@ -43,9 +43,9 @@ export const TokenTable: React.FC<Props> = ({
       ) : (
         <Table>
           <THeader>
-            <THeadCell className="w-1/2">Asset / Amount</THeadCell>
-            <THeadCell className="w-1/4">Price</THeadCell>
-            <THeadCell className="w-1/4 text-right">USD Value</THeadCell>
+            <THeadCell className="w-[160px]">Asset / Amount</THeadCell>
+            <THeadCell className="w-[90px]">Price</THeadCell>
+            <THeadCell className="w-[110px] text-right">USD Value</THeadCell>
           </THeader>
           <TBody className="mt-8">
             {virtual ? (

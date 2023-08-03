@@ -1,10 +1,17 @@
 import clsx from 'clsx';
-import { memo, useMemo, useCallback, ChangeEventHandler } from 'react';
+import {
+  memo,
+  useMemo,
+  useCallback,
+  ChangeEventHandler,
+  useState,
+} from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import React from 'react';
 import { Input } from 'antd';
+import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 
 export const SlippageItem = styled.div<{
   active?: boolean;
@@ -25,13 +32,7 @@ export const SlippageItem = styled.div<{
   background: #f5f6fa;
   border-radius: 4px;
   &:hover {
-    /* background: linear-gradient(
-        0deg,
-        rgba(134, 151, 255, 0.3),
-        rgba(134, 151, 255, 0.3)
-      ),
-      rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2); */
+    background: rgba(134, 151, 255, 0.2);
   }
 `;
 
@@ -47,20 +48,9 @@ const Wrapper = styled.section`
   .input {
     font-weight: 500;
     font-size: 12px;
-    /* color: white; */
     background: #f5f6fa;
     border: 1px solid #e5e9ef;
     border-radius: 4px;
-
-    /* &.ant-input-affix-wrapper, */
-    /* &:focus,
-    &:active {
-      border: 1px solid transparent;
-    } */
-    /* &:hover {
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: none;
-    } */
 
     &:placeholder-shown {
       color: #707280;
@@ -79,17 +69,20 @@ const Wrapper = styled.section`
     position: relative;
     border-radius: 4px;
     background: rgba(255, 176, 32, 0.1);
-    margin-top: 12px;
+    margin-top: 8px;
   }
 `;
 interface SlippageProps {
   value: string;
+  displaySlippage: string;
   onChange: (n: string) => void;
   recommendValue?: number;
 }
 export const Slippage = memo((props: SlippageProps) => {
-  const { value, onChange, recommendValue } = props;
+  const { value, displaySlippage, onChange, recommendValue } = props;
   const [isCustom, setIsCustom] = useToggle(false);
+
+  const [slippageOpen, setSlippageOpen] = useState(false);
 
   const [isLow, isHigh] = useMemo(() => {
     return [
@@ -144,41 +137,68 @@ export const Slippage = memo((props: SlippageProps) => {
   );
 
   return (
-    <Wrapper>
-      <div className="slippage">
-        {SLIPPAGE.map((e) => (
-          <SlippageItem
-            key={e}
+    <div>
+      <div
+        className="flex justify-between cursor-pointer"
+        onClick={() => {
+          setSlippageOpen((e) => !e);
+        }}
+      >
+        <span>Slippage tolerance</span>
+        <span className="font-medium text-gray-title inline-flex items-center">
+          <span className={clsx(!!tips && 'text-orange')}>
+            {displaySlippage}%{' '}
+          </span>
+          <img
+            src={ImgArrowUp}
+            className={clsx(
+              'transition-transform inline-block w-14 h-[15px]',
+              !slippageOpen && 'rotate-180'
+            )}
+          />
+        </span>
+      </div>
+      <Wrapper>
+        <div
+          className={clsx(
+            'slippage',
+            slippageOpen ? 'mt-8' : 'h-0 overflow-hidden'
+          )}
+        >
+          {SLIPPAGE.map((e) => (
+            <SlippageItem
+              key={e}
+              onClick={(event) => {
+                event.stopPropagation();
+                setIsCustom(false);
+                onChange(e);
+              }}
+              active={!isCustom && e === value}
+            >
+              {e}%
+            </SlippageItem>
+          ))}
+          <div
             onClick={(event) => {
               event.stopPropagation();
-              setIsCustom(false);
-              onChange(e);
+              setIsCustom(true);
             }}
-            active={!isCustom && e === value}
+            className="flex-1"
           >
-            {e}%
-          </SlippageItem>
-        ))}
-        <div
-          onClick={(event) => {
-            event.stopPropagation();
-            setIsCustom(true);
-          }}
-          className="flex-1"
-        >
-          <Input
-            className={clsx('input')}
-            bordered={false}
-            value={value}
-            onFocus={onInputFocus}
-            onChange={onInputChange}
-            placeholder="0.1"
-            suffix={<div>%</div>}
-          />
+            <Input
+              className={clsx('input')}
+              bordered={false}
+              value={value}
+              onFocus={onInputFocus}
+              onChange={onInputChange}
+              placeholder="0.1"
+              suffix={<div>%</div>}
+            />
+          </div>
         </div>
-      </div>
 
-      {!!tips && <div className="warning">{tips}</div>}
-    </Wrapper>
+        {!!tips && <div className={clsx('warning')}>{tips}</div>}
+      </Wrapper>
+    </div>
   );
 });

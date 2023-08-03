@@ -480,6 +480,14 @@ class TxHistory {
     };
   }
 
+  removeList(address: string) {
+    const normalizedAddress = address.toLowerCase();
+    delete this.store.transactions[normalizedAddress];
+    this._setStoreTransaction({
+      ...this.store.transactions,
+    });
+  }
+
   completeTx({
     address,
     chainId,

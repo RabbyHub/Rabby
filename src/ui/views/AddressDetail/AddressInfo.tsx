@@ -1,5 +1,5 @@
 import { Button, Form, Input, message, Popover } from 'antd';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, NameAndAddress, PageHeader, Popup } from 'ui/component';
 import {
@@ -67,26 +67,12 @@ const GnonisSafeInfo = ({
       networks.map(async (networkId) => {
         const info = await wallet.getBasicSafeInfo({ address, networkId });
 
-        const owners = await wallet.getGnosisOwners(
-          {
-            type,
-            address,
-            brandName,
-          },
-          address,
-          info.version,
-          networkId
-        );
-
-        const comparedOwners = crossCompareOwners(owners, info.owners);
-
         return {
           chain: Object.values(CHAINS).find(
             (chain) => chain.network === networkId
           ),
           data: {
             ...info,
-            owners: comparedOwners,
           },
         };
       })
@@ -120,6 +106,12 @@ const GnonisSafeInfo = ({
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
     };
   }, [accountsList, highlightedAddresses]);
+
+  useEffect(() => {
+    if (address) {
+      wallet.syncGnosisNetworks(address);
+    }
+  }, [address]);
 
   if (loading) {
     return (

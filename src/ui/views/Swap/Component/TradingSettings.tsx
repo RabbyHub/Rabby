@@ -41,22 +41,25 @@ export const TradingSettings = ({
     <Popup
       visible={visible}
       title={'Enable Exchanges'}
-      height={510}
+      height={544}
       onClose={onClose}
       closable
+      bodyStyle={{
+        paddingTop: 16,
+      }}
     >
       <div>
-        <div className="flex items-center text-gray-content text-12 pb-16 px-12 pt-8">
+        <div className="flex items-center text-gray-content text-12 pb-8 px-12">
           <div className="w-[188px]">Exchanges</div>
           <div className="w-[66px]">View quotes</div>
           <div className="ml-auto">Trade</div>
         </div>
 
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-8">
           {list.map((item) => {
             return (
               <div
-                className="flex items-center h-[48px] bg-gray-bg rounded-[6px] px-12 py-14"
+                className="flex items-center h-[52px] bg-gray-bg rounded-[6px] px-12 py-14"
                 key={item.name}
               >
                 <div className="flex items-center gap-8 w-[188px]">

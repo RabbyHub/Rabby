@@ -60,9 +60,9 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row
             className="bg-[#F6F8FF]"
-            tip="The total risk exposure approved to this spender address"
+            tip="Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
           >
-            Risk exposure
+            Trust value
           </Row>
           <Row>
             {data.riskExposure === null ? (

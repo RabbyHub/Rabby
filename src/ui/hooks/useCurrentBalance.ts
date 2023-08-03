@@ -25,20 +25,32 @@ export default function useCurrentBalance(
   account: string | undefined,
   update = false,
   noNeedBalance = false,
-  nonce = 0
+  nonce = 0,
+  includeTestnet = false
 ) {
   const wallet = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
+  const [testnetBalance, setTestnetBalance] = useState<number | null>(null);
   const [success, setSuccess] = useState(true);
+  const [testnetSuccess, setTestnetSuccess] = useState(true);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [testnetBalanceLoading, setTestnetBalanceLoading] = useState(false);
   const [balanceFromCache, setBalanceFromCache] = useState(false);
+  const [testnetBalanceFromCache, setTestnetBalanceFromCache] = useState(false);
   let isCanceled = false;
   const [matteredChainBalances, setChainBalances] = useState<
+    DisplayChainWithWhiteLogo[]
+  >([]);
+  const [testnetMatteredChainBalances, setTestnetChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
   const [hasValueChainBalances, setHasValueChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
+  const [
+    hasTestnetValueChainBalances,
+    setHasTestnetValueChainBalances,
+  ] = useState<DisplayChainWithWhiteLogo[]>([]);
 
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value, chain_list }) {
@@ -59,6 +71,27 @@ export default function useCurrentBalance(
     },
   });
 
+  const [getTestnetBalance] = useWalletRequest(wallet.getAddressBalance, {
+    onSuccess({ total_usd_value, chain_list }) {
+      if (isCanceled) return;
+      setTestnetBalance(total_usd_value);
+      setTestnetSuccess(true);
+      const chanList = chain_list
+        .filter((item) => item.born_at !== null)
+        .map(formatChain);
+      setTestnetChainBalances(chanList);
+      setHasTestnetValueChainBalances(
+        chanList.filter((item) => item.usd_value > 0)
+      );
+      setTestnetBalanceLoading(false);
+      setTestnetBalanceFromCache(false);
+    },
+    onError() {
+      setSuccess(false);
+      setBalanceLoading(false);
+    },
+  });
+
   const getCurrentBalance = async (force = false) => {
     if (!account || noNeedBalance) return;
     setBalanceLoading(true);
@@ -69,11 +102,17 @@ export default function useCurrentBalance(
       if (update) {
         setBalanceLoading(true);
         getAddressBalance(account.toLowerCase(), force);
+        if (includeTestnet) {
+          getTestnetBalance(account.toLowerCase(), force, true);
+        }
       } else {
         setBalanceLoading(false);
       }
     } else {
       getAddressBalance(account.toLowerCase(), force);
+      if (includeTestnet) {
+        getTestnetBalance(account.toLowerCase(), force, true);
+      }
       setBalanceLoading(false);
       setBalanceFromCache(false);
     }
@@ -109,5 +148,12 @@ export default function useCurrentBalance(
     balanceFromCache,
     refresh,
     hasValueChainBalances,
+    testnetBalance,
+    testnetMatteredChainBalances,
+    getTestnetBalance,
+    testnetSuccess,
+    testnetBalanceLoading,
+    testnetBalanceFromCache,
+    hasTestnetValueChainBalances,
   ] as const;
 }

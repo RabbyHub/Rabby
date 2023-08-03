@@ -18,6 +18,9 @@ interface PreferenceState {
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
+  autoLockTime: number;
+  hiddenBalance: boolean;
+  isShowTestnet: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -37,6 +40,9 @@ export const preference = createModel<RootModel>()({
     addedToken: {},
     tokenApprovalChain: {},
     nftApprovalChain: {},
+    autoLockTime: 0,
+    hiddenBalance: false,
+    isShowTestnet: false,
   } as PreferenceState,
 
   reducers: {
@@ -61,9 +67,13 @@ export const preference = createModel<RootModel>()({
         this.setField({
           [key]: value,
         });
+
+        return value as PreferenceState[typeof key];
       } else {
         this.setField(value);
       }
+
+      return value as PreferenceState;
     },
     async getIsDefaultWallet(_?, store?) {
       const isDefaultWallet = await store.app.wallet.isDefaultWallet();
@@ -137,5 +147,34 @@ export const preference = createModel<RootModel>()({
       await store.app.wallet.updateChain(chains);
       dispatch.preference.getPreference('pinnedChain');
     },
+    async setAutoLockTime(time: number, store?) {
+      dispatch.preference.setField({
+        autoLockTime: time,
+      });
+      await store.app.wallet.setAutoLockTime(time);
+      dispatch.preference.getPreference('autoLockTime');
+    },
+    async setHiddenBalance(hidden: boolean, store?) {
+      dispatch.preference.setField({
+        hiddenBalance: hidden,
+      });
+      await store.app.wallet.setHiddenBalance(hidden);
+      dispatch.preference.getPreference('hiddenBalance');
+    },
+    async setIsShowTestnet(value: boolean, store?) {
+      dispatch.preference.setField({
+        isShowTestnet: value,
+      });
+      await store.app.wallet.setIsShowTestnet(value);
+      dispatch.preference.getPreference('isShowTestnet');
+    },
+
+    // async setOpenapiHost(value: string, store?) {
+    //   dispatch.preference.setField({
+    //     isShowTestnet: value,
+    //   });
+    //   await store.app.wallet.setIsShowTestnet(value);
+    //   dispatch.preference.getPreference('isShowTestnet');
+    // },
   }),
 });

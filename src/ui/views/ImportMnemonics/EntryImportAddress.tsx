@@ -98,7 +98,7 @@ const EntryImportAddress = () => {
             }
             onClick={() => history.push('/import/json')}
           >
-            {t('Import Keystore')}
+            {t('Import KeyStore')}
           </Field>
         </ActionEntries>
       </div>

@@ -13,6 +13,9 @@ export interface Props {
   isSearch: boolean;
   onFocusInput: () => void;
   isNoResults?: boolean;
+  blockedTokens?: TokenItemProps['item'][];
+  customizeTokens?: TokenItemProps['item'][];
+  isTestnet: boolean;
 }
 
 export const TokenList: React.FC<Props> = ({
@@ -20,6 +23,9 @@ export const TokenList: React.FC<Props> = ({
   onFocusInput,
   isSearch,
   isNoResults,
+  blockedTokens,
+  customizeTokens,
+  isTestnet,
 }) => {
   const totalValue = React.useMemo(() => {
     return list
@@ -35,7 +41,12 @@ export const TokenList: React.FC<Props> = ({
     return <TokenListEmpty className="mt-[92px]" text="No Match" />;
   }
 
-  const hasList = !!(list?.length || currentList?.length);
+  const hasList = !!(
+    list?.length ||
+    currentList?.length ||
+    blockedTokens?.length ||
+    customizeTokens?.length
+  );
 
   return (
     <div>
@@ -50,8 +61,8 @@ export const TokenList: React.FC<Props> = ({
       </div>
       {!isSearch && hasList && (
         <div className="flex gap-12 pt-12 border-t-[0.5px] border-gray-divider">
-          <CustomizedButton onClickLink={onFocusInput} />
-          <BlockedButton onClickLink={onFocusInput} />
+          <CustomizedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+          <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
         </div>
       )}
     </div>

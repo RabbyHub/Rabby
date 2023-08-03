@@ -150,7 +150,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-14 text-gray-subTitle font-normal">
+                <span className="text-15 text-gray-title font-medium">
                   Transaction Simulation Not Supported
                 </span>
               </Row>
@@ -168,14 +168,14 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-14 text-gray-subTitle font-normal">
+                <span className="text-15 text-gray-title font-medium">
                   Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
                 </span>
               </Row>
             </Col>
             <Col>
               <Row>
-                <span className="text-14 text-gray-subTitle font-normal">
+                <span className="text-15 text-gray-title font-medium">
                   Fail to fetch balance change
                 </span>
               </Row>
@@ -188,19 +188,17 @@ const BalanceChange = ({
 
   return (
     <div className="token-balance-change">
+      <p className="text-16 text-gray-title font-medium mb-12">
+        Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
+      </p>
       <div className="token-balance-change-content">
         <Table>
-          <Col>
-            <Row>
-              <span className="text-14 text-gray-subTitle font-normal">
-                Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
-              </span>
-            </Row>
-          </Col>
           {!hasChange && isSuccess && (
             <Col>
               <Row>
-                <span className="text-15 font-medium">No balance change</span>
+                <span className="text-15 font-medium text-gray-title">
+                  No balance change
+                </span>
               </Row>
             </Col>
           )}

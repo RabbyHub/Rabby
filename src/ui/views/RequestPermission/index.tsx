@@ -25,7 +25,7 @@ const RequestPermission = () => {
   const PERMISSIONS = {
     camera: {
       title: t('CameraPermissionTitle'),
-      desc: [t('CameraPermission1'), t('CameraPermission2')],
+      desc: [t('CameraPermission1')],
     },
     ledger: {
       title: t('AllowRabbyPermissionsTitle'),

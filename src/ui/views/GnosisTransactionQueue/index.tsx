@@ -1,38 +1,13 @@
-import {
-  SafeInfo,
-  SafeTransactionItem,
-} from '@rabby-wallet/gnosis-sdk/dist/api';
-import { Button, Skeleton, Tooltip } from 'antd';
-import { ExplainTxResponse } from 'background/service/openapi';
-import { Account } from 'background/service/preference';
+import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import clsx from 'clsx';
-import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { toChecksumAddress } from 'web3-utils';
-
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import {
-  CHAINS,
-  CHAINS_ENUM,
-  INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CLASS,
-} from 'consts';
-import { intToHex } from 'ethereumjs-util';
-import IconUser from 'ui/assets/address-management.svg';
-import IconChecked from 'ui/assets/checked.svg';
-import IconUnknown from 'ui/assets/icon-unknown.svg';
-import IconTagYou from 'ui/assets/tag-you.svg';
-import IconUnCheck from 'ui/assets/uncheck.svg';
-import { NameAndAddress, PageHeader } from 'ui/component';
-import { isSameAddress, timeago, useWallet } from 'ui/utils';
-import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
-import { splitNumberByStep } from 'ui/utils/number';
+import { useTranslation } from 'react-i18next';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import { PageHeader } from 'ui/component';
+import { useWallet } from 'ui/utils';
 import { GnosisTransactionQueueList } from './GnosisTransactionQueueList';
 import './style.less';
 import { sortBy } from 'lodash';
-import { useRequest } from 'ahooks';
 import { useAccount } from '@/ui/store-hooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
@@ -72,6 +47,7 @@ const getTabs = (
 
 const GnosisTransactionQueue = () => {
   const { t } = useTranslation();
+  const wallet = useWallet();
 
   const [account] = useAccount();
   const { data: networks } = useGnosisNetworks({ address: account?.address });
@@ -100,6 +76,12 @@ const GnosisTransactionQueue = () => {
   useEffect(() => {
     setActiveKey(tabs[0]?.key || null);
   }, [tabs[0]?.key]);
+
+  useEffect(() => {
+    if (account?.address) {
+      wallet.syncGnosisNetworks(account?.address);
+    }
+  }, [account?.address]);
 
   return (
     <div className="queue">

@@ -89,7 +89,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -194,7 +194,7 @@ const Swap = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1103']}
                   id="1103"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

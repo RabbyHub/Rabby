@@ -16,6 +16,7 @@ import { findChainByServerID } from '@/utils/chain';
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
 import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
+import { isNil } from 'lodash';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -42,6 +43,10 @@ export interface TokenSelectorProps {
   disabledTips?: string;
   supportChains?: CHAINS_ENUM[] | undefined;
 }
+
+const filterTestnetTokenItem = (token: TokenItem) => {
+  return !findChainByServerID(token.chain)?.isTestnet;
+};
 
 const TokenSelector = ({
   visible,
@@ -85,7 +90,12 @@ const TokenSelector = ({
   };
 
   const displayList = useMemo(() => {
-    if (!supportChains?.length) return list || [];
+    if (!supportChains?.length) {
+      const resultList = list || [];
+      if (!chainServerId) return resultList.filter(filterTestnetTokenItem);
+
+      return resultList;
+    }
 
     const varied = (list || []).reduce(
       (accu, token) => {
@@ -97,6 +107,8 @@ const TokenSelector = ({
 
         if (!disabled) {
           accu.natural.push(token);
+        } else if (chainItem?.isTestnet && !chainServerId) {
+          accu.ignored.push(token);
         } else {
           accu.disabled.push(token);
         }
@@ -106,11 +118,12 @@ const TokenSelector = ({
       {
         natural: [] as TokenItem[],
         disabled: [] as TokenItem[],
+        ignored: [] as TokenItem[],
       }
     );
 
     return [...varied.natural, ...varied.disabled];
-  }, [list, supportChains]);
+  }, [list, supportChains, chainServerId]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -292,7 +305,22 @@ const TokenSelector = ({
                       </div>
                     </div>
 
-                    <div>{formatUsdValue(token.price)}</div>
+                    <div className="flex flex-col gap-4">
+                      <div>{formatUsdValue(token.price)}</div>
+                      <div>
+                        {isNil(token.price_24h_change) ? null : (
+                          <div
+                            className={clsx('font-normal', {
+                              'text-green': token.price_24h_change > 0,
+                              'text-red-forbidden': token.price_24h_change < 0,
+                            })}
+                          >
+                            {token.price_24h_change > 0 ? '+' : ''}
+                            {(token.price_24h_change * 100).toFixed(2)}%
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
                     <div className="flex flex-col text-right items-end">
                       <div

@@ -131,7 +131,9 @@ export const AccountList: React.FC<Props> = ({
             account.address,
             keyring,
             undefined,
-            keyring !== KEYRING_CLASS.MNEMONIC
+            keyring !== KEYRING_CLASS.MNEMONIC &&
+              keyring !== KEYRING_CLASS.HARDWARE.KEYSTONE &&
+              keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS
           )
         );
         removeCurrentAccount(account.address);
@@ -192,6 +194,7 @@ export const AccountList: React.FC<Props> = ({
 
   return (
     <Table<Account>
+      scroll={{ y: 'calc(100vh - 352px)' }}
       dataSource={list}
       rowKey={(record) => record.address || record.index}
       className="AccountList"
@@ -292,6 +295,8 @@ export const AccountList: React.FC<Props> = ({
               <AliasName
                 address={record.address}
                 aliasName={account?.aliasName}
+                cacheAliasName={record?.aliasName}
+                disabled={!account}
                 onChange={(val) => handleChangeAliasName(val, record)}
               />
             );

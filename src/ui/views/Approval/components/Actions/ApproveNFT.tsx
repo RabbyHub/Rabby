@@ -109,14 +109,16 @@ const ApproveNFT = ({
                 id="1048"
                 engineResult={engineResultMap['1048']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem
                 id="1044"
                 engineResult={engineResultMap['1044']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Trust value ≤ $10,000"
+                warningText="Trust value ≤ $100,000"
               />
 
               <SecurityListItem

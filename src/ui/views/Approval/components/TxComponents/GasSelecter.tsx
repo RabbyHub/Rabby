@@ -1,7 +1,7 @@
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, Tx } from 'background/service/openapi';
+import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
@@ -13,9 +13,13 @@ import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import { Chain } from '@debank/common';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -36,7 +40,6 @@ interface GasSelectorProps {
   };
   version: 'v0' | 'v1' | 'v2';
   chainId: number;
-  tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
   recommendGasLimit: number | string | BigNumber;
@@ -61,6 +64,9 @@ interface GasSelectorProps {
     msg: string;
     level?: 'warn' | 'danger' | 'forbidden';
   }[];
+  engineResults?: Result[];
+  nativeTokenBalance: string;
+  gasPriceMedian: number | null;
 }
 
 const useExplainGas = ({
@@ -198,7 +204,6 @@ const GasSelector = ({
   gasLimit,
   gas,
   chainId,
-  tx,
   onChange,
   isReady,
   recommendGasLimit,
@@ -214,7 +219,11 @@ const GasSelector = ({
   isGnosisAccount,
   manuallyChangeGasLimit,
   errors,
+  engineResults = [],
+  nativeTokenBalance,
+  gasPriceMedian,
 }: GasSelectorProps) => {
+  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
@@ -253,6 +262,19 @@ const GasSelector = ({
     if (selectedGas.price / 1e9 <= 50) return 0.1;
     return 1;
   }, [selectedGas]);
+
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
 
   const handleSetRecommendTimes = () => {
     if (isGnosisAccount) return;
@@ -472,6 +494,18 @@ const GasSelector = ({
     setMaxPriorityFee(val);
   };
 
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
   useDebounce(
     () => {
       (isReady || !isFirstTimeLoad) &&
@@ -514,6 +548,10 @@ const GasSelector = ({
       setIsFirstTimeLoad(false);
     }
   }, [isReady]);
+
+  useEffect(() => {
+    dispatch.securityEngine.init();
+  }, []);
 
   useEffect(() => {
     if (!is1559) return;
@@ -571,39 +609,49 @@ const GasSelector = ({
         <div
           className={clsx(
             'gas-selector-card',
-            gas.error || !gas.success ? 'items-start mb-12' : 'mb-14'
+            gas.error || !gas.success ? 'items-start mb-12' : 'mb-12'
           )}
         >
-          <div className="gas-selector-card-title">Gas</div>
-          <div className="gas-selector-card-content ml-4">
-            {isGnosisAccount ? (
-              <div className="font-semibold">No gas required</div>
-            ) : gas.error || !gas.success ? (
-              <>
-                <div className="gas-selector-card-error">
-                  Fail to fetch gas cost
-                </div>
-                {/* {version === 'v2' && gas.error ? (
-                  <div className="gas-selector-card-error-desc">
-                    {gas.error.msg}{' '}
-                    <span className="number">#{gas.error.code}</span>
+          <div className="relative flex">
+            <div className="gas-selector-card-title">Gas</div>
+            <div className="gas-selector-card-content ml-4">
+              {isGnosisAccount ? (
+                <div className="font-semibold">No gas required</div>
+              ) : gas.error || !gas.success ? (
+                <>
+                  <div className="gas-selector-card-error">
+                    Fail to fetch gas cost
                   </div>
-                ) : null} */}
-              </>
-            ) : (
-              <div className="gas-selector-card-content-item">
-                <div className="gas-selector-card-amount">
-                  <span className="text-blue-purple font-medium text-15">
-                    {formatTokenAmount(
-                      new BigNumber(gas.gasCostAmount).toString(10)
-                    )}{' '}
-                    {chain.nativeTokenSymbol}
-                  </span>
-                  &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                </>
+              ) : (
+                <div className="gas-selector-card-content-item">
+                  <div className="gas-selector-card-amount translate-y-1">
+                    <span className="text-blue-light font-medium text-15">
+                      {formatTokenAmount(
+                        new BigNumber(gas.gasCostAmount).toString(10)
+                      )}{' '}
+                      {chain.nativeTokenSymbol}
+                    </span>
+                    &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+            {engineResultMap['1118'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1118'].enable}
+                level={
+                  processedRules.includes('1118')
+                    ? 'proceed'
+                    : engineResultMap['1118'].level
+                }
+                onClick={() => handleClickRule('1118')}
+                right="-40px"
+                className="security-level-tag"
+              />
             )}
           </div>
+          <div className="flex-1" />
           <div
             className="flex items-center text-12 text-gray-content cursor-pointer"
             role="button"
@@ -620,6 +668,9 @@ const GasSelector = ({
           customGas={customGas}
           handleCustomGasChange={externalHandleCustomGasChange}
           isGnosisAccount={isGnosisAccount}
+          chain={chain}
+          nativeTokenBalance={nativeTokenBalance}
+          gasPriceMedian={gasPriceMedian}
         />
         {manuallyChangeGasLimit && (
           <ManuallySetGasLimitAlert>
@@ -879,6 +930,31 @@ const GasSelector = ({
   );
 };
 
+const GasPriceDesc = styled.ul`
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 13px;
+  color: #4b4d59;
+  li {
+    position: relative;
+    margin-bottom: 8px;
+    padding-left: 12px;
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 100%;
+      background-color: #4b4d59;
+      left: 0;
+      top: 8px;
+    }
+  }
+`;
+
 const GasSelectPanel = ({
   gasList,
   selectedGas,
@@ -887,6 +963,9 @@ const GasSelectPanel = ({
   customGasConfirm = () => null,
   handleCustomGasChange,
   isGnosisAccount,
+  chain,
+  nativeTokenBalance,
+  gasPriceMedian,
 }: {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
@@ -898,6 +977,9 @@ const GasSelectPanel = ({
   customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isGnosisAccount?: boolean;
+  chain: Chain;
+  nativeTokenBalance: string;
+  gasPriceMedian: number | null;
 }) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -954,6 +1036,21 @@ const GasSelectPanel = ({
           </div>
         ))}
       </CardBody>
+      <GasPriceDesc>
+        <li>
+          My {chain.nativeTokenSymbol} balance:{' '}
+          {formatTokenAmount(
+            new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+          )}{' '}
+          {chain.nativeTokenSymbol}
+        </li>
+        {gasPriceMedian !== null && (
+          <li>
+            Median of last 100 on-chain transactions:{' '}
+            {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
+          </li>
+        )}
+      </GasPriceDesc>
     </Tooltip>
   );
 };

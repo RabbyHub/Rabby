@@ -1,0 +1,54 @@
+@import "@/ui/style/var.less";
+
+@search-result-item-h: 52px;
+@popover-padding-y: 4px;
+
+.account-search-input-overlay {
+  width: 336px;
+
+  .ant-popover-arrow {
+    display: none;
+  }
+
+  .ant-popover-inner-content {
+    padding: 4px;
+    max-height: @search-result-item-h * 3.5 + @popover-padding-y * 2;
+    overflow: overlay;
+  }
+
+  .account-search-input-results .no-matched-address {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
+
+.searched-account-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  padding: 12px 16px;
+  height: @search-result-item-h;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &.active, &:hover {
+    border: 1px solid rgba(134, 151, 255, 0.50);
+    background: rgba(134, 151, 255, 0.20);
+  }
+}
+
+.searched-account-item-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  color: @color-title;
+  font-size: 13px;
+  font-weight: 500;
+  padding-bottom: 2px;
+}

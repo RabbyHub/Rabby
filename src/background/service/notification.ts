@@ -10,6 +10,7 @@ import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { permissionService } from '.';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -221,7 +222,7 @@ class NotificationService extends Events {
       }
 
       const approval: Approval = {
-        taskId: uuid,
+        taskId: uuid as any,
         id: uuid,
         signingTxId,
         data,
@@ -279,7 +280,16 @@ class NotificationService extends Events {
         const chain = Object.values(CHAINS).find((chain) =>
           new BigNumber(chain.hex).isEqualTo(chainId)
         );
-        if (chain) {
+
+        const connectSite = permissionService.getConnectedSite(data.origin);
+        const currentChain = connectSite
+          ? CHAINS[connectSite?.chain]
+          : undefined;
+
+        const isSwitchMainOrTest =
+          chain && currentChain && chain.isTestnet !== currentChain.isTestnet;
+
+        if (!isSwitchMainOrTest && chain) {
           this.resolveApproval(null);
           return;
         }

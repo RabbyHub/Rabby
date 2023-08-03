@@ -5,19 +5,23 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
-import IconDapps from 'ui/assets/dapps.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
-import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconNFT from 'ui/assets/dashboard/nft.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
+import IconFeedback from 'ui/assets/dashboard/feedback.svg';
+import IconMoreSettings from 'ui/assets/dashboard/more-settings.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import { getCurrentConnectSite, useWallet } from 'ui/utils';
+import {
+  getCurrentConnectSite,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
@@ -25,6 +29,9 @@ import './style.less';
 import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
+import FeedbackPopup from '../Feedback';
+import { GasPriceBar } from '../GasPriceBar';
+import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
 
 export default ({
   gnosisPendingCount,
@@ -47,8 +54,14 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
+  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
+    CHAINS_ENUM.ETH
+  );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
-  const [urlVisible, setUrlVisible] = useState(false);
+  const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
+  const [badgeModalVisible, setBadgeModalVisible] = useState(false);
+
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
@@ -94,24 +107,27 @@ export default ({
     setCurrentConnect(current);
   }, []);
 
-  const changeURL = () => {
-    setUrlVisible(!urlVisible);
-  };
-
-  const changeSetting = () => {
+  const toggleShowMoreSettings = () => {
     setSettingVisible(!settingVisible);
     setDashboardReload();
   };
+
+  const showFeedbackModal = useCallback(
+    (nextVal = !feedbackVisible) => {
+      setFeedbackVisible(nextVal);
+    },
+    [feedbackVisible]
+  );
 
   useEffect(() => {
     getCurrentSite();
   }, []);
 
-  // useEffect(() => {
-  //   if (currentConnect?.chain) {
-  //     setCurrentConnectedSiteChain(currentConnect?.chain);
-  //   }
-  // }, [currentConnect?.chain]);
+  useEffect(() => {
+    if (currentConnect?.chain) {
+      setCurrentConnectedSiteChain(currentConnect?.chain);
+    }
+  }, [currentConnect?.chain]);
 
   useEffect(() => {
     onChange(currentConnect);
@@ -143,33 +159,33 @@ export default ({
     disableReason?: string;
   };
 
-  const panelItems: Record<string, IPanelItem> = {
+  const panelItems = {
     swap: {
       icon: IconSwap,
       content: 'Swap',
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
       },
-    },
+    } as IPanelItem,
     send: {
       icon: IconSendToken,
       content: 'Send',
       onClick: () => history.push('/send-token?rbisource=dashboard'),
-    },
+    } as IPanelItem,
     receive: {
       icon: IconReceive,
       content: 'Receive',
       onClick: () => {
         setIsShowReceiveModal(true);
       },
-    },
+    } as IPanelItem,
     gasTopUp: {
       icon: IconGasTopUp,
       content: 'Gas Top Up',
       onClick: () => {
         history.push('/gas-top-up');
       },
-    },
+    } as IPanelItem,
     queue: {
       icon: IconQuene,
       content: 'Queue',
@@ -177,49 +193,53 @@ export default ({
       onClick: () => {
         history.push('/gnosis-queue');
       },
-    },
+    } as IPanelItem,
     transactions: {
       icon: IconTransactions,
       content: 'Transactions',
       onClick: () => {
         history.push('/history');
       },
-    },
-    dapps: {
-      icon: IconDapps,
-      content: 'Connected',
-      onClick: () => {
-        changeURL();
-      },
-    },
+    } as IPanelItem,
     security: {
       icon: IconSecurity,
       content: 'Approvals',
-      onClick: () => {
-        history.push('/approval-manage');
+      onClick: async (evt) => {
+        // history.push('/popup/approval-manage');
+        if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
+          history.push('/popup/approval-manage');
+          return;
+        }
+
+        openInternalPageInTab('approval-manage');
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
-    },
-    settings: {
-      icon: IconSetting,
-      content: 'Settings',
-      onClick: changeSetting,
-    },
+    } as IPanelItem,
+    feedback: {
+      icon: IconFeedback,
+      content: 'Feedback',
+      onClick: showFeedbackModal,
+    } as IPanelItem,
+    more: {
+      icon: IconMoreSettings,
+      content: 'More',
+      onClick: toggleShowMoreSettings,
+    } as IPanelItem,
     address: {
       icon: IconAddresses,
       content: 'Manage Address',
       onClick: () => {
         history.push('/settings/address');
       },
-    },
+    } as IPanelItem,
     nft: {
       icon: IconNFT,
       content: 'NFT',
       onClick: () => {
         history.push('/nft');
       },
-    },
+    } as IPanelItem,
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -234,8 +254,8 @@ export default ({
       'transactions',
       'gasTopUp',
       'security',
-      'dapps',
-      'settings',
+      'feedback',
+      'more',
     ];
   } else {
     pickedPanelKeys = [
@@ -246,8 +266,8 @@ export default ({
       'transactions',
       'gasTopUp',
       'security',
-      'dapps',
-      'settings',
+      'feedback',
+      'more',
     ];
   }
 
@@ -320,9 +340,11 @@ export default ({
           })}
         </div>
       </div>
+      <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
+
       <CurrentConnection
         onChainChange={(chain) => {
-          // setCurrentConnectedSiteChain(chain);
+          setCurrentConnectedSiteChain(chain);
           if (currentConnect) {
             onChange({
               ...currentConnect,
@@ -343,8 +365,36 @@ export default ({
           setIsShowReceiveModal(false);
         }}
       />
-      <Settings visible={settingVisible} onClose={changeSetting} />
-      <RecentConnections visible={urlVisible} onClose={changeURL} />
+
+      <Settings
+        visible={settingVisible}
+        onClose={toggleShowMoreSettings}
+        onOpenConnectedDapps={() => {
+          setConnectedDappsVisible(true);
+          setSettingVisible(false);
+        }}
+        onOpenBadgeModal={() => {
+          setBadgeModalVisible(true);
+          setSettingVisible(false);
+        }}
+      />
+      <ClaimRabbyBadgeModal
+        visible={badgeModalVisible}
+        onCancel={() => {
+          setBadgeModalVisible(false);
+        }}
+      />
+
+      <FeedbackPopup
+        visible={feedbackVisible}
+        onClose={() => showFeedbackModal(false)}
+      />
+      <RecentConnections
+        visible={connectedDappsVisible}
+        onClose={() => {
+          setConnectedDappsVisible(false);
+        }}
+      />
     </div>
   );
 };

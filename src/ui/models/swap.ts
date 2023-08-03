@@ -10,12 +10,16 @@ export const swap = createModel<RootModel>()({
 
   state: {
     selectedDex: null,
-    selectedChain: CHAINS_ENUM.ETH,
+    selectedChain: null,
     gasPriceCache: {},
     unlimitedAllowance: false,
     viewList: {},
     tradeList: {},
-  } as Partial<SwapServiceStore>,
+
+    $$initialSelectedChain: null,
+  } as Partial<SwapServiceStore> & {
+    $$initialSelectedChain: CHAINS_ENUM | null;
+  },
 
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -45,6 +49,13 @@ export const swap = createModel<RootModel>()({
               ...(data as SwapServiceStore),
             }
       );
+
+      if (!key) {
+        this.setField({
+          $$initialSelectedChain:
+            (data as SwapServiceStore).selectedChain || null,
+        });
+      }
     },
 
     async getSwapGasCache(chain: CHAINS_ENUM, store) {

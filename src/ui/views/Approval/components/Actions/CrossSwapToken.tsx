@@ -88,7 +88,7 @@ const CrossSwapToken = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -193,7 +193,7 @@ const CrossSwapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1096']}
                   id="1096"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

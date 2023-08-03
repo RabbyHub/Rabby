@@ -14,6 +14,7 @@ import {
 } from '../hooks';
 import BigNumber from 'bignumber.js';
 import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
+import { SvgIconCross } from 'ui/assets';
 
 const CexListWrapper = styled.div`
   border: 1px solid #e5e9ef;
@@ -55,8 +56,6 @@ interface QuotesProps
 }
 
 export const Quotes = ({
-  visible,
-  onClose,
   list,
   activeName,
   inSufficient,
@@ -98,7 +97,7 @@ export const Quotes = ({
             }
             return new BigNumber(
               quote?.preExecResult.swapPreExecTx.balance_change
-                .receive_token_list[0].amount || 0
+                .receive_token_list?.[0]?.amount || 0
             );
           }
 
@@ -131,12 +130,6 @@ export const Quotes = ({
     );
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
-  const refresh = useSetRefreshId();
-
-  const refreshQuote = React.useCallback(() => {
-    refresh((e) => e + 1);
-  }, [refresh]);
-
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
 
   const noCex = useMemo(() => {
@@ -146,63 +139,43 @@ export const Quotes = ({
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
     return (
-      <>
-        <div className="h-18 mb-20 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
-          <div>The following swap rates are found</div>
-          <div className="w-20 h-20 relative overflow-hidden">
-            <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-              <IconRefresh onClick={refreshQuote} />
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col gap-8">
+        {dex ? (
+          <DexQuoteItem
+            inSufficient={inSufficient}
+            preExecResult={dex?.preExecResult}
+            quote={dex?.data}
+            name={dex?.name}
+            isBestQuote
+            bestAmount={`${
+              dex?.preExecResult?.swapPreExecTx.balance_change
+                .receive_token_list[0]?.amount || '0'
+            }`}
+            active={activeName === dex?.name}
+            isLoading={dex.loading}
+            quoteProviderInfo={{
+              name: 'Wrap Contract',
+              logo: other?.receiveToken?.logo_url,
+            }}
+            {...other}
+          />
+        ) : (
+          <QuoteLoading
+            name="Wrap Contract"
+            logo={other?.receiveToken?.logo_url}
+          />
+        )}
 
-        <div className="flex flex-col gap-[16px]">
-          {dex ? (
-            <DexQuoteItem
-              inSufficient={inSufficient}
-              preExecResult={dex?.preExecResult}
-              quote={dex?.data}
-              name={dex?.name}
-              isBestQuote
-              bestAmount={`${
-                dex?.preExecResult?.swapPreExecTx.balance_change
-                  .receive_token_list[0]?.amount || '0'
-              }`}
-              active={activeName === dex?.name}
-              isLoading={dex.loading}
-              quoteProviderInfo={{
-                name: 'Wrap Contract',
-                logo: other?.receiveToken?.logo_url,
-              }}
-              {...other}
-            />
-          ) : (
-            <QuoteLoading
-              name="Wrap Contract"
-              logo={other?.receiveToken?.logo_url}
-            />
-          )}
-
-          <div className="text-13 text-gray-content">
-            Wrapping {other.receiveToken.name} tokens directly with the smart
-            contract
-          </div>
+        <div className="text-13 text-gray-content">
+          Wrapping {other.receiveToken.name} tokens directly with the smart
+          contract
         </div>
-      </>
+      </div>
     );
   }
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="h-18 mb-20 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
-        <div>The following swap rates are found</div>
-        <div className="w-20 h-20 relative overflow-hidden">
-          <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-            <IconRefresh onClick={refreshQuote} />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-8">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
           if (!isDex) return null;
@@ -225,11 +198,9 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
-
       {!noCex && (
-        <div className="text-gray-light text-12 mt-32 mb-8">Rates from CEX</div>
+        <div className="text-gray-light text-12 mt-20 mb-8">Rates from CEX</div>
       )}
-
       <CexListWrapper>
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
@@ -247,13 +218,12 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
-
-      <div className="mt-auto text-gray-light text-12 pb-16">
-        Of the {exchangeCount} exchanges, {viewCount} can view quotes and{' '}
-        {tradeCount} can trade.{' '}
+      <div className="pt-[40px]" />
+      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2  text-gray-light ">
+        {viewCount} exchanges offer quotes, and {tradeCount} enable trading
         <span
           onClick={openSettings}
-          className="cursor-pointer text-blue-light underline underline-blue-light"
+          className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
         >
           Edit
         </span>
@@ -262,20 +232,41 @@ export const Quotes = ({
   );
 };
 
+const bodyStyle = {
+  paddingTop: 0,
+  paddingBottom: 0,
+};
+
 export const QuoteList = (props: QuotesProps) => {
   const { visible, onClose } = props;
+  const refresh = useSetRefreshId();
+
+  const refreshQuote = React.useCallback(() => {
+    refresh((e) => e + 1);
+  }, [refresh]);
+
   return (
     <Popup
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-gray-content pt-[2px]" />
+      }
       visible={visible}
-      title={null}
-      height={510}
+      title={
+        <div className="mb-[-2px] pb-10 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
+          <div>The following swap rates are found</div>
+          <div className="w-20 h-20 relative overflow-hidden">
+            <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+              <IconRefresh onClick={refreshQuote} />
+            </div>
+          </div>
+        </div>
+      }
+      height={544}
       onClose={onClose}
       closable
       destroyOnClose
       className="isConnectView z-[999]"
-      bodyStyle={{
-        paddingBottom: 0,
-      }}
+      bodyStyle={bodyStyle}
     >
       <Quotes {...props} />
     </Popup>

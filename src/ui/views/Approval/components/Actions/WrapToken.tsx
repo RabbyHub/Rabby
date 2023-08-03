@@ -79,7 +79,7 @@ const WrapToken = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -91,7 +91,7 @@ const WrapToken = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive token</Row>
+          <Row isTitle>Receive</Row>
           <Row>
             <LogoWithText
               logo={receiveToken.logo_url}
@@ -122,7 +122,7 @@ const WrapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1092']}
                   id="1092"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

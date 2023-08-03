@@ -173,7 +173,7 @@ const TokenApprove = ({
   }, [engineResults]);
 
   const tokenBalance = useMemo(() => {
-    return new BigNumber(requireData.token.raw_amount || '0')
+    return new BigNumber(requireData.token.raw_amount_hex_str || '0')
       .div(10 ** requireData.token.decimals)
       .toFixed();
   }, [requireData]);
@@ -275,14 +275,16 @@ const TokenApprove = ({
                 id="1025"
                 engineResult={engineResultMap['1025']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem
                 id="1023"
                 engineResult={engineResultMap['1023']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Trust value ≤ $10,000"
+                warningText="Trust value ≤ $100,000"
               />
 
               <SecurityListItem

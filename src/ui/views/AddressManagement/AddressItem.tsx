@@ -104,11 +104,13 @@ const AddressItem = memo(
     const dispatch = useRabbyDispatch();
 
     const canFastDeleteAccount = useMemo(
-      // not seed phrase ,not privacy secret
+      // not privacy secret
       () =>
         onDelete
           ? true
-          : ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
+          : isCurrentAccount
+          ? false
+          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type),
       [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
@@ -122,6 +124,7 @@ const AddressItem = memo(
           address,
           type,
           brandName,
+          type !== KEYRING_CLASS.MNEMONIC,
         ]);
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,

@@ -5,7 +5,6 @@ import {
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
 import { maxBy } from 'lodash';
@@ -404,7 +403,7 @@ const checkGasAndNonce = ({
   ) {
     errors.push({
       code: 3001,
-      msg: 'The reserved gas fee is not enough',
+      msg: 'You do not have enough gas in your wallet',
       level: 'forbidden',
     });
   }
@@ -591,6 +590,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [gasPriceMedian, setGasPriceMedian] = useState<null | number>(null);
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
   const [gasUsed, setGasUsed] = useState(0);
@@ -1010,7 +1010,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
               value: tx.value || '0x0',
             },
-            res.pre_exec_version
+            res.pre_exec_version,
+            res.gas.gas_used
           );
           const requiredData = await fetchActionRequiredData({
             actionData: parsed,
@@ -1324,6 +1325,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return list;
   };
 
+  const loadGasMedian = async (chain: Chain) => {
+    const { median } = await wallet.openapi.gasPriceStats(chain.serverId);
+    setGasPriceMedian(median);
+    return median;
+  };
+
   const checkCanProcess = async () => {
     const session = params.session;
     const currentAccount =
@@ -1503,6 +1510,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         customGasPrice = parseInt(tx.gasPrice!);
       }
       const gasList = await loadGasMarket(chain, customGasPrice);
+      loadGasMedian(chain);
       let gas: GasLevel | null = null;
 
       if (
@@ -1519,7 +1527,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         const target = gasList.find(
           (item) => item.level === lastTimeGas?.gasLevel
         )!;
-        gas = target;
+        if (target) {
+          gas = target;
+        } else {
+          gas = gasList.find((item) => item.level === 'normal')!;
+        }
       } else {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
@@ -1705,7 +1717,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             <GasSelector
               isGnosisAccount={isGnosisAccount}
               isReady={isReady}
-              tx={tx}
               gasLimit={gasLimit}
               noUpdate={isCancel || isSpeedUp}
               gasList={gasList}
@@ -1738,6 +1749,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
               errors={checkErrors}
+              engineResults={engineResults}
+              nativeTokenBalance={nativeTokenBalance}
+              gasPriceMedian={gasPriceMedian}
             />
           </>
         )}
@@ -1776,6 +1790,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             securityLevel={securityLevel}
             gnosisAccount={isGnosis ? account : undefined}
             chain={chain}
+            isTestnet={chain.isTestnet}
             onCancel={handleCancel}
             onSubmit={() => handleAllow()}
             onIgnoreAllRules={handleIgnoreAllRules}

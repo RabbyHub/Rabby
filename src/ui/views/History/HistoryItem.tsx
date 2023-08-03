@@ -19,6 +19,9 @@ export const HistoryItem = ({
   const chain = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
+  if (!chain) {
+    return null;
+  }
   return (
     <div
       className={clsx('txs-history-card', (isScam || isFailed) && 'is-gray')}

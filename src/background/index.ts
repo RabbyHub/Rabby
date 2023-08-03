@@ -37,6 +37,7 @@ import utc from 'dayjs/plugin/utc';
 import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { testnetOpenapiService } from './service/openapi';
 
 dayjs.extend(utc);
 
@@ -79,6 +80,7 @@ async function restoreAppState() {
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   await openapiService.init();
+  await testnetOpenapiService.init();
 
   // Init keyring and openapi first since this two service will not be migrated
   await migrateData();
@@ -189,6 +191,14 @@ browser.runtime.onConnect.addListener((port) => {
           case 'openapi':
             if (walletController.openapi[data.method]) {
               return walletController.openapi[data.method].apply(
+                null,
+                data.params
+              );
+            }
+            break;
+          case 'testnetOpenapi':
+            if (walletController.testnetOpenapi[data.method]) {
+              return walletController.testnetOpenapi[data.method].apply(
                 null,
                 data.params
               );

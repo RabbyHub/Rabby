@@ -48,6 +48,7 @@ class WhitelistService {
   };
 
   addWhitelist = (address: string) => {
+    if (!address) return;
     if (this.store.whitelists.find((item) => isSameAddress(item, address)))
       return;
     this.store.whitelists = [...this.store.whitelists, address.toLowerCase()];

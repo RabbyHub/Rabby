@@ -1,10 +1,9 @@
-import { account } from './../../ui/models/account';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isNil, uniq } from 'lodash';
+import { groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -45,10 +44,15 @@ import {
   KEYRING_TYPE,
   GNOSIS_SUPPORT_CHAINS,
 } from 'consts';
-import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
+import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { TokenItem, Tx } from '../service/openapi';
+import {
+  TokenItem,
+  TotalBalanceResponse,
+  Tx,
+  testnetOpenapiService,
+} from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -78,15 +82,18 @@ import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTran
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
+import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
-import { AbiItem, isAddress } from 'web3-utils';
+import { isAddress } from 'web3-utils';
 import { findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { autoLockService } from '../service/autoLock';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -94,6 +101,7 @@ const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
 export class WalletController extends BaseController {
   openapi = openapiService;
+  testnetOpenapi = testnetOpenapiService;
 
   /* wallet */
   boot = (password) => keyringService.boot(password);
@@ -395,6 +403,7 @@ export class WalletController extends BaseController {
       unlimited,
       gasPrice,
       shouldTwoStepApprove,
+      postSwapParams,
     }: {
       chain: CHAINS_ENUM;
       quote: QuoteResult;
@@ -404,6 +413,11 @@ export class WalletController extends BaseController {
       unlimited: boolean;
       gasPrice?: number;
       shouldTwoStepApprove: boolean;
+
+      postSwapParams?: Omit<
+        Parameters<OpenApiService['postSwap']>[0],
+        'tx_id' | 'tx'
+      >;
     },
     $ctx?: any
   ) => {
@@ -450,6 +464,10 @@ export class WalletController extends BaseController {
           { isSwap: true }
         );
         unTriggerTxCounter.decrease();
+      }
+
+      if (postSwapParams) {
+        swapService.addTx(chain, quote.tx.data, postSwapParams);
       }
       await this.sendRequest({
         $ctx:
@@ -956,6 +974,27 @@ export class WalletController extends BaseController {
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
   };
+
+  setAutoLockTime = (time: number) => {
+    return autoLockService.setAutoLockTime(time);
+  };
+
+  setLastActiveTime = () => {
+    return autoLockService.setLastActiveTime();
+  };
+
+  setHiddenBalance = (isHidden: boolean) => {
+    return preferenceService.setHiddenBalance(isHidden);
+  };
+
+  getIsShowTestnet = () => {
+    return preferenceService.getIsShowTestnet();
+  };
+
+  setIsShowTestnet = (value: boolean) => {
+    return preferenceService.setIsShowTestnet(value);
+  };
+
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
   };
@@ -1000,12 +1039,28 @@ export class WalletController extends BaseController {
     // 3 mins
   });
 
-  getAddressBalance = async (address: string, force = false) => {
+  private getTestnetTotalBalanceCached = cached(async (address) => {
+    const testnetData = await testnetOpenapiService.getTotalBalance(address);
+    preferenceService.updateTestnetAddressBalance(address, testnetData);
+    return testnetData;
+  });
+
+  getAddressBalance = async (
+    address: string,
+    force = false,
+    isTestnet = false
+  ) => {
+    if (isTestnet) {
+      return this.getTestnetTotalBalanceCached([address], address, force);
+    }
     return this.getTotalBalanceCached([address], address, force);
   };
 
-  getAddressCacheBalance = (address: string | undefined) => {
+  getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
     if (!address) return null;
+    if (isTestnet) {
+      return preferenceService.getTestnetAddressBalance(address);
+    }
     return preferenceService.getAddressBalance(address);
   };
 
@@ -1270,7 +1325,7 @@ export class WalletController extends BaseController {
     ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
-  syncGnosisNetworks = () => {
+  syncAllGnosisNetworks = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
@@ -1283,6 +1338,19 @@ export class WalletController extends BaseController {
           uniq((networks || []).concat(chainList.map((chain) => chain.network)))
         );
       }
+    );
+  };
+
+  syncGnosisNetworks = async (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      return;
+    }
+    const networks = keyring.networkIdsMap[address];
+    const chainList = await this.fetchGnosisChainList(address);
+    keyring.setNetworkIds(
+      address,
+      uniq((networks || []).concat(chainList.map((chain) => chain.network)))
     );
   };
 
@@ -1550,7 +1618,10 @@ export class WalletController extends BaseController {
     await keyring.addSignature(address, signature);
   };
 
-  importWatchAddress = async (address) => {
+  /**
+   * @description add address as watch only account, and DON'T set it as current account
+   */
+  addWatchAddressOnly = async (address: string) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
     try {
@@ -1566,6 +1637,13 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
     }
+
+    return keyring;
+  };
+
+  importWatchAddress = async (address: string) => {
+    const keyring = await this.addWatchAddressOnly(address);
+
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
@@ -1917,7 +1995,7 @@ export class WalletController extends BaseController {
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     keyringService.removePreMnemonics();
-    return this._setCurrentAccountFromKeyring(keyring);
+    // return this._setCurrentAccountFromKeyring(keyring);
   };
 
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
@@ -1954,6 +2032,11 @@ export class WalletController extends BaseController {
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    if (removeEmptyKeyrings) {
+      const keyring = await keyringService.getKeyringForAccount(address, type);
+      this.removeKeyringFromStash(keyring);
+    }
+
     await keyringService.removeAccount(
       address,
       type,
@@ -1961,8 +2044,14 @@ export class WalletController extends BaseController {
       removeEmptyKeyrings
     );
     if (!(await keyringService.hasAddress(address))) {
-      contactBookService.removeAlias(address);
+      // contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
+      transactionHistoryService.removeList(address);
+      signTextHistoryService.removeList(address);
+      preferenceService.removeHighlightedAddress({
+        address,
+        brandName: brand || type,
+      });
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
@@ -2007,6 +2096,7 @@ export class WalletController extends BaseController {
   };
 
   removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
+    this.removePublicKeyFromStash(publicKey);
     keyringService.removeKeyringByPublicKey(publicKey);
   };
 
@@ -2074,6 +2164,7 @@ export class WalletController extends BaseController {
       keyring = new Keyring({ mnemonic });
       keyringService.updateHdKeyringIndex(keyring);
       result.keyringId = this.addKeyringToStash(keyring);
+      keyringService.addKeyring(keyring);
     } else {
       result.isExistedKR = true;
       result.keyringId = this.updateKeyringInStash(keyring);
@@ -2101,6 +2192,22 @@ export class WalletController extends BaseController {
     return Number(keyringId);
   };
 
+  removeKeyringFromStash = (keyring) => {
+    const keyringId = Object.keys(stashKeyrings).find((key) => {
+      return stashKeyrings[key].mnemonic === keyring.mnemonic;
+    });
+    if (keyringId) {
+      delete stashKeyrings[keyringId];
+    }
+  };
+
+  removePublicKeyFromStash = (publicKey: string) => {
+    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    if (keyring) {
+      this.removeKeyringFromStash(keyring);
+    }
+  };
+
   addKeyring = async (
     keyringId: keyof typeof stashKeyrings,
     byImport = true
@@ -2114,7 +2221,7 @@ export class WalletController extends BaseController {
       } else {
         await keyringService.addKeyring(keyring);
       }
-      this._setCurrentAccountFromKeyring(keyring);
+      this._setCurrentAccountFromKeyring(keyring, -1);
     } else {
       throw new Error('failed to addKeyring, keyring is undefined');
     }
@@ -2291,42 +2398,57 @@ export class WalletController extends BaseController {
     }
   };
 
-  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+  submitQRHardwareCryptoHDKey = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
+
     keyring.readKeyring();
     await keyring.submitCryptoHDKey(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
-  submitQRHardwareCryptoAccount = async (cbor: string) => {
+  submitQRHardwareCryptoAccount = async (
+    cbor: string,
+    keyringId?: number | null
+  ) => {
     let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
-    try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      const keystoneKeyring = keyringService.getKeyringClassForType(
-        keyringType
-      );
-      keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const keystoneKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new keystoneKeyring();
+        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
     keyring.readKeyring();
     await keyring.submitCryptoAccount(cbor);
-    return stashKeyringId;
+    return keyringId ?? stashKeyringId;
   };
 
   submitQRHardwareSignature = async (
@@ -2514,7 +2636,7 @@ export class WalletController extends BaseController {
       await keyringService.addNewAccount(keyringInstance);
     }
 
-    return this._setCurrentAccountFromKeyring(keyringInstance);
+    return this._setCurrentAccountFromKeyring(keyringInstance, -1);
   };
 
   getSignTextHistory = (address: string) => {
@@ -2615,6 +2737,10 @@ export class WalletController extends BaseController {
     }
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
+  }
+
+  getContactsByMap() {
+    return contactBookService.getContactsByMap();
   }
 
   listContact = (includeAlias = true) => {
@@ -2869,34 +2995,37 @@ export class WalletController extends BaseController {
   revoke = async ({
     list,
   }: {
-    list: (
-      | {
-          chainServerId: string;
-          contractId: string;
-          spender: string;
-          abi: 'ERC721' | 'ERC1155' | '';
-          tokenId: string | null | undefined;
-          isApprovedForAll: boolean;
-        }
-      | {
-          chainServerId: string;
-          id: string;
-          spender: string;
-        }
-    )[];
+    list: import('@/utils/approval').ApprovalSpenderItemToBeRevoked[];
   }) => {
-    list.forEach((e) => {
-      if ('tokenId' in e) {
-        this.revokeNFTApprove(e);
-      } else {
-        this.approveToken(e.chainServerId, e.id, e.spender, 0, {
-          ga: {
-            category: 'Security',
-            source: 'tokenApproval',
-          },
-        });
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
+    const revokeList = list.map((e) => async () => {
+      try {
+        if ('tokenId' in e) {
+          await this.revokeNFTApprove(e);
+        } else {
+          await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          });
+        }
+      } catch (error) {
+        queue.clear();
+        console.error('revoke error', e);
       }
     });
+
+    try {
+      await queue.addAll(revokeList);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
   };
 
   getRecommendNonce = async ({
@@ -2998,6 +3127,49 @@ export class WalletController extends BaseController {
       securityEngineService.disableRule(id);
     }
   };
+
+  initQRHardware = async (brand: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = this.addKeyringToStash(keyring);
+    }
+
+    await keyring.setCurrentBrand(brand);
+    return stashKeyringId;
+  };
+
+  checkQRHardwareAllowImport = async (brand: string) => {
+    try {
+      const keyring = this._getKeyringByType(KEYRING_CLASS.QRCODE);
+
+      if (!keyring) {
+        return {
+          allowed: true,
+        };
+      }
+
+      return keyring.checkAllowImport(brand);
+    } catch (e) {
+      return {
+        allowed: true,
+      };
+    }
+  };
 }
 
-export default new WalletController();
+const wallet = new WalletController();
+autoLockService.onAutoLock = async () => {
+  await wallet.lockWallet();
+  eventBus.emit(EVENTS.broadcastToUI, {
+    method: EVENTS.LOCK_WALLET,
+  });
+};
+export default wallet;

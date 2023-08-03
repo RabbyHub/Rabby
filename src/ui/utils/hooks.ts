@@ -288,12 +288,13 @@ export const useAccountInfo = (type: string, address: string) => {
   }>();
   const dispatch = useRabbyDispatch();
   const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
+  const isGridPlus = type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
   const isTrezorLike =
     type === KEYRING_CLASS.HARDWARE.TREZOR ||
     type === KEYRING_CLASS.HARDWARE.ONEKEY;
   const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
   const mnemonicAccounts = useRabbySelector((state) => state.account);
-  const fetchLedgerAccount = useCallback(() => {
+  const fetAccountInfo = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
       setAccount({
         ...res,
@@ -326,8 +327,8 @@ export const useAccountInfo = (type: string, address: string) => {
   }, []);
 
   useEffect(() => {
-    if (isLedger) {
-      fetchLedgerAccount();
+    if (isLedger || isGridPlus) {
+      fetAccountInfo();
     } else if (isTrezorLike) {
       fetchTrezorLikeAccount();
     } else if (isMnemonics) {

@@ -90,7 +90,7 @@ const Permit = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>Pay</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -197,7 +197,7 @@ const Permit = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1094']}
                   id="1094"
-                  dangerText="Not your current address"
+                  dangerText="Not the payment address"
                 />
               </ul>
             </Row>

@@ -23,6 +23,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     HDManagerStateContext
   );
   const dispatch = useRabbyDispatch();
+  const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -35,13 +36,19 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     const start = startNoRef.current;
     const index = start - 1;
     let i = index;
-    const isLedgerLive = typeRef.current === HDPathType.LedgerLive;
+    const oneByOne =
+      typeRef.current === HDPathType.LedgerLive &&
+      keyring === KEYRING_CLASS.HARDWARE.LEDGER;
 
     try {
       await createTask(() =>
         wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
       );
-      for (i = index; i < index + MAX_ACCOUNT_COUNT; ) {
+      maxCountRef.current =
+        (await createTask(() =>
+          wallet.requestKeyring(keyring, 'getMaxAccountLimit', keyringId, null)
+        )) ?? MAX_ACCOUNT_COUNT;
+      for (i = index; i < index + maxCountRef.current; ) {
         if (exitRef.current) {
           return;
         }
@@ -61,14 +68,23 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
             'getAddresses',
             keyringId,
             i,
-            i + (isLedgerLive ? 1 : MAX_STEP_COUNT)
+            i + (oneByOne ? 1 : MAX_STEP_COUNT)
           );
         })) as Account[];
-        setAccountList((prev) => [...prev, ...accounts]);
+
+        const accountsWithAliasName = await Promise.all(
+          accounts.map(async (account) => {
+            const aliasName = await wallet.getAlianName(account.address);
+            account.aliasName = aliasName;
+            return account;
+          })
+        );
+
+        setAccountList((prev) => [...prev, ...accountsWithAliasName]);
         setLoading(false);
 
         // only ledger live need to fetch one by one
-        if (isLedgerLive) {
+        if (oneByOne) {
           i++;
         } else {
           i += MAX_STEP_COUNT;
@@ -82,7 +98,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart
-    if (i !== index + MAX_ACCOUNT_COUNT) {
+    if (i !== index + maxCountRef.current) {
       runGetAccounts();
     }
   }, []);
@@ -96,6 +112,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         runGetAccounts();
       } else {
         stoppedRef.current = true;
+        setLoading(true);
       }
     }
   }, [type, startNo]);
@@ -110,7 +127,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     const newData = [...(accountList ?? [])];
     let lastIndex = newData[newData.length - 1]?.index ?? 0;
 
-    for (let i = newData.length; i < MAX_ACCOUNT_COUNT; i++) {
+    for (let i = newData.length; i < maxCountRef.current; i++) {
       newData.push({
         address: '',
         index: ++lastIndex,

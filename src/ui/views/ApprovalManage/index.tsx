@@ -20,17 +20,19 @@ import './style.less';
 import PQueue from 'p-queue';
 import { VariableSizeList } from 'react-window';
 import {
-  ApprovalContractItem,
   ApprovalItem,
   ContractApprovalItem,
   NftApprovalItem,
   TokenApprovalItem,
-} from './components/ApprovalContractItem';
+  getContractRiskEvaluation,
+  makeComputedRiskAboutValues,
+} from '@/utils/approval';
 import { RevokeApprovalDrawer } from './components/RevokeApprovalDrawer';
 import { groupBy, sortBy, flatten } from 'lodash';
 import { ReactComponent as IconDownArrow } from 'ui/assets/approval-management/down.svg';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
+import { ApprovalContractItem } from './components/ApprovalContractItem';
 
 const FILTER_TYPES = {
   contract: 'By Contracts',
@@ -97,12 +99,23 @@ const ApprovalManage = () => {
           data.contracts.forEach((contract) => {
             const chainName = contract.chain;
             const contractId = contract.spender.id;
+            const spender = contract.spender;
+
             if (!contractMap[`${chainName}:${contractId}`]) {
-              const spender = contract.spender;
+              const $riskAboutValues = makeComputedRiskAboutValues(
+                'nft-contract',
+                spender
+              );
               contractMap[`${chainName}:${contractId}`] = {
                 list: [],
                 chain: e.id,
                 type: 'contract',
+                contractFor: 'nft-contract',
+                $riskAboutValues,
+                $contractRiskEvaluation: getContractRiskEvaluation(
+                  spender.risk_level,
+                  $riskAboutValues
+                ),
                 risk_level: spender.risk_level,
                 risk_alert: spender.risk_alert,
                 id: spender.id,
@@ -113,10 +126,12 @@ const ApprovalManage = () => {
             contractMap[`${chainName}:${contractId}`].list.push(contract);
 
             if (!nftMap[`${chainName}:${contract.contract_id}`]) {
+              const spender = contract.spender;
               nftMap[`${chainName}:${contract.contract_id}`] = {
                 nftContract: contract,
                 list: [],
                 type: 'nft',
+                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
                 risk_level: 'safe',
                 id: contract.contract_id,
                 name: contract.contract_name,
@@ -137,6 +152,10 @@ const ApprovalManage = () => {
             const spender = token.spender;
 
             if (!contractMap[`${token.chain}:${contractId}`]) {
+              const $riskAboutValues = makeComputedRiskAboutValues(
+                'nft',
+                spender
+              );
               contractMap[`${token.chain}:${contractId}`] = {
                 list: [],
                 chain: e.id,
@@ -146,6 +165,12 @@ const ApprovalManage = () => {
                 name: spender?.protocol?.name || 'Unknown Contract',
                 logo_url: spender.protocol?.logo_url || IconUnknownNFT,
                 type: 'contract',
+                contractFor: 'nft',
+                $riskAboutValues,
+                $contractRiskEvaluation: getContractRiskEvaluation(
+                  spender.risk_level,
+                  $riskAboutValues
+                ),
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(token);
@@ -161,6 +186,7 @@ const ApprovalManage = () => {
                 name: token.contract_name,
                 logo_url: token?.content || (token as any).collection?.logo_url,
                 type: 'nft',
+                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
                 amount: token.amount,
               };
             }
@@ -181,6 +207,10 @@ const ApprovalManage = () => {
         if (data.length) {
           data.forEach((token) => {
             token.spenders.forEach((spender) => {
+              const $riskAboutValues = makeComputedRiskAboutValues(
+                'token',
+                spender
+              );
               const chainName = token.chain;
               const contractId = spender.id;
               if (!contractMap[`${chainName}:${contractId}`]) {
@@ -193,6 +223,12 @@ const ApprovalManage = () => {
                   name: spender?.protocol?.name || 'Unknown Contract',
                   logo_url: spender.protocol?.logo_url,
                   type: 'contract',
+                  contractFor: 'token',
+                  $riskAboutValues,
+                  $contractRiskEvaluation: getContractRiskEvaluation(
+                    spender.risk_level,
+                    $riskAboutValues
+                  ),
                 };
               }
               contractMap[`${chainName}:${contractId}`].list.push(token);
@@ -208,6 +244,10 @@ const ApprovalManage = () => {
                   name: token.symbol,
                   logo_url: token.logo_url || IconUnknownToken,
                   type: 'token',
+                  $riskAboutValues: makeComputedRiskAboutValues(
+                    'token',
+                    spender
+                  ),
                   balance: token.balance,
                 };
               }
@@ -297,7 +337,7 @@ const ApprovalManage = () => {
 
   const setSize = useCallback((index: number, size: number) => {
     sizeMap.current = { ...sizeMap.current, [index]: size + 12 };
-    listRef?.current.resetAfterIndex(index);
+    listRef?.current?.resetAfterIndex(index);
   }, []);
 
   const getSize = useCallback(
@@ -384,6 +424,7 @@ const ApprovalManage = () => {
                   itemCount={displaySortedContractList.length}
                   itemSize={getSize}
                   itemData={displaySortedContractList}
+                  // @ts-expect-error it seems there's no `setSize` on `VariableSizeList` of this version react-window
                   setSize={setSize}
                 >
                   {({

@@ -1,32 +1,32 @@
 # UI
 
-this extension has 3 kinds of ui page.
+This extension has 3 kinds of UI pages.
 
 - `browser action popup page`
 
-  when user click the icon besides browser address bar, this page will show up.
+  When the user clicks the icon beside the browser address bar, this page will show up.
 
 - `notification page`
 
-  when dapp request user interaction. some like `sign`, `connect`, this page will show in a seperate window.
+  When a Dapp requests user interaction, such as `sign` or `connect`, this page will show in a seperate window.
 
 - `tab page`
 
-  when the extension needs more space to ensure user can get information easily, it will open a browser tab to disaply content.
+  When the extension needs more space to ensure the user can get information easily, it will open a browser tab to display content.
 
-these pages share the same code. in the start of `ui` show, the extension will try to execute `getBackgroundWindow` first.
+These pages share the same code. At the start of `ui` display, the extension will try to execute `getBackgroundWindow` first.
 
-all operations about wallet are mounted in the `background window.wallet`.
+All operations regarding the wallet are mounted in the `background window.wallet`.
 
 ## Route
 
-the default route of `ui` is `SortHat`(_SortHat.tsx_), it will check the wallet status, and decide which view to display.
+The default route of `ui` is `SortHat`(_SortHat.tsx_). This will check the wallet status, and decide which view to display.
 
 ## Approval
 
-when dapp request something which needs user's permission, the `approval job` will be seted, and trigger the `notification page` open.
+When a Dapp requests something which needs the user's permission, the `approval job` will be set, and this triggers the `notification page` open.
 
-then page will check the `approval job` status in the `SortHat` view, and navigate to the `Approval` view.(_views/Approval_)
+Then the page will check the `approval job` status in the `SortHat` view, and navigate to the `Approval` view.(_views/Approval_)
 
-according to the `approval job` uiType, it will display different `Approval` component.
+Depending on the `approval job` uiType, a different `Approval` component will be displayed.
 

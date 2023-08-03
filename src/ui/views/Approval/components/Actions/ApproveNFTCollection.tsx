@@ -111,14 +111,16 @@ const ApproveNFTCollection = ({
                 id="1056"
                 engineResult={engineResultMap['1056']}
                 warningText={<Values.Interacted value={false} />}
-                defaultText={<Values.Interacted value />}
+                defaultText={
+                  <Values.Interacted value={requireData.hasInteraction} />
+                }
               />
 
               <SecurityListItem
                 id="1054"
                 engineResult={engineResultMap['1054']}
-                dangerText="Risk exposure ≤ $10,000"
-                warningText="Risk exposure ≤ $100,000"
+                dangerText="Trust value ≤ $10,000"
+                warningText="Trust value ≤ $100,000"
               />
 
               <SecurityListItem

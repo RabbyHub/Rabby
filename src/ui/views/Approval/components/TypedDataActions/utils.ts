@@ -24,6 +24,7 @@ import {
 } from '../Actions/utils';
 import { CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
+import { isTestnetChainId } from '@/utils/chain';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -181,7 +182,9 @@ const fetchContractRequireData = async (
   id: string,
   chainId: string,
   sender: string,
-  wallet: WalletControllerType
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi']
 ) => {
   const queue = new PQueue();
   const result: ContractRequireData = {
@@ -192,11 +195,11 @@ const fetchContractRequireData = async (
     rank: null,
   };
   queue.add(async () => {
-    const credit = await wallet.openapi.getContractCredit(id, chainId);
+    const credit = await apiProvider.getContractCredit(id, chainId);
     result.rank = credit.rank_at;
   });
   queue.add(async () => {
-    const { desc } = await wallet.openapi.addrDesc(id);
+    const { desc } = await apiProvider.addrDesc(id);
     if (desc.contract && desc.contract[chainId]) {
       result.bornAt = desc.contract[chainId].create_at;
     } else {
@@ -205,7 +208,7 @@ const fetchContractRequireData = async (
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
-    const hasInteraction = await wallet.openapi.hasInteraction(
+    const hasInteraction = await apiProvider.hasInteraction(
       sender,
       chainId,
       id
@@ -235,7 +238,7 @@ export interface ApproveTokenRequireData {
 const fetchTokenApproveRequireData = async ({
   spender,
   token,
-  wallet,
+  apiProvider,
   address,
   chainId,
 }: {
@@ -243,7 +246,9 @@ const fetchTokenApproveRequireData = async ({
   token: TokenItem;
   address: string;
   chainId: string;
-  wallet: WalletControllerType;
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi'];
 }) => {
   const queue = new PQueue();
   const result: ApproveTokenRequireData = {
@@ -262,22 +267,22 @@ const fetchTokenApproveRequireData = async ({
     },
   };
   queue.add(async () => {
-    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    const credit = await apiProvider.getContractCredit(spender, chainId);
     result.rank = credit.rank_at;
   });
   queue.add(async () => {
-    const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    const { usd_value } = await apiProvider.tokenApproveExposure(
       spender,
       chainId
     );
     result.riskExposure = usd_value;
   });
   queue.add(async () => {
-    const t = await wallet.openapi.getToken(address, chainId, token.id);
+    const t = await apiProvider.getToken(address, chainId, token.id);
     result.token = t;
   });
   queue.add(async () => {
-    const { desc } = await wallet.openapi.addrDesc(spender);
+    const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
       result.bornAt = desc.contract[chainId].create_at;
     }
@@ -285,11 +290,11 @@ const fetchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId].is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
-    const hasInteraction = await wallet.openapi.hasInteraction(
+    const hasInteraction = await apiProvider.hasInteraction(
       address,
       chainId,
       spender
@@ -319,7 +324,7 @@ export interface BatchApproveTokenRequireData {
 const fetchBatchTokenApproveRequireData = async ({
   spender,
   tokens,
-  wallet,
+  apiProvider,
   address,
   chainId,
 }: {
@@ -327,7 +332,9 @@ const fetchBatchTokenApproveRequireData = async ({
   tokens: TokenItem[];
   address: string;
   chainId: string;
-  wallet: WalletControllerType;
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi'];
 }) => {
   const queue = new PQueue();
   const result: BatchApproveTokenRequireData = {
@@ -346,11 +353,11 @@ const fetchBatchTokenApproveRequireData = async ({
     })),
   };
   queue.add(async () => {
-    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    const credit = await apiProvider.getContractCredit(spender, chainId);
     result.rank = credit.rank_at;
   });
   queue.add(async () => {
-    const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    const { usd_value } = await apiProvider.tokenApproveExposure(
       spender,
       chainId
     );
@@ -358,12 +365,12 @@ const fetchBatchTokenApproveRequireData = async ({
   });
   queue.add(async () => {
     const list = await Promise.all(
-      tokens.map((token) => wallet.openapi.getToken(address, chainId, token.id))
+      tokens.map((token) => apiProvider.getToken(address, chainId, token.id))
     );
     result.tokens = list;
   });
   queue.add(async () => {
-    const { desc } = await wallet.openapi.addrDesc(spender);
+    const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
       result.bornAt = desc.contract[chainId].create_at;
     }
@@ -371,11 +378,11 @@ const fetchBatchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId].is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
-    const hasInteraction = await wallet.openapi.hasInteraction(
+    const hasInteraction = await apiProvider.hasInteraction(
       address,
       chainId,
       spender
@@ -414,13 +421,16 @@ export const fetchRequireData = async (
       (item) => item.id === Number(actionData.chainId)
     );
   }
+  const apiProvider = isTestnetChainId(actionData.chainId)
+    ? wallet.testnetOpenapi
+    : wallet.openapi;
   if (actionData.sellNFT) {
     if (chain && actionData.contractId) {
       const contractRequireData = await fetchContractRequireData(
         actionData.contractId,
         chain.serverId,
         sender,
-        wallet
+        apiProvider
       );
       return contractRequireData;
     }
@@ -431,7 +441,7 @@ export const fetchRequireData = async (
         actionData.contractId,
         chain.serverId,
         sender,
-        wallet
+        apiProvider
       );
       return contractRequireData;
     }
@@ -442,7 +452,7 @@ export const fetchRequireData = async (
         actionData.contractId,
         chain.serverId,
         sender,
-        wallet
+        apiProvider
       );
       return contractRequireData;
     }
@@ -452,7 +462,7 @@ export const fetchRequireData = async (
       contract: null,
       id: actionData.signMultiSig.multisig_id,
     };
-    const { desc } = await wallet.openapi.addrDesc(
+    const { desc } = await apiProvider.addrDesc(
       actionData.signMultiSig.multisig_id
     );
     if (desc.contract) {
@@ -466,7 +476,7 @@ export const fetchRequireData = async (
         actionData.contractId,
         chain.serverId,
         sender,
-        wallet
+        apiProvider
       );
       return contractRequireData;
     }
@@ -479,7 +489,7 @@ export const fetchRequireData = async (
         token: data.token,
         address: sender,
         chainId: chain.serverId,
-        wallet,
+        apiProvider,
       });
       return tokenApproveRequireData;
     }
@@ -492,7 +502,7 @@ export const fetchRequireData = async (
         tokens: data.token_list,
         address: sender,
         chainId: chain.serverId,
-        wallet,
+        apiProvider,
       });
       return tokenApproveRequireData;
     }
@@ -502,7 +512,7 @@ export const fetchRequireData = async (
       actionData.contractId,
       chain.serverId,
       sender,
-      wallet
+      apiProvider
     );
   }
   return null;
@@ -543,6 +553,9 @@ export const formatSecurityEngineCtx = ({
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
 }): ContextActionData => {
+  if (actionData.chainId && isTestnetChainId(actionData.chainId)) {
+    return {};
+  }
   if (actionData?.permit) {
     const data = requireData as ApproveTokenRequireData;
     return {

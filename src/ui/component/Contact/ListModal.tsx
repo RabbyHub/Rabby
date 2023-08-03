@@ -78,7 +78,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
     setEditWhitelistVisible(true);
   };
 
-  const init = async () => {
+  const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
     dispatch.whitelist.getWhitelistEnabled();
     dispatch.whitelist.getWhitelist();
@@ -115,8 +115,8 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    if (visible) fetchData();
+  }, [visible]);
 
   return (
     <Popup

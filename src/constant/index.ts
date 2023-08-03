@@ -63,12 +63,15 @@ import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import Logo0X from 'ui/assets/swap/0xswap.png';
+import Logo1inch from 'ui/assets/swap/1inch.png';
+
 import LogoOpenOcean from 'ui/assets/swap/openocean.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import IconUtila from 'ui/assets/walletlogo/utila.svg';
+import LogoUniswap from 'ui/assets/swap/uniswap.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -295,6 +298,8 @@ export const INTERNAL_REQUEST_SESSION = {
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 
+export const INITIAL_TESTNET_OPENAPI_URL = 'https://api.testnet.rabby.io';
+
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
   broadcastToBackground: 'broadcastToBackground',
@@ -323,6 +328,7 @@ export const EVENTS = {
   COMMON_HARDWARE: {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
+  LOCK_WALLET: 'LOCK_WALLET',
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -941,6 +947,18 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
+  [DEX_ENUM.UNISWAP]: {
+    id: DEX_ENUM.UNISWAP,
+    logo: LogoUniswap,
+    name: 'Uniswap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
+  },
+  [DEX_ENUM.ONEINCH]: {
+    id: DEX_ENUM.ONEINCH,
+    logo: Logo1inch,
+    name: '1inch',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
+  },
   [DEX_ENUM.ZEROXAPI]: {
     id: DEX_ENUM.ZEROXAPI,
     logo: Logo0X,
