@@ -290,7 +290,7 @@ const fetchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId].is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
@@ -378,7 +378,7 @@ const fetchBatchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId].is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
