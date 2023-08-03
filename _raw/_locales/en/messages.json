@@ -1143,5 +1143,20 @@
   },
   "Gas__Top__Up__hight__gas__fees": {
     "message": "This top up amount is too small because the target network requires high gas fees."
-  }
+  },
+  "page": {
+    "transactions": {
+      "title": "Transactions",
+      "empty": {
+        "title": "No transactions",
+        "desc": " No transactions found on <1>supported chains</1>"
+      }
+    },
+    "chainList": {
+      "title": "{{count}} chains supported"
+    }
+  },
+  "components": {},
+  "global": {},
+  "background": {}
 }

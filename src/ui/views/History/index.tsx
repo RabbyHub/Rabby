@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { last } from 'lodash';
 import { Tabs } from 'antd';
@@ -80,13 +80,15 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
       {(loadingMore || loading) && <Loading count={5} active />}
       {isEmpty && (
         <Empty
-          title={t('No transactions')}
+          title={t('page.transactions.empty.title')}
           desc={
             <span>
-              No transactions found on{' '}
-              <Link className="underline" to="/settings/chain-list">
-                {t('supported chains')}
-              </Link>
+              <Trans i18nKey={'page.transactions.empty.desc'} t={t}>
+                No transactions found on
+                <Link className="underline" to="/settings/chain-list">
+                  supported chains
+                </Link>
+              </Trans>
             </span>
           }
           className="pt-[108px]"
@@ -103,7 +105,7 @@ const History = () => {
 
   return (
     <div className="txs-history">
-      <PageHeader fixed>{t('Transactions')}</PageHeader>
+      <PageHeader fixed>{t('page.transactions.title')}</PageHeader>
       {isShowTestnet && (
         <NetSwitchTabs
           value={selectedTab}
