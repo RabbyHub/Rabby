@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CHAINS_ENUM } from 'consts';
-import { BalanceChange as IBalanceChange } from 'background/service/openapi';
+import {
+  BalanceChange as IBalanceChange,
+  TokenItem,
+} from 'background/service/openapi';
 import { formatAmount } from 'ui/utils/number';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
@@ -10,6 +13,7 @@ import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import BigNumber from 'bignumber.js';
 import { formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 const NFTBalanceChange = ({
   data,
@@ -127,6 +131,9 @@ const BalanceChange = ({
 }) => {
   const isSuccess = data.success;
 
+  const [tokenDetailVisible, setTokenDetailVisible] = useState(false);
+  const [token, setToken] = useState<TokenItem | null>(null);
+
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
   });
@@ -142,6 +149,11 @@ const BalanceChange = ({
       sendTokenList,
     };
   }, [data]);
+
+  const handleClickToken = (t: TokenItem) => {
+    setToken(t);
+    setTokenDetailVisible(true);
+  };
 
   if (version === 'v0') {
     return (
@@ -223,7 +235,12 @@ const BalanceChange = ({
                           <span className="text-red-forbidden">
                             - {formatAmount(token.amount)}
                           </span>{' '}
-                          {getTokenSymbol(token)}
+                          <span
+                            onClick={() => handleClickToken(token)}
+                            className="hover:underline cursor-pointer"
+                          >
+                            {getTokenSymbol(token)}
+                          </span>
                         </>
                       }
                       key={token.id}
@@ -265,7 +282,12 @@ const BalanceChange = ({
                           <span className="text-green">
                             + {formatAmount(token.amount)}
                           </span>{' '}
-                          {getTokenSymbol(token)}
+                          <span
+                            onClick={() => handleClickToken(token)}
+                            className="hover:underline cursor-pointer"
+                          >
+                            {getTokenSymbol(token)}
+                          </span>
                         </>
                       }
                       key={token.id}
@@ -298,6 +320,13 @@ const BalanceChange = ({
           <NFTBalanceChange type="receive" data={data}></NFTBalanceChange>
         </Table>
       </div>
+      <TokenDetailPopup
+        token={token}
+        visible={tokenDetailVisible}
+        onClose={() => setTokenDetailVisible(false)}
+        canClickToken={false}
+        hideOperationButtons
+      />
     </div>
   );
 };

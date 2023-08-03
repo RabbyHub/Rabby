@@ -14,12 +14,16 @@ interface TokenDetailProps {
   onClose?(): void;
   token?: TokenItem | null;
   variant?: 'add';
+  canClickToken?: boolean;
+  hideOperationButtons?: boolean;
 }
 export const TokenDetailPopup = ({
   token,
   visible,
   onClose,
   variant,
+  canClickToken = true,
+  hideOperationButtons = false,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -92,6 +96,8 @@ export const TokenDetailPopup = ({
           variant={variant}
           isAdded={isAdded}
           onClose={onClose}
+          canClickToken={canClickToken}
+          hideOperationButtons={hideOperationButtons}
         ></TokenDetail>
       )}
     </Popup>
