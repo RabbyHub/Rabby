@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
 import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
 import IconHardWallet from 'ui/assets/address/hardwallet.svg';
 import IconMobileWallet from 'ui/assets/address/mobile-wallet.svg';
 import InstitutionalWallet from 'ui/assets/address/institutional-wallet.svg';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
+import IconMnemonics from 'ui/assets/import/mnemonics-light.svg';
+import IconPrivatekey from 'ui/assets/import/privatekey-light.svg';
 
 import './style.less';
 
@@ -187,17 +187,8 @@ const AddAddressOptions = () => {
         content: t('createAddress'),
         brand: 'createAddress',
         onClick: () => {
-          handleRouter((history) => history.push('/mnemonics/create'));
+          handleRouter(() => openInternalPageInTab('mnemonics/create'));
         },
-      },
-      {
-        leftIcon: IconImportAdress,
-        brand: 'importAddress',
-        content: 'Import Address',
-        onClick: () =>
-          handleRouter((history) =>
-            history.push('/import/entry-import-address')
-          ),
       },
     ],
     [t]
@@ -205,6 +196,19 @@ const AddAddressOptions = () => {
 
   const centerList = React.useMemo(
     () => [
+      {
+        leftIcon: IconMnemonics,
+        brand: 'importSeedPhrase',
+        content: 'Import Seed Phrase',
+        onClick: () =>
+          handleRouter(() => openInternalPageInTab('import/mnemonics')),
+      },
+      {
+        leftIcon: IconPrivatekey,
+        brand: 'importPrivatekey',
+        content: 'Import Private Key',
+        onClick: () => handleRouter((history) => history.push('/import/key')),
+      },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
@@ -233,7 +237,7 @@ const AddAddressOptions = () => {
   return (
     <div className="rabby-container" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
-        <div className="bg-white rounded-[6px] mb-[20px]" key={index}>
+        <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
@@ -246,7 +250,7 @@ const AddAddressOptions = () => {
         </div>
       ))}
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {renderList.map((item) => {
           const isSelected = selectedWalletType === item.key;
           return (
@@ -328,7 +332,7 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px] mb-[20px]">
+      <div className="bg-white rounded-[6px] mb-[12px]">
         {bottomList.map((e) => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>

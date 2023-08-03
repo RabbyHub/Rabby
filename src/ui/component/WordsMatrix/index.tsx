@@ -59,10 +59,10 @@ const MatrixWrapper = styled.div.withConfig<{
     color: ${LessPalette['@color-title']};
     position: relative;
 
-    border-right: 1px solid ${LessPalette['@color-border']};
-    border-bottom: 1px solid ${LessPalette['@color-border']};
-    border-right: 0.5px solid ${LessPalette['@color-border']};
-    border-bottom: 0.5px solid ${LessPalette['@color-border']};
+    border-right: 1px solid #e1e5f2;
+    border-bottom: 1px solid #e1e5f2;
+    border-right: 0.5px solid #e1e5f2;
+    border-bottom: 0.5px solid #e1e5f2;
 
     ${(props) => {
       const rowCount = props.rowCount || ROW_COUNT;
