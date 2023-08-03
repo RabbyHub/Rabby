@@ -1322,10 +1322,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.12":
-  version "0.3.12"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.12.tgz#2356f4b4a67618165bce2b2ae355213f58bc0890"
-  integrity sha512-ck9DxyD3OEL2BOLPLWpdEHbXlOoGgSx5hYNr63eMxOLvUIFJNJzfqenu3gldep+2o+gYBKMCkLUEkf3wQHzsEg==
+"@debank/common@^0.3.13":
+  version "0.3.13"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.13.tgz#34ccdc1f3e875dc9ea5c58cc3041a9e1b66f4993"
+  integrity sha512-DwlgLE91PUlmInpOrAexUnW+KhnDM8+He5zxheSy9/K5ShSCFFxPAaVz3pynjF1HhhEGCN4qRIyXee1i0mgt+A==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3554,10 +3554,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@^0.0.26":
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.26.tgz#d4298412f1fb4359eaec2eba82158c247f1ed4fe"
-  integrity sha512-4mnFjJMLJJ4UHD1sRHwgM1K9wH4gQ7mfMWRZlRf4Dhig1oXTdqFYhigzFJAf6zQ3bnp6p2bqKinCkBL067IX6g==
+"@rabby-wallet/rabby-swap@^0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.27.tgz#883b43259140250708f1ebb21d92cc0bc0adf6aa"
+  integrity sha512-lK7SbM7KAosti5U6O2JwcLuIlJRqk4c3Xne6QzTtPKOL0WATY8bVHNFYfeuB7R61kYlO1U9oVeE4EjJ85DvtDA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
