@@ -24,8 +24,36 @@ const { BroadcastChannelMessage, PortMessage } = Message;
 
 const pm = new PortMessage().connect();
 
+const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
+  pm.request(data)
+);
+
+// background notification
+pm.on('message', (data) => bcm.send('message', data));
+
+document.addEventListener('beforeunload', () => {
+  bcm.dispose();
+  pm.dispose();
+});
+
+const getIsDefaultWallet = async () => {
+  const [{ preference }, { permission }] = await Promise.all([
+    browser.storage.local.get('preference'),
+    browser.storage.local.get('permission'),
+  ]);
+  const origin = window.location.origin;
+  const site = permission?.dumpCache?.find((item) => item.k === origin);
+  if (site && site.v.preferMetamask) {
+    return false;
+  }
+  return preference?.isDefaultWallet;
+};
+
 const start = performance.now();
-pm.request({ method: 'isDefaultWallet' })
+pm.request({ method: 'isDefaultWallet' }).then((v) => {
+  console.log('isDefaultWallet message', v, `${performance.now() - start}ms`);
+});
+getIsDefaultWallet()
   .then((isDefaultWallet) => {
     console.log(
       'getIsDefaultWallet',
@@ -38,15 +66,3 @@ pm.request({ method: 'isDefaultWallet' })
     console.log('getIsDefaultWallet', err);
     injectProviderScript(true);
   });
-
-const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
-  pm.request(data)
-);
-
-// background notification
-pm.on('message', (data) => bcm.send('message', data));
-
-document.addEventListener('beforeunload', () => {
-  bcm.dispose();
-  pm.dispose();
-});
