@@ -1630,19 +1630,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
+    console.log('processedRules', processedRules);
     const enableResults = engineResults.filter((item) => item.enable);
-    const hasForbidden = enableResults.find(
-      (result) => result.level === Level.FORBIDDEN
-    );
+    // const hasForbidden = enableResults.find(
+    //   (result) => result.level === Level.FORBIDDEN
+    // );
     const hasSafe = !!enableResults.find(
       (result) => result.level === Level.SAFE
     );
     const needProcess = enableResults.filter(
       (result) =>
-        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        (result.level === Level.DANGER ||
+          result.level === Level.WARNING ||
+          result.level === Level.FORBIDDEN) &&
         !processedRules.includes(result.id)
     );
-    if (hasForbidden) return true;
+    // if (hasForbidden) return true;
     if (needProcess.length > 0) {
       return !hasSafe;
     } else {

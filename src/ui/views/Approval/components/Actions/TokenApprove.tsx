@@ -294,9 +294,21 @@ const TokenApprove = ({
               />
 
               <SecurityListItem
-                id="1029"
-                engineResult={engineResultMap['1029']}
-                dangerText="Flagged by Rabby"
+                id="1134"
+                engineResult={engineResultMap['1134']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1136"
+                engineResult={engineResultMap['1136']}
+                warningText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1133"
+                engineResult={engineResultMap['1133']}
+                safeText="Marked as trusted"
               />
 
               <li>

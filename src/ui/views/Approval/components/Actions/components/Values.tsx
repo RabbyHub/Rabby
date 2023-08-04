@@ -123,6 +123,7 @@ const AddressMark = ({
 }) => {
   const chainId = chain.serverId;
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const handleEditMark = () => {
     userDataDrawer({
       address: address,
@@ -205,6 +206,7 @@ const AddressMark = ({
             ),
           });
         }
+        dispatch.securityEngine.init();
         onChange();
       },
     });
@@ -406,7 +408,6 @@ const Transacted = ({ value }: { value: boolean }) => {
 const TokenSymbol = ({ token }: { token: TokenItem }) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
-    console.log('token', token);
     dispatch.sign.openTokenDetailPopup(token);
   };
   return (

@@ -12,6 +12,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { SecurityListItem } from './components/SecurityListItem';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .header {
@@ -45,12 +46,23 @@ const UnWrapToken = ({
 }) => {
   const { payToken, receiveToken, receiver } = data!;
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, contractWhitelist } = useRabbySelector(
+    (s) => ({
+      contractWhitelist: s.securityEngine.userData.contractWhitelist,
+      rules: s.securityEngine.rules,
+      processedRules: s.securityEngine.currentTx.processedRules,
+    })
+  );
+
   const dispatch = useRabbyDispatch();
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -150,6 +162,20 @@ const UnWrapToken = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"

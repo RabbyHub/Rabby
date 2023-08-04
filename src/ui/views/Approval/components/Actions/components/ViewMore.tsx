@@ -66,10 +66,10 @@ const ViewMore = (props: Props) => {
   const height = React.useMemo(() => {
     switch (props.type) {
       case 'contract':
-        return 330;
+        return 380;
       case 'spender':
       case 'nftSpender':
-        return 425;
+        return 475;
       case 'receiver':
         return 400;
       case 'nft':

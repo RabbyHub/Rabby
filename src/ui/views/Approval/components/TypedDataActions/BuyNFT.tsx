@@ -65,10 +65,22 @@ const BuyNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, contractWhitelist } = useRabbySelector(
+    (s) => ({
+      rules: s.securityEngine.rules,
+      processedRules: s.securityEngine.currentTx.processedRules,
+      contractWhitelist: s.securityEngine.userData.contractWhitelist,
+    })
+  );
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
+
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
     engineResults.forEach((item) => {
@@ -200,38 +212,18 @@ const BuyNFT = ({
             <ul className="desc-list">
               <ProtocolListItem protocol={requireData.protocol} />
 
+              {isInWhitelist && <li>Marked as trusted</li>}
+
               <SecurityListItem
-                id="1043"
-                engineResult={engineResultMap['1043']}
-                dangerText="EOA address"
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
               />
 
               <SecurityListItem
-                id="1048"
-                engineResult={engineResultMap['1048']}
-                warningText={<Values.Interacted value={false} />}
-                defaultText={
-                  <Values.Interacted value={requireData.hasInteraction} />
-                }
-              />
-
-              <SecurityListItem
-                id="1044"
-                engineResult={engineResultMap['1044']}
-                dangerText="Trust value ≤ $10,000"
-                warningText="Trust value ≤ $100,000"
-              />
-
-              <SecurityListItem
-                id="1045"
-                engineResult={engineResultMap['1045']}
-                warningText="Deployed time < 3 days"
-              />
-
-              <SecurityListItem
-                id="1052"
-                engineResult={engineResultMap['1052']}
-                dangerText="Flagged by Rabby"
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
               />
 
               <li>
