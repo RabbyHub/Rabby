@@ -592,7 +592,7 @@ const fetchNFTApproveRequiredData = async ({
       result.bornAt = desc.born_at;
     }
     result.protocol = getProtocol(desc.protocol, chainId);
-    result.isDanger = desc.contract?.[chainId].is_danger || null;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
   });
   queue.add(async () => {
     const hasInteraction = await apiProvider.hasInteraction(
@@ -668,7 +668,7 @@ const fetchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.contract?.[chainId].is_danger || null;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
