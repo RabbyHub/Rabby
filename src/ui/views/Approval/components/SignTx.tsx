@@ -65,6 +65,7 @@ import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -710,10 +711,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
+    tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
@@ -1815,6 +1817,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           />
         </>
       )}
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
+      />
     </>
   );
 };

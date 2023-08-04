@@ -553,7 +553,7 @@ export const formatSecurityEngineCtx = ({
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
 }): ContextActionData => {
-  if (actionData.chainId && isTestnetChainId(actionData.chainId)) {
+  if (actionData?.chainId && isTestnetChainId(actionData?.chainId)) {
     return {};
   }
   if (actionData?.permit) {
