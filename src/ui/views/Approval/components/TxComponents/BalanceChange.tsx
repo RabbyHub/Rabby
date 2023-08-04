@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from 'consts';
 import {
   BalanceChange as IBalanceChange,
@@ -10,10 +11,9 @@ import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
-import BigNumber from 'bignumber.js';
 import { formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useRabbyDispatch } from 'ui/store';
 
 const NFTBalanceChange = ({
   data,
@@ -129,10 +129,8 @@ const BalanceChange = ({
   chainEnum?: CHAINS_ENUM;
   version: 'v0' | 'v1' | 'v2';
 }) => {
+  const dispatch = useRabbyDispatch();
   const isSuccess = data.success;
-
-  const [tokenDetailVisible, setTokenDetailVisible] = useState(false);
-  const [token, setToken] = useState<TokenItem | null>(null);
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
@@ -151,8 +149,7 @@ const BalanceChange = ({
   }, [data]);
 
   const handleClickToken = (t: TokenItem) => {
-    setToken(t);
-    setTokenDetailVisible(true);
+    dispatch.sign.openTokenDetailPopup(t);
   };
 
   if (version === 'v0') {
@@ -320,13 +317,6 @@ const BalanceChange = ({
           <NFTBalanceChange type="receive" data={data}></NFTBalanceChange>
         </Table>
       </div>
-      <TokenDetailPopup
-        token={token}
-        visible={tokenDetailVisible}
-        onClose={() => setTokenDetailVisible(false)}
-        canClickToken={false}
-        hideOperationButtons
-      />
     </div>
   );
 };

@@ -8,7 +8,6 @@ import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -100,9 +99,13 @@ const Swap = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              // <Values.TokenSymbol token={actionData.token} />
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -123,11 +126,14 @@ const Swap = ({
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
                 text={
-                  balanceChange.success && balanceChange.support
-                    ? `${formatAmount(
-                        receiveToken.amount
-                      )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`
-                    : 'Fail to load'
+                  balanceChange.success && balanceChange.support ? (
+                    <>
+                      {formatAmount(receiveToken.amount)}{' '}
+                      <Values.TokenSymbol token={receiveToken} />
+                    </>
+                  ) : (
+                    'Fail to load'
+                  )
                 }
                 icon={
                   <Values.TokenLabel
@@ -209,9 +215,12 @@ const Swap = ({
               <LogoWithText
                 logo={minReceive.logo_url}
                 logoRadius="100%"
-                text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-                  getTokenSymbol(minReceive)
-                )}`}
+                text={
+                  <>
+                    {formatAmount(minReceive.amount)}{' '}
+                    <Values.TokenSymbol token={minReceive} />
+                  </>
+                }
               />
             </div>
             <ul className="desc-list">
