@@ -23,7 +23,6 @@ import IconExternal from 'ui/assets/icon-share.svg';
 import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
 import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { useRabbyDispatch } from '@/ui/store';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -409,7 +408,6 @@ const Transacted = ({ value }: { value: boolean }) => {
 const TokenSymbol = ({ token }: { token: TokenItem }) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
-    console.log('token', token);
     dispatch.sign.openTokenDetailPopup(token);
   };
   return (
