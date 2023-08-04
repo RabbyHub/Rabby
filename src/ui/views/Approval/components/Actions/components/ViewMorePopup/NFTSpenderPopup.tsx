@@ -36,8 +36,10 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
 
   const { isInBlackList, isInWhiteList } = useMemo(() => {
     return {
-      isInBlackList: contractBlacklist.some(({ address }) =>
-        isSameAddress(address, data.spender)
+      isInBlackList: contractBlacklist.some(
+        ({ address, chainId }) =>
+          isSameAddress(address, data.spender) &&
+          chainId === data.chain.serverId
       ),
       isInWhiteList: contractWhitelist.some(
         ({ address, chainId }) =>

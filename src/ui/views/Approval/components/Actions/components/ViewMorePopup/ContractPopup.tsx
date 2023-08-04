@@ -33,8 +33,10 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
 
   const { isInBlackList, isInWhiteList } = useMemo(() => {
     return {
-      isInBlackList: contractBlacklist.some(({ address }) =>
-        isSameAddress(address, data.address)
+      isInBlackList: contractBlacklist.some(
+        ({ address, chainId }) =>
+          isSameAddress(address, data.address) &&
+          chainId === data.chain.serverId
       ),
       isInWhiteList: contractWhitelist.some(
         ({ address, chainId }) =>
