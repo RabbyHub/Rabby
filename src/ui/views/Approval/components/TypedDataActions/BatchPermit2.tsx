@@ -6,14 +6,13 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { formatAmount } from '@/ui/utils/number';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
-import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .header {
@@ -86,8 +85,8 @@ const Permit2 = ({
                   text={
                     <div className="overflow-hidden overflow-ellipsis flex">
                       <Values.TokenAmount value={token.amount} />
-                      <span className="ml-2" title={getTokenSymbol(token)}>
-                        {ellipsisTokenSymbol(getTokenSymbol(token))}
+                      <span className="ml-2">
+                        <Values.TokenSymbol token={token} />
                       </span>
                     </div>
                   }

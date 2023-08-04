@@ -107,9 +107,12 @@ const Permit = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -129,9 +132,12 @@ const Permit = ({
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
-                text={`${formatAmount(
-                  receiveToken.amount
-                )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
+                text={
+                  <>
+                    {formatAmount(receiveToken.amount)}{' '}
+                    <Values.TokenSymbol token={receiveToken} />
+                  </>
+                }
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}

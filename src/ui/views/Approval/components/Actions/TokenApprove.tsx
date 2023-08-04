@@ -221,11 +221,8 @@ const TokenApprove = ({
                 <div className="overflow-hidden overflow-ellipsis flex justify-between items-center">
                   <div className="flex flex-1 overflow-hidden">
                     <Values.TokenAmount value={actionData.token.amount} />
-                    <span
-                      className="ml-2"
-                      title={getTokenSymbol(actionData.token)}
-                    >
-                      {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                    <span className="ml-2">
+                      <Values.TokenSymbol token={requireData.token} />
                     </span>
                   </div>
                   <span

@@ -96,9 +96,12 @@ const UnWrapToken = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
           </Row>
@@ -108,9 +111,12 @@ const UnWrapToken = ({
           <Row>
             <LogoWithText
               logo={receiveToken.logo_url}
-              text={`${formatAmount(
-                receiveToken.min_amount
-              )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
+              text={
+                <>
+                  {formatAmount(receiveToken.min_amount)}{' '}
+                  <Values.TokenSymbol token={receiveToken} />
+                </>
+              }
               logoRadius="100%"
             />
             {engineResultMap['1062'] && (

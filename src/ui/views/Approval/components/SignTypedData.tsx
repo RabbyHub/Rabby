@@ -32,6 +32,7 @@ import {
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId } from '@/utils/chain';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 interface SignTypedDataProps {
   method: string;
@@ -61,10 +62,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
+    tokenDetail: s.sign.tokenDetail,
   }));
   const [
     actionRequireData,
@@ -491,6 +493,14 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         onUndo={handleUndoIgnore}
         onRuleEnableStatusChange={handleRuleEnableStatusChange}
         onClose={handleRuleDrawerClose}
+      />
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
       />
     </>
   );

@@ -17,6 +17,7 @@ import { whitelist } from './whitelist';
 import { swap } from './swap';
 import { customRPC } from './customRPC';
 import { securityEngine } from './securityEngine';
+import { sign } from './sign';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -36,6 +37,7 @@ export interface RootModel extends Models<RootModel> {
   swap: typeof swap;
   customRPC: typeof customRPC;
   securityEngine: typeof securityEngine;
+  sign: typeof sign;
 }
 
 export const models: RootModel = {
@@ -56,4 +58,5 @@ export const models: RootModel = {
   swap,
   customRPC,
   securityEngine,
+  sign,
 };

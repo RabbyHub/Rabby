@@ -2,15 +2,17 @@ import React, { useMemo, ReactNode } from 'react';
 import { message } from 'antd';
 import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
-import { Chain } from 'background/service/openapi';
+import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
 import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
+import { useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
 import LogoWithText from './LogoWithText';
 import { ellipsis } from '@/ui/utils/address';
+import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { openInTab } from '@/ui/utils';
 import IconEdit from 'ui/assets/editpen.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -404,6 +406,23 @@ const Transacted = ({ value }: { value: boolean }) => {
   );
 };
 
+const TokenSymbol = ({ token }: { token: TokenItem }) => {
+  const dispatch = useRabbyDispatch();
+  const handleClickTokenSymbol = () => {
+    console.log('token', token);
+    dispatch.sign.openTokenDetailPopup(token);
+  };
+  return (
+    <span
+      className="hover:underline cursor-pointer"
+      onClick={handleClickTokenSymbol}
+      title={getTokenSymbol(token)}
+    >
+      {ellipsisTokenSymbol(getTokenSymbol(token))}
+    </span>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -420,4 +439,5 @@ export {
   DisplayChain,
   Interacted,
   Transacted,
+  TokenSymbol,
 };

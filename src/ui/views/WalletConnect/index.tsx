@@ -7,7 +7,12 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/icon-back.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
-import { WALLETCONNECT_STATUS_MAP, EVENTS, WALLET_BRAND_CONTENT } from 'consts';
+import {
+  WALLETCONNECT_STATUS_MAP,
+  EVENTS,
+  WALLET_BRAND_CONTENT,
+  WALLET_BRAND_CATEGORY,
+} from 'consts';
 import Mask from 'ui/assets/import-mask.png';
 import './style.less';
 import clsx from 'clsx';
@@ -126,7 +131,11 @@ const WalletConnectTemplate = () => {
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
-      sessionStorage.setItem('SELECTED_WALLET_TYPE', 'mobile');
+      sessionStorage.setItem(
+        'SELECTED_WALLET_TYPE',
+        WALLET_BRAND_CONTENT?.[brand.brand]?.category ||
+          WALLET_BRAND_CATEGORY.MOBILE
+      );
     } else {
       history.replace('/');
     }
