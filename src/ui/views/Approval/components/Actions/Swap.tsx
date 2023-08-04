@@ -99,7 +99,6 @@ const Swap = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              // <Values.TokenSymbol token={actionData.token} />
               text={
                 <>
                   {formatAmount(payToken.amount)}{' '}
