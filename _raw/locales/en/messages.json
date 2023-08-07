@@ -1338,6 +1338,66 @@
         "send": "Send",
         "receive": "Receive",
         "noTransactions": "No Transactions"
+      },
+      "assets": {
+        "usdValue": "USD VALUE",
+        "amount": "AMOUNT",
+        "portfolio": {
+          "nftTips": "Calculated based on the floor price recognized by this protocol.",
+          "fractionTips": "Calculate based on the price of the linked ERC20 token."
+        },
+        "tokenButton": {
+          "subTitle": "The token in this list will not be added to total balance"
+        },
+        "table": {
+          "assetAmount": "Asset / Amount",
+          "price": "Price",
+          "useValue": "USD Value",
+          "healthRate": "Health rate",
+          "debtRatio": "Debt Ratio",
+          "unlockAt": "Unlock at",
+          "lentAgainst": "LENT AGAINST",
+          "type": "Type",
+          "strikePrice": "Strike price",
+          "exerciseEnd": "Exercise end",
+          "tradePair": "Trade pair",
+          "side": "Side",
+          "leverage": "Leverage",
+          "PL": "P&L",
+          "unsupportedPoolType": "Unsupported pool type",
+          "claimable": "Claimable",
+          "endAt": "End at",
+          "dailyUnlock": "Daily unlock",
+          "pool": "POOL",
+          "token": "Token",
+          "balanceValue": "Balance / Value",
+          "percent": "Percent",
+          "summaryTips": "Asset value divided by total net worth",
+          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
+          "noMatch": "No Match",
+          "lowValueDescription": "Low value assets will be shown here",
+          "lowValueAssets": "{{count}} low value assets"
+        },
+        "noAssets": "No assets",
+        "blockLinkText": "Search address to block token",
+        "blockDescription": "Token blocked by you will be shown here",
+        "unfoldChain": "Unfold 1 chain",
+        "unfoldChainPlural": "Unfold {{moreLen}} chains",
+        "customLinkText": "Search address to add custom token",
+        "customDescription": "Custom token added by you will be shown here",
+        "comingSoon": "Coming Soon...",
+        "searchPlaceholder": "Tokens"
+      },
+      "hd": {
+        "howToConnectLedger": "How to Connect Ledger",
+        "userRejectedTheRequest": "User rejected the request.",
+        "ledger": {
+          "doc1": "Plug in a single Ledger",
+          "doc2": "Enter pin to unlock",
+          "doc3": "Open Ethereum App",
+          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.           </1>"
+        },
+        "howToSwitch": "How to switch"
       }
     }
   },
@@ -1372,5 +1432,6 @@
   },
   "backupMnemonicTip": {
     "message": ""
-  }
+  },
+  "tradePair": ""
 }

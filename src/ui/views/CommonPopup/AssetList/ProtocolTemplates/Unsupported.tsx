@@ -4,6 +4,7 @@ import Card from '../components/Card';
 import PortfolioHeader from '../components/PortfolioHeader';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 const UnSupportText = styled.p`
   margin-top: 10px;
@@ -14,10 +15,14 @@ const UnSupportText = styled.p`
 
 export default React.memo(
   ({ name, data }: { name: string; data: AbstractPortfolio }) => {
+    const { t } = useTranslation();
+
     return (
       <Card>
         <PortfolioHeader data={data} name={name} showDescription />
-        <UnSupportText>Unsupported pool type</UnSupportText>
+        <UnSupportText>
+          {t('page.dashboard.assets.table.unsupportedPoolType')}
+        </UnSupportText>
       </Card>
     );
   }

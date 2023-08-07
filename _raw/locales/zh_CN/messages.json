@@ -1182,6 +1182,66 @@
         "send": "",
         "receive": "",
         "noTransactions": ""
+      },
+      "assets": {
+        "usdValue": "",
+        "amount": "",
+        "portfolio": {
+          "nftTips": "",
+          "fractionTips": ""
+        },
+        "tokenButton": {
+          "subTitle": ""
+        },
+        "table": {
+          "assetAmount": "",
+          "price": "",
+          "useValue": "",
+          "healthRate": "",
+          "debtRatio": "",
+          "unlockAt": "",
+          "lentAgainst": "",
+          "type": "",
+          "strikePrice": "",
+          "exerciseEnd": "",
+          "tradePair": "",
+          "side": "",
+          "leverage": "",
+          "PL": "",
+          "unsupportedPoolType": "",
+          "claimable": "",
+          "endAt": "",
+          "dailyUnlock": "",
+          "pool": "",
+          "token": "",
+          "balanceValue": "",
+          "percent": "",
+          "summaryTips": "",
+          "summaryDescription": "",
+          "noMatch": "",
+          "lowValueDescription": "",
+          "lowValueAssets": ""
+        },
+        "noAssets": "",
+        "blockLinkText": "",
+        "blockDescription": "",
+        "unfoldChain": "",
+        "unfoldChainPlural": "",
+        "customLinkText": "",
+        "customDescription": "",
+        "comingSoon": "",
+        "searchPlaceholder": ""
+      },
+      "hd": {
+        "howToConnectLedger": "",
+        "userRejectedTheRequest": "",
+        "ledger": {
+          "doc1": "",
+          "doc2": "",
+          "doc3": "",
+          "reconnect": ""
+        },
+        "howToSwitch": ""
       }
     },
     "chainList": {
@@ -1370,5 +1430,6 @@
   },
   "useThisQuote": {
     "message": ""
-  }
+  },
+  "tradePair": ""
 }
