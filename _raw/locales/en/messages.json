@@ -221,7 +221,6 @@
   "Select__the__addresses__you__to__use__in__Rabby": {
     "message": "Select the addresses to use in Rabby"
   },
-
   "Load__More": {
     "message": "Load More..."
   },
@@ -1154,6 +1153,28 @@
     },
     "chainList": {
       "title": "{{count}} chains supported"
+    },
+    "gasTopUp": {
+      "title": "Instant Gas Top Up",
+      "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
+      "topUpChain": "Top Up Chain",
+      "Amount": "Amount",
+      "Continue": "Continue",
+      "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
+      "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
+      "No_Tokens": "No Tokens",
+      "InsufficientBalanceTips": "Insufficient balance",
+      "payment": "Gas Top Up Payment",
+      "Loading_Tokens": "Loading Tokens...",
+      "Including__service__fee": "Including ${{fee}} service fee",
+      "service__fee__tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
+      "Confirm": "Confirm",
+      "Select_from_supported_tokens": "Select from supported tokens",
+      "Value": "Value",
+      "Payment_Token": "Payment Token",
+      "Select_payment_token": "Select payment token",
+      "Token": "Token",
+      "Balance": "Balance"
     }
   },
   "component": {},
