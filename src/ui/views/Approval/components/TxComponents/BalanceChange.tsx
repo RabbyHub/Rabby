@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from 'consts';
-import { BalanceChange as IBalanceChange } from 'background/service/openapi';
+import {
+  BalanceChange as IBalanceChange,
+  TokenItem,
+} from 'background/service/openapi';
 import { formatAmount } from 'ui/utils/number';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
-import BigNumber from 'bignumber.js';
 import { formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { useRabbyDispatch } from 'ui/store';
 
 const NFTBalanceChange = ({
   data,
@@ -125,6 +129,7 @@ const BalanceChange = ({
   chainEnum?: CHAINS_ENUM;
   version: 'v0' | 'v1' | 'v2';
 }) => {
+  const dispatch = useRabbyDispatch();
   const isSuccess = data.success;
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
@@ -142,6 +147,10 @@ const BalanceChange = ({
       sendTokenList,
     };
   }, [data]);
+
+  const handleClickToken = (t: TokenItem) => {
+    dispatch.sign.openTokenDetailPopup(t);
+  };
 
   if (version === 'v0') {
     return (
@@ -223,7 +232,12 @@ const BalanceChange = ({
                           <span className="text-red-forbidden">
                             - {formatAmount(token.amount)}
                           </span>{' '}
-                          {getTokenSymbol(token)}
+                          <span
+                            onClick={() => handleClickToken(token)}
+                            className="hover:underline cursor-pointer"
+                          >
+                            {getTokenSymbol(token)}
+                          </span>
                         </>
                       }
                       key={token.id}
@@ -265,7 +279,12 @@ const BalanceChange = ({
                           <span className="text-green">
                             + {formatAmount(token.amount)}
                           </span>{' '}
-                          {getTokenSymbol(token)}
+                          <span
+                            onClick={() => handleClickToken(token)}
+                            className="hover:underline cursor-pointer"
+                          >
+                            {getTokenSymbol(token)}
+                          </span>
                         </>
                       }
                       key={token.id}

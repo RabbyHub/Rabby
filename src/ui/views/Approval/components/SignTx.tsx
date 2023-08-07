@@ -65,6 +65,7 @@ import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -710,10 +711,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
+    tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
@@ -1628,19 +1630,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
+    console.log('processedRules', processedRules);
     const enableResults = engineResults.filter((item) => item.enable);
-    const hasForbidden = enableResults.find(
-      (result) => result.level === Level.FORBIDDEN
-    );
+    // const hasForbidden = enableResults.find(
+    //   (result) => result.level === Level.FORBIDDEN
+    // );
     const hasSafe = !!enableResults.find(
       (result) => result.level === Level.SAFE
     );
     const needProcess = enableResults.filter(
       (result) =>
-        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        (result.level === Level.DANGER ||
+          result.level === Level.WARNING ||
+          result.level === Level.FORBIDDEN) &&
         !processedRules.includes(result.id)
     );
-    if (hasForbidden) return true;
+    // if (hasForbidden) return true;
     if (needProcess.length > 0) {
       return !hasSafe;
     } else {
@@ -1815,6 +1820,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           />
         </>
       )}
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
+      />
     </>
   );
 };

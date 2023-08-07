@@ -592,7 +592,7 @@ const fetchNFTApproveRequiredData = async ({
       result.bornAt = desc.born_at;
     }
     result.protocol = getProtocol(desc.protocol, chainId);
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
   });
   queue.add(async () => {
     const hasInteraction = await apiProvider.hasInteraction(
@@ -668,7 +668,7 @@ const fetchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
@@ -1094,6 +1094,7 @@ export const formatSecurityEngineCtx = ({
         receiver,
         from: sender,
         chainId,
+        id: data.id,
         contractAddress: id,
         slippageTolerance,
         usdValuePercentage,
@@ -1119,6 +1120,8 @@ export const formatSecurityEngineCtx = ({
         receiveTokenIsFake,
         receiver,
         from: sender,
+        id: data.id,
+        chainId,
         usdValuePercentage,
         usdValueChange: Number(usdValueDiff),
       },
@@ -1143,6 +1146,8 @@ export const formatSecurityEngineCtx = ({
         receiveTokenIsFake,
         receiver,
         from: sender,
+        id: data.id,
+        chainId,
         usdValuePercentage,
         usdValueChange: Number(usdValueDiff),
       },
@@ -1264,6 +1269,8 @@ export const formatSecurityEngineCtx = ({
         slippageTolerance,
         receiver,
         from: data.sender,
+        chainId,
+        id: data.id,
       },
       contractCall: {
         id: data.id,
@@ -1279,6 +1286,8 @@ export const formatSecurityEngineCtx = ({
         slippageTolerance,
         receiver,
         from: data.sender,
+        chainId,
+        id: data.id,
       },
       contractCall: {
         id: data.id,

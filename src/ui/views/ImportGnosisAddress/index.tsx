@@ -2,7 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_TYPE } from 'consts';
+import { KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
 import { isValidAddress } from 'ethereumjs-util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -79,6 +79,10 @@ const ImportGnosisAddress = () => {
             className="mb-0 absolute z-10 top-[20px] left-[20px] cursor-pointer"
             onClick={() => {
               history.goBack();
+              sessionStorage.setItem(
+                'SELECTED_WALLET_TYPE',
+                WALLET_BRAND_CATEGORY.INSTITUTIONAL
+              );
             }}
           />
           <img

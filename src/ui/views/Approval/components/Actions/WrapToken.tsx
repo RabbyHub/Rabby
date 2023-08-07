@@ -12,6 +12,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import ViewMore from './components/ViewMore';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SecurityListItem } from './components/SecurityListItem';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .header {
@@ -45,11 +46,22 @@ const WrapToken = ({
 }) => {
   const { payToken, receiveToken, receiver } = data!;
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, contractWhitelist } = useRabbySelector(
+    (s) => ({
+      contractWhitelist: s.securityEngine.userData.contractWhitelist,
+      rules: s.securityEngine.rules,
+      processedRules: s.securityEngine.currentTx.processedRules,
+    })
+  );
   const dispatch = useRabbyDispatch();
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -83,9 +95,12 @@ const WrapToken = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
           </Row>
@@ -95,9 +110,12 @@ const WrapToken = ({
           <Row>
             <LogoWithText
               logo={receiveToken.logo_url}
-              text={`${formatAmount(
-                receiveToken.min_amount
-              )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
+              text={
+                <>
+                  {formatAmount(receiveToken.min_amount)}{' '}
+                  <Values.TokenSymbol token={receiveToken} />
+                </>
+              }
               logoRadius="100%"
             />
             {engineResultMap['1061'] && (
@@ -143,6 +161,20 @@ const WrapToken = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"

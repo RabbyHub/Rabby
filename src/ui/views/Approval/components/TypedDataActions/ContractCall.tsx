@@ -3,13 +3,15 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractRequireData, TypedDataActionData } from './utils';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
+import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -51,6 +53,7 @@ const ContractCall = ({
   requireData,
   chain,
   raw,
+  engineResults,
 }: {
   data: TypedDataActionData['contractCall'];
   requireData: ContractRequireData;
@@ -66,6 +69,26 @@ const ContractCall = ({
     }
     return null;
   }, [raw]);
+
+  const { contractWhitelist } = useRabbySelector((s) => ({
+    contractWhitelist: s.securityEngine.userData.contractWhitelist,
+  }));
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -85,6 +108,20 @@ const ContractCall = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"

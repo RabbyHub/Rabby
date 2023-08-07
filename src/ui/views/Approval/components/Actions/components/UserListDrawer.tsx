@@ -105,13 +105,13 @@ const UserListDrawer = ({
   return (
     <div>
       <GlobalStyle />
-      <UserListDrawerWrapper>
+      {/* <UserListDrawerWrapper>
         <div className="origin">
           <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
             <Values.Address address={address} chain={chain} iconWidth="18px" />
           </span>
         </div>
-      </UserListDrawerWrapper>
+      </UserListDrawerWrapper> */}
       <Footer>
         <div
           className="item"
@@ -192,9 +192,9 @@ export default ({
         }}
       />
     ),
-    height: 340,
+    height: 240,
     closable: true,
-    title: 'Manage my mark',
+    title: 'My mark',
     className: 'user-list-drawer',
     onClose: () => destroy(),
     onCancel: () => destroy(),

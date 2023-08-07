@@ -10,6 +10,7 @@ export interface Props {
   warningText?: string | React.ReactNode;
   safeText?: string | React.ReactNode;
   defaultText?: string | React.ReactNode;
+  forbiddenText?: string | React.ReactNode;
 }
 
 export const SecurityListItem: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const SecurityListItem: React.FC<Props> = ({
   warningText,
   safeText,
   defaultText,
+  forbiddenText,
 }) => {
   if (!engineResult) {
     if (defaultText) {
@@ -37,6 +39,7 @@ export const SecurityListItem: React.FC<Props> = ({
         {engineResult.level === Level.DANGER && dangerText}
         {engineResult.level === Level.WARNING && warningText}
         {engineResult.level === Level.SAFE && safeText}
+        {engineResult.level === Level.FORBIDDEN && forbiddenText}
       </span>
 
       <SecurityListItemTag id={id} engineResult={engineResult} />
