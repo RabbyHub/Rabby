@@ -7,12 +7,13 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconExternal from 'ui/assets/icon-share.svg';
-import { Copy, Modal, TokenWithChain } from 'ui/component';
+import { Copy, TokenWithChain } from 'ui/component';
 import {
   splitNumberByStep,
   useWallet,
   openInTab,
   useCommonPopupView,
+  getUITypeName,
 } from 'ui/utils';
 import { getChain } from '@/utils';
 import ChainIcon from '../NFT/ChainIcon';
@@ -39,6 +40,8 @@ interface TokenDetailProps {
   removeToken(token: TokenItem): void;
   variant?: 'add';
   isAdded?: boolean;
+  canClickToken?: boolean;
+  hideOperationButtons?: boolean;
 }
 
 const TokenDetail = ({
@@ -48,6 +51,8 @@ const TokenDetail = ({
   variant,
   isAdded,
   onClose,
+  canClickToken = true,
+  hideOperationButtons = false,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -124,34 +129,8 @@ const TokenDetail = ({
     );
     if (!chain) return;
     const prefix = chain.scanLink?.replace('/tx/_s_', '');
-    openInTab(`${prefix}/token/${token.id}`);
-  };
-
-  const handleRemove = async (token: TokenItem) => {
-    const { destroy } = Modal.info({
-      closable: true,
-      className: 'token-detail-remove-modal',
-      width: 320,
-      content: (
-        <div>
-          <div className="mb-[16px]">
-            This will only stop the token from being visible in Rabby and will
-            not affect its balance
-          </div>
-          <Button
-            type="primary"
-            size="large"
-            className="w-[170px]"
-            onClick={async () => {
-              await removeToken(token);
-              destroy();
-            }}
-          >
-            Remove
-          </Button>
-        </div>
-      ),
-    });
+    const needClose = getUITypeName() !== 'notification';
+    openInTab(`${prefix}/token/${token.id}`, needClose);
   };
 
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
@@ -269,7 +248,7 @@ const TokenDetail = ({
           </div>
         </div>
 
-        {!isHiddenButton && (
+        {!isHiddenButton && !hideOperationButtons && (
           <div className="flex flex-row justify-between mt-24">
             <Tooltip
               overlayClassName="rectangle token_swap__tooltip"
@@ -321,6 +300,7 @@ const TokenDetail = ({
             tokenDict={item.tokenDict}
             key={item.id}
             onClose={onClose}
+            canClickToken={canClickToken}
           ></HistoryItem>
         ))}
         {(loadingMore || loading) && <Loading count={5} active />}

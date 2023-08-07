@@ -57,7 +57,7 @@ const TokenApprove = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+              text={<Values.TokenSymbol token={requireData.token} />}
               logoRadius="100%"
             />
           </Row>

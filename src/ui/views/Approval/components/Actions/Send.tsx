@@ -61,9 +61,12 @@ const Send = ({
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={`${formatTokenAmount(
-                actionData.token.amount || 0
-              )} ${ellipsisTokenSymbol(getTokenSymbol(actionData.token))}`}
+              text={
+                <>
+                  {formatTokenAmount(actionData.token.amount)}{' '}
+                  <Values.TokenSymbol token={actionData.token} />
+                </>
+              }
               logoRadius="100%"
             />
             <ul className="desc-list">

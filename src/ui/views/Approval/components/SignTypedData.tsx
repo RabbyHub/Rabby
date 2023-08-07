@@ -32,6 +32,7 @@ import {
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId } from '@/utils/chain';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 
 interface SignTypedDataProps {
   method: string;
@@ -61,10 +62,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
+    tokenDetail: s.sign.tokenDetail,
   }));
   const [
     actionRequireData,
@@ -93,18 +95,20 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
     const enableResults = engineResults.filter((item) => item.enable);
-    const hasForbidden = enableResults.find(
-      (result) => result.level === Level.FORBIDDEN
-    );
+    // const hasForbidden = enableResults.find(
+    //   (result) => result.level === Level.FORBIDDEN
+    // );
     const hasSafe = !!enableResults.find(
       (result) => result.level === Level.SAFE
     );
     const needProcess = enableResults.filter(
       (result) =>
-        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        (result.level === Level.DANGER ||
+          result.level === Level.WARNING ||
+          result.level === Level.FORBIDDEN) &&
         !processedRules.includes(result.id)
     );
-    if (hasForbidden) return true;
+    // if (hasForbidden) return true;
     if (needProcess.length > 0) {
       return !hasSafe;
     } else {
@@ -489,6 +493,14 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         onUndo={handleUndoIgnore}
         onRuleEnableStatusChange={handleRuleEnableStatusChange}
         onClose={handleRuleDrawerClose}
+      />
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
       />
     </>
   );

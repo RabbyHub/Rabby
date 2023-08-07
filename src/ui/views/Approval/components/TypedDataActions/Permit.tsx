@@ -80,7 +80,7 @@ const Permit = ({
                 <div className="overflow-hidden overflow-ellipsis flex">
                   <Values.TokenAmount value={actionData.token.amount} />
                   <span className="mr-2">
-                    {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                    <Values.TokenSymbol token={actionData.token} />
                   </span>
                 </div>
               }
@@ -150,6 +150,24 @@ const Permit = ({
                 id="1106"
                 engineResult={engineResultMap['1106']}
                 dangerText="Flagged by Rabby"
+              />
+
+              <SecurityListItem
+                id="1134"
+                engineResult={engineResultMap['1134']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1136"
+                engineResult={engineResultMap['1136']}
+                warningText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1133"
+                engineResult={engineResultMap['1133']}
+                safeText="Marked as trusted"
               />
 
               <li>

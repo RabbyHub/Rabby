@@ -14,6 +14,7 @@ import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import { isSameAddress } from '@/ui/utils';
 
 const Wrapper = styled.div`
   .header {
@@ -54,10 +55,22 @@ const Permit = ({
     expireAt,
   } = data!;
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, contractWhitelist } = useRabbySelector(
+    (s) => ({
+      rules: s.securityEngine.rules,
+      processedRules: s.securityEngine.currentTx.processedRules,
+      contractWhitelist: s.securityEngine.userData.contractWhitelist,
+    })
+  );
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
+
   const dispatch = useRabbyDispatch();
 
   const engineResultMap = useMemo(() => {
@@ -94,9 +107,12 @@ const Permit = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -116,9 +132,12 @@ const Permit = ({
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
-                text={`${formatAmount(
-                  receiveToken.amount
-                )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`}
+                text={
+                  <>
+                    {formatAmount(receiveToken.amount)}{' '}
+                    <Values.TokenSymbol token={receiveToken} />
+                  </>
+                }
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}
@@ -214,6 +233,20 @@ const Permit = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"

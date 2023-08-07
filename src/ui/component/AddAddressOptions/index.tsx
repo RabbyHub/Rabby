@@ -21,6 +21,7 @@ import {
   WALLET_BRAND_TYPES,
   IWalletBrandContent,
   WALLET_SORT_SCORE,
+  WALLET_BRAND_CATEGORY,
 } from 'consts';
 
 import clsx from 'clsx';
@@ -52,12 +53,23 @@ const AddAddressOptions = () => {
   // keep selected wallet type
   const rootRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
-    if (sessionStorage.getItem('SELECTED_WALLET_TYPE') === 'mobile') {
-      setSelectedWalletType('mobile');
+    const lastSelectedWalletType = sessionStorage.getItem(
+      'SELECTED_WALLET_TYPE'
+    );
+    if (
+      lastSelectedWalletType &&
+      ([
+        WALLET_BRAND_CATEGORY.MOBILE,
+        WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+      ] as string[]).includes(lastSelectedWalletType)
+    ) {
+      setSelectedWalletType(lastSelectedWalletType);
       setTimeout(() => {
-        rootRef.current?.querySelector('.mobile')?.scrollIntoView({
-          behavior: 'smooth',
-        });
+        rootRef.current
+          ?.querySelector(`.${lastSelectedWalletType}`)
+          ?.scrollIntoView({
+            behavior: 'smooth',
+          });
       }, 150);
     }
 
@@ -156,17 +168,17 @@ const AddAddressOptions = () => {
       [
         {
           title: 'Connect Hardware Wallets',
-          key: 'hardware',
+          key: WALLET_BRAND_CATEGORY.HARDWARE,
           icon: IconHardWallet,
         },
         {
           title: 'Connect Mobile Wallet Apps',
-          key: 'mobile',
+          key: WALLET_BRAND_CATEGORY.MOBILE,
           icon: IconMobileWallet,
         },
         {
           title: 'Connect Institutional Wallets',
-          key: 'institutional',
+          key: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
           icon: InstitutionalWallet,
         },
       ]
@@ -235,7 +247,7 @@ const AddAddressOptions = () => {
   );
 
   return (
-    <div className="rabby-container" ref={rootRef}>
+    <div className="rabby-container pb-[12px]" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
         <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
           {items.map((e) => {
@@ -332,7 +344,7 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px] mb-[12px]">
+      <div className="bg-white rounded-[6px]">
         {bottomList.map((e) => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>

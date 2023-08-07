@@ -3,7 +3,7 @@ import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import { TokenChange, TxInterAddressExplain } from '@/ui/component';
 import clsx from 'clsx';
 import React from 'react';
-import { sinceTime, openInTab } from 'ui/utils';
+import { sinceTime, openInTab, getUITypeName } from 'ui/utils';
 import { ellipsis } from 'ui/utils/address';
 import { CHAINS } from 'consts';
 
@@ -37,7 +37,8 @@ export const HistoryItem = ({
       (item) => data.chain === item.serverId
     );
     if (!chain) return;
-    openInTab(chain.scanLink.replace(/_s_/, data.id));
+    const needClose = getUITypeName() !== 'notification';
+    openInTab(chain.scanLink.replace(/_s_/, data.id), needClose);
   };
   return (
     <div

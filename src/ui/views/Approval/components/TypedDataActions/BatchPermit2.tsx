@@ -86,7 +86,7 @@ const Permit2 = ({
                     <div className="overflow-hidden overflow-ellipsis flex">
                       <Values.TokenAmount value={token.amount} />
                       <span className="ml-2">
-                        {ellipsisTokenSymbol(getTokenSymbol(token))}
+                        <Values.TokenSymbol token={token} />
                       </span>
                     </div>
                   }
@@ -169,6 +169,24 @@ const Permit2 = ({
                 id="1113"
                 engineResult={engineResultMap['1113']}
                 dangerText="Flagged by Rabby"
+              />
+
+              <SecurityListItem
+                id="1134"
+                engineResult={engineResultMap['1134']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1136"
+                engineResult={engineResultMap['1136']}
+                warningText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1133"
+                engineResult={engineResultMap['1133']}
+                safeText="Marked as trusted"
               />
 
               <li>

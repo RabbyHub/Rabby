@@ -290,7 +290,7 @@ const fetchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
@@ -378,7 +378,7 @@ const fetchBatchTokenApproveRequireData = async ({
       result.isEOA = true;
       result.bornAt = desc.born_at;
     }
-    result.isDanger = desc.is_danger;
+    result.isDanger = desc.contract?.[chainId]?.is_danger || null;
     result.protocol = getProtocol(desc.protocol, chainId);
   });
   queue.add(async () => {
@@ -553,7 +553,13 @@ export const formatSecurityEngineCtx = ({
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
 }): ContextActionData => {
-  if (actionData.chainId && isTestnetChainId(actionData.chainId)) {
+  let chain: Chain | undefined;
+  if (actionData?.chainId) {
+    chain = Object.values(CHAINS).find(
+      (item) => item.id === Number(actionData.chainId)
+    );
+  }
+  if (actionData?.chainId && isTestnetChainId(actionData?.chainId)) {
     return {};
   }
   if (actionData?.permit) {
@@ -566,6 +572,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -579,6 +586,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -592,6 +600,7 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+        chainId: chain?.serverId,
       },
     };
   }
@@ -607,6 +616,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.buyNFT.receiver,
         receiveNFTIsFake,
         receiveNFTIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -623,6 +634,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.sellNFT.receiver,
         receiveTokenIsFake,
         receiveTokenIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -639,6 +652,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.batchSellNFT.receiver,
         receiveTokenHasFake: receiveTokenIsFake,
         receiveTokenHasScam: receiveTokenIsScam,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -655,6 +670,8 @@ export const formatSecurityEngineCtx = ({
         receiver: actionData.swapTokenOrder.receiver,
         from: actionData.sender,
         usdValuePercentage: actionData.swapTokenOrder.usdValuePercentage,
+        chainId: chain?.serverId,
+        id: actionData.contractId,
       },
     };
   }
@@ -671,6 +688,14 @@ export const formatSecurityEngineCtx = ({
       verifyAddress: {
         allowOrigins: actionData.verifyAddress.allow_origins,
         origin,
+      },
+    };
+  }
+  if (actionData?.contractCall && actionData?.contractId && chain) {
+    return {
+      contractCall: {
+        id: actionData.contractId,
+        chainId: chain.serverId,
       },
     };
   }

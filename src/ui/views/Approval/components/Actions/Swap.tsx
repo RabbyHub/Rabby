@@ -8,7 +8,6 @@ import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -56,11 +55,22 @@ const Swap = ({
     balanceChange,
   } = data!;
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, contractWhitelist } = useRabbySelector(
+    (s) => ({
+      rules: s.securityEngine.rules,
+      processedRules: s.securityEngine.currentTx.processedRules,
+      contractWhitelist: s.securityEngine.userData.contractWhitelist,
+    })
+  );
   const dispatch = useRabbyDispatch();
+
+  const isInWhitelist = useMemo(() => {
+    return contractWhitelist.some(
+      (item) =>
+        item.chainId === chain.serverId &&
+        isSameAddress(item.address, requireData.id)
+    );
+  }, [contractWhitelist, requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -100,9 +110,12 @@ const Swap = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
-                getTokenSymbol(payToken)
-              )}`}
+              text={
+                <>
+                  {formatAmount(payToken.amount)}{' '}
+                  <Values.TokenSymbol token={payToken} />
+                </>
+              }
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -123,11 +136,14 @@ const Swap = ({
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
                 text={
-                  balanceChange.success && balanceChange.support
-                    ? `${formatAmount(
-                        receiveToken.amount
-                      )} ${ellipsisTokenSymbol(getTokenSymbol(receiveToken))}`
-                    : 'Fail to load'
+                  balanceChange.success && balanceChange.support ? (
+                    <>
+                      {formatAmount(receiveToken.amount)}{' '}
+                      <Values.TokenSymbol token={receiveToken} />
+                    </>
+                  ) : (
+                    'Fail to load'
+                  )
                 }
                 icon={
                   <Values.TokenLabel
@@ -209,9 +225,12 @@ const Swap = ({
               <LogoWithText
                 logo={minReceive.logo_url}
                 logoRadius="100%"
-                text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-                  getTokenSymbol(minReceive)
-                )}`}
+                text={
+                  <>
+                    {formatAmount(minReceive.amount)}{' '}
+                    <Values.TokenSymbol token={minReceive} />
+                  </>
+                }
               />
             </div>
             <ul className="desc-list">
@@ -277,6 +296,20 @@ const Swap = ({
               <li>
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
+
+              {isInWhitelist && <li>Marked as trusted</li>}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText="Marked as blocked"
+              />
+
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText="Marked as blocked"
+              />
               <li>
                 <ViewMore
                   type="contract"
