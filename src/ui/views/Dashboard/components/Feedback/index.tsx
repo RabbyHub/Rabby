@@ -9,6 +9,7 @@ import IconDirectMessage from 'ui/assets/feedback-popup/entry-hi.svg';
 import IconProposal from 'ui/assets/feedback-popup/entry-proposal.svg';
 import IconItemLink from 'ui/assets/feedback-popup/item-link.svg';
 import { openInTab } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsProps {
   visible?: boolean;
@@ -16,11 +17,13 @@ interface SettingsProps {
 }
 
 const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
+  const { t } = useTranslation();
+
   const renderData = [
     {
       leftIcon: IconDirectMessage,
-      content: 'Direct Message',
-      description: 'Chat with Rabby Wallet Official on DeBank',
+      content: t('page.dashboard.feedback.directMessage.content'),
+      description: t('page.dashboard.feedback.directMessage.description'),
       rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
       onClick: () => {
         openInTab('https://debank.com/hi/0a110032');
@@ -28,8 +31,8 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
     },
     {
       leftIcon: IconProposal,
-      content: 'Proposal',
-      description: 'Submit a proposal for Rabby Wallet on DeBank',
+      content: t('page.dashboard.feedback.proposal.content'),
+      description: t('page.dashboard.feedback.proposal.description'),
       rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
       onClick: () => {
         openInTab('https://debank.com/official-account/110032/proposals');
@@ -48,7 +51,9 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
     >
       <div className="popup-feedback">
         <header className="pb-[20px]">
-          <div className="popup-title">Feedback</div>
+          <div className="popup-title">
+            {t('page.dashboard.feedback.title')}
+          </div>
         </header>
         <div className="content">
           {renderData.map((data, index) => (

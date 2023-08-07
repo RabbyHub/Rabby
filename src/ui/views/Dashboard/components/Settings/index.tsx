@@ -46,32 +46,35 @@ import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts } from '..';
 
-const AUTO_LOCK_OPTIONS = [
-  {
-    value: 0,
-    label: 'Never',
-  },
-  {
-    value: 7 * 24 * 60,
-    label: '7 days',
-  },
-  {
-    value: 24 * 60,
-    label: '1 day',
-  },
-  {
-    value: 4 * 60,
-    label: '4 hours',
-  },
-  {
-    value: 60,
-    label: '1 hour',
-  },
-  {
-    value: 10,
-    label: '10 minutes',
-  },
-];
+const useAutoLockOptions = () => {
+  const { t } = useTranslation();
+  return [
+    {
+      value: 0,
+      label: t('page.dashboard.settings.lock.never'),
+    },
+    {
+      value: 7 * 24 * 60,
+      label: t('page.dashboard.settings.7Days'),
+    },
+    {
+      value: 24 * 60,
+      label: t('page.dashboard.settings.1Day'),
+    },
+    {
+      value: 4 * 60,
+      label: t('page.dashboard.settings.4Hours'),
+    },
+    {
+      value: 60,
+      label: t('page.dashboard.settings.1Hour'),
+    },
+    {
+      value: 10,
+      label: t('page.dashboard.settings.10Minutes'),
+    },
+  ];
+};
 
 interface SettingsProps {
   visible?: boolean;
@@ -87,7 +90,7 @@ const OpenApiModal = ({
   onFinish,
   onCancel,
   value,
-  title = 'Backend Service URL',
+  title,
   defaultValue = INITIAL_OPENAPI_URL,
 }: {
   title?: string;
@@ -101,8 +104,9 @@ const OpenApiModal = ({
   const [isVisible, setIsVisible] = useState(false);
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
-
   const dispatch = useRabbyDispatch();
+
+  title = title || t('page.dashboard.settings.backendServiceUrl');
 
   const handleSubmit = async ({ host }: { host: string }) => {
     setIsVisible(false);
@@ -147,16 +151,19 @@ const OpenApiModal = ({
         <Form.Item
           name="host"
           rules={[
-            { required: true, message: t('Please input openapi host') },
+            {
+              required: true,
+              message: t('page.dashboard.settings.inputOpenapiHost'),
+            },
             {
               pattern: /^((https|http)?:\/\/)[^\s]+\.[^\s]+/,
-              message: t('Please check your host'),
+              message: t('page.dashboard.settings.pleaseCheckYourHost'),
             },
           ]}
         >
           <Input
             className="popup-input"
-            placeholder="Host"
+            placeholder={t('page.dashboard.settings.host')}
             size="large"
             autoFocus
             spellCheck={false}
@@ -165,7 +172,7 @@ const OpenApiModal = ({
         {form.getFieldValue('host') !== INITIAL_OPENAPI_URL && (
           <div className="flex justify-end">
             <Button type="link" onClick={restoreInitial} className="restore">
-              {t('Restore initial setting')}
+              {t('page.dashboard.settings.reset')}
             </Button>
           </div>
         )}
@@ -176,7 +183,7 @@ const OpenApiModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            {t('Save')}
+            {t('page.dashboard.settings.save')}
           </Button>
         </div>
       </Form>
@@ -209,7 +216,7 @@ const ResetAccountModal = ({
     await wallet.clearAddressPendingTransactions(currentAddress);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Pending transaction cleared'),
+      content: t('page.dashboard.settings.pendingTransactionCleared'),
       duration: 1,
     });
     setIsVisible(false);
@@ -232,18 +239,14 @@ const ResetAccountModal = ({
       })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Clear Pending')}
+        {t('page.dashboard.settings.clearPending')}
       </PageHeader>
       <div>
         <p className="reset-account-content mb-16">
-          {t(
-            'This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain. '
-          )}
+          {t('page.dashboard.settings.clearPendingTip1')}
         </p>
         <p className="reset-account-content">
-          {t(
-            'This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.'
-          )}
+          {t('page.dashboard.settings.clearPendingTip2')}
         </p>
         <div className="flex justify-center mt-24 popup-footer">
           <Button
@@ -252,7 +255,7 @@ const ResetAccountModal = ({
             className="w-[200px]"
             onClick={handleResetAccount}
           >
-            {t('Confirm')}
+            {t('page.dashboard.settings.confirm')}
           </Button>
         </div>
       </div>
@@ -272,7 +275,7 @@ const AutoLockModal = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
-
+  const AUTO_LOCK_OPTIONS = useAutoLockOptions();
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
@@ -307,7 +310,7 @@ const AutoLockModal = ({
       })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Auto lock time')}
+        {t('page.dashboard.settings.autoLockTime')}
       </PageHeader>
       <div className="auto-lock-option-list">
         {AUTO_LOCK_OPTIONS.map((item) => {
@@ -336,6 +339,7 @@ const AutoLockModal = ({
 };
 
 const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
+  const { t } = useTranslation();
   return (
     <div className="setting-block">
       <div className="setting-items">
@@ -350,7 +354,7 @@ const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
           onClick={onClick}
           className="text-blue-light bg-[#f5f7ff] font-medium"
         >
-          Claim Rabby Badge!
+          {t('page.dashboard.settings.claimRabbyBadge')}
         </Field>
       </div>
     </div>
@@ -383,7 +387,7 @@ const Settings = ({
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
-
+  const AUTO_LOCK_OPTIONS = useAutoLockOptions();
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
@@ -411,12 +415,14 @@ const Settings = ({
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
-      confirmText: 'Confirm',
-      cancelText: 'Cancel',
-      title: value ? 'Enable Whitelist' : 'Disable Whitelist',
+      confirmText: t('page.dashboard.settings.confirm'),
+      cancelText: t('page.dashboard.settings.cancel'),
+      title: value
+        ? t('page.dashboard.settings.enableWhitelist')
+        : t('page.dashboard.settings.disableWhitelist'),
       description: value
-        ? 'Once enabled, you can only send assets to the addresses in the whitelist using Rabby.'
-        : 'You can send assets to any address once disabled',
+        ? t('page.dashboard.settings.enableWhitelistTip')
+        : t('page.dashboard.settings.disableWhitelistTip'),
       validationHandler: async (password: string) =>
         await wallet.toggleWhitelist(password, value),
       onFinished() {
@@ -431,8 +437,8 @@ const Settings = ({
 
   const handleClickClearWatchMode = () => {
     confirm({
-      title: 'Warning',
-      content: 'Do you make sure to delete all Watch Mode address?',
+      title: t('page.dashboard.settings.warning'),
+      content: t('page.dashboard.settings.clearWatchAddressContent'),
       onOk() {
         wallet.clearWatchMode();
       },
@@ -477,11 +483,10 @@ const Settings = ({
         title: null,
         content: (
           <div className="text-14 leading-[18px] text-center text-gray-subTitle">
-            A new update for Rabby Wallet is available. Click to check how to
-            update manually.
+            t('page.dashboard.settings.updateVersion.content')
           </div>
         ),
-        okText: 'See Tutorial',
+        okText: t('page.dashboard.settings.updateVersion.okText'),
         onOk() {
           openInTab('https://rabby.io/update-extension');
         },
@@ -491,7 +496,9 @@ const Settings = ({
         key: 'latest version',
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: (
-          <span className="text-white">You are using the latest version</span>
+          <span className="text-white">
+            {t('page.dashboard.settings.updateVersion.successTip')}
+          </span>
         ),
       });
     }
@@ -499,11 +506,11 @@ const Settings = ({
 
   const renderData = {
     features: {
-      label: 'Features',
+      label: t('page.dashboard.settings.features.label'),
       items: [
         {
           leftIcon: IconLockWallet,
-          content: t('Lock Wallet'),
+          content: t('page.dashboard.settings.features.lockWallet'),
           onClick: () => {
             lockWallet();
             matomoRequestEvent({
@@ -516,7 +523,7 @@ const Settings = ({
         },
         {
           leftIcon: IconActivities,
-          content: t('Signature Record'),
+          content: t('page.dashboard.settings.features.signatureRecord'),
           onClick: () => {
             history.push('/activities');
             matomoRequestEvent({
@@ -529,7 +536,7 @@ const Settings = ({
         },
         {
           leftIcon: IconAddresses,
-          content: t('Manage Address'),
+          content: t('page.dashboard.settings.features.manageAddress'),
           onClick: () => {
             history.push('/settings/address');
             matomoRequestEvent({
@@ -542,7 +549,7 @@ const Settings = ({
         },
         {
           leftIcon: IconSettingsFeatureConnectedDapps,
-          content: t('Connected Dapp'),
+          content: t('page.dashboard.settings.features.connectedDapp'),
           onClick: () => {
             onOpenConnectedDapps?.();
             matomoRequestEvent({
@@ -556,11 +563,13 @@ const Settings = ({
       ] as SettingItem[],
     },
     settings: {
-      label: 'Settings',
+      label: t('page.dashboard.settings.settings.label'),
       items: [
         {
           leftIcon: IconWhitelist,
-          content: t('Enable Whitelist For Sending Assets'),
+          content: t(
+            'page.dashboard.settings.settings.enableWhitelistForSendingAssets'
+          ),
           rightIcon: (
             <Switch
               checked={whitelistEnable}
@@ -570,7 +579,7 @@ const Settings = ({
         },
         {
           leftIcon: IconTestnet,
-          content: t('Show Testnets'),
+          content: t('page.dashboard.settings.settings.showTestnets'),
           rightIcon: (
             <Switch
               checked={isShowTestnet}
@@ -580,7 +589,7 @@ const Settings = ({
         },
         {
           leftIcon: IconCustomRPC,
-          content: t('Custom RPC'),
+          content: t('page.dashboard.settings.settings.customRpc'),
           onClick: () => {
             history.push('/custom-rpc');
             matomoRequestEvent({
@@ -593,7 +602,7 @@ const Settings = ({
         },
         {
           leftIcon: IconPreferMetamask,
-          content: t('MetaMask Preferred Dapps'),
+          content: t('page.dashboard.settings.settings.metamaskPreferredDapps'),
           onClick: () => {
             history.push('/prefer-metamask-dapps');
             matomoRequestEvent({
@@ -606,7 +615,7 @@ const Settings = ({
         },
         {
           leftIcon: IconAutoLock,
-          content: t('Auto lock time'),
+          content: t('page.dashboard.settings.autoLockTime'),
           onClick: () => {
             matomoRequestEvent({
               category: 'Setting',
@@ -631,7 +640,7 @@ const Settings = ({
         },
         {
           leftIcon: IconClear,
-          content: t('Clear Pending'),
+          content: t('page.dashboard.settings.clearPending'),
           onClick: () => {
             matomoRequestEvent({
               category: 'Setting',
@@ -648,11 +657,11 @@ const Settings = ({
       ] as SettingItem[],
     },
     about: {
-      label: 'About us',
+      label: t('page.dashboard.settings.aboutUs'),
       items: [
         {
           leftIcon: IconSettingsAboutVersion,
-          content: t('Current Version'),
+          content: t('page.dashboard.settings.currentVersion'),
           onClick: () => {
             updateVersion();
             matomoRequestEvent({
@@ -682,7 +691,7 @@ const Settings = ({
                     role="button"
                     onClick={updateVersion}
                   >
-                    Update Available
+                    {t('page.dashboard.settings.updateAvailable')}
                   </span>
                   )
                 </span>
@@ -693,7 +702,7 @@ const Settings = ({
         },
         {
           leftIcon: IconSettingsAboutSupporetedChains,
-          content: t('Supported Chains'),
+          content: t('page.dashboard.settings.supportedChains'),
           onClick: () => {
             history.push('/settings/chain-list');
             matomoRequestEvent({
@@ -718,7 +727,7 @@ const Settings = ({
         },
         {
           leftIcon: IconSettingsAboutFollowUs,
-          content: t('Follow Us'),
+          content: t('page.dashboard.settings.followUs'),
           // onClick: () => {},
           rightIcon: (
             <>
@@ -781,7 +790,7 @@ const Settings = ({
       0,
       {
         leftIcon: IconServer,
-        content: t('Backend Service URL'),
+        content: t('page.dashboard.settings.backendServiceUrl'),
         onClick: () => setShowOpenApiModal(true),
         rightIcon: (
           <img src={IconArrowRight} className="icon icon-arrow-right" />
@@ -789,7 +798,7 @@ const Settings = ({
       } as typeof renderData.features.items[0],
       {
         leftIcon: IconServer,
-        content: t('Testnet Backend Service URL'),
+        content: t('page.dashboard.settings.testnetBackendServiceUrl'),
         onClick: () => setShowTestnetOpenApiModal(true),
         rightIcon: (
           <img src={IconArrowRight} className="icon icon-arrow-right" />
@@ -800,7 +809,7 @@ const Settings = ({
 
   if (process.env.DEBUG) {
     renderData.features.items.push({
-      content: t('Clear Watch Mode'),
+      content: t('page.dashboard.settings.clearWatchMode'),
       onClick: handleClickClearWatchMode,
     } as typeof renderData.features.items[0]);
   }
@@ -851,7 +860,7 @@ const Settings = ({
               onClick={lockWallet}
             >
               <img src={IconLock} className="icon icon-lock" />{' '}
-              {t('Lock Wallet')}
+              {'Lock Wallet'}
             </Button> */}
             <ClaimRabbyBadge onClick={onOpenBadgeModal} />
             {Object.values(renderData).map((group, idxl1) => {
@@ -909,7 +918,7 @@ const Settings = ({
             visible={showTestnetOpenApiModal}
             value={openapiStore.testnetHost}
             defaultValue={INITIAL_TESTNET_OPENAPI_URL}
-            title="Testnet Backend Service URL"
+            title={t('page.dashboard.settings.testnetBackendServiceUrl')}
             onFinish={(host) => {
               dispatch.openapi.setTestnetHost(host);
               setShowTestnetOpenApiModal(false);

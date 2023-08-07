@@ -101,7 +101,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
       <Empty
         desc={
           <span className="text-white opacity-80">
-            {t('No NFTs found in supported Collections')}
+            {t('page.dashboard.nft.empty')}
           </span>
         }
         className="pt-[120px] w-full"

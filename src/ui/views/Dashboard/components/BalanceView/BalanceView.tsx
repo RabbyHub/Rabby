@@ -14,8 +14,10 @@ import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { useDebounce } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
+import { useTranslation } from 'react-i18next';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
+  const { t } = useTranslation();
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
@@ -244,7 +246,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               <>
                 <SvgIconOffline className="mr-4 text-white" />
                 <span className="leading-tight">
-                  {'The network is disconnected and no data is obtained'}
+                  {t('page.dashboard.home.offline')}
                 </span>
               </>
             ) : hasValueChainBalances.length > 0 ? (

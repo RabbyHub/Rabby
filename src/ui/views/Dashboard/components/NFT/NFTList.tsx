@@ -68,7 +68,7 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
         <Empty
           desc={
             <span className="text-white opacity-80">
-              {t("You haven't gotten any NFT yet")}
+              {t('page.dashboard.nft.listEmpty')}
             </span>
           }
           className="pt-[120px] w-full"

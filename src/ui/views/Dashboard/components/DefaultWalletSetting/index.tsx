@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import IconDefaultMetamask from 'ui/assets/icon-default-metamask.svg';
 import IconDefaultRabby from 'ui/assets/icon-default-rabby.svg';
 import './style.less';
+import { useTranslation } from 'react-i18next';
 
 const DefaultWalletSetting = () => {
   const [isConflict, setIsConflict] = useState(false);
   const [isDefault, setIsDefault] = useState(true);
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const init = () => {
     wallet.isDefaultWallet().then(setIsDefault);
@@ -26,7 +28,9 @@ const DefaultWalletSetting = () => {
     message.success({
       icon: <i />,
       content: (
-        <span className="text-white">Refresh the web page to take effect</span>
+        <span className="text-white">
+          {t('page.dashboard.home.refreshTheWebPageToTakeEffect')}
+        </span>
       ),
       duration: 2,
     });
@@ -48,9 +52,9 @@ const DefaultWalletSetting = () => {
             alt=""
             className="w-[20px] h-[20px] mr-[8px]"
           />
-          Rabby is in use and Metamask is banned
+          {t('page.dashboard.home.rabbyIsInUseAndMetamaskIsBanned')}
           <a href="#" onClick={handleFlip}>
-            Flip
+            {t('page.dashboard.home.flip')}
           </a>
         </div>
       </>
@@ -64,9 +68,9 @@ const DefaultWalletSetting = () => {
           alt=""
           className="w-[20px] h-[20px] mr-[8px]"
         />
-        MetaMask is in use and Rabby is banned
+        {t('page.dashboard.home.metamaskIsInUseAndRabbyIsBanned')}
         <a href="#" onClick={handleFlip}>
-          Flip
+          {t('page.dashboard.home.flip')}
         </a>
       </div>
     </>
