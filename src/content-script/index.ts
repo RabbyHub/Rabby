@@ -50,7 +50,7 @@ document.addEventListener('beforeunload', () => {
 // };
 
 const getIsDefaultWallet = () => {
-  return pm.request({ method: 'isDefaultWallet' }) as Promise<Boolean>;
+  return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
 };
 
 const start = performance.now();
