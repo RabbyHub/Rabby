@@ -1,0 +1,3 @@
+{
+  "i18n-ally.localesPaths": ["_raw/locales", "src/ui/assets/langs"]
+}

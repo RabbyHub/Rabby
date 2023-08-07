@@ -221,7 +221,6 @@
   "Select__the__addresses__you__to__use__in__Rabby": {
     "message": "Select the addresses to use in Rabby"
   },
-
   "Load__More": {
     "message": "Load More..."
   },
@@ -1150,13 +1149,75 @@
       "empty": {
         "title": "No transactions",
         "desc": " No transactions found on <1>supported chains</1>"
+      },
+      "explain": {
+        "approve": "Approve {{amount}} {{symbol}} for {{project}}",
+        "unknown": "Contract Interaction",
+        "cancel": "Canceled a pending transaction"
       }
     },
     "chainList": {
       "title": "{{count}} chains supported"
+    },
+    "activities": {
+      "title": "Signature Record",
+      "signedTx": {
+        "label": "Transactions",
+        "empty": {
+          "title": "No signed transactions yet",
+          "desc": "All transactions signed via Rabby will be listed here."
+        },
+        "common": {
+          "unlimited": "unlimited",
+          "unknownProtocol": "Unknown protocol",
+          "unknown": "Unknown",
+          "speedUp": "Speed up",
+          "cancel": "Cancel",
+          "pendingDetail": "Pending detail"
+        },
+        "tips": {
+          "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
+          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
+          "speedUp": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+        },
+        "status": {
+          "canceled": "Canceled",
+          "failed": "Failed",
+          "submitFailed": "Failed to submit",
+          "pending": "Pending"
+        },
+        "txType": {
+          "initial": "Initial tx",
+          "cancel": "Cancel tx",
+          "speedUp": "Speed up tx"
+        },
+        "explain": {
+          "unknown": "Unknown Transaction",
+          "send": "Send {{amount}} {{symbol}}",
+          "cancel": "Cancel {{token}} Approve for {{protocol}}",
+          "approve": "Approve {{count}} {{token}} for {{protocol}}",
+          "cancelNFTCollectionApproval": "Cancel NFT Collection Approval for {{protocol}}",
+          "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
+          "singleNFTApproval": "Single NFT Approval for {{protocol}}",
+          "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+        }
+      },
+      "signedText": {
+        "label": "Text",
+        "empty": {
+          "title": "No signed texts yet",
+          "desc": "All texts signed via Rabby will be listed here."
+        }
+      }
     }
   },
   "component": {},
-  "global": {},
+  "global": {
+    "copied": "Copied",
+    "failed": "Failed",
+    "scamTx": "Scam tx",
+    "gas": "Gas",
+    "unknownNFT": "Unknown NFT"
+  },
   "background": {}
 }

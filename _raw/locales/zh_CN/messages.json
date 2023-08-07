@@ -994,5 +994,6 @@
     "transactions": {
       "title": "交易记录"
     }
-  }
+  },
+  "CancelNFTCollectionApprovalExplain": ""
 }
