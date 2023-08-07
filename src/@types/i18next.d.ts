@@ -1,7 +1,7 @@
 // import the original type declarations
 import 'i18next';
 // import all namespaces (for the default language, only)
-import translations from '../../_raw/_locales/en/messages.json';
+import translations from '../../_raw/locales/en/messages.json';
 
 declare module 'i18next' {
   // Extend CustomTypeOptions

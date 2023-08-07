@@ -1,10 +1,9 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import en from '../_raw/_locales/en/messages.json';
 
 export const fetchLocale = async (locale) => {
-  const res = await window.fetch(`./_locales/${locale}/messages.json`);
-  const data: typeof en = await res.json();
+  const res = await window.fetch(`./locales/${locale}/messages.json`);
+  const data = await res.json();
   return data;
   // return Object.keys(data).reduce((res, key) => {
   //   return {
