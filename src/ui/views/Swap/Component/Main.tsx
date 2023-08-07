@@ -24,6 +24,8 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import { findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
+import i18n from '@/i18n';
+import { Trans, useTranslation } from 'react-i18next';
 
 const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
 
@@ -64,9 +66,9 @@ const StyledInput = styled(Input)`
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
-  if (chainItem?.isTestnet) return 'Testnet is not supported';
+  if (chainItem?.isTestnet) return i18n.t('page.swap.testnet-is-not-supported');
 
-  return 'Not supported';
+  return i18n.t('page.swap.not-supported');
 };
 
 export const Main = () => {
@@ -156,23 +158,27 @@ export const Main = () => {
 
   const visible = useQuoteVisible();
   const setVisible = useSetQuoteVisible();
+  const { t } = useTranslation();
 
   const btnText = useMemo(() => {
     if (slippageChanged) {
-      return 'Slippage adjusted. Refresh quote.';
+      return t('page.swap.slippage-adjusted-refresh-quote');
     }
     if (activeProvider && expired) {
-      return 'Price expired. Refresh quote.';
+      return t('page.swap.price-expired-refresh-quote');
     }
-
     if (activeProvider?.shouldApproveToken) {
-      return `Approve ${getTokenSymbol(payToken)}`;
+      return t('page.swap.approve-x-symbol', {
+        symbol: getTokenSymbol(payToken),
+      });
     }
     if (activeProvider?.name) {
-      return `Swap via ${isWrapToken ? 'Wrap Contract' : DexDisplayName}`;
+      return t('page.swap.swap-via-x', {
+        name: isWrapToken ? 'Wrap Contract' : DexDisplayName,
+      });
     }
 
-    return 'Get quotes';
+    return t('page.swap.get-quotes');
   }, [
     slippageChanged,
     activeProvider,
@@ -277,7 +283,7 @@ export const Main = () => {
       )}
     >
       <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-10 mx-20')}>
-        <div className={clsx(tipsClassName)}>Chain</div>
+        <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
         <ChainSelectorInForm
           value={chain}
           onChange={switchChain}
@@ -286,8 +292,8 @@ export const Main = () => {
         />
 
         <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
-          <span>Swap from</span>
-          <span className="ml-[128px]">To</span>
+          <span>{t('page.swap.swap-from')}</span>
+          <span className="ml-[128px]">{t('page.swap.to')}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -303,7 +309,7 @@ export const Main = () => {
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapFrom'}
-            placeholder={'Search by Name / Address'}
+            placeholder={t('page.swap.search-by-name-address')}
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
           />
@@ -323,7 +329,7 @@ export const Main = () => {
             }}
             chainId={CHAINS[chain].serverId}
             type={'swapTo'}
-            placeholder={'Search by Name / Address'}
+            placeholder={t('page.swap.search-by-name-address')}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             tokenRender={(p) => <TokenRender {...p} />}
             useSwapTokenList
@@ -333,7 +339,10 @@ export const Main = () => {
         <div
           className={clsx(tipsClassName, 'flex items-center justify-between')}
         >
-          <div>Amount in {payToken ? getTokenSymbol(payToken) : ''}</div>
+          <div>
+            {t('page.swap.amount-in')}{' '}
+            {payToken ? getTokenSymbol(payToken) : ''}
+          </div>
           <div
             className={clsx(
               'text-gray-title',
@@ -386,7 +395,7 @@ export const Main = () => {
               />
               {isWrapToken ? (
                 <div className="mt-12 text-13 text-gray-subTitle">
-                  There is no fee and slippage for this trade
+                  {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
                 </div>
               ) : (
                 <div className="section text-13 leading-4 text-gray-subTitle mt-12">
@@ -405,14 +414,14 @@ export const Main = () => {
                       }
                     />
                     <div className="flex justify-between">
-                      <span>Minimum received</span>
+                      <span>{t('page.swap.minimum-received')}</span>
                       <span className="font-medium text-gray-title">
                         {miniReceivedAmount}{' '}
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Rabby fee</span>
+                      <span>{t('page.swap.rabby-fee')}</span>
                       <span className="font-medium text-gray-title">0%</span>
                     </div>
                   </div>
@@ -443,7 +452,7 @@ export const Main = () => {
                 inSufficient ? 'text-red-forbidden' : 'text-orange'
               )}
             >
-              Insufficient balance
+              {t('page.swap.insufficient-balance')}
             </span>
           }
         />
@@ -459,7 +468,13 @@ export const Main = () => {
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
           <div className="flex items-center justify-between w-full self-start">
             <div className="tips">
-              1.Approve <span className="swapTips">→ 2.Swap</span>
+              <Trans
+                i18key="page.swap.approve-tips"
+                values={{
+                  swap: t('page.swap.title'),
+                }}
+                components={[<span className="swapTips">→ 2.Swap</span>]}
+              ></Trans>
             </div>
             <div
               className={clsx(
@@ -467,7 +482,7 @@ export const Main = () => {
                 unlimitedAllowance && 'text-gray-subTitle'
               )}
             >
-              <span>Unlimited allowance</span>{' '}
+              <span>{t('page.swap.unlimited-allowance')}</span>{' '}
               <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
             </div>
           </div>
