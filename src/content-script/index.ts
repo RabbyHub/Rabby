@@ -36,23 +36,24 @@ document.addEventListener('beforeunload', () => {
   pm.dispose();
 });
 
-const getIsDefaultWallet = async () => {
-  const [{ preference }, { permission }] = await Promise.all([
-    browser.storage.local.get('preference'),
-    browser.storage.local.get('permission'),
-  ]);
-  const origin = window.location.origin;
-  const site = permission?.dumpCache?.find((item) => item.k === origin);
-  if (site && site.v.preferMetamask) {
-    return false;
-  }
-  return preference?.isDefaultWallet;
+// const getIsDefaultWallet = async () => {
+//   const [{ preference }, { permission }] = await Promise.all([
+//     browser.storage.local.get('preference'),
+//     browser.storage.local.get('permission'),
+//   ]);
+//   const origin = window.location.origin;
+//   const site = permission?.dumpCache?.find((item) => item.k === origin);
+//   if (site && site.v.preferMetamask) {
+//     return false;
+//   }
+//   return preference?.isDefaultWallet;
+// };
+
+const getIsDefaultWallet = () => {
+  return pm.request({ method: 'isDefaultWallet' }) as Promise<Boolean>;
 };
 
 const start = performance.now();
-pm.request({ method: 'isDefaultWallet' }).then((v) => {
-  console.log('isDefaultWallet message', v, `${performance.now() - start}ms`);
-});
 getIsDefaultWallet()
   .then((isDefaultWallet) => {
     console.log(
