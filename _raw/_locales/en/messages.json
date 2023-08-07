@@ -1156,7 +1156,7 @@
       "title": "{{count}} chains supported"
     }
   },
-  "components": {},
+  "component": {},
   "global": {},
   "background": {}
 }
