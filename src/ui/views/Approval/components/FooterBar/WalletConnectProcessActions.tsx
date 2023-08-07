@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Props } from './ActionsContainer';
 import { useDisplayBrandName } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useSessionChainId } from '@/ui/component/WalletConnect/useSessionChainId';
@@ -13,6 +14,7 @@ export const WalletConnectProcessActions: React.FC<Props> = (props) => {
     enableTooltip,
     chain,
   } = props;
+  const { t } = useTranslation();
   const { status } = useSessionStatus(account);
   const sessionChainId = useSessionChainId(account);
   const chainError = chain && sessionChainId !== chain.id;
@@ -22,15 +24,17 @@ export const WalletConnectProcessActions: React.FC<Props> = (props) => {
   );
   const content = React.useMemo(() => {
     if (status === 'ACCOUNT_ERROR') {
-      return "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet";
+      return t('page.signFooterBar.walletConnect.wrongAddressAlert');
     }
 
     if (!status || status === 'DISCONNECTED') {
-      return `${displayBrandName} is not connected to Rabby, please connect before signing`;
+      return t('page.signFooterBar.walletConnect.connectBeforeSign', [
+        displayBrandName,
+      ]);
     }
 
     if (chainError) {
-      return `You've switched to a different chain on mobile wallet. Please switch to ${chain.name} in mobile wallet`;
+      return t('page.signFooterBar.walletConnect.chainSwitched', [chain.name]);
     }
 
     return enableTooltip ? tooltipContent : undefined;

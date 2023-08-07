@@ -52,7 +52,7 @@ const Approval: React.FC<{
         <CurrentApprovalComponent
           params={params}
           origin={origin}
-          requestDefer={requestDefer}
+          // requestDefer={requestDefer}
         />
       )}
     </div>

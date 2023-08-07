@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { AccountInfo } from './AccountInfo';
 import { useWallet } from '@/ui/utils';
@@ -147,6 +148,7 @@ export const FooterBar: React.FC<Props> = ({
   const [account, setAccount] = React.useState<Account>();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const displayOirigin = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
@@ -214,7 +216,7 @@ export const FooterBar: React.FC<Props> = ({
               />
             )}
             <span className="origin">{displayOirigin}</span>
-            <span className="right">Request from</span>
+            <span className="right">{t('page.signFooterBar.requestFrom')}</span>
             {engineResultMap['1088'] && (
               <SecurityLevelTagNoText
                 enable={engineResultMap['1088'].enable}
@@ -266,7 +268,7 @@ export const FooterBar: React.FC<Props> = ({
                 color: SecurityLevelTipColor[securityLevel].text,
               }}
             >
-              Please process the alert before signing
+              {t('page.signFooterBar.processRiskAlert')}
             </span>
             <span
               className="underline text-13 font-medium cursor-pointer"
@@ -275,7 +277,7 @@ export const FooterBar: React.FC<Props> = ({
               }}
               onClick={onIgnoreAllRules}
             >
-              Ignore all
+              {t('page.signFooterBar.ignoreAll')}
             </span>
           </div>
         )}

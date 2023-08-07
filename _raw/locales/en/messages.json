@@ -221,7 +221,6 @@
   "Select__the__addresses__you__to__use__in__Rabby": {
     "message": "Select the addresses to use in Rabby"
   },
-
   "Load__More": {
     "message": "Load More..."
   },
@@ -556,15 +555,6 @@
   "otherWalletConflictAlert": {
     "message": "Disable other browser wallet to avoid conflicts"
   },
-  "GasLimitMinimumValueAlert": {
-    "message": "Gas limit should be more than 21000"
-  },
-  "GasLimitEmptyAlert": {
-    "message": "Please input gas limit"
-  },
-  "RecommendGasLimitTip": {
-    "message": "Est. {{est}}. Current {{current}}x, recommend "
-  },
   "Advanced__Options": {
     "message": "Advanced Options"
   },
@@ -690,9 +680,6 @@
   },
   "Sending__transaction__to__your__phone": {
     "message": "Sending data to your phone"
-  },
-  "Modify__only__when__necessary": {
-    "message": "Modify only when necessary"
   },
   "Refresh__QR__Code": {
     "message": "Refresh QR Code"
@@ -1003,9 +990,6 @@
   "Portfolio": {
     "message": "Portfolio"
   },
-  "multiSignChainNotMatch": {
-    "message": "Multi-signature addresses are not on this chain and cannot initiate transactions"
-  },
   "GnosisLoadFaildDescription": {
     "message": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
   },
@@ -1154,9 +1138,65 @@
     },
     "chainList": {
       "title": "{{count}} chains supported"
+    },
+    "signTx": {
+      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
+      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
+      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
+      "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
+      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {0}",
+      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
+      "safeAddressNotSupportChain": "Current safe address is not supported on {0} chain",
+      "noGasRequired": "No gas required",
+      "gasSelectorTitle": "Gas",
+      "failToFetchGasCost": "Fail to fetch gas cost",
+      "gasMoreButton": "More",
+      "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
+      "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
+      "gasPriceTitle": "Gas Price (Gwei)",
+      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
+      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
+      "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
+      "gasLimitTitle": "Gas limit",
+      "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
+      "nonceTitle": "Nonce",
+      "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
+      "gasPriceMedian": "Median of last 100 on-chain transactions:",
+      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {symbol}",
+      "gasLimitEmptyAlert": "Please input gas limit",
+      "gasLimitMinValueAlert": "Gas limit should be more than 21000"
+    },
+    "signFooterBar": {
+      "requestFrom": "Request from",
+      "processRiskAlert": "Please process the alert before signing",
+      "ignoreAll": "Ignore all",
+      "gridPlusConnected": "GridPlus is connected",
+      "gridPlusNotConnected": "GridPlus is not connected",
+      "connectButton": "Connect",
+      "connecting": "Connecting...",
+      "ledgerNotConnected": "Ledger is not connected",
+      "ledgerConnected": "Ledger is connected",
+      "signAndSubmitButton": "Sign and Submit",
+      "walletConnect": {
+        "connectedButCantSign": "Connected but unable to sign.",
+        "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
+        "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
+        "notConnectToMobile": "Not connected to {{brand}}",
+        "connected": "Connected and ready to sign",
+        "howToSwitch": "How to switch",
+        "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
+        "connectBeforeSign": "{0} is not connected to Rabby, please connect before signing",
+        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {0} in mobile wallet"
+      }
     }
   },
   "component": {},
-  "global": {},
+  "global": {
+    "confirm": "Confirm",
+    "confirmButton": "Confirm",
+    "cancelButton": "Cancel"
+  },
   "background": {}
 }

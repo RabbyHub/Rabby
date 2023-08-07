@@ -35,6 +35,7 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -353,7 +354,7 @@ const checkGasAndNonce = ({
   if (!isGnosisAccount && new BigNumber(gasLimit).lt(MINIMUM_GAS_LIMIT)) {
     errors.push({
       code: 3006,
-      msg: "Gas limit is less than 21000. Transaction can't be submitted",
+      msg: i18n.t('page.signTx.gasLimitNotEnough'),
       level: 'forbidden',
     });
   }
@@ -369,15 +370,13 @@ const checkGasAndNonce = ({
       if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
         errors.push({
           code: 3004,
-          msg:
-            'Gas limit is low. There is 1% chance that the transaction may fail.',
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
           level: 'warn',
         });
       } else if (realRatio.lt(1)) {
         errors.push({
           code: 3005,
-          msg:
-            'Gas limit is too low. There is 95% chance that the transaction may fail.',
+          msg: i18n.t('page.signTx.gasLimitLessThanGasUsed'),
           level: 'danger',
         });
       }
@@ -385,8 +384,7 @@ const checkGasAndNonce = ({
       if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
         errors.push({
           code: 3004,
-          msg:
-            'Gas limit is low. There is 1% chance that the transaction may fail.',
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
           level: 'warn',
         });
       }
@@ -404,16 +402,16 @@ const checkGasAndNonce = ({
   ) {
     errors.push({
       code: 3001,
-      msg: 'You do not have enough gas in your wallet',
+      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
       level: 'forbidden',
     });
   }
   if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
     errors.push({
       code: 3003,
-      msg: `Nonce is too low, the minimum should be ${new BigNumber(
-        recommendNonce
-      ).toString()}`,
+      msg: i18n.t('page.signTx.nonceLowerThanExpect', [
+        new BigNumber(recommendNonce),
+      ]),
     });
   }
   return errors;
@@ -706,7 +704,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  if (!chain) throw new Error('No support chain not found');
+  if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
@@ -1067,7 +1065,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setIsReady(true);
     } catch (e: any) {
       Modal.error({
-        title: t('Error'),
+        title: 'Error',
         content: e.message || JSON.stringify(e),
       });
     }
@@ -1127,7 +1125,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       validateGasPriceRange(tx);
     } catch (e) {
       Modal.error({
-        title: t('Error'),
+        title: 'Error',
         content: e.message || JSON.stringify(e),
       });
       return;
@@ -1342,7 +1340,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
-        <div>You can only use imported addresses to sign</div>
+        <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
@@ -1357,7 +1355,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         setCantProcessReason(
           <div className="flex items-center gap-6">
             <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-            {t('multiSignChainNotMatch')}
+            {t('page.signTx.multiSigChainNotMatch')}
           </div>
         );
       }
@@ -1382,7 +1380,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       }
       if (!networkIds.includes(networkId)) {
         throw new Error(
-          `Current safe address is not supported on ${chain.name} chain`
+          t('page.signTx.safeAddressNotSupportChain', [chain.name])
         );
       } else {
         throw e;
@@ -1559,7 +1557,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setInited(true);
     } catch (e) {
       Modal.error({
-        title: t('Error'),
+        title: 'Error',
         content: e.message || JSON.stringify(e),
       });
     }

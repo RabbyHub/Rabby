@@ -288,7 +288,7 @@ const GasSelector = ({
         ...validateStatus,
         gasLimit: {
           status: 'error',
-          message: t('GasLimitEmptyAlert'),
+          message: t('page.signTx.gasLimitEmptyAlert'),
         },
       });
     } else if (Number(afterGasLimit) < MINIMUM_GAS_LIMIT) {
@@ -296,7 +296,7 @@ const GasSelector = ({
         ...validateStatus,
         gasLimit: {
           status: 'error',
-          message: t('GasLimitMinimumValueAlert'),
+          message: t('page.signTx.gasLimitMinValueAlert'),
         },
       });
     } else if (new BigNumber(customNonce).lt(recommendNonce) && !disableNonce) {
@@ -304,9 +304,9 @@ const GasSelector = ({
         ...validateStatus,
         nonce: {
           status: 'error',
-          message: `Nonce is too low, the minimum should be ${new BigNumber(
-            recommendNonce
-          ).toString()}`,
+          message: t('page.signTx.nonceLowerThanExpect', [
+            new BigNumber(recommendNonce).toString(),
+          ]),
         },
       });
     } else {
@@ -613,14 +613,18 @@ const GasSelector = ({
           )}
         >
           <div className="relative flex">
-            <div className="gas-selector-card-title">Gas</div>
+            <div className="gas-selector-card-title">
+              {t('page.signTx.gasSelectorTitle')}
+            </div>
             <div className="gas-selector-card-content ml-4">
               {isGnosisAccount ? (
-                <div className="font-semibold">No gas required</div>
+                <div className="font-semibold">
+                  {t('page.signTx.noGasRequired')}
+                </div>
               ) : gas.error || !gas.success ? (
                 <>
                   <div className="gas-selector-card-error">
-                    Fail to fetch gas cost
+                    {t('page.signTx.failToFetchGasCost')}
                   </div>
                 </>
               ) : (
@@ -657,7 +661,7 @@ const GasSelector = ({
             role="button"
             onClick={handleClickEdit}
           >
-            <span>More</span>
+            <span>{t('page.signTx.gasMoreButton')}</span>
             <IconArrowRight />
           </div>
         </div>
@@ -674,7 +678,7 @@ const GasSelector = ({
         />
         {manuallyChangeGasLimit && (
           <ManuallySetGasLimitAlert>
-            You have manually set the Gas limit to {Number(gasLimit)}
+            {t('page.signTx.manuallySetGasLimitAlert')} {Number(gasLimit)}
           </ManuallySetGasLimitAlert>
         )}
         {errors.length > 0 && (
@@ -691,7 +695,7 @@ const GasSelector = ({
       <Popup
         height={720}
         visible={modalVisible}
-        title={t('Gas')}
+        title={t('page.signTx.gasSelectorTitle')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         destroyOnClose
@@ -699,11 +703,13 @@ const GasSelector = ({
       >
         <div className="gas-selector-modal-top">
           {isGnosisAccount ? (
-            <div className="gas-selector-modal-amount">No gas required</div>
+            <div className="gas-selector-modal-amount">
+              {t('page.signTx.noGasRequired')}
+            </div>
           ) : gas.error || !gas.success ? (
             <>
               <div className="gas-selector-modal-error">
-                Fail to fetch gas cost
+                {t('page.signTx.failToFetchGasCost')}
               </div>
               {version === 'v2' && gas.error ? (
                 <div className="gas-selector-modal-error-desc mt-[4px]">
@@ -732,13 +738,13 @@ const GasSelector = ({
               disabled: isGnosisAccount,
             })}
           >
-            Gas Price (Gwei)
+            {t('page.signTx.gasPriceTitle')}
           </div>
           <Tooltip
             overlayClassName="rectangle"
             title={
               isGnosisAccount
-                ? 'Gas fee is not required for Safe transactions'
+                ? t('page.signTx.gasNotRequireForSafeTransaction')
                 : null
             }
           >
@@ -786,22 +792,12 @@ const GasSelector = ({
           {is1559 && (
             <div className="priority-slider">
               <p className="priority-slider-header">
-                Max Priority Fee (Gwei)
+                {t('page.signTx.maxPriorityFee')}
                 <Tooltip
                   title={
                     <ol className="list-decimal list-outside pl-[12px] mb-0">
-                      <li>
-                        On chains that support EIP-1559, the Priority Fee is the
-                        tip for miners to process your transaction. You can save
-                        your final gas cost by lowering the Priority Fee, which
-                        may cost more time for the transaction to be processed.
-                      </li>
-                      <li>
-                        Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee.
-                        After you set up the Max Priority Fee, the Base Fee will
-                        be deducted from it and the rest will be tipped to
-                        miners.
-                      </li>
+                      <li>{t('page.signTx.eip1559Desc1')}</li>
+                      <li>{t('page.signTx.eip1559Desc2')}</li>
                     </ol>
                   }
                   overlayClassName="rectangle"
@@ -826,8 +822,7 @@ const GasSelector = ({
           )}
           {isReal1559 && isHardware && (
             <div className="hardware-1559-tip">
-              Make sure your hardware wallet firmware has been upgraded to the
-              version that supports EIP 1559
+              {t('page.signTx.hardwareSupport1559Alert')}
             </div>
           )}
           <Form onFinish={handleConfirmGas}>
@@ -837,14 +832,14 @@ const GasSelector = ({
                   disabled: isGnosisAccount,
                 })}
               >
-                <span className="flex-1">{t('GasLimit')}</span>
+                <span className="flex-1">{t('page.signTx.gasLimitTitle')}</span>
               </p>
               <div className="expanded gas-limit-panel-wrapper">
                 <Tooltip
                   overlayClassName="rectangle"
                   title={
                     isGnosisAccount
-                      ? 'Gas fee is not required for Safe transactions'
+                      ? t('page.signTx.gasNotRequireForSafeTransaction')
                       : null
                   }
                 >
@@ -869,7 +864,7 @@ const GasSelector = ({
                 ) : (
                   <p className={clsx('tip', { disabled: isGnosisAccount })}>
                     <Trans
-                      i18nKey="RecommendGasLimitTip"
+                      i18nKey="page.signTx.recommendGasLimitTip"
                       values={{
                         est: Number(recommendGasLimit),
                         current: new BigNumber(afterGasLimit)
@@ -888,7 +883,7 @@ const GasSelector = ({
                 )}
                 <div className={clsx({ 'opacity-50': disableNonce })}>
                   <p className="gas-limit-title mt-20 mb-0 leading-[16px]">
-                    {t('Nonce')}
+                    {t('page.signTx.nonceTitle')}
                   </p>
                   <Form.Item
                     className="gas-limit-panel mb-0"
@@ -907,7 +902,9 @@ const GasSelector = ({
                       {validateStatus.nonce.message}
                     </p>
                   ) : (
-                    <p className="tip">{t('Modify only when necessary')}</p>
+                    <p className="tip">
+                      {t('page.signTx.gasLimitModifyOnlyNecessaryAlert')}
+                    </p>
                   )}
                 </div>
               </div>
@@ -922,7 +919,7 @@ const GasSelector = ({
             onClick={handleModalConfirmGas}
             disabled={!isReady || validateStatus.customGas.status === 'error'}
           >
-            {t('Confirm')}
+            {t('global.confirm')}
           </Button>
         </div>
       </Popup>
@@ -992,7 +989,7 @@ const GasSelectPanel = ({
   return (
     <Tooltip
       overlayClassName="rectangle"
-      title={disabled ? 'Gas fee is not required for Safe transactions' : null}
+      title={disabled ? t('page.signTx.gasNotRequireForSafeTransaction') : null}
     >
       <CardBody $disabled={disabled}>
         {gasList.map((item, idx) => (
@@ -1038,15 +1035,16 @@ const GasSelectPanel = ({
       </CardBody>
       <GasPriceDesc>
         <li>
-          My {chain.nativeTokenSymbol} balance:{' '}
-          {formatTokenAmount(
-            new BigNumber(nativeTokenBalance).div(1e18).toFixed()
-          )}{' '}
-          {chain.nativeTokenSymbol}
+          {t('page.signTx.myNativeTokenBalance', {
+            symbol: chain.nativeTokenSymbol,
+            balance: formatTokenAmount(
+              new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+            ),
+          })}
         </li>
         {gasPriceMedian !== null && (
           <li>
-            Median of last 100 on-chain transactions:{' '}
+            {t('page.signTx.gasPriceMedian')}{' '}
             {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
           </li>
         )}

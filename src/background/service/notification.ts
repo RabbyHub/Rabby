@@ -35,10 +35,6 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'SignTx',
   'SignText',
   'SignTypedData',
-  'LedgerHardwareWaiting',
-  'QRHardWareWaiting',
-  'WatchAddressWaiting',
-  'CommonWaiting',
 ];
 
 // something need user approval in window

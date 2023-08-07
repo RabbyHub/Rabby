@@ -3,10 +3,9 @@ import {
   NFTApprovalContract,
   NFTApprovalResponse,
 } from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { message, Tabs, Tooltip } from 'antd';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
