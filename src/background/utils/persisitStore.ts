@@ -40,6 +40,7 @@ const createPersistStore = async <T extends object>({
 
       syncStateToUI(BROADCAST_TO_UI_EVENTS.storeChanged, {
         bgStoreName: name,
+        changedKey: prop as string,
         changedKeys: [prop as string],
         partials: {
           [prop]: value,

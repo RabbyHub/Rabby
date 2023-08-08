@@ -31,6 +31,7 @@ export function onBackgroundStoreChanged<S extends keyof AllBackgroundStores>(
       'partials' | 'changedKeys'
     > & {
       bgStoreName: S;
+      changedKey: keyof AllBackgroundStores[S];
       changedKeys: (keyof AllBackgroundStores[S])[];
       partials: Partial<AllBackgroundStores[S]>;
     }

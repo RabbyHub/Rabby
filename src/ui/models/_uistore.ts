@@ -6,13 +6,11 @@ export default (store: typeof import('@/ui/store').default) => {
 
   onBackgroundStoreChanged('contactBook', (payload) => {
     const state = store.getState() as RabbyRootState;
-
     const currentAccount = state.account.currentAccount;
+    const currentAddr = currentAccount?.address;
 
-    const addr = currentAccount?.address;
-
-    if (addr && payload.partials[addr]) {
-      const aliasName = payload.partials[addr]!.name;
+    if (currentAddr && payload.partials[currentAddr]) {
+      const aliasName = payload.partials[currentAddr]!.name;
       currentAccount.alianName = aliasName;
       dispatch.account.setField({
         alianName: aliasName,
@@ -27,18 +25,19 @@ export default (store: typeof import('@/ui/store').default) => {
   // });
 
   onBackgroundStoreChanged('whitelist', payload => {
-    // const state = store.getState() as RabbyRootState;
-
-    if (payload.changedKeys.includes('whitelists')) {
-      dispatch.whitelist.setField({
-        whitelist: payload.partials.whitelists,
-      });
-    }
-
-    if (payload.changedKeys.includes('enabled')) {
-      dispatch.whitelist.setField({
-        enabled: payload.partials.enabled,
-      });
+    switch (payload.changedKey) {
+      case 'whitelists': {
+        dispatch.whitelist.setField({
+          whitelist: payload.partials.whitelists,
+        });
+        break;
+      }
+      case 'enabled': {
+        dispatch.whitelist.setField({
+          enabled: payload.partials.enabled,
+        });
+        break;
+      }
     }
   });
 };
