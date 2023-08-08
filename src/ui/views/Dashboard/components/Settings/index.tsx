@@ -886,7 +886,14 @@ const Settings = ({
             })}
           </div>
           <footer className="footer">
-            <img src={LogoRabby} alt="" />
+            <img
+              className="inline-block cursor-pointer"
+              src={LogoRabby}
+              alt="https://rabby.io"
+              onClick={() => {
+                openInTab('https://rabby.io', false);
+              }}
+            />
           </footer>
           <Contacts
             visible={contactsVisible}
