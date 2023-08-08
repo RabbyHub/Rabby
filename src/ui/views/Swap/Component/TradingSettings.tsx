@@ -143,7 +143,7 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
       </div>
       <div className="text-13 leading-[18px] text-gray-subTitle">
         <p>{t('page.swap.tradingSettingTip1')}</p>
-        <p>{t('page.swap.tradingSettingtip2')}</p>
+        <p>{t('page.swap.tradingSettingTip2')}</p>
       </div>
       <div className="flex flex-col justify-center items-center gap-16 text-gray-subTitle mt-[30px]">
         <Checkbox checked={checked} onChange={setChecked}>
