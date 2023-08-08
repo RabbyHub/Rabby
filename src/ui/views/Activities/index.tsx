@@ -31,11 +31,11 @@ const Activities = () => {
             [
               {
                 key: 'signed_tx',
-                label: `Transactions`,
+                label: 'Transactions',
               },
               {
                 key: 'signed_text',
-                label: `Texts`,
+                label: 'Texts',
               },
             ] as const
           }

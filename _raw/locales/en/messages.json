@@ -1211,8 +1211,7 @@
       "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
       "whitelistAlert__whitelisted": "The address is whitelisted",
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
-      "whitelistAlert__notWhitelisted_line1": "The address is not whitelisted.",
-      "whitelistAlert__notWhitelisted_line2": "I agree to grant temporary permission to transfer.",
+      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
       "tipNotOnAddressList": "Not on address list.",
       "tipAddToContacts": "Add to contacts"
     },
@@ -1224,6 +1223,66 @@
           "PurschaseDate": "Purchase Date",
           "LastPrice": "Last Price"
         }
+      }
+    },
+    "dashboard": {
+      "entry": {
+        "Approvals": "Approvals"
+      }
+    },
+    "approvals": {
+      "header": {
+        "title": "Approvals on {{ address }}"
+      },
+      "tab-switch": {
+        "contract": "By Contracts",
+        "assets": "By Assets"
+      },
+      "component": {
+        "table": {
+          "bodyEmpty": {
+            "loadingText": "Loading...",
+            "noMatchText": "No Match"
+          }
+        },
+        "ApprovalContractItem": {
+          "ApprovalCount_one": "Approval",
+          "ApprovalCount_other": "Approvals"
+        }
+      },
+      "search": {
+        "placeholder": "Search {{ type }} by name/address"
+      },
+      "tableConfig": {
+        "byContracts": {
+          "columnTitle": {
+            "contract": "Contract",
+            "contractTrustValue": "Contract Trust value",
+            "revokeTrends": "24h Revoke Trends",
+            "myApprovedAssets": "My Approved Assets"
+          },
+          "columnTip": {
+            "contractTrustValue": "Trust value refers to the total asset value approved and                     exposed to this contract. A low trust value indicates either                     risk or inactivity for 180 days.",
+            "contractTrustValueWarning": "The contract trust value < $100,000",
+            "contractTrustValueDanger": "The contract trust value < $10,000"
+          }
+        },
+        "byAssets": {
+          "columnTitle": {
+            "asset": "Asset",
+            "type": "Type",
+            "approvedAmount": "Approved Amount",
+            "approvedSpender": "Approved Spender",
+            "myApprovalTime": "My Approval Time"
+          }
+        }
+      },
+      "RevokeApprovalModal": {
+        "subTitleTokenAndNFT": "Approved Token and NFT",
+        "subTitleContract": "Approved to the following Contracts",
+        "selectAll": "Select All",
+        "confirm": "Confirm {{ selectedCount }}",
+        "title": "Approvals"
       }
     }
   },

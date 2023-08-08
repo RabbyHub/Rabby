@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Input, Form, message, Button } from 'antd';
@@ -125,8 +125,10 @@ const SendNFT = () => {
       success: false,
       content: (
         <>
-          {t('page.sendNFT.whitelistAlert__notWhitelisted_line1')}
-          <br /> {t('page.sendNFT.whitelistAlert__notWhitelisted_line2')}
+          <Trans i18nKey={'page.sendNFT.whitelistAlert__notWhitelisted'} t={t}>
+            The address is not whitelisted.
+            <br /> I agree to grant temporary permission to transfer.
+          </Trans>
         </>
       ),
     };

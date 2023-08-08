@@ -32,6 +32,7 @@ import { useRabbySelector } from '@/ui/store';
 import FeedbackPopup from '../Feedback';
 import { GasPriceBar } from '../GasPriceBar';
 import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
+import { useTranslation } from 'react-i18next';
 
 export default ({
   gnosisPendingCount,
@@ -54,6 +55,7 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
+  const { t } = useTranslation();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -203,7 +205,8 @@ export default ({
     } as IPanelItem,
     security: {
       icon: IconSecurity,
-      content: 'Approvals',
+      // 'Approvals'
+      content: t('page.dashboard.entry.Approvals'),
       onClick: async (evt) => {
         // history.push('/popup/approval-manage');
         if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
