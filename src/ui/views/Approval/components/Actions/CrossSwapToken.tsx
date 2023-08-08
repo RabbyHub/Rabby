@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
+import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
@@ -51,7 +52,7 @@ const CrossSwapToken = ({
     usdValuePercentage,
     receiver,
   } = data!;
-
+  const { t } = useTranslation();
   const { rules, processedRules, contractWhitelist } = useRabbySelector(
     (s) => ({
       rules: s.securityEngine.rules,
@@ -99,7 +100,7 @@ const CrossSwapToken = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay</Row>
+          <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -125,7 +126,7 @@ const CrossSwapToken = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Minimum receive</Row>
+          <Row isTitle>{t('page.signTx.swap.minReceive')}</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText
@@ -187,14 +188,16 @@ const CrossSwapToken = ({
                 id="1104"
                 dangerText={
                   <>
-                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
-                    ({formatUsdValue(usdValueDiff || '')})
+                    {t('page.signTx.swap.valueDiff')}{' '}
+                    <Values.Percentage value={usdValuePercentage!} /> (
+                    {formatUsdValue(usdValueDiff || '')})
                   </>
                 }
                 warningText={
                   <>
-                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
-                    ({formatUsdValue(usdValueDiff || '')})
+                    {t('page.signTx.swap.valueDiff')}{' '}
+                    <Values.Percentage value={usdValuePercentage!} /> (
+                    {formatUsdValue(usdValueDiff || '')})
                   </>
                 }
               />
@@ -203,21 +206,21 @@ const CrossSwapToken = ({
         </Col>
         {engineResultMap['1096'] && (
           <Col>
-            <Row isTitle>Receiver</Row>
+            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
                   engineResult={engineResultMap['1096']}
                   id="1096"
-                  dangerText="Not the payment address"
+                  dangerText={t('page.signTx.swap.notPaymentAddress')}
                 />
               </ul>
             </Row>
           </Col>
         )}
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -228,18 +231,18 @@ const CrossSwapToken = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore

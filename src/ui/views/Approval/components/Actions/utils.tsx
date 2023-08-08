@@ -1374,7 +1374,7 @@ export const getActionTypeText = (data: ParsedActionData) => {
     return t('page.signTx.nftCollectionApprove.title');
   }
   if (data.revokeNFTCollection) {
-    return t('page.signTx.revokeNFTCollectionApprove');
+    return t('page.signTx.revokeNFTCollectionApprove.title');
   }
   if (data.deployContract) {
     return t('page.signTx.deployContract.title');

@@ -1,6 +1,7 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
@@ -137,6 +138,7 @@ const Actions = ({
   const actionName = useMemo(() => {
     return getActionTypeText(data);
   }, [data]);
+  const { t } = useTranslation();
 
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -152,18 +154,18 @@ const Actions = ({
           {isSpeedUp && (
             <TooltipWithMagnetArrow
               overlayClassName="rectangle w-[max-content]"
-              title="This accelerated transaction and the original transaction, only one of which will eventually be completed"
+              title={t('page.signTx.speedUpTooltip')}
             >
               <img src={IconSpeedUp} className="icon icon-speedup" />
             </TooltipWithMagnetArrow>
           )}
-          Sign {chain.name} Transaction
+          {t('page.signTx.signTransactionOnChain', { chain: chain.name })}
         </div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
-          View Raw
+          {t('page.signTx.viewRaw')}
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
@@ -173,10 +175,10 @@ const Actions = ({
           <div className="right">
             {data.contractCall && (
               <span className="flex items-center relative">
-                Unknown action type{' '}
+                {t('page.signTx.unknownActionType')}{' '}
                 <TooltipWithMagnetArrow
                   overlayClassName="rectangle w-[max-content]"
-                  title="This signature can't be decoded by Rabby, but it doesn't imply any risk"
+                  title={t('page.signTx.sigCantDecode')}
                   placement="top"
                 >
                   <IconQuestionMark className="icon icon-tip" />

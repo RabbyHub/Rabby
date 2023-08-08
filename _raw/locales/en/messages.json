@@ -1197,7 +1197,14 @@
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
       "send": {
-        "title": "Send Token"
+        "title": "Send Token",
+        "sendToken": "Send token",
+        "sendTo": "Send to",
+        "receiverIsTokenAddress": "Token address",
+        "contractNotOnThisChain": "Contract address not on this chain",
+        "notTopupAddress": "Not top up address",
+        "tokenNotSupport": "{0} not supported",
+        "onMyWhitelist": "On my whitelist"
       },
       "tokenApprove": {
         "title": "Token Approval",
@@ -1207,35 +1214,54 @@
         "eoaAddress": "EOA address",
         "trustValueLessThan": "Trust value ≤ {{value}}",
         "deployTimeLessThan": "Deployed time < {{value}} days",
-        "amountPopupTitle": "Amount"
+        "amountPopupTitle": "Amount",
+        "flagByRabby": "Flagged by Rabby"
       },
       "revokeTokenApprove": {
-        "title": "Revoke Token Approval"
+        "title": "Revoke Token Approval",
+        "revokeFrom": "Revoke from",
+        "revokeToken": "Revoke token"
       },
       "sendNFT": {
-        "title": "Send NFT"
+        "title": "Send NFT",
+        "nftNotSupport": "NFT not supported"
       },
       "nftApprove": {
-        "title": "NFT Approval"
+        "title": "NFT Approval",
+        "approveNFT": "Approve NFT"
       },
       "revokeNFTApprove": {
-        "title": "Revoke NFT Approval"
+        "title": "Revoke NFT Approval",
+        "revokeNFT": "Revoke NFT"
       },
       "nftCollectionApprove": {
-        "title": "NFT Collection Approval"
+        "title": "NFT Collection Approval",
+        "approveCollection": "Approve collection"
       },
-      "revokeNFTCollectionApprove": "Revoke NFT Collection Approval",
+      "revokeNFTCollectionApprove": {
+        "title": "Revoke NFT Collection Approval",
+        "revokeCollection": "Revoke collection"
+      },
       "deployContract": {
-        "title": "Deploy a Contract"
+        "title": "Deploy a Contract",
+        "descriptionTitle": "Description",
+        "description": "You are deploying a smart contract"
       },
       "cancelTx": {
-        "title": "Cancel Pending Transaction"
+        "title": "Cancel Pending Transaction",
+        "txToBeCanceled": "Transaction to be canceled",
+        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
       },
       "submitMultisig": {
-        "title": "Submit Multisig Transaction"
+        "title": "Submit Multisig Transaction",
+        "multisigAddress": "Multisig address"
       },
       "contractCall": {
-        "title": "Contract Call"
+        "title": "Contract Call",
+        "operation": "Operation",
+        "operationABIDesc": "Operation is decoded from ABI",
+        "operationCantDecode": "Operation is not decoded",
+        "payNativeToken": "Pay {{symbol}}"
       },
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
@@ -1243,7 +1269,22 @@
       "unknownAction": "Unknown",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",
-      "markAsBlock": "Marked as blocked"
+      "markAsBlock": "Marked as blocked",
+      "interacted": "Interacted before",
+      "neverInteracted": "Never interacted before",
+      "transacted": "Transacted before",
+      "neverTransacted": "Never transacted before",
+      "fakeTokenAlert": "This is a scam token marked by Rabby",
+      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
+      "trusted": "Trusted",
+      "blocked": "Blocked",
+      "noMark": "No mark",
+      "markRemoved": "Mark removed",
+      "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
+      "signTransactionOnChain": "Sign {{chain}} Transaction",
+      "viewRaw": "View Raw",
+      "unknownActionType": "Unknown action type",
+      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

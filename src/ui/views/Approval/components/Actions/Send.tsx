@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, SendRequireData } from './utils';
@@ -40,6 +41,7 @@ const Send = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -57,7 +59,7 @@ const Send = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send token</Row>
+          <Row isTitle>{t('page.signTx.send.sendToken')}</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
@@ -82,7 +84,7 @@ const Send = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Send to</Row>
+          <Row isTitle>{t('page.signTx.send.sendTo')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.to} chain={chain} />
@@ -93,12 +95,12 @@ const Send = ({
                 {requireData.name && <li>{requireData.name}</li>}
                 <SecurityListItem
                   engineResult={engineResultMap['1016']}
-                  dangerText="Token address"
+                  dangerText={t('page.signTx.send.receiverIsTokenAddress')}
                   id="1016"
                 />
                 <SecurityListItem
                   engineResult={engineResultMap['1019']}
-                  dangerText="Contract address not on this chain"
+                  dangerText={t('page.signTx.send.contractNotOnThisChain')}
                   id="1019"
                 />
                 {requireData.cex && (
@@ -118,15 +120,14 @@ const Send = ({
                     </li>
                     <SecurityListItem
                       engineResult={engineResultMap['1021']}
-                      dangerText="Not top up address"
+                      dangerText={t('page.signTx.send.notTopupAddress')}
                       id="1021"
                     />
                     <SecurityListItem
                       engineResult={engineResultMap['1020']}
-                      dangerText={`${ellipsisTokenSymbol(
-                        getTokenSymbol(actionData.token)
-                      )} not
-                      supported`}
+                      dangerText={t('page.signTx.send.tokenNotSupport', [
+                        ellipsisTokenSymbol(getTokenSymbol(actionData.token)),
+                      ])}
                       id="1020"
                     />
                   </>
@@ -138,7 +139,7 @@ const Send = ({
                 />
                 <SecurityListItem
                   engineResult={engineResultMap['1033']}
-                  safeText="On my whitelist"
+                  safeText={t('page.signTx.send.onMyWhitelist')}
                   id="1033"
                 />
                 <li>

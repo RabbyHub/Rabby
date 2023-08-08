@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -44,6 +44,7 @@ const TokenApprove = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -53,7 +54,7 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Revoke token</Row>
+          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeToken')}</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
@@ -63,7 +64,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Revoke from</Row>
+          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
