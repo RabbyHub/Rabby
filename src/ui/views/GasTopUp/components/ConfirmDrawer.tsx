@@ -144,7 +144,7 @@ export const ConfirmDrawer = ({
         </div>
         <div className="flex items-center">
           <span className="text-12 text-gray-content mr-4">
-            {t('page.gasTopUp.Including__service__fee', {
+            {t('page.gasTopUp.Including-service-fee', {
               fee: new BigNumber(cost).times(0.2).toString(10),
             })}
           </span>
@@ -152,7 +152,7 @@ export const ConfirmDrawer = ({
           <Tooltip
             overlayClassName={clsx('rectangle max-w-[360px] left-[20px]')}
             placement="bottom"
-            title={t('page.gasTopUp.service__fee__tip')}
+            title={t('page.gasTopUp.service-fee-tip')}
           >
             <IconInfo />
           </Tooltip>
@@ -167,8 +167,8 @@ export const ConfirmDrawer = ({
         >
           <div className="text-gray-title text-14">
             {token
-              ? t('page.gasTopUp.Payment_Token')
-              : t('page.gasTopUp.Select_payment_token')}
+              ? t('page.gasTopUp.Payment-Token')
+              : t('page.gasTopUp.Select-payment-token')}
           </div>
           <div className="flex items-center ">
             {token ? (
@@ -223,7 +223,7 @@ export const ConfirmDrawer = ({
                 onClick={() => setTokenModalVisible(false)}
               />
               <div className="text-20 font-medium text-center text-gray-title ">
-                {t('page.gasTopUp.Select_from_supported_tokens')}
+                {t('page.gasTopUp.Select-from-supported-tokens')}
               </div>
             </div>
             <div className="px-20">
