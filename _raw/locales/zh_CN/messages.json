@@ -1124,7 +1124,42 @@
         "chain": "",
         "contract": ""
       },
-      "tokenInfoPrice": ""
+      "tokenInfoPrice": "",
+      "AddToContactsModal": {
+        "addedAsContacts": "",
+        "editAddr": {
+          "placeholder": "",
+          "validator__empty": ""
+        },
+        "editAddressNote": "",
+        "error": ""
+      },
+      "GasSelector": {
+        "confirm": "",
+        "level": {
+          "$unknown": "",
+          "custom": "",
+          "fast": "",
+          "normal": "",
+          "slow": ""
+        },
+        "popupDesc": "",
+        "popupTitle": ""
+      },
+      "allowTransferModal": {
+        "error": "",
+        "placeholder": "",
+        "validator__empty": ""
+      },
+      "modalConfirmAddToContacts": {
+        "confirmText": "",
+        "title": ""
+      },
+      "modalConfirmAllowTransferTo": {
+        "cancelText": "",
+        "confirmText": "",
+        "title": ""
+      }
     },
     "sendTokenComponents": {
       "GasReserved": ""
@@ -1312,5 +1347,39 @@
   },
   "useThisQuote": {
     "message": ""
+  },
+  "component": {
+    "PillsSwitch": {
+      "NetSwitchTabs": {
+        "mainnet": "",
+        "testnet": ""
+      }
+    },
+    "ChainSelectorModal": {
+      "noChains": "",
+      "searchPlaceholder": ""
+    },
+    "TokenSelector": {
+      "header": {
+        "title": ""
+      },
+      "listTableHead": {
+        "assetAmount": {
+          "title": ""
+        },
+        "price": {
+          "title": ""
+        },
+        "usdValue": {
+          "title": ""
+        }
+      },
+      "noMatch": "",
+      "noMatchSuggestion": "",
+      "noTokens": "",
+      "searchInput": {
+        "placeholder": ""
+      }
+    }
   }
 }
