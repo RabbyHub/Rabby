@@ -12,7 +12,7 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
   // seperate content assignment to two line
   // use AssetReplacePlugin to replace pageprovider content
-  let content = `var channelName = '${channelName}';`;
+  let content = `var __rabby__channelName = '${channelName}';`;
   content += `var __rabby__isDefaultWallet = ${isDefaultWallet};`;
   content += '#PAGEPROVIDER#';
   ele.textContent = content;
