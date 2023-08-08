@@ -5,7 +5,7 @@ import { TokenItem } from 'background/service/openapi';
 import LessPalette from '@/ui/style/var-defs';
 import { formatTokenAmount } from '@/ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const GasReservedDiv = styled.div`
   font-weight: 400;
@@ -38,13 +38,19 @@ const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
 
   return (
     <GasReservedDiv>
-      {t('page.sendTokenComponents.GasReserved.tipPrefix')}{' '}
-      <TokenAmount title={amount} onClick={onClickAmount}>
-        {formatTokenAmount(amount, 4)}
-      </TokenAmount>
-      {t('page.sendTokenComponents.GasReserved.tipSuffix', {
-        tokenName: getTokenSymbol(token),
-      })}
+      <Trans
+        i18nKey="page.sendTokenComponents.GasReserved"
+        values={{
+          tokenName: getTokenSymbol(token),
+        }}
+        t={t}
+      >
+        Reserved
+        <TokenAmount title={amount} onClick={onClickAmount}>
+          {formatTokenAmount(amount, 4)}
+        </TokenAmount>
+        {getTokenSymbol(token)} for gas cost
+      </Trans>
     </GasReservedDiv>
   );
 };

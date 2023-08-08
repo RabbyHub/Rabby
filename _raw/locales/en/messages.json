@@ -1181,10 +1181,7 @@
       "sendButton": "Send"
     },
     "sendTokenComponents": {
-      "GasReserved": {
-        "tipPrefix": "Reserved",
-        "tipSuffix": "{{ tokenName }} for gas cost"
-      }
+      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
     },
     "sendNFT": {
       "header": {
@@ -1262,7 +1259,7 @@
             "myApprovedAssets": "My Approved Assets"
           },
           "columnTip": {
-            "contractTrustValue": "Trust value refers to the total asset value approved and                     exposed to this contract. A low trust value indicates either                     risk or inactivity for 180 days.",
+            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
             "contractTrustValueWarning": "The contract trust value < $100,000",
             "contractTrustValueDanger": "The contract trust value < $10,000"
           }
