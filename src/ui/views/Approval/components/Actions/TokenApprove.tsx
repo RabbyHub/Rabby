@@ -294,6 +294,12 @@ const TokenApprove = ({
               />
 
               <SecurityListItem
+                id="1029"
+                engineResult={engineResultMap['1029']}
+                dangerText="Flagged by Rabby"
+              />
+
+              <SecurityListItem
                 id="1134"
                 engineResult={engineResultMap['1134']}
                 forbiddenText="Marked as blocked"
