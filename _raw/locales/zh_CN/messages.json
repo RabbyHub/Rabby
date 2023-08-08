@@ -993,7 +993,8 @@
     "confirm": "",
     "next": "",
     "back": "",
-    "ok": ""
+    "ok": "",
+    "refresh": ""
   },
   "page": {
     "transactions": {
@@ -1398,6 +1399,123 @@
           "disconnect": "",
           "connect": "",
           "howToSwitch": ""
+        }
+      },
+      "hd": {
+        "tooltip": {
+          "removed": "",
+          "added": "",
+          "connectError": "",
+          "disconnected": ""
+        },
+        "waiting": "",
+        "clickToGetInfo": "",
+        "addToRabby": "",
+        "basicInformation": "",
+        "addresses": "",
+        "loadingAddress": "",
+        "notes": "",
+        "getOnChainInformation": "",
+        "hideOnChainInformation": "",
+        "usedChains": "",
+        "firstTransactionTime": "",
+        "balance": "",
+        "ledger": {
+          "hdPathType": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "hdPathTypeNoChain": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          }
+        },
+        "trezor": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          },
+          "message": {
+            "disconnected": ""
+          }
+        },
+        "onekey": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          }
+        },
+        "mnemonic": {
+          "hdPathType": {
+            "default": ""
+          },
+          "hdPathTypeNoChain": {
+            "default": ""
+          }
+        },
+        "gridplus": {
+          "hdPathType": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "hdPathTypeNochain": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "switch": {
+            "title": "",
+            "content": ""
+          },
+          "switchToAnotherGridplus": ""
+        },
+        "keystone": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNochain": {
+            "bip44": ""
+          }
+        },
+        "bitbox02": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          },
+          "disconnected": ""
+        },
+        "selectHdPath": "",
+        "selectIndexTip": "",
+        "manageAddressFrom": "",
+        "advancedSettings": "",
+        "customAddressHdPath": "",
+        "connectedToLedger": "",
+        "connectedToTrezor": "",
+        "connectedToOnekey": "",
+        "manageSeedPhrase": "",
+        "manageGridplus": "",
+        "manageKeystone": "",
+        "manageAirgap": "",
+        "manageCoolwallet": "",
+        "manageBitbox02": "",
+        "done": "",
+        "addressesIn": "",
+        "addressesInRabby": "",
+        "qrCode": {
+          "switch": {
+            "title": "",
+            "content": ""
+          },
+          "switchAnother": ""
         }
       }
     }

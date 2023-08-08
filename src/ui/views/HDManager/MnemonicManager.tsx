@@ -10,6 +10,7 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
 import { HDManagerStateContext } from './utils';
+import { useTranslation } from 'react-i18next';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -50,6 +51,7 @@ export const MnemonicManager: React.FC = () => {
     });
     setLoading(false);
   }, []);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     fetchCurrentAccounts();
@@ -59,7 +61,9 @@ export const MnemonicManager: React.FC = () => {
     <>
       <div className="setting" onClick={openAdvanced}>
         <SettingSVG className="icon" />
-        <span className="title">Advanced Settings</span>
+        <span className="title">
+          {t('page.newAddress.hd.advancedSettings')}
+        </span>
       </div>
 
       <MainContainer setting={setting} loading={loading} HDName="Seed Phrase" />
@@ -67,7 +71,7 @@ export const MnemonicManager: React.FC = () => {
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

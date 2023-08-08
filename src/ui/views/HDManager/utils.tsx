@@ -7,6 +7,7 @@ import { Account } from './AccountList';
 import * as Sentry from '@sentry/browser';
 import { KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -168,6 +169,7 @@ const useHiddenInfo = () => {
 const useTaskQueue = ({ keyring }) => {
   const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
   const history = useHistory();
+  const { t } = useTranslation();
 
   const createTask = React.useCallback(async (task: () => Promise<any>) => {
     return queueRef.current.add(task);
@@ -178,8 +180,7 @@ const useTaskQueue = ({ keyring }) => {
       console.error(e);
       Sentry.captureException(e);
       message.error({
-        content:
-          'Unable to connect to Hardware wallet. Please try to re-connect.',
+        content: t('page.newAddress.hd.tooltip.disconnected'),
         key: 'ledger-error',
       });
       if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {

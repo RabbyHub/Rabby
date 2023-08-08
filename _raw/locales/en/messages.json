@@ -1547,6 +1547,123 @@
           "connect": "Connect",
           "howToSwitch": "How to switch"
         }
+      },
+      "hd": {
+        "tooltip": {
+          "removed": "The address is removed from Rabby",
+          "added": "The address is added to Rabby",
+          "connectError": "Connect has stopped. Please refresh the page to connect again.",
+          "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
+        },
+        "waiting": "Waiting",
+        "clickToGetInfo": "Click to get the information on-chain",
+        "addToRabby": "Add to Rabby",
+        "basicInformation": "Basic information",
+        "addresses": "Addresses",
+        "loadingAddress": "Loading {{0}}/{{1}} addresses",
+        "notes": "Notes",
+        "getOnChainInformation": "Get on-chain information",
+        "hideOnChainInformation": "Hide on-chain information",
+        "usedChains": "Used chains",
+        "firstTransactionTime": "First transaction time",
+        "balance": "Balance",
+        "ledger": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNoChain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          }
+        },
+        "trezor": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "message": {
+            "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
+          }
+        },
+        "onekey": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "mnemonic": {
+          "hdPathType": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          },
+          "hdPathTypeNoChain": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          }
+        },
+        "gridplus": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNochain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          },
+          "switch": {
+            "title": "Switch to a new GridPlus device",
+            "content": "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
+          },
+          "switchToAnotherGridplus": "Switch to another GridPlus"
+        },
+        "keystone": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNochain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "bitbox02": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {0}"
+        },
+        "selectHdPath": "Select HD path:",
+        "selectIndexTip": "Select the serial number of addresses to start from:",
+        "manageAddressFrom": "Manage address from {{0}} to {{1}}",
+        "advancedSettings": "Advanced Settings",
+        "customAddressHdPath": "Custom Address HD path",
+        "connectedToLedger": "Connected to Ledger",
+        "connectedToTrezor": "Connected to Trezor",
+        "connectedToOnekey": "Connected to OneKey",
+        "manageSeedPhrase": "Manage Seed Phrase",
+        "manageGridplus": "Manage GridPlus",
+        "manageKeystone": "Manage Keystone",
+        "manageAirgap": "Manage AirGap",
+        "manageCoolwallet": "Manage CoolWallet",
+        "manageBitbox02": "Manage BitBox02",
+        "done": "Done",
+        "addressesIn": "Addresses in {{0}}",
+        "addressesInRabby": "Addresses in Rabby{{0}}",
+        "qrCode": {
+          "switch": {
+            "title": "Switch to a new {{0}} device",
+            "content": "It's not supported to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
+          },
+          "switchAnother": "Switch to another {{0}}"
+        }
       }
     }
   },
@@ -1557,7 +1674,8 @@
     "confirm": "Confirm",
     "next": "Next",
     "back": "Back",
-    "ok": "OK"
+    "ok": "OK",
+    "refresh": "Refresh"
   },
   "background": {},
   "LedgerPermission2": {
