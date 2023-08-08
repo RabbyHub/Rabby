@@ -758,7 +758,7 @@ const GasSelector = ({
                   onClick={(e) => handlePanelSelection(e, item)}
                 >
                   <div className="gas-level">
-                    {t(GAS_LEVEL_TEXT[item.level])}
+                    {t(`page.signTx.gasLevel.${GAS_LEVEL_TEXT[item.level]}`)}
                   </div>
                   <div
                     className={clsx('cardTitle', {
@@ -1005,7 +1005,9 @@ const GasSelectPanel = ({
               }
             }}
           >
-            <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+            <div className="gas-level">
+              {t(`page.signTx.gasLevel.${GAS_LEVEL_TEXT[item.level]}`)}
+            </div>
             <div
               className={clsx('cardTitle', {
                 'custom-input': item.level === 'custom',
@@ -1037,7 +1039,7 @@ const GasSelectPanel = ({
         <li>
           {t('page.signTx.myNativeTokenBalance', {
             symbol: chain.nativeTokenSymbol,
-            balance: formatTokenAmount(
+            amount: formatTokenAmount(
               new BigNumber(nativeTokenBalance).div(1e18).toFixed()
             ),
           })}

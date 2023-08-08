@@ -507,18 +507,6 @@
   "Select__Gas__Setting": {
     "message": "Select Gas Setting"
   },
-  "Standard": {
-    "message": "Standard"
-  },
-  "Fast": {
-    "message": "Fast"
-  },
-  "Instant": {
-    "message": "Instant"
-  },
-  "Custom": {
-    "message": "Custom"
-  },
   "Enter__Password": {
     "message": "Enter Password"
   },
@@ -1164,9 +1152,98 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
       "gasPriceMedian": "Median of last 100 on-chain transactions:",
-      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {symbol}",
+      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
       "gasLimitEmptyAlert": "Please input gas limit",
-      "gasLimitMinValueAlert": "Gas limit should be more than 21000"
+      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "gasLevel": {
+        "standard": "Standard",
+        "fast": "Fast",
+        "instant": "Instant",
+        "custom": "Custom"
+      },
+      "balanceChange": {
+        "successTitle": "Transaction Simulation Results",
+        "failedTitle": "Transaction Simulation Failed",
+        "noBalanceChange": "No balance change",
+        "tokenOut": "Token out",
+        "tokenIn": "Token in",
+        "errorTitle": "Fail to fetch balance change",
+        "notSupport": "Transaction Simulation Not Supported",
+        "nftOut": "NFT out"
+      },
+      "enoughSafeSigCollected": "Enough signature collected",
+      "moreSafeSigNeeded": "{0} more confirmation needed",
+      "safeAdminSigned": "Signed",
+      "swap": {
+        "title": "Swap Token",
+        "payToken": "Pay",
+        "receiveToken": "Receive",
+        "failLoadReceiveToken": "Fail to load",
+        "valueDiff": "Value diff",
+        "simulationFailed": "Transaction simulation failed",
+        "simulationNotSupport": "Transaction simulation not supported on this chain",
+        "minReceive": "Minimum Receive",
+        "slippageFailToLoad": "Slippage tolerance fail to load",
+        "slippageTolerance": "Slippage tolerance",
+        "receiver": "Receiver",
+        "notPaymentAddress": "Not the payment address"
+      },
+      "crossChain": {
+        "title": "Cross Chain"
+      },
+      "swapAndCross": {
+        "title": "Swap Token and Cross Chain"
+      },
+      "wrapToken": "Wrap Token",
+      "unwrap": "Unwrap Token",
+      "send": {
+        "title": "Send Token"
+      },
+      "tokenApprove": {
+        "title": "Token Approval",
+        "approveToken": "Approve token",
+        "myBalance": "My balance",
+        "approveTo": "Approve to",
+        "eoaAddress": "EOA address",
+        "trustValueLessThan": "Trust value ≤ {{value}}",
+        "deployTimeLessThan": "Deployed time < {{value}} days",
+        "amountPopupTitle": "Amount"
+      },
+      "revokeTokenApprove": {
+        "title": "Revoke Token Approval"
+      },
+      "sendNFT": {
+        "title": "Send NFT"
+      },
+      "nftApprove": {
+        "title": "NFT Approval"
+      },
+      "revokeNFTApprove": {
+        "title": "Revoke NFT Approval"
+      },
+      "nftCollectionApprove": {
+        "title": "NFT Collection Approval"
+      },
+      "revokeNFTCollectionApprove": "Revoke NFT Collection Approval",
+      "deployContract": {
+        "title": "Deploy a Contract"
+      },
+      "cancelTx": {
+        "title": "Cancel Pending Transaction"
+      },
+      "submitMultisig": {
+        "title": "Submit Multisig Transaction"
+      },
+      "contractCall": {
+        "title": "Contract Call"
+      },
+      "revokePermit2": {
+        "title": "Revoke Permit2 Token Approval"
+      },
+      "unknownAction": "Unknown",
+      "interactContract": "Interact contract",
+      "markAsTrust": "Marked as trusted",
+      "markAsBlock": "Marked as blocked"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -1189,6 +1266,19 @@
         "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
         "connectBeforeSign": "{0} is not connected to Rabby, please connect before signing",
         "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {0} in mobile wallet"
+      },
+      "beginSigning": "Begin signing process",
+      "addressTip": {
+        "onekey": "OneKey address",
+        "trezor": "Trezor address",
+        "bitbox": "BitBox02 address",
+        "keystone": "Keystone address",
+        "airgap": "AirGap address",
+        "coolwallet": "CoolWallet address",
+        "privateKey": "Private Key address",
+        "seedPhrase": "Seed Phrase address",
+        "watchAddress": "Unable to sign with watch-only address",
+        "safe": "Safe address"
       }
     }
   },
@@ -1196,7 +1286,11 @@
   "global": {
     "confirm": "Confirm",
     "confirmButton": "Confirm",
-    "cancelButton": "Cancel"
+    "cancelButton": "Cancel",
+    "backButton": "Back",
+    "proceedButton": "Proceed",
+    "editButton": "Edit"
   },
-  "background": {}
+  "background": {},
+  "nftIn": "NFT in"
 }

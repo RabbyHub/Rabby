@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from 'consts';
 import {
@@ -22,6 +23,7 @@ const NFTBalanceChange = ({
   data: IBalanceChange;
   type: 'receive' | 'send';
 }) => {
+  const { t } = useTranslation();
   const {
     hasReceives,
     receiveNftList,
@@ -55,7 +57,7 @@ const NFTBalanceChange = ({
   if (type === 'receive' && hasReceives) {
     return (
       <Col>
-        <Row isTitle>NFT in</Row>
+        <Row isTitle>{t('nftIn')}</Row>
         <div className="flex-1 overflow-hidden">
           {receiveNftList.map((item) => (
             <Row
@@ -87,7 +89,7 @@ const NFTBalanceChange = ({
   if (type === 'send' && hasTransferedOut) {
     return (
       <Col>
-        <Row isTitle>NFT out</Row>
+        <Row isTitle>{t('page.signTx.balanceChange.nftOut')}</Row>
         <div className="flex-1 overflow-hidden">
           {sendNftList.map((item) => (
             <Row
@@ -130,6 +132,7 @@ const BalanceChange = ({
   version: 'v0' | 'v1' | 'v2';
 }) => {
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const isSuccess = data.success;
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
@@ -160,7 +163,7 @@ const BalanceChange = ({
             <Col>
               <Row>
                 <span className="text-15 text-gray-title font-medium">
-                  Transaction Simulation Not Supported
+                  {t('page.signTx.balanceChange.notSupport')}
                 </span>
               </Row>
             </Col>
@@ -178,14 +181,16 @@ const BalanceChange = ({
             <Col>
               <Row>
                 <span className="text-15 text-gray-title font-medium">
-                  Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
+                  {isSuccess
+                    ? t('page.signTx.balanceChange.successTitle')
+                    : t('page.signTx.balanceChange.failedTitle')}
                 </span>
               </Row>
             </Col>
             <Col>
               <Row>
                 <span className="text-15 text-gray-title font-medium">
-                  Fail to fetch balance change
+                  {t('page.signTx.balanceChange.errorTitle')}
                 </span>
               </Row>
             </Col>
@@ -198,7 +203,9 @@ const BalanceChange = ({
   return (
     <div className="token-balance-change">
       <p className="text-16 text-gray-title font-medium mb-12">
-        Transaction Simulation {isSuccess ? 'Results' : 'Failed'}
+        {isSuccess
+          ? t('page.signTx.balanceChange.successTitle')
+          : t('page.signTx.balanceChange.failedTitle')}
       </p>
       <div className="token-balance-change-content">
         <Table>
@@ -206,7 +213,7 @@ const BalanceChange = ({
             <Col>
               <Row>
                 <span className="text-15 font-medium text-gray-title">
-                  No balance change
+                  {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>
             </Col>
@@ -221,7 +228,7 @@ const BalanceChange = ({
           )}
           {sendTokenList && sendTokenList.length > 0 && (
             <Col>
-              <Row isTitle>Token out</Row>
+              <Row isTitle>{t('page.signTx.balanceChange.tokenOut')}</Row>
               <div className="flex-1 overflow-hidden">
                 {sendTokenList.map((token) => (
                   <Row className="has-bottom-border" key={token.id}>
@@ -268,7 +275,7 @@ const BalanceChange = ({
           )}
           {receiveTokenList && receiveTokenList.length > 0 && (
             <Col>
-              <Row isTitle>Token in</Row>
+              <Row isTitle>{t('page.signTx.balanceChange.tokenIn')}</Row>
               <div className="flex-1 overflow-hidden">
                 {receiveTokenList.map((token) => (
                   <Row className="has-bottom-border" key={token.id}>

@@ -192,10 +192,10 @@ export const IS_AFTER_CHROME91 = IS_CHROME
   : false;
 
 export const GAS_LEVEL_TEXT = {
-  slow: 'Standard',
-  normal: 'Fast',
-  fast: 'Instant',
-  custom: 'Custom',
+  slow: 'standard',
+  normal: 'fast',
+  fast: 'instant',
+  custom: 'custom',
 };
 
 export const IS_WINDOWS = /windows/i.test(global.navigator?.userAgent);
