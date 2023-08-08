@@ -781,7 +781,7 @@ const SendToken = () => {
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
-        {t('Send')}
+        {t('page.sendToken.header.title')}
       </PageHeader>
       <Form
         form={form}
@@ -795,14 +795,18 @@ const SendToken = () => {
       >
         <div className="flex-1 overflow-auto">
           <div className="section relative">
-            <div className={clsx('section-title')}>{t('Chain')}</div>
+            <div className={clsx('section-title')}>
+              {t('page.sendToken.sectionChain.title')}
+            </div>
             <ChainSelectorInForm
               value={chain}
               onChange={handleChainChanged}
               disabledTips={'Not supported'}
               supportChains={undefined}
             />
-            <div className={clsx('section-title mt-[10px]')}>{t('From')}</div>
+            <div className={clsx('section-title mt-[10px]')}>
+              {t('page.sendToken.sectionFrom.title')}
+            </div>
             <AccountCard
               icons={{
                 mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
@@ -813,7 +817,9 @@ const SendToken = () => {
               isHideAmount={CHAINS[chain]?.isTestnet}
             />
             <div className="section-title">
-              <span className="section-title__to">{t('To')}</span>
+              <span className="section-title__to">
+                {t('page.sendToken.sectionTo.title')}
+              </span>
               <div className="flex flex-1 justify-end items-center">
                 {showContactInfo && !!contactInfo && (
                   <div
@@ -846,7 +852,10 @@ const SendToken = () => {
               <Form.Item
                 name="to"
                 rules={[
-                  { required: true, message: t('Please input address') },
+                  {
+                    required: true,
+                    message: t('page.sendToken.sectionTo.addrValidator__empty'),
+                  },
                   {
                     validator(_, value) {
                       if (!value) return Promise.resolve();
@@ -855,14 +864,18 @@ const SendToken = () => {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error(t('This address is invalid'))
+                        new Error(
+                          t('page.sendToken.sectionTo.addrValidator__invalid')
+                        )
                       );
                     },
                   },
                 ]}
               >
                 <AccountSearchInput
-                  placeholder={'Enter address or search'}
+                  placeholder={t(
+                    'page.sendToken.sectionTo.searchInputPlaceholder'
+                  )}
                   autoComplete="off"
                   autoFocus
                   spellCheck={false}
@@ -897,7 +910,7 @@ const SendToken = () => {
                   <Skeleton.Input active style={{ width: 100 }} />
                 ) : (
                   <>
-                    {t('Balance')}:{' '}
+                    {t('page.sendToken.sectionBalance.title')}:{' '}
                     <span
                       className="truncate max-w-[80px]"
                       title={formatTokenAmount(
@@ -954,7 +967,9 @@ const SendToken = () => {
               <img className="token-info__header" src={TokenInfoArrow} />
               {!isNativeToken ? (
                 <div className="section-field">
-                  <span>{t('Contract Address')}</span>
+                  <span>
+                    {t('page.sendToken.tokenInfoFieldLabel.contract')}
+                  </span>
                   <span className="flex">
                     <AddressViewer
                       address={currentToken.id}
@@ -971,7 +986,7 @@ const SendToken = () => {
                 ''
               )}
               <div className="section-field">
-                <span>{t('Chain')}</span>
+                <span>{t('page.sendToken.tokenInfoFieldLabel.chain')}</span>
                 <span>
                   {
                     Object.values(CHAINS).find(
@@ -981,7 +996,7 @@ const SendToken = () => {
                 </span>
               </div>
               <div className="section-field">
-                <span>{t('Price')}</span>
+                <span>{t('page.sendToken.tokenInfoPrice')}</span>
                 <span>
                   ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
                 </span>
@@ -1024,7 +1039,7 @@ const SendToken = () => {
               className="w-[100%] h-[48px]"
               loading={isSubmitLoading}
             >
-              {t('Send')}
+              {t('page.sendToken.sendButton')}
             </Button>
           </div>
         </div>
