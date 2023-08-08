@@ -72,7 +72,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
   return (
     <Drawer
       className="edit-contact-modal-with-remove"
-      title={t('Edit address note')}
+      title={t('component.Contact.EditModal.title')}
       visible={visible}
       onClose={onCancel}
       placement="bottom"
@@ -97,7 +97,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
           size="large"
           disabled={!name}
         >
-          {t('Confirm')}
+          {t('global.Confirm')}
         </Button>
       </div>
     </Drawer>

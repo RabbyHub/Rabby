@@ -104,7 +104,7 @@ const AddressItem = memo(
         if (WALLET_BRAND_CONTENT[brandName]) {
           return (
             <Trans
-              i18nKey="addressTypeTip"
+              i18nKey="component.AddressList.AddressItem.addressTypeTip"
               values={{
                 type: WALLET_BRAND_CONTENT[brandName].name,
               }}

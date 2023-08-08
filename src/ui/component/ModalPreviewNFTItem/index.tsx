@@ -9,6 +9,7 @@ import LessPalette from '@/ui/style/var-defs';
 import { getChain } from '@/utils';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 const PreviewModal = styled(Modal)`
   .ant-modal-body {
@@ -73,6 +74,8 @@ export default function ModalPreviewNFTItem({
     return { chainName };
   }, [collectProperty]);
 
+  const { t } = useTranslation();
+
   return (
     <PreviewModal
       {...props}
@@ -95,24 +98,32 @@ export default function ModalPreviewNFTItem({
         <div className="nft-txpreview-title">{nft?.name || '-'}</div>
         <div className="nft-txpreview-properties">
           <div className="nft-txpreview-property">
-            <div className="nft-txpreview-property-label">Collection</div>
+            <div className="nft-txpreview-property-label">
+              {t('component.ModalPreviewNFTItem.collection')}
+            </div>
             <div className="nft-txpreview-property-value">
               {collectProperty?.name || '-'}
             </div>
           </div>
           <div className="nft-txpreview-property">
-            <div className="nft-txpreview-property-label">Chain</div>
+            <div className="nft-txpreview-property-label">
+              {t('component.ModalPreviewNFTItem.chain')}
+            </div>
             <div className="nft-txpreview-property-value">{chainName}</div>
           </div>
           <div className="nft-txpreview-property">
-            <div className="nft-txpreview-property-label">Purchase Date</div>
+            <div className="nft-txpreview-property-label">
+              {t('component.ModalPreviewNFTItem.purchaseDate')}
+            </div>
             <div className="nft-txpreview-property-value">
               {/* todo */}
               {(nft as any)?.pay_token?.date_at || '-'}
             </div>
           </div>
           <div className="nft-txpreview-property">
-            <div className="nft-txpreview-property-label">Last Price</div>
+            <div className="nft-txpreview-property-label">
+              {t('component.ModalPreviewNFTItem.lastPrice')}
+            </div>
             <div className="nft-txpreview-property-value">
               {(nft as any)?.usd_price
                 ? `$${splitNumberByStep(

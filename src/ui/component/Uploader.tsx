@@ -64,7 +64,7 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
       {uploadState === UPLOADER_STATE.INITIAL && (
         <div className="text-center text-13 text-gray-comment">
           <img src={IconUploader} className="mb-12 block mx-auto" />
-          <div>{t('Select a JSON file')}</div>
+          <div>{t('component.Uploader.placeholder')}</div>
         </div>
       )}
       {uploadState === UPLOADER_STATE.SELECTED && (
