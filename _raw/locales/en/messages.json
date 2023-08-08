@@ -1318,7 +1318,14 @@
       }
     }
   },
-  "component": {},
+  "component": {
+    "PillsSwitch": {
+      "NetSwitchTabs": {
+        "mainnet": "Mainnets",
+        "testnet": "Testnets"
+      }
+    }
+  },
   "global": {},
   "background": {}
 }
