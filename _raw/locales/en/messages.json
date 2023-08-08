@@ -1178,7 +1178,42 @@
         "chain": "Chain"
       },
       "tokenInfoPrice": "Price",
-      "sendButton": "Send"
+      "sendButton": "Send",
+      "GasSelector": {
+        "popupTitle": "Set Gas Price (Gwei)",
+        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
+        "confirm": "Confirm",
+        "level": {
+          "$unknown": "Unknown",
+          "slow": "Standard",
+          "normal": "Fast",
+          "fast": "Instant",
+          "custom": "Custom"
+        }
+      },
+      "AddToContactsModal": {
+        "error": "Failed to add to contacts",
+        "addedAsContacts": "Added as contacts",
+        "editAddressNote": "Edit address note",
+        "editAddr": {
+          "validator__empty": "Please enter address note",
+          "placeholder": "Enter Address Note"
+        }
+      },
+      "modalConfirmAddToContacts": {
+        "title": "Add to contacts",
+        "confirmText": "Confirm"
+      },
+      "allowTransferModal": {
+        "error": "incorrect password",
+        "validator__empty": "Please input password",
+        "placeholder": "Enter the Password to Confirm"
+      },
+      "modalConfirmAllowTransferTo": {
+        "title": "Enter the Password to Confirm",
+        "cancelText": "Cancel",
+        "confirmText": "Confirm"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"

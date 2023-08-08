@@ -735,9 +735,12 @@ const SendToken = () => {
       wallet,
       toAddr,
       showAddToWhitelist: !!toAddressInContactBook,
-      title: 'Enter the Password to Confirm',
-      cancelText: 'Cancel',
-      confirmText: 'Confirm',
+      // Enter the Password to Confirm
+      title: t('page.sendToken.modalConfirmAllowTransferTo.title'),
+      // Cancel
+      cancelText: t('page.sendToken.modalConfirmAllowTransferTo.cancelText'),
+      // Confirm
+      confirmText: t('page.sendToken.modalConfirmAllowTransferTo.confirmText'),
       onFinished(result) {
         dispatch.whitelist.getWhitelist();
         setTemporaryGrant(true);
@@ -752,8 +755,8 @@ const SendToken = () => {
     confirmAddToContactsModalPromise({
       wallet,
       addrToAdd: toAddr,
-      title: 'Add to contacts',
-      confirmText: 'Confirm',
+      title: t('page.sendToken.modalConfirmAddToContacts.title'),
+      confirmText: t('page.sendToken.modalConfirmAddToContacts.confirmText'),
       async onFinished(result) {
         await dispatch.contactBook.getContactBookAsync();
         // trigger fetch contactInfo
