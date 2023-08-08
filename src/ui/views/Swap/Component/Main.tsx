@@ -467,15 +467,7 @@ export const Main = () => {
       >
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
           <div className="flex items-center justify-between w-full self-start">
-            <div className="tips">
-              <Trans
-                i18key="page.swap.approve-tips"
-                values={{
-                  swap: t('page.swap.title'),
-                }}
-                components={[<span className="swapTips">→ 2.Swap</span>]}
-              ></Trans>
-            </div>
+            <div className="tips">{t('page.swap.approve-tips')}</div>
             <div
               className={clsx(
                 'allowance',

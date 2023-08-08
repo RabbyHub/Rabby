@@ -81,6 +81,8 @@ interface SlippageProps {
   recommendValue?: number;
 }
 export const Slippage = memo((props: SlippageProps) => {
+  const { t } = useTranslation();
+
   const { value, displaySlippage, onChange, recommendValue } = props;
   const [isCustom, setIsCustom] = useToggle(false);
 
@@ -118,7 +120,21 @@ export const Slippage = memo((props: SlippageProps) => {
                 .times(100)
                 .toString(),
             }}
-          />
+            t={t}
+          >
+            To prevent front-running, we recommend a slippage of{' '}
+            <span
+              onClick={setRecommendValue}
+              className="underline cursor-pointer"
+            >
+              {{
+                slippage: new BigNumber(recommendValue || 0)
+                  .times(100)
+                  .toString(),
+              }}
+            </span>
+            %{' '}
+          </Trans>
         </span>
       );
     }
@@ -141,7 +157,6 @@ export const Slippage = memo((props: SlippageProps) => {
     },
     [onChange]
   );
-  const { t } = useTranslation();
 
   return (
     <div>
