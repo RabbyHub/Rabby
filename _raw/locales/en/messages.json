@@ -1496,14 +1496,68 @@
         },
         "notAValidPrivateKey": "Not a valid private key"
       },
-      "importedSuccessfully": "Imported Successfully"
+      "importedSuccessfully": "Imported Successfully",
+      "ledger": {
+        "title": "Connect Ledger",
+        "cameraPermissionTitle": "Allow Rabby to access the camera",
+        "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "ledgerPermission1": "Connect to an HID device",
+        "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
+        "permissionsAuthorized": "Permissions Authorized",
+        "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
+        "allow": "Allow"
+      },
+      "walletConnect": {
+        "connectYour": "Connect your",
+        "viaWalletConnect": "via Wallet Connect",
+        "connectedSuccessfully": "Connected successfully",
+        "qrCodeError": "Please check your network or refresh the QR code",
+        "qrCode": "QR code",
+        "url": "URL",
+        "changeBridgeServer": "Change bridge server",
+        "status": {
+          "received": "Scan successful. Waiting to be confirmed",
+          "rejected": "Connection canceled. Please scan the QR code to retry.",
+          "brandError": "Wrong wallet app.",
+          "brandErrorDesc": "Please use {{brandName}} to connect",
+          "accountError": "Address not match.",
+          "accountErrorDesc": "Please switch address in your mobile wallet",
+          "connected": "Connected",
+          "duplicate": "The address you're are trying to import is duplicate",
+          "default": "Scan with your"
+        },
+        "title": "Connect with {{brandName}}",
+        "disconnected": "Disconnected",
+        "accountError": {},
+        "tip": {
+          "accountError": {
+            "tip1": "Connected but unable to sign.",
+            "tip2": "Please switch to the correct address in mobile wallet"
+          },
+          "disconnected": {
+            "tip": "Not connected to {{brandName}}"
+          },
+          "connected": {
+            "tip": "Connected to {{brandName}}"
+          }
+        },
+        "button": {
+          "disconnect": "Disconnect",
+          "connect": "Connect",
+          "howToSwitch": "How to switch"
+        }
+      }
     }
   },
   "component": {},
   "global": {
     "error": "",
     "copied": "Copied",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "next": "Next",
+    "back": "Back",
+    "ok": "OK"
   },
   "background": {},
   "LedgerPermission2": {

@@ -990,7 +990,10 @@
   "global": {
     "error": "错误",
     "copied": "",
-    "confirm": ""
+    "confirm": "",
+    "next": "",
+    "back": "",
+    "ok": ""
   },
   "page": {
     "transactions": {
@@ -1345,7 +1348,58 @@
         },
         "notAValidPrivateKey": ""
       },
-      "importedSuccessfully": ""
+      "importedSuccessfully": "",
+      "ledger": {
+        "title": "",
+        "cameraPermissionTitle": "",
+        "cameraPermission1": "",
+        "allowRabbyPermissionsTitle": "",
+        "ledgerPermission1": "",
+        "ledgerPermissionTip": "",
+        "permissionsAuthorized": "",
+        "nowYouCanReInitiateYourTransaction": "",
+        "allow": ""
+      },
+      "walletConnect": {
+        "connectYour": "",
+        "viaWalletConnect": "",
+        "connectedSuccessfully": "",
+        "qrCodeError": "",
+        "qrCode": "",
+        "url": "",
+        "changeBridgeServer": "",
+        "status": {
+          "received": "",
+          "rejected": "",
+          "brandError": "",
+          "brandErrorDesc": "",
+          "accountError": "",
+          "accountErrorDesc": "",
+          "connected": "",
+          "duplicate": "",
+          "default": ""
+        },
+        "title": "",
+        "disconnected": "",
+        "accountError": {},
+        "tip": {
+          "accountError": {
+            "tip1": "",
+            "tip2": ""
+          },
+          "disconnected": {
+            "tip": ""
+          },
+          "connected": {
+            "tip": ""
+          }
+        },
+        "button": {
+          "disconnect": "",
+          "connect": "",
+          "howToSwitch": ""
+        }
+      }
     }
   },
   "AdvancedSettings": {

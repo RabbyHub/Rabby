@@ -24,13 +24,13 @@ const RequestPermission = () => {
 
   const PERMISSIONS = {
     camera: {
-      title: t('CameraPermissionTitle'),
-      desc: [t('CameraPermission1')],
+      title: t('page.newAddress.ledger.cameraPermissionTitle'),
+      desc: [t('page.newAddress.ledger.cameraPermission1')],
     },
     ledger: {
-      title: t('AllowRabbyPermissionsTitle'),
-      desc: [t('LedgerPermission1')],
-      tip: t('LedgerPermissionTip'),
+      title: t('page.newAddress.ledger.allowRabbyPermissionsTitle'),
+      desc: [t('page.newAddress.ledger.ledgerPermission1')],
+      tip: t('page.newAddress.ledger.ledgerPermissionTip'),
     },
   };
 
@@ -107,10 +107,12 @@ const RequestPermission = () => {
       {showSuccess ? (
         <div className="authorize-success">
           <img src={IconSuccess} className="icon icon-success" />
-          <h1>Permissions Authorized</h1>
-          <p>Now you can re-initiate your transaction.</p>
+          <h1>{t('page.newAddress.ledger.permissionsAuthorized')}</h1>
+          <p>
+            {t('page.newAddress.ledger.nowYouCanReInitiateYourTransaction')}
+          </p>
           <Button type="primary" size="large" onClick={() => window.close()}>
-            {t('OK')}
+            {t('global.ok')}
           </Button>
         </div>
       ) : (
@@ -126,7 +128,7 @@ const RequestPermission = () => {
           {needConfirm && (
             <div className="btn-footer">
               <Button type="primary" size="large" onClick={init}>
-                {t('Allow')}
+                {t('page.newAddress.ledger.allow')}
               </Button>
             </div>
           )}
