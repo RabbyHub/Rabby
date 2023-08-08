@@ -1324,6 +1324,32 @@
         "mainnet": "Mainnets",
         "testnet": "Testnets"
       }
+    },
+    "ChainSelectorModal": {
+      "searchPlaceholder": "Search chain",
+      "noChains": "No chains"
+    },
+    "TokenSelector": {
+      "listTableHead": {
+        "assetAmount": {
+          "title": "ASSET / AMOUNT"
+        },
+        "price": {
+          "title": "PRICE"
+        },
+        "usdValue": {
+          "title": "USD VALUE"
+        }
+      },
+      "searchInput": {
+        "placeholder": "Search by Name / Address"
+      },
+      "header": {
+        "title": "Select a token"
+      },
+      "noTokens": "No Tokens",
+      "noMatch": "No Match",
+      "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
     }
   },
   "global": {},
