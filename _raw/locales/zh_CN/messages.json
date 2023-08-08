@@ -988,7 +988,9 @@
     "message": "多签地址不在当前链上，无法进行交易"
   },
   "global": {
-    "error": "错误"
+    "error": "错误",
+    "copied": "",
+    "confirm": ""
   },
   "page": {
     "transactions": {
@@ -1246,6 +1248,104 @@
     },
     "chainList": {
       "title": "支持 {{count}} 条链"
+    },
+    "nft": {
+      "floorPrice": "",
+      "title": "",
+      "all": "",
+      "starred": "",
+      "empty": {
+        "title": "",
+        "description": ""
+      },
+      "noNft": ""
+    },
+    "newAddress": {
+      "title": "",
+      "importSeedPhrase": "",
+      "importPrivateKey": "",
+      "importMyMetamaskAccount": "",
+      "addContacts": {
+        "content": "",
+        "description": "",
+        "required": "",
+        "notAValidAddress": "",
+        "scanViaMobileWallet": "",
+        "scanViaPcCamera": "",
+        "scanQRCode": "",
+        "walletConnect": "",
+        "walletConnectVPN": "",
+        "cameraTitle": "",
+        "addressEns": ""
+      },
+      "unableToImport": {
+        "title": "",
+        "description": ""
+      },
+      "connectHardwareWallets": "",
+      "connectMobileWalletApps": "",
+      "connectInstitutionalWallets": "",
+      "createNewSeedPhrase": "",
+      "importKeystore": "",
+      "selectImportMethod": "",
+      "theSeedPhraseIsInvalidPleaseCheck": "",
+      "seedPhrase": {
+        "importTips": "",
+        "whatIsASeedPhrase": {
+          "question": "",
+          "answer": ""
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "",
+          "answer": ""
+        },
+        "confirm": "",
+        "importError": "",
+        "importQuestion1": "",
+        "importQuestion2": "",
+        "importQuestion3": "",
+        "importQuestion4": "",
+        "riskTips": "",
+        "showSeedPhrase": "",
+        "backup": "",
+        "backupTips": "",
+        "copy": "",
+        "saved": "",
+        "pleaseSelectWords": "",
+        "verificationFailed": "",
+        "createdSuccessfully": "",
+        "verifySeedPhrase": "",
+        "fillInTheBackupSeedPhraseInOrder": "",
+        "clearAll": "",
+        "wordPhrase": ""
+      },
+      "metamask": {
+        "step1": "",
+        "step2": "",
+        "step3": "",
+        "how": "",
+        "step": "",
+        "importSeedPhrase": "",
+        "importSeedPhraseTips": ""
+      },
+      "privateKey": {
+        "required": "",
+        "placeholder": "",
+        "whatIsAPrivateKey": {
+          "question": "",
+          "answer": ""
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "",
+          "answer": ""
+        },
+        "isItPossibleToImportKeystore": {
+          "question": "",
+          "answer": ""
+        },
+        "notAValidPrivateKey": ""
+      },
+      "importedSuccessfully": ""
     }
   },
   "AdvancedSettings": {

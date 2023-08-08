@@ -1288,7 +1288,6 @@
         "clearPending": "Clear Pending",
         "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
-        "confirm": "Confirm",
         "autoLockTime": "Auto lock time",
         "claimRabbyBadge": "Claim Rabby Badge!",
         "cancel": "Cancel",
@@ -1323,7 +1322,8 @@
         "supportedChains": "Supported Chains",
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
-        "clearWatchMode": "Clear Watch Mode"
+        "clearWatchMode": "Clear Watch Mode",
+        "confirm": ""
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
@@ -1395,15 +1395,115 @@
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.           </1>"
+          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
         "howToSwitch": "How to switch"
       }
+    },
+    "nft": {
+      "floorPrice": "/ Floor Price:",
+      "title": "NFT",
+      "all": "All",
+      "starred": "Starred ({{count}})",
+      "empty": {
+        "title": "No Starred NFT",
+        "description": "You can select NFT from \"All\" and add to \"Starred\""
+      },
+      "noNft": "No NFT"
+    },
+    "newAddress": {
+      "title": "Add an Address",
+      "importSeedPhrase": "Import Seed Phrase",
+      "importPrivateKey": "Import Private Key",
+      "importMyMetamaskAccount": "Import My MetaMask Account",
+      "addContacts": {
+        "content": "Add Contacts",
+        "description": "You can also use it as a watch-only address",
+        "required": "Please input address",
+        "notAValidAddress": "Not a valid address",
+        "scanViaMobileWallet": "Scan via mobile wallet",
+        "scanViaPcCamera": "Scan via PC camera",
+        "scanQRCode": "Scan QR codes with WalletConnect-compatible wallets",
+        "walletConnect": "Wallet connect",
+        "walletConnectVPN": "WalletConnect will be unstable if you use VPN.",
+        "cameraTitle": "Please scan the QR code with your camera",
+        "addressEns": "Address / ENS"
+      },
+      "unableToImport": {
+        "title": "Unable to import",
+        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {0} before importing another device."
+      },
+      "connectHardwareWallets": "Connect Hardware Wallets",
+      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
+      "connectInstitutionalWallets": "Connect Institutional Wallets",
+      "createNewSeedPhrase": "Create New Seed Phrase",
+      "importKeystore": "Import KeyStore",
+      "selectImportMethod": "Select Import Method",
+      "theSeedPhraseIsInvalidPleaseCheck": "The seed phrase is invalid, please check!",
+      "seedPhrase": {
+        "importTips": "You can paste your entire secret recovery phrase in 1st field",
+        "whatIsASeedPhrase": {
+          "question": "What is a Seed Phrase?",
+          "answer": "A 12, 18, or 24-word phrase used to control your assets."
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "importError": "[CreateMnemonics] unexpected step {0}",
+        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
+        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
+        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
+        "riskTips": "Before you start, please read and keep the following security tips in mind.",
+        "showSeedPhrase": "Show Seed Phrase",
+        "backup": "Backup Seed Phrase",
+        "backupTips": "Make sure no one else is watching your screen when you back up the seed phrase",
+        "copy": "Copy seed phrase",
+        "saved": "I've Saved the Phrase",
+        "pleaseSelectWords": "Please select words",
+        "verificationFailed": "Verification failed",
+        "createdSuccessfully": "Created Successfully",
+        "verifySeedPhrase": "Verify Seed Phrase",
+        "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
+        "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
+        "clearAll": "Clear All",
+        "confirm": ""
+      },
+      "metamask": {
+        "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
+        "step2": "Import the seed phrase or private key in Rabby",
+        "step3": "Import is completed and all your assets will <br /> appear automatically",
+        "how": "How to import my MetaMask Account?",
+        "step": "Step",
+        "importSeedPhrase": "Import the seed phrase or private key",
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
+      },
+      "privateKey": {
+        "required": "Please input Private key",
+        "placeholder": "Enter your Private key",
+        "whatIsAPrivateKey": {
+          "question": "What is a private key?",
+          "answer": "A string of letters and numbers used to control your assets."
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "isItPossibleToImportKeystore": {
+          "question": "Is it possible to import KeyStore?",
+          "answer": "Yes, you can <1> import KeyStore </1> here."
+        },
+        "notAValidPrivateKey": "Not a valid private key"
+      },
+      "importedSuccessfully": "Imported Successfully"
     }
   },
   "component": {},
   "global": {
-    "error": ""
+    "error": "",
+    "copied": "Copied",
+    "confirm": "Confirm"
   },
   "background": {},
   "LedgerPermission2": {

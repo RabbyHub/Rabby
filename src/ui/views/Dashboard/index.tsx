@@ -236,7 +236,7 @@ const Dashboard = () => {
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              {t('page.dashboard.home.copied')}
+              {t('global.copied')}
             </div>
             <div className="text-white">{currentAccount!.address}</div>
           </div>

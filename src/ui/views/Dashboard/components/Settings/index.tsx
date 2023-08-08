@@ -255,7 +255,7 @@ const ResetAccountModal = ({
             className="w-[200px]"
             onClick={handleResetAccount}
           >
-            {t('page.dashboard.settings.confirm')}
+            {t('global.confirm')}
           </Button>
         </div>
       </div>
@@ -415,7 +415,7 @@ const Settings = ({
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
-      confirmText: t('page.dashboard.settings.confirm'),
+      confirmText: t('global.confirm'),
       cancelText: t('page.dashboard.settings.cancel'),
       title: value
         ? t('page.dashboard.settings.enableWhitelist')

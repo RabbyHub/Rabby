@@ -56,7 +56,7 @@ const ContactItem = ({ item }: { item: ContactBookItem }) => {
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              {t('page.dashboard.contacts.copied')}
+              {t('global.copied')}
             </div>
             <div className="text-white">{item.address}</div>
           </div>
