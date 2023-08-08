@@ -1209,6 +1209,11 @@
           "desc": "All texts signed via Rabby will be listed here."
         }
       }
+    },
+    "receive": {
+      "title": "Receive {{token}} on {{chain}}",
+      "watchModeAlert1": "This is a Watch Mode address.",
+      "watchModeAlert2": "Are you sure to use it to receive assets?"
     }
   },
   "component": {},
@@ -1217,7 +1222,10 @@
     "failed": "Failed",
     "scamTx": "Scam tx",
     "gas": "Gas",
-    "unknownNFT": "Unknown NFT"
+    "unknownNFT": "Unknown NFT",
+    "copyAddress": "Copy address",
+    "watchModeAddress": "Watch Mode address",
+    "assets": "assets"
   },
   "background": {}
 }
