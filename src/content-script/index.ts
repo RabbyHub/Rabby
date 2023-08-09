@@ -53,14 +53,8 @@ const getIsDefaultWallet = () => {
   return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
 };
 
-const start = performance.now();
 getIsDefaultWallet()
   .then((isDefaultWallet) => {
-    console.log(
-      'getIsDefaultWallet',
-      isDefaultWallet,
-      `${performance.now() - start}ms`
-    );
     injectProviderScript(!!isDefaultWallet);
   })
   .catch((err) => {
