@@ -45,7 +45,7 @@ function initAppMeta() {
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';
-  description.content = i18n.t('appDescription');
+  description.content = i18n.t('global.appDescription');
   head?.appendChild(description);
 }
 

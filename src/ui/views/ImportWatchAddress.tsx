@@ -109,10 +109,10 @@ const ImportWatchAddress = () => {
     connector.current = new WalletConnect({
       bridge: DEFAULT_BRIDGE,
       clientMeta: {
-        description: t('appDescription.message'),
+        description: t('global.appDescription'),
         url: 'https://rabby.io',
         icons: ['https://rabby.io/assets/images/logo.png'],
-        name: t('appName.message'),
+        name: t('global.appName'),
       },
     });
     connector.current.on('connect', async (error, payload) => {
