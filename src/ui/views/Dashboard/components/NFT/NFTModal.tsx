@@ -8,6 +8,7 @@ import { openInTab, splitNumberByStep, useCommonPopupView } from '@/ui/utils';
 import { IGAEventSource } from '@/ui/utils/ga-event';
 import { ReactComponent as LinkSVG } from '@/ui/assets/nft-view/link.svg';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 interface ContentProps {
   data?: NFTItem;
@@ -23,6 +24,7 @@ const calc = (data?: NFTItem) => {
 };
 
 const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
+  const { t } = useTranslation();
   const chain = getChain(data?.chain);
   const price = calc(data);
   const history = useHistory();
@@ -70,30 +72,38 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
 
       <div className="nft-preview-card-list">
         <div className="nft-preview-card-list-item">
-          <div className="nft-preview-card-list-item-label">Collection</div>
+          <div className="nft-preview-card-list-item-label">
+            {t('page.dashboard.nft.modal.collection')}
+          </div>
           <div className="nft-preview-card-list-item-value">
             {(data?.collection?.name ?? collectionName) || '-'}
           </div>
         </div>
         <div className="nft-preview-card-list-item">
-          <div className="nft-preview-card-list-item-label">Chain</div>
+          <div className="nft-preview-card-list-item-label">
+            {t('page.dashboard.nft.modal.chain')}
+          </div>
           <div className="nft-preview-card-list-item-value">{chain?.name}</div>
         </div>
         <div className="nft-preview-card-list-item">
-          <div className="nft-preview-card-list-item-label">Purchase Date</div>
+          <div className="nft-preview-card-list-item-label">
+            {t('page.dashboard.nft.modal.purchaseDate')}
+          </div>
           <div className="nft-preview-card-list-item-value">
             {data?.pay_token?.date_at || '-'}
           </div>
         </div>
         <div className="nft-preview-card-list-item">
-          <div className="nft-preview-card-list-item-label">Last Price</div>
+          <div className="nft-preview-card-list-item-label">
+            {t('page.dashboard.nft.modal.lastPrice')}
+          </div>
           <div className="nft-preview-card-list-item-value">{price}</div>
         </div>
       </div>
       <Tooltip
         title={
           !data?.is_erc1155 && !data?.is_erc721
-            ? 'Only ERC 721 and ERC 1155 NFTs are supported for now'
+            ? t('page.dashboard.nft.modal.sendTooltip')
             : null
         }
         overlayClassName="rectangle"
@@ -105,7 +115,7 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
           onClick={handleClickSend}
           disabled={!data?.is_erc1155 && !data?.is_erc721}
         >
-          Send
+          {t('page.dashboard.nft.modal.send')}
         </Button>
       </Tooltip>
     </div>

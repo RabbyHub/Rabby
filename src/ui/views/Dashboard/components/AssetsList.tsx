@@ -233,4 +233,7 @@ const AssetsList = ({
   );
 };
 
+/**
+ * @deprecated
+ */
 export default AssetsList;

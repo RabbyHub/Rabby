@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ellipsis } from '@/ui/utils/address';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 
 const TokenCost = ({
   payToken,
@@ -114,6 +115,8 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       [data?.quote?.slippage]
     );
 
+    const { t } = useTranslation();
+
     return (
       <div
         className={clsx(
@@ -124,22 +127,22 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         <div className="flex justify-between items-center pb-8 border-b border-solid border-gray-divider">
           <div className="flex items-center text-12 font-medium text-gray-title">
             {isPending && (
-              <TooltipWithMagnetArrow title="Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.">
+              <TooltipWithMagnetArrow title={t('page.swap.pendingTip')}>
                 <div className="flex items-center">
                   <img
                     src={ImgPending}
                     alt="loading"
                     className="w-[14px] h-[14px] animate-spin mr-6"
                   />
-                  <span className="text-orange">Pending</span>
+                  <span className="text-orange">{t('page.swap.Pending')}</span>
                 </div>
               </TooltipWithMagnetArrow>
             )}
             {isCompleted && (
-              <TooltipWithMagnetArrow title="Transaction on chain, decoding data to generate record">
+              <TooltipWithMagnetArrow title={t('page.swap.completedTip')}>
                 <div className="flex items-center mr-6">
                   <img src={ImgCompleted} className="w-[14px] h-[14px] mr-6" />
-                  <span>Completed</span>
+                  <span>{t('page.swap.Completed')}</span>
                 </div>
               </TooltipWithMagnetArrow>
             )}
@@ -180,10 +183,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
         <div className="flex justify-between items-center mt-[15px] mb-12">
           <div>
-            Slippage tolerance: <span>{slippagePercent}</span>
+            {t('page.swap.slippage_tolerance')} <span>{slippagePercent}</span>
           </div>
           <div className="flex items-center">
-            <span>Actual Slippage: </span>
+            <span>{t('page.swap.actual-slippage')} </span>
             {loading ? (
               <SkeletonInput className="w-[52px] h-[18px]" active />
             ) : (
@@ -204,7 +207,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span className="ml-auto">GasFee: {gasUsed}</span>
           ) : (
             <span className="ml-auto">
-              Gas price: {data?.gas?.gas_price} Gwei
+              {(t('page.swap.gas-x-price'), { price: data?.gas?.gas_price })}
             </span>
           )}
         </div>
@@ -215,6 +218,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
 const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useSwapHistory();
+  const { t } = useTranslation();
   if (!loading && (!txList || !txList?.list?.length)) {
     return (
       <div className="w-full h-full flex flex-col items-center">
@@ -223,7 +227,7 @@ const HistoryList = () => {
           className="w-[52px] h-[52px] mx-auto mt-[112px] mb-24"
         />
         <p className="text-center text-gray-content text-14">
-          No transaction records
+          {t('page.swap.no-transaction-records')}
         </p>
       </div>
     );
@@ -255,10 +259,11 @@ export const SwapTxHistory = ({
   visible: boolean;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation();
   return (
     <Popup
       visible={visible}
-      title={'Swap history'}
+      title={t('page.swap.swap-history')}
       height={494}
       onClose={onClose}
       closable

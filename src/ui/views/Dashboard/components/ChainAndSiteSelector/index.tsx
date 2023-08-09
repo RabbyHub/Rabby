@@ -54,8 +54,8 @@ export default ({
   gnosisPendingCount?: number;
   setDashboardReload(): void;
 }) => {
-  const history = useHistory();
   const { t } = useTranslation();
+  const history = useHistory();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -164,33 +164,33 @@ export default ({
   const panelItems = {
     swap: {
       icon: IconSwap,
-      content: 'Swap',
+      content: t('page.dashboard.home.panel.swap'),
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
       },
     } as IPanelItem,
     send: {
       icon: IconSendToken,
-      content: 'Send',
+      content: t('page.dashboard.home.panel.send'),
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
     receive: {
       icon: IconReceive,
-      content: 'Receive',
+      content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
         setIsShowReceiveModal(true);
       },
     } as IPanelItem,
     gasTopUp: {
       icon: IconGasTopUp,
-      content: 'Gas Top Up',
+      content: t('page.dashboard.home.panel.gasTopUp'),
       onClick: () => {
         history.push('/gas-top-up');
       },
     } as IPanelItem,
     queue: {
       icon: IconQuene,
-      content: 'Queue',
+      content: t('page.dashboard.home.panel.queue'),
       badge: gnosisPendingCount,
       onClick: () => {
         history.push('/gnosis-queue');
@@ -198,15 +198,14 @@ export default ({
     } as IPanelItem,
     transactions: {
       icon: IconTransactions,
-      content: 'Transactions',
+      content: t('page.dashboard.home.panel.transactions'),
       onClick: () => {
         history.push('/history');
       },
     } as IPanelItem,
     security: {
       icon: IconSecurity,
-      // 'Approvals'
-      content: t('page.dashboard.entry.Approvals'),
+      content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
         // history.push('/popup/approval-manage');
         if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
@@ -221,24 +220,24 @@ export default ({
     } as IPanelItem,
     feedback: {
       icon: IconFeedback,
-      content: 'Feedback',
+      content: t('page.dashboard.home.panel.feedback'),
       onClick: showFeedbackModal,
     } as IPanelItem,
     more: {
       icon: IconMoreSettings,
-      content: 'More',
+      content: t('page.dashboard.home.panel.more'),
       onClick: toggleShowMoreSettings,
     } as IPanelItem,
     address: {
       icon: IconAddresses,
-      content: 'Manage Address',
+      content: t('page.dashboard.home.panel.manageAddress'),
       onClick: () => {
         history.push('/settings/address');
       },
     } as IPanelItem,
     nft: {
       icon: IconNFT,
-      content: 'NFT',
+      content: t('page.dashboard.home.panel.nft'),
       onClick: () => {
         history.push('/nft');
       },
@@ -293,7 +292,9 @@ export default ({
             return item.disabled ? (
               <Tooltip
                 {...(item.commingSoonBadge && { visible: false })}
-                title={item.disableReason || 'Coming soon'}
+                title={
+                  item.disableReason || t('page.dashboard.home.comingSoon')
+                }
                 overlayClassName="rectangle direction-tooltip"
                 autoAdjustOverflow={false}
               >
@@ -336,7 +337,9 @@ export default ({
                 )}
                 <div>{item.content} </div>
                 {item.commingSoonBadge && (
-                  <div className="coming-soon-badge">Soon</div>
+                  <div className="coming-soon-badge">
+                    {t('page.dashboard.home.soon')}
+                  </div>
                 )}
               </div>
             );

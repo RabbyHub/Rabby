@@ -988,181 +988,536 @@
     "message": "多签地址不在当前链上，无法进行交易"
   },
   "global": {
-    "error": "错误"
+    "error": "错误",
+    "copied": "",
+    "confirm": "",
+    "next": "",
+    "back": "",
+    "ok": "",
+    "refresh": ""
   },
   "page": {
     "transactions": {
       "title": "交易记录",
       "empty": {
-        "desc": "",
-        "title": ""
+        "desc": "在<1>支持的链</1>上找不到交易",
+        "title": "没有交易"
       }
     },
-    "approvals": {
-      "RevokeApprovalModal": {
-        "confirm": "",
-        "selectAll": "",
-        "subTitleContract": "",
-        "subTitleTokenAndNFT": "",
-        "title": ""
+    "dashboard": {
+      "feedback": {
+        "directMessage": {
+          "content": "直接留言",
+          "description": "在 DeBank 上与 Rabby Wallet 官方聊天"
+        },
+        "proposal": {
+          "content": "提议",
+          "description": "在 DeBank 上提交 Rabby 钱包提案"
+        },
+        "title": "反馈"
       },
-      "component": {
-        "ApprovalContractItem": {
-          "ApprovalCount_one": "",
-          "ApprovalCount_other": ""
+      "nft": {
+        "empty": "在支持的集合中找不到 NFT",
+        "collectionList": {
+          "collections": {
+            "label": "收藏"
+          },
+          "all_nfts": {
+            "label": "所有 NFT"
+          }
+        },
+        "listEmpty": "您还没有获得任何 NFT",
+        "modal": {
+          "collection": "收藏",
+          "chain": "链",
+          "purchaseDate": "购买日期",
+          "lastPrice": "最后价格",
+          "sendTooltip": "目前仅支持 ERC 721 和 ERC 1155 NFT",
+          "send": "发送"
+        }
+      },
+      "home": {
+        "offline": "网络断开，获取不到数据",
+        "panel": {
+          "swap": "交换",
+          "send": "发送",
+          "receive": "收到",
+          "gasTopUp": "燃气加满",
+          "queue": "队列",
+          "transactions": "交易",
+          "approvals": "批准",
+          "feedback": "反馈",
+          "more": "更多的",
+          "manageAddress": "管理地址",
+          "nft": "NFT"
+        },
+        "comingSoon": "即将推出",
+        "soon": "很快",
+        "flip": "翻动",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask 正在使用，Rabby 被禁止",
+        "rabbyIsInUseAndMetamaskIsBanned": "Rabby正在使用，Metamask被禁止",
+        "refreshTheWebPageToTakeEffect": "刷新网页即可生效",
+        "transactionNeedsToSign": "",
+        "transactionsNeedToSign": "",
+        "view": "",
+        "viewFirstOne": "",
+        "rejectAll": "",
+        "pendingCount": "",
+        "pendingCountPlural": "",
+        "queue": {
+          "title": "",
+          "count": ""
+        },
+        "whatsNew": "",
+        "copied": "",
+        "importType": ""
+      },
+      "recentConnection": {
+        "disconnected": "已断开连接",
+        "rpcUnavailable": "自定义RPC不可用",
+        "metamaskTooltip": "您更喜欢将 MetaMask 与此 dapp 结合使用。\n随时在“设置”>“MetaMask 首选 Dapp”中更新此设置",
+        "notConnected": "未连接",
+        "connected": "连接的",
+        "connectedDapp": "Rabby 未连接到当前 Dapp。要连接，请在 Dapp 网页上找到并单击连接按钮。",
+        "noDappFound": "未找到 Dapp",
+        "disconnectAll": "全部断开",
+        "disconnectRecentlyUsed": {
+          "title": "断开最近使用的<strong>{{count}}</strong>去中心化应用程序",
+          "description": "固定的 DApp 将保持连接"
+        },
+        "title": "连接的 Dapp",
+        "pinned": "已固定",
+        "noPinnedDapps": "没有固定的 dapp",
+        "dragToSort": "拖动排序",
+        "noRecentlyConnectedDapps": "没有最近连接的 Dapp",
+        "recentlyConnected": "最近连接"
+      },
+      "contacts": {
+        "copied": "已复制",
+        "noData": "没有数据",
+        "noDataLabel": "没有数据",
+        "oldContactList": "旧联系人列表",
+        "oldContactListDescription": "由于联系人和手表型号地址合并，旧的联系人会在这里为您备份，一段时间后我们会删除该列表。如果您继续使用，请及时添加。"
+      },
+      "rabbyBadge": {
+        "claim": "宣称",
+        "claimSuccess": "声称成功",
+        "enterClaimCode": "输入索赔代码",
+        "goToSwap": "前往交换",
+        "imageLabel": "拉比徽章",
+        "learnMoreOnDebank": "了解有关 DeBank 的更多信息",
+        "noCode": "您尚未激活该地址的索赔代码",
+        "rabbyValuedUserNo": "Rabby 尊贵用户号{{num}}",
+        "swapTip": "您需要先与Rabby Wallet内的知名dex完成兑换。",
+        "title": "领取 Rabby 徽章",
+        "viewOnDebank": "在 DeBank 上查看",
+        "viewYourClaimCode": "查看您的索赔代码"
+      },
+      "security": {
+        "comingSoon": "更多功能即将推出",
+        "nftApproval": "NFT 批准",
+        "title": "安全",
+        "tokenApproval": "代币批准"
+      },
+      "settings": {
+        "10Minutes": "10分钟",
+        "1Day": "1天",
+        "1Hour": "1小时",
+        "4Hours": "4个小时",
+        "7Days": "7天",
+        "aboutUs": "关于我们",
+        "autoLockTime": "自动锁定时间",
+        "backendServiceUrl": "后端服务网址",
+        "cancel": "取消",
+        "claimRabbyBadge": "领取拉比徽章！",
+        "clearPending": "清除待处理",
+        "clearPendingTip1": "这将清除您所有待处理的交易。\n这可以帮助您解决在某些情况下Rabby中的交易状态与链上状态不匹配的问题。",
+        "clearPendingTip2": "这不会改变您帐户中的余额，也不会要求您重新输入助记词。\n您的所有资产和账户信息都将保持安全。",
+        "clearWatchAddressContent": "您确定删除所有观看模式地址吗？",
+        "clearWatchMode": "清晰观看模式",
+        "confirm": "确认",
+        "currentVersion": "当前版本",
+        "disableWhitelist": "禁用白名单",
+        "disableWhitelistTip": "禁用后您可以将资产发送到任何地址",
+        "enableWhitelist": "启用白名单",
+        "enableWhitelistTip": "启用后，您只能使用Rabby向白名单中的地址发送资产。",
+        "features": {
+          "connectedDapp": "连接的 Dapp",
+          "label": "特征",
+          "lockWallet": "锁钱包",
+          "manageAddress": "管理地址",
+          "signatureRecord": "签名记录"
+        },
+        "followUs": "跟着我们",
+        "host": "主持人",
+        "inputOpenapiHost": "请输入openapi主机",
+        "lock": {
+          "never": "绝不"
+        },
+        "pendingTransactionCleared": "待处理交易已清除",
+        "pleaseCheckYourHost": "请检查您的主机",
+        "reset": "恢复初始设置",
+        "save": "节省",
+        "settings": {
+          "customRpc": "自定义远程过程调用",
+          "enableWhitelistForSendingAssets": "启用发送资产白名单",
+          "label": "设置",
+          "metamaskPreferredDapps": "MetaMask 首选 Dapp",
+          "showTestnets": "显示测试网"
+        },
+        "supportedChains": "支持的链条",
+        "testnetBackendServiceUrl": "测试网后端服务 URL",
+        "updateAvailable": "可用更新",
+        "updateVersion": {
+          "content": "Rabby 钱包有新的更新。\n点击查看如何手动更新。",
+          "okText": "查看教程",
+          "successTip": "您正在使用最新版本"
+        },
+        "warning": "警告"
+      },
+      "tokenDetail": {
+        "blockedTip": "",
+        "blocked": "",
+        "selectedCustom": "",
+        "notSelectedCustom": "",
+        "customized": "",
+        "scamTx": "",
+        "txFailed": "",
+        "notSupported": "",
+        "swap": "",
+        "send": "",
+        "receive": "",
+        "noTransactions": ""
+      },
+      "assets": {
+        "usdValue": "",
+        "amount": "",
+        "portfolio": {
+          "nftTips": "",
+          "fractionTips": ""
+        },
+        "tokenButton": {
+          "subTitle": ""
         },
         "table": {
-          "bodyEmpty": {
-            "loadingText": "",
-            "noMatchText": ""
-          }
-        }
-      },
-      "header": {
-        "title": ""
-      },
-      "search": {
-        "placeholder": ""
-      },
-      "tab-switch": {
-        "assets": "",
-        "contract": ""
-      },
-      "tableConfig": {
-        "byAssets": {
-          "columnTitle": {
-            "approvedAmount": "",
-            "approvedSpender": "",
-            "asset": "",
-            "myApprovalTime": "",
-            "type": ""
-          }
+          "assetAmount": "",
+          "price": "",
+          "useValue": "",
+          "healthRate": "",
+          "debtRatio": "",
+          "unlockAt": "",
+          "lentAgainst": "",
+          "type": "",
+          "strikePrice": "",
+          "exerciseEnd": "",
+          "tradePair": "",
+          "side": "",
+          "leverage": "",
+          "PL": "",
+          "unsupportedPoolType": "",
+          "claimable": "",
+          "endAt": "",
+          "dailyUnlock": "",
+          "pool": "",
+          "token": "",
+          "balanceValue": "",
+          "percent": "",
+          "summaryTips": "",
+          "summaryDescription": "",
+          "noMatch": "",
+          "lowValueDescription": "",
+          "lowValueAssets": ""
         },
-        "byContracts": {
-          "columnTip": {
-            "contractTrustValue": "",
-            "contractTrustValueDanger": "",
-            "contractTrustValueWarning": ""
-          },
-          "columnTitle": {
-            "contract": "",
-            "contractTrustValue": "",
-            "myApprovedAssets": "",
-            "revokeTrends": ""
-          }
-        }
+        "noAssets": "",
+        "blockLinkText": "",
+        "blockDescription": "",
+        "unfoldChain": "",
+        "unfoldChainPlural": "",
+        "customLinkText": "",
+        "customDescription": "",
+        "comingSoon": "",
+        "searchPlaceholder": ""
+      },
+      "hd": {
+        "howToConnectLedger": "",
+        "userRejectedTheRequest": "",
+        "ledger": {
+          "doc1": "",
+          "doc2": "",
+          "doc3": "",
+          "reconnect": ""
+        },
+        "howToSwitch": ""
       }
     },
     "chainList": {
-      "title": ""
-    },
-    "dashboard": {
-      "entry": {
-        "Approvals": ""
-      }
+      "title": "支持 {{count}} 条链"
     },
     "nft": {
-      "ModalPreviewNFTItem": {
-        "FieldLabel": {
-          "Chain": "",
-          "Collection": "",
-          "LastPrice": "",
-          "PurschaseDate": ""
+      "floorPrice": "",
+      "title": "",
+      "all": "",
+      "starred": "",
+      "empty": {
+        "title": "",
+        "description": ""
+      },
+      "noNft": ""
+    },
+    "newAddress": {
+      "title": "",
+      "importSeedPhrase": "",
+      "importPrivateKey": "",
+      "importMyMetamaskAccount": "",
+      "addContacts": {
+        "content": "",
+        "description": "",
+        "required": "",
+        "notAValidAddress": "",
+        "scanViaMobileWallet": "",
+        "scanViaPcCamera": "",
+        "scanQRCode": "",
+        "walletConnect": "",
+        "walletConnectVPN": "",
+        "cameraTitle": "",
+        "addressEns": ""
+      },
+      "unableToImport": {
+        "title": "",
+        "description": ""
+      },
+      "connectHardwareWallets": "",
+      "connectMobileWalletApps": "",
+      "connectInstitutionalWallets": "",
+      "createNewSeedPhrase": "",
+      "importKeystore": "",
+      "selectImportMethod": "",
+      "theSeedPhraseIsInvalidPleaseCheck": "",
+      "seedPhrase": {
+        "importTips": "",
+        "whatIsASeedPhrase": {
+          "question": "",
+          "answer": ""
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "",
+          "answer": ""
+        },
+        "confirm": "",
+        "importError": "",
+        "importQuestion1": "",
+        "importQuestion2": "",
+        "importQuestion3": "",
+        "importQuestion4": "",
+        "riskTips": "",
+        "showSeedPhrase": "",
+        "backup": "",
+        "backupTips": "",
+        "copy": "",
+        "saved": "",
+        "pleaseSelectWords": "",
+        "verificationFailed": "",
+        "createdSuccessfully": "",
+        "verifySeedPhrase": "",
+        "fillInTheBackupSeedPhraseInOrder": "",
+        "clearAll": "",
+        "wordPhrase": ""
+      },
+      "metamask": {
+        "step1": "",
+        "step2": "",
+        "step3": "",
+        "how": "",
+        "step": "",
+        "importSeedPhrase": "",
+        "importSeedPhraseTips": ""
+      },
+      "privateKey": {
+        "required": "",
+        "placeholder": "",
+        "whatIsAPrivateKey": {
+          "question": "",
+          "answer": ""
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "",
+          "answer": ""
+        },
+        "isItPossibleToImportKeystore": {
+          "question": "",
+          "answer": ""
+        },
+        "notAValidPrivateKey": ""
+      },
+      "importedSuccessfully": "",
+      "ledger": {
+        "title": "",
+        "cameraPermissionTitle": "",
+        "cameraPermission1": "",
+        "allowRabbyPermissionsTitle": "",
+        "ledgerPermission1": "",
+        "ledgerPermissionTip": "",
+        "permissionsAuthorized": "",
+        "nowYouCanReInitiateYourTransaction": "",
+        "allow": ""
+      },
+      "walletConnect": {
+        "connectYour": "",
+        "viaWalletConnect": "",
+        "connectedSuccessfully": "",
+        "qrCodeError": "",
+        "qrCode": "",
+        "url": "",
+        "changeBridgeServer": "",
+        "status": {
+          "received": "",
+          "rejected": "",
+          "brandError": "",
+          "brandErrorDesc": "",
+          "accountError": "",
+          "accountErrorDesc": "",
+          "connected": "",
+          "duplicate": "",
+          "default": ""
+        },
+        "title": "",
+        "disconnected": "",
+        "accountError": {},
+        "tip": {
+          "accountError": {
+            "tip1": "",
+            "tip2": ""
+          },
+          "disconnected": {
+            "tip": ""
+          },
+          "connected": {
+            "tip": ""
+          }
+        },
+        "button": {
+          "disconnect": "",
+          "connect": "",
+          "howToSwitch": ""
+        }
+      },
+      "hd": {
+        "tooltip": {
+          "removed": "",
+          "added": "",
+          "connectError": "",
+          "disconnected": ""
+        },
+        "waiting": "",
+        "clickToGetInfo": "",
+        "addToRabby": "",
+        "basicInformation": "",
+        "addresses": "",
+        "loadingAddress": "",
+        "notes": "",
+        "getOnChainInformation": "",
+        "hideOnChainInformation": "",
+        "usedChains": "",
+        "firstTransactionTime": "",
+        "balance": "",
+        "ledger": {
+          "hdPathType": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "hdPathTypeNoChain": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          }
+        },
+        "trezor": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          },
+          "message": {
+            "disconnected": ""
+          }
+        },
+        "onekey": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          }
+        },
+        "mnemonic": {
+          "hdPathType": {
+            "default": ""
+          },
+          "hdPathTypeNoChain": {
+            "default": ""
+          }
+        },
+        "gridplus": {
+          "hdPathType": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "hdPathTypeNochain": {
+            "ledgerLive": "",
+            "bip44": "",
+            "legacy": ""
+          },
+          "switch": {
+            "title": "",
+            "content": ""
+          },
+          "switchToAnotherGridplus": ""
+        },
+        "keystone": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNochain": {
+            "bip44": ""
+          }
+        },
+        "bitbox02": {
+          "hdPathType": {
+            "bip44": ""
+          },
+          "hdPathTypeNoChain": {
+            "bip44": ""
+          },
+          "disconnected": ""
+        },
+        "selectHdPath": "",
+        "selectIndexTip": "",
+        "manageAddressFrom": "",
+        "advancedSettings": "",
+        "customAddressHdPath": "",
+        "connectedToLedger": "",
+        "connectedToTrezor": "",
+        "connectedToOnekey": "",
+        "manageSeedPhrase": "",
+        "manageGridplus": "",
+        "manageKeystone": "",
+        "manageAirgap": "",
+        "manageCoolwallet": "",
+        "manageBitbox02": "",
+        "done": "",
+        "addressesIn": "",
+        "addressesInRabby": "",
+        "qrCode": {
+          "switch": {
+            "title": "",
+            "content": ""
+          },
+          "switchAnother": ""
         }
       }
-    },
-    "sendNFT": {
-      "header": {
-        "title": ""
-      },
-      "nftInfoFieldLabel": {
-        "Collection": "",
-        "Contract": "",
-        "sendAmount": ""
-      },
-      "sectionChain": {
-        "title": ""
-      },
-      "sectionFrom": {
-        "title": ""
-      },
-      "sectionTo": {
-        "addrValidator__empty": "",
-        "addrValidator__invalid": "",
-        "searchInputPlaceholder": "",
-        "title": ""
-      },
-      "sendButton": "",
-      "tipAddToContacts": "",
-      "tipNotOnAddressList": "",
-      "whitelistAlert__disabled": "",
-      "whitelistAlert__notWhitelisted": "",
-      "whitelistAlert__temporaryGranted": "",
-      "whitelistAlert__whitelisted": ""
-    },
-    "sendToken": {
-      "header": {
-        "title": ""
-      },
-      "sectionBalance": {
-        "title": ""
-      },
-      "sectionChain": {
-        "title": ""
-      },
-      "sectionFrom": {
-        "title": ""
-      },
-      "sectionTo": {
-        "addrValidator__empty": "",
-        "addrValidator__invalid": "",
-        "searchInputPlaceholder": "",
-        "title": ""
-      },
-      "sendButton": "",
-      "tokenInfoFieldLabel": {
-        "chain": "",
-        "contract": ""
-      },
-      "tokenInfoPrice": "",
-      "AddToContactsModal": {
-        "addedAsContacts": "",
-        "editAddr": {
-          "placeholder": "",
-          "validator__empty": ""
-        },
-        "editAddressNote": "",
-        "error": ""
-      },
-      "GasSelector": {
-        "confirm": "",
-        "level": {
-          "$unknown": "",
-          "custom": "",
-          "fast": "",
-          "normal": "",
-          "slow": ""
-        },
-        "popupDesc": "",
-        "popupTitle": ""
-      },
-      "allowTransferModal": {
-        "error": "",
-        "placeholder": "",
-        "validator__empty": ""
-      },
-      "modalConfirmAddToContacts": {
-        "confirmText": "",
-        "title": ""
-      },
-      "modalConfirmAllowTransferTo": {
-        "cancelText": "",
-        "confirmText": "",
-        "title": ""
-      }
-    },
-    "sendTokenComponents": {
-      "GasReserved": ""
     }
   },
   "AdvancedSettings": {
@@ -1348,38 +1703,5 @@
   "useThisQuote": {
     "message": ""
   },
-  "component": {
-    "PillsSwitch": {
-      "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
-      }
-    },
-    "ChainSelectorModal": {
-      "noChains": "",
-      "searchPlaceholder": ""
-    },
-    "TokenSelector": {
-      "header": {
-        "title": ""
-      },
-      "listTableHead": {
-        "assetAmount": {
-          "title": ""
-        },
-        "price": {
-          "title": ""
-        },
-        "usdValue": {
-          "title": ""
-        }
-      },
-      "noMatch": "",
-      "noMatchSuggestion": "",
-      "noTokens": "",
-      "searchInput": {
-        "placeholder": ""
-      }
-    }
-  }
+  "tradePair": ""
 }

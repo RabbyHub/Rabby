@@ -31,7 +31,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
     {
       leftIcon: IconTokenApproval,
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-      content: t('Token Approval'),
+      content: t('page.dashboard.security.tokenApproval'),
       onClick: () => {
         matomoRequestEvent({
           category: 'Security',
@@ -47,7 +47,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
     {
       leftIcon: IconNFTApproval,
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-      content: t('NFT Approval'),
+      content: t('page.dashboard.security.nftApproval'),
       onClick: () => {
         matomoRequestEvent({
           category: 'Security',
@@ -69,7 +69,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
         onClose={onClose}
         height={240}
         bodyStyle={{ height: '100%', paddingBottom: 0 }}
-        title="Security"
+        title={t('page.dashboard.security.title')}
       >
         <div className="popup-security">
           <div className="content">
@@ -85,7 +85,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
             ))}
           </div>
           <footer className="footer">
-            <div>{t('More features coming soon')}</div>
+            <div>{t('page.dashboard.security.comingSoon')}</div>
           </footer>
         </div>
       </Popup>

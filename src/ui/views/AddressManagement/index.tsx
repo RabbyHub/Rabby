@@ -36,26 +36,30 @@ function NoAddressUI() {
       <img
         className="no-data-image"
         src="/images/nodata-address.png"
-        alt="no address"
+        alt={t('page.manageAddress.no-address')}
       />
-      <p className="text-gray-content text-14">{t('NoAddress')}</p>
+      <p className="text-gray-content text-14">
+        {t('page.manageAddress.no-address')}
+      </p>
     </div>
   );
 }
 
 function NoSearchedAddressUI() {
+  const { t } = useTranslation();
+
   return (
     <div className="no-matched-address">
       <img
         className="no-data-image w-[52px] h-[52px]"
         src="/images/no-matched-addr.svg"
-        alt="no address"
+        alt={t('page.manageAddress.no-match')}
       />
       <p
         className="text-14 mt-[24px]"
         style={{ color: LessPalette['@color-body'] }}
       >
-        No match
+        {t('page.manageAddress.no-match')}
       </p>
     </div>
   );
@@ -277,7 +281,9 @@ const AddressManagement = () => {
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
-        {enableSwitch ? 'Current Address' : t('Address Management')}
+        {enableSwitch
+          ? t('page.manageAddress.current-address')
+          : t('page.manageAddress.address-management')}
         <div className="absolute top-24 right-[42px]">
           <IconAddAddress
             viewBox="0 0 20 20"
@@ -286,7 +292,7 @@ const AddressManagement = () => {
           />
         </div>
         <Tooltip
-          title="Update balance data"
+          title={t('page.manageAddress.update-balance-data')}
           overlayClassName="rectangle"
           placement="left"
         >
@@ -358,7 +364,7 @@ const AddressManagement = () => {
             <div className="search-address-wrapper">
               <Input
                 className="radius-6px"
-                placeholder="Search"
+                placeholder={t('page.manageAddress.search')}
                 prefix={<img src={IconSearch} />}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 value={searchKeyword}
@@ -369,7 +375,7 @@ const AddressManagement = () => {
               className="flex items-center cursor-pointer"
               onClick={gotoManageAddress}
             >
-              <span>Manage Address</span>
+              <span>{t('page.manageAddress.manage-address')}</span>
               <IconRight />
             </div>
           </div>

@@ -86,9 +86,9 @@ const AddAddressOptions = () => {
 
     if (!allowed) {
       Modal.error({
-        title: 'Unable to import',
-        content: `Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from ${brand} before importing another device.`,
-        okText: 'OK',
+        title: t('page.newAddress.unableToImport.title'),
+        content: t('page.newAddress.unableToImport.description'),
+        okText: t('global.ok'),
         centered: true,
         maskClosable: true,
         className: 'text-center',
@@ -145,7 +145,7 @@ const AddAddressOptions = () => {
           if (item.hidden) return;
           return {
             leftIcon: item.image,
-            content: t(item.name),
+            content: item.name,
             brand: item.brand,
             connectType: item.connectType,
             image: item.image,
@@ -167,17 +167,17 @@ const AddAddressOptions = () => {
     () =>
       [
         {
-          title: 'Connect Hardware Wallets',
+          title: t('page.newAddress.connectHardwareWallets'),
           key: WALLET_BRAND_CATEGORY.HARDWARE,
           icon: IconHardWallet,
         },
         {
-          title: 'Connect Mobile Wallet Apps',
+          title: t('page.newAddress.connectMobileWalletApps'),
           key: WALLET_BRAND_CATEGORY.MOBILE,
           icon: IconMobileWallet,
         },
         {
-          title: 'Connect Institutional Wallets',
+          title: t('page.newAddress.connectInstitutionalWallets'),
           key: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
           icon: InstitutionalWallet,
         },
@@ -196,7 +196,7 @@ const AddAddressOptions = () => {
     () => [
       {
         leftIcon: IconCreatenewaddr,
-        content: t('createAddress'),
+        content: t('page.newAddress.createNewSeedPhrase'),
         brand: 'createAddress',
         onClick: () => {
           handleRouter(() => openInternalPageInTab('mnemonics/create'));
@@ -211,20 +211,20 @@ const AddAddressOptions = () => {
       {
         leftIcon: IconMnemonics,
         brand: 'importSeedPhrase',
-        content: 'Import Seed Phrase',
+        content: t('page.newAddress.importSeedPhrase'),
         onClick: () =>
           handleRouter(() => openInternalPageInTab('import/mnemonics')),
       },
       {
         leftIcon: IconPrivatekey,
         brand: 'importPrivatekey',
-        content: 'Import Private Key',
+        content: t('page.newAddress.importPrivateKey'),
         onClick: () => handleRouter((history) => history.push('/import/key')),
       },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
-        content: 'Import My MetaMask Account',
+        content: t('page.newAddress.importMyMetamaskAccount'),
         onClick: () =>
           handleRouter((history) => history.push('/import/metamask')),
       },
@@ -237,8 +237,8 @@ const AddAddressOptions = () => {
       {
         leftIcon: IconAddwatchmodo,
         brand: 'addWatchMode',
-        content: 'Add Contacts',
-        subText: 'You can also use it as a watch-only address',
+        content: t('page.newAddress.addContacts.content'),
+        subText: t('page.newAddress.addContacts.description'),
         onClick: () =>
           handleRouter((history) => history.push('/import/watch-address')),
       },

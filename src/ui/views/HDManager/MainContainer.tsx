@@ -5,6 +5,7 @@ import { AddressesInHD } from './AddressesInHD';
 import { AddressesInRabby } from './AddressesInRabby';
 import { SettingData, MAX_ACCOUNT_COUNT } from './AdvancedSettings';
 import { HDManagerStateContext } from './utils';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   setting: SettingData;
@@ -52,13 +53,18 @@ export const MainContainer: React.FC<Props> = ({
     });
   }, [setting.startNo, currentAccounts]);
 
+  const { t } = useTranslation();
+
   return (
     <Tabs
       activeKey={tab}
       onChange={(active) => setTab(active as any)}
       className="tabs"
     >
-      <Tabs.TabPane tab={`Addresses in ${HDName}`} key="hd">
+      <Tabs.TabPane
+        tab={t('page.newAddress.hd.addressesIn', [HDName])}
+        key="hd"
+      >
         <AddressesInHD
           type={setting.type}
           startNo={setting.startNo}
@@ -67,9 +73,9 @@ export const MainContainer: React.FC<Props> = ({
         />
       </Tabs.TabPane>
       <Tabs.TabPane
-        tab={`Addresses in Rabby${
-          loading ? '' : ` (${filterCurrentAccounts.length})`
-        }`}
+        tab={t('page.newAddress.hd.addressesInRabby', [
+          loading ? '' : ` (${filterCurrentAccounts.length})`,
+        ])}
         key="rabby"
         disabled={loading}
       >

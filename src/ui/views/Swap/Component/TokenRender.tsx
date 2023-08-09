@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ReactComponent as IconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { useTranslation } from 'react-i18next';
 const TokenRenderWrapper = styled.div`
   width: 150px;
   height: 46px;
@@ -56,6 +57,7 @@ export const TokenRender = ({
   token?: TokenItem | undefined;
   openTokenModal: () => void;
 }) => {
+  const { t } = useTranslation();
   return (
     <TokenRenderWrapper onClick={openTokenModal}>
       {token ? (
@@ -74,7 +76,7 @@ export const TokenRender = ({
         </div>
       ) : (
         <div className="select">
-          <span>Select Token</span>
+          <span>{t('page.swap.select-token')}</span>
           <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
         </div>
       )}

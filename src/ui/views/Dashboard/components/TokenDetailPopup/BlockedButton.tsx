@@ -1,6 +1,7 @@
 import { Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 export interface Props {
@@ -37,6 +38,7 @@ export const BlockedButton: React.FC<Props> = ({
   onOpen,
   onClose,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={clsx('flex rounded', {
@@ -50,7 +52,7 @@ export const BlockedButton: React.FC<Props> = ({
           selected ? 'block' : 'hidden'
         )}
       >
-        Blocked token will not be shown in token list
+        {t('page.dashboard.tokenDetail.blockedTip')}
       </div>
       <label
         className={clsx('flex items-center gap-x-6 cursor-pointer', {
@@ -68,7 +70,9 @@ export const BlockedButton: React.FC<Props> = ({
             }
           }}
         />
-        <span className="text-black text-12">Blocked</span>
+        <span className="text-black text-12">
+          {t('page.dashboard.tokenDetail.blocked')}
+        </span>
       </label>
     </div>
   );

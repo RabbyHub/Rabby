@@ -6,6 +6,7 @@ import { Popup } from '@/ui/component';
 import { ReactComponent as EmptySVG } from '@/ui/assets/dashboard/empty.svg';
 import { TokenTable } from './TokenTable';
 import { useCommonPopupView } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   label: string;
@@ -27,6 +28,7 @@ export const TokenButton: React.FC<Props> = ({
   const { visible: commonPopupVisible } = useCommonPopupView();
   const [visible, setVisible] = React.useState(false);
   const len = tokens?.length ?? 0;
+  const { t } = useTranslation();
 
   const handleClickLink = React.useCallback(() => {
     setVisible(false);
@@ -66,7 +68,7 @@ export const TokenButton: React.FC<Props> = ({
       >
         {!hiddenSubTitle && (
           <div className="text-black text-13 mb-[30px] text-center -m-8">
-            The token in this list will not be added to total balance
+            {t('page.dashboard.assets.tokenButton.subTitle')}
           </div>
         )}
         <TokenTable

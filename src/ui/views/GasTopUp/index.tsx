@@ -317,20 +317,20 @@ export const GasTopUp = () => {
       }}
     >
       <PageHeader onBack={handleClickBack} forceShowBack invertBack>
-        <span className="text-white">{t('Instant Gas Top Up')}</span>
+        <span className="text-white">{t('page.gasTopUp.title')}</span>
       </PageHeader>
       <div className="text-12 leading-[17px] text-white pt-[4px] pb-[24px]">
-        {t('gasTopUpDescribe')}
+        {t('page.gasTopUp.description')}
       </div>
 
       <div className="w-[360px] h-[284px] bg-white rounded-[6px] px-[16px] py-[32px]">
         <div className="text-15 font-medium text-gray-title mb-12">
-          {t('Top Up Chain')}
+          {t('page.gasTopUp.topUpChain')}
         </div>
         <ChainSelect value={chain} onChange={setChain} />
 
         <div className="text-15 font-medium text-gray-title mt-[40px] mb-[12px]">
-          {t('Amount')}
+          {t('page.gasTopUp.Amount')}
         </div>
         <Space size={8}>
           {prices.map((e, i) => (
@@ -361,7 +361,7 @@ export const GasTopUp = () => {
           onClick={handleContinue}
           disabled={btnDisabled}
         >
-          {t('Continue')}
+          {t('page.gasTopUp.Continue')}
         </Button>
       </div>
 
@@ -435,9 +435,9 @@ const GasBox = ({
       }
       title={
         chainInsufficientBalance
-          ? t('Gas Top Up Insufficient Balance')
+          ? t('page.gasTopUp.InsufficientBalance')
           : gasCostExceedsBudget
-          ? t('Gas Top Up hight gas fees')
+          ? t('page.gasTopUp.hightGasFees')
           : ''
       }
     >

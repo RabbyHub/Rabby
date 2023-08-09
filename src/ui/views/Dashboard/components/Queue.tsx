@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -31,6 +32,7 @@ const Queue = ({ count, className }: QueueProps) => {
   const handleClickPendingTxs = () => {
     history.push('/gnosis-queue');
   };
+  const { t } = useTranslation();
 
   return (
     <Wrapper
@@ -44,9 +46,13 @@ const Queue = ({ count, className }: QueueProps) => {
       )}
     >
       <div className="group-hover:block hidden">
-        {count ? <span className="mr-4">{count} in</span> : null}
+        {count ? (
+          <span className="mr-4">
+            {t('page.dashboard.home.queue.count', { count })}
+          </span>
+        ) : null}
       </div>
-      <div>Queue</div>
+      <div>{t('page.dashboard.home.queue.title')}</div>
     </Wrapper>
   );
 };
