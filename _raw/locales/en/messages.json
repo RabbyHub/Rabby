@@ -2001,6 +2001,16 @@
           "switchAnother": "Switch to another {{0}}"
         }
       }
+    },
+    "unlock": {
+      "btn": {
+        "unlock": "Unlock"
+      },
+      "password": {
+        "required": "Enter the Password to Unlock",
+        "placeholder": "Enter the Password to Unlock",
+        "error": "incorrect password"
+      }
     }
   },
   "component": {
