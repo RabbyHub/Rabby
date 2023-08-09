@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractRequireData, TypedDataActionData } from './utils';
@@ -62,7 +63,7 @@ const ContractCall = ({
   engineResults: Result[];
 }) => {
   const dispatch = useRabbyDispatch();
-
+  const { t } = useTranslation();
   const operation = useMemo(() => {
     if (raw.primaryType) {
       return raw.primaryType as string;
@@ -98,7 +99,7 @@ const ContractCall = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -109,18 +110,18 @@ const ContractCall = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore
@@ -139,7 +140,7 @@ const ContractCall = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Operation</Row>
+          <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
           <Row>
             <div className="relative flex items-center">
               {operation || '-'}
@@ -147,8 +148,8 @@ const ContractCall = ({
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   operation
-                    ? 'Operation is decoded from message'
-                    : 'Operation is not decoded'
+                    ? t('page.signTypedData.contractCall.operationDecoded')
+                    : t('page.signTx.contractCall.operationCantDecode')
                 }
               >
                 <img src={IconQuestionMark} className="w-12 ml-6" />

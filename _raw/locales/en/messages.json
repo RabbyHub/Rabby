@@ -1132,10 +1132,10 @@
       "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
       "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
       "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
-      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {0}",
+      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
       "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
-      "safeAddressNotSupportChain": "Current safe address is not supported on {0} chain",
+      "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
       "gasSelectorTitle": "Gas",
       "failToFetchGasCost": "Fail to fetch gas cost",
@@ -1172,7 +1172,7 @@
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{0} more confirmation needed",
+      "moreSafeSigNeeded": "{{0}} more confirmation needed",
       "safeAdminSigned": "Signed",
       "swap": {
         "title": "Swap Token",
@@ -1203,8 +1203,13 @@
         "receiverIsTokenAddress": "Token address",
         "contractNotOnThisChain": "Contract address not on this chain",
         "notTopupAddress": "Not top up address",
-        "tokenNotSupport": "{0} not supported",
-        "onMyWhitelist": "On my whitelist"
+        "tokenNotSupport": "{{0}} not supported",
+        "onMyWhitelist": "On my whitelist",
+        "notOnThisChain": "Not on this chain",
+        "cexAddress": "CEX address",
+        "addressBalanceTitle": "Address balance",
+        "whitelistTitle": "Whitelist",
+        "notOnWhitelist": "Not on my whitelist"
       },
       "tokenApprove": {
         "title": "Token Approval",
@@ -1215,7 +1220,8 @@
         "trustValueLessThan": "Trust value ≤ {{value}}",
         "deployTimeLessThan": "Deployed time < {{value}} days",
         "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby"
+        "flagByRabby": "Flagged by Rabby",
+        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeTokenApprove": {
         "title": "Revoke Token Approval",
@@ -1228,7 +1234,8 @@
       },
       "nftApprove": {
         "title": "NFT Approval",
-        "approveNFT": "Approve NFT"
+        "approveNFT": "Approve NFT",
+        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeNFTApprove": {
         "title": "Revoke NFT Approval",
@@ -1284,7 +1291,20 @@
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
       "unknownActionType": "Unknown action type",
-      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk"
+      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
+      "nftCollection": "NFT Collection",
+      "floorPrice": "Floor price",
+      "contractAddress": "Contract address",
+      "protocolTitle": "Protocol",
+      "deployTimeTitle": "Deployed time",
+      "popularity": "Popularity",
+      "contractPopularity": "No.{{0}} on {{1}}",
+      "addressNote": "Address note",
+      "myMark": "My mark",
+      "collectionTitle": "Collection",
+      "addressTypeTitle": "Address type",
+      "firstOnChain": "First on-chain",
+      "trustValue": "Trust value"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -1305,8 +1325,8 @@
         "connected": "Connected and ready to sign",
         "howToSwitch": "How to switch",
         "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
-        "connectBeforeSign": "{0} is not connected to Rabby, please connect before signing",
-        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {0} in mobile wallet"
+        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
+        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet"
       },
       "beginSigning": "Begin signing process",
       "addressTip": {
@@ -1320,6 +1340,46 @@
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
         "safe": "Safe address"
+      }
+    },
+    "signTypedData": {
+      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
+      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
+      "permit": {
+        "title": "Permit Token Approval"
+      },
+      "permit2": {
+        "title": "Permit2 Token Approval",
+        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
+        "sigExpireTime": "Signature expire time",
+        "approvalExpiretime": "Approval expire time"
+      },
+      "swapTokenOrder": {
+        "title": "Token Order"
+      },
+      "sellNFT": {
+        "title": "NFT Order",
+        "receiveToken": "Receive token",
+        "listNFT": "List NFT",
+        "specificBuyer": "Specific buyer"
+      },
+      "signMultiSig": {
+        "title": "Confirm Transaction"
+      },
+      "createKey": {
+        "title": "Create Key"
+      },
+      "verifyAddress": {
+        "title": "Verify Address"
+      },
+      "buyNFT": {
+        "payToken": "Pay token",
+        "receiveNFT": "Receive NFT",
+        "expireTime": "Expire time",
+        "listOn": "List on"
+      },
+      "contractCall": {
+        "operationDecoded": "Operation is decoded from message"
       }
     }
   },

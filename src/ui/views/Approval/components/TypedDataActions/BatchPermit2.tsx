@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
@@ -46,6 +47,7 @@ const Permit2 = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -76,7 +78,7 @@ const Permit2 = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve token</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
           <div className="flex-1 overflow-hidden">
             {actionData.token_list.map((token) => (
               <Row key={token.id} className="has-bottom-border">
@@ -94,7 +96,7 @@ const Permit2 = ({
                 />
                 <ul className="desc-list">
                   <li>
-                    My balance{' '}
+                    {t('page.signTx.tokenApprove.myBalance')}{' '}
                     <span>{formatAmount(tokenBalanceMap[token.id])}</span>{' '}
                     {ellipsisTokenSymbol(getTokenSymbol(token))}
                   </li>
@@ -104,11 +106,8 @@ const Permit2 = ({
           </div>
         </Col>
         <Col>
-          <Row
-            isTitle
-            tip="The duration for this signature to be valid on-chain"
-          >
-            Signature expire time
+          <Row isTitle tip={t('page.signTypedData.permit2.sigExpireTimeTip')}>
+            {t('page.signTypedData.permit2.sigExpireTime')}
           </Row>
           <Row>
             {actionData.sig_expire_at ? (
@@ -119,7 +118,9 @@ const Permit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approval expire time</Row>
+          <Row isTitle>
+            {t('page.signTypedData.permit2.approvalExpiretime')}
+          </Row>
           <Row>
             {actionData.expire_at ? (
               <Values.TimeSpanFuture to={actionData.expire_at} />
@@ -129,7 +130,7 @@ const Permit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -155,38 +156,44 @@ const Permit2 = ({
               <SecurityListItem
                 id="1110"
                 engineResult={engineResultMap['1110']}
-                dangerText="Trust value ≤ $10,000"
-                warningText="Trust value ≤ $100,000"
+                dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$10,000',
+                })}
+                warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$100,000',
+                })}
               />
 
               <SecurityListItem
                 id="1111"
                 engineResult={engineResultMap['1111']}
-                warningText="Deployed time < 3 days"
+                warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
+                  value: '3',
+                })}
               />
 
               <SecurityListItem
                 id="1113"
                 engineResult={engineResultMap['1113']}
-                dangerText="Flagged by Rabby"
+                dangerText={t('page.signTx.tokenApprove.flagByRabby')}
               />
 
               <SecurityListItem
                 id="1134"
                 engineResult={engineResultMap['1134']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1136"
                 engineResult={engineResultMap['1136']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1133"
                 engineResult={engineResultMap['1133']}
-                safeText="Marked as trusted"
+                safeText={t('page.signTx.markAsTrust')}
               />
 
               <li>
