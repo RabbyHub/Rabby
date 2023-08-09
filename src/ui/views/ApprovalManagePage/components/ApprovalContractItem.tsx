@@ -12,13 +12,14 @@ import { ApprovalItem } from '@/utils/approval';
 import { findChainByServerID } from '@/utils/chain';
 import { openScanLinkFromChainItem } from '../utils';
 import ApprovalsNameAndAddr from './NameAndAddr';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   data: ApprovalItem[];
   index: number;
   setSize?: (i: number, h: number) => void;
   onClick?: (item: ApprovalItem) => void;
-  showNFTAmount?: boolean;
+  // showNFTAmount?: boolean;
 };
 
 export const ApprovalContractItem = ({
@@ -26,7 +27,6 @@ export const ApprovalContractItem = ({
   index,
   setSize,
   onClick: onSelect,
-  showNFTAmount = false,
 }: Props) => {
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +47,8 @@ export const ApprovalContractItem = ({
       setSize(index, rowRef.current.getBoundingClientRect().height);
     }
   }, [item, setSize, index]);
+
+  const { t } = useTranslation();
 
   const chainItem = useMemo(() => findChainByServerID(item.chain), [
     item.chain,
@@ -112,7 +114,16 @@ export const ApprovalContractItem = ({
 
         <span className="text-[13px] text-gray-subTitle flex-shrink-0 ml-auto font-medium">
           {item.list.length}{' '}
-          {!onSelect && 'Approval' + (item.list.length > 1 ? 's' : '')}
+          {!onSelect &&
+            (item.list.length > 1
+              ? // 'Approvals'
+                t(
+                  'page.approvals.component.ApprovalContractItem.ApprovalCount_other'
+                )
+              : // 'Approval'
+                t(
+                  'page.approvals.component.ApprovalContractItem.ApprovalCount_one'
+                ))}
           {}
         </span>
         {onSelect && <IconArrowRight />}

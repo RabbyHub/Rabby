@@ -172,17 +172,20 @@ const TokenSelector = ({
 
           {!query || isSearchAddr ? (
             <p className="text-gray-content text-14 mt-12 text-center mb-0">
-              {t('No Tokens')}
+              {t('component.TokenSelector.noTokens')}
             </p>
           ) : (
             <>
               <p className="text-gray-content text-14 mt-12 text-center mb-0">
-                No Match
+                {t('component.TokenSelector.noMatch')}
               </p>
               <p className="text-gray-content text-14 mt-0 text-center">
-                Try to search contract address on{' '}
-                {CHAINS_LIST.find((e) => e.serverId === chainServerId)?.name ||
-                  'chain'}
+                {/* Try to search contract address on {{ chainName }} */}
+                {t('component.TokenSelector.noMatchSuggestion', {
+                  chainName:
+                    CHAINS_LIST.find((e) => e.serverId === chainServerId)
+                      ?.name || 'chain',
+                })}
               </p>
             </>
           )}
@@ -209,13 +212,17 @@ const TokenSelector = ({
       visible={visible}
       onClose={onCancel}
     >
-      <div className="header">{t('Select a token')}</div>
+      {/* Select a token */}
+      <div className="header">{t('component.TokenSelector.header.title')}</div>
       <div className="input-wrapper">
         <Input
           className={clsx({ active: isInputActive })}
           size="large"
           prefix={<img src={IconSearch} />}
-          placeholder={placeholder ?? t('Search by Name / Address')}
+          // Search by Name / Address
+          placeholder={
+            placeholder ?? t('component.TokenSelector.searchInput.placeholder')
+          }
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus
@@ -255,9 +262,18 @@ const TokenSelector = ({
       </div>
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
-          <div>ASSET / AMOUNT</div>
-          <div>PRICE</div>
-          <div>USD VALUE</div>
+          <div>
+            {/* ASSET / AMOUNT */}
+            {t('component.TokenSelector.listTableHead.assetAmount.title')}
+          </div>
+          <div>
+            {/* PRICE */}
+            {t('component.TokenSelector.listTableHead.price.title')}
+          </div>
+          <div>
+            {/* USD VALUE */}
+            {t('component.TokenSelector.listTableHead.usdValue.title')}
+          </div>
         </li>
         {isEmpty
           ? NoDataUI

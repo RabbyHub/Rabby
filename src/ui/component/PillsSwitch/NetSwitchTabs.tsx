@@ -2,25 +2,18 @@ import React, { useState, useMemo, useCallback } from 'react';
 import PillsSwitch, { PillsSwitchProps } from '@/ui/component/PillsSwitch';
 import { useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const NetTypes = {
   mainnet: 'Mainnets',
   testnet: 'Testnets',
 } as const;
 
-export const switchOptions = [
-  {
-    key: 'mainnet',
-    label: NetTypes.mainnet,
-  },
-  {
-    key: 'testnet',
-    label: NetTypes.testnet,
-  },
-] as const;
-
-type OptionType = typeof switchOptions[number];
-export type NetSwitchTabsKey = OptionType['key'];
+export type NetSwitchTabsKey = keyof typeof NetTypes;
+type OptionType = {
+  key: NetSwitchTabsKey;
+  label: string;
+};
 type SwitchTabProps = Omit<PillsSwitchProps<OptionType[]>, 'options'>;
 
 export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
@@ -47,7 +40,28 @@ export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
   };
 }
 
+function useSwitchOptions() {
+  const { t } = useTranslation();
+
+  return useMemo(() => {
+    return [
+      {
+        key: 'mainnet',
+        // Mainnets
+        label: t('component.PillsSwitch.NetSwitchTabs.mainnet'),
+      },
+      {
+        key: 'testnet',
+        // Testnets
+        label: t('component.PillsSwitch.NetSwitchTabs.testnet'),
+      },
+    ] as const;
+  }, [t]);
+}
+
 export default function NetSwitchTabs(props: SwitchTabProps) {
+  const switchOptions = useSwitchOptions();
+
   return (
     <PillsSwitch
       {...props}
@@ -60,6 +74,8 @@ export default function NetSwitchTabs(props: SwitchTabProps) {
 }
 
 NetSwitchTabs.ApprovalsPage = function ApprovalsPage(props: SwitchTabProps) {
+  const switchOptions = useSwitchOptions();
+
   return (
     <PillsSwitch
       {...props}

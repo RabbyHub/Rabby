@@ -1154,6 +1154,154 @@
     "chainList": {
       "title": "{{count}} chains supported"
     },
+    "sendToken": {
+      "header": {
+        "title": "Send"
+      },
+      "sectionChain": {
+        "title": "Chain"
+      },
+      "sectionFrom": {
+        "title": "From"
+      },
+      "sectionTo": {
+        "title": "To",
+        "addrValidator__empty": "Please input address",
+        "addrValidator__invalid": "This address is invalid",
+        "searchInputPlaceholder": "Enter address or search"
+      },
+      "sectionBalance": {
+        "title": "Balance"
+      },
+      "tokenInfoFieldLabel": {
+        "contract": "Contract Address",
+        "chain": "Chain"
+      },
+      "tokenInfoPrice": "Price",
+      "sendButton": "Send",
+      "GasSelector": {
+        "popupTitle": "Set Gas Price (Gwei)",
+        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
+        "confirm": "Confirm",
+        "level": {
+          "$unknown": "Unknown",
+          "slow": "Standard",
+          "normal": "Fast",
+          "fast": "Instant",
+          "custom": "Custom"
+        }
+      },
+      "AddToContactsModal": {
+        "error": "Failed to add to contacts",
+        "addedAsContacts": "Added as contacts",
+        "editAddressNote": "Edit address note",
+        "editAddr": {
+          "validator__empty": "Please enter address note",
+          "placeholder": "Enter Address Note"
+        }
+      },
+      "modalConfirmAddToContacts": {
+        "title": "Add to contacts",
+        "confirmText": "Confirm"
+      },
+      "allowTransferModal": {
+        "error": "incorrect password",
+        "validator__empty": "Please input password",
+        "placeholder": "Enter the Password to Confirm"
+      },
+      "modalConfirmAllowTransferTo": {
+        "title": "Enter the Password to Confirm",
+        "cancelText": "Cancel",
+        "confirmText": "Confirm"
+      }
+    },
+    "sendTokenComponents": {
+      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
+    },
+    "sendNFT": {
+      "header": {
+        "title": "Send"
+      },
+      "sectionChain": {
+        "title": "Chain"
+      },
+      "sectionFrom": {
+        "title": "From"
+      },
+      "sectionTo": {
+        "title": "To",
+        "addrValidator__empty": "Please input address",
+        "addrValidator__invalid": "This address is invalid",
+        "searchInputPlaceholder": "Enter address or search"
+      },
+      "nftInfoFieldLabel": {
+        "Collection": "Collection",
+        "Contract": "Contract",
+        "sendAmount": "Send Amount"
+      },
+      "sendButton": "Send",
+      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
+      "whitelistAlert__whitelisted": "The address is whitelisted",
+      "whitelistAlert__temporaryGranted": "Temporary permission granted",
+      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
+      "tipNotOnAddressList": "Not on address list.",
+      "tipAddToContacts": "Add to contacts"
+    },
+    "approvals": {
+      "header": {
+        "title": "Approvals on {{ address }}"
+      },
+      "tab-switch": {
+        "contract": "By Contracts",
+        "assets": "By Assets"
+      },
+      "component": {
+        "table": {
+          "bodyEmpty": {
+            "loadingText": "Loading...",
+            "noMatchText": "No Match"
+          }
+        },
+        "ApprovalContractItem": {
+          "ApprovalCount_one": "Approval",
+          "ApprovalCount_other": "Approvals"
+        }
+      },
+      "search": {
+        "placeholder": "Search {{ type }} by name/address"
+      },
+      "tableConfig": {
+        "byContracts": {
+          "columnTitle": {
+            "contract": "Contract",
+            "contractTrustValue": "Contract Trust value",
+            "revokeTrends": "24h Revoke Trends",
+            "myApprovedAssets": "My Approved Assets"
+          },
+          "columnTip": {
+            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+            "contractTrustValueWarning": "The contract trust value < $100,000",
+            "contractTrustValueDanger": "The contract trust value < $10,000"
+          }
+        },
+        "byAssets": {
+          "columnTitle": {
+            "asset": "Asset",
+            "type": "Type",
+            "approvedAmount": "Approved Amount",
+            "approvedSpender": "Approved Spender",
+            "myApprovalTime": "My Approval Time"
+          }
+        }
+      },
+      "RevokeApprovalModal": {
+        "subTitleTokenAndNFT": "Approved Token and NFT",
+        "subTitleContract": "Approved to the following Contracts",
+        "selectAll": "Select All",
+        "confirm": "Confirm {{ selectedCount }}",
+        "title": "Approvals"
+      }
+    },
     "gasTopUp": {
       "title": "Instant Gas Top Up",
       "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
@@ -1793,7 +1941,48 @@
       }
     }
   },
-  "component": {},
+  "component": {
+    "PillsSwitch": {
+      "NetSwitchTabs": {
+        "mainnet": "Mainnets",
+        "testnet": "Testnets"
+      }
+    },
+    "ChainSelectorModal": {
+      "searchPlaceholder": "Search chain",
+      "noChains": "No chains"
+    },
+    "TokenSelector": {
+      "listTableHead": {
+        "assetAmount": {
+          "title": "ASSET / AMOUNT"
+        },
+        "price": {
+          "title": "PRICE"
+        },
+        "usdValue": {
+          "title": "USD VALUE"
+        }
+      },
+      "searchInput": {
+        "placeholder": "Search by Name / Address"
+      },
+      "header": {
+        "title": "Select a token"
+      },
+      "noTokens": "No Tokens",
+      "noMatch": "No Match",
+      "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
+    },
+    "ModalPreviewNFTItem": {
+      "FieldLabel": {
+        "Collection": "Collection",
+        "Chain": "Chain",
+        "PurschaseDate": "Purchase Date",
+        "LastPrice": "Last Price"
+      }
+    }
+  },
   "global": {
     "error": "",
     "copied": "Copied",
