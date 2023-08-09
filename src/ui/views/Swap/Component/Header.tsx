@@ -6,12 +6,14 @@ import React, { useCallback, useState } from 'react';
 import { TradingSettings } from './TradingSettings';
 import { useSetSettingVisible, useSettingVisible } from '../hooks';
 import { SwapTxHistory } from './History';
+import { useTranslation } from 'react-i18next';
 
 export const Header = () => {
   const visible = useSettingVisible();
   const setVisible = useSetSettingVisible();
 
   const [historyVisible, setHistoryVisible] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -35,7 +37,7 @@ export const Header = () => {
           </div>
         }
       >
-        Swap
+        {t('page.swap.title')}
       </PageHeader>
       <TradingSettings
         visible={visible}

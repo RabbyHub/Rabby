@@ -9,6 +9,7 @@ import { Button } from 'antd';
 import React, { useMemo } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { ReactComponent as IconDelete } from '@/ui/assets/address/red-delete.svg';
+import { useTranslation } from 'react-i18next';
 
 type DelectModalProps = {
   visible: boolean;
@@ -25,6 +26,7 @@ export const AddressDeleteModal = ({
   item: IDisplayedAccountWithBalance;
   count: number;
 }) => {
+  const { t } = useTranslation();
   const { address, brandName, type } = item;
   const brandIcon = useWalletConnectIcon({
     address,
@@ -55,11 +57,14 @@ export const AddressDeleteModal = ({
         <IconDelete className="absolute -bottom-4 -right-4" />
       </div>
       <div className="text-center mt-20 mb-[36px] text-gray-title text-20 font-medium">
-        Delete {count} {renderBrand} {count > 1 ? 'addresses' : 'address'}
+        {t('page.manageAddress.delete-title', {
+          count,
+          brand: renderBrand,
+        })}
       </div>
       <footer className="flex gap-[16px]">
         <Button type="primary" size="large" block onClick={onClose}>
-          Cancel
+          {t('page.manageAddress.cancel')}
         </Button>
         <Button
           onClick={onSubmit}
@@ -69,7 +74,7 @@ export const AddressDeleteModal = ({
           className={'rabby-btn-ghost'}
           block
         >
-          Confirm Delete
+          {t('page.manageAddress.confirm-delete')}
         </Button>
       </footer>
     </Popup>
