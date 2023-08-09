@@ -13,6 +13,7 @@ import { useWallet } from '@/ui/utils';
 import { Account } from './AccountList';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
+import { useTranslation } from 'react-i18next';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -121,13 +122,12 @@ export const GridPlusManager: React.FC = () => {
   React.useEffect(() => {
     fetchInitAccountsTask();
   }, []);
-
+  const { t } = useTranslation();
   const openSwitchHD = React.useCallback(async () => {
     Modal.error({
-      title: 'Switch to a new GridPlus device',
-      content:
-        "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process.",
-      okText: 'Confirm',
+      title: t('page.newAddress.hd.gridplus.switch.title'),
+      content: t('page.newAddress.hd.gridplus.switch.content'),
+      okText: t('global.confirm'),
       onOk: async () => {
         const accounts = await wallet.requestKeyring(
           GRIDPLUS_TYPE,
@@ -156,11 +156,15 @@ export const GridPlusManager: React.FC = () => {
       <div className="toolbar">
         <div className="toolbar-item" onClick={openSwitchHD}>
           <HardwareSVG className="icon" />
-          <span className="title">Switch to another GridPlus</span>
+          <span className="title">
+            {t('page.newAddress.hd.gridplus.switchToAnotherGridplus')}
+          </span>
         </div>
         <div className="toolbar-item" onClick={openAdvanced}>
           <SettingSVG className="icon" />
-          <span className="title">Advanced Settings</span>
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
         </div>
       </div>
 
@@ -169,7 +173,7 @@ export const GridPlusManager: React.FC = () => {
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

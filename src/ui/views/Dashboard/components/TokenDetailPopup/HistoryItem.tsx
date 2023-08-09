@@ -6,6 +6,7 @@ import React from 'react';
 import { sinceTime, openInTab, getUITypeName } from 'ui/utils';
 import { ellipsis } from 'ui/utils/address';
 import { CHAINS } from 'consts';
+import { useTranslation } from 'react-i18next';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -40,6 +41,7 @@ export const HistoryItem = ({
     const needClose = getUITypeName() !== 'notification';
     openInTab(chain.scanLink.replace(/_s_/, data.id), needClose);
   };
+  const { t } = useTranslation();
   return (
     <div
       className={clsx(
@@ -48,9 +50,17 @@ export const HistoryItem = ({
       )}
     >
       <div className="token-txs-history-card-header">
-        {isScam && <div className="tag-scam">Scam tx</div>}
+        {isScam && (
+          <div className="tag-scam">
+            {t('page.dashboard.tokenDetail.scamTx')}
+          </div>
+        )}
         <div className="time">{sinceTime(data.time_at)}</div>
-        {isFailed && <span className="tx-status is-failed">Failed</span>}
+        {isFailed && (
+          <span className="tx-status is-failed">
+            {t('page.dashboard.tokenDetail.txFailed')}
+          </span>
+        )}
         <EtherscanLink onClick={handleClickTxHash}>
           {ellipsis(data.id)}
         </EtherscanLink>

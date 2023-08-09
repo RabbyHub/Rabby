@@ -11,6 +11,7 @@ import { HDManagerStateContext } from './utils';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { useAsyncRetry } from 'react-use';
 import * as Sentry from '@sentry/browser';
+import { useTranslation } from 'react-i18next';
 
 export const BitBox02Manager: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
@@ -48,6 +49,7 @@ export const BitBox02Manager: React.FC = () => {
       type: HDPathType.BIP44,
     });
   }, []);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     if (fetchCurrentAccountsRetry.loading) {
@@ -64,9 +66,8 @@ export const BitBox02Manager: React.FC = () => {
     Sentry.captureException(fetchCurrentAccountsRetry.error);
 
     Modal.error({
-      content: `Cannot connect to BitBox02. Please refresh the page to connect again.
-Reason: ${errMessage}`,
-      okText: 'Refresh',
+      content: t('page.newAddress.hd.bitbox02.disconnected', [errMessage]),
+      okText: t('global.refresh'),
       centered: true,
       onOk() {
         window.location.reload();
@@ -79,7 +80,9 @@ Reason: ${errMessage}`,
       <div className="toolbar">
         <div className="toolbar-item" onClick={openAdvanced}>
           <SettingSVG className="icon" />
-          <span className="title">Advanced Settings</span>
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
         </div>
       </div>
 
@@ -94,7 +97,7 @@ Reason: ${errMessage}`,
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

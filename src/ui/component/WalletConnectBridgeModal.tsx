@@ -55,7 +55,7 @@ const OpenApiModal = ({
     <ModalComponent
       height={240}
       closable={false}
-      title={t('Bridge server URL')}
+      title={t('component.WalletConnectBridgeModal.title')}
       visible={visible}
       onCancel={onCancel}
       className="openapi-modal rabby-modal"
@@ -65,10 +65,13 @@ const OpenApiModal = ({
           className="mb-12"
           name="host"
           rules={[
-            { required: true, message: t('Please input bridge server host') },
+            {
+              required: true,
+              message: t('component.WalletConnectBridgeModal.requiredMsg'),
+            },
             {
               pattern: /^((https|http)?:\/\/)[^\s]+\.[^\s]+/,
-              message: t('Please check your host'),
+              message: t('component.WalletConnectBridgeModal.invalidMsg'),
             },
           ]}
         >
@@ -83,7 +86,7 @@ const OpenApiModal = ({
         {form.getFieldValue('host') !== INITIAL_OPENAPI_URL && (
           <div className="flex justify-end">
             <Button type="link" onClick={restoreInitial} className="restore">
-              {t('Restore initial setting')}
+              {t('component.WalletConnectBridgeModal.restore')}
             </Button>
           </div>
         )}
@@ -94,7 +97,7 @@ const OpenApiModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            {t('Save')}
+            {t('global.Save')}
           </Button>
         </div>
       </Form>

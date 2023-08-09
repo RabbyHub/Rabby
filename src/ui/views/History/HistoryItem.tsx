@@ -5,6 +5,7 @@ import React from 'react';
 import { getChain } from '@/utils';
 import { numberWithCommasIsLtOne } from 'ui/utils';
 import { TokenChange, TxId, TxInterAddressExplain } from '@/ui/component';
+import { useTranslation } from 'react-i18next';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -19,6 +20,9 @@ export const HistoryItem = ({
   const chain = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
+
+  const { t } = useTranslation();
+
   if (!chain) {
     return null;
   }
@@ -27,7 +31,7 @@ export const HistoryItem = ({
       className={clsx('txs-history-card', (isScam || isFailed) && 'is-gray')}
     >
       <div className="txs-history-card-header">
-        {isScam && <div className="tag-scam">Scam tx</div>}
+        {isScam && <div className="tag-scam">{t('global.scamTx')}</div>}
         <div className="txs-history-card-header-inner">
           <div className="time">{sinceTime(data.time_at)}</div>
           <TxId chain={data.chain} id={data.id} />
@@ -46,13 +50,15 @@ export const HistoryItem = ({
         <div className="txs-history-card-footer">
           {data.tx && data.tx?.eth_gas_fee ? (
             <div>
-              {' '}
-              Gas : {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 2)}{' '}
+              {t('global.gas')}:{' '}
+              {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 2)}{' '}
               {chain?.nativeTokenSymbol} ($
               {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2)})
             </div>
           ) : null}
-          {isFailed && <span className="tx-status is-failed">Failed</span>}
+          {isFailed && (
+            <span className="tx-status is-failed">{t('global.failed')}</span>
+          )}
         </div>
       ) : null}
     </div>

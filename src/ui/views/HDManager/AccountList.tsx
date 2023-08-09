@@ -15,6 +15,7 @@ import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
 import { KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 export interface Account {
   address: string;
@@ -67,6 +68,7 @@ export const AccountList: React.FC<Props> = ({
     },
     []
   );
+  const { t } = useTranslation();
 
   const copy = React.useCallback((value: string) => {
     const clipboard = new ClipboardJS('.copy-icon', {
@@ -76,7 +78,7 @@ export const AccountList: React.FC<Props> = ({
     });
     clipboard.on('success', () => {
       message.success({
-        content: 'Copied',
+        content: t('global.copied'),
         key: 'ledger-success',
       });
       clipboard.destroy();
@@ -123,7 +125,7 @@ export const AccountList: React.FC<Props> = ({
         // update current account list
         await createTask(() => getCurrentAccounts());
         message.success({
-          content: 'The address is added to Rabby',
+          content: t('page.newAddress.hd.tooltip.added'),
         });
       } else {
         await createTask(() =>
@@ -138,7 +140,7 @@ export const AccountList: React.FC<Props> = ({
         );
         removeCurrentAccount(account.address);
         message.success({
-          content: 'The address is removed from Rabby',
+          content: t('page.newAddress.hd.tooltip.removed'),
         });
       }
 
@@ -201,7 +203,9 @@ export const AccountList: React.FC<Props> = ({
       loading={
         !preventLoading && loading
           ? {
-              tip: 'Waiting' + (loadNum ? ` - ${loadNum}%` : ''),
+              tip:
+                t('page.newAddress.hd.waiting') +
+                (loadNum ? ` - ${loadNum}%` : ''),
             }
           : false
       }
@@ -220,14 +224,14 @@ export const AccountList: React.FC<Props> = ({
           >
             <td>
               <ArrowSVG className="icon" />
-              <span>Click to get the information on-chain</span>
+              <span>{t('page.newAddress.hd.clickToGetInfo')}</span>
             </td>
           </tr>
         ) : null
       }
     >
       <Table.Column<Account>
-        title="Add to Rabby"
+        title={t('page.newAddress.hd.addToRabby')}
         key="add"
         render={(val, record) =>
           record.address ? (
@@ -247,7 +251,11 @@ export const AccountList: React.FC<Props> = ({
       />
 
       <Table.ColumnGroup
-        title={<div className="column-group">Basic information</div>}
+        title={
+          <div className="column-group">
+            {t('page.newAddress.hd.basicInformation')}
+          </div>
+        }
         className="column-group-wrap"
       >
         <Table.Column
@@ -258,7 +266,7 @@ export const AccountList: React.FC<Props> = ({
           className="cell-index"
         />
         <Table.Column<Account>
-          title="Addresses"
+          title={t('page.newAddress.hd.addresses')}
           dataIndex="address"
           key="address"
           render={(value: string, record, index) =>
@@ -273,7 +281,10 @@ export const AccountList: React.FC<Props> = ({
             ) : (
               <AccountListSkeleton align="left" height={28} width={300}>
                 {index === currentIndex
-                  ? `Loading ${index + 1}/${MAX_ACCOUNT_COUNT} addresses`
+                  ? t('page.newAddress.hd.loadingAddress', [
+                      index + 1,
+                      MAX_ACCOUNT_COUNT,
+                    ])
                   : ''}
               </AccountListSkeleton>
             )
@@ -281,7 +292,7 @@ export const AccountList: React.FC<Props> = ({
         />
         <Table.Column<Account>
           width={200}
-          title="Notes"
+          title={t('page.newAddress.hd.notes')}
           dataIndex="aliasName"
           key="aliasName"
           className="cell-note"
@@ -309,13 +320,15 @@ export const AccountList: React.FC<Props> = ({
         title={
           <div ref={infoRef} className="column-group">
             <a href="#" onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}>
-              {hiddenInfo ? 'Get' : 'Hide'} on-chain information
+              {hiddenInfo
+                ? t('page.newAddress.hd.getOnChainInformation')
+                : t('page.newAddress.hd.hideOnChainInformation')}
             </a>
           </div>
         }
       >
         <Table.Column<Account>
-          title="Used chains"
+          title={t('page.newAddress.hd.usedChains')}
           dataIndex="usedChains"
           key="usedChains"
           width={140}
@@ -328,7 +341,7 @@ export const AccountList: React.FC<Props> = ({
           }
         />
         <Table.Column<Account>
-          title="First transaction time"
+          title={t('page.newAddress.hd.firstTransactionTime')}
           dataIndex="firstTxTime"
           key="firstTxTime"
           width={160}
@@ -341,7 +354,7 @@ export const AccountList: React.FC<Props> = ({
           }
         />
         <Table.Column<Account>
-          title="Balance"
+          title={t('page.newAddress.hd.balance')}
           dataIndex="balance"
           key="balance"
           width={200}

@@ -3,6 +3,7 @@ import { CommonStatusBar } from './CommonStatusBar';
 import { useGridPlusStatus } from './useGridPlusStatus';
 import clsx from 'clsx';
 import { GridPlusSignal } from './GridPlusSignal';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
@@ -15,6 +16,8 @@ export const GridPlusStatusBar: React.FC<Props> = ({ className }) => {
     onClickConnect,
     connectLoading,
   } = useGridPlusStatus();
+
+  const { t } = useTranslation();
 
   return (
     <CommonStatusBar
@@ -30,7 +33,9 @@ export const GridPlusStatusBar: React.FC<Props> = ({ className }) => {
                 underline: !connectLoading,
               })}
             >
-              {connectLoading ? 'Connecting...' : 'Connect'}
+              {connectLoading
+                ? t('component.ConnectStatus.connecting')
+                : t('component.ConnectStatus.connect')}
             </div>
           )}
         </>

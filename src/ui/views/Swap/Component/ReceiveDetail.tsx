@@ -25,15 +25,18 @@ import { QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { DEX } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import i18n from '@/i18n';
+import { useTranslation } from 'react-i18next';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
-  `The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is ${receive}. You'll receive ${diff}  less than the expected offer.`;
+  i18n.t('page.swap.QuoteLessWarning', { receive, diff });
 
 export const WarningOrChecked = ({
   quoteWarning,
 }: {
   quoteWarning?: [string, string];
 }) => {
+  const { t } = useTranslation();
   return (
     <Tooltip
       align={{
@@ -44,7 +47,7 @@ export const WarningOrChecked = ({
       title={
         quoteWarning
           ? getQuoteLessWarning(quoteWarning)
-          : 'By transaction simulation, the quote is valid'
+          : t('page.swap.by-transaction-simulation-the-quote-is-valid')
       }
     >
       <img
@@ -163,6 +166,7 @@ interface ReceiveDetailsProps {
 export const ReceiveDetails = (
   props: ReceiveDetailsProps & InsHTMLAttributes<HTMLDivElement>
 ) => {
+  const { t } = useTranslation();
   const {
     receiveRawAmount: receiveAmount,
     payAmount,
@@ -240,13 +244,13 @@ export const ReceiveDetails = (
             <div className="flex items-center gap-2 w-[108px] text-13 font-medium text-gray-title h-18">
               <span>
                 {isWrapToken
-                  ? 'Wrap Contract'
+                  ? t('page.swap.wrap-contract')
                   : DEX?.[activeProvider?.name]?.name}
               </span>
               {!!activeProvider.shouldApproveToken && (
                 <TooltipWithMagnetArrow
                   overlayClassName="rectangle w-[max-content]"
-                  title="Need to approve token before swap"
+                  title={t('page.swap.need-to-approve-token-before-swap')}
                 >
                   <img src={ImgLock} className="w-14 h-14" />
                 </TooltipWithMagnetArrow>
@@ -306,15 +310,15 @@ export const ReceiveDetails = (
               title={
                 <div className="flex flex-col gap-4 py-[5px] text-13">
                   <div>
-                    Est. Payment: {payAmount}
+                    {t('page.swap.est-payment')} {payAmount}
                     {payTokenSymbol} ≈ ${payUsd}
                   </div>
                   <div>
-                    Est. Receiving: {receiveNum}
+                    {t('page.swap.est-receiving')} {receiveNum}
                     {receiveTokenSymbol} ≈ ${receiveUsd}
                   </div>
                   <div>
-                    Est. Difference: {sign}
+                    {t('page.swap.est-difference')} {sign}
                     {diff}%
                   </div>
                 </div>
@@ -331,11 +335,13 @@ export const ReceiveDetails = (
 
       {!loading && showLoss && (
         <div className="warning rate">
-          Selected offer differs greatly from current rate, may cause big losses
+          {t(
+            'page.swap.selected-offer-differs-greatly-from-current-rate-may-cause-big-losses'
+          )}
         </div>
       )}
       <div className="column footer">
-        <span className="rate">Rate</span>
+        <span className="rate">{t('page.swap.rate')}</span>
         <div className="right">
           <SkeletonChildren
             loading={loading}

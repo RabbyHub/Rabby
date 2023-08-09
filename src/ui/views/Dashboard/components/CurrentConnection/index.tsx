@@ -50,7 +50,11 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     getCurrentSite();
     message.success({
       icon: <i />,
-      content: <span className="text-white">{t('Disconnected')}</span>,
+      content: (
+        <span className="text-white">
+          {t('page.dashboard.recentConnection.disconnected')}
+        </span>
+      ),
     });
   };
 
@@ -67,7 +71,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     if (rpc) {
       const avaliable = await wallet.pingCustomRPC(chain);
       if (!avaliable) {
-        message.error('The custom RPC is unavailable');
+        message.error(t('page.dashboard.recentConnection.rpcUnavailable'));
       }
     }
   };
@@ -85,7 +89,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           align={{
             offset: [-12, -4],
           }}
-          title="You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps"
+          title={t('page.dashboard.recentConnection.metamaskTooltip')}
         >
           <div className="relative">
             <img
@@ -114,7 +118,9 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           {site?.origin}
         </div>
         <div className={clsx('site-status', site?.isConnected && 'active')}>
-          {site?.isConnected ? 'Connected' : 'Not connected'}
+          {site?.isConnected
+            ? t('page.dashboard.recentConnection.connected')
+            : t('page.dashboard.recentConnection.notConnected')}
           <img
             src={IconDisconnect}
             className="site-status-icon"
@@ -138,7 +144,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             align={{
               offset: [-12, -15],
             }}
-            title="Rabby is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage."
+            title={t('page.dashboard.recentConnection.connectedDapp')}
           >
             {Content}
           </Tooltip>
@@ -146,7 +152,9 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       ) : (
         <div className="site is-empty">
           <img src={IconDapps} className="site-icon ml-6" alt="" />
-          <div className="site-content">No Dapp found</div>
+          <div className="site-content">
+            {t('page.dashboard.recentConnection.noDappFound')}
+          </div>
         </div>
       )}
       <ChainSelector

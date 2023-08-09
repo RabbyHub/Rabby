@@ -23,6 +23,7 @@ import NetSwitchTabs, {
   NetSwitchTabsKey,
   useSwitchNetTab,
 } from '../PillsSwitch/NetSwitchTabs';
+import { useTranslation } from 'react-i18next';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -130,6 +131,8 @@ const ChainSelectorModal = ({
     hideTestnetTab,
   });
 
+  const { t } = useTranslation();
+
   const {
     matteredList,
     unmatteredList,
@@ -190,7 +193,8 @@ const ChainSelectorModal = ({
         )}
         <Input
           prefix={<img src={IconSearch} />}
-          placeholder="Search chain"
+          // Search chain
+          placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           allowClear
@@ -221,7 +225,10 @@ const ChainSelectorModal = ({
         ></SelectChainList>
         {matteredList.length === 0 && unmatteredList.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">
-            <Empty>No chains</Empty>
+            <Empty>
+              {/* No chains */}
+              {t('component.ChainSelectorModal.noChains')}
+            </Empty>
           </div>
         ) : null}
       </div>

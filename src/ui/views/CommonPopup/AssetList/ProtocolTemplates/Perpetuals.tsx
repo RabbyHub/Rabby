@@ -5,6 +5,7 @@ import { formatUsdValue } from 'ui/utils/number';
 import PortfolioHeader from '../components/PortfolioHeader';
 import { TokenList, Supplements } from '../components/PortfolioDetail';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 export default React.memo(
   ({ name, data }: { name: string; data: AbstractPortfolio }) => {
@@ -17,22 +18,23 @@ export default React.memo(
     const side = portfolio.detail.side;
     const leverage = portfolio.detail.leverage;
     const pnl = portfolio.detail.pnl_usd_value;
+    const { t } = useTranslation();
 
     const supplements = [
       !!tradePair && {
-        label: 'Trade pair',
+        label: t('page.dashboard.assets.table.tradePair'),
         content: tradePair,
       },
       !!side && {
-        label: 'Side',
+        label: t('page.dashboard.assets.table.side'),
         content: side,
       },
       !!leverage && {
-        label: 'Leverage',
+        label: t('page.dashboard.assets.table.leverage'),
         content: `${leverage.toFixed(2)}x`,
       },
       !!pnl && {
-        label: 'P&L',
+        label: t('page.dashboard.assets.table.PL'),
         content: (
           <span style={{ color: pnl < 0 ? 'red' : 'green' }}>{`${
             pnl > 0 ? '+' : ''

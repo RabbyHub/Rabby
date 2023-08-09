@@ -57,7 +57,7 @@ const NFTBalanceChange = ({
   if (type === 'receive' && hasReceives) {
     return (
       <Col>
-        <Row isTitle>{t('nftIn')}</Row>
+        <Row isTitle>{t('page.signTx.nftIn')}</Row>
         <div className="flex-1 overflow-hidden">
           {receiveNftList.map((item) => (
             <Row

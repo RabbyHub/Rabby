@@ -2,7 +2,7 @@ import { Empty, Modal, Popup } from '@/ui/component';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
@@ -74,7 +74,11 @@ const RecentConnections = ({
     });
     message.success({
       icon: <i />,
-      content: <span className="text-white">{t('Disconnected')}</span>,
+      content: (
+        <span className="text-white">
+          {t('page.dashboard.recentConnection.disconnected')}
+        </span>
+      ),
     });
   };
 
@@ -90,7 +94,11 @@ const RecentConnections = ({
     }
     message.success({
       icon: <i />,
-      content: <span className="text-white">{t('Disconnected')}</span>,
+      content: (
+        <span className="text-white">
+          {t('page.dashboard.recentConnection.disconnected')}
+        </span>
+      ),
     });
   };
 
@@ -99,16 +107,23 @@ const RecentConnections = ({
       className: 'recent-connections-confirm-modal',
       centered: true,
       closable: true,
-      okText: t('Disconnect All'),
+      okText: t('page.dashboard.recentConnection.disconnectAll'),
       width: 320,
       onOk: removeAll,
       autoFocusButton: null,
       content: (
         <div>
           <div className="title">
-            Disconnect recently used <strong>{recentList.length}</strong> DApps
+            <Trans
+              count={recentList.length}
+              i18nKey="page.dashboard.recentConnection.disconnectRecentlyUsed.title"
+            ></Trans>
           </div>
-          <div className="desc">Pinned DApps will remain connected</div>
+          <div className="desc">
+            {t(
+              'page.dashboard.recentConnection.disconnectRecentlyUsed.description'
+            )}
+          </div>
         </div>
       ),
     });
@@ -123,7 +138,7 @@ const RecentConnections = ({
       visible={visible}
       height={580}
       onClose={onClose}
-      title="Connected Dapp"
+      title={t('page.dashboard.recentConnection.title')}
       closable
     >
       <div className="recent-connections-popup">
@@ -132,9 +147,17 @@ const RecentConnections = ({
             onRemove={handleRemove}
             data={pinnedList}
             onFavoriteChange={handleFavoriteChange}
-            title={t('Pinned')}
-            empty={<div className="list-empty">{t('No pinned dapps')}</div>}
-            extra={pinnedList.length > 0 ? t('Drag to sort') : null}
+            title={t('page.dashboard.recentConnection.pinned')}
+            empty={
+              <div className="list-empty">
+                {t('page.dashboard.recentConnection.noPinnedDapps')}
+              </div>
+            }
+            extra={
+              pinnedList.length > 0
+                ? t('page.dashboard.recentConnection.dragToSort')
+                : null
+            }
             onClick={handleClick}
             onSort={handleSort}
             sortable={true}
@@ -145,16 +168,20 @@ const RecentConnections = ({
           onClick={handleClick}
           onFavoriteChange={handleFavoriteChange}
           data={recentList}
-          title={t('Recently connected')}
+          title={t('page.dashboard.recentConnection.recentlyConnected')}
           extra={
             recentList.length > 0 ? (
-              <a onClick={handleRemoveAll}>{t('Disconnect all')}</a>
+              <a onClick={handleRemoveAll}>
+                {t('page.dashboard.recentConnection.disconnectAll')}
+              </a>
             ) : null
           }
           empty={
             <div className="list-empty mb-[-24px] rounded-b-none">
               <Empty
-                desc={t('No recently connected Dapps')}
+                desc={t(
+                  'page.dashboard.recentConnection.noRecentlyConnectedDapps'
+                )}
                 className="pt-[68px] pb-[181px]"
               ></Empty>
             </div>

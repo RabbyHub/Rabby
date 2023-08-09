@@ -92,6 +92,9 @@ const WidgetDetailModal = ({
   );
 };
 
+/**
+ * @deprecated
+ */
 const Widget = ({ visible, onClose }: WidgetProps) => {
   const [widgets, setWidgets] = useState<WidgetItem[]>([]);
   const [currentWidget, setCurrentWidget] = useState<WidgetItem | null>(null);

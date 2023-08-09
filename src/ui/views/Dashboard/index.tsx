@@ -1,7 +1,7 @@
 import { Input, message, Popover } from 'antd';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -59,7 +59,6 @@ const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
-
   const { alianName, currentAccount, accountsList } = useRabbySelector((s) => ({
     alianName: s.account.alianName,
     currentAccount: s.account.currentAccount,
@@ -219,6 +218,7 @@ const Dashboard = () => {
   }, [clicked]);
 
   const handleCopyCurrentAddress = () => {
+    const { t } = useTranslation();
     const clipboard = new ClipboardJS('.address-popover', {
       text: function () {
         return currentAccount!.address;
@@ -236,7 +236,7 @@ const Dashboard = () => {
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{currentAccount!.address}</div>
           </div>
@@ -326,6 +326,7 @@ const Dashboard = () => {
   };
 
   const brandIcon = useWalletConnectIcon(currentAccount);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -444,7 +445,7 @@ const Dashboard = () => {
       </div>
       <Modal
         visible={firstNotice && updateContent}
-        title="What's new"
+        title={t('page.dashboard.home.whatsNew')}
         className="first-notice"
         onCancel={() => {
           dispatch.appVersion.afterFirstLogin();
@@ -537,7 +538,7 @@ const Dashboard = () => {
                   KEYRING_TYPE_TEXT[currentAccount?.type]) ||
                   (currentAccount && (
                     <Trans
-                      i18nKey="addressTypeTip"
+                      i18nKey="page.dashboard.home.importType"
                       values={{
                         type:
                           WALLET_BRAND_CONTENT[currentAccount?.brandName]?.name,

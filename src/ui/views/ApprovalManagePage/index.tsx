@@ -28,11 +28,7 @@ import IconCheckboxIndeterminate from './icons/check-indeterminate.svg';
 import IconCheckboxUnchecked from './icons/check-unchecked.svg';
 import IconExternal from './icons/icon-share.svg';
 
-import {
-  TableViewOptions,
-  useApprovalsPage,
-  useTableScrollableHeight,
-} from './useApprovalsPage';
+import { useApprovalsPage, useTableScrollableHeight } from './useApprovalsPage';
 import {
   ApprovalItem,
   ContractApprovalItem,
@@ -68,6 +64,7 @@ import ApprovalsNameAndAddr from './components/NameAndAddr';
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -84,10 +81,13 @@ function getColumnsForContract({
   sortedInfo,
   selectedRows = [],
   onChangeSelectedContractSpenders,
+  t,
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
   selectedRows: any[];
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
+  // t: ReturnType<typeof useTranslation>['t']
+  t: any;
 }) {
   const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     {
@@ -149,7 +149,12 @@ function getColumnsForContract({
     },
     // Contract
     {
-      title: () => <span>{'Contract'}</span>,
+      title: () => (
+        <span>
+          {/* {'Contract'} */}
+          {t('page.approvals.tableConfig.byContracts.columnTitle.contract')}
+        </span>
+      ),
       key: 'contract',
       dataIndex: 'key',
       render: (_, row, rowIndex) => {
@@ -232,15 +237,21 @@ function getColumnsForContract({
       title: (props) => {
         return (
           <span className="inline-flex items-center justify-center">
-            {'Contract Trust value'}
+            {/* {'Contract Trust value'} */}
+            {t(
+              'page.approvals.tableConfig.byContracts.columnTitle.contractTrustValue'
+            )}
             <Tooltip
               overlayClassName="J-table__tooltip tip-column-contract-trust-value disable-ant-overwrite"
               overlay={
                 <div className="text-[12px]">
                   <p>
-                    Trust value refers to the total asset value approved and
+                    {/* Trust value refers to the total asset value approved and
                     exposed to this contract. A low trust value indicates either
-                    risk or inactivity for 180 days.
+                    risk or inactivity for 180 days. */}
+                    {t(
+                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValue'
+                    )}
                   </p>
                 </div>
               }
@@ -301,8 +312,22 @@ function getColumnsForContract({
             )}
             overlay={
               <div className="text-[12px]">
-                {isWarning && <p>{'The contract trust value < $100,000'}</p>}
-                {isDanger && <p>{'The  contract trust value < $10,000'}</p>}
+                {isWarning && (
+                  <p>
+                    {/* {'The contract trust value < $100,000'} */}
+                    {t(
+                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValueWarning'
+                    )}
+                  </p>
+                )}
+                {isDanger && (
+                  <p>
+                    {/* {'The contract trust value < $10,000'} */}
+                    {t(
+                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValueDanger'
+                    )}
+                  </p>
+                )}
               </div>
             }
             {...(!isDanger &&
@@ -331,7 +356,12 @@ function getColumnsForContract({
     },
     // 24h Revoke Trends
     {
-      title: () => <span>{'24h Revoke Trends'}</span>,
+      title: () => (
+        <span>
+          {/* {'24h Revoke Trends'} */}
+          {t('page.approvals.tableConfig.byContracts.columnTitle.revokeTrends')}
+        </span>
+      ),
       key: 'recentRevokes',
       dataIndex: 'revoke_user_count',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -455,7 +485,14 @@ function getColumnsForContract({
     },
     // My Approved Assets
     {
-      title: () => <span>{'My Approved Assets'}</span>,
+      title: () => (
+        <span>
+          {/* {'My Approved Assets'} */}
+          {t(
+            'page.approvals.tableConfig.byContracts.columnTitle.myApprovedAssets'
+          )}
+        </span>
+      ),
       align: 'right',
       className: clsx('J_contracts_last_column', IS_WINDOWS && 'is-windows'),
       key: 'myApprovedAssets',
@@ -508,9 +545,12 @@ function getColumnsForContract({
 function getColumnsForAsset({
   sortedInfo,
   selectedRows,
+  t,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
   selectedRows: any[];
+  // t: ReturnType<typeof useTranslation>['t']
+  t: any;
 }) {
   const isSelected = (record: AssetApprovalSpender) => {
     return (
@@ -546,7 +586,12 @@ function getColumnsForAsset({
     },
     // Asset
     {
-      title: () => <span>{'Asset'}</span>,
+      title: () => (
+        <span>
+          {/* {'Asset'} */}
+          {t('page.approvals.tableConfig.byAssets.columnTitle.asset')}
+        </span>
+      ),
       key: 'asset',
       dataIndex: 'key',
       render: (_, row) => {
@@ -588,7 +633,12 @@ function getColumnsForAsset({
     },
     // Type
     {
-      title: () => <span>{'Type'}</span>,
+      title: () => (
+        <span>
+          {/* {'Type'} */}
+          {t('page.approvals.tableConfig.byAssets.columnTitle.type')}
+        </span>
+      ),
       key: 'assetType',
       dataIndex: 'type',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -647,7 +697,12 @@ function getColumnsForAsset({
     },
     // Approved Amount
     {
-      title: () => <span>{'Approved Amount'}</span>,
+      title: () => (
+        <span>
+          {/* {'Approved Amount'} */}
+          {t('page.approvals.tableConfig.byAssets.columnTitle.approvedAmount')}
+        </span>
+      ),
       key: 'approvedAmount',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -667,7 +722,12 @@ function getColumnsForAsset({
     },
     // Approved Spender
     {
-      title: () => <span>{'Approved Spender'}</span>,
+      title: () => (
+        <span>
+          {/* {'Approved Spender'} */}
+          {t('page.approvals.tableConfig.byAssets.columnTitle.approvedSpender')}
+        </span>
+      ),
       key: 'approveSpender',
       dataIndex: 'key',
       render: (_, spender) => {
@@ -726,7 +786,12 @@ function getColumnsForAsset({
     },
     // My Approval Time
     {
-      title: () => <span className="pl-[20px]">{'My Approval Time'}</span>,
+      title: () => (
+        <span className="pl-[20px]">
+          {/* {'My Approval Time'} */}
+          {t('page.approvals.tableConfig.byAssets.columnTitle.myApprovalTime')}
+        </span>
+      ),
       key: 'assetApproveTime',
       dataIndex: 'key',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],
@@ -823,11 +888,14 @@ function TableByContracts({
 
   const { onClickRowInspection } = useInspectRowItem(onClickRow);
 
+  const { t } = useTranslation();
+
   const columnsForContracts = useMemo(() => {
     return getColumnsForContract({
       selectedRows,
       sortedInfo: sortedInfo,
       onChangeSelectedContractSpenders,
+      t,
     });
   }, [selectedRows, sortedInfo, onChangeSelectedContractSpenders]);
 
@@ -878,6 +946,7 @@ function TableByAssetSpenders({
   );
 
   const { onClickRowInspection } = useInspectRowItem(onClickRow);
+  const { t } = useTranslation();
 
   return (
     <VirtualTable<AssetApprovalSpender>
@@ -888,6 +957,7 @@ function TableByAssetSpenders({
       columns={getColumnsForAsset({
         sortedInfo: sortedInfo,
         selectedRows,
+        t,
       })}
       sortedInfo={sortedInfo}
       dataSource={dataSource}
@@ -921,6 +991,8 @@ const ApprovalManagePage = () => {
       eventBus.removeEventListener('accountsChanged', listener);
     };
   }, []);
+
+  const { t } = useTranslation();
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
@@ -1043,7 +1115,10 @@ const ApprovalManagePage = () => {
             </div>
           )}
           <div className="title">
-            Approvals on {ellipsisAddress(account?.address || '')}
+            {/* Approvals on {ellipsisAddress(account?.address || '')} */}
+            {t('page.approvals.header.title', {
+              address: ellipsisAddress(account?.address || ''),
+            })}
             {account?.alianName && (
               <span className="text-[#4b4d59] text-[20px] font-normal">
                 {' '}
@@ -1057,7 +1132,20 @@ const ApprovalManagePage = () => {
           <div className="approvals-manager__table-tools">
             <PillsSwitch
               value={filterType}
-              options={TableViewOptions}
+              options={
+                [
+                  {
+                    key: 'contract',
+                    // 'By Contracts'
+                    label: t('page.approvals.tab-switch.contract'),
+                  },
+                  {
+                    key: 'assets',
+                    // 'By Assets'
+                    label: t('page.approvals.tab-switch.assets'),
+                  },
+                ] as const
+              }
               onTabChange={(key) => setFilterType(key)}
               itemClassname="text-[15px] w-[148px] h-[40px]"
               itemClassnameInActive="text-[#707280]"
@@ -1069,9 +1157,9 @@ const ApprovalManagePage = () => {
               prefix={<img src={IconSearch} />}
               className="search-input"
               suffix={<span />}
-              placeholder={`Search ${
-                filterType === 'contract' ? 'contract' : 'assets'
-              } by name/address`}
+              placeholder={t('page.approvals.search.placeholder', {
+                type: filterType === 'contract' ? 'contract' : 'assets',
+              })}
             />
           </div>
 

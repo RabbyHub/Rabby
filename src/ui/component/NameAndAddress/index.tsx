@@ -18,8 +18,9 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconExternal from 'ui/assets/icon-share.svg';
 import './index.less';
+import { useTranslation } from 'react-i18next';
 
-function tipCopied(addr: string) {
+function tipCopied(addr: string, t: any) {
   message.success({
     duration: 3,
     icon: <i />,
@@ -27,7 +28,7 @@ function tipCopied(addr: string) {
       <div>
         <div className="flex gap-4 mb-4">
           <img src={IconSuccess} alt="" />
-          Copied
+          {t('global.copied')}
         </div>
         <div className="text-white">{addr}</div>
       </div>
@@ -70,6 +71,7 @@ const NameAndAddress = ({
   const [alianName, setAlianName] = useState('');
 
   const mountedRef = useRef(false);
+  const { t } = useTranslation();
   const init = async () => {
     const alianName =
       (await wallet.getAlianName(address?.toLowerCase())) ||
@@ -88,7 +90,7 @@ const NameAndAddress = ({
     });
 
     clipboard.on('success', () => {
-      tipCopied(address);
+      tipCopied(address, t);
       clipboard.destroy();
     });
   };
@@ -101,7 +103,7 @@ const NameAndAddress = ({
     ) => {
       evt.stopPropagation();
       copyTextToClipboard(address).then(() => {
-        tipCopied(address);
+        tipCopied(address, t);
       });
     },
     [address]

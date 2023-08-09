@@ -2,6 +2,7 @@ import { message } from 'antd';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import React, { MouseEventHandler, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
@@ -23,6 +24,7 @@ const Copy = ({
   onClick,
 }: CopyProps) => {
   const ref = useRef<HTMLImageElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const clipboard = new ClipboardJS(ref.current!, {
@@ -40,7 +42,7 @@ const Copy = ({
             <div>
               <div className="flex gap-4 mb-4">
                 <img src={IconSuccess} alt="" />
-                Copied
+                {t('global.copied')}
               </div>
               <div className="text-white">{data}</div>
             </div>
@@ -49,7 +51,7 @@ const Copy = ({
       } else {
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: 'Copied',
+          content: t('global.copied'),
           duration: 0.5,
         });
       }

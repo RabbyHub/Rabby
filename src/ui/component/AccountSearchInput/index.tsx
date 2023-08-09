@@ -13,6 +13,7 @@ import AddressItem from './AddressItem';
 import './index.less';
 import type { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import LessPalette from '@/ui/style/var-defs';
+import { useTranslation } from 'react-i18next';
 
 function useSearchAccount(searchKeyword?: string) {
   const {
@@ -119,6 +120,7 @@ function useSearchAccount(searchKeyword?: string) {
 }
 
 function NoSearchedAddressUI() {
+  const { t } = useTranslation();
   return (
     <div className="no-matched-address h-[120px]">
       <img
@@ -130,7 +132,7 @@ function NoSearchedAddressUI() {
         className="text-13 mt-[10px]"
         style={{ color: LessPalette['@color-body'] }}
       >
-        No match address
+        {t('component.AccountSearchInput.noMatchAddress')}
       </p>
     </div>
   );

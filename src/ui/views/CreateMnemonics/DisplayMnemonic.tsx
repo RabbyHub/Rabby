@@ -16,6 +16,7 @@ import { generateAliasName } from '@/utils/account';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import LogoSVG from '@/ui/assets/logo.svg';
 import IconBack from 'ui/assets/back.svg';
+import { useTranslation } from 'react-i18next';
 
 const AlertBlock = styled.div`
   padding: 10px 12px;
@@ -62,7 +63,7 @@ const DisplayMnemonic = () => {
   useEffect(() => {
     dispatch.createMnemonics.prepareMnemonicsAsync();
   }, []);
-
+  const { t } = useTranslation();
   const { mnemonics } = useRabbySelector((s) => ({
     mnemonics: s.createMnemonics.mnemonics,
   }));
@@ -71,7 +72,7 @@ const DisplayMnemonic = () => {
     copyTextToClipboard(mnemonics).then(() => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('global.copied'),
         duration: 0.5,
       });
     });
@@ -115,15 +116,12 @@ const DisplayMnemonic = () => {
             'text-[20px] text-gray-title'
           )}
         >
-          <span>Backup Seed Phrase</span>
+          <span>{t('page.newAddress.seedPhrase.backup')}</span>
         </h1>
         <div className="px-20 pt-24">
           <AlertBlock className="flex justify-center items-center mb-[24px] rounded-[4px]">
             <InfoCircleOutlined className="mr-10" />
-            <p className="mb-0">
-              Make sure no one else is watching your screen when you back up the
-              seed phrase
-            </p>
+            <p className="mb-0">{t('page.newAddress.seedPhrase.backupTips')}</p>
           </AlertBlock>
           <MnemonicsWrapper className="relative">
             <div className="rounded-[6px] flex items-center">
@@ -140,7 +138,7 @@ const DisplayMnemonic = () => {
             className="text-13 pt-16 pb-16 mt-8"
           >
             <img className="mr-6" src={IconCopy} />
-            Copy seed phrase
+            {t('page.newAddress.seedPhrase.copy')}
           </CopySection>
         </div>
         <div className="text-center mt-[116px]">
@@ -150,7 +148,7 @@ const DisplayMnemonic = () => {
             onClick={onSubmit}
             className="py-[13px] px-[56px] h-auto"
           >
-            I've Saved the Phrase
+            {t('page.newAddress.seedPhrase.saved')}
           </Button>
         </div>
       </div>

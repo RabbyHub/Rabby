@@ -32,28 +32,22 @@ function useQuestionsCheck() {
     return [
       {
         index: 1 as const,
-        content: t('If I lose my seed phrase, my assets will be lost forever.'),
+        content: t('page.newAddress.seedPhrase.importQuestion1'),
         checked: true,
       },
       {
         index: 2 as const,
-        content: t(
-          'If I share my seed phrase with others, my assets will be stolen.'
-        ),
+        content: t('page.newAddress.seedPhrase.importQuestion2'),
         checked: true,
       },
       {
         index: 3 as const,
-        content: t(
-          'The seed phrase is only stored on my computer, and Rabby has no access to it.'
-        ),
+        content: t('page.newAddress.seedPhrase.importQuestion3'),
         checked: true,
       },
       {
         index: 4 as const,
-        content: t(
-          'If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.'
-        ),
+        content: t('page.newAddress.seedPhrase.importQuestion4'),
         checked: true,
       },
     ];
@@ -84,7 +78,7 @@ function useQuestionsCheck() {
 
 const RiskCheck = () => {
   const dispatch = useRabbyDispatch();
-
+  const { t } = useTranslation();
   const {
     questionChecks,
     isAllChecked,
@@ -107,12 +101,11 @@ const RiskCheck = () => {
             'text-[20px] text-gray-title'
           )}
         >
-          <span>Create New Seed Phrase</span>
+          <span>{t('page.newAddress.createNewSeedPhrase')}</span>
         </h1>
         <div>
           <RiskTipText className="mb-32">
-            Before you start, please read and keep the following security tips
-            in mind.
+            {t('page.newAddress.seedPhrase.riskTips')}
           </RiskTipText>
           <QuestionsWrapper>
             {questionChecks.map((q) => {
@@ -153,7 +146,7 @@ const RiskCheck = () => {
             onClick={() => dispatch.createMnemonics.stepTo('display')}
             className="py-[13px] px-[56px] h-auto"
           >
-            Show Seed Phrase
+            {t('page.newAddress.seedPhrase.showSeedPhrase')}
           </Button>
         </div>
       </div>

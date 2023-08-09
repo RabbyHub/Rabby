@@ -8,6 +8,7 @@ import Scan from '@/ui/views/Approval/components/WatchAddressWaiting/Scan';
 import { useSessionStatus } from './useSessionStatus';
 import { useDisplayBrandName } from './useDisplayBrandName';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export const ReconnectView: React.FC = () => {
   const wallet = useWallet();
@@ -50,6 +51,7 @@ export const ReconnectView: React.FC = () => {
   const handleRefreshQrCode = () => {
     initWalletConnect();
   };
+  const { t } = useTranslation();
 
   const init = async () => {
     if (!account) return;
@@ -63,7 +65,9 @@ export const ReconnectView: React.FC = () => {
       type: KEYRING_CLASS.WALLETCONNECT,
     });
     setBridge(bridge || DEFAULT_BRIDGE);
-    setPopupViewTitle(`Connect with ${displayBrandName}`);
+    setPopupViewTitle(
+      t('page.newAddress.walletConnect.title', { brandName: displayBrandName })
+    );
     setHeight(420);
     setClassName('isConnectView');
     initWalletConnect();
@@ -83,7 +87,7 @@ export const ReconnectView: React.FC = () => {
     if (status === 'CONNECTED') {
       message.success({
         type: 'success',
-        content: 'Connected',
+        content: t('page.newAddress.walletConnect.status.connected'),
       });
       closePopup();
     } else if (account && errorAccount && status === 'ACCOUNT_ERROR') {
