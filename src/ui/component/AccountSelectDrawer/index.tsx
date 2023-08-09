@@ -183,7 +183,7 @@ const AccountSelectDrawer = ({
       </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
-          {t('Cancel')}
+          {t('component.AccountSelectDrawer.btn.cancel')}
         </Button>
         <Button
           type="primary"
@@ -191,7 +191,7 @@ const AccountSelectDrawer = ({
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('Proceed')}
+          {t('component.AccountSelectDrawer.btn.proceed')}
         </Button>
       </div>
     </Drawer>

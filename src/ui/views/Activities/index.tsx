@@ -17,7 +17,7 @@ const Activities = () => {
 
   return (
     <div className="activities">
-      <PageHeader fixed>{t('Signature Record')}</PageHeader>
+      <PageHeader fixed>{t('page.activities.title')}</PageHeader>
       <div className="bg-[#f5f6fa] sticky top-[64px] z-10">
         <PillsSwitch
           value={selectedTab}
@@ -31,11 +31,11 @@ const Activities = () => {
             [
               {
                 key: 'signed_tx',
-                label: 'Transactions',
+                label: t('page.activities.signedTx.label'),
               },
               {
                 key: 'signed_text',
-                label: 'Texts',
+                label: t('page.activities.signedText.label'),
               },
             ] as const
           }
@@ -49,13 +49,21 @@ const Activities = () => {
         renderTabBar={() => <></>}
       >
         <Tabs.TabPane
-          tab={<span className="text-13 tab-title">{t('Transactions')}</span>}
+          tab={
+            <span className="text-13 tab-title">
+              {t('page.activities.signedTx.label')}
+            </span>
+          }
           key="signed_tx"
         >
           <TransactionHistory />
         </Tabs.TabPane>
         <Tabs.TabPane
-          tab={<span className="text-13 tab-title">{t('Texts')}</span>}
+          tab={
+            <span className="text-13 tab-title">
+              {t('page.activities.signedText.label')}
+            </span>
+          }
           key="signed_text"
         >
           <SignedTextHistory />

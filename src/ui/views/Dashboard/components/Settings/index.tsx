@@ -76,6 +76,17 @@ const useAutoLockOptions = () => {
   ];
 };
 
+const LANG_OPTIONS = [
+  {
+    value: 'en',
+    label: 'English',
+  },
+  {
+    value: 'zh_CN',
+    label: '简体中文',
+  },
+];
+
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
@@ -338,6 +349,79 @@ const AutoLockModal = ({
   );
 };
 
+const SwitchLangModal = ({
+  visible,
+  onFinish,
+  onCancel,
+}: {
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const wallet = useWallet();
+  const { t } = useTranslation();
+  const [isVisible, setIsVisible] = useState(false);
+
+  const locale = useRabbySelector((state) => state.preference.locale);
+  const dispatch = useRabbyDispatch();
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  const handleSelect = async (value: string) => {
+    dispatch.preference.switchLocale(value);
+    setIsVisible(false);
+    setTimeout(() => {
+      onFinish();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  return (
+    <div
+      className={clsx('auto-lock-modal', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('Current Language')}
+      </PageHeader>
+      <div className="auto-lock-option-list">
+        {LANG_OPTIONS.map((item) => {
+          return (
+            <div
+              className="auto-lock-option-list-item"
+              key={item.value}
+              onClick={() => {
+                handleSelect(item.value);
+              }}
+            >
+              {item.label}
+              {locale === item.value && (
+                <img
+                  src={IconCheck}
+                  alt=""
+                  className="auto-lock-option-list-item-icon"
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
   const { t } = useTranslation();
   return (
@@ -382,11 +466,14 @@ const Settings = ({
   const [showTestnetOpenApiModal, setShowTestnetOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
+  const [isShowLangModal, setIsShowLangModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
+  const locale = useRabbySelector((state) => state.preference.locale);
+
   const AUTO_LOCK_OPTIONS = useAutoLockOptions();
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
@@ -401,7 +488,11 @@ const Settings = ({
       AUTO_LOCK_OPTIONS.find((item) => item.value === autoLockTime)?.label ||
       `${autoLockTime} minutes`
     );
-  }, [autoLockTime]);
+  }, [autoLockTime, AUTO_LOCK_OPTIONS]);
+
+  const langLabel = useMemo(() => {
+    return LANG_OPTIONS.find((item) => item.value === locale)?.label;
+  }, [locale]);
 
   const handleSwitchWhitelistEnable = async (checked: boolean) => {
     matomoRequestEvent({
@@ -483,7 +574,7 @@ const Settings = ({
         title: null,
         content: (
           <div className="text-14 leading-[18px] text-center text-gray-subTitle">
-            t('page.dashboard.settings.updateVersion.content')
+            {t('page.dashboard.settings.updateVersion.content')}
           </div>
         ),
         okText: t('page.dashboard.settings.updateVersion.okText'),
@@ -599,6 +690,31 @@ const Settings = ({
             });
             reportSettings('Custom RPC');
           },
+        },
+        {
+          leftIcon: IconAutoLock,
+          content: t('page.dashboard.settings.settings.currentLanguage'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Current Language',
+            });
+            reportSettings('Current Language');
+            setIsShowLangModal(true);
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-[#13141a]"
+                role="button"
+                onClick={updateVersion}
+              >
+                {langLabel}
+              </span>
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </>
+          ),
         },
         {
           leftIcon: IconPreferMetamask,
@@ -903,7 +1019,6 @@ const Settings = ({
               setContactsVisible(false);
             }}
           />
-
           <OpenApiModal
             visible={showOpenApiModal}
             value={openapiStore.host}
@@ -934,6 +1049,11 @@ const Settings = ({
             visible={isShowAutoLockModal}
             onFinish={() => setIsShowAutoLockModal(false)}
             onCancel={() => setIsShowAutoLockModal(false)}
+          />
+          <SwitchLangModal
+            visible={isShowLangModal}
+            onFinish={() => setIsShowLangModal(false)}
+            onCancel={() => setIsShowLangModal(false)}
           />
         </div>
       </Popup>

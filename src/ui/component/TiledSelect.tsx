@@ -167,7 +167,7 @@ const TiledSelect = ({
               }}
             >
               <img src={IconClear} className="w-[12px] h-[12px] mr-4" />
-              Clear
+              {t('global.Clear')}
             </span>
           </div>
         </div>
@@ -187,9 +187,7 @@ const TiledSelect = ({
             onClick={() => {
               if (correctValue) {
                 if (options[i] !== correctValue[targetIdx]) {
-                  message.error(
-                    t('The seed phrase order is wrong, please check')
-                  );
+                  message.error(t('component.TiledSelect.errMsg'));
                   return;
                 }
 

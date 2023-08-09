@@ -3,6 +3,7 @@ import { RootModel } from '.';
 import { TokenItem } from 'background/service/openapi';
 import { GasCache, addedToken } from 'background/service/preference';
 import { CHAINS_ENUM } from 'consts';
+import i18n from '@/i18n';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -167,6 +168,15 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setIsShowTestnet(value);
       dispatch.preference.getPreference('isShowTestnet');
+    },
+
+    async switchLocale(locale: string, store?) {
+      dispatch.preference.setField({
+        locale,
+      });
+      i18n.changeLanguage(locale);
+      await store.app.wallet.setLocale(locale);
+      dispatch.preference.getPreference('locale');
     },
 
     // async setOpenapiHost(value: string, store?) {

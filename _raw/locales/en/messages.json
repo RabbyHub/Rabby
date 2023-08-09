@@ -1149,10 +1149,71 @@
       "empty": {
         "title": "No transactions",
         "desc": " No transactions found on <1>supported chains</1>"
+      },
+      "explain": {
+        "approve": "Approve {{amount}} {{symbol}} for {{project}}",
+        "unknown": "Contract Interaction",
+        "cancel": "Canceled a pending transaction"
       }
     },
     "chainList": {
       "title": "{{count}} chains supported"
+    },
+    "activities": {
+      "title": "Signature Record",
+      "signedTx": {
+        "label": "Transactions",
+        "empty": {
+          "title": "No signed transactions yet",
+          "desc": "All transactions signed via Rabby will be listed here."
+        },
+        "common": {
+          "unlimited": "unlimited",
+          "unknownProtocol": "Unknown protocol",
+          "unknown": "Unknown",
+          "speedUp": "Speed up",
+          "cancel": "Cancel",
+          "pendingDetail": "Pending detail"
+        },
+        "tips": {
+          "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
+          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
+          "speedUp": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+        },
+        "status": {
+          "canceled": "Canceled",
+          "failed": "Failed",
+          "submitFailed": "Failed to submit",
+          "pending": "Pending"
+        },
+        "txType": {
+          "initial": "Initial tx",
+          "cancel": "Cancel tx",
+          "speedUp": "Speed up tx"
+        },
+        "explain": {
+          "unknown": "Unknown Transaction",
+          "send": "Send {{amount}} {{symbol}}",
+          "cancel": "Cancel {{token}} Approve for {{protocol}}",
+          "approve": "Approve {{count}} {{token}} for {{protocol}}",
+          "cancelNFTCollectionApproval": "Cancel NFT Collection Approval for {{protocol}}",
+          "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
+          "singleNFTApproval": "Single NFT Approval for {{protocol}}",
+          "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+        }
+      },
+      "signedText": {
+        "label": "Text",
+        "empty": {
+          "title": "No signed texts yet",
+          "desc": "All texts signed via Rabby will be listed here."
+        }
+      }
+    },
+    "receive": {
+      "title": "Receive {{token}} on {{chain}}",
+      "watchModeAlert1": "This is a Watch Mode address.",
+      "watchModeAlert2": "Are you sure to use it to receive assets?"
     },
     "sendToken": {
       "header": {
@@ -1588,7 +1649,8 @@
           "showTestnets": "Show Testnets",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Custom RPC",
-          "metamaskPreferredDapps": "MetaMask Preferred Dapps"
+          "metamaskPreferredDapps": "MetaMask Preferred Dapps",
+          "currentLanguage": "Current Language"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1939,9 +2001,140 @@
           "switchAnother": "Switch to another {{0}}"
         }
       }
+    },
+    "unlock": {
+      "btn": {
+        "unlock": "Unlock"
+      },
+      "password": {
+        "required": "Enter the Password to Unlock",
+        "placeholder": "Enter the Password to Unlock",
+        "error": "incorrect password"
+      }
     }
   },
   "component": {
+    "AccountSearchInput": {
+      "noMatchAddress": "No match address",
+      "AddressItem": {
+        "whitelistedAddressTip": "Whitelisted address"
+      }
+    },
+    "AccountSelectDrawer": {
+      "btn": {
+        "cancel": "Cancel",
+        "proceed": "Proceed"
+      }
+    },
+    "AddAddressOptions": {
+      "unableToImport": {
+        "title": "Unable to import",
+        "content": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{brand}} before importing another device."
+      },
+      "connectHardwareWallets": "Connect Hardware Wallets",
+      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
+      "connectInstitutionalWallets": "Connect Institutional Wallets",
+      "createAddress": "Create New Seed Phrase",
+      "importSeedPhrase": "Import Seed Phrase",
+      "importPrivateKey": "Import Private Key",
+      "addMetaMaskAccount": "Import My MetaMask Account",
+      "addWatchMode": "Add Contacts",
+      "addWatchModeSubText": "You can also use it as a watch-only address"
+    },
+    "AddressList": {
+      "AddressItem": {
+        "addressTypeTip": "Imported by {{type}}"
+      }
+    },
+    "AuthenticationModal": {
+      "passwordError": "incorrect password",
+      "passwordRequired": "Please input password",
+      "passwordPlaceholder": "Enter the Password to Confirm"
+    },
+    "ConnectStatus": {
+      "connecting": "Connecting...",
+      "connect": "Connect",
+      "gridPlusConnected": "GridPlus is connected",
+      "gridPlusNotConnected": "GridPlus is not connected",
+      "ledgerNotConnected": "Ledger is not connected",
+      "ledgerConnected": "Ledger is connected"
+    },
+    "Contact": {
+      "AddressItem": {
+        "notWhitelisted": "This address is not whitelisted",
+        "whitelistedTip": "Whitelisted address"
+      },
+      "EditModal": {
+        "title": "Edit address note"
+      },
+      "EditWhitelist": {
+        "backModalTitle": "Discard Changes",
+        "backModalContent": "Changes you made will not be saved",
+        "title": "Edit Whitelist",
+        "tip": "Select the address you want to whitelist and save.",
+        "save": "Save to Whitelist ({{count}})"
+      },
+      "ListModal": {
+        "title": "Select Address",
+        "whitelistEnabled": "Whitelist is enabled. You can only send assets to a whitelisted address or you can disable it in \"Settings\"",
+        "whitelistDisabled": "Whitelist is disabled. You can send assets to any address",
+        "editWhitelist": "Edit Whitelist",
+        "whitelistUpdated": "Whitelist Updated"
+      }
+    },
+    "LoadingOverlay": {
+      "loadingData": "Loading data..."
+    },
+    "MultiSelectAddressList": {
+      "imported": "Imported"
+    },
+    "NFTNumberInput": {
+      "erc1155Tips": "Your balance is {{amount}}",
+      "erc721Tips": "Only one NFT of ERC 721 can be sent at a time"
+    },
+    "WalletConnect": {
+      "ConnectStatus": {
+        "statusText": {
+          "received": "Scan successful. Waiting to be confirmed",
+          "rejected": "Connection canceled. Please scan the QR code to retry.",
+          "brandNameError": "Wrong wallet app.",
+          "brandNameError2": "Please use {{displayBrandName}} to connect",
+          "accountError": "Address not match.",
+          "accountError2": "Please switch address in your mobile wallet",
+          "connected": "Connected",
+          "duplicate": "The address you're are trying to import is duplicate",
+          "scan": "Scan with your {{displayBrandName}}   {{wallet}}"
+        }
+      },
+      "SessionStatusBar": {
+        "tip": {
+          "accountError": "Connected but unable to sign. ",
+          "accountError2": "Please switch to the correct address in mobile wallet",
+          "disconnected": "Not connected to {{displayBrandName}}",
+          "connected": "Connected to {{displayBrandName}}"
+        },
+        "button": {
+          "switchAddress": "How to switch"
+        }
+      }
+    },
+    "ScanCopyQRCode": {
+      "qrcode": "QR code",
+      "url": "URL",
+      "changeBridge": "Change bridge server"
+    },
+    "TiledSelect": {
+      "errMsg": "The seed phrase order is wrong, please check"
+    },
+    "Uploader": {
+      "placeholder": "Select a JSON file"
+    },
+    "WalletConnectBridgeModal": {
+      "title": "Bridge server URL",
+      "requiredMsg": "Please input bridge server host",
+      "invalidMsg": "Please check your host",
+      "restore": "Restore initial setting"
+    },
     "PillsSwitch": {
       "NetSwitchTabs": {
         "mainnet": "Mainnets",
@@ -1990,7 +2183,24 @@
     "next": "Next",
     "back": "Back",
     "ok": "OK",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "failed": "Failed",
+    "scamTx": "Scam tx",
+    "gas": "Gas",
+    "unknownNFT": "Unknown NFT",
+    "copyAddress": "Copy address",
+    "watchModeAddress": "Watch Mode address",
+    "assets": "assets",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+    "Back": "Back",
+    "Next": "Next",
+    "Disconnected": "Disconnected",
+    "Disconnect": "Disconnect",
+    "Connect": "Connect",
+    "Copied": "Copied",
+    "Clear": "Clear",
+    "Save": "Save"
   },
   "background": {},
   "LedgerPermission2": {
