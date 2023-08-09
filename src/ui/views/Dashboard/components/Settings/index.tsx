@@ -574,7 +574,7 @@ const Settings = ({
         title: null,
         content: (
           <div className="text-14 leading-[18px] text-center text-gray-subTitle">
-            t('page.dashboard.settings.updateVersion.content')
+            {t('page.dashboard.settings.updateVersion.content')}
           </div>
         ),
         okText: t('page.dashboard.settings.updateVersion.okText'),
