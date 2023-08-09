@@ -16,7 +16,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
-import i18n from 'i18next';
+import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
   waitQueueFinished,

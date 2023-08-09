@@ -35,7 +35,7 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
+import i18n from '@/i18n';
 import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';

@@ -1388,10 +1388,6 @@
         "operationDecoded": "Operation is decoded from message"
       }
     },
-  "global": {
-    
-  },
-  "background": {},
     "activities": {
       "title": "Signature Record",
       "signedTx": {
@@ -2244,6 +2240,28 @@
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
       }
+    },
+    "addToken": {
+      "noTokenFound": "No token found",
+      "tokenSupported": "Token has been supported on Rabby",
+      "tokenCustomized": "Current token has already been added to customized",
+      "tokenNotFound": "Token not found from this contract address",
+      "title": "Add custom token to Rabby",
+      "balance": "Balance",
+      "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
+      "noTokenFoundOnThisChain": "No token found on this chain"
+    },
+    "switchChain": {
+      "title": "Switching to {{chain}}",
+      "chainNotSupport": "The requested chain is not supported by Rabby yet"
+    },
+    "signText": {
+      "title": "Sign Text",
+      "message": "Message",
+      "createKey": {
+        "interactDapp": "Interact Dapp",
+        "description": "Description"
+      }
     }
   },
   "component": {
@@ -2438,7 +2456,8 @@
     "cancelButton": "Cancel",
     "backButton": "Back",
     "proceedButton": "Proceed",
-    "editButton": "Edit"
+    "editButton": "Edit",
+    "addButton": "Add"
   },
   "background": {},
   "LedgerPermission2": {
