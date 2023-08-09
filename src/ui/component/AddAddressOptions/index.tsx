@@ -86,10 +86,8 @@ const AddAddressOptions = () => {
 
     if (!allowed) {
       Modal.error({
-        title: t('component.AddAddressOptions.unableToImport.title'),
-        content: t('component.AddAddressOptions.unableToImport.content', {
-          brand,
-        }),
+        title: t('page.newAddress.unableToImport.title'),
+        content: t('page.newAddress.unableToImport.description'),
         okText: t('global.ok'),
         centered: true,
         maskClosable: true,
@@ -147,8 +145,7 @@ const AddAddressOptions = () => {
           if (item.hidden) return;
           return {
             leftIcon: item.image,
-            // todoo
-            content: t(item.name),
+            content: item.name,
             brand: item.brand,
             connectType: item.connectType,
             image: item.image,
@@ -170,17 +167,17 @@ const AddAddressOptions = () => {
     () =>
       [
         {
-          title: t('component.AddAddressOptions.connectHardwareWallets'),
+          title: t('page.newAddress.connectHardwareWallets'),
           key: WALLET_BRAND_CATEGORY.HARDWARE,
           icon: IconHardWallet,
         },
         {
-          title: t('component.AddAddressOptions.connectMobileWalletApps'),
+          title: t('page.newAddress.connectMobileWalletApps'),
           key: WALLET_BRAND_CATEGORY.MOBILE,
           icon: IconMobileWallet,
         },
         {
-          title: t('component.AddAddressOptions.connectInstitutionalWallets'),
+          title: t('page.newAddress.connectInstitutionalWallets'),
           key: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
           icon: InstitutionalWallet,
         },
@@ -199,7 +196,7 @@ const AddAddressOptions = () => {
     () => [
       {
         leftIcon: IconCreatenewaddr,
-        content: t('component.AddAddressOptions.createAddress'),
+        content: t('page.newAddress.createNewSeedPhrase'),
         brand: 'createAddress',
         onClick: () => {
           handleRouter(() => openInternalPageInTab('mnemonics/create'));
@@ -214,20 +211,20 @@ const AddAddressOptions = () => {
       {
         leftIcon: IconMnemonics,
         brand: 'importSeedPhrase',
-        content: t('component.AddAddressOptions.importSeedPhrase'),
+        content: t('page.newAddress.importSeedPhrase'),
         onClick: () =>
           handleRouter(() => openInternalPageInTab('import/mnemonics')),
       },
       {
         leftIcon: IconPrivatekey,
         brand: 'importPrivatekey',
-        content: t('component.AddAddressOptions.importPrivateKey'),
+        content: t('page.newAddress.importPrivateKey'),
         onClick: () => handleRouter((history) => history.push('/import/key')),
       },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
-        content: t('component.AddAddressOptions.addMetaMaskAccount'),
+        content: t('page.newAddress.importMyMetamaskAccount'),
         onClick: () =>
           handleRouter((history) => history.push('/import/metamask')),
       },
@@ -240,8 +237,8 @@ const AddAddressOptions = () => {
       {
         leftIcon: IconAddwatchmodo,
         brand: 'addWatchMode',
-        content: t('component.AddAddressOptions.addWatchMode'),
-        subText: t('component.AddAddressOptions.addWatchModeSubText'),
+        content: t('page.newAddress.addContacts.content'),
+        subText: t('page.newAddress.addContacts.description'),
         onClick: () =>
           handleRouter((history) => history.push('/import/watch-address')),
       },

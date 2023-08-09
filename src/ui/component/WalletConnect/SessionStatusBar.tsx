@@ -31,7 +31,6 @@ export const SessionStatusBar: React.FC<Props> = ({
     brandName,
     address
   );
-
   const { t } = useTranslation();
 
   const tipStatus = React.useMemo(() => {
@@ -58,7 +57,7 @@ export const SessionStatusBar: React.FC<Props> = ({
     });
     if (tipStatus === 'CONNECTED') {
       wallet.killWalletConnectConnector(address, brandName, true);
-      message.success(t('global.Disconnected'));
+      message.success(t('page.newAddress.walletConnect.disconnected'));
     } else if (tipStatus === 'DISCONNECTED') {
       wallet.killWalletConnectConnector(address, brandName, true, true);
       activePopup('WalletConnect');
@@ -73,10 +72,10 @@ export const SessionStatusBar: React.FC<Props> = ({
         return (
           <>
             <div>
-              {t('component.WalletConnect.SessionStatusBar.tip.accountError1')}
+              {t('page.newAddress.walletConnect.tip.accountError.tip1')}
             </div>
             <div>
-              {t('component.WalletConnect.SessionStatusBar.tip.accountError2')}
+              {t('page.newAddress.walletConnect.tip.accountError.tip2')}
             </div>
           </>
         );
@@ -84,8 +83,8 @@ export const SessionStatusBar: React.FC<Props> = ({
       case 'DISCONNECTED':
         return (
           <div>
-            {t('component.WalletConnect.SessionStatusBar.tip.disconnected', {
-              displayBrandName,
+            {t('page.newAddress.walletConnect.tip.disconnected.tip', {
+              brandName: displayBrandName,
             })}
           </div>
         );
@@ -93,8 +92,8 @@ export const SessionStatusBar: React.FC<Props> = ({
       default:
         return (
           <div>
-            {t('component.WalletConnect.SessionStatusBar.tip.connected', {
-              displayBrandName,
+            {t('page.newAddress.walletConnect.tip.connected.tip', {
+              brandName: displayBrandName,
             })}
           </div>
         );
@@ -116,10 +115,12 @@ export const SessionStatusBar: React.FC<Props> = ({
       onClickButton={handleButton}
       ButtonText={
         <>
-          {tipStatus === 'CONNECTED' && t('global.Disconnect')}
-          {tipStatus === 'DISCONNECTED' && t('global.Connect')}
+          {tipStatus === 'CONNECTED' &&
+            t('page.newAddress.walletConnect.button.disconnect')}
+          {tipStatus === 'DISCONNECTED' &&
+            t('page.newAddress.walletConnect.button.connect')}
           {tipStatus === 'ACCOUNT_ERROR' &&
-            t('component.WalletConnect.SessionStatusBar.button.switchAddress')}
+            t('page.newAddress.walletConnect.button.howToSwitch')}
         </>
       }
       Content={<TipContent />}

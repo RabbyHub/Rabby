@@ -28,7 +28,7 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
         return (
           <div className="py-[15px]">
             <img src={TipSuccessSVG} className={IconClassName} />
-            {t('component.WalletConnect.ConnectStatus.statusText.received')}
+            {t('page.newAddress.walletConnect.status.received')}
           </div>
         );
       case 'REJECTED':
@@ -36,7 +36,7 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
         return (
           <div className="py-[15px]">
             <img src={TipInfoSVG} className={IconClassName} />
-            {t('component.WalletConnect.ConnectStatus.statusText.rejected')}
+            {t('page.newAddress.walletConnect.status.rejected')}
           </div>
         );
       case 'BRAND_NAME_ERROR':
@@ -44,17 +44,12 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
           <div className="py-[8px]">
             <div>
               <img src={TipWarningSVG} className={IconClassName} />
-              {t(
-                'component.WalletConnect.ConnectStatus.statusText.brandNameError'
-              )}
+              {t('page.newAddress.walletConnect.status.brandError')}
             </div>
             <div>
-              {t(
-                'component.WalletConnect.ConnectStatus.statusText.brandNameError2',
-                {
-                  displayBrandName,
-                }
-              )}
+              {t('page.newAddress.walletConnect.status.brandErrorDesc', {
+                brandName: displayBrandName,
+              })}
             </div>
           </div>
         );
@@ -63,36 +58,31 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
           <div className="py-[8px]">
             <div>
               <img src={TipWarningSVG} className={IconClassName} />
-              {t(
-                'component.WalletConnect.ConnectStatus.statusText.accountError'
-              )}
+              {t('page.newAddress.walletConnect.status.accountError')}
             </div>
             <div>
-              {t(
-                'component.WalletConnect.ConnectStatus.statusText.accountError2'
-              )}
+              {t('page.newAddress.walletConnect.status.accountErrorDesc')}
             </div>
           </div>
         );
       case 'CONNECTED':
         return (
           <div className="py-[15px]">
-            {t('component.WalletConnect.ConnectStatus.statusText.connected')}
+            {t('page.newAddress.walletConnect.status.connected')}
           </div>
         );
       case 'ADDRESS_DUPLICATE':
         return (
           <div className="py-[15px]">
-            {t('component.WalletConnect.ConnectStatus.statusText.duplicate')}
+            {t('page.newAddress.walletConnect.status.duplicate')}
           </div>
         );
       default:
         return (
           <div className="py-[15px]">
-            {t('component.WalletConnect.ConnectStatus.statusText.scan', {
-              displayBrandName,
-              wallet: hasWallet ? '' : ' wallet',
-            })}
+            {t('page.newAddress.walletConnect.status.default')}{' '}
+            {displayBrandName}
+            {hasWallet ? '' : ' wallet'}
           </div>
         );
     }

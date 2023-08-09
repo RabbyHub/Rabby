@@ -62,7 +62,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
       }, 1000);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('global.Copied'),
+        content: t('global.copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -88,13 +88,13 @@ const ScanCopyQRCode: React.FC<Props> = ({
           className={clsx('cursor-pointer', { active: !showURL })}
           onClick={() => changeShowURL(false)}
         >
-          {t('component.ScanCopyQRCode.qrcode')}
+          {t('page.newAddress.walletConnect.qrCode')}
         </div>
         <div
           className={clsx('cursor-pointer', { active: showURL })}
           onClick={() => changeShowURL(true)}
         >
-          {t('component.ScanCopyQRCode.url')}
+          {t('page.newAddress.walletConnect.url')}
         </div>
       </div>
       {!showURL && (
@@ -142,7 +142,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
           onClick={() => setShowOpenApiModal(true)}
         >
           <img src={IconBridgeChange} />
-          {t('component.ScanCopyQRCode.changeBridge')}
+          {t('page.newAddress.walletConnect.changeBridgeServer')}
         </div>
       )}
       <WalletConnectBridgeModal
