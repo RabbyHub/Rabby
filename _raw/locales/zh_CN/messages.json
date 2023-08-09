@@ -651,7 +651,7 @@
         }
       },
       "header": {
-        "title": "{{ 地址 }} 的批准"
+        "title": "{{ address }} 的批准"
       },
       "search": {
         "placeholder": "按姓名/地址搜索 {{ type }}"
@@ -961,7 +961,7 @@
         "operation": "手术",
         "operationABIDesc": "操作从 ABI 解码",
         "operationCantDecode": "操作未解码",
-        "payNativeToken": "支付{{符号}}",
+        "payNativeToken": "支付{{symbol}}",
         "title": "合约调用"
       },
       "contractPopularity": "否。{{0}}，日期：{{1}}",
@@ -1031,7 +1031,7 @@
       "nonceTitle": "随机数",
       "popularity": "人气",
       "protocolTitle": "协议",
-      "recommendGasLimitTip": "美东时间。 \n{{美东时间}}。\n当前{{current}}x，推荐",
+      "recommendGasLimitTip": "美东时间。 \n{{est}}。\n当前{{current}}x，推荐",
       "revokeNFTApprove": {
         "revokeNFT": "撤销 NFT",
         "title": "撤销 NFT 批准"
@@ -1104,7 +1104,7 @@
         "flagByRabby": "由拉比标记",
         "myBalance": "我的余额",
         "title": "代币批准",
-        "trustValueLessThan": "信任值≤{{值}}"
+        "trustValueLessThan": "信任值≤{{value}}"
       },
       "transacted": "之前交易过",
       "trustValue": "信任价值",
@@ -1225,7 +1225,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
-      "title": "切换到{{链}}"
+      "title": "切换到{{chain}}"
     },
     "unlock": {
       "btn": {
