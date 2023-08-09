@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   RuleConfig,
@@ -72,7 +73,7 @@ const UserDataList = ({
   onRuleEnableStatusChange,
 }: Props) => {
   const wallet = useWallet();
-
+  const { t } = useTranslation();
   const isInBlacklist = useMemo(() => {
     return userData.originBlacklist.includes(origin.toLowerCase());
   }, [origin, userData]);
@@ -134,7 +135,9 @@ const UserDataList = ({
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Added to your whitelist</div>
+              <div className="text-white">
+                {t('page.connect.addedToWhitelist')}
+              </div>
             </div>
           </div>
         ),
@@ -148,7 +151,9 @@ const UserDataList = ({
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Added to your blacklist</div>
+              <div className="text-white">
+                {t('page.connect.addedToBlacklist')}
+              </div>
             </div>
           </div>
         ),
@@ -163,7 +168,9 @@ const UserDataList = ({
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Removed from all lists</div>
+              <div className="text-white">
+                {t('page.connect.removedFromAll')}
+              </div>
             </div>
           </div>
         ),
@@ -237,17 +244,17 @@ const UserDataList = ({
         })}
         onClick={() => setListDrawerVisible(true)}
       >
-        {!isInBlacklist && !isInWhitelist && 'Not on any list'}
+        {!isInBlacklist && !isInWhitelist && t('page.connect.notOnAnyList')}
         {isInBlacklist && (
           <>
             <img className="icon-list-status" src={IconBlacklist} />
-            On your blacklist
+            {t('page.connect.onYourBlacklist')}
           </>
         )}
         {isInWhitelist && (
           <>
             <img className="icon-list-status" src={IconWhitelist} />
-            On your whitelist
+            {t('page.connect.onYourWhitelist')}
           </>
         )}
         <img src={IconEditList} className="icon-edit-list" />

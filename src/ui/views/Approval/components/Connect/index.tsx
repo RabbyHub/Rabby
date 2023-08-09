@@ -3,6 +3,7 @@ import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
@@ -130,37 +131,37 @@ const Footer = styled.div`
 const RuleDesc = [
   {
     id: '1004',
-    desc: 'Listed by',
+    desc: i18n.t('page.connect.listedBy'),
     fixed: true,
   },
   {
     id: '1005',
-    desc: 'Site popularity',
+    desc: i18n.t('page.connect.sitePopularity'),
     fixed: true,
   },
   {
     id: '1006',
-    desc: 'My Mark',
+    desc: i18n.t('page.connect.myMark'),
     fixed: false,
   },
   {
     id: '1001',
-    desc: 'Flagged by Rabby',
+    desc: i18n.t('page.connect.flagByRabby'),
     fixed: false,
   },
   {
     id: '1002',
-    desc: 'Flagged by MetaMask',
+    desc: i18n.t('page.connect.flagByMM'),
     fixed: false,
   },
   {
     id: '1003',
-    desc: 'Flagged by ScamSniffer',
+    desc: i18n.t('page.connect.flagByScamSniffer'),
     fixed: false,
   },
   {
     id: '1070',
-    desc: 'Verified by Rabby',
+    desc: i18n.t('page.connect.verifiedByRabby'),
     fixed: false,
   },
 ];
@@ -266,7 +267,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let warningCount = 0;
     let dangerCount = 0;
     let needProcessCount = 0;
-    let cancelBtnText = 'Cancel';
+    let cancelBtnText = t('global.Cancel');
     let level: Level = Level.SAFE;
     resultsWithoutDisable.forEach((result) => {
       if (result.level === Level.SAFE) {
@@ -289,8 +290,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
     if (forbiddenCount > 0) {
       disabled = true;
-      text = 'Found forbidden risks. Connection is blocked.';
-      cancelBtnText = 'Close';
+      text = t('page.connect.foundForbiddenRisk');
+      cancelBtnText = t('global.closeButton');
       level = Level.FORBIDDEN;
     } else if (needProcessCount > 0) {
       if (safeCount > 0) {
@@ -299,7 +300,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         level = Level.SAFE;
       } else {
         disabled = true;
-        text = 'Please process the alert before signing';
+        text = t('page.signFooterBar.processRiskAlert');
         if (dangerCount > 0) {
           level = Level.DANGER;
         } else {
@@ -379,7 +380,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Mark as "Trusted"</div>
+              <div className="text-white">
+                {t('page.connect.markAsTrustToast')}
+              </div>
             </div>
           </div>
         ),
@@ -393,7 +396,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Mark as "Blocked"</div>
+              <div className="text-white">
+                {t('page.connect.markAsBlockToast')}
+              </div>
             </div>
           </div>
         ),
@@ -408,7 +413,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Mark removed</div>
+              <div className="text-white">
+                {t('page.connect.markRemovedToast')}
+              </div>
             </div>
           </div>
         ),
@@ -556,12 +563,12 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       <ConnectWrapper>
         <div className="approval-connect">
           <div className="flex justify-between items-center mb-20">
-            <div className="approval-title">Connect to Dapp</div>
+            <div className="approval-title">{t('page.connect.title')}</div>
             <ChainSelector
               title={
                 <div>
                   <div className="chain-selector-tips">
-                    Select a chain to connect for
+                    {t('page.connect.selectChainToConnect')}
                   </div>
                   <div className="chain-selector-site">{origin}</div>
                 </div>
@@ -586,7 +593,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                 <RuleResult
                   rule={{
                     id: '1006',
-                    desc: 'My mark',
+                    desc: t('page.connect.markRuleText'),
                     result: userListResult || null,
                   }}
                   onSelect={handleSelectRule}
@@ -633,7 +640,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                 'mb-0': !connectBtnStatus.text,
               })}
             >
-              {t('Connect')}
+              {t('page.connect.connectBtn')}
             </Button>
             {connectBtnStatus.text && (
               <div

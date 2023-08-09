@@ -2262,6 +2262,56 @@
         "interactDapp": "Interact Dapp",
         "description": "Description"
       }
+    },
+    "securityEngine": {
+      "yes": "Yes",
+      "no": "No",
+      "whenTheValueIs": "when the value is {{value}}",
+      "currentValueIs": "Current value is {{value}}",
+      "viewRules": "View security rules",
+      "undo": "Undo",
+      "riskProcessed": "Risk Processed",
+      "ignoreAlert": "Ignore the alert",
+      "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
+      "unknownResult": "Unknown result because security rule is unavailable",
+      "alertTriggerReason": "Alert triggered reason:",
+      "understandRisk": "I understand and accept responsibility for any loss",
+      "forbiddenCantIgnore": "Found forbidden risk that can't be ignored.",
+      "ruleDetailTitle": "Rule Detail",
+      "enableRule": "Enable the rule",
+      "viewRiskLevel": "View risk level"
+    },
+    "connect": {
+      "listedBy": "Listed by",
+      "sitePopularity": "Site popularity",
+      "myMark": "My Mark",
+      "flagByRabby": "Flagged by Rabby",
+      "flagByMM": "Flagged by MetaMask",
+      "flagByScamSniffer": "Flagged by ScamSniffer",
+      "verifiedByRabby": "Verified by Rabby",
+      "foundForbiddenRisk": "Found forbidden risks. Connection is blocked.",
+      "markAsTrustToast": "Mark as \"Trusted\"",
+      "markAsBlockToast": "Mark as \"Blocked\"",
+      "markRemovedToast": "Mark removed",
+      "title": "Connect to Dapp",
+      "selectChainToConnect": "Select a chain to connect for",
+      "markRuleText": "My mark",
+      "connectBtn": "Connect",
+      "noWebsite": "None",
+      "popularLevelHigh": "High",
+      "popularLevelMedium": "Medium",
+      "popularLevelLow": "Low",
+      "popularLevelVeryLow": "Very Low",
+      "noMark": "No mark",
+      "blocked": "Blocked",
+      "trusted": "Trusted",
+      "addedToWhitelist": "Added to your whitelist",
+      "addedToBlacklist": "Added to your blacklist",
+      "removedFromAll": "Removed from all lists",
+      "notOnAnyList": "Not on any list",
+      "onYourBlacklist": "On your blacklist",
+      "onYourWhitelist": "On your whitelist",
+      "manageWhiteBlackList": "Manage whitelist/blacklist"
     }
   },
   "component": {
@@ -2457,7 +2507,8 @@
     "backButton": "Back",
     "proceedButton": "Proceed",
     "editButton": "Edit",
-    "addButton": "Add"
+    "addButton": "Add",
+    "closeButton": "Close"
   },
   "background": {},
   "LedgerPermission2": {
