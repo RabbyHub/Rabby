@@ -1234,7 +1234,10 @@
       "unable-to-fetch-the-price": "无法获取价格",
       "unlimited-allowance": "无限津贴",
       "view-quotes": "查看报价",
-      "wrap-contract": "包装合同"
+      "wrap-contract": "包装合同",
+      "actual": "实际的：",
+      "gas-fee": "煤气费：{{gasUsed}}",
+      "estimate": "估计："
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
@@ -1249,6 +1252,28 @@
         "placeholder": "输入密码解锁",
         "required": "输入密码解锁"
       }
+    },
+    "addressDetail": {
+      "add-to-whitelist": "添加到白名单",
+      "remove-from-whitelist": "从白名单中删除",
+      "address-detail": "地址详情",
+      "backup-private-key": "备份私钥",
+      "backup-seed-phrase": "备份种子短语",
+      "tx-requires": "任何交易都需要 <2>{{num}}</2> 次确认",
+      "address": "地址",
+      "address-note": "地址备注",
+      "admins": "管理员",
+      "assets": "资产",
+      "delete-address": "删除地址",
+      "delete-desc": "在删除之前，请记住以下几点，以了解如何保护您的资产。",
+      "direct-delete-desc": "该地址是一个{{renderBrand}}地址，Rabby不存储该地址的私钥或助记词，您可以将其删除",
+      "edit-memo-title": "编辑地址备注",
+      "hd-path": "高清路径",
+      "manage-addresses-under-this-seed-phrase": "管理此种子短语下的地址",
+      "manage-seed-phrase": "管理种子短语",
+      "please-input-address-note": "请输入地址备注",
+      "qr-code": "二维码",
+      "source": "来源"
     }
   },
   "component": {

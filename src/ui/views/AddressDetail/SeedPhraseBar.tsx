@@ -3,6 +3,7 @@ import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 
 interface Props {
@@ -11,13 +12,14 @@ interface Props {
 
 export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const goToHDManager = async () => {
     let keyringId;
     AuthenticationModalPromise({
-      confirmText: 'Confirm',
-      cancelText: 'Cancel',
-      title: 'Manage Seed Phrase',
+      confirmText: t('global.Confirm'),
+      cancelText: t('global.Cancel'),
+      title: t('page.addressDetail.manage-seed-phrase'),
       validationHandler: async (password: string) => {
         await wallet.getMnemonics(password, address);
         const mnemonics = await wallet.getMnemonicByAddress(address);
@@ -46,7 +48,9 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
         'cursor-pointer'
       )}
     >
-      <div className="pl-[2px]">Manage addresses under this Seed Phrase </div>
+      <div className="pl-[2px]">
+        {t('page.addressDetail.manage-addresses-under-this-seed-phrase')}{' '}
+      </div>
       <IconArrowRight width={16} height={16} viewBox="0 0 12 12" />
     </div>
   );

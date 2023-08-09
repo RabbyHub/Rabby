@@ -156,7 +156,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         </div>
 
         <div className="flex items-center mt-12">
-          <span className="w-[68px]">Estimate:</span>
+          <span className="w-[68px]">{t('page.swap.estimate')}</span>
           <div>
             <TokenCost
               payToken={data?.pay_token}
@@ -168,7 +168,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         </div>
 
         <div className="flex items-center mt-[15px]">
-          <span className="w-[68px]">Actual:</span>
+          <span className="w-[68px]">{t('page.swap.actual')}</span>
           <div>
             <TokenCost
               payToken={data?.pay_token}
@@ -204,10 +204,14 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
           </span>
 
           {!loading ? (
-            <span className="ml-auto">GasFee: {gasUsed}</span>
+            <span className="ml-auto">
+              {t('page.swap.gas-fee', { gasUsed })}
+            </span>
           ) : (
             <span className="ml-auto">
-              {(t('page.swap.gas-x-price'), { price: data?.gas?.gas_price })}
+              {t('page.swap.gas-x-price', {
+                price: data?.gas?.gas_price || '',
+              })}
             </span>
           )}
         </div>
@@ -232,6 +236,8 @@ const HistoryList = () => {
       </div>
     );
   }
+
+  console.log('txList?.list', txList?.list);
 
   return (
     <div className="overflow-y-auto max-h-[434px] space-y-[12px] pb-20">

@@ -1,7 +1,7 @@
-import { Button, Form, Input, message, Popover } from 'antd';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Copy, NameAndAddress, PageHeader, Popup } from 'ui/component';
+import { Button, Form, Input, Popover } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { NameAndAddress, Popup } from 'ui/component';
 import {
   isSameAddress,
   splitNumberByStep,
@@ -18,18 +18,15 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
 import {
   CHAINS,
-  CHAINS_ENUM,
   KEYRING_CLASS,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
-import { useLocation } from 'react-router-dom';
-import { connectStore, useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbySelector } from '@/ui/store';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { useAsync } from 'react-use';
-import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { crossCompareOwners } from '@/ui/utils/gnosis';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { SvgIconLoading } from 'ui/assets';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
@@ -37,18 +34,16 @@ import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBa
 import { SeedPhraseBar } from './SeedPhraseBar';
 import clsx from 'clsx';
 import { Chain } from '@debank/common';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { sortBy } from 'lodash';
 
 const GnonisSafeInfo = ({
   address,
-  type,
-  brandName,
 }: {
   address: string;
   type: string;
   brandName: string;
 }) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [activeData, setActiveData] = useState<
     | {
@@ -133,7 +128,7 @@ const GnonisSafeInfo = ({
         <div className="rabby-list-item no-hover">
           <div className="rabby-list-item-content border-0">
             <div className="rabby-list-item-label">
-              Admins
+              {t('page.addressDetail.admins')}
               <div className="tabs-container">
                 <div className="tabs">
                   {safeInfo?.map((item) => {
@@ -158,12 +153,15 @@ const GnonisSafeInfo = ({
                 </div>
               </div>
               <div className="rabby-list-item-desc text-gray-subTitle">
-                Any transaction requires{' '}
-                <span className="text-gray-title text-14">
-                  {activeData?.data?.threshold}/
-                  {activeData?.data?.owners.length}
-                </span>{' '}
-                confirmations
+                <Trans t={t} i18nKey={'page.addressDetail.tx-requires'}>
+                  Any transaction requires{' '}
+                  <span className="text-gray-title text-14">
+                    {{
+                      num: `${activeData?.data?.threshold}/${activeData?.data?.owners.length}`,
+                    }}
+                  </span>{' '}
+                  confirmations
+                </Trans>
               </div>
             </div>
             <div className="rabby-list-item-extra flex gap-[4px]"></div>
@@ -209,7 +207,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       inputRef.current?.focus();
     }, 50);
     const { destroy } = Popup.info({
-      title: 'Edit address note',
+      title: t('page.addressDetail.edit-memo-title'),
       height: 215,
       content: (
         <div className="pt-[4px]">
@@ -232,13 +230,18 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             <Form.Item
               name="memo"
               className="h-[80px] mb-0"
-              rules={[{ required: true, message: 'Please input address note' }]}
+              rules={[
+                {
+                  required: true,
+                  message: t('page.addressDetail.please-input-address-note'),
+                },
+              ]}
             >
               <Input
                 ref={inputRef}
                 className="popup-input h-[48px]"
                 size="large"
-                placeholder="Please input address note"
+                placeholder={t('page.addressDetail.please-input-address-note')}
                 autoFocus
                 allowClear
                 spellCheck={false}
@@ -253,7 +256,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 className="w-[200px]"
                 htmlType="submit"
               >
-                Confirm
+                {t('global.Confirm')}
               </Button>
             </div>
           </Form>
@@ -267,7 +270,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       <div className="rabby-list-item">
         <div className="rabby-list-item-content pr-11">
           <div className="rabby-list-item-label">
-            Address
+            {t('page.addressDetail.address')}
             <div className="rabby-list-item-desc flex gap-4 text-[13px]">
               {address}
               <img
@@ -285,7 +288,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       </div>
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">Address Note</div>
+          <div className="rabby-list-item-label">
+            {t('page.addressDetail.address-note')}
+          </div>
           <div
             className="rabby-list-item-extra flex gap-[10px]"
             onClick={handleEditMemo}
@@ -299,7 +304,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       </div>
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">Assets</div>
+          <div className="rabby-list-item-label">
+            {t('page.addressDetail.assets')}
+          </div>
           <div
             className="rabby-list-item-extra truncate"
             title={splitNumberByStep((balance || 0).toFixed(0))}
@@ -310,7 +317,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       </div>
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">QR Code</div>
+          <div className="rabby-list-item-label">
+            {t('page.addressDetail.qr-code')}
+          </div>
           <div className="rabby-list-item-extra">
             <Popover
               placement="bottomLeft"
@@ -332,7 +341,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       </div>
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">Source</div>
+          <div className="rabby-list-item-label">
+            {t('page.addressDetail.source')}
+          </div>
           <div className="rabby-list-item-extra flex gap-[4px]">
             <img
               className="w-[16px] h-[16px]"
@@ -372,7 +383,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       {accountInfo && (
         <div className="rabby-list-item">
           <div className="rabby-list-item-content">
-            <div className="rabby-list-item-label">HD Path</div>
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.hd-path')}
+            </div>
             <div className="rabby-list-item-extra flex gap-[4px]">{`${accountInfo.hdPathTypeLabel} #${accountInfo.index}`}</div>
           </div>
         </div>

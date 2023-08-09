@@ -563,7 +563,10 @@
       "i-understand-and-accept-it": "I understand and accept it",
       "confirm": "Confirm",
       "tradingSettingTip1": "1. Once enabled, you will interact with the contract from the exchange directly",
-      "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges"
+      "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
+      "gas-fee": "GasFee: {{gasUsed}}",
+      "estimate": "Estimate:",
+      "actual": "Actual:"
     },
     "manageAddress": {
       "no-address": "No address",
@@ -1206,6 +1209,28 @@
       "onYourBlacklist": "On your blacklist",
       "onYourWhitelist": "On your whitelist",
       "manageWhiteBlackList": "Manage whitelist/blacklist"
+    },
+    "addressDetail": {
+      "add-to-whitelist": "Add to Whitelist",
+      "remove-from-whitelist": "Remove from Whitelist",
+      "address-detail": "Address Detail",
+      "backup-private-key": "Backup Private Key",
+      "backup-seed-phrase": "Backup Seed Phrase",
+      "delete-address": "Delete address",
+      "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
+      "direct-delete-desc": "This address is a {{renderBrand}} address, Rabby does not store the private key or seed phrase for this address, you can just delete it",
+      "admins": "Admins",
+      "tx-requires": "Any transaction requires <2>{{num}}</2> confirmations",
+      "edit-memo-title": "Edit address note",
+      "please-input-address-note": "Please input address note",
+      "address": "Address",
+      "address-note": "Address Note",
+      "assets": "Assets",
+      "qr-code": "QR Code",
+      "source": "Source",
+      "hd-path": "HD Path",
+      "manage-seed-phrase": "Manage Seed Phrase",
+      "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase"
     }
   },
   "component": {
@@ -1404,7 +1429,8 @@
     "proceedButton": "Proceed",
     "editButton": "Edit",
     "addButton": "Add",
-    "closeButton": "Close"
+    "closeButton": "Close",
+    "Deleted": "Deleted"
   },
   "background": {
     "error": {
