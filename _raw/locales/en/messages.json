@@ -352,6 +352,10 @@
       },
       "tokenInfoPrice": "Price",
       "sendButton": "Send",
+      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
+      "whitelistAlert__whitelisted": "The address is whitelisted",
+      "whitelistAlert__temporaryGranted": "Temporary permission granted",
+      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
       "GasSelector": {
         "popupTitle": "Set Gas Price (Gwei)",
         "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",

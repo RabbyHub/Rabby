@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useDebounce } from 'react-use';
@@ -147,19 +147,19 @@ const SendToken = () => {
   const whitelistAlertContent = useMemo(() => {
     if (!whitelistEnabled) {
       return {
-        content: 'Whitelist disabled. You can transfer to any address.',
+        content: t('page.sendToken.whitelistAlert__disabled'),
         success: true,
       };
     }
     if (toAddressInWhitelist) {
       return {
-        content: 'The address is whitelisted',
+        content: t('page.sendToken.whitelistAlert__whitelisted'),
         success: true,
       };
     }
     if (temporaryGrant) {
       return {
-        content: 'Temporary permission granted',
+        content: t('page.sendToken.whitelistAlert__temporaryGranted'),
         success: true,
       };
     }
@@ -167,8 +167,13 @@ const SendToken = () => {
       success: false,
       content: (
         <>
-          The address is not whitelisted.
-          <br /> I agree to grant temporary permission to transfer.
+          <Trans
+            i18nKey={'page.sendToken.whitelistAlert__notWhitelisted'}
+            t={t}
+          >
+            The address is not whitelisted.
+            <br /> I agree to grant temporary permission to transfer.
+          </Trans>
         </>
       ),
     };
