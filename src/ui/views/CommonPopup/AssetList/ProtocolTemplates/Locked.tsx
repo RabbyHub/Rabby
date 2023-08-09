@@ -5,14 +5,15 @@ import Card from '../components/Card';
 import PortfolioHeader from '../components/PortfolioHeader';
 import { TokenList, Supplements } from '../components/PortfolioDetail';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 export default React.memo(
   ({ name, data }: { name: string; data: AbstractPortfolio }) => {
     const portfolio = data._originPortfolio;
-
+    const { t } = useTranslation();
     const supplements = [
       !!portfolio.detail.unlock_at && {
-        label: 'Unlock at',
+        label: t('page.dashboard.assets.table.unlockAt'),
         content: dayjs(Number(portfolio.detail.unlock_at) * 1000).format(
           'YYYY/MM/DD'
         ),

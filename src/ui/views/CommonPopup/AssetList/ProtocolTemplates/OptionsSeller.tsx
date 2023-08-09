@@ -8,11 +8,12 @@ import { getTokenSymbol } from 'ui/utils/token';
 import { TokenList, Supplements } from '../components/PortfolioDetail';
 import PortfolioHeader from '../components/PortfolioHeader';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 export default React.memo(
   ({ name, data }: { name: string; data: AbstractPortfolio }) => {
     const portfolio = data._originPortfolio;
-
+    const { t } = useTranslation();
     const optionsType = portfolio.detail.type;
     const strikePrice = portfolio.detail.underlying_token?.amount
       ? formatPrice(
@@ -24,16 +25,16 @@ export default React.memo(
 
     const supplements = [
       !!optionsType && {
-        label: 'Type',
+        label: t('page.dashboard.assets.table.type'),
         content: optionsType,
       },
       !!strikePrice && {
-        label: 'Strike price',
+        label: t('page.dashboard.assets.table.strikePrice'),
         content:
           strikePrice + ' ' + getTokenSymbol(portfolio.detail.strike_token),
       },
       !!exerciseEnd && {
-        label: 'Exercise end',
+        label: t('page.dashboard.assets.table.exerciseEnd'),
         content: dayjs(Number(exerciseEnd) * 1000).format('YYYY/MM/DD'),
       },
     ];

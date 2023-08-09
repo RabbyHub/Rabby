@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { KEYRING_TYPE } from 'consts';
 
@@ -53,7 +53,7 @@ const ImportPrivateKey = () => {
         pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
-          title: t('Imported Successfully'),
+          title: t('page.newAddress.importedSuccessfully'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccountsLength,
@@ -64,7 +64,9 @@ const ImportPrivateKey = () => {
       form.setFields([
         {
           name: 'key',
-          errors: [err?.message || t('Not a valid private key')],
+          errors: [
+            err?.message || t('page.newAddress.privateKey.notAValidPrivateKey'),
+          ],
         },
       ]);
     },
@@ -100,7 +102,7 @@ const ImportPrivateKey = () => {
         hasDivider
         noPadding
         className={clsx(isWide && 'rabby-stray-page')}
-        NextButtonContent="Confirm"
+        NextButtonContent={t('global.confirm')}
         formProps={{
           onValuesChange: (states) => {
             wallet.setPageStateCache({
@@ -128,19 +130,22 @@ const ImportPrivateKey = () => {
             }
           }}
         >
-          Import Private Key
+          {t('page.newAddress.importPrivateKey')}
         </Navbar>
         <div className="rabby-container">
           <div className="px-20 pt-24">
             <Form.Item
               name="key"
               rules={[
-                { required: true, message: t('Please input Private key') },
+                {
+                  required: true,
+                  message: t('page.newAddress.privateKey.required'),
+                },
               ]}
             >
               <Input
                 className={'h-[52px] p-16'}
-                placeholder={t('Enter your Private key')}
+                placeholder={t('page.newAddress.privateKey.placeholder')}
                 autoFocus
                 spellCheck={false}
                 type="password"
@@ -148,29 +153,45 @@ const ImportPrivateKey = () => {
             </Form.Item>
             <TipTextList className="mt-32">
               <section>
-                <h3>What is a private key?</h3>
+                <h3>
+                  {t('page.newAddress.privateKey.whatIsAPrivateKey.question')}
+                </h3>
                 <p>
-                  A string of letters and numbers used to control your assets.
+                  {t('page.newAddress.privateKey.whatIsAPrivateKey.answer')}
                 </p>
               </section>
               <section>
-                <h3>Is it safe to import it in Rabby?</h3>
+                <h3>
+                  {t(
+                    'page.newAddress.privateKey.isItSafeToImportItInRabby.question'
+                  )}
+                </h3>
                 <p>
-                  Yes, it will be stored locally on your browser and only
-                  accessible to you.{' '}
+                  {t(
+                    'page.newAddress.privateKey.isItSafeToImportItInRabby.answer'
+                  )}
                 </p>
               </section>
               <section>
-                <h3>Is it possible to import KeyStore?</h3>
+                <h3>
+                  {t(
+                    'page.newAddress.privateKey.isItPossibleToImportKeystore.question'
+                  )}
+                </h3>
                 <p>
-                  Yes, you can{' '}
-                  <a
-                    className="underline text-blue-light cursor-pointer"
-                    onClick={() => history.push('/import/json')}
+                  <Trans
+                    t={t}
+                    i18nKey="page.newAddress.privateKey.isItPossibleToImportKeystore.answer"
                   >
-                    import KeyStore
-                  </a>{' '}
-                  here.
+                    Yes, you can
+                    <a
+                      className="underline text-blue-light cursor-pointer"
+                      onClick={() => history.push('/import/json')}
+                    >
+                      import KeyStore
+                    </a>
+                    here.
+                  </Trans>
                 </p>
               </section>
             </TipTextList>

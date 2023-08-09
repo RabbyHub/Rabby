@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { ChainItem, ChainItemType } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export const ChainList = ({
   onChange,
@@ -26,6 +27,7 @@ export const ChainList = ({
   const [moreChainList, setMoreChainList] = React.useState<ChainItemType[]>([]);
   const [showMore, setShowMore] = React.useState(false);
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleSelectChain = (id?: string) => {
     if (!id || activeChainId === id) {
@@ -110,7 +112,9 @@ export const ChainList = ({
             setShowMore(true);
           }}
         >
-          Unfold {moreLen} chain{moreLen > 1 ? 's' : ''}
+          {moreLen > 1
+            ? t('page.dashboard.assets.unfoldChain')
+            : t('page.dashboard.assets.unfoldChainPlural', { moreLen })}
         </div>
       )}
     </div>

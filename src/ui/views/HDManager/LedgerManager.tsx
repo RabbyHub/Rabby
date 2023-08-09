@@ -12,6 +12,7 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
+import { useTranslation } from 'react-i18next';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -120,12 +121,15 @@ export const LedgerManager: React.FC = () => {
   React.useEffect(() => {
     fetchInitAccountsTask();
   }, []);
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="setting" onClick={openAdvanced}>
         <SettingSVG className="icon" />
-        <span className="title">Advanced Settings</span>
+        <span className="title">
+          {t('page.newAddress.hd.advancedSettings')}
+        </span>
       </div>
 
       <MainContainer setting={setting} loading={loading} HDName="Ledger" />
@@ -133,7 +137,7 @@ export const LedgerManager: React.FC = () => {
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

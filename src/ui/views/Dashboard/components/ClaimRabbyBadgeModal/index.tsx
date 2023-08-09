@@ -30,6 +30,7 @@ import * as animationData from './success.json';
 import { useAsync, useAsyncFn } from 'react-use';
 import { openInTab, useWallet } from '@/ui/utils';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 const RABBY_BADGE_URL = 'https://debank.com/official-badge/2';
 
@@ -261,6 +262,7 @@ const Wrapper = styled.div`
 `;
 
 const ClaimRabbyBadge = () => {
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [swapTips, setSwapTips] = useState(false);
@@ -340,15 +342,19 @@ const ClaimRabbyBadge = () => {
 
   return (
     <Wrapper className={clsx({ noCode })}>
-      <img src={ImgRabbyBadgeM} className="badge" alt="rabby badge" />
-      <div className="title">Claim Rabby Badge for</div>
+      <img
+        src={ImgRabbyBadgeM}
+        className="badge"
+        alt={t('page.dashboard.rabbyBadge.imageLabel')}
+      />
+      <div className="title">{t('page.dashboard.rabbyBadge.title')}</div>
       <CurrentAccount className="account" />
       {!noCode && (
         <>
           <div className={clsx('box', swapTips && 'swap')}>
             <Input
               className={clsx('codeInput', error && 'red')}
-              placeholder="Enter claim code"
+              placeholder={t('page.dashboard.rabbyBadge.enterClaimCode')}
               value={code}
               onChange={onInputChange}
               autoFocus
@@ -358,10 +364,9 @@ const ClaimRabbyBadge = () => {
               <div className="swapTips">
                 <img src={ImgInfo} className="w-12 h-12 self-start mt-[3px]" />
                 <span>
-                  You need to complete a swap with notable dex within Rabby
-                  Wallet first.{' '}
+                  {t('page.dashboard.rabbyBadge.swapTip')}{' '}
                   <span onClick={gotoSwap} className="toSwap">
-                    Go to Swap
+                    {t('page.dashboard.rabbyBadge.goToSwap')}
                   </span>
                 </span>
               </div>
@@ -375,10 +380,10 @@ const ClaimRabbyBadge = () => {
             onClick={handleClaim}
             loading={mintLoading}
           >
-            Claim
+            {t('page.dashboard.rabbyBadge.claim')}
           </Button>
           <div className="tips" onClick={gotoDeBankRabbyBadge}>
-            View your claim code
+            {t('page.dashboard.rabbyBadge.viewYourClaimCode')}
           </div>
         </>
       )}
@@ -390,13 +395,13 @@ const ClaimRabbyBadge = () => {
           </>
         ) : (
           <>
-            <div>You haven’t activated claim code for this address </div>
+            <div>{t('page.dashboard.rabbyBadge.noCode')} </div>
             <Button
               type="primary"
               className="btn more"
               onClick={gotoDeBankRabbyBadge}
             >
-              <span>Learn more on DeBank</span>
+              <span>{t('page.dashboard.rabbyBadge.learnMoreOnDebank')}</span>
               <img src={ImgLink} className="ml-4 w-20 h-20" />
             </Button>
           </>
@@ -467,14 +472,23 @@ const ClaimSuccessWrapper = styled.div`
 `;
 
 const ClaimSuccess = ({ num }: { num: number }) => {
+  const { t } = useTranslation();
   return (
     <ClaimSuccessWrapper>
-      <img src={ImgRabbyBadgeL} className="badge" alt="rabby badge" />
-      <div className="desc">Rabby Valued User No.{num}</div>
-      <div className="title">Claim Success</div>
+      <img
+        src={ImgRabbyBadgeL}
+        className="badge"
+        alt={t('page.dashboard.rabbyBadge.imageLabel')}
+      />
+      <div className="desc">
+        {t('page.dashboard.rabbyBadge.rabbyValuedUserNo', {
+          num,
+        })}
+      </div>
+      <div className="title">{t('page.dashboard.rabbyBadge.claimSuccess')}</div>
       <CurrentAccount className="account" isSuccess />
       <Button type="primary" className="btn" onClick={gotoDeBankRabbyBadge}>
-        <span>View on DeBank</span>
+        <span>{t('page.dashboard.rabbyBadge.viewOnDebank')}</span>
         <img src={ImgLink} className="ml-4 w-20 h-20" />
       </Button>
       <div className="confetti">

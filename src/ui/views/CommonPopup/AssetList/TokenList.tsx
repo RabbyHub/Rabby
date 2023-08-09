@@ -7,6 +7,7 @@ import { TokenTable } from './components/TokenTable';
 import { BlockedButton } from './BlockedButton';
 import { CustomizedButton } from './CustomizedButton';
 import { TokenListEmpty } from './TokenListEmpty';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -36,9 +37,15 @@ export const TokenList: React.FC<Props> = ({
   const lowValueList = React.useMemo(() => {
     return list?.filter((item) => currentList?.indexOf(item) === -1);
   }, [currentList, list, isSearch]);
+  const { t } = useTranslation();
 
   if (isNoResults) {
-    return <TokenListEmpty className="mt-[92px]" text="No Match" />;
+    return (
+      <TokenListEmpty
+        className="mt-[92px]"
+        text={t('page.dashboard.assets.table.noMatch')}
+      />
+    );
   }
 
   const hasList = !!(
