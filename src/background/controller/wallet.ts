@@ -94,6 +94,7 @@ import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
+import { t } from 'i18next';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -183,11 +184,11 @@ export class WalletController extends BaseController {
     contractAddress: string
   ): Promise<string> => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = Object.values(CHAINS)
       .find((chain) => chain.serverId === chainServerId)
       ?.id.toString();
-    if (!chainId) throw new Error('invalid chain id');
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
 
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
@@ -217,12 +218,12 @@ export class WalletController extends BaseController {
     $ctx?: any;
   }) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chain = Object.values(CHAINS).find(
       (chain) => chain.serverId === chainServerId
     );
     const chainId = chain?.id;
-    if (!chainId) throw new Error('invalid chain id');
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
     const params: Record<string, any> = {
       chainId: chain.id,
       from: account!.address,
@@ -278,7 +279,7 @@ export class WalletController extends BaseController {
   }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) {
-      throw new Error('no account');
+      throw new Error(t('background.error.noCurrentAccount'));
     }
     const currentProvider = new EthereumProvider();
     currentProvider.currentAccount = account.address;
@@ -336,7 +337,7 @@ export class WalletController extends BaseController {
     });
 
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const txId = await this.sendToken(others);
 
     stats.report('gasTopUpTxFinished', {
@@ -422,9 +423,10 @@ export class WalletController extends BaseController {
     $ctx?: any
   ) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainObj = findChainByEnum(chain);
-    if (!chainObj) throw new Error(`Can not find chain ${chain}`);
+    if (!chainObj)
+      throw new Error(t('background.error.notFindChain', { chain }));
     try {
       if (shouldTwoStepApprove) {
         unTriggerTxCounter.increase(3);
@@ -561,11 +563,11 @@ export class WalletController extends BaseController {
     extra?: { isSwap: boolean }
   ) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = Object.values(CHAINS).find(
       (chain) => chain.serverId === chainServerId
     )?.id;
-    if (!chainId) throw new Error('invalid chain id');
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
     let tx: any = {
       from: account.address,
       to: id,
@@ -619,7 +621,7 @@ export class WalletController extends BaseController {
     }
   ) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
@@ -667,11 +669,11 @@ export class WalletController extends BaseController {
     $ctx?: any
   ) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = Object.values(CHAINS).find(
       (chain) => chain.serverId === chainServerId
     )?.id;
-    if (!chainId) throw new Error('invalid chain id');
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       await this.sendRequest({
         $ctx,
@@ -753,7 +755,7 @@ export class WalletController extends BaseController {
         ],
       });
     } else {
-      throw new Error('unknown contract abi');
+      throw new Error(t('background.error.unknownAbi'));
     }
   };
 
@@ -776,11 +778,11 @@ export class WalletController extends BaseController {
     $ctx?: any
   ) => {
     const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const chainId = Object.values(CHAINS).find(
       (chain) => chain.serverId === chainServerId
     )?.id;
-    if (!chainId) throw new Error('invalid chain id');
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       if (isApprovedForAll) {
         await this.sendRequest({
@@ -875,7 +877,7 @@ export class WalletController extends BaseController {
         ],
       });
     } else {
-      throw new Error('unknown contract abi');
+      throw new Error(t('background.error.unknownAbi'));
     }
   };
 
@@ -1303,7 +1305,7 @@ export class WalletController extends BaseController {
 
   fetchGnosisChainList = (address: string) => {
     if (!isAddress(address)) {
-      return Promise.reject(new Error('Not a valid address'));
+      return Promise.reject(new Error(t('background.error.invalidAddress')));
     }
     return Promise.all(
       GNOSIS_SUPPORT_CHAINS.map(async (chainEnum) => {
@@ -1426,7 +1428,7 @@ export class WalletController extends BaseController {
         networkId
       );
     } else {
-      throw new Error('No Gnosis keyring found');
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
   };
 
@@ -1463,14 +1465,14 @@ export class WalletController extends BaseController {
         hash
       );
     } else {
-      throw new Error('No Gnosis keyring found');
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
   };
 
   postGnosisTransaction = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
-      throw new Error('No transaction in Gnosis keyring found');
+      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     return keyring.postTransaction();
   };
@@ -1478,7 +1480,7 @@ export class WalletController extends BaseController {
   getGnosisAllPendingTxs = async (address: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
-      throw new Error('No Gnosis keyring found');
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
     const networks = keyring.networkIdsMap[address];
     if (!networks || !networks.length) {
@@ -1523,7 +1525,7 @@ export class WalletController extends BaseController {
     networkId: string
   ) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     const currentProvider = new EthereumProvider();
     currentProvider.currentAccount = account.address;
     currentProvider.currentAccountType = account.type;
@@ -1584,36 +1586,36 @@ export class WalletController extends BaseController {
 
   gnosisGenerateTypedData = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
-      throw new Error('No transaction in Gnosis keyring');
+      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     return keyring.generateTypedData();
   };
 
   gnosisAddConfirmation = async (address: string, signature: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
-      throw new Error('No transaction in Gnosis keyring');
+      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addConfirmation(address, signature);
   };
 
   gnosisAddPureSignature = async (address: string, signature: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
-      throw new Error('No transaction in Gnosis keyring');
+      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addPureSignature(address, signature);
   };
 
   gnosisAddSignature = async (address: string, signature: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
-      throw new Error('No transaction in Gnosis keyring');
+      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addSignature(address, signature);
   };
@@ -1725,7 +1727,7 @@ export class WalletController extends BaseController {
         // 1h
         maxDuration: 3600000,
         clientMeta: {
-          description: i18n.t('appDescription'),
+          description: t('global.appDescription'),
           url: 'https://rabby.io',
           icons: ['https://rabby.io/assets/images/logo.png'],
           name: 'Rabby',
@@ -1952,7 +1954,7 @@ export class WalletController extends BaseController {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
 
-    const error = new Error(i18n.t('the private key is invalid'));
+    const error = new Error(t('background.error.invalidPrivateKey'));
     try {
       if (!ethUtil.isValidPrivate(buffer)) {
         throw error;
@@ -1972,7 +1974,7 @@ export class WalletController extends BaseController {
     try {
       JSON.parse(content);
     } catch {
-      throw new Error(i18n.t('the input file is invalid'));
+      throw new Error(t('background.error.invalidJson'));
     }
 
     let wallet;
@@ -2133,7 +2135,7 @@ export class WalletController extends BaseController {
   getMnemonicByAddress = (address: string) => {
     const keyring = this._getMnemonicKeyringByAddress(address);
     if (!keyring) {
-      throw new Error("Can't find keyring by address");
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return keyring.mnemonic;
   };
@@ -2141,14 +2143,14 @@ export class WalletController extends BaseController {
   getMnemonicAddressIndex = async (address: string) => {
     const keyring = this._getMnemonicKeyringByAddress(address);
     if (!keyring) {
-      throw new Error("Can't find keyring by address");
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return await keyring.getIndexByAddress(address);
   };
 
   generateKeyringWithMnemonic = async (mnemonic: string) => {
     if (!bip39.validateMnemonic(mnemonic)) {
-      throw new Error(i18n.t('The seed phrase is invalid, please check!'));
+      throw new Error(t('background.error.invalidMnemonic'));
     }
     // If import twice use same kerying
     let keyring = this.getKeyringByMnemonic(mnemonic);
@@ -2223,7 +2225,7 @@ export class WalletController extends BaseController {
       }
       this._setCurrentAccountFromKeyring(keyring, -1);
     } else {
-      throw new Error('failed to addKeyring, keyring is undefined');
+      throw new Error(t('background.error.addKeyring404'));
     }
   };
 
@@ -2759,7 +2761,7 @@ export class WalletController extends BaseController {
     const account = accounts[index < 0 ? index + accounts.length : index];
 
     if (!account) {
-      throw new Error('the current account is empty');
+      throw new Error(t('background.error.emptyAccount'));
     }
 
     const _account = {
@@ -2823,7 +2825,7 @@ export class WalletController extends BaseController {
     keyringType: string;
   }) => {
     if (addresses.length <= 0)
-      throw new Error('[GenerateCacheAliasNames]: need at least one address');
+      throw new Error(t('background.error.generateCacheAliasNames'));
     const firstAddress = addresses[0];
     const keyrings = await this.getTypedAccounts(keyringType);
     const keyring = await keyringService.getKeyringForAccount(
@@ -3037,7 +3039,7 @@ export class WalletController extends BaseController {
   }) => {
     const chain = Object.values(CHAINS).find((item) => item.id === chainId);
     if (!chain) {
-      throw new Error('chain not found');
+      throw new Error(t('background.error.invalidChainId'));
     }
     const onChainNonce = await this.requestETHRpc(
       {
