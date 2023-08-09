@@ -394,7 +394,7 @@ const SwitchLangModal = ({
       })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Current Language')}
+        {t('page.dashboard.settings.settings.currentLanguage')}
       </PageHeader>
       <div className="auto-lock-option-list">
         {LANG_OPTIONS.map((item) => {

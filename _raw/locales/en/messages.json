@@ -887,7 +887,7 @@
       },
       "unableToImport": {
         "title": "Unable to import",
-        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {0} before importing another device."
+        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{0}} before importing another device."
       },
       "connectHardwareWallets": "Connect Hardware Wallets",
       "connectMobileWalletApps": "Connect Mobile Wallet Apps",
@@ -906,7 +906,7 @@
           "question": "Is it safe to import it in Rabby?",
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
-        "importError": "[CreateMnemonics] unexpected step {0}",
+        "importError": "[CreateMnemonics] unexpected step {{0}}",
         "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
         "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
         "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
@@ -1094,7 +1094,7 @@
           "hdPathTypeNoChain": {
             "bip44": "BIP44: HDpath defined by the BIP44 protocol."
           },
-          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {0}"
+          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {{0}}"
         },
         "selectHdPath": "Select HD path:",
         "selectIndexTip": "Select the serial number of addresses to start from:",
