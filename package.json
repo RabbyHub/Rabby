@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.13",
+  "version": "0.92.14",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
