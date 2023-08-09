@@ -113,8 +113,8 @@ export const ChainList = ({
           }}
         >
           {moreLen > 1
-            ? t('page.dashboard.assets.unfoldChain')
-            : t('page.dashboard.assets.unfoldChainPlural', { moreLen })}
+            ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
+            : t('page.dashboard.assets.unfoldChain')}
         </div>
       )}
     </div>
