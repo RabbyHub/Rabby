@@ -45,7 +45,7 @@ export const AddressDelete = ({
     );
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Deleted'),
+      content: t('global.Deleted'),
       duration: 0.5,
     });
     setVisible(false);
@@ -60,14 +60,13 @@ export const AddressDelete = ({
       type === KEYRING_TYPE.SimpleKeyring
     ) {
       await AuthenticationModalPromise({
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
-        title: 'Delete address',
-        description:
-          'Before you delete, keep the following points in mind to understand how to protect your assets.',
+        confirmText: t('global.Confirm'),
+        cancelText: t('global.Cancel'),
+        title: t('page.addressDetail.delete-address'),
+        description: t('page.addressDetail.delete-desc'),
         checklist: [
-          'I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.',
-          "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
+          t('page.manageAddress.delete-checklist-1'),
+          t('page.manageAddress.delete-checklist-2'),
         ],
         onFinished() {
           handleDeleteAddress();
@@ -91,7 +90,7 @@ export const AddressDelete = ({
         >
           <div className="rabby-list-item-content">
             <div className="rabby-list-item-label" style={{ color: '#EC5151' }}>
-              Delete Address
+              {t('page.addressDetail.delete-address')}
             </div>
             <div className="rabby-list-item-arrow">
               <IconArrowRight
@@ -147,18 +146,17 @@ const AddressDeleteModal = ({
   return (
     <Popup
       visible={visible}
-      title={t('Delete address')}
+      title={t('page.addressDetail.delete-address')}
       height={240}
       className="address-delete-modal"
       onClose={onClose}
     >
       <div className="desc">
-        This address is a {renderBrand} address, Rabby does not store the
-        private key or seed phrase for this address, you can just delete it
+        {t('page.addressDetail.direct-delete-desc', { renderBrand })}
       </div>
       <footer className="footer flex gap-[16px]">
         <Button type="primary" size="large" block onClick={onClose}>
-          Cancel
+          {t('global.Cancel')}
         </Button>
         <Button
           onClick={onSubmit}
@@ -168,7 +166,7 @@ const AddressDeleteModal = ({
           className={'rabby-btn-ghost'}
           block
         >
-          Confirm Delete
+          {t('page.manageAddress.confirm-delete')}
         </Button>
       </footer>
     </Popup>
