@@ -126,10 +126,12 @@ export const RevokeApprovalModal = (props: {
 
   const subTitle = useMemo(() => {
     if (item?.type === 'contract') {
-      return 'Approved Token and NFT';
+      // return 'Approved Token and NFT';
+      return t('page.approvals.RevokeApprovalModal.subTitleTokenAndNFT');
     }
-    return 'Approved to the following Contracts';
-  }, [item?.type]);
+    // return 'Approved to the following Contracts';
+    return t('page.approvals.RevokeApprovalModal.subTitleContract');
+  }, [item?.type, t]);
 
   const displayList = useMemo(() => {
     if (!item) return null;
@@ -357,12 +359,12 @@ export const RevokeApprovalModal = (props: {
       }}
       destroyOnClose
       footer={null}
-      title="Approvals"
+      title={t('page.approvals.RevokeApprovalModal.title')}
       closeIcon={<IconClose />}
     >
       <div>
         <div className="mt-16 mb-18">
-          <ApprovalContractItem data={[item]} index={0} showNFTAmount />
+          <ApprovalContractItem data={[item]} index={0} />
         </div>
 
         <section className="mb-[6px] flex justify-between items-center">
@@ -371,7 +373,8 @@ export const RevokeApprovalModal = (props: {
             className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]"
             onClick={handleSelectAll}
           >
-            {t('Select All')}
+            {/* Select All */}
+            {t('page.approvals.RevokeApprovalModal.selectAll')}
           </div>
         </section>
 
@@ -401,7 +404,10 @@ export const RevokeApprovalModal = (props: {
           size="large"
           onClick={handleRevoke}
         >
-          Confirm {selectedList.length > 0 ? `(${selectedList.length})` : ''}
+          {t('page.approvals.RevokeApprovalModal.confirm', {
+            selectedCount:
+              selectedList.length > 0 ? `(${selectedList.length})` : '',
+          })}
         </Button>
       </div>
     </ModalStyled>

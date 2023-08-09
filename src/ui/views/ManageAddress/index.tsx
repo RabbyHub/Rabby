@@ -20,8 +20,10 @@ import { useBackUp, useWalletTypeData } from './hooks';
 import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { useTranslation } from 'react-i18next';
 
 const ManageAddress = () => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   const wallet = useWallet();
@@ -61,14 +63,13 @@ const ManageAddress = () => {
   const AuthenticationDeleteModalPromise = useCallback(
     async (title: string, onFinished: () => void, onCancel?: () => void) => {
       await AuthenticationModalPromise({
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
+        confirmText: t('page.manageAddress.confirm'),
+        cancelText: t('page.manageAddress.cancel'),
         title: title,
-        description:
-          'Before you delete, keep the following points in mind to understand how to protect your assets.',
+        description: t('page.manageAddress.delete-desc'),
         checklist: [
-          'I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.',
-          "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
+          t('page.manageAddress.delete-checklist-1'),
+          t('page.manageAddress.delete-checklist-2'),
         ],
         async onFinished() {
           await onFinished();
@@ -102,9 +103,9 @@ const ManageAddress = () => {
 
       if (list?.[0].type === KEYRING_TYPE['SimpleKeyring']) {
         const count = list.length;
-        const title = `Delete ${count} private key ${
-          count > 1 ? 'addresses' : 'address'
-        }`;
+        const title = t('page.manageAddress.delete-private-key-modal-title', {
+          count,
+        });
 
         await AuthenticationDeleteModalPromise(title, async () => {
           if (list.length) {
@@ -150,7 +151,7 @@ const ManageAddress = () => {
     setOpen(false);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: 'Deleted',
+      content: t('page.manageAddress.deleted'),
       duration: 0.5,
     });
   };
@@ -165,9 +166,10 @@ const ManageAddress = () => {
     }
 
     const count = TypedWalletObj?.[activeIndex].list?.length || 0;
-    const title = `Delete seed phrase and its ${count} ${
-      count > 1 ? 'addresses' : 'address'
-    }`;
+    const title = t('page.manageAddress.delete-seed-phrase-title', {
+      count,
+    });
+
     await AuthenticationDeleteModalPromise(title, async () => {
       if (TypedWalletObj && TypedWalletObj?.[activeIndex]?.list?.length) {
         await Promise.all(
@@ -203,7 +205,7 @@ const ManageAddress = () => {
 
   const handleDeleteEmptySeedPhrase = async () => {
     await AuthenticationDeleteModalPromise(
-      'Delete seed phrase and its 0 address',
+      t('page.manageAddress.delete-empty-seed-phrase'),
 
       async () => {
         if (TypedWalletObj?.[activeIndex]?.publicKey) {
@@ -226,7 +228,9 @@ const ManageAddress = () => {
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="px-20">
-          <PageHeader className="pt-[24px]">Manage Address</PageHeader>
+          <PageHeader className="pt-[24px]">
+            {t('page.manageAddress.manage-address')}
+          </PageHeader>
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto">
@@ -299,7 +303,7 @@ const ManageAddress = () => {
 
             {!!isLedger && !!TypedWalletObj?.[activeIndex]?.hdPathType && (
               <div className="text-gray-content text-12 mb-4">
-                HD path:{' '}
+                {t('page.manageAddress.hd-path')}{' '}
                 {LedgerHDPathTypeLabel[TypedWalletObj[activeIndex].hdPathType!]}
               </div>
             )}
@@ -318,7 +322,7 @@ const ManageAddress = () => {
               <Empty
                 desc={
                   <div className="text-gray-content text-14 max-w-[296px] mt-12">
-                    You haven't imported any addresses under this seed phrase.
+                    {t('page.manageAddress.no-address-under-seed-phrase')}
                   </div>
                 }
               />
@@ -329,13 +333,13 @@ const ManageAddress = () => {
                   icon={<IconPlus />}
                   onClick={handleAddSeedPhraseAddress}
                 >
-                  Add address
+                  {t('page.manageAddress.add-address')}
                 </Button>
                 <div
                   className="mt-20 cursor-pointer underline text-gray-content text-14 text-center"
                   onClick={handleDeleteEmptySeedPhrase}
                 >
-                  Delete seed phrase
+                  {t('page.manageAddress.delete-seed-phrase')}
                 </div>
               </div>
             </div>

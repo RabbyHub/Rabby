@@ -20,6 +20,7 @@ import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import { Chain } from '@debank/common';
+import { getGasLevelI18nKey } from '@/ui/utils/trans';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -752,7 +753,8 @@ const GasSelector = ({
                   onClick={(e) => handlePanelSelection(e, item)}
                 >
                   <div className="gas-level">
-                    {t(GAS_LEVEL_TEXT[item.level])}
+                    {/* {t(GAS_LEVEL_TEXT[item.level])} */}
+                    {t(getGasLevelI18nKey(item.level))}
                   </div>
                   <div
                     className={clsx('cardTitle', {

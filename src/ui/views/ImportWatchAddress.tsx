@@ -56,7 +56,7 @@ const ImportWatchAddress = () => {
         pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
-          title: t('Imported Successfully'),
+          title: t('page.newAddress.importedSuccessfully'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccounts && importedAccounts?.length,
@@ -68,7 +68,9 @@ const ImportWatchAddress = () => {
       form.setFields([
         {
           name: 'address',
-          errors: [err?.message || t('Not a valid address')],
+          errors: [
+            err?.message || t('page.newAddress.addContacts.notAValidAddress'),
+          ],
         },
       ]);
     },
@@ -107,10 +109,10 @@ const ImportWatchAddress = () => {
     connector.current = new WalletConnect({
       bridge: DEFAULT_BRIDGE,
       clientMeta: {
-        description: t('appDescription'),
+        description: t('appDescription.message'),
         url: 'https://rabby.io',
         icons: ['https://rabby.io/assets/images/logo.png'],
-        name: 'Rabby',
+        name: t('appName.message'),
       },
     });
     connector.current.on('connect', async (error, payload) => {
@@ -238,7 +240,7 @@ const ImportWatchAddress = () => {
       }}
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
-      NextButtonContent="Confirm"
+      NextButtonContent={t('global.confirm')}
       nextDisabled={!isValidAddr}
     >
       <header className="create-new-header create-password-header h-[264px] res">
@@ -254,10 +256,10 @@ const ImportWatchAddress = () => {
             src={WatchLogo}
           />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            Add Contacts
+            {t('page.newAddress.addContacts.content')}
           </p>
           <p className="text-14 mb-0 mt-4 text-white  text-center">
-            You can also use it as a watch-only address{' '}
+            {t('page.newAddress.addContacts.description')}
           </p>
           <img src="/images/watch-mask.png" className="mask" />
         </div>
@@ -267,10 +269,15 @@ const ImportWatchAddress = () => {
           <Form.Item
             className="pt-32 px-20"
             name="address"
-            rules={[{ required: true, message: t('Please input address') }]}
+            rules={[
+              {
+                required: true,
+                message: t('page.newAddress.addContacts.required'),
+              },
+            ]}
           >
             <Input
-              placeholder="Address / ENS"
+              placeholder={t('page.newAddress.addContacts.addressEns')}
               size="large"
               maxLength={44}
               autoFocus
@@ -304,14 +311,14 @@ const ImportWatchAddress = () => {
             onClick={handleImportByWalletconnect}
           >
             <img src={IconWalletconnect} className="icon icon-walletconnect" />
-            {t('Scan via mobile wallet')}
+            {t('page.newAddress.addContacts.scanViaMobileWallet')}
           </div>
           <div
             className="w-[172px] import-watchmode__button"
             onClick={handleImportByQrcode}
           >
             <img src={IconScan} className="icon icon-walletconnect" />
-            {t('Scan via PC camera')}
+            {t('page.newAddress.addContacts.scanViaPcCamera')}
           </div>
         </div>
       </div>
@@ -323,12 +330,10 @@ const ImportWatchAddress = () => {
         onCancel={handleWalletconnectModalCancel}
         // width={360}
       >
-        <p className="guide">
-          {t(' Scan QR codes with WalletConnect-compatible wallets')}
-        </p>
+        <p className="guide">{t('page.newAddress.addContacts.scanQRCode')}</p>
         <div className="symbol">
           <img src={IconWalletconnect} className="icon icon-walletconnect" />
-          Wallet connect
+          {t('page.newAddress.addContacts.walletConnect')}
         </div>
         {walletconnectUri && (
           <>
@@ -336,7 +341,7 @@ const ImportWatchAddress = () => {
               <QRCode value={walletconnectUri} size={176} />
             </div>
             <div className="text-12 text-gray-content text-center  mt-12">
-              WalletConnect will be unstable if you use VPN.
+              {t('page.newAddress.addContacts.walletConnectVPN')}
             </div>
           </>
         )}
@@ -350,7 +355,7 @@ const ImportWatchAddress = () => {
         // width={360}
         destroyOnClose
       >
-        <p className="guide">{t('Please scan the QR code with your camera')}</p>
+        <p className="guide">{t('page.newAddress.addContacts.cameraTitle')}</p>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
         <div className="qrcode">
           <QRCodeReader

@@ -162,4 +162,7 @@ function AddressRow({
   );
 }
 
+/**
+ * @deprecated
+ */
 export default connectStore()(AddressRow);

@@ -14,6 +14,7 @@ import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 import { message } from 'antd';
 import IconSuccess from 'ui/assets/success.svg';
+import { useTranslation } from 'react-i18next';
 
 export const AccountList = ({
   list,
@@ -30,6 +31,7 @@ export const AccountList = ({
   updateIndex: (b: boolean) => void;
 }) => {
   const history = useHistory();
+  const { t } = useTranslation();
 
   const dispatch = useRabbyDispatch();
 
@@ -62,7 +64,7 @@ export const AccountList = ({
         }
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: 'Deleted',
+          content: t('page.manageAddress.deleted'),
           duration: 0.5,
         });
       };

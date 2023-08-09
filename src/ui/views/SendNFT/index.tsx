@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Input, Form, message, Button } from 'antd';
@@ -105,19 +105,19 @@ const SendNFT = () => {
   const whitelistAlertContent = useMemo(() => {
     if (!whitelistEnabled) {
       return {
-        content: 'Whitelist disabled. You can transfer to any address.',
+        content: t('page.sendNFT.whitelistAlert__disabled'),
         success: true,
       };
     }
     if (toAddressInWhitelist) {
       return {
-        content: 'The address is whitelisted',
+        content: t('page.sendNFT.whitelistAlert__whitelisted'),
         success: true,
       };
     }
     if (temporaryGrant) {
       return {
-        content: 'Temporary permission granted',
+        content: t('page.sendNFT.whitelistAlert__temporaryGranted'),
         success: true,
       };
     }
@@ -125,12 +125,14 @@ const SendNFT = () => {
       success: false,
       content: (
         <>
-          The address is not whitelisted.
-          <br /> I agree to grant temporary permission to transfer.
+          <Trans i18nKey={'page.sendNFT.whitelistAlert__notWhitelisted'} t={t}>
+            The address is not whitelisted.
+            <br /> I agree to grant temporary permission to transfer.
+          </Trans>
         </>
       ),
     };
-  }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled]);
+  }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled, t]);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
@@ -375,7 +377,7 @@ const SendNFT = () => {
   return (
     <div className="transfer-nft">
       <PageHeader onBack={handleClickBack} forceShowBack>
-        {t('Send NFT')}
+        {t('page.sendNFT.header.title')}
       </PageHeader>
       {nftItem && (
         <Form
@@ -392,11 +394,15 @@ const SendNFT = () => {
               {/* {chain && <TagChainSelector value={chain!} readonly />} */}
               {chain && (
                 <>
-                  <div className={clsx('section-title')}>{t('Chain')}</div>
+                  <div className={clsx('section-title')}>
+                    {t('page.sendNFT.sectionChain.title')}
+                  </div>
                   <ChainSelectorInForm value={chain} readonly />
                 </>
               )}
-              <div className="section-title mt-[10px]">{t('From')}</div>
+              <div className="section-title mt-[10px]">
+                {t('page.sendNFT.sectionFrom.title')}
+              </div>
               <AccountCard
                 icons={{
                   mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
@@ -406,7 +412,9 @@ const SendNFT = () => {
                 alianName={sendAlianName}
               />
               <div className="section-title">
-                <span className="section-title__to">{t('To')}</span>
+                <span className="section-title__to">
+                  {t('page.sendNFT.sectionTo.title')}
+                </span>
                 <div className="flex flex-1 justify-end items-center">
                   {showContactInfo && (
                     <div
@@ -439,7 +447,10 @@ const SendNFT = () => {
                 <Form.Item
                   name="to"
                   rules={[
-                    { required: true, message: t('Please input address') },
+                    {
+                      required: true,
+                      message: t('page.sendNFT.sectionTo.addrValidator__empty'),
+                    },
                     {
                       validator(_, value) {
                         if (!value) return Promise.resolve();
@@ -447,14 +458,18 @@ const SendNFT = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error(t('This address is invalid'))
+                          new Error(
+                            t('page.sendNFT.sectionTo.addrValidator__invalid')
+                          )
                         );
                       },
                     },
                   ]}
                 >
                   <AccountSearchInput
-                    placeholder={'Enter address or search'}
+                    placeholder={t(
+                      'page.sendNFT.sectionTo.searchInputPlaceholder'
+                    )}
                     autoComplete="off"
                     autoFocus
                     spellCheck={false}
@@ -475,13 +490,15 @@ const SendNFT = () => {
                 </Form.Item>
                 {toAddressIsValid && !toAddressInContactBook && (
                   <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
-                    Not on address list.{' '}
+                    {/* Not on address list.{' '} */}
+                    {t('page.sendNFT.tipNotOnAddressList')}{' '}
                     <span
                       onClick={handleClickAddContact}
                       className={clsx('ml-[2px] underline cursor-pointer')}
                       style={{ color: LessPalette['@primary-text-color'] }}
                     >
-                      Add to contacts
+                      {/* Add to contacts */}
+                      {t('page.sendNFT.tipAddToContacts')}
                     </span>
                   </div>
                 )}
@@ -501,13 +518,17 @@ const SendNFT = () => {
                 <div className="nft-info__detail">
                   <h3>{nftItem.name}</h3>
                   <p>
-                    <span className="field-name">Collection</span>
+                    <span className="field-name">
+                      {t('page.sendNFT.nftInfoFieldLabel.Collection')}
+                    </span>
                     <span className="value">
                       {nftItem.collection?.name || '-'}
                     </span>
                   </p>
                   <p>
-                    <span className="field-name">Contract</span>
+                    <span className="field-name">
+                      {t('page.sendNFT.nftInfoFieldLabel.Contract')}
+                    </span>
                     <span className="value gap-[4px]">
                       <AddressViewer
                         address={nftItem.contract_id}
@@ -524,7 +545,7 @@ const SendNFT = () => {
                 </div>
               </div>
               <div className="section-footer">
-                <span>Send amount</span>
+                <span>{t('page.sendNFT.nftInfoFieldLabel.sendAmount')}</span>
 
                 <Form.Item name="amount">
                   <NumberInput
@@ -572,7 +593,7 @@ const SendNFT = () => {
                 size="large"
                 className="w-[100%] h-[48px]"
               >
-                {t('Send')}
+                {t('page.sendNFT.sendButton')}
               </Button>
             </div>
           </div>

@@ -16,6 +16,7 @@ import DebouncedInput from '../DebouncedInput';
 import { isTryingToPaste } from '@/ui/utils/keyboard';
 
 import './MnemonicsInputs.less';
+import { Trans, useTranslation } from 'react-i18next';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
@@ -265,6 +266,7 @@ function MnemonicsInputs({
     setMnemonics,
     isLastTypingWordFull,
   } = useTypingMnemonics();
+  const { t } = useTranslation();
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
@@ -284,11 +286,17 @@ function MnemonicsInputs({
                     }}
                   >
                     <div className="text-wrapper">
-                      I have a{' '}
-                      <b style={{ color: LessPalette['@primary-color'] }}>
-                        {count}
-                      </b>
-                      -word phrase
+                      <Trans
+                        t={t}
+                        i18nKey="page.newAddress.seedPhrase.wordPhrase"
+                        values={{ count }}
+                      >
+                        I have a
+                        <b style={{ color: LessPalette['@primary-color'] }}>
+                          {count}
+                        </b>
+                        -word phrase
+                      </Trans>
                     </div>
                   </Menu.Item>
                 );
@@ -297,7 +305,16 @@ function MnemonicsInputs({
           }
         >
           <div className="left flex items-center cursor-pointer">
-            <span>I have a {mnemonicsCount}-word phrase</span>
+            <span>
+              <Trans
+                t={t}
+                i18nKey="page.newAddress.seedPhrase.wordPhrase"
+                values={{ count: mnemonicsCount }}
+              >
+                I have a <span>{mnemonicsCount}</span>-word phrase
+              </Trans>
+            </span>
+
             <img className="ml-[2px]" src={IconCaretDown} />
           </div>
         </Dropdown>
@@ -308,7 +325,9 @@ function MnemonicsInputs({
           }}
         >
           <img src={IconClearAll} />
-          <span className="ml-[6px]">Clear All</span>
+          <span className="ml-[6px]">
+            {t('page.newAddress.seedPhrase.clearAll')}
+          </span>
         </div>
       </HeadToolbar>
       <MatrixWrapper

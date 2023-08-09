@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import IconPendingTx from 'ui/assets/dashboard/pending-tx.svg';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -41,7 +42,8 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
   const handleClickPendingTxs = () => {
     history.push('/activities');
   };
-
+  const { t } = useTranslation();
+  const countStr = pendingTxCount > 99 ? '99+' : pendingTxCount.toString();
   return (
     <Wrapper
       className={clsx(
@@ -63,9 +65,11 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
       <div className="group-hover:flex hidden px-[10px] py-[2px]">
         <IconPendingTxElement src={IconPendingTx} />
         <span>
-          {`${pendingTxCount > 99 ? '99+' : pendingTxCount} Pending${
-            pendingTxCount > 1 ? 's' : ''
-          }`}
+          {pendingTxCount > 1
+            ? t('page.dashboard.home.pendingCountPlural', {
+                countStr,
+              })
+            : t('page.dashboard.home.pendingCount')}
         </span>
       </div>
     </Wrapper>

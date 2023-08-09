@@ -12,6 +12,8 @@ import BigNumber from 'bignumber.js';
 import React from 'react';
 import { Input } from 'antd';
 import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
+import i18n from '@/i18n';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const SlippageItem = styled.div<{
   active?: boolean;
@@ -79,6 +81,8 @@ interface SlippageProps {
   recommendValue?: number;
 }
 export const Slippage = memo((props: SlippageProps) => {
+  const { t } = useTranslation();
+
   const { value, displaySlippage, onChange, recommendValue } = props;
   const [isCustom, setIsCustom] = useToggle(false);
 
@@ -97,22 +101,40 @@ export const Slippage = memo((props: SlippageProps) => {
 
   const tips = useMemo(() => {
     if (isLow) {
-      return 'Low slippage may cause failed transactions due to high volatility';
+      return i18n.t(
+        'page.swap.low-slippage-may-cause-failed-transactions-due-to-high-volatility'
+      );
     }
     if (isHigh) {
-      return 'Transaction might be frontrun because of high slippage tolerance';
+      return i18n.t(
+        'page.swap.transaction-might-be-frontrun-because-of-high-slippage-tolerance'
+      );
     }
     if (recommendValue) {
       return (
         <span>
-          To prevent front-running, we recommend a slippage of{' '}
-          <span
-            onClick={setRecommendValue}
-            className="underline cursor-pointer"
+          <Trans
+            i18nKey="page.swap.recommend-slippage"
+            value={{
+              slippage: new BigNumber(recommendValue || 0)
+                .times(100)
+                .toString(),
+            }}
+            t={t}
           >
-            {new BigNumber(recommendValue || 0).times(100).toString()}
-          </span>
-          %
+            To prevent front-running, we recommend a slippage of{' '}
+            <span
+              onClick={setRecommendValue}
+              className="underline cursor-pointer"
+            >
+              {{
+                slippage: new BigNumber(recommendValue || 0)
+                  .times(100)
+                  .toString(),
+              }}
+            </span>
+            %{' '}
+          </Trans>
         </span>
       );
     }
@@ -144,7 +166,7 @@ export const Slippage = memo((props: SlippageProps) => {
           setSlippageOpen((e) => !e);
         }}
       >
-        <span>Slippage tolerance</span>
+        <span>{t('page.swap.slippage-tolerance')}</span>
         <span className="font-medium text-gray-title inline-flex items-center">
           <span className={clsx(!!tips && 'text-orange')}>
             {displaySlippage}%{' '}

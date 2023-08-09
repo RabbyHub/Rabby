@@ -16,6 +16,8 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
+import i18n from '@/i18n';
+import { useTranslation } from 'react-i18next';
 
 export type DisplayedAccount = IDisplayedAccountWithBalance & {
   hdPathBasePublicKey?: string;
@@ -35,10 +37,10 @@ export type TypeKeyringGroup = {
 
 export const getWalletTypeName = (s: string) => {
   if (s === KEYRING_TYPE['SimpleKeyring']) {
-    return 'Private Key';
+    return i18n.t('page.manageAddress.private-key');
   }
   if (s === KEYRING_TYPE['HdKeyring']) {
-    return 'Seed Phrase';
+    return i18n.t('page.manageAddress.seed-phrase');
   }
 
   if (WALLET_BRAND_CONTENT[s]) {
@@ -103,6 +105,7 @@ const getWalletScore = (s: TypeKeyringGroup[]) => {
 };
 
 export const useWalletTypeData = () => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const {
     accountsList,
@@ -227,7 +230,7 @@ export const useWalletTypeData = () => {
     if (watchSortedAccountsList.length) {
       v.push([
         {
-          name: 'Watch Address',
+          name: t('page.manageAddress.watch-address'),
           list: watchSortedAccountsList,
           type: KEYRING_TYPE['WatchAddressKeyring'],
         },
@@ -268,13 +271,14 @@ export const useWalletTypeData = () => {
 export const useBackUp = () => {
   const wallet = useWallet();
   const history = useHistory();
+  const { t } = useTranslation();
 
   const handleBackup = useCallback(
     async (publicKey: string, index) => {
       await AuthenticationModalPromise({
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
-        title: 'Backup Seed Phrase',
+        confirmText: t('page.manageAddress.confirm'),
+        cancelText: t('page.manageAddress.cancel'),
+        title: t('page.manageAddress.backup-seed-phrase'),
 
         async onFinished() {
           const data = await wallet.getMnemonicFromPublicKey(publicKey);

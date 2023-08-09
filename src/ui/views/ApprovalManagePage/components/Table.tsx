@@ -17,15 +17,24 @@ import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
 import IconNoMatch from '../icons/no-match.svg';
 import { SorterResult } from 'antd/lib/table/interface';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_SCROLL = { y: 300, x: '100vw' };
 
-function TableBodyEmpty({ isLoading }: { isLoading?: boolean }) {
+function TableBodyEmpty({
+  isLoading,
+  loadingText = 'Loading...',
+  noMatchText = 'No Match',
+}: {
+  isLoading?: boolean;
+  loadingText?: string;
+  noMatchText?: string;
+}) {
   return (
     <Empty
       className="am-virtual-table-empty"
       image={IconNoMatch}
-      description={isLoading ? 'Loading...' : 'No Match'}
+      description={isLoading ? loadingText : noMatchText}
     />
   );
 }
@@ -272,6 +281,8 @@ export function VirtualTable<RecordType extends object>({
     );
   }, [getTotalHeight, props.dataSource]);
 
+  const { t } = useTranslation();
+
   const renderVirtualList = (
     rowList: readonly RecordType[],
     { scrollbarSize, ref, onScroll }: any
@@ -280,7 +291,17 @@ export function VirtualTable<RecordType extends object>({
     // const totalHeight = rowList.length * ROW_HEIGHT;
 
     if (!rowList.length) {
-      return <TableBodyEmpty isLoading={isLoading} />;
+      return (
+        <TableBodyEmpty
+          isLoading={isLoading}
+          loadingText={t(
+            'page.approvals.component.table.bodyEmpty.loadingText'
+          )}
+          noMatchText={t(
+            'page.approvals.component.table.bodyEmpty.noMatchText'
+          )}
+        />
+      );
     }
 
     return (
