@@ -1,19 +1,8 @@
 import { Dropdown, Menu } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import IconArrowDown from 'ui/assets/arrow-down-white.svg';
 import IconChecked from 'ui/assets/checked-1.svg';
-import { SvgIconArrowDownTriangle } from 'ui/assets';
-
-const options = [
-  {
-    label: 'Collections',
-    value: 'collection',
-  },
-  {
-    label: 'All NFTs',
-    value: 'nft',
-  },
-];
 
 interface NFTDropdownProps {
   value: 'collection' | 'nft';
@@ -21,6 +10,17 @@ interface NFTDropdownProps {
 }
 
 const NFTDropdown = ({ value, onChange }: NFTDropdownProps) => {
+  const { t } = useTranslation();
+  const options = [
+    {
+      label: t('page.dashboard.nft.collectionList.collections.label'),
+      value: 'collection',
+    },
+    {
+      label: t('page.dashboard.nft.collectionList.all_nfts.label'),
+      value: 'nft',
+    },
+  ];
   const current =
     options.find((option) => option.value === value) || options[0];
 

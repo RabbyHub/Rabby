@@ -12,6 +12,7 @@ import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
 import * as Sentry from '@sentry/browser';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   HDName?: string;
@@ -55,6 +56,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
   }, []);
 
   const [modal, contextHolder] = useModal();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     if (fetchCurrentAccountsRetry.loading) {
@@ -75,8 +77,8 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       Sentry.captureException(fetchCurrentAccountsRetry.error);
 
       modal.error({
-        content: `${HDName}Connect has stopped. Please refresh the page to connect again.`,
-        okText: 'Refresh',
+        content: t('page.newAddress.hd.trezor.message.disconnected', [HDName]),
+        okText: t('global.refresh'),
         centered: true,
         onOk() {
           window.location.reload();
@@ -89,7 +91,9 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
     <>
       <div className="setting" onClick={openAdvanced}>
         <SettingSVG className="icon" />
-        <span className="title">Advanced Settings</span>
+        <span className="title">
+          {t('page.newAddress.hd.advancedSettings')}
+        </span>
       </div>
 
       <MainContainer
@@ -103,7 +107,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

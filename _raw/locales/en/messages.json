@@ -1279,9 +1279,557 @@
       "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
       "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
       "seed-phrase-delete-title": "Delete seed phrase?"
+    },
+    "dashboard": {
+      "home": {
+        "offline": "The network is disconnected and no data is obtained",
+        "panel": {
+          "swap": "Swap",
+          "send": "Send",
+          "receive": "Receive",
+          "gasTopUp": "Gas Top Up",
+          "queue": "Queue",
+          "transactions": "Transactions",
+          "approvals": "Approvals",
+          "feedback": "Feedback",
+          "more": "More",
+          "manageAddress": "Manage Address",
+          "nft": "NFT"
+        },
+        "comingSoon": "Coming soon",
+        "soon": "Soon",
+        "refreshTheWebPageToTakeEffect": "Refresh the web page to take effect",
+        "rabbyIsInUseAndMetamaskIsBanned": "Rabby is in use and Metamask is banned",
+        "flip": "Flip",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask is in use and Rabby is banned",
+        "transactionNeedsToSign": "transaction needs to sign",
+        "transactionsNeedToSign": "transactions need to sign",
+        "view": "View",
+        "viewFirstOne": "View first one",
+        "rejectAll": "Reject All",
+        "pendingCount": "1 Pending",
+        "pendingCountPlural": "{{countStr}} Pendings",
+        "queue": {
+          "title": "Queue",
+          "count": "{{count}} in"
+        },
+        "whatsNew": "What's new",
+        "copied": "Copied",
+        "importType": "Imported by {{type}}"
+      },
+      "recentConnection": {
+        "disconnected": "Disconnected",
+        "rpcUnavailable": "The custom RPC is unavailable",
+        "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
+        "connected": "Connected",
+        "notConnected": "Not connected",
+        "connectedDapp": "Rabby is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage.",
+        "noDappFound": "No Dapp found",
+        "disconnectAll": "Disconnect All",
+        "disconnectRecentlyUsed": {
+          "title": "Disconnect recently used <strong>{{count}}</strong> DApps",
+          "description": "Pinned DApps will remain connected"
+        },
+        "title": "Connected Dapp",
+        "pinned": "Pinned",
+        "noPinnedDapps": "No pinned dapps",
+        "dragToSort": "Drag to sort",
+        "recentlyConnected": "Recently connected",
+        "noRecentlyConnectedDapps": "No recently connected Dapps"
+      },
+      "feedback": {
+        "directMessage": {
+          "content": "Direct Message",
+          "description": "Chat with Rabby Wallet Official on DeBank"
+        },
+        "proposal": {
+          "content": "Proposal",
+          "description": "Submit a proposal for Rabby Wallet on DeBank"
+        },
+        "title": "Feedback"
+      },
+      "nft": {
+        "empty": "No NFTs found in supported Collections",
+        "collectionList": {
+          "collections": {
+            "label": "Collections"
+          },
+          "all_nfts": {
+            "label": "All NFTs"
+          }
+        },
+        "listEmpty": "You haven't gotten any NFT yet",
+        "modal": {
+          "collection": "Collection",
+          "chain": "Chain",
+          "lastPrice": "Last Price",
+          "purchaseDate": "Purchase Date",
+          "sendTooltip": "Only ERC 721 and ERC 1155 NFTs are supported for now",
+          "send": "Send"
+        }
+      },
+      "rabbyBadge": {
+        "imageLabel": "rabby badge",
+        "title": "Claim Rabby Badge for",
+        "enterClaimCode": "Enter claim code",
+        "swapTip": "You need to complete a swap with notable dex within Rabby Wallet first.",
+        "goToSwap": "Go to Swap",
+        "claim": "Claim",
+        "viewYourClaimCode": "View your claim code",
+        "noCode": "You haven’t activated claim code for this address",
+        "learnMoreOnDebank": "Learn more on DeBank",
+        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
+        "claimSuccess": "Claim Success",
+        "viewOnDebank": "View on DeBank"
+      },
+      "contacts": {
+        "copied": "Copied",
+        "noDataLabel": "no data",
+        "noData": "No data",
+        "oldContactList": "Old Contact List",
+        "oldContactListDescription": "Because of the merging of contacts and watch model addresses, the old contacts will be backed up for you here and after some time we will delete the list.Please add in time if you continue to use."
+      },
+      "security": {
+        "tokenApproval": "Token Approval",
+        "nftApproval": "NFT Approval",
+        "comingSoon": "More features coming soon",
+        "title": "Security"
+      },
+      "settings": {
+        "lock": {
+          "never": "Never"
+        },
+        "7Days": "7 days",
+        "1Day": "1 day",
+        "4Hours": "4 hours",
+        "1Hour": "1 hour",
+        "10Minutes": "10 minutes",
+        "backendServiceUrl": "Backend Service URL",
+        "inputOpenapiHost": "Please input openapi host",
+        "pleaseCheckYourHost": "Please check your host",
+        "host": "Host",
+        "reset": "Restore initial setting",
+        "save": "Save",
+        "pendingTransactionCleared": "Pending transaction cleared",
+        "clearPending": "Clear Pending",
+        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
+        "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
+        "autoLockTime": "Auto lock time",
+        "claimRabbyBadge": "Claim Rabby Badge!",
+        "cancel": "Cancel",
+        "enableWhitelist": "Enable Whitelist",
+        "disableWhitelist": "Disable Whitelist",
+        "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Rabby.",
+        "disableWhitelistTip": "You can send assets to any address once disabled",
+        "warning": "Warning",
+        "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
+        "updateVersion": {
+          "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
+          "okText": "See Tutorial",
+          "successTip": "You are using the latest version"
+        },
+        "features": {
+          "label": "Features",
+          "lockWallet": "Lock Wallet",
+          "signatureRecord": "Signature Record",
+          "manageAddress": "Manage Address",
+          "connectedDapp": "Connected Dapp"
+        },
+        "settings": {
+          "label": "Settings",
+          "showTestnets": "Show Testnets",
+          "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
+          "customRpc": "Custom RPC",
+          "metamaskPreferredDapps": "MetaMask Preferred Dapps"
+        },
+        "aboutUs": "About us",
+        "currentVersion": "Current Version",
+        "updateAvailable": "Update Available",
+        "supportedChains": "Supported Chains",
+        "followUs": "Follow Us",
+        "testnetBackendServiceUrl": "Testnet Backend Service URL",
+        "clearWatchMode": "Clear Watch Mode",
+        "confirm": ""
+      },
+      "tokenDetail": {
+        "blockedTip": "Blocked token will not be shown in token list",
+        "blocked": "Blocked",
+        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
+        "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
+        "customized": "Customized",
+        "scamTx": "Scam tx",
+        "txFailed": "Failed",
+        "notSupported": "The token on this chain is not supported",
+        "swap": "Swap",
+        "send": "Send",
+        "receive": "Receive",
+        "noTransactions": "No Transactions"
+      },
+      "assets": {
+        "usdValue": "USD VALUE",
+        "amount": "AMOUNT",
+        "portfolio": {
+          "nftTips": "Calculated based on the floor price recognized by this protocol.",
+          "fractionTips": "Calculate based on the price of the linked ERC20 token."
+        },
+        "tokenButton": {
+          "subTitle": "The token in this list will not be added to total balance"
+        },
+        "table": {
+          "assetAmount": "Asset / Amount",
+          "price": "Price",
+          "useValue": "USD Value",
+          "healthRate": "Health rate",
+          "debtRatio": "Debt Ratio",
+          "unlockAt": "Unlock at",
+          "lentAgainst": "LENT AGAINST",
+          "type": "Type",
+          "strikePrice": "Strike price",
+          "exerciseEnd": "Exercise end",
+          "tradePair": "Trade pair",
+          "side": "Side",
+          "leverage": "Leverage",
+          "PL": "P&L",
+          "unsupportedPoolType": "Unsupported pool type",
+          "claimable": "Claimable",
+          "endAt": "End at",
+          "dailyUnlock": "Daily unlock",
+          "pool": "POOL",
+          "token": "Token",
+          "balanceValue": "Balance / Value",
+          "percent": "Percent",
+          "summaryTips": "Asset value divided by total net worth",
+          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
+          "noMatch": "No Match",
+          "lowValueDescription": "Low value assets will be shown here",
+          "lowValueAssets": "{{count}} low value assets"
+        },
+        "noAssets": "No assets",
+        "blockLinkText": "Search address to block token",
+        "blockDescription": "Token blocked by you will be shown here",
+        "unfoldChain": "Unfold 1 chain",
+        "unfoldChainPlural": "Unfold {{moreLen}} chains",
+        "customLinkText": "Search address to add custom token",
+        "customDescription": "Custom token added by you will be shown here",
+        "comingSoon": "Coming Soon...",
+        "searchPlaceholder": "Tokens"
+      },
+      "hd": {
+        "howToConnectLedger": "How to Connect Ledger",
+        "userRejectedTheRequest": "User rejected the request.",
+        "ledger": {
+          "doc1": "Plug in a single Ledger",
+          "doc2": "Enter pin to unlock",
+          "doc3": "Open Ethereum App",
+          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+        },
+        "howToSwitch": "How to switch"
+      }
+    },
+    "nft": {
+      "floorPrice": "/ Floor Price:",
+      "title": "NFT",
+      "all": "All",
+      "starred": "Starred ({{count}})",
+      "empty": {
+        "title": "No Starred NFT",
+        "description": "You can select NFT from \"All\" and add to \"Starred\""
+      },
+      "noNft": "No NFT"
+    },
+    "newAddress": {
+      "title": "Add an Address",
+      "importSeedPhrase": "Import Seed Phrase",
+      "importPrivateKey": "Import Private Key",
+      "importMyMetamaskAccount": "Import My MetaMask Account",
+      "addContacts": {
+        "content": "Add Contacts",
+        "description": "You can also use it as a watch-only address",
+        "required": "Please input address",
+        "notAValidAddress": "Not a valid address",
+        "scanViaMobileWallet": "Scan via mobile wallet",
+        "scanViaPcCamera": "Scan via PC camera",
+        "scanQRCode": "Scan QR codes with WalletConnect-compatible wallets",
+        "walletConnect": "Wallet connect",
+        "walletConnectVPN": "WalletConnect will be unstable if you use VPN.",
+        "cameraTitle": "Please scan the QR code with your camera",
+        "addressEns": "Address / ENS"
+      },
+      "unableToImport": {
+        "title": "Unable to import",
+        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {0} before importing another device."
+      },
+      "connectHardwareWallets": "Connect Hardware Wallets",
+      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
+      "connectInstitutionalWallets": "Connect Institutional Wallets",
+      "createNewSeedPhrase": "Create New Seed Phrase",
+      "importKeystore": "Import KeyStore",
+      "selectImportMethod": "Select Import Method",
+      "theSeedPhraseIsInvalidPleaseCheck": "The seed phrase is invalid, please check!",
+      "seedPhrase": {
+        "importTips": "You can paste your entire secret recovery phrase in 1st field",
+        "whatIsASeedPhrase": {
+          "question": "What is a Seed Phrase?",
+          "answer": "A 12, 18, or 24-word phrase used to control your assets."
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "importError": "[CreateMnemonics] unexpected step {0}",
+        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
+        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
+        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
+        "riskTips": "Before you start, please read and keep the following security tips in mind.",
+        "showSeedPhrase": "Show Seed Phrase",
+        "backup": "Backup Seed Phrase",
+        "backupTips": "Make sure no one else is watching your screen when you back up the seed phrase",
+        "copy": "Copy seed phrase",
+        "saved": "I've Saved the Phrase",
+        "pleaseSelectWords": "Please select words",
+        "verificationFailed": "Verification failed",
+        "createdSuccessfully": "Created Successfully",
+        "verifySeedPhrase": "Verify Seed Phrase",
+        "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
+        "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
+        "clearAll": "Clear All",
+        "confirm": ""
+      },
+      "metamask": {
+        "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
+        "step2": "Import the seed phrase or private key in Rabby",
+        "step3": "Import is completed and all your assets will <br /> appear automatically",
+        "how": "How to import my MetaMask Account?",
+        "step": "Step",
+        "importSeedPhrase": "Import the seed phrase or private key",
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
+      },
+      "privateKey": {
+        "required": "Please input Private key",
+        "placeholder": "Enter your Private key",
+        "whatIsAPrivateKey": {
+          "question": "What is a private key?",
+          "answer": "A string of letters and numbers used to control your assets."
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "isItPossibleToImportKeystore": {
+          "question": "Is it possible to import KeyStore?",
+          "answer": "Yes, you can <1> import KeyStore </1> here."
+        },
+        "notAValidPrivateKey": "Not a valid private key"
+      },
+      "importedSuccessfully": "Imported Successfully",
+      "ledger": {
+        "title": "Connect Ledger",
+        "cameraPermissionTitle": "Allow Rabby to access the camera",
+        "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "ledgerPermission1": "Connect to an HID device",
+        "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
+        "permissionsAuthorized": "Permissions Authorized",
+        "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
+        "allow": "Allow"
+      },
+      "walletConnect": {
+        "connectYour": "Connect your",
+        "viaWalletConnect": "via Wallet Connect",
+        "connectedSuccessfully": "Connected successfully",
+        "qrCodeError": "Please check your network or refresh the QR code",
+        "qrCode": "QR code",
+        "url": "URL",
+        "changeBridgeServer": "Change bridge server",
+        "status": {
+          "received": "Scan successful. Waiting to be confirmed",
+          "rejected": "Connection canceled. Please scan the QR code to retry.",
+          "brandError": "Wrong wallet app.",
+          "brandErrorDesc": "Please use {{brandName}} to connect",
+          "accountError": "Address not match.",
+          "accountErrorDesc": "Please switch address in your mobile wallet",
+          "connected": "Connected",
+          "duplicate": "The address you're are trying to import is duplicate",
+          "default": "Scan with your"
+        },
+        "title": "Connect with {{brandName}}",
+        "disconnected": "Disconnected",
+        "accountError": {},
+        "tip": {
+          "accountError": {
+            "tip1": "Connected but unable to sign.",
+            "tip2": "Please switch to the correct address in mobile wallet"
+          },
+          "disconnected": {
+            "tip": "Not connected to {{brandName}}"
+          },
+          "connected": {
+            "tip": "Connected to {{brandName}}"
+          }
+        },
+        "button": {
+          "disconnect": "Disconnect",
+          "connect": "Connect",
+          "howToSwitch": "How to switch"
+        }
+      },
+      "hd": {
+        "tooltip": {
+          "removed": "The address is removed from Rabby",
+          "added": "The address is added to Rabby",
+          "connectError": "Connect has stopped. Please refresh the page to connect again.",
+          "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
+        },
+        "waiting": "Waiting",
+        "clickToGetInfo": "Click to get the information on-chain",
+        "addToRabby": "Add to Rabby",
+        "basicInformation": "Basic information",
+        "addresses": "Addresses",
+        "loadingAddress": "Loading {{0}}/{{1}} addresses",
+        "notes": "Notes",
+        "getOnChainInformation": "Get on-chain information",
+        "hideOnChainInformation": "Hide on-chain information",
+        "usedChains": "Used chains",
+        "firstTransactionTime": "First transaction time",
+        "balance": "Balance",
+        "ledger": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNoChain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          }
+        },
+        "trezor": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "message": {
+            "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
+          }
+        },
+        "onekey": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "mnemonic": {
+          "hdPathType": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          },
+          "hdPathTypeNoChain": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          }
+        },
+        "gridplus": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNochain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          },
+          "switch": {
+            "title": "Switch to a new GridPlus device",
+            "content": "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
+          },
+          "switchToAnotherGridplus": "Switch to another GridPlus"
+        },
+        "keystone": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNochain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "bitbox02": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {0}"
+        },
+        "selectHdPath": "Select HD path:",
+        "selectIndexTip": "Select the serial number of addresses to start from:",
+        "manageAddressFrom": "Manage address from {{0}} to {{1}}",
+        "advancedSettings": "Advanced Settings",
+        "customAddressHdPath": "Custom Address HD path",
+        "connectedToLedger": "Connected to Ledger",
+        "connectedToTrezor": "Connected to Trezor",
+        "connectedToOnekey": "Connected to OneKey",
+        "manageSeedPhrase": "Manage Seed Phrase",
+        "manageGridplus": "Manage GridPlus",
+        "manageKeystone": "Manage Keystone",
+        "manageAirgap": "Manage AirGap",
+        "manageCoolwallet": "Manage CoolWallet",
+        "manageBitbox02": "Manage BitBox02",
+        "done": "Done",
+        "addressesIn": "Addresses in {{0}}",
+        "addressesInRabby": "Addresses in Rabby{{0}}",
+        "qrCode": {
+          "switch": {
+            "title": "Switch to a new {{0}} device",
+            "content": "It's not supported to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
+          },
+          "switchAnother": "Switch to another {{0}}"
+        }
+      }
     }
   },
   "component": {},
-  "global": {},
-  "background": {}
+  "global": {
+    "error": "",
+    "copied": "Copied",
+    "confirm": "Confirm",
+    "next": "Next",
+    "back": "Back",
+    "ok": "OK",
+    "refresh": "Refresh"
+  },
+  "background": {},
+  "LedgerPermission2": {
+    "message": ""
+  },
+  "Mnemonics__words": {
+    "message": ""
+  },
+  "Please__input__Mnemonics": {
+    "message": ""
+  },
+  "Select__Addresses": {
+    "message": ""
+  },
+  "Select__the__addresses__you__to__view__in__Rabby": {
+    "message": ""
+  },
+  "Successfully__imported": {
+    "message": ""
+  },
+  "Wrong__mnemonic__word": {
+    "message": ""
+  },
+  "backupMnemonicAlert": {
+    "message": ""
+  },
+  "backupMnemonicTip": {
+    "message": ""
+  },
+  "tradePair": ""
 }
