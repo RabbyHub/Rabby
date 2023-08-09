@@ -87,7 +87,7 @@ const AddAddressOptions = () => {
     if (!allowed) {
       Modal.error({
         title: t('page.newAddress.unableToImport.title'),
-        content: t('page.newAddress.unableToImport.description'),
+        content: t('page.newAddress.unableToImport.description', [brand]),
         okText: t('global.ok'),
         centered: true,
         maskClosable: true,

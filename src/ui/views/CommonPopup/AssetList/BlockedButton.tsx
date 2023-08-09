@@ -18,7 +18,7 @@ export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
 
   return (
     <TokenButton
-      label="blocked"
+      label={t('page.dashboard.tokenDetail.blockedButton')}
       tokens={list}
       linkText={t('page.dashboard.assets.blockLinkText')}
       description={t('page.dashboard.assets.blockDescription')}

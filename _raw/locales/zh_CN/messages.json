@@ -38,7 +38,9 @@
     "proceedButton": "继续",
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
-    "watchModeAddress": "观看模式地址"
+    "watchModeAddress": "观看模式地址",
+    "appDescription": "",
+    "appName": ""
   },
   "page": {
     "transactions": {
@@ -237,7 +239,9 @@
         "swap": "交换",
         "send": "发送",
         "receive": "收到",
-        "noTransactions": "没有交易"
+        "noTransactions": "没有交易",
+        "customizedButton": "定制",
+        "blockedButton": "被阻止"
       },
       "assets": {
         "usdValue": "美元价值",
@@ -353,7 +357,7 @@
           "question": "在 Rabby 中导入它安全吗？",
           "answer": "是的，它将存储在您本地的浏览器上，并且只有您可以访问。"
         },
-        "confirm": "",
+        "confirm": "page.newAddress.seedPhrase.confirm",
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
         "importQuestion1": "如果我丢失了助记词，我的资产将永远丢失。",
         "importQuestion2": "如果我与他人分享我的助记词，我的资产就会被盗。",
@@ -566,6 +570,15 @@
             "content": "不支持导入多个 {{0}} 设备。如果您切换到新的 {{0}} 设备，则在开始导入过程之前，当前设备的地址列表将被删除。"
           },
           "switchAnother": "切换到另一个{{0}}"
+        }
+      },
+      "importYourKeystore": "导入您的密钥库",
+      "incorrectPassword": "密码错误",
+      "keystore": {
+        "description": "选择需要导入的keystore文件并输入对应的密码",
+        "password": {
+          "required": "请输入密码",
+          "placeholder": "密码"
         }
       }
     },
@@ -1401,5 +1414,23 @@
       }
     }
   },
-  "background": {}
+  "background": {
+    "error": {
+      "addKeyring404": "",
+      "emptyAccount": "",
+      "generateCacheAliasNames": "",
+      "invalidAddress": "",
+      "invalidChainId": "",
+      "invalidJson": "",
+      "invalidMnemonic": "",
+      "invalidPrivateKey": "",
+      "noCurrentAccount": "",
+      "notFindChain": "",
+      "notFoundGnosisKeyring": "",
+      "notFoundKeyring": "",
+      "notFoundKeyringByAddress": "",
+      "notFoundTxGnosisKeyring": "",
+      "unknownAbi": ""
+    }
+  }
 }

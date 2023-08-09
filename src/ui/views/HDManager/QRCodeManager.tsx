@@ -83,7 +83,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
     Modal.error({
       title: t('page.newAddress.hd.qrCode.switch.title', [brand]),
       content: t('page.newAddress.hd.qrCode.switch.content', [brand]),
-      okText: t('Confirm.message'),
+      okText: t('global.confirm'),
       onOk: async () => {
         await Promise.all(
           currentAccountsRef.current?.map(async (account) =>

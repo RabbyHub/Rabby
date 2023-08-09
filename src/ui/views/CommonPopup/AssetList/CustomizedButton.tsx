@@ -21,7 +21,7 @@ export const CustomizedButton: React.FC<Props> = ({
 
   return (
     <TokenButton
-      label="customized"
+      label={t('page.dashboard.tokenDetail.customizedButton')}
       linkText={t('page.dashboard.assets.customLinkText')}
       description={t('page.dashboard.assets.customDescription')}
       tokens={list}

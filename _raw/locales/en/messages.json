@@ -785,7 +785,9 @@
         "swap": "Swap",
         "send": "Send",
         "receive": "Receive",
-        "noTransactions": "No Transactions"
+        "noTransactions": "No Transactions",
+        "customizedButton": "customized",
+        "blockedButton": "blocked"
       },
       "assets": {
         "usdValue": "USD VALUE",
@@ -1112,6 +1114,15 @@
           },
           "switchAnother": "Switch to another {{0}}"
         }
+      },
+      "importYourKeystore": "Import Your KeyStore",
+      "incorrectPassword": "incorrect password",
+      "keystore": {
+        "description": "Select the keystore file you want to import and enter the corresponding password",
+        "password": {
+          "required": "Please input Password",
+          "placeholder": "Password"
+        }
       }
     },
     "unlock": {
@@ -1413,5 +1424,13 @@
       "invalidMnemonic": "The seed phrase is invalid, please check!",
       "notFoundKeyringByAddress": "Can't find keyring by address"
     }
+  },
+  "appDescription": {
+    "description": "",
+    "message": ""
+  },
+  "appName": {
+    "description": "",
+    "message": ""
   }
 }
