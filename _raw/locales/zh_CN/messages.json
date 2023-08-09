@@ -1441,21 +1441,21 @@
   },
   "background": {
     "error": {
-      "addKeyring404": "",
-      "emptyAccount": "",
-      "generateCacheAliasNames": "",
-      "invalidAddress": "",
-      "invalidChainId": "",
-      "invalidJson": "",
-      "invalidMnemonic": "",
-      "invalidPrivateKey": "",
-      "noCurrentAccount": "",
-      "notFindChain": "",
-      "notFoundGnosisKeyring": "",
-      "notFoundKeyring": "",
-      "notFoundKeyringByAddress": "",
-      "notFoundTxGnosisKeyring": "",
-      "unknownAbi": ""
+      "noCurrentAccount": "No current account",
+      "invalidChainId": "Invalid chain id",
+      "notFindChain": "Can not find chain {{chain}}",
+      "unknownAbi": "unknown contract abi",
+      "invalidAddress": "Not a valid address",
+      "notFoundGnosisKeyring": "No Gnosis keyring found",
+      "notFoundTxGnosisKeyring": "No transaction in Gnosis keyring found",
+      "notFoundKeyring": "failed to addKeyring, keyring is undefined",
+      "addKeyring404": "failed to addKeyring, keyring is undefined",
+      "emptyAccount": "the current account is empty",
+      "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",
+      "invalidPrivateKey": "the private key is invalid",
+      "invalidJson": "the input file is invalid",
+      "invalidMnemonic": "The seed phrase is invalid, please check!",
+      "notFoundKeyringByAddress": "Can't find keyring by address"
     }
   }
 }

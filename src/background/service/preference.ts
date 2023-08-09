@@ -93,7 +93,7 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
 }
 
-const SUPPORT_LOCALES = ['en'];
+const SUPPORT_LOCALES = ['en', 'zh_CN'];
 
 class PreferenceService {
   store!: PreferenceStore;
@@ -136,7 +136,7 @@ class PreferenceService {
         isShowTestnet: false,
       },
     });
-    if (!this.store.locale || this.store.locale !== defaultLang) {
+    if (!this.store.locale || !SUPPORT_LOCALES.includes(this.store.locale)) {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
