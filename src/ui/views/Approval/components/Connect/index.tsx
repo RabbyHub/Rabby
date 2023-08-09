@@ -20,6 +20,7 @@ import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
+import { SignTestnetPermission } from './SignTestnetPermission';
 
 interface ConnectProps {
   params: any;
@@ -621,53 +622,55 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
             }
           })}
         </div>
-
-        <Footer>
-          <div className="action-buttons flex flex-col mt-4 items-center">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => handleAllow()}
-              disabled={connectBtnStatus.disabled}
-              className={clsx({
-                'mb-0': !connectBtnStatus.text,
-              })}
-            >
-              {t('Connect')}
-            </Button>
-            {connectBtnStatus.text && (
-              <div
-                className={clsx('security-tip', connectBtnStatus.level)}
-                style={{
-                  color: SecurityLevelTipColor[connectBtnStatus.level].bg,
-                  backgroundColor:
-                    SecurityLevelTipColor[connectBtnStatus.level].bg,
-                }}
+        <div>
+          <SignTestnetPermission />
+          <Footer>
+            <div className="action-buttons flex flex-col mt-4 items-center">
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => handleAllow()}
+                disabled={connectBtnStatus.disabled}
+                className={clsx({
+                  'mb-0': !connectBtnStatus.text,
+                })}
               >
-                <img
-                  src={SecurityLevelTipColor[connectBtnStatus.level].icon}
-                  className="icon icon-level"
-                />
-                <span
+                {t('Connect')}
+              </Button>
+              {connectBtnStatus.text && (
+                <div
+                  className={clsx('security-tip', connectBtnStatus.level)}
                   style={{
-                    color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    color: SecurityLevelTipColor[connectBtnStatus.level].bg,
+                    backgroundColor:
+                      SecurityLevelTipColor[connectBtnStatus.level].bg,
                   }}
                 >
-                  {connectBtnStatus.text}
-                </span>
-              </div>
-            )}
-            <Button
-              type="primary"
-              ghost
-              className="rabby-btn-ghost"
-              size="large"
-              onClick={handleCancel}
-            >
-              {connectBtnStatus.cancelBtnText}
-            </Button>
-          </div>
-        </Footer>
+                  <img
+                    src={SecurityLevelTipColor[connectBtnStatus.level].icon}
+                    className="icon icon-level"
+                  />
+                  <span
+                    style={{
+                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    }}
+                  >
+                    {connectBtnStatus.text}
+                  </span>
+                </div>
+              )}
+              <Button
+                type="primary"
+                ghost
+                className="rabby-btn-ghost"
+                size="large"
+                onClick={handleCancel}
+              >
+                {connectBtnStatus.cancelBtnText}
+              </Button>
+            </div>
+          </Footer>
+        </div>
         <RuleDrawer
           selectRule={selectRule}
           visible={ruleDrawerVisible}

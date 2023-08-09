@@ -48,14 +48,14 @@ export const useApproval = () => {
     }
   };
 
-  useEffect(() => {
-    if (!getUiType().isNotification) {
-      return;
-    }
-    window.addEventListener('beforeunload', rejectApproval);
+  // useEffect(() => {
+  //   if (!getUiType().isNotification) {
+  //     return;
+  //   }
+  //   window.addEventListener('beforeunload', rejectApproval);
 
-    return () => window.removeEventListener('beforeunload', rejectApproval);
-  }, []);
+  //   return () => window.removeEventListener('beforeunload', rejectApproval);
+  // }, []);
 
   return [getApproval, resolveApproval, rejectApproval] as const;
 };
