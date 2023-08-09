@@ -40,6 +40,7 @@ import IconSettingsAboutFollowUs from 'ui/assets/dashboard/settings/follow-us.sv
 import IconSettingsAboutSupporetedChains from 'ui/assets/dashboard/settings/supported-chains.svg';
 import IconSettingsAboutVersion from 'ui/assets/dashboard/settings/version.svg';
 import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
+import IconI18n from 'ui/assets/dashboard/settings/i18n.svg';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -692,7 +693,7 @@ const Settings = ({
           },
         },
         {
-          leftIcon: IconAutoLock,
+          leftIcon: IconI18n,
           content: t('page.dashboard.settings.settings.currentLanguage'),
           onClick: () => {
             matomoRequestEvent({
