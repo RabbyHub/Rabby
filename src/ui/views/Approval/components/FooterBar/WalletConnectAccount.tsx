@@ -10,6 +10,7 @@ import { Chain } from '@debank/common';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { CommonAccount } from './CommonAccount';
 
 export interface Props {
@@ -19,6 +20,7 @@ export interface Props {
 
 export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   const { activePopup, setAccount, setVisible } = useCommonPopupView();
+  const { t } = useTranslation();
   const { address, brandName, type } = account;
   const brandIcon = useWalletConnectIcon({
     address,
@@ -71,30 +73,42 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       case 'ACCOUNT_ERROR':
         return (
           <div className="text-orange">
-            <div>Connected but unable to sign.</div>
+            <div>
+              {t('page.signFooterBar.walletConnect.connectedButCantSign')}
+            </div>
             <div className="whitespace-nowrap mt-8">
-              Please switch to the correct address in mobile wallet
+              {t('page.signFooterBar.walletConnect.switchToCorrectAddress')}
             </div>
           </div>
         );
       case 'CHAIN_ERROR':
         return (
           <div className="text-orange">
-            <div>Connected but unable to sign.</div>
+            <div>
+              {t('page.signFooterBar.walletConnect.connectedButCantSign')}
+            </div>
             <div className="mt-8">
-              Please switch to {chain?.name} in mobile wallet
+              {t('page.signFooterBar.walletConnect.switchChainAlert', {
+                chain: chain?.name,
+              })}
             </div>
           </div>
         );
       case 'DISCONNECTED':
         return (
           <div className="text-red-forbidden">
-            Not connected to {displayBrandName}
+            {t('page.signFooterBar.walletConnect.notConnectToMobile', {
+              brand: displayBrandName,
+            })}
           </div>
         );
 
       default:
-        return <div className="text-black">Connected and ready to sign</div>;
+        return (
+          <div className="text-black">
+            {t('page.signFooterBar.walletConnect.connected')}
+          </div>
+        );
     }
   };
 
@@ -139,7 +153,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
             className="w-full h-[40px] mt-[12px]"
             type="primary"
           >
-            Connect
+            {t('page.signFooterBar.connectButton')}
           </Button>
         )
       }
@@ -152,8 +166,10 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
           'text-12 font-medium text-gray-subTitle'
         )}
       >
-        {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
-        {tipStatus === 'CHAIN_ERROR' && 'How to switch'}
+        {tipStatus === 'ACCOUNT_ERROR' &&
+          t('page.signFooterBar.walletConnect.howToSwitch')}
+        {tipStatus === 'CHAIN_ERROR' &&
+          t('page.signFooterBar.walletConnect.howToSwitch')}
       </div>
     </CommonAccount>
   );

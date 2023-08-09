@@ -183,7 +183,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
         <div className="flex-1 px-28 pt-80">
           <img src={IconWarning} className="w-[68px] h-[68px] mb-28 mx-auto" />
           <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
-            {t('The requested chain is not supported by Rabby yet')}
+            {t('page.switchChain.chainNotSupport')}
           </div>
         </div>
         <Footer className="justify-center">
@@ -205,7 +205,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       <OptionsWrapper>
         <div className="content">
           <div className="title">
-            Switching to {state.isSwitchToMainnet ? 'Mainnet' : 'Testnet'}
+            {t('page.switchChain.title', {
+              chain: state.isSwitchToMainnet ? 'Mainnet' : 'Testnet',
+            })}
           </div>
           <div className="connect-site-card">
             <FallbackSiteLogo
@@ -229,7 +231,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="rabby-btn-ghost w-[172px]"
             onClick={() => rejectApproval()}
           >
-            Cancel
+            {t('global.cancelButton')}
           </Button>
           <Button
             type="primary"
@@ -237,7 +239,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             size="large"
             onClick={handleConfirm}
           >
-            Confirm
+            {t('global.Confirm')}
           </Button>
         </Footer>
       </OptionsWrapper>

@@ -1,5 +1,6 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Tabs } from 'antd';
 import { TextActionData, getActionTypeText } from './utils';
@@ -171,6 +172,8 @@ const Actions = ({
     return getActionTypeText(data);
   }, [data]);
 
+  const { t } = useTranslation();
+
   const handleViewRawClick = () => {
     Popup.info({
       closable: true,
@@ -191,12 +194,12 @@ const Actions = ({
   return (
     <>
       <SignTitle>
-        <div className="left relative">Sign Text</div>
+        <div className="left relative">{t('page.signText.title')}</div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
-          View Raw
+          {t('page.signTx.viewRaw')}
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
@@ -222,8 +225,7 @@ const Actions = ({
       {!data && (
         <NoActionAlert>
           <img src={IconAlert} className="icon icon-alert" />
-          This signature can't be decoded by Rabby, but it doesn't imply any
-          risk
+          {t('page.signTx.sigCantDecode')}
         </NoActionAlert>
       )}
       <MessageWrapper
@@ -231,7 +233,7 @@ const Actions = ({
           'no-action': !data,
         })}
       >
-        <div className="title">Message</div>
+        <div className="title">{t('page.signText.message')}</div>
         <div className="content">{message}</div>
       </MessageWrapper>
     </>

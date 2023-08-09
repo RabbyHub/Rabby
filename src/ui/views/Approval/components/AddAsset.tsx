@@ -5,6 +5,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Button } from 'antd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
@@ -177,6 +178,7 @@ interface TokenHistoryItem extends TxHistoryItem {
 const AddAsset = ({ params }: { params: AddAssetProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [token, setToken] = useState<TokenItem | null>(null);
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
@@ -189,12 +191,12 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     if (!token)
       return {
         disable: true,
-        reason: 'No token found',
+        reason: t('page.addToken.noTokenFound'),
       };
     if (token?.is_core) {
       return {
         disable: true,
-        reason: 'Token has been supported on Rabby',
+        reason: t('page.addToken.tokenSupported'),
       };
     }
     const isCustom = customTokens.some(
@@ -203,7 +205,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
     if (isCustom) {
       return {
         disable: true,
-        reason: 'Current token has already been added to customized',
+        reason: t('page.addToken.tokenCustomized'),
       };
     }
     return {
@@ -318,7 +320,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
       <NoTokenWrapper>
         <div className="content flex-1">
           <img src={IconWarning} className="icon icon-warning" />
-          <p>Token not found from this contract address</p>
+          <p>{t('page.addToken.tokenNotFound')}</p>
         </div>
         <div className="footer">
           <Button
@@ -337,7 +339,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   return (
     <Spin spinning={isLoading}>
       <AddAssetWrapper>
-        <div className="header">Add custom token to Rabby</div>
+        <div className="header">{t('page.addToken.title')}</div>
         <div className="token">
           {token && (
             <>
@@ -362,7 +364,9 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 </div>
               </div>
               <div className="token-balance">
-                <div>{getTokenSymbol(token)} Balance</div>
+                <div>
+                  {getTokenSymbol(token)} {t('page.addToken.balance')}
+                </div>
                 <div>
                   <span className="amount">
                     {formatTokenAmount(token.amount)}
@@ -378,7 +382,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                   <div className="empty">
                     <img className="no-data" src="./images/nodata-tx.png" />
                     <p className="text-14 text-gray-content mt-12">
-                      No Transactions
+                      {t('page.dashboard.tokenDetail.noTransactions')}
                     </p>
                   </div>
                 )}
@@ -405,7 +409,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
               className="w-[172px] h-[48px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
               onClick={() => rejectApproval('User rejected the request.')}
             >
-              Cancel
+              {t('global.cancelButton')}
             </Button>
             <TooltipWithMagnetArrow
               overlayClassName="rectangle w-[max-content]"
@@ -418,17 +422,17 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 disabled={addButtonStatus.disable}
                 onClick={handleConfirm}
               >
-                Add
+                {t('global.addButton')}
               </Button>
             </TooltipWithMagnetArrow>
           </div>
           <ChainSelectorModal
-            title="Token address on multiple chains. Please choose one"
+            title={t('page.addToken.tokenOnMultiChains')}
             visible={chainSelectorVisible}
             supportChains={supportChains}
             onChange={handleChainChanged}
             onCancel={() => rejectApproval('User rejected the request.')}
-            disabledTips="No token found on this chain"
+            disabledTips={t('page.addToken.noTokenFoundOnThisChain')}
           />
         </div>
       </AddAssetWrapper>

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
@@ -57,6 +58,7 @@ const ApproveNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
     engineResults.forEach((item) => {
@@ -73,7 +75,7 @@ const ApproveNFT = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve NFT</Row>
+          <Row isTitle>{t('page.signTx.nftApprove.approveNFT')}</Row>
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
@@ -90,7 +92,7 @@ const ApproveNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -101,7 +103,7 @@ const ApproveNFT = ({
               <SecurityListItem
                 id="1043"
                 engineResult={engineResultMap['1043']}
-                dangerText="EOA address"
+                dangerText={t('page.signTx.tokenApprove.eoaAddress')}
               />
 
               <SecurityListItem
@@ -116,38 +118,44 @@ const ApproveNFT = ({
               <SecurityListItem
                 id="1044"
                 engineResult={engineResultMap['1044']}
-                dangerText="Trust value ≤ $10,000"
-                warningText="Trust value ≤ $100,000"
+                dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$10,000',
+                })}
+                warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$100,000',
+                })}
               />
 
               <SecurityListItem
                 id="1045"
                 engineResult={engineResultMap['1045']}
-                warningText="Deployed time < 3 days"
+                warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
+                  value: '3',
+                })}
               />
 
               <SecurityListItem
                 id="1052"
                 engineResult={engineResultMap['1052']}
-                dangerText="Flagged by Rabby"
+                dangerText={t('page.signTx.tokenApprove.flagByRabby')}
               />
 
               <SecurityListItem
                 id="1134"
                 engineResult={engineResultMap['1134']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1136"
                 engineResult={engineResultMap['1136']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1133"
                 engineResult={engineResultMap['1133']}
-                safeText="Marked as trusted"
+                safeText={t('page.signTx.markAsTrust')}
               />
 
               <li>

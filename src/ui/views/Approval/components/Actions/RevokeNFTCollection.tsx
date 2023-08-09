@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
@@ -54,6 +55,7 @@ const RevokeNFTCollection = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -63,7 +65,9 @@ const RevokeNFTCollection = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Revoke collection</Row>
+          <Row isTitle>
+            {t('page.signTx.revokeNFTCollectionApprove.revokeCollection')}
+          </Row>
           <Row>
             {actionData?.collection?.name}
             <ul className="desc-list">
@@ -80,7 +84,7 @@ const RevokeNFTCollection = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Revoke from</Row>
+          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />

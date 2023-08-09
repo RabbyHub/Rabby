@@ -1,5 +1,6 @@
 import { Button, Tooltip } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-white.svg';
@@ -11,6 +12,7 @@ export const SubmitActions: React.FC<Props> = ({
   tooltipContent,
   enableTooltip,
 }) => {
+  const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
 
   const handleClickSign = React.useCallback(() => {
@@ -49,7 +51,7 @@ export const SubmitActions: React.FC<Props> = ({
             )}
             onClick={handleClickConfirm}
           >
-            Confirm
+            {t('global.confirmButton')}
           </button>
           <button
             className={clsx(
@@ -78,7 +80,7 @@ export const SubmitActions: React.FC<Props> = ({
               )}
               onClick={handleClickSign}
             >
-              Sign and Submit
+              {t('page.signFooterBar.signAndSubmitButton')}
             </Button>
           </div>
         </Tooltip>

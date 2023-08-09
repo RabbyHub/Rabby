@@ -16,6 +16,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
+import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
   waitQueueFinished,
@@ -519,29 +520,31 @@ export const fetchRequireData = async (
 };
 
 export const getActionTypeText = (data: TypedDataActionData) => {
+  const { t } = i18n;
+
   if (data.permit) {
-    return 'Permit Token Approval';
+    return t('page.signTypedData.permit.title');
   }
   if (data.permit2 || data.batchPermit2) {
-    return 'Permit2 Token Approval';
+    return t('page.signTypedData.permit2.title');
   }
   if (data.swapTokenOrder) {
-    return 'Token Order';
+    return t('page.signTypedData.swapTokenOrder.title');
   }
   if (data.buyNFT || data.sellNFT || data.batchSellNFT) {
-    return 'NFT Order';
+    return t('page.signTypedData.sellNFT.title');
   }
   if (data.signMultiSig) {
-    return 'Confirm Transaction';
+    return t('page.signTypedData.signMultiSig.title');
   }
   if (data.createKey) {
-    return 'Create Key';
+    return t('page.signTypedData.createKey.title');
   }
   if (data.verifyAddress) {
-    return 'Verify Address';
+    return t('page.signTypedData.verifyAddress.title');
   }
   if (data.contractCall) {
-    return 'Contract Call';
+    return t('page.signTx.contractCall.title');
   }
   return '';
 };

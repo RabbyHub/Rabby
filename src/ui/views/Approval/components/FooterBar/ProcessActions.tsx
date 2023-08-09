@@ -2,6 +2,7 @@ import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 export const ProcessActions: React.FC<Props> = ({
   onSubmit,
@@ -9,6 +10,7 @@ export const ProcessActions: React.FC<Props> = ({
   disabledProcess,
   tooltipContent,
 }) => {
+  const { t } = useTranslation();
   return (
     <ActionsContainer onCancel={onCancel}>
       <Tooltip
@@ -28,7 +30,7 @@ export const ProcessActions: React.FC<Props> = ({
             )}
             onClick={onSubmit}
           >
-            Begin signing process
+            {t('page.signFooterBar.beginSigning')}
           </Button>
         </div>
       </Tooltip>

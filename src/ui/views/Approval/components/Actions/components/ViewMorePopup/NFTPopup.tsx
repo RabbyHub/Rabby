@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
@@ -20,6 +21,7 @@ export interface NFTPopupProps extends Props {
 }
 
 export const NFTPopup: React.FC<Props> = ({ data }) => {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="title flex">
@@ -34,11 +36,11 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">Collection</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.collectionTitle')}</Row>
           <Row>{data.nft.collection ? data.nft.collection.name : '-'}</Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Floor price</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.floorPrice')}</Row>
           <Row>
             {data.nft?.collection?.floor_price
               ? `${formatAmount(data?.nft?.collection?.floor_price)} ETH`
@@ -46,7 +48,7 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Contract address</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.contractAddress')}</Row>
           <Row>
             <Values.Address address={data.nft.contract_id} chain={data.chain} />
           </Row>

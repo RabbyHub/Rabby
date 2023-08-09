@@ -31,7 +31,7 @@ const LoadingBalanceChange = () => {
   return (
     <div className="loading-balance-change p-[16px] mb-0">
       <p className="section-title flex justify-between">
-        <span>{t('Est. balance change')}</span>
+        <span>{t('page.signTx.balanceChange.successTitle')}</span>
       </p>
       <div>
         <div className="flex items-center gap-[12px] mb-[12px]">

@@ -507,18 +507,6 @@
   "Select__Gas__Setting": {
     "message": "Select Gas Setting"
   },
-  "Standard": {
-    "message": "Standard"
-  },
-  "Fast": {
-    "message": "Fast"
-  },
-  "Instant": {
-    "message": "Instant"
-  },
-  "Custom": {
-    "message": "Custom"
-  },
   "Enter__Password": {
     "message": "Enter Password"
   },
@@ -554,15 +542,6 @@
   },
   "otherWalletConflictAlert": {
     "message": "Disable other browser wallet to avoid conflicts"
-  },
-  "GasLimitMinimumValueAlert": {
-    "message": "Gas limit should be more than 21000"
-  },
-  "GasLimitEmptyAlert": {
-    "message": "Please input gas limit"
-  },
-  "RecommendGasLimitTip": {
-    "message": "Est. {{est}}. Current {{current}}x, recommend "
   },
   "Advanced__Options": {
     "message": "Advanced Options"
@@ -689,9 +668,6 @@
   },
   "Sending__transaction__to__your__phone": {
     "message": "Sending data to your phone"
-  },
-  "Modify__only__when__necessary": {
-    "message": "Modify only when necessary"
   },
   "Refresh__QR__Code": {
     "message": "Refresh QR Code"
@@ -1002,9 +978,6 @@
   "Portfolio": {
     "message": "Portfolio"
   },
-  "multiSignChainNotMatch": {
-    "message": "Multi-signature addresses are not on this chain and cannot initiate transactions"
-  },
   "GnosisLoadFaildDescription": {
     "message": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
   },
@@ -1158,6 +1131,262 @@
     },
     "chainList": {
       "title": "{{count}} chains supported"
+    },
+    "signTx": {
+      "nftIn": "NFT in",
+      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
+      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
+      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
+      "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
+      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
+      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
+      "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
+      "noGasRequired": "No gas required",
+      "gasSelectorTitle": "Gas",
+      "failToFetchGasCost": "Fail to fetch gas cost",
+      "gasMoreButton": "More",
+      "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
+      "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
+      "gasPriceTitle": "Gas Price (Gwei)",
+      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
+      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
+      "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
+      "gasLimitTitle": "Gas limit",
+      "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
+      "nonceTitle": "Nonce",
+      "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
+      "gasPriceMedian": "Median of last 100 on-chain transactions:",
+      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
+      "gasLimitEmptyAlert": "Please input gas limit",
+      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "gasLevel": {
+        "standard": "Standard",
+        "fast": "Fast",
+        "instant": "Instant",
+        "custom": "Custom"
+      },
+      "balanceChange": {
+        "successTitle": "Transaction Simulation Results",
+        "failedTitle": "Transaction Simulation Failed",
+        "noBalanceChange": "No balance change",
+        "tokenOut": "Token out",
+        "tokenIn": "Token in",
+        "errorTitle": "Fail to fetch balance change",
+        "notSupport": "Transaction Simulation Not Supported",
+        "nftOut": "NFT out"
+      },
+      "enoughSafeSigCollected": "Enough signature collected",
+      "moreSafeSigNeeded": "{{0}} more confirmation needed",
+      "safeAdminSigned": "Signed",
+      "swap": {
+        "title": "Swap Token",
+        "payToken": "Pay",
+        "receiveToken": "Receive",
+        "failLoadReceiveToken": "Fail to load",
+        "valueDiff": "Value diff",
+        "simulationFailed": "Transaction simulation failed",
+        "simulationNotSupport": "Transaction simulation not supported on this chain",
+        "minReceive": "Minimum Receive",
+        "slippageFailToLoad": "Slippage tolerance fail to load",
+        "slippageTolerance": "Slippage tolerance",
+        "receiver": "Receiver",
+        "notPaymentAddress": "Not the payment address"
+      },
+      "crossChain": {
+        "title": "Cross Chain"
+      },
+      "swapAndCross": {
+        "title": "Swap Token and Cross Chain"
+      },
+      "wrapToken": "Wrap Token",
+      "unwrap": "Unwrap Token",
+      "send": {
+        "title": "Send Token",
+        "sendToken": "Send token",
+        "sendTo": "Send to",
+        "receiverIsTokenAddress": "Token address",
+        "contractNotOnThisChain": "Contract address not on this chain",
+        "notTopupAddress": "Not top up address",
+        "tokenNotSupport": "{{0}} not supported",
+        "onMyWhitelist": "On my whitelist",
+        "notOnThisChain": "Not on this chain",
+        "cexAddress": "CEX address",
+        "addressBalanceTitle": "Address balance",
+        "whitelistTitle": "Whitelist",
+        "notOnWhitelist": "Not on my whitelist"
+      },
+      "tokenApprove": {
+        "title": "Token Approval",
+        "approveToken": "Approve token",
+        "myBalance": "My balance",
+        "approveTo": "Approve to",
+        "eoaAddress": "EOA address",
+        "trustValueLessThan": "Trust value ≤ {{value}}",
+        "deployTimeLessThan": "Deployed time < {{value}} days",
+        "amountPopupTitle": "Amount",
+        "flagByRabby": "Flagged by Rabby",
+        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+      },
+      "revokeTokenApprove": {
+        "title": "Revoke Token Approval",
+        "revokeFrom": "Revoke from",
+        "revokeToken": "Revoke token"
+      },
+      "sendNFT": {
+        "title": "Send NFT",
+        "nftNotSupport": "NFT not supported"
+      },
+      "nftApprove": {
+        "title": "NFT Approval",
+        "approveNFT": "Approve NFT",
+        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+      },
+      "revokeNFTApprove": {
+        "title": "Revoke NFT Approval",
+        "revokeNFT": "Revoke NFT"
+      },
+      "nftCollectionApprove": {
+        "title": "NFT Collection Approval",
+        "approveCollection": "Approve collection"
+      },
+      "revokeNFTCollectionApprove": {
+        "title": "Revoke NFT Collection Approval",
+        "revokeCollection": "Revoke collection"
+      },
+      "deployContract": {
+        "title": "Deploy a Contract",
+        "descriptionTitle": "Description",
+        "description": "You are deploying a smart contract"
+      },
+      "cancelTx": {
+        "title": "Cancel Pending Transaction",
+        "txToBeCanceled": "Transaction to be canceled",
+        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
+      },
+      "submitMultisig": {
+        "title": "Submit Multisig Transaction",
+        "multisigAddress": "Multisig address"
+      },
+      "contractCall": {
+        "title": "Contract Call",
+        "operation": "Operation",
+        "operationABIDesc": "Operation is decoded from ABI",
+        "operationCantDecode": "Operation is not decoded",
+        "payNativeToken": "Pay {{symbol}}"
+      },
+      "revokePermit2": {
+        "title": "Revoke Permit2 Token Approval"
+      },
+      "unknownAction": "Unknown",
+      "interactContract": "Interact contract",
+      "markAsTrust": "Marked as trusted",
+      "markAsBlock": "Marked as blocked",
+      "interacted": "Interacted before",
+      "neverInteracted": "Never interacted before",
+      "transacted": "Transacted before",
+      "neverTransacted": "Never transacted before",
+      "fakeTokenAlert": "This is a scam token marked by Rabby",
+      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
+      "trusted": "Trusted",
+      "blocked": "Blocked",
+      "noMark": "No mark",
+      "markRemoved": "Mark removed",
+      "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
+      "signTransactionOnChain": "Sign {{chain}} Transaction",
+      "viewRaw": "View Raw",
+      "unknownActionType": "Unknown action type",
+      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
+      "nftCollection": "NFT Collection",
+      "floorPrice": "Floor price",
+      "contractAddress": "Contract address",
+      "protocolTitle": "Protocol",
+      "deployTimeTitle": "Deployed time",
+      "popularity": "Popularity",
+      "contractPopularity": "No.{{0}} on {{1}}",
+      "addressNote": "Address note",
+      "myMark": "My mark",
+      "collectionTitle": "Collection",
+      "addressTypeTitle": "Address type",
+      "firstOnChain": "First on-chain",
+      "trustValue": "Trust value"
+    },
+    "signFooterBar": {
+      "requestFrom": "Request from",
+      "processRiskAlert": "Please process the alert before signing",
+      "ignoreAll": "Ignore all",
+      "gridPlusConnected": "GridPlus is connected",
+      "gridPlusNotConnected": "GridPlus is not connected",
+      "connectButton": "Connect",
+      "connecting": "Connecting...",
+      "ledgerNotConnected": "Ledger is not connected",
+      "ledgerConnected": "Ledger is connected",
+      "signAndSubmitButton": "Sign and Submit",
+      "walletConnect": {
+        "connectedButCantSign": "Connected but unable to sign.",
+        "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
+        "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
+        "notConnectToMobile": "Not connected to {{brand}}",
+        "connected": "Connected and ready to sign",
+        "howToSwitch": "How to switch",
+        "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
+        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
+        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet"
+      },
+      "beginSigning": "Begin signing process",
+      "addressTip": {
+        "onekey": "OneKey address",
+        "trezor": "Trezor address",
+        "bitbox": "BitBox02 address",
+        "keystone": "Keystone address",
+        "airgap": "AirGap address",
+        "coolwallet": "CoolWallet address",
+        "privateKey": "Private Key address",
+        "seedPhrase": "Seed Phrase address",
+        "watchAddress": "Unable to sign with watch-only address",
+        "safe": "Safe address"
+      }
+    },
+    "signTypedData": {
+      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
+      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
+      "permit": {
+        "title": "Permit Token Approval"
+      },
+      "permit2": {
+        "title": "Permit2 Token Approval",
+        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
+        "sigExpireTime": "Signature expire time",
+        "approvalExpiretime": "Approval expire time"
+      },
+      "swapTokenOrder": {
+        "title": "Token Order"
+      },
+      "sellNFT": {
+        "title": "NFT Order",
+        "receiveToken": "Receive token",
+        "listNFT": "List NFT",
+        "specificBuyer": "Specific buyer"
+      },
+      "signMultiSig": {
+        "title": "Confirm Transaction"
+      },
+      "createKey": {
+        "title": "Create Key"
+      },
+      "verifyAddress": {
+        "title": "Verify Address"
+      },
+      "buyNFT": {
+        "payToken": "Pay token",
+        "receiveNFT": "Receive NFT",
+        "expireTime": "Expire time",
+        "listOn": "List on"
+      },
+      "contractCall": {
+        "operationDecoded": "Operation is decoded from message"
+      }
     },
     "activities": {
       "title": "Signature Record",
@@ -2011,6 +2240,78 @@
         "placeholder": "Enter the Password to Unlock",
         "error": "incorrect password"
       }
+    },
+    "addToken": {
+      "noTokenFound": "No token found",
+      "tokenSupported": "Token has been supported on Rabby",
+      "tokenCustomized": "Current token has already been added to customized",
+      "tokenNotFound": "Token not found from this contract address",
+      "title": "Add custom token to Rabby",
+      "balance": "Balance",
+      "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
+      "noTokenFoundOnThisChain": "No token found on this chain"
+    },
+    "switchChain": {
+      "title": "Switching to {{chain}}",
+      "chainNotSupport": "The requested chain is not supported by Rabby yet"
+    },
+    "signText": {
+      "title": "Sign Text",
+      "message": "Message",
+      "createKey": {
+        "interactDapp": "Interact Dapp",
+        "description": "Description"
+      }
+    },
+    "securityEngine": {
+      "yes": "Yes",
+      "no": "No",
+      "whenTheValueIs": "when the value is {{value}}",
+      "currentValueIs": "Current value is {{value}}",
+      "viewRules": "View security rules",
+      "undo": "Undo",
+      "riskProcessed": "Risk Processed",
+      "ignoreAlert": "Ignore the alert",
+      "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
+      "unknownResult": "Unknown result because security rule is unavailable",
+      "alertTriggerReason": "Alert triggered reason:",
+      "understandRisk": "I understand and accept responsibility for any loss",
+      "forbiddenCantIgnore": "Found forbidden risk that can't be ignored.",
+      "ruleDetailTitle": "Rule Detail",
+      "enableRule": "Enable the rule",
+      "viewRiskLevel": "View risk level"
+    },
+    "connect": {
+      "listedBy": "Listed by",
+      "sitePopularity": "Site popularity",
+      "myMark": "My Mark",
+      "flagByRabby": "Flagged by Rabby",
+      "flagByMM": "Flagged by MetaMask",
+      "flagByScamSniffer": "Flagged by ScamSniffer",
+      "verifiedByRabby": "Verified by Rabby",
+      "foundForbiddenRisk": "Found forbidden risks. Connection is blocked.",
+      "markAsTrustToast": "Mark as \"Trusted\"",
+      "markAsBlockToast": "Mark as \"Blocked\"",
+      "markRemovedToast": "Mark removed",
+      "title": "Connect to Dapp",
+      "selectChainToConnect": "Select a chain to connect for",
+      "markRuleText": "My mark",
+      "connectBtn": "Connect",
+      "noWebsite": "None",
+      "popularLevelHigh": "High",
+      "popularLevelMedium": "Medium",
+      "popularLevelLow": "Low",
+      "popularLevelVeryLow": "Very Low",
+      "noMark": "No mark",
+      "blocked": "Blocked",
+      "trusted": "Trusted",
+      "addedToWhitelist": "Added to your whitelist",
+      "addedToBlacklist": "Added to your blacklist",
+      "removedFromAll": "Removed from all lists",
+      "notOnAnyList": "Not on any list",
+      "onYourBlacklist": "On your blacklist",
+      "onYourWhitelist": "On your whitelist",
+      "manageWhiteBlackList": "Manage whitelist/blacklist"
     }
   },
   "component": {
@@ -2200,7 +2501,14 @@
     "Connect": "Connect",
     "Copied": "Copied",
     "Clear": "Clear",
-    "Save": "Save"
+    "Save": "Save",
+    "confirmButton": "Confirm",
+    "cancelButton": "Cancel",
+    "backButton": "Back",
+    "proceedButton": "Proceed",
+    "editButton": "Edit",
+    "addButton": "Add",
+    "closeButton": "Close"
   },
   "background": {},
   "LedgerPermission2": {
