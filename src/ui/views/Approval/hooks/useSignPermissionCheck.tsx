@@ -40,16 +40,18 @@ export const useSignPermissionCheck = ({
   onOk,
 }: {
   origin?: string;
-  chainId: string | number;
+  chainId?: string | number;
   onOk?: () => void;
   onDisconnect?: () => void;
 }) => {
   const wallet = useWallet();
   const chain = useMemo(
     () =>
-      CHAINS_LIST.find((item) =>
-        new BigNumber(item.network).isEqualTo(chainId)
-      ),
+      chainId
+        ? CHAINS_LIST.find((item) =>
+            new BigNumber(item.network).isEqualTo(chainId)
+          )
+        : undefined,
     [chainId]
   );
 
@@ -79,6 +81,7 @@ export const useSignPermissionCheck = ({
     if (
       connectedSite &&
       connectedSite.signPermission === SIGN_PERMISSION_TYPES.TESTNET &&
+      chain &&
       !chain?.isTestnet
     ) {
       const { destroy } = Modal.info({
