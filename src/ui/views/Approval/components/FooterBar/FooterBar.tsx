@@ -326,7 +326,7 @@ export const FooterBar: React.FC<Props> = ({
               testnet: currentChain.isTestnet,
             })}
           >
-            {currentChain.isTestnet ? 'Testnets' : 'Mainnets'}
+            {currentChain.isTestnet ? 'Testnet' : 'Mainnet'}
           </div>
         )}
       </Wrapper>
