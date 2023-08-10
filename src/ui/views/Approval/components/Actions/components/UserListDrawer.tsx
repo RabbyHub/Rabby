@@ -194,7 +194,7 @@ export default ({
     ),
     height: 240,
     closable: true,
-    title: 'My mark',
+    title: `My mark on ${chain.name} contract`,
     className: 'user-list-drawer',
     onClose: () => destroy(),
     onCancel: () => destroy(),
