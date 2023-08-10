@@ -16,13 +16,12 @@ const Content = styled.div`
     text-align: center;
     font-size: 16px;
     font-weight: 500;
-    line-height: 19px;
-    margin-bottom: 33px;
+    line-height: 22px;
+    margin-bottom: 28px;
   }
   .ant-btn {
     width: 172px;
     height: 44px;
-    margin-bottom: 20px;
   }
 `;
 
