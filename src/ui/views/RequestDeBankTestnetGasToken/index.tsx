@@ -11,6 +11,7 @@ import imgInfo from 'ui/assets/faucet/info.svg';
 import imgDeBankTestnet from 'ui/assets/faucet/debank-testnet.svg';
 import imgUsd from 'ui/assets/faucet/usd.svg';
 import imgLoading from 'ui/assets/faucet/loading.svg';
+import imgBg from 'ui/assets/faucet/bg.png';
 
 import { Button, Skeleton, message } from 'antd';
 import { ClaimRabbyBadgeModal } from '../Dashboard/components/ClaimRabbyBadgeModal';
@@ -46,13 +47,17 @@ const Wrapper = styled.div`
   }
 
   .container {
+    background: #fff;
+    background-image: url(${imgBg});
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: contain;
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 448px;
     flex-shrink: 0;
     border-radius: 8px;
-    background: #fff;
     padding: 24px;
     margin-top: 40px;
 
@@ -60,8 +65,18 @@ const Wrapper = styled.div`
       height: 508px;
       margin-top: 24px;
     }
-
     .tip {
+      margin-top: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #192945;
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    .badgeTip {
       margin: 24px 0;
       display: flex;
       align-items: center;
@@ -231,19 +246,26 @@ const RequestDeBankTestnetGasToken = () => {
           )}
         >
           <CurrentAccount />
-          <div className="tip">
-            <img src={imgInfo} className="w-16" />
-            <span>Request available for Rabby Badge holders only</span>
-          </div>
-          {!mintedRabbyBadge && (
-            <Button
-              className="claimBtn"
-              type="primary"
-              block
-              onClick={() => setBadgeModalVisible(true)}
-            >
-              Claim Rabby Badge
-            </Button>
+
+          {mintedRabbyBadge ? (
+            <div className="tip">
+              Rabby Badge holders can request once a day
+            </div>
+          ) : (
+            <>
+              <div className="badgeTip">
+                <img src={imgInfo} className="w-16" />
+                <span>Request available for Rabby Badge holders only</span>
+              </div>
+              <Button
+                className="claimBtn"
+                type="primary"
+                block
+                onClick={() => setBadgeModalVisible(true)}
+              >
+                Claim Rabby Badge
+              </Button>
+            </>
           )}
           <div className="faucetBox">
             <img src={imgDeBankTestnet} className="title" />
