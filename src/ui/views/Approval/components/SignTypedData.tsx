@@ -11,7 +11,12 @@ import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import {
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  CHAINS,
+} from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
@@ -348,6 +353,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      const site = await wallet.getConnectedSite(params.session.origin);
+      if (site) {
+        data.chainId = CHAINS[site.chain].id.toString();
+      }
+    }
     if (currentAccount) {
       const requireData = await fetchRequireData(
         data,
@@ -469,6 +480,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           hasShadow={footerShowShadow}
           origin={params.session.origin}
           originLogo={params.session.icon}
+          chain={chain}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
           securityLevel={securityLevel}

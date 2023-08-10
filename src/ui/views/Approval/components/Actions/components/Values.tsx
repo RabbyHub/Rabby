@@ -280,14 +280,6 @@ const TokenLabel = ({
 
 const AddressWrapper = styled.div`
   display: flex;
-  .icon-copy {
-    opacity: 0;
-  }
-  &:hover {
-    .icon-copy {
-      opacity: 1;
-    }
-  }
 `;
 const Address = ({
   address,
@@ -327,8 +319,13 @@ const Address = ({
     });
   };
   return (
-    <AddressWrapper className="value-address">
-      <span title={address}>{ellipsis(address)}</span>
+    <AddressWrapper className="value-address relative">
+      <TooltipWithMagnetArrow
+        title={address}
+        className="rectangle w-[max-content]"
+      >
+        <span>{ellipsis(address)}</span>
+      </TooltipWithMagnetArrow>
       {chain && (
         <img
           onClick={handleClickContractId}
