@@ -469,6 +469,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           hasShadow={footerShowShadow}
           origin={params.session.origin}
           originLogo={params.session.icon}
+          chain={chain}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
           securityLevel={securityLevel}

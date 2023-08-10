@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { AccountInfo } from './AccountInfo';
 import { useWallet } from '@/ui/utils';
@@ -7,12 +7,14 @@ import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { Chain } from '@debank/common';
+import { CHAINS } from 'consts';
 import { SecurityEngineLevel } from 'consts';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { FallbackSiteLogo } from '@/ui/component';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import { ConnectedSite } from 'background/service/permission';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -98,6 +100,22 @@ const Wrapper = styled.section`
       left: 115px;
     }
   }
+  .chain-watermark {
+    padding: 10px 18px;
+    border-radius: 6px;
+    opacity: 0.4;
+    position: absolute;
+    top: 26px;
+    right: 64px;
+    color: #7084ff;
+    border: 1px solid currentColor;
+    line-height: 1;
+    transform: rotate(-15deg);
+    font-size: 20px;
+    &.testnet {
+      color: #8d91ab;
+    }
+  }
 `;
 
 const Shadow = styled.div`
@@ -145,6 +163,10 @@ export const FooterBar: React.FC<Props> = ({
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
+  const [
+    connectedSite,
+    setConnectedSite,
+  ] = React.useState<ConnectedSite | null>(null);
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
@@ -155,10 +177,20 @@ export const FooterBar: React.FC<Props> = ({
     return origin;
   }, [origin]);
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
+  const { rules, processedRules, isShowTestnet } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
+    isShowTestnet: s.preference.isShowTestnet,
   }));
+
+  const currentChain = useMemo(() => {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      return props.chain || CHAINS.ETH;
+    } else {
+      if (!connectedSite) return CHAINS.ETH;
+      return CHAINS[connectedSite.chain];
+    }
+  }, [props.chain, origin, connectedSite]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -186,6 +218,14 @@ export const FooterBar: React.FC<Props> = ({
     if (currentAccount) setAccount(currentAccount);
     dispatch.securityEngine.init();
   };
+
+  useEffect(() => {
+    if (origin) {
+      wallet.getConnectedSite(origin).then((site) => {
+        site && setConnectedSite(site);
+      });
+    }
+  }, [origin]);
 
   React.useEffect(() => {
     init();
@@ -277,6 +317,15 @@ export const FooterBar: React.FC<Props> = ({
             >
               Ignore all
             </span>
+          </div>
+        )}
+        {isShowTestnet && (
+          <div
+            className={clsx('chain-watermark', {
+              testnet: currentChain.isTestnet,
+            })}
+          >
+            {currentChain.isTestnet ? 'Testnets' : 'Mainnets'}
           </div>
         )}
       </Wrapper>
