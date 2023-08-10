@@ -201,8 +201,6 @@ const RequestDeBankTestnetGasToken = () => {
     !!value?.is_success ||
     !!hasRequested?.has_requested;
 
-  console.log('value', { value, loading, error });
-
   useEffect(() => {
     if (error?.message) {
       message.error(String(error?.message));

@@ -445,7 +445,6 @@ export const ClaimRabbyBadgeModal = ({
   onCancel: () => void;
   onClaimed?: () => void;
 }) => {
-  console.log('visible', visible);
   return (
     <StyledModal
       visible={visible}
