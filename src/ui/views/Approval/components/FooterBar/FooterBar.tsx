@@ -112,6 +112,7 @@ const Wrapper = styled.section`
     line-height: 1;
     transform: rotate(-15deg);
     font-size: 20px;
+    user-select: none;
     &.testnet {
       color: #8d91ab;
     }
