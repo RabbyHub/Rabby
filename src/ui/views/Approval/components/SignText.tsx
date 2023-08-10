@@ -29,6 +29,8 @@ import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import Actions from './TextActions';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { isTestnetChainId } from '@/utils/chain';
+import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
+import { useTestnetCheck } from '../hooks/useTestnetCheck';
 
 interface SignTextProps {
   data: string[];
@@ -84,6 +86,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
   }));
+  const [chainId, setChainId] = useState<number | undefined>(undefined);
 
   const securityLevel = useMemo(() => {
     const enableResults = engineResults.filter((result) => {
@@ -129,6 +132,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         chainId = CHAINS[site.chain].id;
       }
     }
+    setChainId(chainId);
 
     const apiProvider = isTestnetChainId(chainId)
       ? wallet.testnetOpenapi
@@ -140,6 +144,24 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       origin: session.origin,
     });
   }, [signText, session]);
+
+  useSignPermissionCheck({
+    origin: params.session.origin,
+    chainId,
+    onOk: () => {
+      handleCancel();
+    },
+    onDisconnect: () => {
+      handleCancel();
+    },
+  });
+
+  useTestnetCheck({
+    chainId,
+    onOk: () => {
+      handleCancel();
+    },
+  });
 
   const report = async (
     action:

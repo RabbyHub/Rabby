@@ -30,14 +30,16 @@ export const useTestnetCheck = ({
   chainId,
   onOk,
 }: {
-  chainId: string | number;
+  chainId?: string | number;
   onOk?: () => void;
 }) => {
   const chain = useMemo(
     () =>
-      CHAINS_LIST.find((item) =>
-        new BigNumber(item.network).isEqualTo(chainId)
-      ),
+      chainId
+        ? CHAINS_LIST.find((item) =>
+            new BigNumber(item.network).isEqualTo(chainId)
+          )
+        : undefined,
     [chainId]
   );
 
@@ -50,7 +52,7 @@ export const useTestnetCheck = ({
   });
 
   useEffect(() => {
-    if (!isShowTestnet && chain?.isTestnet) {
+    if (!isShowTestnet && chain && chain?.isTestnet) {
       const { destroy } = Modal.info({
         className: 'testnet-check-modal',
         width: 360,
