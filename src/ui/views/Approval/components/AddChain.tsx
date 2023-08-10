@@ -1,8 +1,9 @@
 import IconArrowDown from '@/ui/assets/approval/icon-arrow-down.svg';
-import { CHAINS_LIST } from '@debank/common';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useRabbySelector } from '@/ui/store';
+import { CHAINS_LIST, Chain } from '@debank/common';
 import { useSetState } from 'ahooks';
 import { Button } from 'antd';
-import { Chain } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import { CHAINS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
@@ -110,6 +111,16 @@ const Footer = styled.div`
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
+  .ant-btn-primary[disabled],
+  .ant-btn-primary[disabled]:hover,
+  .ant-btn-primary[disabled]:focus,
+  .ant-btn-primary[disabled]:active {
+    background-color: rgba(112, 132, 255, 0.4);
+    border: none;
+    &:before {
+      display: none;
+    }
+  }
 `;
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
@@ -175,6 +186,17 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     resolveApproval();
   };
 
+  const isShowTestnet = useRabbySelector(
+    (state) => state.preference.isShowTestnet
+  );
+
+  const isShowTestnetTip = useMemo(() => {
+    if (!isShowTestnet && state.nextChain?.isTestnet) {
+      return true;
+    }
+    return false;
+  }, [isShowTestnet, state.nextChain?.isTestnet]);
+
   if (!inited) return <></>;
 
   if (state.isShowUnsupportAlert) {
@@ -231,14 +253,33 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           >
             Cancel
           </Button>
-          <Button
-            type="primary"
-            className="w-[172px]"
-            size="large"
-            onClick={handleConfirm}
-          >
-            Confirm
-          </Button>
+          {isShowTestnetTip ? (
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle"
+              title={`Please turn on "Enable Testnets" under "More" before connecting to testnets`}
+            >
+              <span>
+                <Button
+                  type="primary"
+                  className="w-[172px]"
+                  size="large"
+                  onClick={handleConfirm}
+                  disabled
+                >
+                  Confirm
+                </Button>
+              </span>
+            </TooltipWithMagnetArrow>
+          ) : (
+            <Button
+              type="primary"
+              className="w-[172px]"
+              size="large"
+              onClick={handleConfirm}
+            >
+              Confirm
+            </Button>
+          )}
         </Footer>
       </OptionsWrapper>
     );

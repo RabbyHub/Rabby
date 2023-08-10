@@ -107,7 +107,10 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
-          const { defaultChain } = await notificationService.requestApproval(
+          const {
+            defaultChain,
+            signPermission,
+          } = await notificationService.requestApproval(
             {
               params: { origin, name, icon },
               approvalComponent: 'Connect',
@@ -115,7 +118,13 @@ const flowContext = flow
             { height: 800 }
           );
           connectOrigins.delete(origin);
-          permissionService.addConnectedSite(origin, name, icon, defaultChain);
+          permissionService.addConnectedSiteV2({
+            origin,
+            name,
+            icon,
+            defaultChain,
+            signPermission,
+          });
         } catch (e) {
           connectOrigins.delete(origin);
           throw e;

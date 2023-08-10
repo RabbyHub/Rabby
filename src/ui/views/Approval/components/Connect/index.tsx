@@ -6,7 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS, SecurityEngineLevel } from 'consts';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  SecurityEngineLevel,
+  SIGN_PERMISSION_TYPES,
+} from 'consts';
 import styled from 'styled-components';
 import {
   ContextActionData,
@@ -213,6 +218,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     level?: Level;
     ignored: boolean;
   } | null>(null);
+
+  const [signPermission, setSignPermission] = useState<SIGN_PERMISSION_TYPES>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -522,6 +529,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
+      signPermission,
     });
   };
 
@@ -623,7 +631,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           })}
         </div>
         <div>
-          <SignTestnetPermission />
+          <SignTestnetPermission
+            value={signPermission}
+            onChange={(v) => setSignPermission(v)}
+          />
           <Footer>
             <div className="action-buttons flex flex-col mt-4 items-center">
               <Button
