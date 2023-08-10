@@ -1,5 +1,5 @@
-import { Modal, NameAndAddress } from '@/ui/component';
-import React, { useCallback, useRef, useState } from 'react';
+import { Modal } from '@/ui/component';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ImgRabbyBadgeBg from '@/ui/assets/badge/bg.svg';
 import ImgRabbyBadgeBg2 from '@/ui/assets/badge/bg2.svg';
@@ -14,94 +14,21 @@ import ImgLink from '@/ui/assets/badge/link.svg';
 
 import { useAccount } from '@/ui/store-hooks';
 import { Button, Input, Skeleton } from 'antd';
-import ImgCopy from 'ui/assets/icon-copy.svg';
 
 import clsx from 'clsx';
-import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import {
-  KEYRING_ICONS,
-  KEYRING_ICONS_WHITE,
-  WALLET_BRAND_CONTENT,
-} from '@/constant';
 
 import Lottie from 'lottie-react';
 
 import * as animationData from './success.json';
 import { useAsync, useAsyncFn } from 'react-use';
 import { openInTab, useWallet } from '@/ui/utils';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import { CurrentAccount } from '@/ui/component/CurrentAccout';
 
 const RABBY_BADGE_URL = 'https://debank.com/official-badge/2';
 
 const gotoDeBankRabbyBadge = () => {
   openInTab(RABBY_BADGE_URL);
-};
-
-const CurrentAccountWrapper = styled.div`
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.13);
-  display: inline-flex;
-  justify-content: center;
-  gap: 6px;
-  height: 36px;
-  align-items: center;
-  padding: 0 15px;
-
-  .icon {
-    width: 20px;
-    height: 20px;
-  }
-  .name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    max-width: 112px;
-  }
-  .addr {
-    font-size: 13px;
-    color: #fff;
-  }
-  &.success {
-    background: #f5f6fa;
-    .name {
-      color: #13141a;
-    }
-    .addr {
-      color: #4b4d59;
-    }
-  }
-`;
-
-const CurrentAccount = ({
-  className,
-  isSuccess,
-}: {
-  className?: string;
-  isSuccess?: boolean;
-}) => {
-  const [currentAccount] = useAccount();
-  const brandIcon = useWalletConnectIcon(currentAccount);
-
-  if (!currentAccount) return null;
-  const addressTypeIcon: string = isSuccess
-    ? brandIcon ||
-      KEYRING_ICONS[currentAccount.type] ||
-      WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-    : brandIcon ||
-      WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
-      KEYRING_ICONS_WHITE[currentAccount.type];
-
-  return (
-    <CurrentAccountWrapper className={clsx(isSuccess && 'success', className)}>
-      <img className={clsx('icon')} src={addressTypeIcon} />
-      <NameAndAddress
-        nameClass="name"
-        addressClass="addr"
-        copyIcon={isSuccess ? true : ImgCopy}
-        address={currentAccount?.address}
-      />
-    </CurrentAccountWrapper>
-  );
 };
 
 const Wrapper = styled.div`
@@ -260,7 +187,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const ClaimRabbyBadge = () => {
+const ClaimRabbyBadge = ({ onClaimed }: { onClaimed?: () => void }) => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [swapTips, setSwapTips] = useState(false);
@@ -328,6 +255,12 @@ const ClaimRabbyBadge = () => {
     lockErrorRef.current = true;
   }
 
+  useEffect(() => {
+    if (mintResult?.is_success || mintInfo?.has_minted) {
+      onClaimed?.();
+    }
+  }, [onClaimed, mintResult?.is_success, mintInfo?.has_minted]);
+
   if (mintResult?.is_success || mintInfo?.has_minted) {
     return (
       <ClaimSuccess
@@ -342,7 +275,7 @@ const ClaimRabbyBadge = () => {
     <Wrapper className={clsx({ noCode })}>
       <img src={ImgRabbyBadgeM} className="badge" alt="rabby badge" />
       <div className="title">Claim Rabby Badge for</div>
-      <CurrentAccount className="account" />
+      <CurrentAccount noInvert={false} className="account" />
       {!noCode && (
         <>
           <div className={clsx('box', swapTips && 'swap')}>
@@ -472,7 +405,7 @@ const ClaimSuccess = ({ num }: { num: number }) => {
       <img src={ImgRabbyBadgeL} className="badge" alt="rabby badge" />
       <div className="desc">Rabby Valued User No.{num}</div>
       <div className="title">Claim Success</div>
-      <CurrentAccount className="account" isSuccess />
+      <CurrentAccount className="account" />
       <Button type="primary" className="btn" onClick={gotoDeBankRabbyBadge}>
         <span>View on DeBank</span>
         <img src={ImgLink} className="ml-4 w-20 h-20" />
@@ -506,9 +439,11 @@ const StyledModal = styled(Modal)`
 export const ClaimRabbyBadgeModal = ({
   visible,
   onCancel,
+  onClaimed,
 }: {
   visible: boolean;
   onCancel: () => void;
+  onClaimed?: () => void;
 }) => {
   console.log('visible', visible);
   return (
@@ -519,7 +454,7 @@ export const ClaimRabbyBadgeModal = ({
       destroyOnClose
       closeIcon={<RcIconClose />}
     >
-      <ClaimRabbyBadge />
+      <ClaimRabbyBadge onClaimed={onClaimed} />
     </StyledModal>
   );
 };
