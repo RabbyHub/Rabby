@@ -12,10 +12,12 @@ import imgDeBankTestnet from 'ui/assets/faucet/debank-testnet.svg';
 import imgUsd from 'ui/assets/faucet/usd.svg';
 import imgLoading from 'ui/assets/faucet/loading.svg';
 import imgBg from 'ui/assets/faucet/bg.png';
+import IconSuccess from 'ui/assets/success.svg';
 
-import { Button, Skeleton, message } from 'antd';
+import { Button, message } from 'antd';
 import { ClaimRabbyBadgeModal } from '../Dashboard/components/ClaimRabbyBadgeModal';
 import { CurrentAccount } from '@/ui/component/CurrentAccout';
+import { Loading } from './Loading';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -60,10 +62,26 @@ const Wrapper = styled.div`
     border-radius: 8px;
     padding: 24px;
     margin-top: 40px;
+    box-shadow: 0px 24px 40px 0px rgba(0, 0, 0, 0.08);
 
     &.mintedRabbyBadge {
       height: 508px;
       margin-top: 24px;
+
+      position: relative;
+      &::after {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 314px;
+        left: 0;
+        bottom: 0;
+        opacity: 0.4;
+        pointer-events: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        background: rgba(255, 255, 255, 0.4);
+      }
     }
     .tip {
       margin-top: 20px;
@@ -222,6 +240,15 @@ const RequestDeBankTestnetGasToken = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (value?.is_success) {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: 'Requested successfully',
+      });
+    }
+  }, [value?.is_success]);
+
   return (
     <Wrapper>
       <div className="header-bg" />
@@ -231,12 +258,7 @@ const RequestDeBankTestnetGasToken = () => {
           {/* {t('page.RequestDebankTestnetGasToken.title')} */}
         </PageHeader>
 
-        {initLoading && (
-          <Skeleton.Input
-            active
-            className="bg-gray-bg w-full h-[508px] rounded-[8px]"
-          />
-        )}
+        {initLoading && <Loading />}
 
         <div
           className={clsx(
@@ -246,7 +268,6 @@ const RequestDeBankTestnetGasToken = () => {
           )}
         >
           <CurrentAccount />
-
           {mintedRabbyBadge ? (
             <div className="tip">
               Rabby Badge holders can request once a day

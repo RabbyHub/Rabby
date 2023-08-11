@@ -363,7 +363,7 @@ const RequestDeBankTestnetGasToken = () => {
   const { t } = useTranslation();
   const history = useHistory();
   return (
-    <div className="setting-block">
+    <div className="setting-block mt-8">
       <div className="setting-items">
         <Field
           leftIcon={<img src={IconSettingsDeBank} className="w-28 h-28" />}
