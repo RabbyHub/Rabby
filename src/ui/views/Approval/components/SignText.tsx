@@ -6,7 +6,12 @@ import { useSize } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import {
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  CHAINS,
+} from 'consts';
 import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -23,6 +28,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import Actions from './TextActions';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
+import { isTestnetChainId } from '@/utils/chain';
 
 interface SignTextProps {
   data: string[];
@@ -116,8 +122,19 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   const { value: textActionData, loading, error } = useAsync(async () => {
     const currentAccount = await wallet.getCurrentAccount();
+    let chainId = 1; // ETH as default
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      const site = await wallet.getConnectedSite(params.session.origin);
+      if (site) {
+        chainId = CHAINS[site.chain].id;
+      }
+    }
 
-    return await wallet.openapi.parseText({
+    const apiProvider = isTestnetChainId(chainId)
+      ? wallet.testnetOpenapi
+      : wallet.openapi;
+
+    return await apiProvider.parseText({
       text: signText,
       address: currentAccount!.address,
       origin: session.origin,
