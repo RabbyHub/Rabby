@@ -79,7 +79,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     number | string | undefined
   >(undefined);
 
-  console.log(currentChainId, 'currentChainId');
   useSignPermissionCheck({
     origin: params.session.origin,
     chainId: currentChainId,
