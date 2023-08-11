@@ -38,6 +38,8 @@ import {
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
+import { useTestnetCheck } from '../hooks/useTestnetCheck';
 
 interface SignTypedDataProps {
   method: string;
@@ -73,6 +75,27 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
+  const [currentChainId, setCurrentChainId] = useState<
+    number | string | undefined
+  >(undefined);
+
+  useSignPermissionCheck({
+    origin: params.session.origin,
+    chainId: currentChainId,
+    onOk: () => {
+      handleCancel();
+    },
+    onDisconnect: () => {
+      handleCancel();
+    },
+  });
+
+  useTestnetCheck({
+    chainId: currentChainId,
+    onOk: () => {
+      handleCancel();
+    },
+  });
   const [
     actionRequireData,
     setActionRequireData,
@@ -174,6 +197,22 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
     return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
+
+  const getCurrentChainId = async () => {
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      const site = await wallet.getConnectedSite(params.session.origin);
+      if (site) {
+        return CHAINS[site.chain].id;
+      }
+    } else {
+      return chain?.id;
+    }
+  };
+  useEffect(() => {
+    getCurrentChainId().then((id) => {
+      setCurrentChainId(id);
+    });
+  }, [params.session.origin]);
 
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {

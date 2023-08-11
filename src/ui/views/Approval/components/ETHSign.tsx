@@ -32,7 +32,7 @@ const ETHSign = ({ params }: { params: AddAssetProps }) => {
         <>
           <img
             src={IconWarning}
-            className="w-[68px] h-[68px] mb-[20px] mx-auto"
+            className="w-[68px] h-[68px] mt-[32px] mb-[20px] mx-auto"
           />
           <div className="text-gray-title text-[20px] leading-[26px] w-[344px] mx-auto font-medium text-center">
             Signing with 'eth_sign' can lead to asset loss. For your safety,

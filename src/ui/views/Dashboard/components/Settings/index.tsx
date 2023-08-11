@@ -599,7 +599,7 @@ const Settings = ({
         },
         {
           leftIcon: IconTestnet,
-          content: t('Show Testnets'),
+          content: t('Enable Testnets'),
           rightIcon: (
             <Switch
               checked={isShowTestnet}

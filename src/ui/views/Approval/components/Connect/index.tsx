@@ -1,12 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS, SecurityEngineLevel } from 'consts';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  SecurityEngineLevel,
+  SIGN_PERMISSION_TYPES,
+} from 'consts';
 import styled from 'styled-components';
 import {
   ContextActionData,
@@ -20,6 +25,9 @@ import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
+import { SignTestnetPermission } from './SignTestnetPermission';
+import { useRabbySelector } from '@/ui/store';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 interface ConnectProps {
   params: any;
@@ -94,11 +102,21 @@ const Footer = styled.div`
   .ant-btn {
     width: 100%;
     height: 52px;
-    &:nth-child(1) {
+    /* &:nth-child(1) {
       margin-bottom: 12px;
     }
     &:nth-last-child(1) {
       margin-top: 20px;
+    } */
+  }
+  .ant-btn-primary[disabled],
+  .ant-btn-primary[disabled]:hover,
+  .ant-btn-primary[disabled]:focus,
+  .ant-btn-primary[disabled]:active {
+    background-color: rgba(112, 132, 255, 0.4);
+    border: none;
+    &:before {
+      display: none;
     }
   }
   .security-tip {
@@ -212,6 +230,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     level?: Level;
     ignored: boolean;
   } | null>(null);
+
+  const [signPermission, setSignPermission] = useState<SIGN_PERMISSION_TYPES>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -521,6 +541,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
+      signPermission,
     });
   };
 
@@ -550,6 +571,13 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     });
     setRuleDrawerVisible(true);
   };
+
+  const isShowTestnet = useRabbySelector(
+    (state) => state.preference.isShowTestnet
+  );
+  const isShowTestnetTip = useMemo(() => {
+    return !isShowTestnet && CHAINS[defaultChain]?.isTestnet;
+  }, [isShowTestnet, defaultChain]);
 
   return (
     <Spin spinning={isLoading}>
@@ -621,53 +649,84 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
             }
           })}
         </div>
-
-        <Footer>
-          <div className="action-buttons flex flex-col mt-4 items-center">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => handleAllow()}
-              disabled={connectBtnStatus.disabled}
-              className={clsx({
-                'mb-0': !connectBtnStatus.text,
-              })}
-            >
-              {t('Connect')}
-            </Button>
-            {connectBtnStatus.text && (
-              <div
-                className={clsx('security-tip', connectBtnStatus.level)}
-                style={{
-                  color: SecurityLevelTipColor[connectBtnStatus.level].bg,
-                  backgroundColor:
-                    SecurityLevelTipColor[connectBtnStatus.level].bg,
-                }}
-              >
-                <img
-                  src={SecurityLevelTipColor[connectBtnStatus.level].icon}
-                  className="icon icon-level"
-                />
-                <span
+        <div>
+          <SignTestnetPermission
+            value={signPermission}
+            onChange={(v) => setSignPermission(v)}
+          />
+          <Footer>
+            <div className="action-buttons flex flex-col mt-4 items-center">
+              {isShowTestnetTip ? (
+                <Tooltip
+                  overlayClassName="rectangle"
+                  placement="top"
+                  overlayStyle={{ maxWidth: '360px' }}
+                  title={`Please turn on "Enable Testnets" under "More" before connecting to testnets`}
+                  arrowPointAtCenter
+                >
+                  <div className="w-full">
+                    <Button
+                      type="primary"
+                      size="large"
+                      onClick={() => handleAllow()}
+                      disabled
+                      block
+                      className={clsx(
+                        !connectBtnStatus.text ? 'mb-0' : 'mb-[12px]'
+                      )}
+                    >
+                      {t('Connect')}
+                    </Button>
+                  </div>
+                </Tooltip>
+              ) : (
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={() => handleAllow()}
+                  disabled={connectBtnStatus.disabled}
+                  className={clsx(
+                    !connectBtnStatus.text ? 'mb-0' : 'mb-[12px]'
+                  )}
+                >
+                  {t('Connect')}
+                </Button>
+              )}
+              {connectBtnStatus.text && (
+                <div
+                  className={clsx('security-tip', connectBtnStatus.level)}
                   style={{
-                    color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    color: SecurityLevelTipColor[connectBtnStatus.level].bg,
+                    backgroundColor:
+                      SecurityLevelTipColor[connectBtnStatus.level].bg,
                   }}
                 >
-                  {connectBtnStatus.text}
-                </span>
-              </div>
-            )}
-            <Button
-              type="primary"
-              ghost
-              className="rabby-btn-ghost"
-              size="large"
-              onClick={handleCancel}
-            >
-              {connectBtnStatus.cancelBtnText}
-            </Button>
-          </div>
-        </Footer>
+                  <img
+                    src={SecurityLevelTipColor[connectBtnStatus.level].icon}
+                    className="icon icon-level"
+                  />
+                  <span
+                    style={{
+                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    }}
+                  >
+                    {connectBtnStatus.text}
+                  </span>
+                </div>
+              )}
+
+              <Button
+                type="primary"
+                ghost
+                className="rabby-btn-ghost mt-[20px]"
+                size="large"
+                onClick={handleCancel}
+              >
+                {connectBtnStatus.cancelBtnText}
+              </Button>
+            </div>
+          </Footer>
+        </div>
         <RuleDrawer
           selectRule={selectRule}
           visible={ruleDrawerVisible}
