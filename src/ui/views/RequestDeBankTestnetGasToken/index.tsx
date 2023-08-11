@@ -76,7 +76,6 @@ const Wrapper = styled.div`
         height: 314px;
         left: 0;
         bottom: 0;
-        opacity: 0.4;
         pointer-events: none;
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
