@@ -59,7 +59,7 @@ export const useTestnetCheck = ({
         content: (
           <Content>
             <div className="title">
-              Please turn on "Enable Testnets" under "More" before connecting to
+              Please turn on "Enable Testnets" under "More" before sign on
               testnets
             </div>
             <Button

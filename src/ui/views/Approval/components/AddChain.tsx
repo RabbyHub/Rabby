@@ -3,7 +3,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS_LIST, Chain } from '@debank/common';
 import { useSetState } from 'ahooks';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { CHAINS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
@@ -256,7 +256,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           {isShowTestnetTip ? (
             <TooltipWithMagnetArrow
               overlayClassName="rectangle"
+              overlayStyle={{ maxWidth: '305px', width: '305px' }}
               title={`Please turn on "Enable Testnets" under "More" before connecting to testnets`}
+              placement="topRight"
             >
               <span>
                 <Button
