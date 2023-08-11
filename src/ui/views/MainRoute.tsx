@@ -59,6 +59,7 @@ import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import ApprovalManagePage from './ApprovalManagePage';
+import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 
 declare global {
   interface Window {
@@ -278,6 +279,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
+        </PrivateRoute>
+        <PrivateRoute exact path="/request-debank-testnet-gas-token">
+          <RequestDeBankTestnetGasToken />
         </PrivateRoute>
       </Switch>
 
