@@ -886,14 +886,16 @@ const Settings = ({
             })}
           </div>
           <footer className="footer">
-            <img
-              className="inline-block cursor-pointer"
-              src={LogoRabby}
-              alt="https://rabby.io"
-              onClick={() => {
-                openInTab('https://rabby.io', false);
-              }}
-            />
+            <div className="px-8 py-2 rounded hover:bg-[#EEF1FF] inline-block">
+              <img
+                className="inline-block cursor-pointer"
+                src={LogoRabby}
+                alt="https://rabby.io"
+                onClick={() => {
+                  openInTab('https://rabby.io', false);
+                }}
+              />
+            </div>
           </footer>
           <Contacts
             visible={contactsVisible}
