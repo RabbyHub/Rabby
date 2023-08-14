@@ -5,7 +5,6 @@ const LessPalette = {
   "@primary-text-color": "#7084ff",
   "@light-purple": "#826fff",
   "@primary-linear": "linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%)",
-  "@primary-disabled-linear": "linear-gradient(    0deg,    rgba(255, 255, 255, 0.4),    rgba(255, 255, 255, 0.4)  ),  #7084ff",
   "@color-green": "#27c193",
   "@color-orange": "#ffb020",
   "@color-red": "#ec5151",
