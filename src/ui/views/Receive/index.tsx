@@ -175,7 +175,7 @@ const Receive = () => {
                 history.goBack();
               }}
             >
-              Cancel
+              {t('global.Cancel')}
             </Button>
             <Button
               type="primary"
@@ -186,7 +186,7 @@ const Receive = () => {
                 modal.destroy();
               }}
             >
-              Confirm
+              {t('global.Confirm')}
             </Button>
           </div>
         </div>

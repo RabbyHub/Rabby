@@ -46,19 +46,19 @@ export const PreferMetamaskDapps = () => {
   const handleRemovePrefeMask = async (site: ConnectedSite) => {
     await wallet.removePreferMetamask(site.origin);
     runAsync();
-    message.success('Deleted');
+    message.success(t('global.Deleted'));
   };
 
   const handleAdd = () => {
     Popup.info({
-      title: 'How to Add',
+      title: t('page.preferMetamaskDapps.howToAdd'),
       closable: true,
       className: 'prefer-metamask-popup',
       height: 270,
       content: (
         <div className="content">
           <div className="info">
-            Right click on the website and find this option
+            {t('page.preferMetamaskDapps.howToAddDesc')}
           </div>
           <img src={contextMenuImage} alt="" />
         </div>
@@ -69,11 +69,8 @@ export const PreferMetamaskDapps = () => {
   return (
     <div className="page-prefer-metamask-dapps">
       <header className="header">
-        <PageHeader>{t('MetaMask Preferred Dapps')}</PageHeader>
-        <div className="desc">
-          The following dapps will remain connected through MetaMask, regardless
-          of the wallet you've flipped to
-        </div>
+        <PageHeader>{t('page.preferMetamaskDapps.title')}</PageHeader>
+        <div className="desc">{t('page.preferMetamaskDapps.desc')}</div>
       </header>
       {sites?.length ? (
         <div className="content">
@@ -92,7 +89,7 @@ export const PreferMetamaskDapps = () => {
       )}
       <footer className="footer">
         <Button type="primary" onClick={handleAdd}>
-          How to Add
+          {t('page.preferMetamaskDapps.howToAdd')}
         </Button>
       </footer>
     </div>

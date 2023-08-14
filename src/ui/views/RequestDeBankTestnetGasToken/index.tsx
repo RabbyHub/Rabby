@@ -253,8 +253,8 @@ const RequestDeBankTestnetGasToken = () => {
       <div className="header-bg" />
       <div className="body">
         <PageHeader className="pt-[24px]" invertBack>
-          <span className="title">Request DeBank Testnet Gas Token</span>
-          {/* {t('page.RequestDebankTestnetGasToken.title')} */}
+          <span className="title"></span>
+          {t('page.requestDebankTestnetGasToken.title')}
         </PageHeader>
 
         {initLoading && <Loading />}
@@ -269,13 +269,15 @@ const RequestDeBankTestnetGasToken = () => {
           <CurrentAccount />
           {mintedRabbyBadge ? (
             <div className="tip">
-              Rabby Badge holders can request once a day
+              {t('page.requestDebankTestnetGasToken.mintedTip')}
             </div>
           ) : (
             <>
               <div className="badgeTip">
                 <img src={imgInfo} className="w-16" />
-                <span>Request available for Rabby Badge holders only</span>
+                <span>
+                  {t('page.requestDebankTestnetGasToken.notMintedTip')}
+                </span>
               </div>
               <Button
                 className="claimBtn"
@@ -283,7 +285,7 @@ const RequestDeBankTestnetGasToken = () => {
                 block
                 onClick={() => setBadgeModalVisible(true)}
               >
-                Claim Rabby Badge
+                {t('page.requestDebankTestnetGasToken.claimBadgeBtn')}
               </Button>
             </>
           )}
@@ -291,10 +293,14 @@ const RequestDeBankTestnetGasToken = () => {
             <img src={imgDeBankTestnet} className="title" />
             <img src={imgUsd} className="usd" />
             <div className="value">0.1 USD</div>
-            <div className="time">Per day</div>
+            <div className="time">
+              {t('page.requestDebankTestnetGasToken.time')}
+            </div>
 
             {requested ? (
-              <div className="requestedTip">You have requested today</div>
+              <div className="requestedTip">
+                {t('page.requestDebankTestnetGasToken.requested')}
+              </div>
             ) : (
               <Button
                 block
@@ -303,7 +309,7 @@ const RequestDeBankTestnetGasToken = () => {
                 disabled={!mintedRabbyBadge || loading}
                 onClick={requestFaucet}
               >
-                <span>Request</span>{' '}
+                <span>{t('page.requestDebankTestnetGasToken.requestBtn')}</span>{' '}
                 {loading && (
                   <img src={imgLoading} className="animate-spin w-14" />
                 )}

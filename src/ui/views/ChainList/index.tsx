@@ -70,11 +70,11 @@ const ChainList = () => {
           [
             {
               key: 'mainnet',
-              label: `Mainnets (${mainnet.length})`,
+              label: `${t('page.chainList.mainnet')} (${mainnet.length})`,
             },
             {
               key: 'testnet',
-              label: `Testnets (${testnet.length})`,
+              label: `${t('page.chainList.testnet')} (${testnet.length})`,
             },
           ] as const
         }

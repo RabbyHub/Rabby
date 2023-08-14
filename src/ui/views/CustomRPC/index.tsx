@@ -14,6 +14,7 @@ import IconDelete from 'ui/assets/custom-rpc/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 import { findChainByEnum } from '@/utils/chain';
+import { useTranslation } from 'react-i18next';
 
 const RPCItemWrapper = styled.div`
   background: #ffffff;
@@ -105,6 +106,7 @@ const RPCItemComp = ({
   onEdit(item: { id: CHAINS_ENUM; rpc: RPCItem }): void;
 }) => {
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const chainItem = useMemo(() => {
     return findChainByEnum(item.id);
@@ -126,7 +128,7 @@ const RPCItemComp = ({
         <div>
           <div className="flex gap-4 mb-4">
             <img src={IconSuccess} alt="" />
-            {val ? 'Opened' : 'Closed'}
+            {val ? t('page.customRpc.opened') : t('page.customRpc.closed')}
           </div>
         </div>
       ),
@@ -147,7 +149,7 @@ const RPCItemComp = ({
         <div>
           <div className="flex gap-4 mb-4">
             <img src={IconSuccess} alt="" />
-            Deleted
+            {t('global.Deleted')}
           </div>
         </div>
       ),
@@ -181,6 +183,7 @@ const RPCItemComp = ({
 };
 
 const CustomRPC = () => {
+  const { t } = useTranslation();
   const { customRPC } = useRabbySelector((s) => ({
     ...s.customRPC,
   }));
@@ -268,17 +271,18 @@ const CustomRPC = () => {
         alt="no address"
       />
       <p className="text-gray-content text-14 text-center font-medium">
-        No custom RPC
+        {t('page.customRpc.empty')}
       </p>
     </div>
   );
 
   return (
     <div className="custom-rpc">
-      <PageHeader className="pt-[24px] mx-[20px] mb-16">Custom RPC</PageHeader>
+      <PageHeader className="pt-[24px] mx-[20px] mb-16">
+        {t('page.customRpc.title')}
+      </PageHeader>
       <p className="text-gray-subTitle text-14 mb-20 px-20">
-        Enabling custom RPC will replace Rabby as the default node. To continue
-        using Rabby, please disable or remove the custom RPC node.
+        {t('page.customRpc.desc')}
       </p>
       {rpcList.length <= 0 ? (
         NoAddressUI
@@ -296,7 +300,7 @@ const CustomRPC = () => {
           className="w-[172px]"
           onClick={handleClickAdd}
         >
-          Add RPC
+          {t('page.customRpc.add')}
         </Button>
       </Footer>
       <ChainSelectorModal

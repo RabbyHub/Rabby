@@ -40,7 +40,9 @@
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
     "appDescription": "",
-    "appName": ""
+    "appName": "",
+    "Deleted": "Deleted",
+    "Loading": "Loading"
   },
   "page": {
     "transactions": {
@@ -225,7 +227,8 @@
           "okText": "查看教程",
           "successTip": "您正在使用最新版本"
         },
-        "warning": "警告"
+        "warning": "警告",
+        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -305,7 +308,9 @@
       }
     },
     "chainList": {
-      "title": "支持 {{count}} 条链"
+      "title": "支持 {{count}} 条链",
+      "mainnet": "主网",
+      "testnet": "测试网"
     },
     "nft": {
       "floorPrice": "/ 底价:",
@@ -1278,6 +1283,35 @@
       "please-input-address-note": "请输入地址备注",
       "qr-code": "二维码",
       "source": "来源"
+    },
+    "preferMetamaskDapps": {
+      "title": "MetaMask 优先 Dapps"
+    },
+    "customRpc": {
+      "title": "自定义 RPC",
+      "desc": "添加的自定义RPC将替代Rabby默认的节点。如果想要继续用Rabby的节点，请关闭或删除自定义RPC节点。",
+      "add": "添加自定义 RPC",
+      "empty": "No custom RPC",
+      "opened": "Opened",
+      "closed": "Closed",
+      "EditRPCModal": {
+        "invalidRPCUrl": "Invalid RPC URL",
+        "invalidChainId": "Invalid Chain ID",
+        "rpcAuthFailed": "RPC authentication failed",
+        "title": "Edit RPC",
+        "rpcUrl": "RPC URL",
+        "rpcUrlPlaceholder": "Enter the RPC URL"
+      }
+    },
+    "requestDebankTestnetGasToken": {
+      "title": "Request DeBank Testnet Gas Token",
+      "desc": "Rabby Badge holders can request once a day",
+      "mintedTip": "Rabby Badge holders can request once a day",
+      "notMintedTip": "Request available for Rabby Badge holders only",
+      "claimBadgeBtn": "Claim Rabby Badge",
+      "time": "Per day",
+      "requestBtn": "Request",
+      "requested": "You have requested today"
     }
   },
   "component": {

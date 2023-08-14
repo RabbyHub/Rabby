@@ -467,8 +467,7 @@ const RequestDeBankTestnetGasToken = () => {
           }}
           className="text-[#FF6238] bg-[#FFF4F1] font-medium hover:border-[#FF6238]"
         >
-          Request DeBank Testnet Gas Token
-          {/* {t('page.dashboard.settings.request-debank-testnet-gas-token')} */}
+          {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
         </Field>
       </div>
     </div>

@@ -13,7 +13,9 @@
       }
     },
     "chainList": {
-      "title": "{{count}} chains supported"
+      "title": "{{count}} chains supported",
+      "mainnet": "Mainnets",
+      "testnet": "Testnets"
     },
     "signTx": {
       "nftIn": "NFT in",
@@ -784,7 +786,8 @@
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
-        "confirm": ""
+        "confirm": "",
+        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
@@ -1242,6 +1245,37 @@
       "hd-path": "HD Path",
       "manage-seed-phrase": "Manage Seed Phrase",
       "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase"
+    },
+    "preferMetamaskDapps": {
+      "title": "MetaMask Preferred Dapps",
+      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
+      "howToAdd": "How to Add",
+      "howToAddDesc": "Right click on the website and find this option"
+    },
+    "customRpc": {
+      "opened": "Opened",
+      "closed": "Closed",
+      "empty": "No custom RPC",
+      "title": "Custom RPC",
+      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
+      "add": "Add RPC",
+      "EditRPCModal": {
+        "invalidRPCUrl": "Invalid RPC URL",
+        "invalidChainId": "Invalid Chain ID",
+        "rpcAuthFailed": "RPC authentication failed",
+        "title": "Edit RPC",
+        "rpcUrl": "RPC URL",
+        "rpcUrlPlaceholder": "Enter the RPC URL"
+      }
+    },
+    "requestDebankTestnetGasToken": {
+      "title": "Request DeBank Testnet Gas Token",
+      "mintedTip": "Rabby Badge holders can request once a day",
+      "notMintedTip": "Request available for Rabby Badge holders only",
+      "claimBadgeBtn": "Claim Rabby Badge",
+      "time": "Per day",
+      "requested": "You have requested today",
+      "requestBtn": "Request"
     }
   },
   "component": {
@@ -1441,7 +1475,8 @@
     "editButton": "Edit",
     "addButton": "Add",
     "closeButton": "Close",
-    "Deleted": "Deleted"
+    "Deleted": "Deleted",
+    "Loading": "Loading"
   },
   "background": {
     "error": {
