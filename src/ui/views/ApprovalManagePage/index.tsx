@@ -452,7 +452,13 @@ function getColumnsForContract({
     },
     // My Approval Time
     {
-      title: () => <span>{'My Approval Time'}</span>,
+      title: () => (
+        <span>
+          {t(
+            'page.approvals.tableConfig.byContracts.columnTitle.myApprovalTime'
+          )}
+        </span>
+      ),
       key: 'contractApprovalTime',
       dataIndex: 'last_approve_at',
       sortDirections: [...DEFAULT_SORT_ORDER_TUPLE],

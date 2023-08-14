@@ -169,7 +169,9 @@ export const Quotes = ({
         )}
 
         <div className="text-13 text-gray-content">
-          {t('page.swap.directlySwap')}
+          {t('page.swap.directlySwap', {
+            tokenName: other.receiveToken.name,
+          })}
         </div>
       </div>
     );

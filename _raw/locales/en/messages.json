@@ -442,6 +442,10 @@
         "ApprovalContractItem": {
           "ApprovalCount_one": "Approval",
           "ApprovalCount_other": "Approvals"
+        },
+        "RevokeButton": {
+          "btnText_zero": "Revoke",
+          "btnText_other": "Revoke ({{count}})"
         }
       },
       "search": {
@@ -453,7 +457,8 @@
             "contract": "Contract",
             "contractTrustValue": "Contract Trust value",
             "revokeTrends": "24h Revoke Trends",
-            "myApprovedAssets": "My Approved Assets"
+            "myApprovedAssets": "My Approved Assets",
+            "myApprovalTime": "My Approval Time"
           },
           "columnTip": {
             "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
