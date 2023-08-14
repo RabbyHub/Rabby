@@ -74,7 +74,7 @@ const RPCItemWrapper = styled.div`
     }
   }
   &:hover {
-    background: rgba(134, 151, 255, 0.1);
+    background: var(--blue-light, #eef1ff);
     border: 1px solid var(--brand-default, #7084ff);
     border-radius: 6px;
     .operation {

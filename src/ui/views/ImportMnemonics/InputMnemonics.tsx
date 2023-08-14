@@ -13,7 +13,7 @@ import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
 
 const Toptip = styled.div`
-  background: rgba(134, 151, 255, 0.1);
+  background: var(--blue-light, #eef1ff);
   border-radius: 4px;
   padding: 9px 17px;
 
