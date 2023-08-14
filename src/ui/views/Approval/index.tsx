@@ -43,7 +43,7 @@ const Approval: React.FC<{
 
   if (!approval) return <></>;
   const { data } = approval;
-  const { approvalComponent, params, origin, requestDefer } = data;
+  const { approvalComponent, params, origin } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (

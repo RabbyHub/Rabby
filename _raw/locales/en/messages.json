@@ -217,7 +217,12 @@
         "howToSwitch": "How to switch",
         "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
         "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
-        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet"
+        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
+        "latency": "Latency",
+        "requestSuccessToast": "Request successfully sent.",
+        "sendingRequest": "Sending signing request",
+        "signOnYourMobileWallet": "Please sign on your mobile wallet.",
+        "requestFailedToSend": "Signing request failed to send"
       },
       "beginSigning": "Begin signing process",
       "addressTip": {
@@ -231,7 +236,35 @@
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
         "safe": "Safe address"
-      }
+      },
+      "qrcode": {
+        "signWith": "Sign with {{brand}}",
+        "failedToGetExplain": "Failed to get explain",
+        "txFailed": "Transaction failed",
+        "sigReceived": "Signature received",
+        "sigCompleted": "Signature completed",
+        "getSig": "Get signature",
+        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
+        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "unknownQRCode": "Error: We couldn't identify that QR code",
+        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
+      },
+      "ledger": {
+        "resent": "Resent",
+        "signError": "Ledger sign error:",
+        "notConnected": "Your wallet is not connected. Please re-connect.",
+        "siging": "Sending signing request...",
+        "txRejected": "Transaction rejected",
+        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
+        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
+        "txRejectedByLedger": "Transaction is rejected on your Ledger",
+        "blindSigTutorial": "Blind Signature Tutorial from Ledger"
+      },
+      "common": {
+        "notSupport": "{{0}} is not supported"
+      },
+      "resend": "Resend",
+      "submitTx": "Submit Transaction"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",

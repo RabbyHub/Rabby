@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { useSessionNetworkStatus } from '@/ui/component/WalletConnect/useSessionNetworkStatus';
 import FastSVG from 'ui/assets/connect/fast.svg';
@@ -13,6 +14,7 @@ export interface Props {
 
 export const NetworkStatus: React.FC<Props> = ({ account, className }) => {
   const { status, delay } = useSessionNetworkStatus(account);
+  const { t } = useTranslation();
 
   const iconUrl = React.useMemo(() => {
     switch (status) {
@@ -30,7 +32,11 @@ export const NetworkStatus: React.FC<Props> = ({ account, className }) => {
     <div className={className}>
       <Tooltip
         placement="right"
-        title={<div className="text-white">Latency {delay}ms</div>}
+        title={
+          <div className="text-white">
+            {t('page.signFooterBar.walletConnect.latency')} {delay}ms
+          </div>
+        }
       >
         <img src={iconUrl} className="w-[20px] h-[20px]" />
       </Tooltip>
