@@ -107,7 +107,7 @@ const RuleDrawerWrapper = styled.div`
         }
         &.checked {
           .rabby-checkbox {
-            background-color: #8697ff !important;
+            background-color: var(--brand-default, #7084ff) !important;
             border: none;
           }
         }

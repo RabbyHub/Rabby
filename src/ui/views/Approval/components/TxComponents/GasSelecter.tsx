@@ -111,18 +111,18 @@ const CardBody = styled.div<{
             cursor: pointer;
 
             &:hover {
-              border: 1px solid #8697ff;
+              border: 1px solid var(--brand-default, #7084ff);
             }
 
             &.active {
               background: rgba(134, 151, 255, 0.1);
-              border: 1px solid #8697ff;
+              border: 1px solid var(--brand-default, #7084ff);
             }
           }
 
           .cardTitle {
             &.active {
-              color: #8697ff !important;
+              color: var(--brand-default, #7084ff) !important;
             }
           }
         `}
@@ -160,7 +160,7 @@ const CardBody = styled.div<{
       color: ${LessPalette['@color-title']};
       padding-top: 0;
       &.active {
-        color: #8697ff !important;
+        color: var(--brand-default, #7084ff) !important;
       }
     }
     .ant-input:focus,

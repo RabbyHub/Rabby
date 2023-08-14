@@ -243,7 +243,10 @@ export const ConfirmDrawer = ({
             )}
             {loading && (
               <div className="flex flex-col items-center justify-center pt-[80px]">
-                <SvgIconLoading className="animate-spin" fill="#8697FF" />
+                <SvgIconLoading
+                  className="animate-spin"
+                  fill="var(--brand-default, #7084ff)"
+                />
                 <div className="mt-12">{t('Loading Tokens')}</div>
               </div>
             )}

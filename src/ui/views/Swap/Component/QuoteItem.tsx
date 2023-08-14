@@ -82,10 +82,10 @@ const ItemWrapper = styled.div`
         rgba(134, 151, 255, 0.1)
       ),
       #ffffff;
-    border: 1px solid #8697ff;
+    border: 1px solid var(--brand-default, #7084ff);
   }
   &.active {
-    outline: 2px solid #8697ff;
+    outline: 2px solid var(--brand-default, #7084ff);
   }
   &.disabled {
     height: 56px;

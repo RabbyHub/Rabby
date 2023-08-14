@@ -257,7 +257,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             <TooltipWithMagnetArrow
               overlayClassName="rectangle"
               overlayStyle={{ maxWidth: '305px', width: '305px' }}
-              title={`Please turn on "Enable Testnets" under "More" before connecting to testnets`}
+              title={
+                'Please turn on "Enable Testnets" under "More" before connecting to testnets'
+              }
               placement="topRight"
             >
               <span>
