@@ -235,7 +235,9 @@ class LedgerBridgeKeyring extends EventEmitter {
             });
           }
         }
-        Sentry.captureException(e);
+        if (!e.message?.includes('The device is already open')) {
+          Sentry.captureException(e);
+        }
       }
     }
   }

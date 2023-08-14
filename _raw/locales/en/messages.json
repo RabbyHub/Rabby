@@ -189,7 +189,7 @@
       "popularity": "Popularity",
       "contractPopularity": "No.{{0}} on {{1}}",
       "addressNote": "Address note",
-      "myMark": "My mark",
+      "myMark": "My mark on {{chainName}} contract",
       "collectionTitle": "Collection",
       "addressTypeTitle": "Address type",
       "firstOnChain": "First on-chain",
@@ -774,7 +774,8 @@
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Custom RPC",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
-          "currentLanguage": "Current Language"
+          "currentLanguage": "Current Language",
+          "enableTestnets": "Enable Testnets"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1159,7 +1160,8 @@
     },
     "switchChain": {
       "title": "Switching to {{chain}}",
-      "chainNotSupport": "The requested chain is not supported by Rabby yet"
+      "chainNotSupport": "The requested chain is not supported by Rabby yet",
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
     },
     "signText": {
       "title": "Sign Text",

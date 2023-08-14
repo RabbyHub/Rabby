@@ -1,3 +1,4 @@
+import { SIGN_PERMISSION_TYPES } from './../../constant/index';
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
@@ -15,6 +16,7 @@ export interface ConnectedSite {
   order?: number;
   isConnected: boolean;
   preferMetamask?: boolean;
+  signPermission?: SIGN_PERMISSION_TYPES;
 }
 
 export type PermissionStore = {
@@ -85,6 +87,16 @@ class PermissionService {
     this.sync();
   };
 
+  /**
+   * @deprecated
+   *
+   * @param origin
+   * @param name
+   * @param icon
+   * @param defaultChain
+   * @param isSigned
+   * @returns
+   */
   addConnectedSite = (
     origin: string,
     name: string,
@@ -102,6 +114,36 @@ class PermissionService {
       isSigned,
       isTop: false,
       isConnected: true,
+    });
+    this.sync();
+  };
+
+  addConnectedSiteV2 = ({
+    origin,
+    name,
+    icon,
+    defaultChain,
+    isSigned = false,
+    signPermission,
+  }: {
+    origin: string;
+    name: string;
+    icon: string;
+    defaultChain: CHAINS_ENUM;
+    isSigned?: boolean;
+    signPermission?: SIGN_PERMISSION_TYPES;
+  }) => {
+    if (!this.lruCache) return;
+
+    this.lruCache.set(origin, {
+      origin,
+      name,
+      icon,
+      chain: defaultChain,
+      isSigned,
+      isTop: false,
+      isConnected: true,
+      signPermission,
     });
     this.sync();
   };

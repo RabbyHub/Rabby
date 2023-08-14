@@ -12,6 +12,8 @@ import { useHistory } from 'react-router-dom';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import IconArrowBlueRight from 'ui/assets/dashboard/settings/icon-right-arrow-blue.svg';
+import IconArrowOrangeRight from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
+import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
@@ -446,6 +448,33 @@ const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
+const RequestDeBankTestnetGasToken = () => {
+  const { t } = useTranslation();
+  const history = useHistory();
+  return (
+    <div className="setting-block mt-8">
+      <div className="setting-items">
+        <Field
+          leftIcon={<img src={IconSettingsDeBank} className="w-28 h-28" />}
+          rightIcon={
+            <img
+              src={IconArrowOrangeRight}
+              className="icon icon-arrow-right w-20 h-20"
+            />
+          }
+          onClick={() => {
+            history.push('/request-debank-testnet-gas-token');
+          }}
+          className="text-[#FF6238] bg-[#FFF4F1] font-medium hover:border-[#FF6238]"
+        >
+          Request DeBank Testnet Gas Token
+          {/* {t('page.dashboard.settings.request-debank-testnet-gas-token')} */}
+        </Field>
+      </div>
+    </div>
+  );
+};
+
 type SettingItem = {
   leftIcon: string;
   content: React.ReactNode;
@@ -671,7 +700,7 @@ const Settings = ({
         },
         {
           leftIcon: IconTestnet,
-          content: t('page.dashboard.settings.settings.showTestnets'),
+          content: t('page.dashboard.settings.settings.enableTestnets'),
           rightIcon: (
             <Switch
               checked={isShowTestnet}
@@ -980,6 +1009,7 @@ const Settings = ({
               {'Lock Wallet'}
             </Button> */}
             <ClaimRabbyBadge onClick={onOpenBadgeModal} />
+            <RequestDeBankTestnetGasToken />
             {Object.values(renderData).map((group, idxl1) => {
               return (
                 <div key={`g-${idxl1}`} className="setting-block">
@@ -1012,7 +1042,16 @@ const Settings = ({
             })}
           </div>
           <footer className="footer">
-            <img src={LogoRabby} alt="" />
+            <div className="px-8 py-2 rounded hover:bg-[#EEF1FF] inline-block">
+              <img
+                className="inline-block cursor-pointer"
+                src={LogoRabby}
+                alt="https://rabby.io"
+                onClick={() => {
+                  openInTab('https://rabby.io', false);
+                }}
+              />
+            </div>
           </footer>
           <Contacts
             visible={contactsVisible}

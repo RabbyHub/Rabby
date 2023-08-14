@@ -19,7 +19,7 @@ import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as MnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink.svg';
 import { ReactComponent as GridPlusSVG } from '@/ui/assets/walletlogo/gridplus.svg';
-import { ReactComponent as KeyStoneSVG } from '@/ui/assets/walletlogo/keystone.svg';
+import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
 import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
 import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
@@ -145,7 +145,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
       <div className="HDManager relative">
         <main>
           <div className="logo">
-            <Logo className="icon" />
+            {typeof Logo === 'string' ? (
+              <img src={Logo} className="icon" />
+            ) : (
+              <Logo className="icon" viewBox="0 0 28px 28px" />
+            )}
             <span className="title">{name}</span>
           </div>
           <Manager brand={brand} />

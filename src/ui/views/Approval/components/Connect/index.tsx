@@ -7,7 +7,12 @@ import i18n from '@/i18n';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS, SecurityEngineLevel } from 'consts';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  SecurityEngineLevel,
+  SIGN_PERMISSION_TYPES,
+} from 'consts';
 import styled from 'styled-components';
 import {
   ContextActionData,
@@ -21,6 +26,8 @@ import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
+import { SignTestnetPermission } from './SignTestnetPermission';
+import { useRabbySelector } from '@/ui/store';
 
 interface ConnectProps {
   params: any;
@@ -213,6 +220,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     level?: Level;
     ignored: boolean;
   } | null>(null);
+
+  const [signPermission, setSignPermission] = useState<SIGN_PERMISSION_TYPES>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -450,6 +459,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let level: 'very_low' | 'low' | 'medium' | 'high' = 'low';
     let collectList: { name: string; logo_url: string }[] = [];
     let defaultChain = CHAINS_ENUM.ETH;
+    let isShowTestnet = false;
     const queue = new PQueue();
     const waitQueueFinished = (q: PQueue) => {
       return new Promise((resolve) => {
@@ -494,6 +504,13 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         console.log(e);
       }
     });
+    queue.add(async () => {
+      try {
+        isShowTestnet = await wallet.getIsShowTestnet();
+      } catch (e) {
+        console.log(e);
+      }
+    });
     await waitQueueFinished(queue);
     setOriginPopularLevel(level);
     setCollectList(collectList);
@@ -510,8 +527,11 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
     setEngineResults(results);
     if (site) {
-      setDefaultChain(site.chain);
       setIsLoading(false);
+      if (!isShowTestnet && CHAINS[site.chain]?.isTestnet) {
+        return;
+      }
+      setDefaultChain(site.chain);
       return;
     }
     setIsLoading(false);
@@ -528,6 +548,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
+      signPermission,
     });
   };
 
@@ -628,53 +649,58 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
             }
           })}
         </div>
-
-        <Footer>
-          <div className="action-buttons flex flex-col mt-4 items-center">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => handleAllow()}
-              disabled={connectBtnStatus.disabled}
-              className={clsx({
-                'mb-0': !connectBtnStatus.text,
-              })}
-            >
-              {t('page.connect.connectBtn')}
-            </Button>
-            {connectBtnStatus.text && (
-              <div
-                className={clsx('security-tip', connectBtnStatus.level)}
-                style={{
-                  color: SecurityLevelTipColor[connectBtnStatus.level].bg,
-                  backgroundColor:
-                    SecurityLevelTipColor[connectBtnStatus.level].bg,
-                }}
+        <div>
+          <SignTestnetPermission
+            value={signPermission}
+            onChange={(v) => setSignPermission(v)}
+          />
+          <Footer>
+            <div className="action-buttons flex flex-col mt-4 items-center">
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => handleAllow()}
+                disabled={connectBtnStatus.disabled}
+                className={clsx({
+                  'mb-0': !connectBtnStatus.text,
+                })}
               >
-                <img
-                  src={SecurityLevelTipColor[connectBtnStatus.level].icon}
-                  className="icon icon-level"
-                />
-                <span
+                {t('page.connect.connectBtn')}
+              </Button>
+              {connectBtnStatus.text && (
+                <div
+                  className={clsx('security-tip', connectBtnStatus.level)}
                   style={{
-                    color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    color: SecurityLevelTipColor[connectBtnStatus.level].bg,
+                    backgroundColor:
+                      SecurityLevelTipColor[connectBtnStatus.level].bg,
                   }}
                 >
-                  {connectBtnStatus.text}
-                </span>
-              </div>
-            )}
-            <Button
-              type="primary"
-              ghost
-              className="rabby-btn-ghost"
-              size="large"
-              onClick={handleCancel}
-            >
-              {connectBtnStatus.cancelBtnText}
-            </Button>
-          </div>
-        </Footer>
+                  <img
+                    src={SecurityLevelTipColor[connectBtnStatus.level].icon}
+                    className="icon icon-level"
+                  />
+                  <span
+                    style={{
+                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    }}
+                  >
+                    {connectBtnStatus.text}
+                  </span>
+                </div>
+              )}
+              <Button
+                type="primary"
+                ghost
+                className="rabby-btn-ghost"
+                size="large"
+                onClick={handleCancel}
+              >
+                {connectBtnStatus.cancelBtnText}
+              </Button>
+            </div>
+          </Footer>
+        </div>
         <RuleDrawer
           selectRule={selectRule}
           visible={ruleDrawerVisible}

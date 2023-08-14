@@ -67,6 +67,8 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
+import { useTestnetCheck } from '../hooks/useTestnetCheck';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -716,6 +718,24 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
+
+  useSignPermissionCheck({
+    origin,
+    chainId,
+    onDisconnect: () => {
+      handleCancel();
+    },
+    onOk: () => {
+      handleCancel();
+    },
+  });
+
+  useTestnetCheck({
+    chainId,
+    onOk: () => {
+      handleCancel();
+    },
+  });
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:

@@ -11,7 +11,12 @@ import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import {
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  CHAINS,
+} from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignComponent } from './SignText';
@@ -33,6 +38,8 @@ import {
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
+import { useTestnetCheck } from '../hooks/useTestnetCheck';
 
 interface SignTypedDataProps {
   method: string;
@@ -68,6 +75,27 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
+  const [currentChainId, setCurrentChainId] = useState<
+    number | string | undefined
+  >(undefined);
+
+  useSignPermissionCheck({
+    origin: params.session.origin,
+    chainId: currentChainId,
+    onOk: () => {
+      handleCancel();
+    },
+    onDisconnect: () => {
+      handleCancel();
+    },
+  });
+
+  useTestnetCheck({
+    chainId: currentChainId,
+    onOk: () => {
+      handleCancel();
+    },
+  });
   const [
     actionRequireData,
     setActionRequireData,
@@ -169,6 +197,22 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
     return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
+
+  const getCurrentChainId = async () => {
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      const site = await wallet.getConnectedSite(params.session.origin);
+      if (site) {
+        return CHAINS[site.chain].id;
+      }
+    } else {
+      return chain?.id;
+    }
+  };
+  useEffect(() => {
+    getCurrentChainId().then((id) => {
+      setCurrentChainId(id);
+    });
+  }, [params.session.origin]);
 
   const { value: typedDataActionData, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
@@ -348,6 +392,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      const site = await wallet.getConnectedSite(params.session.origin);
+      if (site) {
+        data.chainId = CHAINS[site.chain].id.toString();
+      }
+    }
     if (currentAccount) {
       const requireData = await fetchRequireData(
         data,
@@ -469,6 +519,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           hasShadow={footerShowShadow}
           origin={params.session.origin}
           originLogo={params.session.icon}
+          chain={chain}
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}
           securityLevel={securityLevel}

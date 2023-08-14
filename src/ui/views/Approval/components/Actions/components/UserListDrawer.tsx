@@ -173,7 +173,9 @@ export default ({
     ),
     height: 240,
     closable: true,
-    title: i18n.t('page.signTx.myMark'),
+    title: i18n.t('page.signTx.myMark', {
+      chainName: chain.name,
+    }),
     className: 'user-list-drawer',
     onClose: () => destroy(),
     onCancel: () => destroy(),
