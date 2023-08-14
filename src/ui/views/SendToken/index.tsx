@@ -53,7 +53,6 @@ import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
-import LessPalette from '@/ui/style/var-defs';
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -882,7 +881,7 @@ const SendToken = () => {
                   <span
                     onClick={handleClickAddContact}
                     className={clsx('ml-[2px] underline cursor-pointer')}
-                    style={{ color: LessPalette['@primary-text-color'] }}
+                    style={{ color: 'var(--brand-default, #7084ff)' }}
                   >
                     Add to contacts
                   </span>

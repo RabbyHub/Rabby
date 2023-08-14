@@ -1,4 +1,3 @@
-import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import React, {
   ComponentPropsWithoutRef,
@@ -38,7 +37,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: ${LessPalette['@primary-color']};
+            border-color: var(--brand-default, #7084ff);
           }
         `
       : ''}

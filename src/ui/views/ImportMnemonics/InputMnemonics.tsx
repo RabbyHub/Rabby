@@ -22,7 +22,7 @@ const Toptip = styled.div`
   font-size: 13px;
   line-height: 14px;
 
-  color: ${LessPalette['@primary-color']};
+  color: var(--brand-default, #7084ff);
 `;
 
 const FormItemWrapper = styled.div`

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { Field, StrayPage } from 'ui/component';
 
 import EntryImportAddressLogo from 'ui/assets/import/entry-import-address.svg';
-import ArrowLeftWhiteBack from 'ui/assets/import/arrow-left-white.svg';
 
 import IconMnemonics from 'ui/assets/import/mnemonics.svg';
 import IconPrivatekey from 'ui/assets/import/privatekey.svg';
@@ -13,10 +12,8 @@ import IconKeystore from 'ui/assets/import/keystore.svg';
 
 import IconEntryRightIcon from 'ui/assets/import/entry-right-icon.svg';
 
-import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
-import LessPalette from '@/ui/style/var-defs';
 import IconBack from 'ui/assets/icon-back.svg';
 import { openInternalPageInTab } from '@/ui/utils';
 
@@ -27,7 +24,7 @@ const ActionEntries = styled.div`
     border: 1px solid #ffffff;
 
     &:hover {
-      border-color: ${LessPalette['@primary-color']};
+      border-color: var(--brand-default, #7084ff);
       background: rgba(134, 151, 255, 0.1);
     }
 
