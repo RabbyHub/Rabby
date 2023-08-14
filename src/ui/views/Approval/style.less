@@ -275,11 +275,11 @@
       }
 
       &.pass {
-        color: @primary-color;
-        background-color: fade(@primary-color, 10%);
+        color: var(--brand-default, #7084ff);
+        background-color: fade(#7084ff, 10%);
         .icon-question-mark {
           path:first-child {
-            fill: fade(@primary-color, 60%);
+            fill: fade(#7084ff, 60%);
           }
         }
       }
@@ -536,7 +536,7 @@
         font-size: 13px;
         line-height: 15px;
         text-decoration-line: underline;
-        color: @primary-color;
+        color: var(--brand-default, #7084ff);
         cursor: pointer;
         margin-left: auto;
         flex-shrink: 0;
@@ -1268,10 +1268,10 @@
       transform: rotate(-90deg);
     }
     .ant-btn {
-      border: 1px solid @primary-color;
+      border: 1px solid var(--brand-default, #7084ff);
       border-radius: 12px;
       background-color: #fff;
-      color: @primary-color;
+      color: var(--brand-default, #7084ff);
       padding: 4px 12px;
       font-size: 12px;
       line-height: 14px;
@@ -1337,7 +1337,7 @@
       font-weight: 500;
       font-size: 13px;
       line-height: 15px;
-      color: @primary-color;
+      color: var(--brand-default, #7084ff);
       padding: 1px 6px;
       text-transform: capitalize;
     }
@@ -1355,7 +1355,7 @@
       a {
         font-size: 15px;
         line-height: 18px;
-        color: @primary-color;
+        color: var(--brand-default, #7084ff);
         padding: 8px;
         margin-right: -8px;
       }
@@ -2351,7 +2351,7 @@
     }
     &.selected {
       svg path {
-        stroke: @primary-color;
+        stroke: var(--brand-default, #7084ff);
       }
     }
   }
