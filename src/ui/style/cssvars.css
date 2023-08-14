@@ -1,10 +1,13 @@
 :root {
     /* -------------------- base define -------------------- */
     --rabby-light-blue-default: #7084ff;
+    --rabby-light-blue-default-rgba: rgba(238, 241, 255, 1);
     /* blue/light #eef1ff */
     --rabby-light-blue-light: #eef1ff;
+    --rabby-light-blue-light-rgba: rgba(238, 241, 255, 0.1);
     /* blue/disable #7084ff80 50% */
     --rabby-light-blue-disable: #7084ff80;
+    --rabby-light-blue-disable-rgba: rgba(112, 132, 255, 0.5);
     /* green/default #2abb7f */
     --rabby-light-green-default: #2abb7f;
     /* green/light #2abb7f26 15% */
@@ -50,7 +53,7 @@ html, body {
     /* -------------------- default light mode -------------------- */
     --brand-default: var(--rabby-light-blue-default);
     --blue-light: var(--rabby-light-blue-light);
-    --blue-disable: var(--rabby-light-blue-disable);
+    --blue-disable: var(--rabby-light-blue-disable-rgba);
     --green-default: var(--rabby-light-green-default);
     --green-light: var(--rabby-light-green-light);
     --orange-default: var(--rabby-light-orange-default);
