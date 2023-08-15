@@ -20,6 +20,7 @@ i18n
     defaultNS: 'translations',
     interpolation: {
       escapeValue: false, // react already safes from xss
+      skipOnVariables: true,
     },
     returnNull: false,
   });

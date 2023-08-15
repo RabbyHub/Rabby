@@ -109,7 +109,7 @@
         "comingSoon": "即将推出",
         "soon": "很快",
         "flip": "切换",
-        "metamaskIsInUseAndRabbyIsBanned": "启用 MetaMask ，禁用 Rabby",
+        "metamaskIsInUseAndRabbyIsBanned": "启用 MetaMask，禁用 Rabby",
         "rabbyIsInUseAndMetamaskIsBanned": "启用 Rabby，禁用 Metamask",
         "refreshTheWebPageToTakeEffect": "刷新网页即可生效",
         "transactionNeedsToSign": "笔交易需要签名",
@@ -121,7 +121,7 @@
         "pendingCountPlural": "{{countStr}} 待完成",
         "queue": {
           "title": "队列",
-          "count": "{{count}} 中"
+          "count": "{{count}}"
         },
         "whatsNew": "更新内容",
         "copied": "已复制",
@@ -159,12 +159,12 @@
         "claimSuccess": "领取成功",
         "enterClaimCode": "输入邀请码",
         "goToSwap": "完成兑换",
-        "imageLabel": "Rabby 徽章",
+        "imageLabel": "Rabby Badge",
         "learnMoreOnDebank": "跳转至 DeBank 领取",
         "noCode": "您尚未激活该地址的邀请码",
-        "rabbyValuedUserNo": "Rabby 价值用户 编号{{num}}",
+        "rabbyValuedUserNo": "Rabby Valued User 编号{{num}}",
         "swapTip": "您需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
-        "title": "领取 Rabby 徽章",
+        "title": "领取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
         "viewYourClaimCode": "查看您的邀请码"
       },
@@ -184,7 +184,7 @@
         "autoLockTime": "自动锁定时间",
         "backendServiceUrl": "后端服务网址",
         "cancel": "取消",
-        "claimRabbyBadge": "领取 Rabby 徽章",
+        "claimRabbyBadge": "领取 Rabby Badge",
         "clearPending": "清除待完成交易",
         "clearPendingTip1": "这将清除您所有待完成的交易。\n这可以帮助您解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题",
         "clearPendingTip2": "这不会改变您帐户中的余额，也不会要求您重新输入助记词。\n您的所有资产和帐户信息都将保持安全",
@@ -230,7 +230,7 @@
           "successTip": "您正在使用最新版本"
         },
         "warning": "警告",
-        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
+        "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -252,7 +252,7 @@
         "usdValue": "美元价值",
         "amount": "数量",
         "portfolio": {
-          "nftTips": "根据本协议认可的底价计算",
+          "nftTips": "根据本协议认可的地板价计算",
           "fractionTips": "根据链接的ERC20代币的价格进行计算"
         },
         "tokenButton": {
@@ -351,7 +351,7 @@
       "connectMobileWalletApps": "连接手机钱包",
       "connectInstitutionalWallets": "连接机构钱包",
       "createNewSeedPhrase": "创建新的助记词",
-      "importKeystore": "导入KeyStore",
+      "importKeystore": "导入 KeyStore",
       "selectImportMethod": "选择导入方式",
       "theSeedPhraseIsInvalidPleaseCheck": "助记词无效，请检查！",
       "seedPhrase": {
@@ -1151,7 +1151,7 @@
       "buyNFT": {
         "expireTime": "过期时间",
         "listOn": "挂单于",
-        "payToken": "支付代币",
+        "payToken": "卖出",
         "receiveNFT": "接收 NFT"
       },
       "contractCall": {
@@ -1255,7 +1255,7 @@
       "view-quotes": "查看报价",
       "wrap-contract": "Wrap 合约",
       "actual": "实际：",
-      "gas-fee": "煤气费：{{gasUsed}}",
+      "gas-fee": "矿工费：{{gasUsed}}",
       "estimate": "预估："
     },
     "switchChain": {
@@ -1296,55 +1296,55 @@
     },
     "preferMetamaskDapps": {
       "title": "MetaMask 优先 Dapps",
-      "howToAddDesc": "在网页空白处点击右键，找到这个选项"
+      "howToAddDesc": "在网页空白处点击右键，找到该选项"
     },
     "customRpc": {
       "title": "自定义 RPC",
       "desc": "添加的自定义RPC将替代Rabby默认的节点。如果想要继续用Rabby的节点，请关闭或删除自定义RPC节点。",
       "add": "添加自定义 RPC",
-      "empty": "No custom RPC",
-      "opened": "Opened",
-      "closed": "Closed",
+      "empty": "未添加自定义 RPC",
+      "opened": "已打开",
+      "closed": "已关闭",
       "EditRPCModal": {
-        "invalidRPCUrl": "Invalid RPC URL",
-        "invalidChainId": "Invalid Chain ID",
-        "rpcAuthFailed": "RPC authentication failed",
-        "title": "Edit RPC",
+        "invalidRPCUrl": " RPC URL 无效",
+        "invalidChainId": "Chain ID 无效",
+        "rpcAuthFailed": "RPC 验证失败",
+        "title": "编辑 RPC",
         "rpcUrl": "RPC URL",
-        "rpcUrlPlaceholder": "Enter the RPC URL"
+        "rpcUrlPlaceholder": "输入 RPC URL"
       }
     },
     "requestDebankTestnetGasToken": {
-      "title": "Request DeBank Testnet Gas Token",
-      "mintedTip": "Rabby Badge holders can request once a day",
-      "notMintedTip": "Request available for Rabby Badge holders only",
-      "claimBadgeBtn": "Claim Rabby Badge",
-      "time": "Per day",
-      "requested": "You have requested today",
-      "requestBtn": "Request"
+      "title": "获取 DeBank Testnet Gas Token",
+      "mintedTip": "Rabby Badge持有者可以每天获取一次",
+      "notMintedTip": "仅 Rabby Badge持有者可以获取",
+      "claimBadgeBtn": "领取 Rabby Badge",
+      "time": "每日额度",
+      "requested": "您今日已获取过",
+      "requestBtn": "获取"
     },
     "safeQueue": {
-      "title": "Queue",
-      "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
-      "loading": "Loading pending transactions",
-      "noData": "No pending transactions",
-      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes",
-      "accountSelectTitle": "You can submit this transaction using any address",
-      "LowerNonceError": "Transaction with nonce {{nonce}} needs to be executed first",
-      "submitBtn": "Submit transaction",
-      "unknownTx": "Unknown Transaction",
-      "cancelExplain": "Cancel {{token}} Approve for {{protocol}}",
-      "unknownProtocol": "Unknown protocol",
-      "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
-      "unlimited": "unlimited",
+      "title": "队列",
+      "sameNonceWarning": "这些交易nonce相同，无法同时完成。                   一笔交易完成后，其他交易将被替代",
+      "loading": "加载待完成交易",
+      "noData": "暂无待完成交易",
+      "loadingFaild": "由于 Safe 服务器不稳定，暂时无法获取数据，请5分钟后重试",
+      "accountSelectTitle": "你可以用任意地址提交交易",
+      "LowerNonceError": "Nonce {{nonce}} 交易需要优先完成",
+      "submitBtn": "提交交易",
+      "unknownTx": "未知交易",
+      "cancelExplain": "取消授权 {{token}} 给 {{protocol}}",
+      "unknownProtocol": "未知协议",
+      "approvalExplain": "授权 {{count}} {{token}} 给 {{protocol}}",
+      "unlimited": "无限额度",
       "action": {
-        "send": "Send"
+        "send": "发送"
       },
-      "viewBtn": "View"
+      "viewBtn": "查看"
     },
     "importSuccess": {
-      "title": "Imported Successfully",
-      "addressCount": "{{count}} addresses"
+      "title": "成功导入",
+      "addressCount": "{{count}} 个地址"
     }
   },
   "component": {
@@ -1415,7 +1415,7 @@
         "editWhitelist": "编辑白名单",
         "whitelistUpdated": "白名单已更新",
         "authModal": {
-          "title": "Save to Whitelist"
+          "title": "保存至白名单"
         }
       }
     },
@@ -1516,30 +1516,35 @@
   "background": {
     "error": {
       "noCurrentAccount": "No current account",
-      "invalidChainId": "Invalid chain id",
-      "notFindChain": "Can not find chain {{chain}}",
-      "unknownAbi": "unknown contract abi",
-      "invalidAddress": "Not a valid address",
-      "notFoundGnosisKeyring": "No Gnosis keyring found",
-      "notFoundTxGnosisKeyring": "No transaction in Gnosis keyring found",
-      "notFoundKeyring": "failed to addKeyring, keyring is undefined",
-      "addKeyring404": "failed to addKeyring, keyring is undefined",
-      "emptyAccount": "the current account is empty",
-      "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",
-      "invalidPrivateKey": "the private key is invalid",
-      "invalidJson": "the input file is invalid",
+      "invalidChainId": "无效的 chain id",
+      "notFindChain": "无法找到 {{chain}} 链",
+      "unknownAbi": "未知的合约 abi",
+      "invalidAddress": "无效地址",
+      "notFoundGnosisKeyring": "未找到 Gnosis keyring",
+      "notFoundTxGnosisKeyring": "未找到 Gnosis keyring 的交易",
+      "notFoundKeyring": "添加 Keyring 失败，未定义 keyring",
+      "addKeyring404": "添加 Keyring 失败，未定义 keyring",
+      "emptyAccount": "当前帐户为空",
+      "generateCacheAliasNames": "[GenerateCacheAliasNames]: 至少需要一个地址",
+      "invalidPrivateKey": "私钥无效",
+      "invalidJson": "输入的文件无效",
       "invalidMnemonic": "助记词无效，请检查！",
       "notFoundKeyringByAddress": "Can't find keyring by address",
-      "txPushFailed": "Transaction push failed",
-      "unlock": "you need to unlock wallet first",
-      "verifyPassword": "Cannot unlock without a previous vault",
-      "duplicateAccount": "The account you're are trying to import is duplicate"
+      "txPushFailed": "交易推送失败",
+      "unlock": "你需要先解锁钱包",
+      "canNotUnlock": "Cannot unlock without a previous vault",
+      "duplicateAccount": "地址已导入"
     },
     "transactionWatcher": {
-      "submitted": "Transaction submitted",
-      "more": "click to view more information",
-      "failed": "Transaction failed",
-      "completed": "Transaction completed"
+      "submitted": "交易已提交",
+      "more": "点击查看更多信息",
+      "failed": "交易失败",
+      "completed": "交易已完成"
+    },
+    "alias": {
+      "HdKeyring": "助记词",
+      "simpleKeyring": "私钥",
+      "watchAddressKeyring": "联系人"
     }
   }
 }

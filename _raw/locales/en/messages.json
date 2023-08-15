@@ -1573,6 +1573,11 @@
       "more": "click to view more information",
       "completed": "Transaction completed",
       "failed": "Transaction failed"
+    },
+    "alias": {
+      "HdKeyring": "Seed Phrase",
+      "simpleKeyring": "Private Key",
+      "watchAddressKeyring": "Contact"
     }
   },
   "appDescription": {

@@ -126,7 +126,7 @@ const ItemWrapper = styled.div`
     color: #707280;
     .receiveNum {
       font-size: 15px;
-      font-family: 500px;
+      /* font-family: 500px; */
       max-width: 130px;
       display: inline-block;
       overflow: hidden;

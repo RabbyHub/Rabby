@@ -253,8 +253,9 @@ const RequestDeBankTestnetGasToken = () => {
       <div className="header-bg" />
       <div className="body">
         <PageHeader className="pt-[24px]" invertBack>
-          <span className="title"></span>
-          {t('page.requestDebankTestnetGasToken.title')}
+          <span className="title">
+            {t('page.requestDebankTestnetGasToken.title')}
+          </span>
         </PageHeader>
 
         {initLoading && <Loading />}

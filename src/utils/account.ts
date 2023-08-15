@@ -12,20 +12,31 @@ export function generateAliasName({
   keyringCount?: number;
   addressCount?: number;
 }) {
+  console.log(
+    'alias --',
+    keyringType,
+    brandName,
+    t('background.alias.HdKeyring')
+  );
   if (keyringType === KEYRING_CLASS.MNEMONIC) {
-    return `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]} ${
-      keyringCount + 1
-    } #${addressCount + 1}`;
-  } else if (keyringType === KEYRING_TYPE.SimpleKeyring) {
-    return `${BRAND_ALIAN_TYPE_TEXT[keyringType] || brandName} ${
-      keyringCount + 1
+    return `${t('background.alias.HdKeyring')} ${keyringCount + 1} #${
+      addressCount + 1
     }`;
+  } else if (keyringType === KEYRING_TYPE.SimpleKeyring) {
+    return `${t('background.alias.simpleKeyring')} ${keyringCount + 1}`;
   } else {
+    if (
+      keyringType === KEYRING_TYPE.WatchAddressKeyring ||
+      brandName === KEYRING_TYPE.WatchAddressKeyring
+    ) {
+      return `${t('background.alias.watchAddressKeyring')} ${addressCount + 1}`;
+    }
     if (brandName) {
       return `${BRAND_ALIAN_TYPE_TEXT[brandName] || brandName} ${
         addressCount + 1
       }`;
     }
+
     return `${BRAND_ALIAN_TYPE_TEXT[keyringType] || brandName} ${
       addressCount + 1
     }`;
