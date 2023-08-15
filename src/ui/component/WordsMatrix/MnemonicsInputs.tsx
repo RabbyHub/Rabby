@@ -85,7 +85,7 @@ const MatrixWrapper = styled.div.withConfig<{
     &:hover,
     &:focus,
     &.ant-input-focused {
-      border-color: ${LessPalette['@primary-color']};
+      border-color: var(--brand-default, #7084ff);
     }
   }
   .visible-switch-icon-wrapper {
@@ -292,7 +292,7 @@ function MnemonicsInputs({
                         values={{ count }}
                       >
                         I have a
-                        <b style={{ color: LessPalette['@primary-color'] }}>
+                        <b style={{ color: 'var(--brand-default, #7084ff)' }}>
                           {count}
                         </b>
                         -word phrase

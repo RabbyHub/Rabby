@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { TokenItem } from 'background/service/openapi';
-import LessPalette from '@/ui/style/var-defs';
 import { formatTokenAmount } from '@/ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Trans, useTranslation } from 'react-i18next';
@@ -21,7 +20,7 @@ const GasReservedDiv = styled.div`
 
 const TokenAmount = styled.span`
   cursor: pointer;
-  color: ${LessPalette['@primary-color']};
+  color: var(--brand-default, #7084ff);
   text-decoration: underline;
   font-weight: 500;
   margin: 0 2px;

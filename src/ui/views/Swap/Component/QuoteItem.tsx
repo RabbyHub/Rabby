@@ -80,14 +80,14 @@ const ItemWrapper = styled.div`
   &:hover:not(.disabled, .inSufficient) {
     background: linear-gradient(
         0deg,
-        rgba(134, 151, 255, 0.1),
-        rgba(134, 151, 255, 0.1)
+        var(--blue-light, #eef1ff),
+        var(--blue-light, #eef1ff)
       ),
       #ffffff;
-    border: 1px solid #8697ff;
+    border: 1px solid var(--brand-default, #7084ff);
   }
   &.active {
-    outline: 2px solid #8697ff;
+    outline: 2px solid var(--brand-default, #7084ff);
   }
   &.disabled {
     height: 56px;
