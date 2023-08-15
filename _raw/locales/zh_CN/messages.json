@@ -42,7 +42,8 @@
     "appDescription": "",
     "appName": "",
     "Deleted": "Deleted",
-    "Loading": "Loading"
+    "Loading": "Loading",
+    "Balance": "余额"
   },
   "page": {
     "transactions": {
@@ -64,7 +65,7 @@
           "description": "在 DeBank 上与 Rabby Wallet 官方1v1联系"
         },
         "proposal": {
-          "content": "发起提议",
+          "content": "发起提案",
           "description": "在 DeBank 上提交对 Rabby 钱包的提议"
         },
         "title": "反馈"
@@ -205,7 +206,7 @@
         "host": "host",
         "inputOpenapiHost": "请输入openapi主机",
         "lock": {
-          "never": "绝不"
+          "never": "永不"
         },
         "pendingTransactionCleared": "待完成交易已清除",
         "pleaseCheckYourHost": "请检查您的 Host",
@@ -313,7 +314,7 @@
       "testnet": "测试网"
     },
     "nft": {
-      "floorPrice": "/ 底价:",
+      "floorPrice": "/ 地板价:",
       "title": "NFT",
       "all": "全部",
       "starred": "已收藏 ({{count}})",
@@ -658,7 +659,7 @@
       },
       "component": {
         "ApprovalContractItem": {
-          "ApprovalCount_one": "赞同",
+          "ApprovalCount_one": "授权",
           "ApprovalCount_other": "授权"
         },
         "table": {
@@ -967,8 +968,8 @@
         "noBalanceChange": "未检测到余额变化",
         "notSupport": "该链暂不支持交易模拟",
         "successTitle": "交易模拟结果",
-        "tokenIn": "接收代币",
-        "tokenOut": "转出代币"
+        "tokenIn": "增加的代币",
+        "tokenOut": "减少的代币"
       },
       "blocked": "拉黑",
       "canOnlyUseImportedAddress": "您只能使用导入的地址进行签名",
@@ -1101,10 +1102,10 @@
       },
       "swap": {
         "failLoadReceiveToken": "加载失败",
-        "minReceive": "至少收到",
+        "minReceive": "最少收到",
         "notPaymentAddress": "非当前付款地址",
-        "payToken": "支付代币",
-        "receiveToken": "接收代币",
+        "payToken": "卖出",
+        "receiveToken": "买入",
         "receiver": "接收地址",
         "simulationFailed": "交易模拟失败",
         "simulationNotSupport": "该链暂不支持交易模拟",
@@ -1183,7 +1184,7 @@
       "Pending": "待完成",
       "QuoteLessWarning": "通过Rabby交易模拟估算， \ndex 提供的报价是 {{receive}} ，\n您收到的报价将比预期少 {{diff}}",
       "actual-slippage": "实际滑点：",
-      "amount-in": "金额",
+      "amount-in": "卖出{{symbol}}金额",
       "approve-tips": "1.授权 → 2.兑换",
       "approve-x-symbol": "授权 {{symbol}}",
       "best": "最佳",
@@ -1208,7 +1209,7 @@
       "i-understand-and-accept-it": "我理解并接受",
       "insufficient-balance": "余额不足",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "滑点过低，可能会因高波动性而导致交易失败",
-      "minimum-received": "至少收到",
+      "minimum-received": "最少收到",
       "need-to-approve-token-before-swap": "兑换前需要授权代币",
       "no-transaction-records": "无交易记录",
       "not-supported": "不支持",
@@ -1225,7 +1226,7 @@
       "slippage-adjusted-refresh-quote": "滑点调整，\n刷新报价",
       "slippage-tolerance": "滑点",
       "slippage_tolerance": "滑点：",
-      "swap-from": "从",
+      "swap-from": "卖出",
       "swap-history": "兑换历史",
       "swap-via-x": "通过 {{name}} 兑换",
       "testnet-is-not-supported": "不支持测试网",
@@ -1234,7 +1235,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "您未启用该交易所进行交易",
       "this-token-pair-is-not-supported": "不支持该代币对",
       "title": "兑换",
-      "to": "到",
+      "to": "买入",
       "trade": "交易",
       "tradingSettingTip1": "1. 开启后，您将直接与交易所合约进行交互",
       "tradingSettingTip2": "2. Rabby 不承担因交易所合约产生的任何风险",
@@ -1312,6 +1313,9 @@
       "time": "Per day",
       "requestBtn": "Request",
       "requested": "You have requested today"
+    },
+    "safeQueue": {
+      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
     }
   },
   "component": {

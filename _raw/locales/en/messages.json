@@ -531,7 +531,7 @@
       "swap-from": "Swap from",
       "to": "To",
       "search-by-name-address": "Search by Name / Address",
-      "amount-in": "Amount in",
+      "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
       "rabby-fee": "Rabby fee",
@@ -1276,6 +1276,25 @@
       "time": "Per day",
       "requested": "You have requested today",
       "requestBtn": "Request"
+    },
+    "safeQueue": {
+      "title": "Queue",
+      "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
+      "loading": "Loading pending transactions",
+      "noData": "No pending transactions",
+      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes",
+      "accountSelectTitle": "You can submit this transaction using any address",
+      "LowerNonceError": "Transaction with nonce {{nonce}} needs to be executed first",
+      "submitBtn": "Submit transaction",
+      "unknownTx": "Unknown Transaction",
+      "cancelExplain": "Cancel {{token}} Approve for {{protocol}}",
+      "unknownProtocol": "Unknown protocol",
+      "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
+      "unlimited": "unlimited",
+      "action": {
+        "send": "Send"
+      },
+      "viewBtn": "View"
     }
   },
   "component": {
@@ -1476,7 +1495,9 @@
     "addButton": "Add",
     "closeButton": "Close",
     "Deleted": "Deleted",
-    "Loading": "Loading"
+    "Loading": "Loading",
+    "nonce": "nonce",
+    "Balance": "Balance"
   },
   "background": {
     "error": {

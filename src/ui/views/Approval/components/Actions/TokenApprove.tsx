@@ -128,7 +128,8 @@ const ApproveAmountModal = ({
               setCustomAmount(balance);
             }}
           >
-            Balance: {formatAmount(new BigNumber(balance).toFixed(4))}
+            {t('global.Balance')}:{' '}
+            {formatAmount(new BigNumber(balance).toFixed(4))}
           </span>
         )}
       </div>

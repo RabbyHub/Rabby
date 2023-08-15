@@ -85,7 +85,7 @@ const GnosisTransactionQueue = () => {
 
   return (
     <div className="queue">
-      <PageHeader fixed>{t('Queue')}</PageHeader>
+      <PageHeader fixed>{t('page.safeQueue.title')}</PageHeader>
       <div className="tabs-container">
         <div className="tabs">
           {tabs?.map((tab) => {

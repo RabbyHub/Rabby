@@ -70,7 +70,7 @@ export const AccountInfo: React.FC<Props> = ({
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-black mt-[4px]')}
+            className={clsx('text-13 text-black mt-[2px]')}
           />
         </div>
         {isTestnet ? null : (

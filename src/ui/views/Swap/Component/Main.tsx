@@ -292,8 +292,8 @@ export const Main = () => {
         />
 
         <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
-          <span>{t('page.swap.swap-from')}</span>
-          <span className="ml-[128px]">{t('page.swap.to')}</span>
+          <span className="block w-[150px]">{t('page.swap.swap-from')}</span>
+          <span className="block w-[150px] ml-auto">{t('page.swap.to')}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -340,8 +340,9 @@ export const Main = () => {
           className={clsx(tipsClassName, 'flex items-center justify-between')}
         >
           <div>
-            {t('page.swap.amount-in')}{' '}
-            {payToken ? getTokenSymbol(payToken) : ''}
+            {t('page.swap.amount-in', {
+              symbol: payToken ? getTokenSymbol(payToken) : '',
+            })}{' '}
           </div>
           <div
             className={clsx(
@@ -354,7 +355,7 @@ export const Main = () => {
               }
             }}
           >
-            Balance: {formatAmount(payToken?.amount || 0)}
+            {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
           </div>
         </div>
         <StyledInput
