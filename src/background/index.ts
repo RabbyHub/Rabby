@@ -299,15 +299,6 @@ declare global {
   }
 }
 
-storage
-  .byteInUse()
-  .then((byte) => {
-    stats.report('byteInUse', { value: byte });
-  })
-  .catch(() => {
-    // IGNORE
-  });
-
 function startEnableUser() {
   const time = preferenceService.getSendEnableTime();
   if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
