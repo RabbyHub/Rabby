@@ -34,7 +34,7 @@
     }
 
     &:hover {
-      border: 1px solid #8697ff;
+      border: 1px solid var(--brand-default, #7084ff);
       .icon-star {
         opacity: 1;
       }
@@ -108,8 +108,8 @@
         border-bottom-left-radius: 6px;
         border: 1px solid transparent;
         &:hover {
-          border: 1px solid #8697ff;
-          background: rgba(134, 151, 255, 0.1);
+          border: 1px solid var(--brand-default, #7084ff);
+          background: var(--blue-light, #eef1ff);
         }
       }
       .rabby-address-item-arrow {
@@ -117,8 +117,8 @@
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
         &:hover {
-          border: 1px solid #8697ff;
-          background: rgba(134, 151, 255, 0.1);
+          border: 1px solid var(--brand-default, #7084ff);
+          background: var(--blue-light, #eef1ff);
         }
       }
       &:hover {
@@ -139,7 +139,7 @@
 
   .create-address {
     display: flex;
-    color: @primary-text-color;
+    color: var(--brand-default, #7084ff);
     font-size: 15px;
     line-height: 18px;
     font-weight: 500;
@@ -166,7 +166,7 @@
       margin-top: 100px;
       text-align: center;
       background-color: rgba(134, 151, 255, 0.2);
-      color: @primary-text-color;
+      color: var(--brand-default, #7084ff);
       align-items: center;
       justify-content: center;
       .icon-plus {

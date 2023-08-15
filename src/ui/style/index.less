@@ -3,6 +3,7 @@
 @import 'tailwindcss/utilities';
 @import '~antd/lib/style/themes/default.less';
 @import '~antd/dist/antd.less';
+@import './cssvars.css';
 @import './var.less';
 @import './antd-overwrite.less';
 
@@ -174,7 +175,7 @@ button:focus {
     cursor: pointer;
     user-select: none;
     &__inner {
-      background-color: rgba(134, 151, 255, 0.1);
+      background-color: var(--blue-light, #eef1ff);
       border-radius: 4px;
       height: 40px;
       display: flex;
@@ -317,14 +318,14 @@ button:focus {
 
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:hover {
   background: #f3f5fe !important;
-  color: #8697ff;
+  color: var(--brand-default, #7084ff);
   box-shadow: none;
   &::before {
     opacity: 0;
   }
 }
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:disabled {
-  color: #8697ff !important;
+  color: var(--brand-default, #7084ff) !important;
 }
 
 .input-password-popup {
