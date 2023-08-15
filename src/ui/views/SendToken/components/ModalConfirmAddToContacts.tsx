@@ -35,7 +35,7 @@ const FormInputItem = styled(Form.Item)`
 
   label.ant-form-item-required {
     font-size: 12px;
-    font-family: Roboto;
+
     font-style: normal;
     font-weight: 400;
     line-height: normal;

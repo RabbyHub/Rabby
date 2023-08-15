@@ -1316,16 +1316,31 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "Request DeBank Testnet Gas Token",
-      "desc": "Rabby Badge holders can request once a day",
       "mintedTip": "Rabby Badge holders can request once a day",
       "notMintedTip": "Request available for Rabby Badge holders only",
       "claimBadgeBtn": "Claim Rabby Badge",
       "time": "Per day",
-      "requestBtn": "Request",
-      "requested": "You have requested today"
+      "requested": "You have requested today",
+      "requestBtn": "Request"
     },
     "safeQueue": {
-      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
+      "title": "Queue",
+      "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
+      "loading": "Loading pending transactions",
+      "noData": "No pending transactions",
+      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes",
+      "accountSelectTitle": "You can submit this transaction using any address",
+      "LowerNonceError": "Transaction with nonce {{nonce}} needs to be executed first",
+      "submitBtn": "Submit transaction",
+      "unknownTx": "Unknown Transaction",
+      "cancelExplain": "Cancel {{token}} Approve for {{protocol}}",
+      "unknownProtocol": "Unknown protocol",
+      "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
+      "unlimited": "unlimited",
+      "action": {
+        "send": "Send"
+      },
+      "viewBtn": "View"
     },
     "importSuccess": {
       "title": "Imported Successfully",
