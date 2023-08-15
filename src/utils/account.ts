@@ -1,4 +1,5 @@
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import { t } from 'i18next';
 
 export function generateAliasName({
   keyringType,

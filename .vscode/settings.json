@@ -1,5 +1,6 @@
 {
   "i18n-ally.localesPaths": ["_raw/locales"],
   "i18n-ally.keystyle": "nested",
-  "i18n-ally.extract.ignored": ["Gwei"]
+  "i18n-ally.extract.ignored": ["Gwei"],
+  "i18n-ally.sourceLanguage": "en"
 }

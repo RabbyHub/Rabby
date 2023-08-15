@@ -43,7 +43,8 @@
     "appName": "",
     "Deleted": "Deleted",
     "Loading": "Loading",
-    "Balance": "余额"
+    "Balance": "余额",
+    "Done": "完成"
   },
   "page": {
     "transactions": {
@@ -66,7 +67,7 @@
         },
         "proposal": {
           "content": "发起提案",
-          "description": "在 DeBank 上提交对 Rabby 钱包的提议"
+          "description": "在 DeBank 上发布对 Rabby Wallet 的提案"
         },
         "title": "反馈"
       },
@@ -671,6 +672,9 @@
         "RevokeButton": {
           "btnText_zero": "取消授权",
           "btnText_other": "取消授权 ({{count}})"
+        },
+        "ViewMore": {
+          "text": "查看更多"
         }
       },
       "header": {
@@ -851,6 +855,7 @@
       "whitelistAlert__whitelisted": "该地址已列入转账白名单"
     },
     "sendToken": {
+      "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
       "AddToContactsModal": {
         "addedAsContacts": "添加为联系人",
         "editAddr": {
@@ -859,6 +864,11 @@
         },
         "editAddressNote": "编辑地址备注",
         "error": "添加联系人失败"
+      },
+      "allowTransferModal": {
+        "error": "密码错误",
+        "placeholder": "输入密码进行确认",
+        "validator__empty": "请输入密码"
       },
       "GasSelector": {
         "confirm": "确认",
@@ -871,11 +881,6 @@
         },
         "popupDesc": "矿工费将根据您设置的 Gas 价格从转账金额中预留",
         "popupTitle": "设置 Gas 价格 (Gwei)"
-      },
-      "allowTransferModal": {
-        "error": "密码错误",
-        "placeholder": "输入密码进行确认",
-        "validator__empty": "请输入密码"
       },
       "header": {
         "title": "发送"
@@ -902,14 +907,18 @@
         "addrValidator__empty": "请输入地址",
         "addrValidator__invalid": "该地址无效",
         "searchInputPlaceholder": "输入地址或搜索",
-        "title": "至"
+        "title": "接收地址"
       },
       "sendButton": "发送",
       "tokenInfoFieldLabel": {
         "chain": "链",
         "contract": "合约地址"
       },
-      "tokenInfoPrice": "价格"
+      "tokenInfoPrice": "价格",
+      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
+      "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 <1 /> 我批准此次转账",
+      "whitelistAlert__temporaryGranted": "已暂时批准",
+      "whitelistAlert__whitelisted": "白名单地址"
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费"
@@ -1286,7 +1295,8 @@
       "source": "来源"
     },
     "preferMetamaskDapps": {
-      "title": "MetaMask 优先 Dapps"
+      "title": "MetaMask 优先 Dapps",
+      "howToAddDesc": "在网页空白处点击右键，找到这个选项"
     },
     "customRpc": {
       "title": "自定义 RPC",
@@ -1316,6 +1326,10 @@
     },
     "safeQueue": {
       "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes"
+    },
+    "importSuccess": {
+      "title": "Imported Successfully",
+      "addressCount": "{{count}} addresses"
     }
   },
   "component": {
@@ -1384,7 +1398,10 @@
         "whitelistEnabled": "白名单已开启。您只能转账给白名单中的地址。您也可以在 “更多” 中关闭白名单功能",
         "whitelistDisabled": "白名单已关闭。您可以转账给所有地址",
         "editWhitelist": "编辑白名单",
-        "whitelistUpdated": "白名单已更新"
+        "whitelistUpdated": "白名单已更新",
+        "authModal": {
+          "title": "Save to Whitelist"
+        }
       }
     },
     "LoadingOverlay": {
@@ -1497,7 +1514,17 @@
       "invalidPrivateKey": "the private key is invalid",
       "invalidJson": "the input file is invalid",
       "invalidMnemonic": "助记词无效，请检查！",
-      "notFoundKeyringByAddress": "Can't find keyring by address"
+      "notFoundKeyringByAddress": "Can't find keyring by address",
+      "txPushFailed": "Transaction push failed",
+      "unlock": "you need to unlock wallet first",
+      "verifyPassword": "Cannot unlock without a previous vault",
+      "duplicateAccount": "The account you're are trying to import is duplicate"
+    },
+    "transactionWatcher": {
+      "submitted": "Transaction submitted",
+      "more": "click to view more information",
+      "failed": "Transaction failed",
+      "completed": "Transaction completed"
     }
   }
 }

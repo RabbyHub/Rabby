@@ -363,8 +363,47 @@
       "watchModeAlert2": "Are you sure to use it to receive assets?"
     },
     "sendToken": {
+      "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
+      "AddToContactsModal": {
+        "addedAsContacts": "Added as contacts",
+        "editAddr": {
+          "placeholder": "Enter Address Note",
+          "validator__empty": "Please enter address note"
+        },
+        "editAddressNote": "Edit address note",
+        "error": "Failed to add to contacts"
+      },
+      "allowTransferModal": {
+        "error": "incorrect password",
+        "placeholder": "Enter the Password to Confirm",
+        "validator__empty": "Please input password"
+      },
+      "GasSelector": {
+        "confirm": "Confirm",
+        "level": {
+          "$unknown": "Unknown",
+          "custom": "Custom",
+          "fast": "Instant",
+          "normal": "Fast",
+          "slow": "Standard"
+        },
+        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
+        "popupTitle": "Set Gas Price (Gwei)"
+      },
       "header": {
         "title": "Send"
+      },
+      "modalConfirmAddToContacts": {
+        "confirmText": "Confirm",
+        "title": "Add to contacts"
+      },
+      "modalConfirmAllowTransferTo": {
+        "cancelText": "Cancel",
+        "confirmText": "Confirm",
+        "title": "Enter the Password to Confirm"
+      },
+      "sectionBalance": {
+        "title": "Balance"
       },
       "sectionChain": {
         "title": "Chain"
@@ -373,59 +412,21 @@
         "title": "From"
       },
       "sectionTo": {
-        "title": "To",
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search"
+        "searchInputPlaceholder": "Enter address or search",
+        "title": "To"
       },
-      "sectionBalance": {
-        "title": "Balance"
-      },
+      "sendButton": "Send",
       "tokenInfoFieldLabel": {
-        "contract": "Contract Address",
-        "chain": "Chain"
+        "chain": "Chain",
+        "contract": "Contract Address"
       },
       "tokenInfoPrice": "Price",
-      "sendButton": "Send",
       "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
-      "whitelistAlert__whitelisted": "The address is whitelisted",
-      "whitelistAlert__temporaryGranted": "Temporary permission granted",
       "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
-      "GasSelector": {
-        "popupTitle": "Set Gas Price (Gwei)",
-        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
-        "confirm": "Confirm",
-        "level": {
-          "$unknown": "Unknown",
-          "slow": "Standard",
-          "normal": "Fast",
-          "fast": "Instant",
-          "custom": "Custom"
-        }
-      },
-      "AddToContactsModal": {
-        "error": "Failed to add to contacts",
-        "addedAsContacts": "Added as contacts",
-        "editAddressNote": "Edit address note",
-        "editAddr": {
-          "validator__empty": "Please enter address note",
-          "placeholder": "Enter Address Note"
-        }
-      },
-      "modalConfirmAddToContacts": {
-        "title": "Add to contacts",
-        "confirmText": "Confirm"
-      },
-      "allowTransferModal": {
-        "error": "incorrect password",
-        "validator__empty": "Please input password",
-        "placeholder": "Enter the Password to Confirm"
-      },
-      "modalConfirmAllowTransferTo": {
-        "title": "Enter the Password to Confirm",
-        "cancelText": "Cancel",
-        "confirmText": "Confirm"
-      }
+      "whitelistAlert__temporaryGranted": "Temporary permission granted",
+      "whitelistAlert__whitelisted": "The address is whitelisted"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
@@ -481,6 +482,9 @@
         "RevokeButton": {
           "btnText_zero": "Revoke",
           "btnText_other": "Revoke ({{count}})"
+        },
+        "ViewMore": {
+          "text": "View more"
         }
       },
       "search": {
@@ -1328,6 +1332,11 @@
         "send": "Send"
       },
       "viewBtn": "View"
+    },
+    "importSuccess": {
+      "title": "Imported Successfully",
+      "addressCount": "{{count}} addresses",
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
     }
   },
   "component": {
@@ -1396,7 +1405,10 @@
         "whitelistEnabled": "Whitelist is enabled. You can only send assets to a whitelisted address or you can disable it in \"Settings\"",
         "whitelistDisabled": "Whitelist is disabled. You can send assets to any address",
         "editWhitelist": "Edit Whitelist",
-        "whitelistUpdated": "Whitelist Updated"
+        "whitelistUpdated": "Whitelist Updated",
+        "authModal": {
+          "title": "Save to Whitelist"
+        }
       }
     },
     "LoadingOverlay": {
@@ -1530,7 +1542,8 @@
     "Deleted": "Deleted",
     "Loading": "Loading",
     "nonce": "nonce",
-    "Balance": "Balance"
+    "Balance": "Balance",
+    "Done": "Done"
   },
   "background": {
     "error": {
@@ -1548,7 +1561,18 @@
       "invalidPrivateKey": "the private key is invalid",
       "invalidJson": "the input file is invalid",
       "invalidMnemonic": "The seed phrase is invalid, please check!",
-      "notFoundKeyringByAddress": "Can't find keyring by address"
+      "notFoundKeyringByAddress": "Can't find keyring by address",
+      "txPushFailed": "Transaction push failed",
+      "unlock": "you need to unlock wallet first",
+      "verifyPassword": "Cannot unlock without a previous vault",
+      "duplicateAccount": "The account you're are trying to import is duplicate",
+      "canNotUnlock": "Cannot unlock without a previous vault"
+    },
+    "transactionWatcher": {
+      "submitted": "Transaction submitted",
+      "more": "click to view more information",
+      "completed": "Transaction completed",
+      "failed": "Transaction failed"
     }
   },
   "appDescription": {
