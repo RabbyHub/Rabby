@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FooterDoneButton } from './FooterDoneButton';
 import { FooterResend } from './FooterResend';
 import { FooterButton } from './FooterButton';
@@ -44,6 +45,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   const [image, setImage] = React.useState('');
   const [iconColor, setIconColor] = React.useState('');
   const [contentColor, setContentColor] = React.useState('');
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     switch (status) {
@@ -126,14 +128,20 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}
         {status === 'WAITING' && <FooterResend onResend={onRetry} />}
         {status === 'FAILED' && (
-          <FooterButton text="Resend" onClick={onRetry} />
+          <FooterButton
+            text={t('page.signFooterBar.resend')}
+            onClick={onRetry}
+          />
         )}
         {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} />}
         {status === 'REJECTED' && (
           <FooterResendCancelGroup onResend={onRetry} onCancel={onCancel} />
         )}
         {status === 'SUBMITTING' && (
-          <FooterButton text="Submit Transaction" onClick={onSubmit} />
+          <FooterButton
+            text={t('page.signFooterBar.submitTx')}
+            onClick={onSubmit}
+          />
         )}
       </div>
       {children}
