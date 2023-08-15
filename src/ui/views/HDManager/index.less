@@ -343,7 +343,7 @@
 
   &--selected {
     background: rgba(134, 151, 255, 0.2);
-    color: @primary-text-color;
+    color: var(--brand-default, #7084ff);
   }
 
   &--on-chain::before {
@@ -375,11 +375,11 @@
     top: 2px;
 
     path {
-      stroke: @primary-color;
+      stroke: var(--brand-default, #7084ff);
     }
   }
   &.ant-switch-checked {
-    background-color: @primary-color;
+    background-color: var(--brand-default, #7084ff);
     .ant-switch-handle {
       left: calc(100% - 22px);
       &::before {

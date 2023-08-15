@@ -868,7 +868,8 @@
       "allowTransferModal": {
         "error": "密码错误",
         "placeholder": "输入密码进行确认",
-        "validator__empty": "请输入密码"
+        "validator__empty": "请输入密码",
+        "addWhitelist": "添加到白名单"
       },
       "GasSelector": {
         "confirm": "确认",
@@ -918,7 +919,13 @@
       "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
       "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 <1 /> 我批准此次转账",
       "whitelistAlert__temporaryGranted": "已暂时批准",
-      "whitelistAlert__whitelisted": "白名单地址"
+      "whitelistAlert__whitelisted": "白名单地址",
+      "balanceError": {
+        "insufficientBalance": "余额不足"
+      },
+      "balanceWarn": {
+        "gasFeeReservation": "需要预留 Gas"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费"

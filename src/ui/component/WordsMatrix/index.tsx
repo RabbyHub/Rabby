@@ -29,7 +29,7 @@ const CloseIcon = styled.img.attrs({
 `;
 
 const FocusingBox = styled.div`
-  border: 1px solid ${LessPalette['@primary-color']};
+  border: 1px solid var(--brand-default, #7084ff);
   border-radius: 6px;
 `;
 
