@@ -442,7 +442,7 @@ const SendToken = () => {
             .minus(gasCostTokenAmount)
             .lt(0)
         ) {
-          setBalanceWarn(t('Gas fee reservation required'));
+          setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
         } else {
           setBalanceWarn(null);
         }
@@ -456,7 +456,8 @@ const SendToken = () => {
         )
       )
     ) {
-      setBalanceError(t('Insufficient balance'));
+      // Insufficient balance
+      setBalanceError(t('page.sendToken.balanceError.insufficientBalance'));
     } else {
       setBalanceError(null);
     }
@@ -524,7 +525,8 @@ const SendToken = () => {
         }
       } catch (e) {
         if (!isGnosisSafe) {
-          setBalanceWarn(t('Gas fee reservation required'));
+          // Gas fee reservation required
+          setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
           setShowGasReserved(false);
         }
       }

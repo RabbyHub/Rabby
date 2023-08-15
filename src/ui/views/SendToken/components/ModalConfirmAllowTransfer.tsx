@@ -124,7 +124,8 @@ function ModalConfirmAllowTransfer({
             }
             className="icon icon-check inline-block relative -top-1 mr-[4px]"
           />
-          Add to whitelist
+          {/* Add to whitelist */}
+          {t('page.sendToken.allowTransferModal.addWhitelist')}
         </p>
         <div
           className={clsx(
