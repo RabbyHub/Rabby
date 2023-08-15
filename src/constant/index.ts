@@ -707,7 +707,7 @@ export const KEYRING_CATEGORY_MAP = {
 
 export const SWAP_FEE_PRECISION = 1e5;
 
-export const DEFAULT_GAS_LIMIT_RATIO = 2;
+export const DEFAULT_GAS_LIMIT_RATIO = 1.5;
 
 export const SAFE_GAS_LIMIT_RATIO = {};
 export const GAS_TOP_UP_ADDRESS = '0x7559e1bbe06e94aeed8000d5671ed424397d25b5';
