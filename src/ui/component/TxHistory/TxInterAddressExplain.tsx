@@ -40,13 +40,12 @@ export const TxInterAddressExplain = ({
     const approveToken = tokenDict[data.token_approve?.token_id || ''];
     const amount = data.token_approve?.value || 0;
 
+    // todo: translate
     interAddressExplain = (
       <div className="tx-explain-title">
-        {t('page.transactions.explain.approve', {
-          amount: amount < 1e9 ? amount.toFixed(4) : 'infinite',
-          symbol: getTokenSymbol(approveToken),
-          projectName,
-        })}
+        Approve {amount < 1e9 ? amount.toFixed(4) : 'infinite'}{' '}
+        {`${getTokenSymbol(approveToken)} for `}
+        {projectName}
       </div>
     );
   } else {

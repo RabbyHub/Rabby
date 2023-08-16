@@ -185,7 +185,8 @@
       "popularity": "Popularity",
       "contractPopularity": "No.{{0}} on {{1}}",
       "addressNote": "Address note",
-      "myMark": "My mark on {{chainName}} contract",
+      "myMarkWithContract": "My mark on {{chainName}} contract",
+      "myMark": "My mark",
       "collectionTitle": "Collection",
       "addressTypeTitle": "Address type",
       "firstOnChain": "First on-chain",
@@ -1282,7 +1283,8 @@
       "title": "MetaMask Preferred Dapps",
       "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
       "howToAdd": "How to Add",
-      "howToAddDesc": "Right click on the website and find this option"
+      "howToAddDesc": "Right click on the website and find this option",
+      "empty": "No dapps"
     },
     "customRpc": {
       "opened": "Opened",
@@ -1332,6 +1334,56 @@
       "title": "Imported Successfully",
       "addressCount": "{{count}} addresses",
       "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+    },
+    "backupSeedPhrase": {
+      "title": "Backup Seed Phrase",
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShow": "Click to show Seed Phrase",
+      "copySeedPhrase": "Copy seed phrase"
+    },
+    "backupPrivateKey": {
+      "title": "Backup Private Key",
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShow": "Click to show private key",
+      "clickToShowQr": "Click to show private key QR Code"
+    },
+    "ethSign": {
+      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+    },
+    "createPassword": {
+      "title": "Set Password",
+      "passwordRequired": "Please input Password",
+      "passwordMin": "Password must be at least 8 characters long",
+      "passwordPlaceholder": "Password must be at least 8 characters long",
+      "confirmRequired": "Please Confirm Password",
+      "confirmError": "Passwords do not match",
+      "confirmPlaceholder": "Confirm password",
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+    },
+    "welcome": {
+      "step1": {
+        "title": "Access All Dapps",
+        "desc": "Rabby connects to all Dapps that MetaMask supports"
+      },
+      "step2": {
+        "title": "Self-custodial",
+        "desc": "Private keys are stored locally with sole access to you",
+        "btnText": "Get Started"
+      }
+    },
+    "importSafe": {
+      "title": "Add Safe address",
+      "placeholder": "Please input address",
+      "error": {
+        "invalid": "Not a valid address",
+        "required": "Please input address"
+      },
+      "loading": "Searching the deployed chain of this address",
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+    },
+    "importQrBase": {
+      "desc": "Scan the QR code on the {{brandName}} hardware wallet",
+      "btnText": "Try Again"
     }
   },
   "component": {

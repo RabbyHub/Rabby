@@ -173,7 +173,7 @@ export default ({
     ),
     height: 240,
     closable: true,
-    title: i18n.t('page.signTx.myMark', {
+    title: i18n.t('page.signTx.myMarkWithContract', {
       chainName: chain.name,
     }),
     className: 'user-list-drawer',

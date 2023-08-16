@@ -67,7 +67,7 @@
             "label": "所有 NFT"
           }
         },
-        "listEmpty": "您还没有获得任何 NFT",
+        "listEmpty": "你还没有获得任何 NFT",
         "modal": {
           "collection": "系列",
           "chain": "链",
@@ -115,7 +115,7 @@
       "recentConnection": {
         "disconnected": "已断开连接",
         "rpcUnavailable": "自定义RPC不可用",
-        "metamaskTooltip": "您选择在该 Dapp 优先使用 MetaMask。\n您可在 “更多” > “MetaMask 优先 Dapp” 中更新此设置",
+        "metamaskTooltip": "你选择在该 Dapp 优先使用 MetaMask。\n你可在 “更多” > “MetaMask 优先 Dapp” 中更新此设置",
         "notConnected": "未连接",
         "connected": "已连接",
         "connectedDapp": "Rabby 未连接到当前 Dapp。请在 Dapp 网页上单击连接按钮",
@@ -136,7 +136,7 @@
         "noData": "没有数据",
         "noDataLabel": "没有数据",
         "oldContactList": "旧联系人列表",
-        "oldContactListDescription": "由于联系人功能和观察地址合并，旧的联系人数据备份于此。后续我们会删除该列表。如果您需要继续使用，请及时添加为联系人"
+        "oldContactListDescription": "由于联系人功能和观察地址合并，旧的联系人数据备份于此。后续我们会删除该列表。如果你需要继续使用，请及时添加为联系人"
       },
       "rabbyBadge": {
         "claim": "领取",
@@ -145,12 +145,12 @@
         "goToSwap": "完成兑换",
         "imageLabel": "Rabby Badge",
         "learnMoreOnDebank": "跳转至 DeBank 领取",
-        "noCode": "您尚未激活该地址的邀请码",
+        "noCode": "你尚未激活该地址的邀请码",
         "rabbyValuedUserNo": "Rabby Valued User 编号{{num}}",
-        "swapTip": "您需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
+        "swapTip": "你需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
         "title": "领取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
-        "viewYourClaimCode": "查看您的邀请码"
+        "viewYourClaimCode": "查看你的邀请码"
       },
       "security": {
         "comingSoon": "更多功能即将推出",
@@ -170,15 +170,15 @@
         "cancel": "取消",
         "claimRabbyBadge": "领取 Rabby Badge",
         "clearPending": "清除待完成交易",
-        "clearPendingTip1": "这将清除您所有待完成的交易。\n这可以帮助您解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题",
-        "clearPendingTip2": "这不会改变您帐户中的余额，也不会要求您重新输入助记词。\n您的所有资产和帐户信息都将保持安全",
-        "clearWatchAddressContent": "您确定删除所有观察地址吗？",
+        "clearPendingTip1": "这将清除你所有待完成的交易。\n这可以帮助你解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题",
+        "clearPendingTip2": "这不会改变你帐户中的余额，也不会要求你重新输入助记词。\n你的所有资产和帐户信息都将保持安全",
+        "clearWatchAddressContent": "你确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
         "currentVersion": "当前版本",
         "disableWhitelist": "关闭转账白名单",
-        "disableWhitelistTip": "关闭后您可以将资产发送到任何地址",
+        "disableWhitelistTip": "关闭后你可以将资产发送到任何地址",
         "enableWhitelist": "启用转账白名单",
-        "enableWhitelistTip": "启用后，您只能使用 Rabby 向白名单中的地址发送资产",
+        "enableWhitelistTip": "启用后，你只能使用 Rabby 向白名单中的地址发送资产",
         "features": {
           "connectedDapp": "已连接的 Dapp",
           "label": "功能",
@@ -193,7 +193,7 @@
           "never": "永不"
         },
         "pendingTransactionCleared": "待完成交易已清除",
-        "pleaseCheckYourHost": "请检查您的 Host",
+        "pleaseCheckYourHost": "请检查你的 Host",
         "reset": "恢复初始设置",
         "save": "保存",
         "settings": {
@@ -210,7 +210,7 @@
         "updateVersion": {
           "content": "检测到 Rabby Wallet 更新版本\n点击查看如何手动更新",
           "okText": "查看教程",
-          "successTip": "您正在使用最新版本"
+          "successTip": "你正在使用最新版本"
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token"
@@ -218,8 +218,8 @@
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
         "blocked": "隐藏",
-        "selectedCustom": "Rabby 未支持该代币。\n您已手动添加该代币",
-        "notSelectedCustom": "Rabby 未支持该代币。\n您可以手动添加该代币",
+        "selectedCustom": "Rabby 未支持该代币。\n你已手动添加该代币",
+        "notSelectedCustom": "Rabby 未支持该代币。\n你可以手动添加该代币",
         "customized": "添加",
         "scamTx": "诈骗交易",
         "txFailed": "失败",
@@ -272,11 +272,11 @@
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
-        "blockDescription": "被您隐藏的代币将显示在此处",
+        "blockDescription": "被你隐藏的代币将显示在此处",
         "unfoldChain": "展开 1 条链条",
         "unfoldChainPlural": "展开 {{moreLen}} 链",
         "customLinkText": "搜索代币地址，添加代币",
-        "customDescription": "您手动添加的代币将显示在此处",
+        "customDescription": "你手动添加的代币将显示在此处",
         "comingSoon": "即将推出...",
         "searchPlaceholder": "代币"
       },
@@ -304,7 +304,7 @@
       "starred": "已收藏 ({{count}})",
       "empty": {
         "title": "没有已收藏的 NFT",
-        "description": "您可以从“全部”中选择NFT添加到“已收藏”"
+        "description": "你可以从“全部”中选择NFT添加到“已收藏”"
       },
       "noNft": "无 NFT"
     },
@@ -315,14 +315,14 @@
       "importMyMetamaskAccount": "导入我的 MetaMask 帐户",
       "addContacts": {
         "content": "添加联系人",
-        "description": "您也可以将其用作观察地址",
+        "description": "你也可以将其用作观察地址",
         "required": "请输入地址",
         "notAValidAddress": "无效地址",
         "scanViaMobileWallet": "通过手机钱包扫描",
         "scanViaPcCamera": "通过电脑摄像头扫描",
         "scanQRCode": "使用兼容 WalletConnect 的钱包扫描二维码",
         "walletConnect": "WalleConnect",
-        "walletConnectVPN": "如果您使用 VPN，WalletConnect 将会不稳定",
+        "walletConnectVPN": "如果你使用 VPN，WalletConnect 将会不稳定",
         "cameraTitle": "请用相机扫描二维码",
         "addressEns": "输入地址/ENS"
       },
@@ -338,14 +338,14 @@
       "selectImportMethod": "选择导入方式",
       "theSeedPhraseIsInvalidPleaseCheck": "助记词无效，请检查！",
       "seedPhrase": {
-        "importTips": "您可以将完整助记词粘贴到第一个字段中",
+        "importTips": "你可以将完整助记词粘贴到第一个字段中",
         "whatIsASeedPhrase": {
           "question": "什么是助记词？",
-          "answer": "用于控制您的资产的 12、18 或 24 个单词的短语。"
+          "answer": "用于控制你的资产的 12、18 或 24 个单词的短语。"
         },
         "isItSafeToImportItInRabby": {
           "question": "在 Rabby 中导入它安全吗？",
-          "answer": "是的，它将存储在您本地的浏览器上，并且只有您可以访问。"
+          "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
         "importQuestion1": "如果我丢失了助记词，我的资产将永远丢失。",
@@ -355,7 +355,7 @@
         "riskTips": "在开始之前，请阅读并牢记以下安全提示",
         "showSeedPhrase": "创建助记词",
         "backup": "备份助记词",
-        "backupTips": "备份助记词时，确保没有其他人查看您的屏幕",
+        "backupTips": "备份助记词时，确保没有其他人查看你的屏幕",
         "copy": "复制助记词",
         "saved": "我已备份",
         "pleaseSelectWords": "请选择字词",
@@ -369,26 +369,26 @@
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥 <1>查看指南<2/></1>",
         "step2": "在 Rabby 中导入助记词或私钥",
-        "step3": "导入完成，您的所有资产将自动展示<br />",
+        "step3": "导入完成，你的所有资产将自动展示<br />",
         "how": "如何导入我的 MetaMask 帐户？",
         "step": "步骤",
         "importSeedPhrase": "导入助记词或私钥",
-        "importSeedPhraseTips": "它只会存储在本地浏览器上。 \nRabby 永远不会访问您的私人信息。"
+        "importSeedPhraseTips": "它只会存储在本地浏览器上。 \nRabby 永远不会访问你的私人信息。"
       },
       "privateKey": {
         "required": "请输入私钥",
-        "placeholder": "输入您的私钥",
+        "placeholder": "输入你的私钥",
         "whatIsAPrivateKey": {
           "question": "什么是私钥？",
-          "answer": "用于控制您的资产的一串字符。"
+          "answer": "用于控制你的资产的一串字符。"
         },
         "isItSafeToImportItInRabby": {
           "question": "在 Rabby 中导入它安全吗？",
-          "answer": "是的，它将存储在您本地的浏览器上，并且只有您可以访问。"
+          "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "isItPossibleToImportKeystore": {
           "question": "可以导入 KeyStore 吗？",
-          "answer": "是的，您可以在此处<1>导入 KeyStore</1>。"
+          "answer": "是的，你可以在此处<1>导入 KeyStore</1>。"
         },
         "notAValidPrivateKey": "无效私钥"
       },
@@ -399,16 +399,16 @@
         "cameraPermission1": "在浏览器弹出窗口中允许Rabby访问摄像头",
         "allowRabbyPermissionsTitle": "允许 Rabby 获取以下权限：",
         "ledgerPermission1": "连接到 HID 设备",
-        "ledgerPermissionTip": "请点击下面的“允许”，并在弹出窗口中授权访问您的 Ledger",
+        "ledgerPermissionTip": "请点击下面的“允许”，并在弹出窗口中授权访问你的 Ledger",
         "permissionsAuthorized": "权限已授权",
-        "nowYouCanReInitiateYourTransaction": "现在您可以重新发起您的交易",
+        "nowYouCanReInitiateYourTransaction": "现在你可以重新发起你的交易",
         "allow": "允许"
       },
       "walletConnect": {
-        "connectYour": "连接您的",
+        "connectYour": "连接你的",
         "viaWalletConnect": "通过 Wallet Connect",
         "connectedSuccessfully": "连接成功",
-        "qrCodeError": "请检查您的网络或刷新二维码",
+        "qrCodeError": "请检查你的网络或刷新二维码",
         "qrCode": "二维码",
         "url": "网址",
         "changeBridgeServer": "更改桥接服务器",
@@ -421,7 +421,7 @@
           "accountErrorDesc": "请切换手机钱包地址",
           "connected": "已连接",
           "duplicate": "该地址已导入",
-          "default": "用您的{{brand}}扫描"
+          "default": "用你的{{brand}}扫描"
         },
         "title": "与 {{brandName}} 连接",
         "disconnected": "已断开连接",
@@ -556,12 +556,12 @@
         "qrCode": {
           "switch": {
             "title": "切换到新的 {{0}} 设备",
-            "content": "不支持导入多个 {{0}} 设备。如果您切换到新的 {{0}} 设备，需要在开始导入过程之前，删除当前设备的所有地址。"
+            "content": "不支持导入多个 {{0}} 设备。如果你切换到新的 {{0}} 设备，需要在开始导入过程之前，删除当前设备的所有地址。"
           },
           "switchAnother": "切换到另一个{{0}}"
         }
       },
-      "importYourKeystore": "导入您的 KeyStore",
+      "importYourKeystore": "导入你的 KeyStore",
       "incorrectPassword": "密码错误",
       "keystore": {
         "description": "选择需要导入的 keystore 文件并输入对应的密码",
@@ -695,8 +695,8 @@
       }
     },
     "connect": {
-      "addedToBlacklist": "添加到您的黑名单",
-      "addedToWhitelist": "添加到您的白名单",
+      "addedToBlacklist": "添加到你的黑名单",
+      "addedToWhitelist": "添加到你的白名单",
       "blocked": "黑名单",
       "connectBtn": "连接",
       "flagByMM": "被 MetaMask 标记为风险网址",
@@ -741,7 +741,7 @@
       "Select-payment-token": "选择支付代币",
       "Token": "代币",
       "Value": "价值",
-      "description": "您可以在任意链上充值 Gas， 只需要支付已有链上的可用代币。\n付款一经确认立即到账，无需等待，不可撤销",
+      "description": "你可以在任意链上充值 Gas， 只需要支付已有链上的可用代币。\n付款一经确认立即到账，无需等待，不可撤销",
       "hightGasFees": "该充值金额太小，目标网络需要较高的 Gas 费",
       "payment": "Gas 充值付款",
       "service-fee-tip": "Rabby 通过提供 Gas 充值服务，需要承担代币波动的损失以及充值的 Gas 费用。\n因此要收取20%的服务费",
@@ -761,7 +761,7 @@
       "delete-all-addresses-but-keep-the-seed-phrase": "删除所有地址，但保留助记词",
       "delete-checklist-1": "我明白如果我删除这个地址，对应的私钥及助记词都将被删除，Rabby 无法为我找回",
       "delete-checklist-2": "我确认我已备份私钥或助记词，现在已准备好进行删除",
-      "delete-desc": "删除前，请记住以下几点，以了解如何保护您的资产",
+      "delete-desc": "删除前，请记住以下几点，以了解如何保护你的资产",
       "delete-empty-seed-phrase": "删除助记词及其 0 个地址",
       "delete-private-key-modal-title_one": "删除 {{count}} 个私钥地址",
       "delete-private-key-modal-title_other": "删除 {{count}} 个私钥地址",
@@ -774,7 +774,7 @@
       "hd-path": "HDpath：",
       "manage-address": "管理地址",
       "no-address": "无地址",
-      "no-address-under-seed-phrase": "您尚未在此助记词下导入任何地址",
+      "no-address-under-seed-phrase": "你尚未在此助记词下导入任何地址",
       "no-match": "没有匹配",
       "private-key": "私钥",
       "search": "搜索",
@@ -787,7 +787,7 @@
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
       "watchModeAlert1": "这是一个观察地址",
-      "watchModeAlert2": "您确定用它来接收资产吗？"
+      "watchModeAlert2": "你确定用它来接收资产吗？"
     },
     "securityEngine": {
       "alertTriggerReason": "警报触发原因：",
@@ -798,7 +798,7 @@
       "no": "不",
       "riskProcessed": "风险已处理",
       "ruleDetailTitle": "规则详情",
-      "ruleDisabled": "安全规则已被禁用。\n为了您的安全，您可以随时将其打开",
+      "ruleDisabled": "安全规则已被禁用。\n为了你的安全，你可以随时将其打开",
       "understandRisk": "我理解并自行承担任何损失",
       "undo": "撤消",
       "unknownResult": "由于安全规则不可用，结果未知",
@@ -831,7 +831,7 @@
       "sendButton": "发送",
       "tipAddToContacts": "添加为联系人",
       "tipNotOnAddressList": "不在地址列表中",
-      "whitelistAlert__disabled": "白名单已禁用，\n您可以转账到任何地址",
+      "whitelistAlert__disabled": "白名单已禁用，\n你可以转账到任何地址",
       "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 \n<1 /> 我批准此次转账",
       "whitelistAlert__temporaryGranted": "已暂时获得批准",
       "whitelistAlert__whitelisted": "该地址已列入转账白名单"
@@ -862,7 +862,7 @@
           "normal": "快速",
           "slow": "标准"
         },
-        "popupDesc": "矿工费将根据您设置的 Gas 价格从转账金额中预留",
+        "popupDesc": "矿工费将根据你设置的 Gas 价格从转账金额中预留",
         "popupTitle": "设置 Gas 价格 (Gwei)"
       },
       "header": {
@@ -937,7 +937,7 @@
       "requestFrom": "请求来源",
       "signAndSubmitButton": "签名并提交",
       "walletConnect": {
-        "chainSwitched": "您已在移动钱包上切换到不同的链\n请在手机钱包中切换到{{0}}",
+        "chainSwitched": "你已在移动钱包上切换到不同的链\n请在手机钱包中切换到{{0}}",
         "connectBeforeSign": "{{0}}未连接到 Rabby，请在签名前连接",
         "connected": "已连接并准备签名",
         "connectedButCantSign": "已连接但无法签名",
@@ -945,7 +945,7 @@
         "notConnectToMobile": "未连接到 {{brand}}",
         "switchChainAlert": "请在手机钱包中切换到{{chain}}",
         "switchToCorrectAddress": "请在手机钱包中切换到正确地址",
-        "wrongAddressAlert": "您已在手机钱包中切换到其他地址\n请在手机钱包中切换至正确地址",
+        "wrongAddressAlert": "你已在手机钱包中切换到其他地址\n请在手机钱包中切换至正确地址",
         "latency": "Latency",
         "requestFailedToSend": "Signing request failed to send",
         "requestSuccessToast": "Request successfully sent.",
@@ -1003,7 +1003,7 @@
         "tokenOut": "减少的代币"
       },
       "blocked": "拉黑",
-      "canOnlyUseImportedAddress": "您只能使用导入的地址进行签名",
+      "canOnlyUseImportedAddress": "你只能使用导入的地址进行签名",
       "cancelTx": {
         "gasPriceAlert": "将当前 Gas 价格设置为大于 {{value}} Gwei 以取消待处理的交易",
         "title": "取消待处理交易",
@@ -1018,17 +1018,16 @@
         "payNativeToken": "支付{{symbol}}",
         "title": "合约调用"
       },
-      "contractPopularity": "否。{{0}}，日期：{{1}}",
       "crossChain": {
         "title": "跨链"
       },
       "deployContract": {
-        "description": "您正在部署智能合约",
+        "description": "你正在部署智能合约",
         "descriptionTitle": "描述",
         "title": "部署合约"
       },
       "deployTimeTitle": "部署时间",
-      "eip1559Desc1": "在支持 EIP-1559 的链上，Priority Fee 是给处理您的交易的矿工的小费。\n您可以通过降低 Max Priority Fee 来节省最终的矿工费，这可能会导致完成交易需要耗费更长时间",
+      "eip1559Desc1": "在支持 EIP-1559 的链上，Priority Fee 是给处理你的交易的矿工的小费。\n你可以通过降低 Max Priority Fee 来节省最终的矿工费，这可能会导致完成交易需要耗费更长时间",
       "eip1559Desc2": "在 Rabby 中，Priority Fee（小费）= Max Fee - Base Fee。\n设置 Max Priority Fee 后，将从中扣除 Base Fee，剩下的部分将作为小费给予矿工",
       "enoughSafeSigCollected": "已收集到足够的签名",
       "failToFetchGasCost": "获取矿工费失败",
@@ -1047,10 +1046,10 @@
       "gasPriceMedian": "最近 100 笔链上交易的中位数：",
       "gasPriceTitle": "Gas 价格 (Gwei)",
       "gasSelectorTitle": "矿工费",
-      "hardwareSupport1559Alert": "确保您的硬件钱包固件已升级到支持 EIP 1559 的版本",
+      "hardwareSupport1559Alert": "确保你的硬件钱包固件已升级到支持 EIP 1559 的版本",
       "interactContract": "交互合约",
       "interacted": "之前交互过",
-      "manuallySetGasLimitAlert": "您已手动将 Gas 限制设置为",
+      "manuallySetGasLimitAlert": "你已手动将 Gas 限制设置为",
       "markAsBlock": "已标记为拉黑",
       "markAsTrust": "已标记为信任",
       "markRemoved": "标记已删除",
@@ -1059,7 +1058,7 @@
       "multiSigChainNotMatch": "多签地址不在本链上，无法发起交易",
       "myMark": "我的标记",
       "myNativeTokenBalance": "我的 {{symbol}} 余额：{{amount}} {{symbol}}",
-      "nativeTokenNotEngouthForGas": "您的钱包里没有足够的 Gas",
+      "nativeTokenNotEngouthForGas": "你的钱包里没有足够的 Gas",
       "neverInteracted": "之前没有交互过",
       "neverTransacted": "之前没有交易过",
       "nftApprove": {
@@ -1161,7 +1160,9 @@
       "unknownActionType": "未知的动作类型",
       "unwrap": "Unwrap",
       "viewRaw": "查看原始数据",
-      "wrapToken": "Wrap 代币"
+      "wrapToken": "Wrap 代币",
+      "contractPopularity": "No.{{0}} on {{1}}",
+      "myMarkWithContract": "My mark on {{chainName}} contract"
     },
     "signTypedData": {
       "buyNFT": {
@@ -1207,7 +1208,7 @@
       "Completed": "已完成",
       "InSufficientTip": "余额不足，无法进行交易模拟和 Gas 估算。\n将显示原始报价",
       "Pending": "待完成",
-      "QuoteLessWarning": "通过Rabby交易模拟估算， \ndex 提供的报价是 {{receive}} ，\n您收到的报价将比预期少 {{diff}}",
+      "QuoteLessWarning": "通过Rabby交易模拟估算， \ndex 提供的报价是 {{receive}} ，\n你收到的报价将比预期少 {{diff}}",
       "actual-slippage": "实际滑点：",
       "amount-in": "卖出{{symbol}}金额",
       "approve-tips": "1.授权 → 2.兑换",
@@ -1238,13 +1239,13 @@
       "need-to-approve-token-before-swap": "兑换前需要授权代币",
       "no-transaction-records": "无交易记录",
       "not-supported": "不支持",
-      "pendingTip": "交易已提交。\n如果交易长时间处于待完成状态，您可以尝试点击“更多”>“清除待完成”",
+      "pendingTip": "交易已提交。\n如果交易长时间处于待完成状态，你可以尝试点击“更多”>“清除待完成”",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Rabby手续费",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
       "recommend-slippage": "为了防止被抢先交易，我们建议滑点为 <2>{{ slippage }}</2>%",
-      "search-by-name-address": "搜素名称/地址",
+      "search-by-name-address": "搜索名称/地址",
       "security-verification-failed": "安全验证失败",
       "select-token": "选择代币",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "所选报价与当前价格差异较大，可能造成重大损失",
@@ -1257,12 +1258,12 @@
       "testnet-is-not-supported": "不支持测试网",
       "the-following-swap-rates-are-found": "发现以下报价",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何费用和滑点",
-      "this-exchange-is-not-enabled-to-trade-by-you": "您未启用该交易所进行交易",
+      "this-exchange-is-not-enabled-to-trade-by-you": "你未启用该交易所进行交易",
       "this-token-pair-is-not-supported": "不支持该代币对",
       "title": "兑换",
       "to": "买入",
       "trade": "交易",
-      "tradingSettingTip1": "1. 开启后，您将直接与交易所合约进行交互",
+      "tradingSettingTip1": "1. 开启后，你将直接与交易所合约进行交互",
       "tradingSettingTip2": "2. Rabby 不承担因交易所合约产生的任何风险",
       "tradingSettingTips": "共 {{viewCount}} 个交易所提供报价，{{tradeCount}} 个允许直接交易",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "由于滑点较高，交易可能会被抢先交易",
@@ -1301,8 +1302,8 @@
       "admins": "管理员",
       "assets": "余额",
       "delete-address": "删除地址",
-      "delete-desc": "在删除之前，请记住以下几点，以了解如何保护您的资产",
-      "direct-delete-desc": "该地址是一个{{renderBrand}}地址，Rabby不存储该地址的私钥或助记词，您可以将其删除",
+      "delete-desc": "在删除之前，请记住以下几点，以了解如何保护你的资产",
+      "direct-delete-desc": "该地址是一个{{renderBrand}}地址，Rabby不存储该地址的私钥或助记词，你可以将其删除",
       "edit-memo-title": "编辑地址备注",
       "hd-path": "HDpath",
       "manage-addresses-under-this-seed-phrase": "管理此助记词下的地址",
@@ -1314,8 +1315,9 @@
     "preferMetamaskDapps": {
       "title": "MetaMask 优先 Dapps",
       "howToAddDesc": "在网页空白处点击右键，找到该选项",
-      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
-      "howToAdd": "How to Add"
+      "desc": "无论当前启用Rabby或者MetaMask，以下Dapp将保持连接至MetaMask",
+      "howToAdd": "如何添加",
+      "empty": "No dapps"
     },
     "customRpc": {
       "title": "自定义 RPC",
@@ -1339,7 +1341,7 @@
       "notMintedTip": "仅 Rabby Badge持有者可以获取",
       "claimBadgeBtn": "领取 Rabby Badge",
       "time": "每日额度",
-      "requested": "您今日已获取过",
+      "requested": "你今日已获取过",
       "requestBtn": "获取"
     },
     "safeQueue": {
@@ -1365,6 +1367,56 @@
       "title": "成功导入",
       "addressCount": "{{count}} 个地址",
       "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+    },
+    "backupPrivateKey": {
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShowQr": "Click to show private key QR Code",
+      "clickToShow": "Click to show private key",
+      "title": "Backup Private Key"
+    },
+    "backupSeedPhrase": {
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShow": "Click to show Seed Phrase",
+      "copySeedPhrase": "Copy seed phrase",
+      "title": "Backup Seed Phrase"
+    },
+    "ethSign": {
+      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+    },
+    "createPassword": {
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>",
+      "confirmPlaceholder": "Confirm password",
+      "passwordMin": "Password must be at least 8 characters long",
+      "confirmError": "Passwords do not match",
+      "confirmRequired": "Please Confirm Password",
+      "title": "Set Password",
+      "passwordRequired": "Please input Password",
+      "passwordPlaceholder": "Password must be at least 8 characters long"
+    },
+    "welcome": {
+      "step2": {
+        "title": "Self-custodial",
+        "desc": "Private keys are stored locally with sole access to you",
+        "btnText": "Get Started"
+      },
+      "step1": {
+        "title": "Access All Dapps",
+        "desc": "Rabby connects to all Dapps that MetaMask supports"
+      }
+    },
+    "importQrBase": {
+      "btnText": "Try Again",
+      "desc": "Scan the QR code on the {{brandName}} hardware wallet"
+    },
+    "importSafe": {
+      "error": {
+        "invalid": "Not a valid address",
+        "required": "Please input address"
+      },
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains",
+      "loading": "Searching the deployed chain of this address",
+      "placeholder": "Please input address",
+      "title": "Add Safe address"
     }
   },
   "component": {
@@ -1408,15 +1460,15 @@
       },
       "EditWhitelist": {
         "backModalTitle": "放弃修改",
-        "backModalContent": "您所做的改动不会被保存",
+        "backModalContent": "你所做的改动不会被保存",
         "title": "编辑白名单",
         "tip": "选择地址加入白名单，点击保存",
         "save": "保存至白名单 ({{count}})"
       },
       "ListModal": {
         "title": "选择地址",
-        "whitelistEnabled": "白名单已开启。您只能转账给白名单中的地址。您也可以在 “更多” 中关闭白名单功能",
-        "whitelistDisabled": "白名单已关闭。您可以转账给所有地址",
+        "whitelistEnabled": "白名单已开启。你只能转账给白名单中的地址。你也可以在 “更多” 中关闭白名单功能",
+        "whitelistDisabled": "白名单已关闭。你可以转账给所有地址",
         "editWhitelist": "编辑白名单",
         "whitelistUpdated": "白名单已更新",
         "authModal": {
@@ -1431,7 +1483,7 @@
       "imported": "Imported"
     },
     "NFTNumberInput": {
-      "erc1155Tips": "您持有数量为 {{amount}}",
+      "erc1155Tips": "你持有数量为 {{amount}}",
       "erc721Tips": "ERC 721 NFT 只支持单个发送"
     },
     "TiledSelect": {
@@ -1443,7 +1495,7 @@
     "WalletConnectBridgeModal": {
       "title": "Bridge server URL",
       "requiredMsg": "请输入 bridge server host",
-      "invalidMsg": "请检查您的 host",
+      "invalidMsg": "请检查你的 host",
       "restore": "恢复初始设置"
     },
     "PillsSwitch": {

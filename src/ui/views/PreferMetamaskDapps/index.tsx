@@ -85,7 +85,10 @@ export const PreferMetamaskDapps = () => {
           })}
         </div>
       ) : (
-        <Empty desc="No dapps" className="mt-[80px]" />
+        <Empty
+          desc={t('page.preferMetamaskDapps.empty')}
+          className="mt-[80px]"
+        />
       )}
       <footer className="footer">
         <Button type="primary" onClick={handleAdd}>

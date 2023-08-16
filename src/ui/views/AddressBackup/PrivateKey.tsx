@@ -33,12 +33,10 @@ const AddressBackup = () => {
   }
   return (
     <div className="page-address-backup">
-      <header>Backup Private Key</header>
+      <header>{t('page.backupPrivateKey.title')}</header>
       <div className="alert mb-[20px]">
         <InfoCircleOutlined />
-        This Private Key is the credential to your assets. DO NOT lose it or
-        reveal it to others, otherwise you might lose your assets forever.
-        Please view it in a secure environment and keep it carefully.
+        {t('page.backupPrivateKey.alert')}
       </div>
       <div className="qrcode mb-[32px] relative">
         <div
@@ -49,7 +47,7 @@ const AddressBackup = () => {
         >
           <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
           <p className="mt-[16px] mb-0 text-white px-[15px]">
-            {t('Click to show private key QR Code')}
+            {t('page.backupPrivateKey.clickToShowQr')}
           </p>
         </div>
         <QRCode
@@ -67,7 +65,7 @@ const AddressBackup = () => {
             }}
           >
             <IconRcMask width={20} height={20} viewBox="0 0 44 44"></IconRcMask>
-            Click to show private key
+            {t('page.backupPrivateKey.clickToShow')}
           </div>
         ) : (
           <>
@@ -84,7 +82,7 @@ const AddressBackup = () => {
           className="w-[200px]"
           onClick={() => history.goBack()}
         >
-          Done
+          {t('global.Done')}
         </Button>
       </div>
     </div>

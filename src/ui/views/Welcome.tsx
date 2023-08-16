@@ -46,10 +46,8 @@ const Welcome = () => {
       </div>
       {step === 1 ? (
         <section className="step">
-          <div className="step-title">Access All Dapps</div>
-          <div className="step-content">
-            Rabby connects to all Dapps that MetaMask supports
-          </div>
+          <div className="step-title">{t('page.welcome.step1.title')}</div>
+          <div className="step-content">{t('page.welcome.step1.desc')}</div>
           <img className="step-image" src={WelcomeStep1} alt="" />
           <footer>
             <Button
@@ -60,21 +58,19 @@ const Welcome = () => {
                 setStep(2);
               }}
             >
-              Next
+              {t('global.next')}
             </Button>
           </footer>
         </section>
       ) : (
         <section className="step">
-          <div className="step-title">Self-custodial</div>
-          <div className="step-content">
-            Private keys are stored locally with sole access to you
-          </div>
+          <div className="step-title">{t('page.welcome.step2.title')}</div>
+          <div className="step-content">{t('page.welcome.step2.desc')}</div>
           <img className="step-image" src={WelcomeStep2} alt="" />
           <footer>
             <Link to="/no-address" replace>
               <Button type="primary" size="large" block>
-                Get Started
+                {t('page.welcome.step2.btnText')}
               </Button>
             </Link>
           </footer>
