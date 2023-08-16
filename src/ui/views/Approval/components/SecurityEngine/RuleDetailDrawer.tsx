@@ -57,8 +57,8 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
     const levelThreshold = threshold[level];
     switch (rule.valueDefine.type) {
       case 'boolean':
-        if (value === true) return t('page.securityEngine.yes');
-        return t('page.securityEngine.no');
+        if (value === true) return 'Yes';
+        return 'No';
       case 'percent':
       case 'float':
       case 'int': {

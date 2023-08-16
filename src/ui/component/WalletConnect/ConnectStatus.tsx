@@ -80,9 +80,9 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
       default:
         return (
           <div className="py-[15px]">
-            {t('page.newAddress.walletConnect.status.default')}{' '}
-            {displayBrandName}
-            {hasWallet ? '' : ' wallet'}
+            {t('page.newAddress.walletConnect.status.default', {
+              brand: `${displayBrandName}${hasWallet ? '' : ' wallet'}`,
+            })}
           </div>
         );
     }

@@ -346,8 +346,8 @@ const RuleDrawer = ({
     const levelThreshold = threshold[level];
     switch (ruleConfig.valueDefine.type) {
       case 'boolean':
-        if (value === true) return t('page.securityEngine.yes');
-        return t('page.securityEngine.no');
+        if (value === true) return 'Yes';
+        return 'No';
       case 'float':
       case 'percent':
       case 'int': {

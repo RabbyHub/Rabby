@@ -437,11 +437,11 @@
           "brandErrorDesc": "请使用 {{brandName}} 进行连接",
           "accountError": "地址不匹配",
           "accountErrorDesc": "请切换手机钱包地址",
-          "connected": "连接的",
+          "connected": "已连接",
           "duplicate": "该地址已导入",
-          "default": "用您的扫描"
+          "default": "用您的{{brand}}扫描"
         },
-        "title": "与 {{brandName}} 联系",
+        "title": "与 {{brandName}} 连接",
         "disconnected": "已断开连接",
         "accountError": {},
         "tip": {
