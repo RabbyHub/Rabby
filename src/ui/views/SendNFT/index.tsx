@@ -125,7 +125,7 @@ const SendNFT = () => {
       success: false,
       content: (
         <>
-          <Trans i18nKey={'page.sendNFT.whitelistAlert__notWhitelisted'} t={t}>
+          <Trans i18nKey="page.sendNFT.whitelistAlert__notWhitelisted" t={t}>
             The address is not whitelisted.
             <br /> I agree to grant temporary permission to transfer.
           </Trans>

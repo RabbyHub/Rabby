@@ -83,7 +83,7 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
           title={t('page.transactions.empty.title')}
           desc={
             <span>
-              <Trans i18nKey={'page.transactions.empty.desc'} t={t}>
+              <Trans i18nKey="page.transactions.empty.desc" t={t}>
                 No transactions found on
                 <Link className="underline" to="/settings/chain-list">
                   supported chains

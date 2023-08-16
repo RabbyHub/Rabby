@@ -29,8 +29,8 @@ export const ImportMyMetaMaskAccount = () => {
         Guidance <IconTinRightArrow className="inline-block relative" />
       </a>
     </Trans>,
-    <Trans i18nKey={'page.newAddress.metamask.step2'} />,
-    <Trans i18nKey={'page.newAddress.metamask.step3'} />,
+    <Trans i18nKey="page.newAddress.metamask.step2" />,
+    <Trans i18nKey="page.newAddress.metamask.step3" />,
   ];
 
   const importList = React.useMemo(

@@ -46,12 +46,6 @@
       "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
-      "gasLevel": {
-        "standard": "Standard",
-        "fast": "Fast",
-        "instant": "Instant",
-        "custom": "Custom"
-      },
       "balanceChange": {
         "successTitle": "Transaction Simulation Results",
         "failedTitle": "Transaction Simulation Failed",
@@ -324,8 +318,7 @@
         },
         "tips": {
           "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
-          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
-          "speedUp": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
         },
         "status": {
           "canceled": "Canceled",
@@ -693,7 +686,6 @@
           "count": "{{count}} in"
         },
         "whatsNew": "What's new",
-        "copied": "Copied",
         "importType": "Imported by {{type}}"
       },
       "recentConnection": {
@@ -762,7 +754,6 @@
         "viewOnDebank": "View on DeBank"
       },
       "contacts": {
-        "copied": "Copied",
         "noDataLabel": "no data",
         "noData": "No data",
         "oldContactList": "Old Contact List",
@@ -816,7 +807,6 @@
         },
         "settings": {
           "label": "Settings",
-          "showTestnets": "Show Testnets",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Custom RPC",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
@@ -830,7 +820,6 @@
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
-        "confirm": "",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
       },
       "tokenDetail": {
@@ -977,8 +966,7 @@
         "verifySeedPhrase": "Verify Seed Phrase",
         "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
         "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
-        "clearAll": "Clear All",
-        "confirm": ""
+        "clearAll": "Clear All"
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
@@ -1359,21 +1347,6 @@
         "proceed": "Proceed"
       }
     },
-    "AddAddressOptions": {
-      "unableToImport": {
-        "title": "Unable to import",
-        "content": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{brand}} before importing another device."
-      },
-      "connectHardwareWallets": "Connect Hardware Wallets",
-      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
-      "connectInstitutionalWallets": "Connect Institutional Wallets",
-      "createAddress": "Create New Seed Phrase",
-      "importSeedPhrase": "Import Seed Phrase",
-      "importPrivateKey": "Import Private Key",
-      "addMetaMaskAccount": "Import My MetaMask Account",
-      "addWatchMode": "Add Contacts",
-      "addWatchModeSubText": "You can also use it as a watch-only address"
-    },
     "AddressList": {
       "AddressItem": {
         "addressTypeTip": "Imported by {{type}}"
@@ -1427,37 +1400,6 @@
     "NFTNumberInput": {
       "erc1155Tips": "Your balance is {{amount}}",
       "erc721Tips": "Only one NFT of ERC 721 can be sent at a time"
-    },
-    "WalletConnect": {
-      "ConnectStatus": {
-        "statusText": {
-          "received": "Scan successful. Waiting to be confirmed",
-          "rejected": "Connection canceled. Please scan the QR code to retry.",
-          "brandNameError": "Wrong wallet app.",
-          "brandNameError2": "Please use {{displayBrandName}} to connect",
-          "accountError": "Address not match.",
-          "accountError2": "Please switch address in your mobile wallet",
-          "connected": "Connected",
-          "duplicate": "The address you're are trying to import is duplicate",
-          "scan": "Scan with your {{displayBrandName}}   {{wallet}}"
-        }
-      },
-      "SessionStatusBar": {
-        "tip": {
-          "accountError": "Connected but unable to sign. ",
-          "accountError2": "Please switch to the correct address in mobile wallet",
-          "disconnected": "Not connected to {{displayBrandName}}",
-          "connected": "Connected to {{displayBrandName}}"
-        },
-        "button": {
-          "switchAddress": "How to switch"
-        }
-      }
-    },
-    "ScanCopyQRCode": {
-      "qrcode": "QR code",
-      "url": "URL",
-      "changeBridge": "Change bridge server"
     },
     "TiledSelect": {
       "errMsg": "The seed phrase order is wrong, please check"
@@ -1530,12 +1472,6 @@
     "assets": "assets",
     "Confirm": "Confirm",
     "Cancel": "Cancel",
-    "Back": "Back",
-    "Next": "Next",
-    "Disconnected": "Disconnected",
-    "Disconnect": "Disconnect",
-    "Connect": "Connect",
-    "Copied": "Copied",
     "Clear": "Clear",
     "Save": "Save",
     "confirmButton": "Confirm",
@@ -1560,7 +1496,6 @@
       "invalidAddress": "Not a valid address",
       "notFoundGnosisKeyring": "No Gnosis keyring found",
       "notFoundTxGnosisKeyring": "No transaction in Gnosis keyring found",
-      "notFoundKeyring": "failed to addKeyring, keyring is undefined",
       "addKeyring404": "failed to addKeyring, keyring is undefined",
       "emptyAccount": "the current account is empty",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",

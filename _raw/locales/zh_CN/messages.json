@@ -6,15 +6,9 @@
     "back": "后退",
     "ok": "好的",
     "refresh": "刷新",
-    "Back": "后退",
     "Cancel": "取消",
     "Clear": "清除",
     "Confirm": "确认",
-    "Connect": "连接",
-    "Copied": "已复制",
-    "Disconnect": "断开",
-    "Disconnected": "已断开连接",
-    "Next": "下一步",
     "Save": "保存",
     "addButton": "添加",
     "assets": "资产",
@@ -30,12 +24,13 @@
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
-    "appDescription": "",
-    "appName": "",
+    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appName": "Rabby Wallet",
     "Deleted": "Deleted",
     "Loading": "Loading",
     "Balance": "余额",
-    "Done": "完成"
+    "Done": "完成",
+    "nonce": "nonce"
   },
   "page": {
     "transactions": {
@@ -115,7 +110,6 @@
           "count": "{{count}}"
         },
         "whatsNew": "更新内容",
-        "copied": "已复制",
         "importType": "由 {{type}} 导入"
       },
       "recentConnection": {
@@ -139,7 +133,6 @@
         "recentlyConnected": "最近连接"
       },
       "contacts": {
-        "copied": "已复制",
         "noData": "没有数据",
         "noDataLabel": "没有数据",
         "oldContactList": "旧联系人列表",
@@ -169,7 +162,7 @@
         "10Minutes": "10分钟",
         "1Day": "1天",
         "1Hour": "1小时",
-        "4Hours": "4个小时",
+        "4Hours": "4小时",
         "7Days": "7天",
         "aboutUs": "关于我们",
         "autoLockTime": "自动锁定时间",
@@ -181,7 +174,6 @@
         "clearPendingTip2": "这不会改变您帐户中的余额，也不会要求您重新输入助记词。\n您的所有资产和帐户信息都将保持安全",
         "clearWatchAddressContent": "您确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
-        "confirm": "确认",
         "currentVersion": "当前版本",
         "disableWhitelist": "关闭转账白名单",
         "disableWhitelistTip": "关闭后您可以将资产发送到任何地址",
@@ -209,7 +201,7 @@
           "enableWhitelistForSendingAssets": "启用转账白名单",
           "label": "设置",
           "metamaskPreferredDapps": "MetaMask 优先 Dapp",
-          "showTestnets": "显示测试网",
+          "enableTestnets": "启用测试网",
           "currentLanguage": "当前语言"
         },
         "supportedChains": "支持的链",
@@ -355,7 +347,6 @@
           "question": "在 Rabby 中导入它安全吗？",
           "answer": "是的，它将存储在您本地的浏览器上，并且只有您可以访问。"
         },
-        "confirm": "page.newAddress.seedPhrase.confirm",
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
         "importQuestion1": "如果我丢失了助记词，我的资产将永远丢失。",
         "importQuestion2": "如果我与他人分享我的助记词，我的资产就会被盗。",
@@ -620,8 +611,7 @@
         },
         "tips": {
           "canNotCancel": "无法加速或取消：不是第一个待完成的交易",
-          "pendingDetail": "只会有一笔交易成功完成，而且一般是 Gas Price 最高的一笔交易将成功",
-          "speedUp": "本次加速交易和原交易，最终只会完成其中一笔"
+          "pendingDetail": "只会有一笔交易成功完成，而且一般是 Gas Price 最高的一笔交易将成功"
         },
         "txType": {
           "cancel": "取消交易",
@@ -698,7 +688,8 @@
             "contract": "合约",
             "contractTrustValue": "合约信任值",
             "myApprovedAssets": "我的授权资产",
-            "revokeTrends": "24小时取消授权趋势"
+            "revokeTrends": "24小时取消授权趋势",
+            "myApprovalTime": "我的授权时间"
           }
         }
       }
@@ -954,8 +945,41 @@
         "notConnectToMobile": "未连接到 {{brand}}",
         "switchChainAlert": "请在手机钱包中切换到{{chain}}",
         "switchToCorrectAddress": "请在手机钱包中切换到正确地址",
-        "wrongAddressAlert": "您已在手机钱包中切换到其他地址\n请在手机钱包中切换至正确地址"
-      }
+        "wrongAddressAlert": "您已在手机钱包中切换到其他地址\n请在手机钱包中切换至正确地址",
+        "latency": "Latency",
+        "requestFailedToSend": "Signing request failed to send",
+        "requestSuccessToast": "Request successfully sent.",
+        "sendingRequest": "Sending signing request",
+        "signOnYourMobileWallet": "Please sign on your mobile wallet."
+      },
+      "common": {
+        "notSupport": "{{0}} is not supported"
+      },
+      "ledger": {
+        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
+        "notConnected": "Your wallet is not connected. Please re-connect.",
+        "resent": "Resent",
+        "siging": "Sending signing request...",
+        "signError": "Ledger sign error:",
+        "txRejected": "Transaction rejected",
+        "txRejectedByLedger": "Transaction is rejected on your Ledger",
+        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
+        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger"
+      },
+      "qrcode": {
+        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera",
+        "failedToGetExplain": "Failed to get explain",
+        "getSig": "Get signature",
+        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
+        "sigCompleted": "Signature completed",
+        "sigReceived": "Signature received",
+        "signWith": "Sign with {{brand}}",
+        "txFailed": "Transaction failed",
+        "unknownQRCode": "Error: We couldn't identify that QR code"
+      },
+      "resend": "Resend",
+      "submitTx": "Submit Transaction"
     },
     "signText": {
       "createKey": {
@@ -1011,12 +1035,6 @@
       "fakeTokenAlert": "这是由 Rabby 标记的诈骗代币",
       "firstOnChain": "首次链上交易",
       "floorPrice": "地板价",
-      "gasLevel": {
-        "custom": "自定义",
-        "fast": "快速",
-        "instant": "立即",
-        "standard": "标准"
-      },
       "gasLimitEmptyAlert": "请输入 Gas limit",
       "gasLimitLessThanExpect": "Gas limit 较低，\n交易失败的可能性为 1%",
       "gasLimitLessThanGasUsed": "Gas limit 太低，\n交易失败的可能性为 95%",
@@ -1258,7 +1276,8 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
-      "title": "切换到{{chain}}"
+      "title": "切换到{{chain}}",
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
     },
     "unlock": {
       "btn": {
@@ -1294,7 +1313,9 @@
     },
     "preferMetamaskDapps": {
       "title": "MetaMask 优先 Dapps",
-      "howToAddDesc": "在网页空白处点击右键，找到该选项"
+      "howToAddDesc": "在网页空白处点击右键，找到该选项",
+      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
+      "howToAdd": "How to Add"
     },
     "customRpc": {
       "title": "自定义 RPC",
@@ -1342,7 +1363,8 @@
     },
     "importSuccess": {
       "title": "成功导入",
-      "addressCount": "{{count}} 个地址"
+      "addressCount": "{{count}} 个地址",
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
     }
   },
   "component": {
@@ -1357,21 +1379,6 @@
         "cancel": "取消",
         "proceed": "继续"
       }
-    },
-    "AddAddressOptions": {
-      "unableToImport": {
-        "title": "无法导入",
-        "content": "不支持导入多个基于二维码的硬件钱包，\n请先删除 {{brand}} 中的所有地址，然后再导入新的设备"
-      },
-      "connectHardwareWallets": "连接硬件钱包",
-      "connectMobileWalletApps": "连接手机钱包",
-      "connectInstitutionalWallets": "连接机构钱包",
-      "createAddress": "创建新的助记词",
-      "importSeedPhrase": "导入助记词",
-      "importPrivateKey": "导入私钥",
-      "addMetaMaskAccount": "导入我的 MetaMask 帐户",
-      "addWatchMode": "添加联系人",
-      "addWatchModeSubText": "您也可以将其用作观察地址"
     },
     "AddressList": {
       "AddressItem": {
@@ -1426,37 +1433,6 @@
     "NFTNumberInput": {
       "erc1155Tips": "您持有数量为 {{amount}}",
       "erc721Tips": "ERC 721 NFT 只支持单个发送"
-    },
-    "WalletConnect": {
-      "ConnectStatus": {
-        "statusText": {
-          "received": "扫码成功，等待确认",
-          "rejected": "连接已取消，请重新扫描二维码",
-          "brandNameError": "钱包应用程序不匹配",
-          "brandNameError2": "请使用 {{displayBrandName}} 连接",
-          "accountError": "地址不匹配",
-          "accountError2": "请切换手机钱包地址",
-          "connected": "已连接",
-          "duplicate": "该地址已导入",
-          "scan": "使用 {{displayBrandName}}   {{wallet}} 扫码"
-        }
-      },
-      "SessionStatusBar": {
-        "tip": {
-          "accountError": "已连接但无法签名",
-          "accountError2": "请切换至手机钱包中的正确地址",
-          "disconnected": "未连接 {{displayBrandName}}",
-          "connected": "已连接 {{displayBrandName}}"
-        },
-        "button": {
-          "switchAddress": "如何切换"
-        }
-      }
-    },
-    "ScanCopyQRCode": {
-      "qrcode": "二维码",
-      "url": "URL",
-      "changeBridge": "修改 bridge server"
     },
     "TiledSelect": {
       "errMsg": "助记词无效，请检查！"
@@ -1520,7 +1496,6 @@
       "invalidAddress": "无效地址",
       "notFoundGnosisKeyring": "未找到 Gnosis keyring",
       "notFoundTxGnosisKeyring": "未找到 Gnosis keyring 的交易",
-      "notFoundKeyring": "添加 Keyring 失败，未定义 keyring",
       "addKeyring404": "添加 Keyring 失败，未定义 keyring",
       "emptyAccount": "当前帐户为空",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: 至少需要一个地址",

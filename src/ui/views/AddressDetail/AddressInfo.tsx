@@ -153,7 +153,7 @@ const GnonisSafeInfo = ({
                 </div>
               </div>
               <div className="rabby-list-item-desc text-gray-subTitle">
-                <Trans t={t} i18nKey={'page.addressDetail.tx-requires'}>
+                <Trans t={t} i18nKey="page.addressDetail.tx-requires">
                   Any transaction requires{' '}
                   <span className="text-gray-title text-14">
                     {{

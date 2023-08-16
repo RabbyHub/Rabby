@@ -167,10 +167,7 @@ const SendToken = () => {
       success: false,
       content: (
         <>
-          <Trans
-            t={t}
-            i18nKey={'page.sendToken.whitelistAlert__notWhitelisted'}
-          >
+          <Trans t={t} i18nKey="page.sendToken.whitelistAlert__notWhitelisted">
             The address is not whitelisted.
             <br /> I agree to grant temporary permission to transfer.
           </Trans>
@@ -901,7 +898,7 @@ const SendToken = () => {
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
                 <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
-                  <Trans i18nKey={'page.sendToken.addressNotInContract'} t={t}>
+                  <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
                     Not on address list.{' '}
                     <span
                       onClick={handleClickAddContact}
