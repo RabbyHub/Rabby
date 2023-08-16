@@ -37,7 +37,7 @@ module.exports = {
       blue: {
         from: '#8A78FD',
         to: '#796BFD',
-        light: '#7084ff',
+        light: '#8697FF',
         DEFAULT: '#796BFD',
         purple: '#5F75FF',
       },

@@ -1,3 +1,4 @@
+import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import React, {
   ComponentPropsWithoutRef,
@@ -16,7 +17,7 @@ const ItemWrapper = styled.div<{
   py: number | string;
   //default white;
   bgColor: string;
-  //default var(--blue-light, #eef1ff);
+  //default rgba(134, 151, 255, 0.1);
   hoverBgColor: string;
 }>`
   width: 100%;
@@ -37,7 +38,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: var(--brand-default, #7084ff);
+            border-color: ${LessPalette['@primary-color']};
           }
         `
       : ''}
@@ -60,7 +61,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   py?: number | string;
   //default white;
   bgColor?: string;
-  //default var(--blue-light, #eef1ff);
+  //default rgba(134, 151, 255, 0.1);
   hoverBgColor?: string;
   className?: string;
 
@@ -82,7 +83,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     px = 16,
     py = 16,
     bgColor = '#fff',
-    hoverBgColor = 'var(--blue-light, #eef1ff)',
+    hoverBgColor = 'rgba(134, 151, 255, 0.1)',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',

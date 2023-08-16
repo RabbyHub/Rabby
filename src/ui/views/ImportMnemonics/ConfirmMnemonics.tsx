@@ -191,7 +191,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
           </AddressWrapper>
           <div className="flex items-center justify-end">
             <span
-              style={{ color: 'var(--brand-default, #7084ff)' }}
+              style={{ color: '#8697ff ' }}
               className="cursor-pointer text-12 leading-14"
               onClick={handleGotoImportMoreAddress}
             >

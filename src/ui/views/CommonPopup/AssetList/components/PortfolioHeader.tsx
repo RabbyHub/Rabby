@@ -7,12 +7,12 @@ const Wrapper = styled.div`
   align-items: start;
   margin-bottom: 16px;
   .name {
-    background: var(--blue-light, #eef1ff);
+    background: rgba(134, 151, 255, 0.1);
     border-radius: 10px;
     font-weight: 500;
     font-size: 12px;
     line-height: 14px;
-    color: var(--brand-default, #7084ff);
+    color: #8697ff;
     padding: 4px 6px;
   }
   .description {

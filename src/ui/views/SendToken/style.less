@@ -55,7 +55,7 @@
   .account-card {
     height: 36px;
     padding: 0;
-    background: var(--blue-light, #eef1ff);
+    background: rgba(134, 151, 255, 0.1);
     border-radius: 4px;
     margin-bottom: 10px;
     .title {
@@ -65,7 +65,7 @@
       width: 18px;
       height: 18px;
       path {
-        fill: var(--brand-default, #7084ff);
+        fill: #8697ff;
       }
     }
     .account-detail {
@@ -73,11 +73,11 @@
       width: 100%;
       padding: 10px 12px;
       .send-text {
-        color: var(--brand-default, #7084ff) !important;
+        color: #8697ff !important;
       }
       .address-viewer-text,
       .amount {
-        color: var(--brand-default, #7084ff) !important;
+        color: #8697ff !important;
         font-size: 13px;
         line-height: 15px;
         font-weight: 500;
@@ -121,7 +121,7 @@
     padding: 3px 6px;
     border: 0.5px solid rgba(134, 151, 255, 0.5);
     border-radius: 2px;
-    color: var(--brand-default, #7084ff);
+    color: #8697ff;
     font-size: 12px;
     line-height: 14px;
     cursor: pointer;
@@ -133,7 +133,7 @@
       margin-right: 4px;
     }
     &:hover {
-      background-color: var(--blue-light, #eef1ff);
+      background-color: rgba(134, 151, 255, 0.1);
     }
     &.disabled {
       opacity: 0.5;
@@ -405,11 +405,11 @@
           margin-right: 0;
         }
         &:hover {
-          border: 1px solid var(--brand-default, #7084ff);
+          border: 1px solid @primary-color;
         }
         &.active {
-          background: var(--blue-light, #eef1ff);
-          border: 1px solid var(--brand-default, #7084ff);
+          background: rgba(134, 151, 255, 0.1);
+          border: 1px solid #8697ff;
         }
         .gas-level {
           text-align: center;
@@ -425,7 +425,7 @@
           margin: 4px auto 0;
           font-weight: 500;
           &.active {
-            color: var(--brand-default, #7084ff) !important;
+            color: #8697ff !important;
           }
         }
         .custom-input {
@@ -437,7 +437,7 @@
           padding-top: 0;
           font-weight: 500;
           &.active {
-            color: var(--brand-default, #7084ff) !important;
+            color: #8697ff !important;
           }
         }
         .ant-input:focus,

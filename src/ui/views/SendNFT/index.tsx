@@ -38,6 +38,7 @@ import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalConfirmAddToContacts';
+import LessPalette from '@/ui/style/var-defs';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -494,7 +495,7 @@ const SendNFT = () => {
                     <span
                       onClick={handleClickAddContact}
                       className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: 'var(--brand-default, #7084ff)' }}
+                      style={{ color: LessPalette['@primary-text-color'] }}
                     >
                       {/* Add to contacts */}
                       {t('page.sendNFT.tipAddToContacts')}
