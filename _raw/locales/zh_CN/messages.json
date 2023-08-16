@@ -1,14 +1,5 @@
 {
-  "appName": {
-    "message": "Rabby",
-    "description": "The name of the application"
-  },
-  "appDescription": {
-    "message": "专为 DeFi 设计的插件钱包",
-    "description": "The description of the application"
-  },
   "global": {
-    "error": "错误",
     "copied": "已复制",
     "confirm": "确认",
     "next": "下一步",

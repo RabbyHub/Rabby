@@ -1515,7 +1515,6 @@
   "global": {
     "appName": "Rabby Wallet",
     "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
-    "error": "",
     "copied": "Copied",
     "confirm": "Confirm",
     "next": "Next",
@@ -1571,7 +1570,6 @@
       "notFoundKeyringByAddress": "Can't find keyring by address",
       "txPushFailed": "Transaction push failed",
       "unlock": "you need to unlock wallet first",
-      "verifyPassword": "Cannot unlock without a previous vault",
       "duplicateAccount": "The account you're are trying to import is duplicate",
       "canNotUnlock": "Cannot unlock without a previous vault"
     },
@@ -1586,13 +1584,5 @@
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Contact"
     }
-  },
-  "appDescription": {
-    "description": "",
-    "message": ""
-  },
-  "appName": {
-    "description": "",
-    "message": ""
   }
 }

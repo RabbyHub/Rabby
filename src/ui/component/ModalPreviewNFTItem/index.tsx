@@ -99,7 +99,7 @@ export default function ModalPreviewNFTItem({
         <div className="nft-txpreview-properties">
           <div className="nft-txpreview-property">
             <div className="nft-txpreview-property-label">
-              {t('page.nft.ModalPreviewNFTItem.FieldLabel.Collection')}
+              {t('component.ModalPreviewNFTItem.FieldLabel.Collection')}
             </div>
             <div className="nft-txpreview-property-value">
               {collectProperty?.name || '-'}
@@ -107,13 +107,13 @@ export default function ModalPreviewNFTItem({
           </div>
           <div className="nft-txpreview-property">
             <div className="nft-txpreview-property-label">
-              {t('page.nft.ModalPreviewNFTItem.FieldLabel.Chain')}
+              {t('component.ModalPreviewNFTItem.FieldLabel.Chain')}
             </div>
             <div className="nft-txpreview-property-value">{chainName}</div>
           </div>
           <div className="nft-txpreview-property">
             <div className="nft-txpreview-property-label">
-              {t('page.nft.ModalPreviewNFTItem.FieldLabel.PurschaseDate')}
+              {t('component.ModalPreviewNFTItem.FieldLabel.PurschaseDate')}
             </div>
             <div className="nft-txpreview-property-value">
               {/* todo */}
@@ -122,7 +122,7 @@ export default function ModalPreviewNFTItem({
           </div>
           <div className="nft-txpreview-property">
             <div className="nft-txpreview-property-label">
-              {t('page.nft.ModalPreviewNFTItem.FieldLabel.LastPrice')}
+              {t('component.ModalPreviewNFTItem.FieldLabel.LastPrice')}
             </div>
             <div className="nft-txpreview-property-value">
               {(nft as any)?.usd_price
