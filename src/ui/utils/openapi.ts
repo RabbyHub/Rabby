@@ -15,9 +15,9 @@ type AllMethodNamesOnOpenAPI = {
 
 type ResultType<T> = {
   mainnet: T;
-  testnet: T;
+  testnet: T | null;
 };
-type IHandleResults<T, R = T> = (ctx: ResultType<T>) => R;
+type IHandleResults<T, R> = (ctx: ResultType<T>) => R extends T ? T : R;
 const defaultProcessResults = <T>(ctx: ResultType<T>) => {
   return ctx.mainnet;
 };
@@ -41,34 +41,36 @@ export async function requestOpenApiMultipleNets<
      */
     openapi: IOpenAPIClient;
     isTestnetTask?: boolean;
-  }) => Promise<T>,
+  }) => Promise<T> | T,
   options: {
     wallet: WalletControllerType;
     fallbackValues: ResultType<T>;
     needTestnetResult?: boolean;
     processResults?: IHandleResults<T, R>;
   }
-) {
+): Promise<R extends T ? T : R> {
   const {
     wallet,
     needTestnetResult = false,
-    processResults = defaultProcessResults,
+    processResults = defaultProcessResults as IHandleResults<T, R>,
     fallbackValues,
   } = options || {};
 
   const mainnetOpenapi = wallet.openapi;
   const testnetOpenapi = wallet.testnetOpenapi;
 
-  if (!needTestnetResult) {
-    return request({ wallet, openapi: mainnetOpenapi });
-  }
+  // if (!needTestnetResult) {
+  //   return request({ wallet, openapi: mainnetOpenapi });
+  // }
 
   const mainnetP = request({ wallet, openapi: mainnetOpenapi });
-  const testnetP = request({
-    wallet,
-    openapi: testnetOpenapi,
-    isTestnetTask: true,
-  });
+  const testnetP = !needTestnetResult
+    ? null
+    : request({
+        wallet,
+        openapi: testnetOpenapi,
+        isTestnetTask: true,
+      });
 
   return Promise.allSettled([mainnetP, testnetP]).then(([mainnet, testnet]) => {
     const mainResult =
