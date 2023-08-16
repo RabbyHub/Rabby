@@ -41,7 +41,7 @@ const Wrapper = styled.div`
   .title {
     color: #fff;
     text-align: center;
-
+    font-family: Roboto;
     font-size: 17px;
     font-style: normal;
     font-weight: 500;
@@ -136,7 +136,7 @@ const Wrapper = styled.div`
       .value {
         color: #ff6238;
         text-align: center;
-
+        font-family: Roboto;
         font-size: 24px;
         font-style: normal;
         font-weight: 500;
@@ -146,7 +146,7 @@ const Wrapper = styled.div`
         margin-top: 8px;
         color: #6a7587;
         text-align: center;
-
+        font-family: Roboto;
         font-size: 13px;
         font-style: normal;
         font-weight: 400;

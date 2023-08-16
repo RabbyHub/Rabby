@@ -147,7 +147,7 @@ const MessageWrapper = styled.div`
     color: #4b4d59;
     height: 320px;
     overflow-y: auto;
-    /* font-family: 'Roboto Mono'; */
+    font-family: 'Roboto Mono';
   }
   &.no-action {
     .content {
