@@ -1571,5 +1571,13 @@
       "simpleKeyring": "Private Key",
       "watchAddressKeyring": "Contact"
     }
+  },
+  "constant": {
+    "KEYRING_TYPE_TEXT": {
+      "HdKeyring": "Created by Seed Phrase",
+      "SimpleKeyring": "Imported by Private Key",
+      "WatchAddressKeyring": "Contact"
+    },
+    "IMPORTED_HD_KEYRING": "Imported by Seed Phrase"
   }
 }

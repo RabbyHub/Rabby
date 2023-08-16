@@ -26,8 +26,8 @@
     "watchModeAddress": "观察模式地址",
     "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
     "appName": "Rabby Wallet",
-    "Deleted": "Deleted",
-    "Loading": "Loading",
+    "Deleted": "已删除",
+    "Loading": "加载中",
     "Balance": "余额",
     "Done": "完成",
     "nonce": "nonce"
@@ -40,7 +40,7 @@
         "title": "没有交易"
       },
       "explain": {
-        "approve": "授权 {{project}} 的 {{amount}} {{symbol}}",
+        "approve": "授权 {{amount}} {{symbol}} 给  {{project}} ",
         "cancel": "取消了待完成的交易",
         "unknown": "合约交互"
       }
@@ -188,7 +188,7 @@
         },
         "followUs": "关注我们",
         "host": "host",
-        "inputOpenapiHost": "请输入openapi主机",
+        "inputOpenapiHost": "请输入openapi host",
         "lock": {
           "never": "永不"
         },
@@ -236,7 +236,7 @@
         "amount": "数量",
         "portfolio": {
           "nftTips": "根据本协议认可的地板价计算",
-          "fractionTips": "根据链接的ERC20代币的价格进行计算"
+          "fractionTips": "根据链接的 ERC20 代币的价格进行计算"
         },
         "tokenButton": {
           "subTitle": "该列表中的代币不会计算到总余额中"
@@ -898,7 +898,7 @@
         "contract": "合约地址"
       },
       "tokenInfoPrice": "价格",
-      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
+      "whitelistAlert__disabled": "转账白名单已关闭，你可以转账给任何地址",
       "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 <1 /> 我批准此次转账",
       "whitelistAlert__temporaryGranted": "已暂时批准",
       "whitelistAlert__whitelisted": "白名单地址",
@@ -946,40 +946,40 @@
         "switchChainAlert": "请在手机钱包中切换到{{chain}}",
         "switchToCorrectAddress": "请在手机钱包中切换到正确地址",
         "wrongAddressAlert": "你已在手机钱包中切换到其他地址\n请在手机钱包中切换至正确地址",
-        "latency": "Latency",
-        "requestFailedToSend": "Signing request failed to send",
-        "requestSuccessToast": "Request successfully sent.",
-        "sendingRequest": "Sending signing request",
-        "signOnYourMobileWallet": "Please sign on your mobile wallet."
+        "latency": "延迟",
+        "requestFailedToSend": "签名请求发送失败",
+        "requestSuccessToast": "请求已成功发送",
+        "sendingRequest": "签名请求发送中",
+        "signOnYourMobileWallet": "请用你的手机钱包签名"
       },
       "common": {
-        "notSupport": "{{0}} is not supported"
+        "notSupport": "暂不支持 {{0}}"
       },
       "ledger": {
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "notConnected": "Your wallet is not connected. Please re-connect.",
-        "resent": "Resent",
-        "siging": "Sending signing request...",
-        "signError": "Ledger sign error:",
-        "txRejected": "Transaction rejected",
-        "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
-        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger"
+        "notConnected": "你的钱包未连接，请重新连接",
+        "resent": "重试",
+        "siging": "签名请求发送中",
+        "signError": "Ledger 签名错误:",
+        "txRejected": "交易已拒绝",
+        "txRejectedByLedger": "Ledger 上已拒绝该交易",
+        "unlockAlert": "请插入并解锁你的 Ledger 设备，打开 Ethereum 应用程序",
+        "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序"
       },
       "qrcode": {
-        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera",
+        "afterSignDesc": "签名确认后，请将 {{brand}} 的二维码放置于你的电脑摄像头前",
         "failedToGetExplain": "Failed to get explain",
-        "getSig": "Get signature",
+        "getSig": "获取签名",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
-        "sigCompleted": "Signature completed",
-        "sigReceived": "Signature received",
-        "signWith": "Sign with {{brand}}",
-        "txFailed": "Transaction failed",
-        "unknownQRCode": "Error: We couldn't identify that QR code"
+        "qrcodeDesc": "请使用你的 {{brand}} 扫码签名。<br></br>签名后，点击下方按钮获取签名。",
+        "sigCompleted": "签名已完成",
+        "sigReceived": "签名已获取",
+        "signWith": "使用 {{brand}} 签名",
+        "txFailed": "交易失败",
+        "unknownQRCode": "错误：无法识别二维码"
       },
-      "resend": "Resend",
-      "submitTx": "Submit Transaction"
+      "resend": "重试",
+      "submitTx": "提交"
     },
     "signText": {
       "createKey": {
@@ -1278,7 +1278,7 @@
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
       "title": "切换到{{chain}}",
-      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+      "testnetTip": "连接测试网前，请在 “更多” 中点击“启用测试网”"
     },
     "unlock": {
       "btn": {
@@ -1366,32 +1366,32 @@
     "importSuccess": {
       "title": "成功导入",
       "addressCount": "{{count}} 个地址",
-      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+      "gnosisChainDesc": "该地址部署于  {{count}} 条链上"
     },
     "backupPrivateKey": {
       "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
-      "clickToShowQr": "Click to show private key QR Code",
-      "clickToShow": "Click to show private key",
-      "title": "Backup Private Key"
+      "clickToShowQr": "点击展示私钥二维码",
+      "clickToShow": "点击展示私钥",
+      "title": "备份私钥"
     },
     "backupSeedPhrase": {
       "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
-      "clickToShow": "Click to show Seed Phrase",
-      "copySeedPhrase": "Copy seed phrase",
-      "title": "Backup Seed Phrase"
+      "clickToShow": "点击展示助记词",
+      "copySeedPhrase": "复制助记词",
+      "title": "备份助记词"
     },
     "ethSign": {
-      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+      "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
     },
     "createPassword": {
-      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>",
-      "confirmPlaceholder": "Confirm password",
-      "passwordMin": "Password must be at least 8 characters long",
-      "confirmError": "Passwords do not match",
-      "confirmRequired": "Please Confirm Password",
-      "title": "Set Password",
-      "passwordRequired": "Please input Password",
-      "passwordPlaceholder": "Password must be at least 8 characters long"
+      "agree": "我已阅读并同意 <1/> <2>Terms of Use</2>",
+      "confirmPlaceholder": "确认密码",
+      "passwordMin": "密码长度至少需要8个字符",
+      "confirmError": "密码不匹配",
+      "confirmRequired": "请确认密码",
+      "title": "设置密码",
+      "passwordRequired": "请输入密码",
+      "passwordPlaceholder": "密码长度至少需要8个字符"
     },
     "welcome": {
       "step2": {
@@ -1405,18 +1405,18 @@
       }
     },
     "importQrBase": {
-      "btnText": "Try Again",
-      "desc": "Scan the QR code on the {{brandName}} hardware wallet"
+      "btnText": "重试",
+      "desc": "请扫描 {{brandName}} 硬件钱包的二维码"
     },
     "importSafe": {
       "error": {
-        "invalid": "Not a valid address",
-        "required": "Please input address"
+        "invalid": "无效地址",
+        "required": "请输入地址"
       },
-      "gnosisChainDesc": "This address was found deployed on  {{count}} chains",
-      "loading": "Searching the deployed chain of this address",
-      "placeholder": "Please input address",
-      "title": "Add Safe address"
+      "gnosisChainDesc": "该地址部署于  {{count}} 条链上",
+      "loading": "正在查询地址部署链",
+      "placeholder": "请输入地址",
+      "title": "添加 Safe 地址"
     }
   },
   "component": {
@@ -1571,5 +1571,13 @@
       "simpleKeyring": "私钥",
       "watchAddressKeyring": "联系人"
     }
+  },
+  "constant": {
+    "KEYRING_TYPE_TEXT": {
+      "HdKeyring": "通过助记词创建",
+      "SimpleKeyring": "通过私钥导入",
+      "WatchAddressKeyring": "联系人"
+    },
+    "IMPORTED_HD_KEYRING": "通过助记词导入"
   }
 }
