@@ -55,10 +55,15 @@ import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTra
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import LessPalette from '@/ui/style/var-defs';
 
-const MaxButton = styled.img`
+const MaxButton = styled.div`
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 5px;
   cursor: pointer;
   user-select: nonce;
   margin-left: 6px;
+  background-color: rgba(134, 151, 255, 0.1);
+  color: #8697ff;
 `;
 
 const SendToken = () => {
@@ -939,10 +944,9 @@ const SendToken = () => {
                   </>
                 )}
                 {currentToken.amount > 0 && (
-                  <MaxButton
-                    src={ButtonMax}
-                    onClick={handleClickTokenBalance}
-                  />
+                  <MaxButton onClick={handleClickTokenBalance}>
+                    {t('page.sendToken.max')}
+                  </MaxButton>
                 )}
               </div>
               {showGasReserved &&

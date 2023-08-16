@@ -259,7 +259,9 @@
         "notSupport": "{{0}} is not supported"
       },
       "resend": "Resend",
-      "submitTx": "Submit Transaction"
+      "submitTx": "Submit Transaction",
+      "testnet": "Testnet",
+      "mainnet": "Mainnet"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -427,7 +429,8 @@
       },
       "balanceError": {
         "insufficientBalance": "Insufficient balance"
-      }
+      },
+      "max": "MAX"
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"

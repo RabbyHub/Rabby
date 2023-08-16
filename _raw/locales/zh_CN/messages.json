@@ -907,7 +907,8 @@
       },
       "balanceWarn": {
         "gasFeeReservation": "需要预留 Gas"
-      }
+      },
+      "max": "全部"
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费"
@@ -979,7 +980,9 @@
         "unknownQRCode": "错误：无法识别二维码"
       },
       "resend": "重试",
-      "submitTx": "提交"
+      "submitTx": "提交",
+      "testnet": "测试网",
+      "mainnet": "主网"
     },
     "signText": {
       "createKey": {
