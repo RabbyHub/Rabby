@@ -595,9 +595,9 @@
         "explain": {
           "approve": "授权 {{protocol}} 的 {{count}} {{token}}",
           "cancel": "取消 {{token}} 授权 {{protocol}}",
-          "cancelNFTCollectionApproval": "取消 {{protocol}} 的 NFT 系列授权",
+          "cancelNFTCollectionApproval": "取消 {{protocol}} 的 NFT collection 授权",
           "cancelSingleNFTApproval": "取消 {{protocol}} 的单一 NFT 授权",
-          "nftCollectionApproval": "{{protocol}} 的 NFT 系列授权",
+          "nftCollectionApproval": "{{protocol}} 的 NFT collection 授权",
           "send": "发送 {{amount}} {{symbol}}",
           "singleNFTApproval": "{{protocol}} 的单一 NFT 授权",
           "unknown": "未知交易"
@@ -1076,10 +1076,10 @@
         "nftContractTrustValueTip": "信任值是指授权并暴露给该合约的资产总价值，\n信任值低表示该合约存在风险或 180 天内不活跃",
         "title": "授权 NFT"
       },
-      "nftCollection": "NFT 系列",
+      "nftCollection": "NFT collection",
       "nftCollectionApprove": {
-        "approveCollection": "授权 NFT 系列",
-        "title": "授权 NFT 系列"
+        "approveCollection": "授权 NFT collection",
+        "title": "授权 NFT Collection"
       },
       "nftIn": "NFT 在",
       "noGasRequired": "无需 Gas",
@@ -1094,8 +1094,8 @@
         "title": "取消 NFT 授权"
       },
       "revokeNFTCollectionApprove": {
-        "revokeCollection": "取消的 NFT 系列",
-        "title": "取消 NFT 系列授权 "
+        "revokeCollection": "取消的 NFT collection",
+        "title": "取消 NFT Collection 授权 "
       },
       "revokePermit2": {
         "title": "取消 Permit2 代币授权"
