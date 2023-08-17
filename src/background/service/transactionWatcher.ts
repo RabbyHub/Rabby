@@ -58,8 +58,8 @@ class TransactionWatcher {
     const url = format(chainItem.scanLink, hash);
     notification.create(
       url,
-      i18n.t('Transaction submitted'),
-      i18n.t('click to view more information')
+      i18n.t('background.transactionWatcher.submitted'),
+      i18n.t('background.transactionWatcher.more')
     );
   };
 
@@ -105,13 +105,13 @@ class TransactionWatcher {
 
     const title =
       txReceipt.status === '0x1'
-        ? i18n.t('Transaction completed')
-        : i18n.t('Transaction failed');
+        ? i18n.t('background.transactionWatcher.completed')
+        : i18n.t('background.transactionWatcher.failed');
 
     notification.create(
       url,
       title,
-      i18n.t('click to view more information'),
+      i18n.t('background.transactionWatcher.more'),
       2
     );
 

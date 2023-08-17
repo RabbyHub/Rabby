@@ -48,7 +48,7 @@ const WalletConnectTemplate = () => {
           brand: brand.brand,
           image: brand.image,
           editing: true,
-          title: 'Connected successfully',
+          title: t('page.newAddress.walletConnect.connectedSuccessfully'),
           importedAccount: true,
         },
       });
@@ -162,7 +162,7 @@ const WalletConnectTemplate = () => {
         sessionStatus === 'ADDRESS_DUPLICATE'
       )
         return;
-      message.error(t('Please check your network or refresh the QR code'));
+      message.error(t('page.newAddress.walletConnect.qrCodeError'));
     };
 
     eventBus.addEventListener(
@@ -231,11 +231,11 @@ const WalletConnectTemplate = () => {
           />
         </div>
         <p className="text-[17px] leading-none mb-8 mt-0 text-white text-center font-bold">
-          Connect your {brandName}
+          {t('page.newAddress.walletConnect.connectYour')} {brandName}
           {hasWallet ? '' : ' Wallet'}
         </p>
         <p className="text-13 leading-none mb-0 text-white font-medium text-center">
-          {'via Wallet Connect'}
+          {t('page.newAddress.walletConnect.viaWalletConnect')}
         </p>
         <img src={Mask} className="mask" />
       </div>

@@ -19,6 +19,7 @@ import {
   NFTSpenderPopup,
   NFTSpenderPopupProps,
 } from './ViewMorePopup/NFTSpenderPopup';
+import { useTranslation } from 'react-i18next';
 
 type Props =
   | SpenderPopupProps
@@ -58,6 +59,7 @@ const PopupContainer = styled.div`
 
 const ViewMore = (props: Props) => {
   const [popupVisible, setPopupVisible] = useState(false);
+  const { t } = useTranslation();
 
   const handleClickViewMore = () => {
     setPopupVisible(true);
@@ -84,7 +86,7 @@ const ViewMore = (props: Props) => {
   return (
     <>
       <span className="underline cursor-pointer" onClick={handleClickViewMore}>
-        View more
+        {t('page.approvals.component.ViewMore.text')}
       </span>
       <Popup
         visible={popupVisible}

@@ -16,6 +16,7 @@ import { LedgerAccount } from './LedgerAccount';
 import { CommonAccount } from './CommonAccount';
 import { GridPlusAccount } from './GridPlusAccount';
 import { Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   account: Account;
@@ -32,6 +33,7 @@ export const AccountInfo: React.FC<Props> = ({
   const [balance] = useCurrentBalance(account?.address);
   const displayBalance = splitNumberByStep((balance || 0).toFixed(2));
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const init = async () => {
     const result = await wallet.getAlianName(
@@ -68,7 +70,7 @@ export const AccountInfo: React.FC<Props> = ({
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-black mt-[4px]')}
+            className={clsx('text-13 text-black mt-[2px]')}
           />
         </div>
         {isTestnet ? null : (
@@ -88,61 +90,61 @@ export const AccountInfo: React.FC<Props> = ({
       {account?.type === KEYRING_CLASS.HARDWARE.ONEKEY && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.ONEKEY.icon}
-          tip="OneKey address"
+          tip={t('page.signFooterBar.addressTip.onekey')}
         />
       )}
       {account?.type === KEYRING_CLASS.HARDWARE.TREZOR && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.TREZOR.icon}
-          tip="Trezor address"
+          tip={t('page.signFooterBar.addressTip.trezor')}
         />
       )}
       {account?.type === KEYRING_CLASS.HARDWARE.BITBOX02 && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.BITBOX02.icon}
-          tip="BitBox02 address"
+          tip={t('page.signFooterBar.addressTip.bitbox')}
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.KEYSTONE && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.Keystone.icon}
-          tip="Keystone address"
+          tip={t('page.signFooterBar.addressTip.keystone')}
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.AIRGAP && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.AirGap.icon}
-          tip="AirGap address"
+          tip={t('page.signFooterBar.addressTip.airgap')}
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.COOLWALLET && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.CoolWallet.icon}
-          tip="CoolWallet address"
+          tip={t('page.signFooterBar.addressTip.coolwallet')}
         />
       )}
       {account?.type === KEYRING_CLASS.PRIVATE_KEY && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY]}
-          tip="Private Key address"
+          tip={t('page.signFooterBar.addressTip.privateKey')}
         />
       )}
       {account?.type === KEYRING_CLASS.MNEMONIC && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.MNEMONIC]}
-          tip="Seed Phrase address"
+          tip={t('page.signFooterBar.addressTip.seedPhrase')}
         />
       )}
       {account?.type === KEYRING_CLASS.WATCH && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.WATCH]}
-          tip="Unable to sign with watch-only address"
+          tip={t('page.signFooterBar.addressTip.watchAddress')}
         />
       )}
       {account?.type === KEYRING_CLASS.GNOSIS && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.Gnosis.icon}
-          tip="Safe address"
+          tip={t('page.signFooterBar.addressTip.safe')}
         />
       )}
     </div>

@@ -5,6 +5,7 @@ import IconUnknown from 'ui/assets/token-default.svg';
 import { numberWithCommasIsLtOne } from 'ui/utils';
 import { getTokenSymbol } from 'ui/utils/token';
 import { TokenLabel } from './TokenLabel';
+import { useTranslation } from 'react-i18next';
 
 type TokenChangeProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -19,6 +20,7 @@ export const TokenChange = ({
   onClose,
 }: TokenChangeProps) => {
   const tokens = tokenDict || {};
+  const { t } = useTranslation();
 
   if (!info.sends?.length && !info.receives?.length) {
     return null;
@@ -32,7 +34,7 @@ export const TokenChange = ({
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
-            (symbol ? `${symbol} ${token?.inner_id}` : 'Unknown NFT')
+            (symbol ? `${symbol} ${token?.inner_id}` : t('global.unknownNFT'))
           : symbol;
 
         return (
@@ -84,7 +86,7 @@ export const TokenChange = ({
         const symbol = getTokenSymbol(token);
         const name = isNft
           ? token?.name ||
-            (symbol ? `${symbol} ${token?.inner_id}` : 'Unknown NFT')
+            (symbol ? `${symbol} ${token?.inner_id}` : t('global.unknownNFT'))
           : symbol;
 
         return (

@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
+import { useTranslation } from 'react-i18next';
 
 const Null = () => null;
 
@@ -34,6 +35,7 @@ const ChainList = () => {
     history.goBack();
   };
 
+  const { t } = useTranslation();
   const [selectedTab, onTabChange] = useState<'mainnet' | 'testnet'>('mainnet');
 
   const list = useMemo(
@@ -56,7 +58,7 @@ const ChainList = () => {
   return (
     <div className="page-chain-list">
       <PageHeader onBack={goBack} fixed>
-        {list.length} chains supported
+        {t('page.chainList.title', { count: list.length })}
       </PageHeader>
       <PillsSwitch
         value={selectedTab}
@@ -68,11 +70,11 @@ const ChainList = () => {
           [
             {
               key: 'mainnet',
-              label: `Mainnets (${mainnet.length})`,
+              label: `${t('page.chainList.mainnet')} (${mainnet.length})`,
             },
             {
               key: 'testnet',
-              label: `Testnets (${testnet.length})`,
+              label: `${t('page.chainList.testnet')} (${testnet.length})`,
             },
           ] as const
         }

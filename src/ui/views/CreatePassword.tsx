@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Input, Form, Spin, Button, Drawer } from 'antd';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
@@ -126,7 +126,7 @@ const CreatePassword = () => {
               src={UnlockLogo}
             />
             <p className="text-24 mb-8 mt-0 text-white text-center font-bold">
-              Set Password
+              {t('page.createPassword.title')}
             </p>
             <p className="text-14 mb-0 text-white opacity-80 text-center">
               It will be used to unlock your wallet and encrypt local data
@@ -141,18 +141,18 @@ const CreatePassword = () => {
               rules={[
                 {
                   required: true,
-                  message: t('Please input Password'),
+                  message: t('page.createPassword.passwordRequired'),
                 },
                 {
                   min: MINIMUM_PASSWORD_LENGTH,
-                  message: 'Password must be at least 8 characters long',
+                  message: t('page.createPassword.passwordMin'),
                 },
               ]}
             >
               <Input
                 className={'h-[52px]'}
                 size="large"
-                placeholder={'Password must be at least 8 characters long'}
+                placeholder={t('page.createPassword.passwordPlaceholder')}
                 type="password"
                 autoFocus
                 spellCheck={false}
@@ -165,7 +165,7 @@ const CreatePassword = () => {
               rules={[
                 {
                   required: true,
-                  message: t('Please Confirm Password'),
+                  message: t('page.createPassword.confirmRequired'),
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value: string) {
@@ -173,7 +173,7 @@ const CreatePassword = () => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error(t('Passwords do not match'))
+                      new Error(t('page.createPassword.confirmError'))
                     );
                   },
                 }),
@@ -182,7 +182,7 @@ const CreatePassword = () => {
               <Input
                 className="h-[52px]"
                 size="large"
-                placeholder={'Confirm password'}
+                placeholder={t('page.createPassword.confirmPlaceholder')}
                 type="password"
                 spellCheck={false}
               />
@@ -201,17 +201,19 @@ const CreatePassword = () => {
               <img src={IconCheck} className="w-[10px]" />
             </div>
             <span className="text-[13px] text-gray-subTitle">
-              I have read and agree to the{' '}
-              <span
-                className="text-blue-light cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleVisible();
-                }}
-              >
-                Terms of Use
-              </span>
-            </span>{' '}
+              <Trans t={t} i18nKey="page.createPassword.agree">
+                have read and agree to the{' '}
+                <span
+                  className="text-blue-light cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleVisible();
+                  }}
+                >
+                  Terms of Use
+                </span>
+              </Trans>
+            </span>
           </div>
           <div className="p-32 pt-0">
             <Button

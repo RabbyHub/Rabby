@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import {
   CHAINS_ENUM,
@@ -41,6 +42,7 @@ const Process = ({
   const { setClassName, setTitle: setPopupViewTitle } = useCommonPopupView();
   const [displayBrandName] = useDisplayBrandName(account.brandName);
   const brandRealUrl = useWalletConnectIcon(account);
+  const { t } = useTranslation();
   const brandUrl = React.useMemo(() => {
     return (
       brandRealUrl ||
@@ -76,7 +78,9 @@ const Process = ({
   }, [status, sendingCounter]);
 
   React.useEffect(() => {
-    setPopupViewTitle(`Sign with ${displayBrandName}`);
+    setPopupViewTitle(
+      t('page.signFooterBar.qrcode.signWith', { brand: displayBrandName })
+    );
   }, [displayBrandName]);
 
   const init = async () => {
@@ -86,27 +90,29 @@ const Process = ({
   React.useEffect(() => {
     switch (mergedStatus) {
       case WALLETCONNECT_STATUS_MAP.CONNECTED:
-        setContent('Sending signing request');
+        setContent(t('page.signFooterBar.walletConnect.sendingRequest'));
         setDescription('');
         setStatusProp('SENDING');
         break;
       case WALLETCONNECT_STATUS_MAP.WAITING:
-        setContent('Request successfully sent. ');
-        setDescription('Please sign on your mobile wallet.');
+        setContent(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+        setDescription(
+          t('page.signFooterBar.walletConnect.signOnYourMobileWallet')
+        );
         setStatusProp('WAITING');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILD:
-        setContent('Signing request failed to send');
+        setContent(t('page.signFooterBar.walletConnect.requestFailedToSend'));
         setDescription('');
         setStatusProp('FAILED');
         break;
       case WALLETCONNECT_STATUS_MAP.SIBMITTED:
-        setContent('Signature completed');
+        setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
         setStatusProp('RESOLVED');
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
-        setContent('Transaction rejected');
+        setContent(t('page.signFooterBar.ledger.txRejected'));
         setDescription('');
         setStatusProp('REJECTED');
         break;
@@ -129,7 +135,7 @@ const Process = ({
         <>
           {content}
           {mergedStatus === WALLETCONNECT_STATUS_MAP.CONNECTED && (
-            <span> ({sendingCounter}s)</span>
+            <span>({sendingCounter}s)</span>
           )}
         </>
       }

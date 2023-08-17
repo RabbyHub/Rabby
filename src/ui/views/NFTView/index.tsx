@@ -13,6 +13,7 @@ import { CollectionListSkeleton } from './CollectionListSkeleton';
 import styled from 'styled-components';
 import { useCollection } from './useCollection';
 import { NFTListEmpty, NFTStarredListEmpty } from './NFTEmpty';
+import { useTranslation } from 'react-i18next';
 
 const TabsStyled = styled(Tabs)`
   .ant-tabs-tab {
@@ -71,7 +72,7 @@ export const NFTView: React.FC = () => {
     onToggleStar,
     checkStarred,
   } = useCollection();
-
+  const { t } = useTranslation();
   const handleShowModal = React.useCallback((item: NFTItem, name: string) => {
     setCollectionName(name);
     setNFTItem(item);
@@ -95,11 +96,11 @@ export const NFTView: React.FC = () => {
   return (
     <div className="nft-view px-20 pb-20 bg-[#F0F2F5] h-screen">
       <PageHeader onBack={handleClickBack} forceShowBack>
-        {'NFT'}
+        {t('page.nft.title')}
       </PageHeader>
       <div>
         <TabsStyled defaultActiveKey={tab} centered onChange={setTab}>
-          <Tabs.TabPane tab="All" key="all">
+          <Tabs.TabPane tab={t('page.nft.all')} key="all">
             {isLoading ? (
               <CollectionListSkeleton />
             ) : list.length ? (
@@ -118,7 +119,12 @@ export const NFTView: React.FC = () => {
               <NFTListEmpty />
             )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab={`Starred (${starredList.length})`} key="starred">
+          <Tabs.TabPane
+            tab={t('page.nft.starred', {
+              count: starredList.length,
+            })}
+            key="starred"
+          >
             {isLoading ? (
               <CollectionListSkeleton />
             ) : starredList.length ? (

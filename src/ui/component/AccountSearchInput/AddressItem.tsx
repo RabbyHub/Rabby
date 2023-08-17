@@ -17,6 +17,7 @@ import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import { useTranslation } from 'react-i18next';
 
 export interface AddressItemProps {
   balance: number;
@@ -46,6 +47,7 @@ const AddressItem = memo(
       whitelistEnable: s.whitelist.enabled,
       whiteList: s.whitelist.whitelist,
     }));
+    const { t } = useTranslation();
 
     const isInWhiteList = useMemo(() => {
       return whiteList.some((e) => isSameAddress(e, address));
@@ -112,7 +114,9 @@ const AddressItem = memo(
                   <Tooltip
                     overlayClassName="rectangle"
                     placement="top"
-                    title={'Whitelisted address'}
+                    title={t(
+                      'component.AccountSearchInput.AddressItem.whitelistedAddressTip'
+                    )}
                   >
                     <img
                       src={IconWhitelist}

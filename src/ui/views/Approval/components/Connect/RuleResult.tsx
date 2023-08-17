@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
@@ -69,6 +70,7 @@ const RuleResult = ({
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
   onEditUserList(): void;
 }) => {
+  const { t } = useTranslation();
   const handleClick = () => {
     if (!rule.result) return;
     onSelect({
@@ -100,13 +102,13 @@ const RuleResult = ({
 
   const ruleDesc = () => {
     if (rule.id === '1004') {
-      return <>Listed by</>;
+      return <>{t('page.connect.listedBy')}</>;
     }
     if (rule.id === '1005') {
-      return <>Site popularity</>;
+      return <>{t('page.connect.sitePopularity')}</>;
     }
     if (rule.id === '1006' || rule.id === '1007') {
-      return <>My mark</>;
+      return <>{t('page.connect.markRuleText')}</>;
     }
     if (rule.result) {
       if (
@@ -128,7 +130,7 @@ const RuleResult = ({
       <div className="rule-value">
         {rule.id === '1004' && (
           <div className="collect-list">
-            {collectList.length <= 0 && 'None'}
+            {collectList.length <= 0 && t('page.connect.noWebsite')}
             {collectList.length > 0 &&
               collectList.slice(0, 10).map((item) => (
                 <div className="collect-list-item">
@@ -145,25 +147,38 @@ const RuleResult = ({
         )}
         {rule.id === '1005' && (
           <div>
-            {popularLevel === 'high' && 'High'}
-            {popularLevel === 'medium' && 'Medium'}
-            {popularLevel === 'low' && 'Low'}
-            {popularLevel === 'very_low' && 'Very Low'}
+            {popularLevel === 'high' && t('page.connect.popularLevelHigh')}
+            {popularLevel === 'medium' && t('page.connect.popularLevelMedium')}
+            {popularLevel === 'low' && t('page.connect.popularLevelLow')}
+            {popularLevel === 'very_low' &&
+              t('page.connect.popularLevelVeryLow')}
           </div>
         )}
         {['1001', '1002', '1003'].includes(rule.id) && rule.result && (
-          <div>{rule.result.value ? 'Yes' : 'No'}</div>
+          <div>
+            {rule.result.value
+              ? t('page.securityEngine.yes')
+              : t('page.securityEngine.no')}
+          </div>
         )}
         {(rule.id === '1006' || rule.id === '1007') && (
           <div className="flex cursor-pointer" onClick={onEditUserList}>
-            {!userListResult && 'No mark'}
-            {userListResult && userListResult.id === '1006' && 'Blocked'}
-            {userListResult && userListResult.id === '1007' && 'Trusted'}
+            {!userListResult && t('page.connect.noMark')}
+            {userListResult &&
+              userListResult.id === '1006' &&
+              t('page.connect.blocked')}
+            {userListResult &&
+              userListResult.id === '1007' &&
+              t('page.connect.trusted')}
             <img src={IconEdit} className="ml-6 icon icon-edit" />
           </div>
         )}
         {rule.id === '1070' && rule.result && (
-          <div>{rule.result.value ? 'Yes' : 'No'}</div>
+          <div>
+            {rule.result.value
+              ? t('page.securityEngine.yes')
+              : t('page.securityEngine.no')}
+          </div>
         )}
       </div>
       {rule.result && !ignored && rule.result.enable && (

@@ -246,7 +246,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     ) {
       setIsWatch(true);
       setCantProcessReason(
-        <div>You can only use imported addresses to sign</div>
+        <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
     }
     if (currentAccount && currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
@@ -254,7 +254,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       setCantProcessReason(
         <div className="flex items-center gap-6">
           <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-          {t('This is a Safe address, and it cannot be used to sign text.')}
+          {t('page.signTypedData.safeCantSignText')}
         </div>
       );
     }

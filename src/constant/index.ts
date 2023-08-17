@@ -1,6 +1,7 @@
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
+import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';
 import {
@@ -192,11 +193,12 @@ export const IS_AFTER_CHROME91 = IS_CHROME
   : false;
 
 export const GAS_LEVEL_TEXT = {
+  $unknown: 'Unknown',
   slow: 'Standard',
   normal: 'Fast',
   fast: 'Instant',
   custom: 'Custom',
-};
+} as const;
 
 export const IS_WINDOWS = /windows/i.test(global.navigator?.userAgent);
 
@@ -205,6 +207,11 @@ export const LANGS = [
     value: 'en',
     label: 'English',
     icon: IconEN,
+  },
+  {
+    value: 'zh_CN',
+    label: '中文',
+    icon: IconZH,
   },
 ];
 

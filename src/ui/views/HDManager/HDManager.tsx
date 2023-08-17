@@ -24,6 +24,7 @@ import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
 import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
 import { BitBox02Manager } from './BitBox02Manager';
+import { useTranslation } from 'react-i18next';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -35,18 +36,6 @@ const LOGO_MAP = {
   [WALLET_BRAND_TYPES.AIRGAP]: AirGapSVG,
   [WALLET_BRAND_TYPES.COOLWALLET]: CoolWalletSVG,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
-};
-
-const LOGO_NAME_MAP = {
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: 'Connected to Ledger',
-  [HARDWARE_KEYRING_TYPES.Trezor.type]: 'Connected to Trezor',
-  [HARDWARE_KEYRING_TYPES.Onekey.type]: 'Connected to OneKey',
-  [KEYRING_CLASS.MNEMONIC]: 'Manage Seed Phrase ',
-  [HARDWARE_KEYRING_TYPES.GridPlus.type]: 'Manage GridPlus',
-  [WALLET_BRAND_TYPES.KEYSTONE]: 'Manage Keystone',
-  [WALLET_BRAND_TYPES.AIRGAP]: 'Manage AirGap',
-  [WALLET_BRAND_TYPES.COOLWALLET]: 'Manage CoolWallet',
-  [HARDWARE_KEYRING_TYPES.BitBox02.type]: 'Manage BitBox02',
 };
 
 const MANAGER_MAP = {
@@ -67,10 +56,32 @@ export const HDManager: React.FC<StateProviderProps> = ({
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
-
+  const { t } = useTranslation();
   const closeConnect = React.useCallback(() => {
     wallet.requestKeyring(keyring, 'cleanUp', idRef.current);
   }, []);
+
+  const LOGO_NAME_MAP = {
+    [HARDWARE_KEYRING_TYPES.Ledger.type]: t(
+      'page.newAddress.hd.connectedToLedger'
+    ),
+    [HARDWARE_KEYRING_TYPES.Trezor.type]: t(
+      'page.newAddress.hd.connectedToTrezor'
+    ),
+    [HARDWARE_KEYRING_TYPES.Onekey.type]: t(
+      'page.newAddress.hd.connectedToOnekey'
+    ),
+    [KEYRING_CLASS.MNEMONIC]: t('page.newAddress.hd.manageSeedPhrase'),
+    [HARDWARE_KEYRING_TYPES.GridPlus.type]: t(
+      'page.newAddress.hd.manageGridplus'
+    ),
+    [WALLET_BRAND_TYPES.KEYSTONE]: t('page.newAddress.hd.manageKeystone'),
+    [WALLET_BRAND_TYPES.AIRGAP]: t('page.newAddress.hd.manageAirgap'),
+    [WALLET_BRAND_TYPES.COOLWALLET]: t('page.newAddress.hd.manageCoolwallet'),
+    [HARDWARE_KEYRING_TYPES.BitBox02.type]: t(
+      'page.newAddress.hd.manageBitbox02'
+    ),
+  };
 
   React.useEffect(() => {
     if (
@@ -97,8 +108,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
           } else {
             setInitialed(false);
             message.error({
-              content:
-                'Connect has stopped. Please refresh the page to connect again.',
+              content: t('page.newAddress.hd.tooltip.connectError'),
               key: 'ledger-error',
             });
           }
@@ -149,7 +159,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
           className="absolute bottom-[40px] left-0 right-0 text-center"
         >
           <Button type="primary" className="w-[280px] h-[60px] text-20">
-            Done
+            {t('page.newAddress.hd.done')}
           </Button>
         </div>
       </div>

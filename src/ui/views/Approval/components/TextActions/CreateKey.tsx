@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { CreateKeyAction } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
@@ -13,17 +14,18 @@ const CreateKey = ({
   data: CreateKeyAction;
   engineResults: Result[];
 }) => {
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Interact Dapp</Row>
+          <Row isTitle>{t('page.signText.createKey.interactDapp')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Description</Row>
+          <Row isTitle>{t('page.signText.createKey.description')}</Row>
           <Row>{data.desc}</Row>
         </Col>
       </Table>

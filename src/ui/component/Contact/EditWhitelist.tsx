@@ -5,6 +5,7 @@ import { PageHeader, Checkbox, Modal } from 'ui/component';
 import AccountItem from './AccountItem';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { isSameAddress } from 'ui/utils';
+import { useTranslation } from 'react-i18next';
 
 const EditWhitelistWrapper = styled.div`
   position: fixed;
@@ -63,6 +64,8 @@ const EditWhitelist = ({
   const [checkedList, setCheckedList] = useState<string[]>(whitelist);
   const [hasAnyChange, setHasAnyChange] = useState(false);
 
+  const { t } = useTranslation();
+
   const handleClickBack = () => {
     if (hasAnyChange) {
       const modal = Modal.info({
@@ -71,10 +74,10 @@ const EditWhitelist = ({
         content: (
           <div>
             <h1 className="text-gray-title text-center mb-12">
-              Discard Changes
+              {t('component.Contact.EditWhitelist.backModalTitle')}
             </h1>
             <p className="text-gray-subTitle text-center text-15 mb-[52px]">
-              Changes you made will not be saved
+              {t('component.Contact.EditWhitelist.backModalContent')}
             </p>
             <div className="footer">
               <Button
@@ -84,7 +87,7 @@ const EditWhitelist = ({
                   modal.destroy();
                 }}
               >
-                Cancel
+                {t('global.Cancel')}
               </Button>
               <Button
                 type="primary"
@@ -96,7 +99,7 @@ const EditWhitelist = ({
                   onCancel();
                 }}
               >
-                Confirm
+                {t('global.Confirm')}
               </Button>
             </div>
           </div>
@@ -124,9 +127,11 @@ const EditWhitelist = ({
 
   return (
     <EditWhitelistWrapper>
-      <PageHeader onBack={handleClickBack}>Edit Whitelist</PageHeader>
+      <PageHeader onBack={handleClickBack}>
+        {t('component.Contact.EditWhitelist.title')}
+      </PageHeader>
       <p className="text-gray-content text-14 mb-20 text-center">
-        Select the address you want to whitelist and save.
+        {t('component.Contact.EditWhitelist.tip')}
       </p>
       <ListScrollWrapper>
         {accountsList.map((account) => (
@@ -156,7 +161,9 @@ const EditWhitelist = ({
           className="w-[215px] h-[40px] text-15"
           onClick={handleSaveWhitelist}
         >
-          Save to Whitelist ({checkedList.length})
+          {t('component.Contact.EditWhitelist.save', {
+            count: checkedList.length,
+          })}
         </Button>
       </ListFooterWrapper>
     </EditWhitelistWrapper>

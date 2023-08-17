@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { maxBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import {
   ParsedActionData,
   CancelTxRequireData,
@@ -88,6 +89,7 @@ const CancelTx = ({
   onChange(tx: Record<string, any>): void;
 }) => {
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -96,7 +98,7 @@ const CancelTx = ({
   const pendingTx = useMemo(() => {
     let tx: { type: string; gasPrice: number } | null = null;
     requireData.pendingTxs.forEach((group) => {
-      let type = 'Unknown';
+      let type = t('page.signTx.unknownAction');
       if (group.action) {
         const data = group.action.actionData;
         type = getActionTypeText(data);
@@ -133,7 +135,7 @@ const CancelTx = ({
         <>
           <div className="container">
             <div className="internal-transaction">
-              Transaction to be canceled
+              {t('page.signTx.cancelTx.txToBeCanceled')}
               <div className="bg"></div>
             </div>
             {pendingTx && (
@@ -146,8 +148,9 @@ const CancelTx = ({
           {pendingTx && !canCancel && (
             <GasPriceTip>
               <img src={IconAlert} className="w-[15px] mr-10" />
-              Set current gas price more than {pendingTx.gasPrice / 1e9} Gwei to
-              cancel the pending transaction
+              {t('page.signTx.cancelTx.gasPriceAlert', {
+                value: pendingTx.gasPrice / 1e9,
+              })}
             </GasPriceTip>
           )}
         </>

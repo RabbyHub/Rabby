@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
@@ -55,6 +56,8 @@ const RevokeNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
+
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -63,7 +66,7 @@ const RevokeNFT = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Revoke NFT</Row>
+          <Row isTitle>{t('page.signTx.revokeNFTApprove.revokeNFT')}</Row>
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
@@ -80,7 +83,7 @@ const RevokeNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Revoke from</Row>
+          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />

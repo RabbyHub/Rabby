@@ -205,7 +205,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
         <div className="flex-1 px-28 pt-80">
           <img src={IconWarning} className="w-[68px] h-[68px] mb-28 mx-auto" />
           <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
-            {t('The requested chain is not supported by Rabby yet')}
+            {t('page.switchChain.chainNotSupport')}
           </div>
         </div>
         <Footer className="justify-center">
@@ -215,7 +215,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="w-[200px]"
             onClick={() => rejectApproval()}
           >
-            OK
+            {t('global.ok')}
           </Button>
         </Footer>
       </OptionsWrapper>
@@ -227,7 +227,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       <OptionsWrapper>
         <div className="content">
           <div className="title">
-            Switching to {state.isSwitchToMainnet ? 'Mainnet' : 'Testnet'}
+            {t('page.switchChain.title', {
+              chain: state.isSwitchToMainnet ? 'Mainnet' : 'Testnet',
+            })}
           </div>
           <div className="connect-site-card">
             <FallbackSiteLogo
@@ -251,13 +253,13 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="rabby-btn-ghost w-[172px]"
             onClick={() => rejectApproval()}
           >
-            Cancel
+            {t('global.cancelButton')}
           </Button>
           {isShowTestnetTip ? (
             <TooltipWithMagnetArrow
               overlayClassName="rectangle"
               overlayStyle={{ maxWidth: '305px', width: '305px' }}
-              title={`Please turn on "Enable Testnets" under "More" before connecting to testnets`}
+              title={t('page.switchChain.testnetTip')}
               placement="topRight"
             >
               <span>
@@ -268,7 +270,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                   onClick={handleConfirm}
                   disabled
                 >
-                  Confirm
+                  {t('global.Confirm')}
                 </Button>
               </span>
             </TooltipWithMagnetArrow>
@@ -279,7 +281,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
               size="large"
               onClick={handleConfirm}
             >
-              Confirm
+              {t('global.Confirm')}
             </Button>
           )}
         </Footer>

@@ -66,7 +66,7 @@ function ModalConfirmAllowTransfer({
       form.setFields([
         {
           name: 'password',
-          errors: [e?.message || t('incorrect password')],
+          errors: [e?.message || t('page.sendToken.allowTransferModal.error')],
         },
       ]);
     }
@@ -89,11 +89,18 @@ function ModalConfirmAllowTransfer({
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
           name="password"
-          rules={[{ required: true, message: t('Please input password') }]}
+          // Please input password
+          rules={[
+            {
+              required: true,
+              message: t('page.sendToken.allowTransferModal.validator__empty'),
+            },
+          ]}
         >
           <Input
             className="popup-input"
-            placeholder={t('Enter the Password to Confirm')}
+            // Enter the Password to Confirm
+            placeholder={t('page.sendToken.allowTransferModal.placeholder')}
             type="password"
             size="large"
             autoFocus
@@ -117,7 +124,8 @@ function ModalConfirmAllowTransfer({
             }
             className="icon icon-check inline-block relative -top-1 mr-[4px]"
           />
-          Add to whitelist
+          {/* Add to whitelist */}
+          {t('page.sendToken.allowTransferModal.addWhitelist')}
         </p>
         <div
           className={clsx(

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -46,6 +47,7 @@ const Permit = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -56,7 +58,6 @@ const Permit = ({
   }, [engineResults]);
 
   const tokenBalance = useMemo(() => {
-    console.log(requireData);
     return new BigNumber(requireData.token.raw_amount || '0')
       .div(10 ** requireData.token.decimals)
       .toFixed();
@@ -72,7 +73,7 @@ const Permit = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve token</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
@@ -88,18 +89,16 @@ const Permit = ({
             />
             <ul className="desc-list">
               <li>
-                My balance <span>{formatAmount(tokenBalance)}</span>{' '}
+                {t('page.signTx.tokenApprove.myBalance')}{' '}
+                <span>{formatAmount(tokenBalance)}</span>{' '}
                 {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               </li>
             </ul>
           </Row>
         </Col>
         <Col>
-          <Row
-            isTitle
-            tip="The duration for this signature to be valid on-chain"
-          >
-            Signature expire time
+          <Row isTitle tip={t('page.signTypedData.permit2.sigExpireTimeTip')}>
+            {t('page.signTypedData.permit2.sigExpireTime')}
           </Row>
           <Row>
             {actionData.expire_at ? (
@@ -110,7 +109,7 @@ const Permit = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -136,38 +135,44 @@ const Permit = ({
               <SecurityListItem
                 id="1078"
                 engineResult={engineResultMap['1078']}
-                dangerText="Trust value ≤ $10,000"
-                warningText="Trust value ≤ $100,000"
+                dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$10,000',
+                })}
+                warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$100,000',
+                })}
               />
 
               <SecurityListItem
                 id="1079"
                 engineResult={engineResultMap['1079']}
-                warningText="Deployed time < 3 days"
+                warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
+                  value: '3',
+                })}
               />
 
               <SecurityListItem
                 id="1106"
                 engineResult={engineResultMap['1106']}
-                dangerText="Flagged by Rabby"
+                dangerText={t('page.signTx.tokenApprove.flagByRabby')}
               />
 
               <SecurityListItem
                 id="1134"
                 engineResult={engineResultMap['1134']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1136"
                 engineResult={engineResultMap['1136']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1133"
                 engineResult={engineResultMap['1133']}
-                safeText="Marked as trusted"
+                safeText={t('page.signTx.markAsTrust')}
               />
 
               <li>

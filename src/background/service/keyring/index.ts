@@ -190,7 +190,7 @@ export class KeyringService extends EventEmitter {
 
   async generatePreMnemonic(): Promise<string> {
     if (!this.password) {
-      throw new Error(i18n.t('you need to unlock wallet first'));
+      throw new Error(i18n.t('background.error.unlock'));
     }
     const mnemonic = this.generateMnemonic();
     const preMnemonics = await this.encryptor.encrypt(this.password, mnemonic);
@@ -215,7 +215,7 @@ export class KeyringService extends EventEmitter {
     }
 
     if (!this.password) {
-      throw new Error(i18n.t('you need to unlock wallet first'));
+      throw new Error(i18n.t('background.error.unlock'));
     }
 
     return await this.encryptor.decrypt(
@@ -237,7 +237,7 @@ export class KeyringService extends EventEmitter {
   createKeyringWithMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
       return Promise.reject(
-        new Error(i18n.t('The seed phrase is invalid, please check!'))
+        new Error(i18n.t('background.error.invalidMnemonic'))
       );
     }
 
@@ -354,7 +354,7 @@ export class KeyringService extends EventEmitter {
   async verifyPassword(password: string): Promise<void> {
     const encryptedBooted = this.store.getState().booted;
     if (!encryptedBooted) {
-      throw new Error(i18n.t('Cannot unlock without a previous vault'));
+      throw new Error(i18n.t('background.error.canNotUnlock'));
     }
     await this.encryptor.decrypt(password, encryptedBooted);
   }
@@ -436,7 +436,7 @@ export class KeyringService extends EventEmitter {
     });
 
     return isIncluded
-      ? Promise.reject(new Error(i18n.t('duplicateAccount')))
+      ? Promise.reject(new Error(i18n.t('background.error.duplicateAccount')))
       : Promise.resolve(newAccountArray);
   }
 
@@ -817,7 +817,7 @@ export class KeyringService extends EventEmitter {
   async unlockKeyrings(password: string): Promise<any[]> {
     const encryptedVault = this.store.getState().vault;
     if (!encryptedVault) {
-      throw new Error(i18n.t('Cannot unlock without a previous vault'));
+      throw new Error(i18n.t('background.error.canNotUnlock'));
     }
 
     await this.clearKeyrings();

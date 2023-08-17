@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   revokeList: any[];
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export const RevokeButton: React.FC<Props> = ({ revokeList, onRevoke }) => {
+  const { t } = useTranslation();
   return (
     <>
       {revokeList.length > 1 ? (
@@ -23,7 +25,9 @@ export const RevokeButton: React.FC<Props> = ({ revokeList, onRevoke }) => {
         disabled={!revokeList.length}
         onClick={onRevoke}
       >
-        Revoke {revokeList?.length > 0 ? `(${revokeList.length})` : ''}
+        {t('page.approvals.component.RevokeButton.btnText', {
+          count: revokeList.length,
+        })}
       </Button>
     </>
   );

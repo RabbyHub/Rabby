@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
@@ -30,6 +31,7 @@ export interface SpenderPopupProps extends Props {
 }
 
 export const SpenderPopup: React.FC<Props> = ({ data }) => {
+  const { t } = useTranslation();
   const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
   });
@@ -52,7 +54,9 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        {data.isRevoke ? 'Revoke from' : 'Approve to'}{' '}
+        {data.isRevoke
+          ? t('page.signTx.revokeTokenApprove.revokeFrom')
+          : t('page.signTx.tokenApprove.approveTo')}{' '}
         <Values.Address
           address={data.spender}
           chain={data.chain}
@@ -61,18 +65,22 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">Protocol</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Address type</Row>
+          <Row className="bg-[#F6F8FF]">
+            {t('page.signTx.addressTypeTitle')}
+          </Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
           <Row className="bg-[#F6F8FF]">
-            {data.isEOA ? 'First on-chain' : 'Deployed time'}
+            {data.isEOA
+              ? t('page.signTx.firstOnChain')
+              : t('page.signTx.deployTimeTitle')}
           </Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
@@ -81,9 +89,9 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row
             className="bg-[#F6F8FF]"
-            tip="Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
           >
-            Trust value
+            {t('page.signTx.trustValue')}
           </Row>
           <Row>
             {data.riskExposure === null ? (
@@ -94,31 +102,40 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Popularity</Row>
-          <Row>{data.rank ? `No.${data.rank} on ${data.chain.name}` : '-'}</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.popularity')}</Row>
+          <Row>
+            {data.rank
+              ? t('page.signTx.contractPopularity', [
+                  data.rank,
+                  data.chain.name,
+                ])
+              : '-'}
+          </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Interacted before</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Address note</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         {data.isDanger && (
           <Col>
-            <Row className="bg-[#F6F8FF]">Flagged by Rabby</Row>
+            <Row className="bg-[#F6F8FF]">
+              {t('page.signTx.tokenApprove.flagByRabby')}
+            </Row>
             <Row>
               <Values.Boolean value={!!data.isDanger} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row className="bg-[#F6F8FF]">My mark</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract

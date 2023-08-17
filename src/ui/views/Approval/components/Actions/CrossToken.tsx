@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -61,6 +62,8 @@ const Swap = ({
   );
   const dispatch = useRabbyDispatch();
 
+  const { t } = useTranslation();
+
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
       (item) =>
@@ -99,7 +102,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay</Row>
+          <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -125,7 +128,7 @@ const Swap = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Minimum receive</Row>
+          <Row isTitle>{t('page.signTx.swap.minReceive')}</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText
@@ -187,14 +190,16 @@ const Swap = ({
                 id="1105"
                 dangerText={
                   <>
-                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
-                    ({formatUsdValue(usdValueDiff || '')})
+                    {t('page.signTx.swap.valueDiff')}{' '}
+                    <Values.Percentage value={usdValuePercentage!} /> (
+                    {formatUsdValue(usdValueDiff || '')})
                   </>
                 }
                 warningText={
                   <>
-                    Value diff <Values.Percentage value={usdValuePercentage!} />{' '}
-                    ({formatUsdValue(usdValueDiff || '')})
+                    {t('page.signTx.swap.valueDiff')}{' '}
+                    <Values.Percentage value={usdValuePercentage!} /> (
+                    {formatUsdValue(usdValueDiff || '')})
                   </>
                 }
               />
@@ -203,21 +208,21 @@ const Swap = ({
         </Col>
         {engineResultMap['1103'] && (
           <Col>
-            <Row isTitle>Receiver</Row>
+            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
                   engineResult={engineResultMap['1103']}
                   id="1103"
-                  dangerText="Not the payment address"
+                  dangerText={t('page.signTx.swap.notPaymentAddress')}
                 />
               </ul>
             </Row>
           </Col>
         )}
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -228,18 +233,18 @@ const Swap = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore

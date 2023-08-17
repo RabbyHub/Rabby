@@ -51,6 +51,7 @@ const AddressItem = ({
   onSelect,
   checked,
 }: AddressItemProps) => {
+  const { t } = useTranslation();
   return (
     <FieldCheckbox
       className={clsx(
@@ -62,7 +63,11 @@ const AddressItem = ({
       )}
       showCheckbox={!!account.type}
       rightSlot={
-        signed ? <span className="text-green text-14">Signed</span> : undefined
+        signed ? (
+          <span className="text-green text-14">
+            {t('page.signTx.safeAdminSigned')}
+          </span>
+        ) : undefined
       }
       onChange={(checked) => checked && onSelect(account)}
       checked={checked}
@@ -157,8 +162,10 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
     <div className="gnosis-drawer-container">
       <div className="title">
         {safeInfo.threshold - signatures.length > 0
-          ? `${safeInfo.threshold - signatures.length} more confirmation needed`
-          : t('Enough signature collected')}
+          ? t('page.signTx.moreSafeSigNeeded', [
+              safeInfo.threshold - signatures.length,
+            ])
+          : t('page.signTx.enoughSafeSigCollected')}
       </div>
       <div className="list">
         {ownerAccounts.map((owner) => (
@@ -181,7 +188,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
       </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
-          {t('Back')}
+          {t('global.backButton')}
         </Button>
         <Button
           type="primary"
@@ -189,7 +196,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('Proceed')}
+          {t('global.proceedButton')}
         </Button>
       </div>
     </div>

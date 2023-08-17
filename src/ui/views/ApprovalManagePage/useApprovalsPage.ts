@@ -62,17 +62,6 @@ const FILTER_TYPES = {
   assets: 'By Assets',
 } as const;
 
-export const TableViewOptions = [
-  {
-    key: 'contract',
-    label: FILTER_TYPES.contract,
-  },
-  {
-    key: 'assets',
-    label: FILTER_TYPES.assets,
-  },
-] as const;
-
 function sortTokenOrNFTApprovalsSpenderList(
   item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
 ) {

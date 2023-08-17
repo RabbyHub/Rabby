@@ -21,7 +21,7 @@ const ImportJson = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Imported Successfully'),
+          title: t('page.newAddress.importedSuccessfully'),
           editing: true,
           importedAccount: true,
         },
@@ -31,7 +31,7 @@ const ImportJson = () => {
       form.setFields([
         {
           name: 'password',
-          errors: [err?.message || t('incorrect password')],
+          errors: [err?.message || t('page.newAddress.incorrectPassword')],
         },
       ]);
     },
@@ -48,7 +48,7 @@ const ImportJson = () => {
       hasDivider
       noPadding
       nextDisabled={!isUpload}
-      NextButtonContent="Confirm"
+      NextButtonContent={t('global.confirm')}
     >
       <Navbar
         onBack={() => {
@@ -58,9 +58,9 @@ const ImportJson = () => {
             history.replace('/');
           }
         }}
-        desc="Select the keystore file you want to import and enter the corresponding password"
+        desc={t('page.newAddress.keystore.description')}
       >
-        Import Your KeyStore
+        {t('page.newAddress.importYourKeystore')}
       </Navbar>
       <div className="rabby-container">
         <div className="px-20">
@@ -84,10 +84,15 @@ const ImportJson = () => {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: t('Please input Password') }]}
+            rules={[
+              {
+                required: true,
+                message: t('page.newAddress.keystore.password.required'),
+              },
+            ]}
           >
             <Input
-              placeholder={t('Password')}
+              placeholder={t('page.newAddress.keystore.password.placeholder')}
               type="password"
               size="large"
               spellCheck={false}

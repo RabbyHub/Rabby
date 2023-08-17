@@ -174,7 +174,7 @@ const TransactionExplain = ({
   let icon: React.ReactNode = (
     <img className="icon icon-explain" src={IconUnknown} />
   );
-  let content: string | React.ReactNode = t('Unknown Transaction');
+  let content: string | React.ReactNode = t('page.safeQueue.unknownTx');
 
   if (explain) {
     if (explain.type_cancel_token_approval) {
@@ -189,12 +189,12 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="CancelExplain"
+          i18nKey="page.safeQueue.cancelExplain"
           values={{
             token: explain.type_cancel_token_approval.token_symbol,
             protocol:
               explain.type_cancel_token_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
@@ -210,22 +210,22 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="ApproveExplain"
+          i18nKey="page.safeQueue.approvalExplain"
           values={{
             token: explain.type_token_approval.token_symbol,
             count: explain.type_token_approval.is_infinity
-              ? t('unlimited')
+              ? t('page.safeQueue.unlimited')
               : splitNumberByStep(explain.type_token_approval.token_amount),
             protocol:
               explain.type_token_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
     }
     if (explain.type_send) {
       icon = <img className="icon icon-explain" src={IconUser} />;
-      content = `${t('Send')} ${splitNumberByStep(
+      content = `${t('page.safeQueue.action.send')} ${splitNumberByStep(
         explain.type_send.token_amount
       )} ${explain.type_send.token_symbol}`;
     }
@@ -243,14 +243,14 @@ const TransactionExplain = ({
   return (
     <p className="tx-explain">
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
-      <span>{content || t('Unknown Transaction')}</span>
+      <span>{content || t('page.safeQueue.unknownTx')}</span>
       <Button
         type="primary"
         className="tx-explain__view"
         onClick={onView}
         loading={isViewLoading}
       >
-        {t('View')}
+        {t('page.safeQueue.viewBtn')}
       </Button>
     </p>
   );
@@ -273,6 +273,7 @@ const GnosisTransactionItem = ({
   const [isLoading, setIsLoading] = useState(false);
   const submitAt = dayjs(data.submissionDate).valueOf();
   const now = dayjs().valueOf();
+  // todo
   const ago = timeago(now, submitAt);
   let agoText = '';
 
@@ -372,7 +373,9 @@ const GnosisTransactionItem = ({
     >
       <div className="queue-item__time">
         <span>{agoText}</span>
-        <span>nonce: {data.nonce}</span>
+        <span>
+          {t('global.nonce')}: {data.nonce}
+        </span>
       </div>
       <div className="queue-item__info">
         {explain ? (
@@ -396,7 +399,7 @@ const GnosisTransactionItem = ({
           title={
             data.nonce !== safeInfo.nonce ? (
               <Trans
-                i18nKey="GnosisLowerNonceNeedExcute"
+                i18nKey="page.safeQueue.LowerNonceError"
                 values={{ nonce: safeInfo.nonce }}
               />
             ) : null
@@ -412,7 +415,7 @@ const GnosisTransactionItem = ({
               data.nonce !== safeInfo.nonce
             }
           >
-            {t('Submit transaction')}
+            {t('page.safeQueue.submitBtn')}
           </Button>
         </Tooltip>
       </div>
@@ -594,10 +597,7 @@ export const GnosisTransactionQueueList = (props: {
             <div className="queue-group">
               <div className="queue-group__header">
                 <img src={IconInformation} className="icon icon-information" />
-                <span>
-                  These transactions conflict as they use the same nonce.
-                  Executing one will automatically replace the other(s).
-                </span>
+                <span>{t('page.safeQueue.sameNonceWarning')}</span>
               </div>
               {transactionsGroup[nonce].map((transaction) => (
                 <GnosisTransactionItem
@@ -627,7 +627,7 @@ export const GnosisTransactionQueueList = (props: {
             <>
               <LoadingOutlined className="text-24 text-gray-content" />
               <p className="text-14 text-gray-content mt-12">
-                {t('Loading pending transactions')}
+                {t('page.safeQueue.loading')}
               </p>
             </>
           ) : isLoadFaild ? (
@@ -637,14 +637,14 @@ export const GnosisTransactionQueueList = (props: {
                 src="./images/gnosis-load-faild.png"
               />
               <p className="load-faild-desc">
-                {t('GnosisLoadFaildDescription')}
+                {t('page.safeQueue.loadingFaild')}
               </p>
             </>
           ) : (
             <>
               <img className="no-data" src="./images/nodata-tx.png" />
               <p className="text-14 text-gray-content mt-8">
-                {t('No pending transactions')}
+                {t('page.safeQueue.noData')}
               </p>
             </>
           )}
@@ -654,7 +654,7 @@ export const GnosisTransactionQueueList = (props: {
       <AccountSelectDrawer
         visible={submitDrawerVisible}
         onChange={handleConfirm}
-        title={t('You can submit this transaction using any address')}
+        title={t('page.safeQueue.accountSelectTitle')}
         onCancel={handleCancel}
         isLoading={isSubmitting}
         networkId={networkId}

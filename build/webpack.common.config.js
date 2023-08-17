@@ -4,6 +4,7 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const { version } = require('../_raw/manifest.json');
 const path = require('path');
 
@@ -217,6 +218,11 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.version': JSON.stringify(`version: ${version}`),
       'process.env.release': JSON.stringify(version),
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: paths.rootResolve('_raw'), to: paths.rootResolve('dist') },
+      ],
     }),
   ],
   resolve: {

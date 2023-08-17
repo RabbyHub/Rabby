@@ -1,24 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Popup, Checkbox } from 'ui/component';
 import { Chain } from 'background/service/openapi';
-import * as Values from './Values';
-
-const UserListDrawerWrapper = styled.div`
-  .origin {
-    display: flex;
-    margin-bottom: 80px;
-    font-weight: 500;
-    font-size: 22px;
-    line-height: 26px;
-    color: #13141a;
-    .logo {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-    }
-  }
-`;
 
 const Footer = styled.div`
   background: #f5f6fa;
@@ -102,22 +87,16 @@ const UserListDrawer = ({
   onBlacklist,
   onChange,
 }: Props) => {
+  const { t } = useTranslation();
   return (
     <div>
       <GlobalStyle />
-      {/* <UserListDrawerWrapper>
-        <div className="origin">
-          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            <Values.Address address={address} chain={chain} iconWidth="18px" />
-          </span>
-        </div>
-      </UserListDrawerWrapper> */}
       <Footer>
         <div
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: false })}
         >
-          <div>No mark</div>
+          <div>{t('page.signTx.noMark')}</div>
           <div>
             <Checkbox
               checked={!onWhitelist && !onBlacklist}
@@ -131,7 +110,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
-          <div className="text-green">Trusted</div>
+          <div className="text-green">{t('page.signTx.trusted')}</div>
           <div>
             <Checkbox
               checked={onWhitelist}
@@ -145,7 +124,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
-          <div className="text-red">Blocked</div>
+          <div className="text-red">{t('page.signTx.blocked')}</div>
           <div>
             <Checkbox
               checked={onBlacklist}
@@ -194,7 +173,9 @@ export default ({
     ),
     height: 240,
     closable: true,
-    title: `My mark on ${chain.name} contract`,
+    title: i18n.t('page.signTx.myMarkWithContract', {
+      chainName: chain.name,
+    }),
     className: 'user-list-drawer',
     onClose: () => destroy(),
     onCancel: () => destroy(),

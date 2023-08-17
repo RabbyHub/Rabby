@@ -76,7 +76,7 @@ const MultiSelectAddressList = ({
             disable={
               imported && (
                 <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
-                  {t('Imported')}
+                  {t('component.MultiSelectAddressList.imported')}
                 </span>
               )
             }

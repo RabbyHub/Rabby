@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractRequireData, TypedDataActionData } from './utils';
@@ -65,6 +66,7 @@ const BuyNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const { rules, processedRules, contractWhitelist } = useRabbySelector(
     (s) => ({
       rules: s.securityEngine.rules,
@@ -113,7 +115,7 @@ const BuyNFT = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay token</Row>
+          <Row isTitle>{t('page.signTypedData.buyNFT.payToken')}</Row>
           <Row>
             <LogoWithText
               logo={actionData.pay_token.logo_url}
@@ -135,7 +137,7 @@ const BuyNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive NFT</Row>
+          <Row isTitle>{t('page.signTypedData.buyNFT.receiveNFT')}</Row>
           <Row>
             <div className="relative">
               <NFTWithName
@@ -179,7 +181,7 @@ const BuyNFT = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Expire time</Row>
+          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
           <Row>
             {actionData.expire_at ? (
               <Values.TimeSpanFuture to={Number(actionData.expire_at)} />
@@ -190,21 +192,21 @@ const BuyNFT = ({
         </Col>
         {hasReceiver && (
           <Col>
-            <Row isTitle>Receiver</Row>
+            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
               <Values.Address address={actionData.receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
                   id="1085"
                   engineResult={engineResultMap['1085']}
-                  dangerText="Not the payment address"
+                  dangerText={t('page.signTx.swap.notPaymentAddress')}
                 />
               </ul>
             </Row>
           </Col>
         )}
         <Col>
-          <Row isTitle>List on</Row>
+          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -212,18 +214,18 @@ const BuyNFT = ({
             <ul className="desc-list">
               <ProtocolListItem protocol={requireData.protocol} />
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
 
               <li>
@@ -233,7 +235,7 @@ const BuyNFT = ({
                     ...requireData,
                     address: requireData.id,
                     chain,
-                    title: 'List on',
+                    title: t('page.signTypedData.buyNFT.listOn'),
                   }}
                 />
               </li>

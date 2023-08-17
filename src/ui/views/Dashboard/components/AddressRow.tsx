@@ -19,6 +19,7 @@ import {
 import { AddressViewer } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useIsMountedRef from '@/ui/hooks/useMountedRef';
+import { useTranslation } from 'react-i18next';
 
 function AddressRow({
   data,
@@ -47,6 +48,7 @@ function AddressRow({
       account.address === highlighted.address &&
       account.brandName === highlighted.brandName
   );
+  const { t } = useTranslation();
 
   const handleCopyContractAddress = React.useCallback(() => {
     const clipboard = new ClipboardJS('.address-item', {
@@ -65,7 +67,7 @@ function AddressRow({
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{account?.address}</div>
           </div>
@@ -162,4 +164,7 @@ function AddressRow({
   );
 }
 
+/**
+ * @deprecated
+ */
 export default connectStore()(AddressRow);

@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
@@ -55,6 +56,8 @@ const Swap = ({
     balanceChange,
   } = data!;
 
+  const { t } = useTranslation();
+
   const { rules, processedRules, contractWhitelist } = useRabbySelector(
     (s) => ({
       rules: s.securityEngine.rules,
@@ -106,7 +109,7 @@ const Swap = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay</Row>
+          <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -129,7 +132,7 @@ const Swap = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive</Row>
+          <Row isTitle>{t('page.signTx.swap.receiveToken')}</Row>
           <Row>
             <div className="flex relative pr-10">
               <LogoWithText
@@ -142,7 +145,7 @@ const Swap = ({
                       <Values.TokenSymbol token={receiveToken} />
                     </>
                   ) : (
-                    'Fail to load'
+                    t('page.signTx.swap.failLoadReceiveToken')
                   )
                 }
                 icon={
@@ -194,14 +197,14 @@ const Swap = ({
                     id="1012"
                     dangerText={
                       <>
-                        Value diff{' '}
+                        {t('page.signTx.swap.valueDiff')}{' '}
                         <Values.Percentage value={usdValuePercentage!} /> (
                         {formatUsdValue(usdValueDiff || '')})
                       </>
                     }
                     warningText={
                       <>
-                        Value diff{' '}
+                        {t('page.signTx.swap.valueDiff')}{' '}
                         <Values.Percentage value={usdValuePercentage!} /> (
                         {formatUsdValue(usdValueDiff || '')})
                       </>
@@ -210,16 +213,16 @@ const Swap = ({
                 </>
               )}
               {balanceChange.support && !balanceChange.success && (
-                <li>Transaction simulation failed</li>
+                <li>{t('page.signTx.swap.simulationFailed')}</li>
               )}
               {!balanceChange.support && (
-                <li>Transaction simulation not supported on this chain</li>
+                <li>{t('page.signTx.swap.simulationNotSupport')}</li>
               )}
             </ul>
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Minimum Receive</Row>
+          <Row isTitle>{t('page.signTx.swap.minReceive')}</Row>
           <Row>
             <div>
               <LogoWithText
@@ -244,10 +247,10 @@ const Swap = ({
               </li>
               <li>
                 {slippageTolerance === null &&
-                  'Slippage tolerance fail to load'}
+                  t('page.signTx.swap.slippageFailToLoad')}
                 {slippageTolerance !== null && (
                   <>
-                    Slippage tolerance{' '}
+                    {t('page.signTx.swap.slippageTolerance')}{' '}
                     {hasReceiver ? (
                       '-'
                     ) : (
@@ -272,21 +275,21 @@ const Swap = ({
         </Col>
         {engineResultMap['1069'] && (
           <Col>
-            <Row isTitle>Receiver</Row>
+            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
                   engineResult={engineResultMap['1069']}
                   id="1069"
-                  dangerText="Not the payment address"
+                  dangerText={t('page.signTx.swap.notPaymentAddress')}
                 />
               </ul>
             </Row>
           </Col>
         )}
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -297,18 +300,18 @@ const Swap = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore

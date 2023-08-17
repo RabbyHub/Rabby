@@ -2,7 +2,7 @@ import { BlueHeader, Item } from '@/ui/component';
 import { openInTab, openInternalPageInTab } from '@/ui/utils';
 import { Timeline } from 'antd';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconMnemonics from 'ui/assets/import/mnemonics.svg';
@@ -11,43 +11,40 @@ import { ReactComponent as IconTinRightArrow } from 'ui/assets/address/tiny-arro
 
 import './style.less';
 
-const stepList = [
-  <>
-    Export seed phrase or private key from MetaMask{' '}
-    <a
-      href="javascript:void(0)"
-      target="_blank"
-      onClick={(e) => {
-        e.preventDefault();
-        openInTab('https://rabby.io/metamask-export');
-      }}
-    >
-      Guidance <IconTinRightArrow className="inline-block relative" />
-    </a>
-  </>,
-  <>Import the seed phrase or private key in Rabby</>,
-  <>
-    Import is completed and all your assets will
-    <br /> appear automatically
-  </>,
-];
-
 export const ImportMyMetaMaskAccount = () => {
   const history = useHistory();
   const { t } = useTranslation();
+
+  const stepList = [
+    <Trans t={t} i18nKey="page.newAddress.metamask.step1">
+      Export seed phrase or private key from MetaMask
+      <a
+        href="javascript:void(0)"
+        target="_blank"
+        onClick={(e) => {
+          e.preventDefault();
+          openInTab('https://rabby.io/metamask-export');
+        }}
+      >
+        Guidance <IconTinRightArrow className="inline-block relative" />
+      </a>
+    </Trans>,
+    <Trans i18nKey="page.newAddress.metamask.step2" />,
+    <Trans i18nKey="page.newAddress.metamask.step3" />,
+  ];
 
   const importList = React.useMemo(
     () => [
       {
         icon: IconMnemonics,
-        content: t('Import Seed Phrase'),
+        content: t('page.newAddress.importSeedPhrase'),
         onClick: () => {
           openInternalPageInTab('import/mnemonics');
         },
       },
       {
         icon: IconPrivatekey,
-        content: t('Import Private Key'),
+        content: t('page.newAddress.importPrivateKey'),
         onClick: () => {
           history.push('/import/key');
         },
@@ -57,7 +54,9 @@ export const ImportMyMetaMaskAccount = () => {
   );
   return (
     <div className="add-metamask ">
-      <BlueHeader className="mx-[-20px]">Import My MetaMask Account</BlueHeader>
+      <BlueHeader className="mx-[-20px]">
+        {t('page.newAddress.importMyMetamaskAccount')}
+      </BlueHeader>
       <div className="rabby-container">
         <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
           <div className="metamask-shadow" />
@@ -69,7 +68,7 @@ export const ImportMyMetaMaskAccount = () => {
               alt="MetaMask"
             />
             <div className="pl-[10px] text-16 font-bold text-gray-title">
-              How to import my MetaMask Account?
+              {t('page.newAddress.metamask.how')}
             </div>
           </div>
 
@@ -80,7 +79,7 @@ export const ImportMyMetaMaskAccount = () => {
                   color="transparent"
                   dot={
                     <span className="text-13 font-bold text-gray-title">
-                      Step {i + 1} :{' '}
+                      {t('page.newAddress.metamask.step')} {i + 1} :{' '}
                     </span>
                   }
                 >
@@ -96,12 +95,11 @@ export const ImportMyMetaMaskAccount = () => {
         <div className="bg-white rounded-[6px] ">
           <div className="border-b border-gray-divider py-[15px] px-[19px]">
             <div className="text-13 leading-[20px] font-medium text-gray-title">
-              Import the seed phrase or private key
+              {t('page.newAddress.metamask.importSeedPhrase')}
             </div>
 
             <div className="mt-[3px] text-12 leading-[18px] text-[#666]">
-              It will only be stored locally on the browser. Rabby will never
-              have access to your private information.
+              {t('page.newAddress.metamask.importSeedPhraseTips')}
             </div>
           </div>
 

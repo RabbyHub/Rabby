@@ -1,6 +1,7 @@
 import { Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 export interface Props {
@@ -33,6 +34,7 @@ export const CustomizedButton: React.FC<Props> = ({
   onOpen,
   onClose,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={clsx(
@@ -42,9 +44,8 @@ export const CustomizedButton: React.FC<Props> = ({
     >
       <div className={clsx('text-orange text-13')}>
         {selected
-          ? "Token is not listed by Rabby. You've added it to the token list by custom."
-          : `Token is not listed by Rabby. It will be added to the token list if you
-        switch on.`}
+          ? t('page.dashboard.tokenDetail.selectedCustom')
+          : t('page.dashboard.tokenDetail.notSelectedCustom')}
       </div>
       <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
         <SwitchStyled
@@ -58,7 +59,9 @@ export const CustomizedButton: React.FC<Props> = ({
             }
           }}
         />
-        <span className="text-black text-12">Customized</span>
+        <span className="text-black text-12">
+          {t('page.dashboard.tokenDetail.customized')}
+        </span>
       </label>
     </div>
   );

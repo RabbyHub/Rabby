@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Switch } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox } from 'ui/component';
 import {
   RuleConfig,
@@ -306,6 +307,7 @@ const RuleDrawer = ({
   const [changed, setChanged] = useState(false);
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [ruleDetailDrawerVisible, setRuleDetailDrawerVisible] = useState(false);
+  const { t } = useTranslation();
 
   const [isHovering, hoverProps] = useHover();
   const currentLevel = useMemo(() => {
@@ -318,8 +320,8 @@ const RuleDrawer = ({
     const { value, ruleConfig } = selectRule;
     switch (ruleConfig.valueDefine.type) {
       case 'boolean':
-        if (value === true) return 'Yes';
-        return 'No';
+        if (value === true) return t('page.securityEngine.yes');
+        return t('page.securityEngine.no');
       case 'enum':
         return ruleConfig.valueDefine.display[value as string];
       case 'percent':
@@ -431,13 +433,13 @@ const RuleDrawer = ({
     let color: string | null = '#B4BDCC';
     if (selectRule.ignored) {
       if (isHovering) {
-        text = 'Undo';
+        text = t('page.securityEngine.undo');
         color = '#707280';
       } else {
-        text = 'Risk Processed';
+        text = t('page.securityEngine.riskProcessed');
       }
     } else {
-      text = 'Ignore the alert';
+      text = t('page.securityEngine.ignoreAlert');
       color = null;
     }
     return {
@@ -488,8 +490,7 @@ const RuleDrawer = ({
         <RuleDrawerWrapper className={clsx(Level.ERROR)}>
           <img src={IconDisable} />
           <p className="text-15 text-gray-content mt-4 text-center font-medium">
-            Security rules have been disabled. For your safety, you can turn it
-            on anytime.
+            {t('page.securityEngine.ruleDisabled')}
           </p>
         </RuleDrawerWrapper>
       );
@@ -498,7 +499,7 @@ const RuleDrawer = ({
         <RuleDrawerWrapper className={clsx(selectRule.level)}>
           <img src={IconError} />
           <p className="text-15 text-gray-content mt-16 text-center font-medium">
-            Unknown result because security rule is unavailable
+            {t('page.securityEngine.unknownResult')}
           </p>
         </RuleDrawerWrapper>
       );
@@ -526,7 +527,7 @@ const RuleDrawer = ({
             </div>
           </div>
           <div className="threshold">
-            <p>Alert triggered reason:</p>
+            <p>{t('page.securityEngine.alertTriggerReason')}</p>
             <div className="rule-threshold">
               {currentLevel && (
                 <img
@@ -541,10 +542,14 @@ const RuleDrawer = ({
               )}
               <div>
                 <div className="threshold-text">
-                  when the value is {displayThreshold}
+                  {t('page.securityEngine.whenTheValueIs', {
+                    value: displayThreshold,
+                  })}
                 </div>
                 <div className="current-value">
-                  Current Value is {displayValue}
+                  {t('page.securityEngine.currentValueIs', {
+                    value: displayThreshold,
+                  })}
                 </div>
               </div>
             </div>
@@ -560,13 +565,13 @@ const RuleDrawer = ({
                       checked={selectRule.ignored || accepted}
                       onChange={(val) => setAccepted(val)}
                     >
-                      I understand and accept responsibility for any loss
+                      {t('page.securityEngine.understandRisk')}
                     </Checkbox>
                   </div>
                 )}
                 {selectRule.level === Level.FORBIDDEN && (
                   <p className="forbidden-tip">
-                    Found forbidden risk that can't be ignored.
+                    {t('page.securityEngine.forbiddenCantIgnore')}
                   </p>
                 )}
                 <div {...hoverProps}>
@@ -598,14 +603,14 @@ const RuleDrawer = ({
       onClose={handleClose}
       height="510"
       closable
-      title="Rule Detail"
+      title={t('page.securityEngine.ruleDetailTitle')}
     >
       {selectRule && (
         <>
           {content()}
           <RuleFooter>
             <div className="item">
-              <div className="left">Enable the rule</div>
+              <div className="left">{t('page.securityEngine.enableRule')}</div>
               <div className="right">
                 <Switch
                   checked={
@@ -619,7 +624,9 @@ const RuleDrawer = ({
               className="item"
               onClick={() => setRuleDetailDrawerVisible(true)}
             >
-              <div className="left">View risk level</div>
+              <div className="left">
+                {t('page.securityEngine.viewRiskLevel')}
+              </div>
               <div className="right">
                 {ruleLevels}
                 <img src={IconArrowRight} className="icon-arrow-right" />

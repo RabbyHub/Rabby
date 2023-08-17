@@ -90,7 +90,7 @@ const ImportGnosisAddress = () => {
             src={IconGnosis}
           />
           <p className="text-[17px] leading-[20px] mt-0 text-white text-center font-bold">
-            {t('Add Safe address')}
+            {t('page.importSafe.title')}
           </p>
         </div>
       </header>
@@ -105,16 +105,16 @@ const ImportGnosisAddress = () => {
               <Input
                 size="large"
                 autoFocus
-                placeholder={t('Please input address')}
+                placeholder={t('page.importSafe.placeholder')}
                 autoComplete="off"
                 onChange={(e) => {
                   const value = e.target.value;
                   if (!value) {
-                    setErrorMessage('Please input address');
+                    setErrorMessage(t('page.importSafe.error.required'));
                     return;
                   }
                   if (!isValidAddress(value)) {
-                    setErrorMessage(t('Not a valid address'));
+                    setErrorMessage(t('page.importSafe.error.invalid'));
                     return;
                   }
                   runAsync(e.target.value);
@@ -124,7 +124,7 @@ const ImportGnosisAddress = () => {
           </Form>
           {loading ? (
             <div className="loading">
-              <LoadingOutlined /> Searching the deployed chain of this address
+              <LoadingOutlined /> {t('page.importSafe.loading')}
             </div>
           ) : (
             <>
@@ -134,8 +134,9 @@ const ImportGnosisAddress = () => {
                 !!chainList?.length && (
                   <div className="chain-list-container">
                     <div className="desc">
-                      This address was found deployed on {chainList?.length}{' '}
-                      chains
+                      {t('page.importSafe.gnosisChainDesc', {
+                        count: chainList?.length,
+                      })}
                     </div>
                     <div className="chain-list">
                       {chainList?.map((chain) => {
@@ -171,7 +172,7 @@ const ImportGnosisAddress = () => {
             )
           }
         >
-          Next
+          {t('global.next')}
         </Button>
       </footer>
     </div>

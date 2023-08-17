@@ -30,6 +30,8 @@ import {
 import { useRabbySelector } from '@/ui/store';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -124,7 +126,7 @@ const ItemWrapper = styled.div`
     color: #707280;
     .receiveNum {
       font-size: 15px;
-      font-family: 500px;
+      /* font-family: 500px; */
       max-width: 130px;
       display: inline-block;
       overflow: hidden;
@@ -203,6 +205,8 @@ export const DexQuoteItem = (
     quoteProviderInfo,
     setActiveProvider: updateActiveQuoteProvider,
   } = props;
+
+  const { t } = useTranslation();
 
   const openSwapSettings = useSetSettingVisible();
   const openSwapQuote = useSetQuoteVisible();
@@ -289,7 +293,7 @@ export const DexQuoteItem = (
       right = (
         <span className={clsx('percent', percent.lt(0) && 'red')}>
           {isBestQuote
-            ? 'Best'
+            ? t('page.swap.best')
             : `${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
         </span>
       );
@@ -298,7 +302,7 @@ export const DexQuoteItem = (
     if (!quote?.toTokenAmount) {
       right = (
         <div className="text-gray-content text-[13px] font-normal">
-          Unable to fetch the price
+          {t('page.swap.unable-to-fetch-the-price')}
         </div>
       );
       center = <div className="text-15 text-gray-title font-medium">-</div>;
@@ -310,7 +314,7 @@ export const DexQuoteItem = (
         center = <div className="text-15 text-gray-title font-medium">-</div>;
         right = (
           <div className="text-gray-content text-[13px] font-normal">
-            Fail to simulate transaction
+            {t('page.swap.fail-to-simulate-transaction')}
           </div>
         );
         disable = true;
@@ -322,7 +326,7 @@ export const DexQuoteItem = (
       center = <div className="text-15 text-gray-title font-medium">-</div>;
       right = (
         <div className="text-gray-content text-[13px] font-normal">
-          Security verification failed
+          {t('page.swap.security-verification-failed')}
         </div>
       );
     }
@@ -512,7 +516,7 @@ export const DexQuoteItem = (
             {!!preExecResult?.shouldApproveToken && (
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
-                title="Need to approve token before swap"
+                title={t('page.swap.need-to-approve-token-before-swap')}
               >
                 <img src={ImgLock} className="w-14 h-14" />
               </TooltipWithMagnetArrow>
@@ -555,7 +559,7 @@ export const DexQuoteItem = (
       >
         <img src={ImgWhiteWarning} className="w-12 h-12" />
         <span>
-          This exchange is not enabled to trade by you.
+          {t('page.swap.this-exchange-is-not-enabled-to-trade-by-you')}
           <span
             className="underline-transparent underline cursor-pointer ml-4"
             onClick={(e) => {
@@ -564,7 +568,7 @@ export const DexQuoteItem = (
               setDisabledTradeTipsOpen(false);
             }}
           >
-            Enable it
+            {t('page.swap.enable-it')}
           </span>
         </span>
       </div>
@@ -588,6 +592,7 @@ export const CexQuoteItem = (props: {
     isLoading,
     inSufficient,
   } = props;
+  const { t } = useTranslation();
   const dexInfo = useMemo(() => CEX[name as keyof typeof CEX], [name]);
 
   const [middleContent, rightContent] = useMemo(() => {
@@ -600,7 +605,7 @@ export const CexQuoteItem = (props: {
     if (!data?.receive_token?.amount) {
       right = (
         <div className="text-gray-content text-[13px] font-normal">
-          This token pair is not supported
+          {t('page.swap.this-token-pair-is-not-supported')}
         </div>
       );
       disable = true;
@@ -628,7 +633,7 @@ export const CexQuoteItem = (props: {
       right = (
         <span className={clsx('percent', percent.lt(0) && 'red')}>
           {isBestQuote
-            ? 'Best'
+            ? t('page.swap.best')
             : `${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
         </span>
       );
@@ -677,20 +682,21 @@ export const CexListWrapper = styled.div`
 `;
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
-  `The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is ${receive}. You'll receive ${diff}  less than the expected offer.`;
+  i18n.t('page.swap.QuoteLessWarning', { receive, diff });
 
 export function WarningOrChecked({
   quoteWarning,
 }: {
   quoteWarning?: [string, string];
 }) {
+  const { t } = useTranslation();
   return (
     <TooltipWithMagnetArrow
       overlayClassName={clsx('rectangle', 'w-[max-content]')}
       title={
         quoteWarning
           ? getQuoteLessWarning(quoteWarning)
-          : 'By transaction simulation, the quote is valid'
+          : t('page.swap.by-transaction-simulation-the-quote-is-valid')
       }
     >
       <img

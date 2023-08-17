@@ -5,6 +5,7 @@ import { ReactComponent as StarredSVG } from '@/ui/assets/nft-view/starred.svg';
 import { NFTItem, CollectionList } from '@rabby-wallet/rabby-api/dist/types';
 import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
 import { ChainIcon, getChainName } from './ChainIcon';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   collection: CollectionList;
@@ -21,6 +22,7 @@ export const CollectionCard: React.FC<Props> = ({
   onStar,
   isStarred,
 }) => {
+  const { t } = useTranslation();
   const chain = collection.nft_list[0].chain;
   const chainName = getChainName(chain);
   return (
@@ -49,7 +51,9 @@ export const CollectionCard: React.FC<Props> = ({
             {collection.floor_price !== 0 ? (
               <>
                 {' '}
-                <span>/ Floor Price: {collection.floor_price}</span>{' '}
+                <span>
+                  {t('page.nft.floorPrice')} {collection.floor_price}
+                </span>{' '}
                 <span>{collection.native_token?.symbol}</span>
               </>
             ) : null}

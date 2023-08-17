@@ -8,8 +8,10 @@ import NetSwitchTabs, {
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
 import { SvgIconOffline } from '@/ui/assets';
+import { useTranslation } from 'react-i18next';
 
 export const AssetList = ({ visible }: { visible: boolean }) => {
+  const { t } = useTranslation();
   const { setHeight, data } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
   const [selectTestnetChainId, setSelectTestnetChainId] = useState<
@@ -49,7 +51,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
           <div className="text-gray-subTitle mt-40 flex items-center justify-center">
             <SvgIconOffline className="mr-4 text-gray-subTitle" />
             <span className="leading-tight">
-              {'The network is disconnected and no data is obtained'}
+              {t('page.dashboard.home.offline')}
             </span>
           </div>
         )}
@@ -61,7 +63,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         >
           <AssetEmptySVG className="m-auto" />
           <div className="mt-[16px] text-gray-subTitle text-12 text-center">
-            No assets
+            {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
         <div
@@ -83,7 +85,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
           <div className="text-gray-subTitle mt-40 flex items-center justify-center">
             <SvgIconOffline className="mr-4 text-gray-subTitle" />
             <span className="leading-tight">
-              {'The network is disconnected and no data is obtained'}
+              {t('page.dashboard.home.offline')}
             </span>
           </div>
         )}
@@ -95,7 +97,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         >
           <AssetEmptySVG className="m-auto" />
           <div className="mt-[16px] text-gray-subTitle text-12 text-center">
-            No assets
+            {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
         <div

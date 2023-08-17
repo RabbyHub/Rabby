@@ -8,6 +8,7 @@ import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useTranslation } from 'react-i18next';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -266,8 +267,19 @@ export const useAddressSource = ({
   brandName: string;
   byImport?: boolean;
 }) => {
+  const { t } = useTranslation();
   if (byImport === true && KEYRING_TYPE.HdKeyring === type) {
-    return 'Imported by Seed Phrase';
+    return t('constant.IMPORTED_HD_KEYRING');
+  }
+  const dict = {
+    [KEYRING_TYPE.HdKeyring]: t('constant.KEYRING_TYPE_TEXT.HdKeyring'),
+    [KEYRING_TYPE.SimpleKeyring]: t('constant.KEYRING_TYPE_TEXT.SimpleKeyring'),
+    [KEYRING_TYPE.WatchAddressKeyring]: t(
+      'constant.KEYRING_TYPE_TEXT.WatchAddressKeyring'
+    ),
+  };
+  if (dict[type]) {
+    return dict[type];
   }
   if (KEYRING_TYPE_TEXT[type]) {
     return KEYRING_TYPE_TEXT[type];

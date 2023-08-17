@@ -6,6 +6,7 @@ import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg
 import { useForm } from 'antd/lib/form/Form';
 import { useHistory } from 'react-router-dom';
 import { KEYRING_TYPE } from '@/constant';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   address: string;
@@ -13,6 +14,7 @@ type Props = {
   brandName?: string;
 };
 export const AddressBackup = ({ address, type }: Props) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
 
@@ -26,9 +28,12 @@ export const AddressBackup = ({ address, type }: Props) => {
     form.resetFields();
     let data = '';
     await AuthenticationModalPromise({
-      confirmText: 'Confirm',
-      cancelText: 'Cancel',
-      title: `Backup ${path === 'private-key' ? 'Private Key' : 'Seed Phrase'}`,
+      confirmText: t('global.confirm'),
+      cancelText: t('global.Cancel'),
+      title:
+        path === 'private-key'
+          ? t('page.addressDetail.backup-private-key')
+          : t('page.addressDetail.backup-seed-phrase'),
       validationHandler: async (password: string) => {
         if (path === 'private-key') {
           data = await wallet.getPrivateKey(password, {
@@ -64,7 +69,9 @@ export const AddressBackup = ({ address, type }: Props) => {
           }}
         >
           <div className="rabby-list-item-content">
-            <div className="rabby-list-item-label">Backup Seed Phrase</div>
+            <div className="rabby-list-item-label">
+              {t('page.addressDetail.backup-seed-phrase')}
+            </div>
             <div className="rabby-list-item-arrow">
               <IconArrowRight
                 width={16}
@@ -82,7 +89,9 @@ export const AddressBackup = ({ address, type }: Props) => {
         }}
       >
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">Backup Private Key</div>
+          <div className="rabby-list-item-label">
+            {t('page.addressDetail.backup-private-key')}
+          </div>
           <div className="rabby-list-item-arrow">
             <IconArrowRight
               width={16}

@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import { t } from 'i18next';
 import React from 'react';
 import IconSuccess from 'ui/assets/success.svg';
 function fallbackCopyTextToClipboard(text: string) {
@@ -44,7 +45,7 @@ export async function copyAddress(address: string) {
       <div>
         <div className="flex gap-4 mb-4">
           <img src={IconSuccess} alt="" />
-          Copied
+          {t('global.copied')}
         </div>
         <div className="text-white">{address}</div>
       </div>

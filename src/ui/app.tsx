@@ -45,7 +45,7 @@ function initAppMeta() {
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';
-  description.content = i18n.t('appDescription');
+  description.content = i18n.t('global.appDescription');
   head?.appendChild(description);
 }
 
@@ -124,9 +124,14 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 store.dispatch.app.initWallet({ wallet });
 store.dispatch.app.initBizStore();
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Views wallet={wallet} />
-  </Provider>,
-  document.getElementById('root')
-);
+wallet.getLocale().then((locale) => {
+  addResourceBundle(locale).then(() => {
+    i18n.changeLanguage(locale);
+    ReactDOM.render(
+      <Provider store={store}>
+        <Views wallet={wallet} />
+      </Provider>,
+      document.getElementById('root')
+    );
+  });
+});

@@ -35,7 +35,7 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
+        content: t('global.copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -99,8 +99,8 @@ const SignedTextHistory = () => {
       ))}
       {textHistory.length <= 0 && (
         <Empty
-          title={t('No signed texts yet')}
-          desc={t('All texts signed via Rabby will be listed here.')}
+          title={t('page.activities.signedText.empty.title')}
+          desc={t('page.activities.signedText.empty.desc')}
           className="pt-[108px]"
         ></Empty>
       )}

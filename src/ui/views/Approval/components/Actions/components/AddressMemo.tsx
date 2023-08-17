@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
@@ -9,6 +10,7 @@ const AddressMemo = ({ address }: { address: string }) => {
   const [addressAlias, updateAlias] = useAlias(address);
   const inputRef = useRef<Input>(null);
   const [form] = useForm();
+  const { t } = useTranslation();
 
   const updateAddressMemo = (
     alias: string | undefined,
@@ -21,7 +23,7 @@ const AddressMemo = ({ address }: { address: string }) => {
       inputRef.current?.focus();
     }, 50);
     const { destroy } = Popup.info({
-      title: 'Edit address note',
+      title: t('component.Contact.EditModal.title'),
       height: 215,
       content: (
         <div className="pt-[4px]">
@@ -65,7 +67,7 @@ const AddressMemo = ({ address }: { address: string }) => {
                 className="w-[200px]"
                 htmlType="submit"
               >
-                Confirm
+                {t('global.confirm')}
               </Button>
             </div>
           </Form>

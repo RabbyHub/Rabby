@@ -52,7 +52,9 @@ const TransactionExplain = ({
   let icon: React.ReactNode = (
     <img className="icon icon-explain" src={IconUnknown} />
   );
-  let content: string | React.ReactNode = t('Unknown Transaction');
+  let content: string | React.ReactNode = t(
+    'page.activities.signedTx.explain.unknown'
+  );
   if (explain) {
     if (explain.type_cancel_nft_collection_approval) {
       icon = (
@@ -66,12 +68,14 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="CancelNFTCollectionApprovalExplain"
+          i18nKey="page.activities.signedTx.explain.cancelNFTCollectionApproval"
           values={{
             protocol:
               explain.type_cancel_nft_collection_approval
-                .spender_protocol_name || t('UnknownProtocol'),
+                .spender_protocol_name ||
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_nft_collection_approval) {
@@ -86,12 +90,13 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="NFTCollectionApprovalExplain"
+          i18nKey="page.activities.signedTx.explain.nftCollectionApproval"
           values={{
             protocol:
               explain.type_nft_collection_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_cancel_single_nft_approval) {
@@ -106,12 +111,13 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="CancelSingleNFTApprovalExplain"
+          i18nKey="page.activities.signedTx.explain.cancelSingleNFTApproval"
           values={{
             protocol:
               explain.type_cancel_single_nft_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_single_nft_approval) {
@@ -126,19 +132,21 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="SingleNFTApprovalExplain"
+          i18nKey="page.activities.signedTx.explain.singleNFTApproval"
           values={{
             protocol:
               explain.type_single_nft_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_nft_send) {
       icon = <img className="icon icon-explain" src={IconUser} />;
-      content = `${t('Send')} ${splitNumberByStep(
-        explain.type_nft_send.token_amount
-      )} NFT`;
+      content = `${t('page.activities.signedTx.explain.send', {
+        amount: splitNumberByStep(explain.type_nft_send.token_amount),
+        symbol: 'NFT',
+      })}`;
     } else if (explain.type_cancel_token_approval) {
       icon = (
         <img
@@ -151,13 +159,14 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="CancelExplain"
+          i18nKey="page.activities.signedTx.explain.cancel"
           values={{
             token: explain.type_cancel_token_approval.token_symbol,
             protocol:
               explain.type_cancel_token_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_token_approval) {
@@ -171,23 +180,25 @@ const TransactionExplain = ({
       );
       content = (
         <Trans
-          i18nKey="ApproveExplain"
+          i18nKey="page.activities.signedTx.explain.approve"
           values={{
             token: explain.type_token_approval.token_symbol,
             count: explain.type_token_approval.is_infinity
-              ? t('unlimited')
+              ? t('page.activities.signedTx.common.unlimited')
               : splitNumberByStep(explain.type_token_approval.token_amount),
             protocol:
               explain.type_token_approval.spender_protocol_name ||
-              t('UnknownProtocol'),
+              t('page.activities.signedTx.common.unknownProtocol'),
           }}
+          t={t}
         />
       );
     } else if (explain.type_send) {
       icon = <img className="icon icon-explain" src={IconUser} />;
-      content = `${t('Send')} ${splitNumberByStep(
-        explain.type_send.token_amount
-      )} ${explain.type_send.token_symbol}`;
+      content = `${t('page.activities.signedTx.explain.send', {
+        amount: splitNumberByStep(explain.type_send.token_amount),
+        symbol: explain.type_send.token_symbol,
+      })}`;
     } else if (explain.type_call) {
       icon = (
         <img
@@ -204,13 +215,15 @@ const TransactionExplain = ({
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
       <div className="flex flex-1 justify-between">
         <div className="flex flex-1 items-center tx-explain__text">
-          <span>{content || t('Unknown Transaction')}</span>
+          <span>
+            {content || t('page.activities.signedTx.explain.unknown')}
+          </span>
           <SvgIconOpenExternal className="icon icon-external" />
         </div>
         <span className="text-red-light text-14 font-normal text-right">
-          {isCancel && t('Canceled')}
-          {isFailed && t('Failed')}
-          {isSubmitFailed && t('Failed to submit')}
+          {isCancel && t('page.activities.signedTx.status.canceled')}
+          {isFailed && t('page.activities.signedTx.status.failed')}
+          {isSubmitFailed && t('page.activities.signedTx.status.submitFailed')}
         </span>
       </div>
     </p>
@@ -230,11 +243,11 @@ const ChildrenTxText = ({
   let text = '';
 
   if (isOrigin) {
-    text = t('Initial tx');
+    text = t('page.activities.signedTx.txType.initial');
   } else if (isCancel) {
-    text = t('Cancel tx');
+    text = t('page.activities.signedTx.txType.cancel');
   } else {
-    text = t('Speed up tx');
+    text = t('page.activities.signedTx.txType.speedUp');
   }
   return <span className="tx-type">{text}</span>;
 };
@@ -494,7 +507,7 @@ const TransactionItem = ({
         {isPending && (
           <div className="pending">
             <SvgPendingSpin className="icon icon-pending-spin" />
-            {t('Pending')}
+            {t('page.activities.signedTx.status.pending')}
           </div>
         )}
         <div className="tx-id">
@@ -520,14 +533,22 @@ const TransactionItem = ({
               })}
             >
               <Tooltip
-                title={canCancel ? null : t('CanNotCancelTip')}
+                title={
+                  canCancel
+                    ? null
+                    : t('page.activities.signedTx.tips.canNotCancel')
+                }
                 overlayClassName="rectangle cant-cancel__tooltip"
                 placement="topRight"
                 autoAdjustOverflow={false}
               >
                 <div className="flex items-center">
                   <Tooltip
-                    title={canCancel ? 'Speed up' : null}
+                    title={
+                      canCancel
+                        ? t('page.activities.signedTx.common.speedUp')
+                        : null
+                    }
                     overlayClassName="rectangle"
                   >
                     <img
@@ -540,7 +561,11 @@ const TransactionItem = ({
                   </Tooltip>
                   <div className="hr" />
                   <Tooltip
-                    title={canCancel ? 'Cancel' : null}
+                    title={
+                      canCancel
+                        ? t('page.activities.signedTx.common.cancel')
+                        : null
+                    }
                     overlayClassName="rectangle"
                   >
                     <img
@@ -568,7 +593,7 @@ const TransactionItem = ({
                   Gwei{' '}
                 </>
               ) : (
-                t('Unknown')
+                t('page.activities.signedTx.common.unknown')
               )}
             </div>
           </div>
@@ -597,7 +622,7 @@ const TransactionItem = ({
                         txQueues[completedTx!.hash].tokenCount! *
                         (txQueues[completedTx!.hash].token?.price || 1)
                       ).toFixed(2)})`
-                    : t('Unknown')}
+                    : t('page.activities.signedTx.common.unknown')}
                 </span>
               </>
             )}
@@ -608,9 +633,9 @@ const TransactionItem = ({
         <ChildrenWrapper>
           <div className="tx-history__item--children">
             <div className="pending-detail">
-              {t('Pending detail')}
+              {t('page.activities.signedTx.common.pendingDetail')}
               <Tooltip
-                title={t('PendingDetailTip')}
+                title={t('page.activities.signedTx.tips.pendingDetail')}
                 overlayClassName="rectangle pending-detail__tooltip"
                 autoAdjustOverflow={false}
               >
@@ -638,7 +663,7 @@ const TransactionItem = ({
                         Gwei{' '}
                       </>
                     ) : (
-                      t('Unknown')
+                      t('page.activities.signedTx.common.unknown')
                     )}
                   </div>
                   <SvgPendingSpin className="icon icon-spin" />
@@ -734,8 +759,8 @@ const TransactionHistory = () => {
       )}
       {completeList.length <= 0 && pendingList.length <= 0 && (
         <Empty
-          title={t('No signed transactions yet')}
-          desc={t('All transactions signed via Rabby will be listed here.')}
+          title={t('page.activities.signedTx.empty.title')}
+          desc={t('page.activities.signedTx.empty.desc')}
           className="pt-[108px]"
         ></Empty>
       )}

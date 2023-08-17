@@ -3,6 +3,7 @@ import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
@@ -54,6 +55,7 @@ const ApproveAmountModal = ({
   onChange,
 }: ApproveAmountModalProps) => {
   const inputRef = useRef<Input>(null);
+  const { t } = useTranslation();
   const [customAmount, setCustomAmount] = useState(
     new BigNumber(amount).toFixed()
   );
@@ -126,7 +128,8 @@ const ApproveAmountModal = ({
               setCustomAmount(balance);
             }}
           >
-            Balance: {formatAmount(new BigNumber(balance).toFixed(4))}
+            {t('global.Balance')}:{' '}
+            {formatAmount(new BigNumber(balance).toFixed(4))}
           </span>
         )}
       </div>
@@ -138,7 +141,7 @@ const ApproveAmountModal = ({
           htmlType="submit"
           disabled={!canSubmit}
         >
-          Confirm
+          {t('global.confirmButton')}
         </Button>
       </div>
     </Form>
@@ -163,6 +166,7 @@ const TokenApprove = ({
   const actionData = data!;
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -212,7 +216,7 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve token</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
           <Row>
             <LogoWithText
               className="flex-1 pr-10"
@@ -229,7 +233,7 @@ const TokenApprove = ({
                     className="text-blue-light text-12 font-medium cursor-pointer ml-4"
                     onClick={() => setEditApproveModalVisible(true)}
                   >
-                    Edit
+                    {t('global.editButton')}
                   </span>
                 </div>
               }
@@ -240,7 +244,7 @@ const TokenApprove = ({
             />
             <ul className="desc-list">
               <li>
-                My balance{' '}
+                {t('page.signTx.tokenApprove.myBalance')}{' '}
                 <span
                   className={clsx(
                     new BigNumber(approveAmount).gt(tokenBalance)
@@ -257,7 +261,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve to</Row>
+          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
           <Row>
             <div>
               <Values.Address address={actionData.spender} chain={chain} />
@@ -268,7 +272,7 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1022"
                 engineResult={engineResultMap['1022']}
-                dangerText="EOA address"
+                dangerText={t('page.signTx.tokenApprove.eoaAddress')}
               />
 
               <SecurityListItem
@@ -283,14 +287,20 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1023"
                 engineResult={engineResultMap['1023']}
-                dangerText="Trust value ≤ $10,000"
-                warningText="Trust value ≤ $100,000"
+                dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$10,000',
+                })}
+                warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
+                  value: '$100,000',
+                })}
               />
 
               <SecurityListItem
                 id="1024"
                 engineResult={engineResultMap['1024']}
-                warningText="Deployed time < 3 days"
+                warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {
+                  value: '3',
+                })}
               />
 
               <SecurityListItem
@@ -302,19 +312,19 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1134"
                 engineResult={engineResultMap['1134']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1136"
                 engineResult={engineResultMap['1136']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1133"
                 engineResult={engineResultMap['1133']}
-                safeText="Marked as trusted"
+                safeText={t('page.signTx.markAsTrust')}
               />
 
               <li>
@@ -335,7 +345,7 @@ const TokenApprove = ({
         visible={editApproveModalVisible}
         className="edit-approve-amount-modal"
         height={280}
-        title="Amount"
+        title={t('page.signTx.tokenApprove.amountPopupTitle')}
         onCancel={() => setEditApproveModalVisible(false)}
         destroyOnClose
       >

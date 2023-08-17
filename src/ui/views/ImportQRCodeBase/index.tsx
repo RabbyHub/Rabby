@@ -139,7 +139,9 @@ const ImportQRCodeBase = () => {
             {brandInfo.name}
           </p>
           <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {`Scan the QR code on the ${brandInfo.name} hardware wallet`}
+            {t('page.importQrBase.desc', {
+              brandName: brandInfo.name || '',
+            })}
           </p>
           <img src="/images/watch-mask.png" className="mask" />
         </div>
@@ -159,8 +161,8 @@ const ImportQRCodeBase = () => {
             onCancel={handleClickBack}
             data={errorMessage}
             onOk={handleScan}
-            okText={t('Try Again')}
-            cancelText={t('Cancel')}
+            okText={t('page.importQrBase.btnText')}
+            cancelText={t('global.Cancel')}
           />
         )}
       </div>

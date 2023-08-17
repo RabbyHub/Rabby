@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useDebounce } from 'react-use';
@@ -55,10 +55,15 @@ import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTra
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import LessPalette from '@/ui/style/var-defs';
 
-const MaxButton = styled.img`
+const MaxButton = styled.div`
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 5px;
   cursor: pointer;
   user-select: nonce;
   margin-left: 6px;
+  background-color: rgba(134, 151, 255, 0.1);
+  color: #8697ff;
 `;
 
 const SendToken = () => {
@@ -147,19 +152,19 @@ const SendToken = () => {
   const whitelistAlertContent = useMemo(() => {
     if (!whitelistEnabled) {
       return {
-        content: 'Whitelist disabled. You can transfer to any address.',
+        content: t('page.sendToken.whitelistAlert__disabled'),
         success: true,
       };
     }
     if (toAddressInWhitelist) {
       return {
-        content: 'The address is whitelisted',
+        content: t('page.sendToken.whitelistAlert__whitelisted'),
         success: true,
       };
     }
     if (temporaryGrant) {
       return {
-        content: 'Temporary permission granted',
+        content: t('page.sendToken.whitelistAlert__temporaryGranted'),
         success: true,
       };
     }
@@ -167,8 +172,10 @@ const SendToken = () => {
       success: false,
       content: (
         <>
-          The address is not whitelisted.
-          <br /> I agree to grant temporary permission to transfer.
+          <Trans t={t} i18nKey="page.sendToken.whitelistAlert__notWhitelisted">
+            The address is not whitelisted.
+            <br /> I agree to grant temporary permission to transfer.
+          </Trans>
         </>
       ),
     };
@@ -437,7 +444,7 @@ const SendToken = () => {
             .minus(gasCostTokenAmount)
             .lt(0)
         ) {
-          setBalanceWarn(t('Gas fee reservation required'));
+          setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
         } else {
           setBalanceWarn(null);
         }
@@ -451,7 +458,8 @@ const SendToken = () => {
         )
       )
     ) {
-      setBalanceError(t('Insufficient balance'));
+      // Insufficient balance
+      setBalanceError(t('page.sendToken.balanceError.insufficientBalance'));
     } else {
       setBalanceError(null);
     }
@@ -519,7 +527,8 @@ const SendToken = () => {
         }
       } catch (e) {
         if (!isGnosisSafe) {
-          setBalanceWarn(t('Gas fee reservation required'));
+          // Gas fee reservation required
+          setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
           setShowGasReserved(false);
         }
       }
@@ -585,7 +594,7 @@ const SendToken = () => {
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{currentToken.id}</div>
           </div>
@@ -735,9 +744,12 @@ const SendToken = () => {
       wallet,
       toAddr,
       showAddToWhitelist: !!toAddressInContactBook,
-      title: 'Enter the Password to Confirm',
-      cancelText: 'Cancel',
-      confirmText: 'Confirm',
+      // Enter the Password to Confirm
+      title: t('page.sendToken.modalConfirmAllowTransferTo.title'),
+      // Cancel
+      cancelText: t('page.sendToken.modalConfirmAllowTransferTo.cancelText'),
+      // Confirm
+      confirmText: t('page.sendToken.modalConfirmAllowTransferTo.confirmText'),
       onFinished(result) {
         dispatch.whitelist.getWhitelist();
         setTemporaryGrant(true);
@@ -752,8 +764,8 @@ const SendToken = () => {
     confirmAddToContactsModalPromise({
       wallet,
       addrToAdd: toAddr,
-      title: 'Add to contacts',
-      confirmText: 'Confirm',
+      title: t('page.sendToken.modalConfirmAddToContacts.title'),
+      confirmText: t('page.sendToken.modalConfirmAddToContacts.confirmText'),
       async onFinished(result) {
         await dispatch.contactBook.getContactBookAsync();
         // trigger fetch contactInfo
@@ -781,7 +793,7 @@ const SendToken = () => {
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
-        {t('Send')}
+        {t('page.sendToken.header.title')}
       </PageHeader>
       <Form
         form={form}
@@ -795,14 +807,18 @@ const SendToken = () => {
       >
         <div className="flex-1 overflow-auto">
           <div className="section relative">
-            <div className={clsx('section-title')}>{t('Chain')}</div>
+            <div className={clsx('section-title')}>
+              {t('page.sendToken.sectionChain.title')}
+            </div>
             <ChainSelectorInForm
               value={chain}
               onChange={handleChainChanged}
               disabledTips={'Not supported'}
               supportChains={undefined}
             />
-            <div className={clsx('section-title mt-[10px]')}>{t('From')}</div>
+            <div className={clsx('section-title mt-[10px]')}>
+              {t('page.sendToken.sectionFrom.title')}
+            </div>
             <AccountCard
               icons={{
                 mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
@@ -813,7 +829,9 @@ const SendToken = () => {
               isHideAmount={CHAINS[chain]?.isTestnet}
             />
             <div className="section-title">
-              <span className="section-title__to">{t('To')}</span>
+              <span className="section-title__to">
+                {t('page.sendToken.sectionTo.title')}
+              </span>
               <div className="flex flex-1 justify-end items-center">
                 {showContactInfo && !!contactInfo && (
                   <div
@@ -846,7 +864,10 @@ const SendToken = () => {
               <Form.Item
                 name="to"
                 rules={[
-                  { required: true, message: t('Please input address') },
+                  {
+                    required: true,
+                    message: t('page.sendToken.sectionTo.addrValidator__empty'),
+                  },
                   {
                     validator(_, value) {
                       if (!value) return Promise.resolve();
@@ -855,14 +876,18 @@ const SendToken = () => {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error(t('This address is invalid'))
+                        new Error(
+                          t('page.sendToken.sectionTo.addrValidator__invalid')
+                        )
                       );
                     },
                   },
                 ]}
               >
                 <AccountSearchInput
-                  placeholder={'Enter address or search'}
+                  placeholder={t(
+                    'page.sendToken.sectionTo.searchInputPlaceholder'
+                  )}
                   autoComplete="off"
                   autoFocus
                   spellCheck={false}
@@ -878,14 +903,16 @@ const SendToken = () => {
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
                 <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
-                  Not on address list.{' '}
-                  <span
-                    onClick={handleClickAddContact}
-                    className={clsx('ml-[2px] underline cursor-pointer')}
-                    style={{ color: LessPalette['@primary-text-color'] }}
-                  >
-                    Add to contacts
-                  </span>
+                  <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
+                    Not on address list.{' '}
+                    <span
+                      onClick={handleClickAddContact}
+                      className={clsx('ml-[2px] underline cursor-pointer')}
+                      style={{ color: LessPalette['@primary-text-color'] }}
+                    >
+                      Add to contacts
+                    </span>
+                  </Trans>
                 </div>
               )}
             </div>
@@ -897,7 +924,7 @@ const SendToken = () => {
                   <Skeleton.Input active style={{ width: 100 }} />
                 ) : (
                   <>
-                    {t('Balance')}:{' '}
+                    {t('page.sendToken.sectionBalance.title')}:{' '}
                     <span
                       className="truncate max-w-[80px]"
                       title={formatTokenAmount(
@@ -917,10 +944,9 @@ const SendToken = () => {
                   </>
                 )}
                 {currentToken.amount > 0 && (
-                  <MaxButton
-                    src={ButtonMax}
-                    onClick={handleClickTokenBalance}
-                  />
+                  <MaxButton onClick={handleClickTokenBalance}>
+                    {t('page.sendToken.max')}
+                  </MaxButton>
                 )}
               </div>
               {showGasReserved &&
@@ -954,7 +980,9 @@ const SendToken = () => {
               <img className="token-info__header" src={TokenInfoArrow} />
               {!isNativeToken ? (
                 <div className="section-field">
-                  <span>{t('Contract Address')}</span>
+                  <span>
+                    {t('page.sendToken.tokenInfoFieldLabel.contract')}
+                  </span>
                   <span className="flex">
                     <AddressViewer
                       address={currentToken.id}
@@ -971,7 +999,7 @@ const SendToken = () => {
                 ''
               )}
               <div className="section-field">
-                <span>{t('Chain')}</span>
+                <span>{t('page.sendToken.tokenInfoFieldLabel.chain')}</span>
                 <span>
                   {
                     Object.values(CHAINS).find(
@@ -981,7 +1009,7 @@ const SendToken = () => {
                 </span>
               </div>
               <div className="section-field">
-                <span>{t('Price')}</span>
+                <span>{t('page.sendToken.tokenInfoPrice')}</span>
                 <span>
                   ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
                 </span>
@@ -1024,7 +1052,7 @@ const SendToken = () => {
               className="w-[100%] h-[48px]"
               loading={isSubmitLoading}
             >
-              {t('Send')}
+              {t('page.sendToken.sendButton')}
             </Button>
           </div>
         </div>
