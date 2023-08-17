@@ -898,6 +898,7 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
+  CHAINS_ENUM.BASE,
 ]);
 
 export const WALLET_SORT_SCORE = [
