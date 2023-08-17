@@ -734,11 +734,7 @@ const Settings = ({
           },
           rightIcon: (
             <>
-              <span
-                className="text-14 mr-[8px] text-[#13141a]"
-                role="button"
-                onClick={updateVersion}
-              >
+              <span className="text-14 mr-[8px] text-[#13141a]" role="button">
                 {langLabel}
               </span>
               <img src={IconArrowRight} className="icon icon-arrow-right" />
@@ -772,11 +768,7 @@ const Settings = ({
           },
           rightIcon: (
             <>
-              <span
-                className="text-14 mr-[8px] text-[#13141a]"
-                role="button"
-                onClick={updateVersion}
-              >
+              <span className="text-14 mr-[8px] text-[#13141a]" role="button">
                 {autoLockTimeLabel}
               </span>
               <img src={IconArrowRight} className="icon icon-arrow-right" />
@@ -859,11 +851,7 @@ const Settings = ({
           },
           rightIcon: (
             <>
-              <span
-                className="text-14 mr-[8px] text-[#13141a]"
-                role="button"
-                onClick={updateVersion}
-              >
+              <span className="text-14 mr-[8px] text-[#13141a]" role="button">
                 {Object.values(CHAINS).length}
               </span>
               <img src={IconArrowRight} className="icon icon-arrow-right" />
