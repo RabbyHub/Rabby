@@ -159,11 +159,13 @@ export default ({
     disabled?: boolean;
     commingSoonBadge?: boolean;
     disableReason?: string;
+    eventKey: string;
   };
 
   const panelItems = {
     swap: {
       icon: IconSwap,
+      eventKey: 'Swap',
       content: t('page.dashboard.home.panel.swap'),
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
@@ -171,11 +173,13 @@ export default ({
     } as IPanelItem,
     send: {
       icon: IconSendToken,
+      eventKey: 'Send',
       content: t('page.dashboard.home.panel.send'),
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
     receive: {
       icon: IconReceive,
+      eventKey: 'Receive',
       content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
         setIsShowReceiveModal(true);
@@ -183,6 +187,7 @@ export default ({
     } as IPanelItem,
     gasTopUp: {
       icon: IconGasTopUp,
+      eventKey: 'Gas Top Up',
       content: t('page.dashboard.home.panel.gasTopUp'),
       onClick: () => {
         history.push('/gas-top-up');
@@ -190,6 +195,7 @@ export default ({
     } as IPanelItem,
     queue: {
       icon: IconQuene,
+      eventKey: 'Queue',
       content: t('page.dashboard.home.panel.queue'),
       badge: gnosisPendingCount,
       onClick: () => {
@@ -198,6 +204,7 @@ export default ({
     } as IPanelItem,
     transactions: {
       icon: IconTransactions,
+      eventKey: 'Transactions',
       content: t('page.dashboard.home.panel.transactions'),
       onClick: () => {
         history.push('/history');
@@ -205,6 +212,7 @@ export default ({
     } as IPanelItem,
     security: {
       icon: IconSecurity,
+      eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
         // history.push('/popup/approval-manage');
@@ -220,16 +228,19 @@ export default ({
     } as IPanelItem,
     feedback: {
       icon: IconFeedback,
+      eventKey: 'Feedback',
       content: t('page.dashboard.home.panel.feedback'),
       onClick: showFeedbackModal,
     } as IPanelItem,
     more: {
       icon: IconMoreSettings,
+      eventKey: 'More',
       content: t('page.dashboard.home.panel.more'),
       onClick: toggleShowMoreSettings,
     } as IPanelItem,
     address: {
       icon: IconAddresses,
+      eventKey: 'Manage Address',
       content: t('page.dashboard.home.panel.manageAddress'),
       onClick: () => {
         history.push('/settings/address');
@@ -237,6 +248,7 @@ export default ({
     } as IPanelItem,
     nft: {
       icon: IconNFT,
+      eventKey: 'NFT',
       content: t('page.dashboard.home.panel.nft'),
       onClick: () => {
         history.push('/nft');
@@ -310,7 +322,7 @@ export default ({
                   matomoRequestEvent({
                     category: 'Dashboard',
                     action: 'clickEntry',
-                    label: item.content,
+                    label: item.eventKey,
                   });
                   item?.onClick(evt);
                 }}
