@@ -254,10 +254,12 @@ export const DexQuoteItem = (
           .toString()
       : preExecResult?.swapPreExecTx.balance_change.receive_token_list[0]
           ?.amount;
-    if (actualReceiveAmount) {
+    if (actualReceiveAmount || dexId === 'WrapToken') {
+      const receiveAmount =
+        actualReceiveAmount || dexId === 'WrapToken' ? payAmount : 0;
       const bestQuoteAmount = new BigNumber(bestAmount);
-      const receivedTokeAmountBn = new BigNumber(actualReceiveAmount || 0);
-      const percent = new BigNumber(actualReceiveAmount)
+      const receivedTokeAmountBn = new BigNumber(receiveAmount);
+      const percent = new BigNumber(receiveAmount)
         .minus(bestAmount || 0)
         .div(bestAmount)
         .times(100);
@@ -267,7 +269,7 @@ export const DexQuoteItem = (
       );
 
       diffUsd = formatUsdValue(
-        new BigNumber(actualReceiveAmount)
+        new BigNumber(receiveAmount)
           .minus(bestQuoteAmount || 0)
           .times(receiveToken.price || 0)
           .toString(10)
