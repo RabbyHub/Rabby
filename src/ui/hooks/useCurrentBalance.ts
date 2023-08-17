@@ -87,8 +87,8 @@ export default function useCurrentBalance(
       setTestnetBalanceFromCache(false);
     },
     onError() {
-      setSuccess(false);
-      setBalanceLoading(false);
+      setTestnetSuccess(false);
+      setTestnetBalanceLoading(false);
     },
   });
 
