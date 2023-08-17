@@ -155,10 +155,9 @@ const ContractCall = ({
         {new BigNumber(requireData.payNativeTokenAmount).gt(0) && (
           <Col>
             <Row isTitle>
-              {
-                (t('page.signTx.contractCall.payNativeToken'),
-                { symbol: requireData.nativeTokenSymbol })
-              }
+              {t('page.signTx.contractCall.payNativeToken', {
+                symbol: requireData.nativeTokenSymbol,
+              })}
             </Row>
             {
               <Row>
