@@ -652,6 +652,7 @@
         },
         "RevokeButton": {
           "btnText_zero": "取消授权",
+          "btnText_one": "取消授权 ({{count}})",
           "btnText_other": "取消授权 ({{count}})"
         },
         "ViewMore": {

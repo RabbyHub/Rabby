@@ -485,6 +485,7 @@
         },
         "RevokeButton": {
           "btnText_zero": "Revoke",
+          "btnText_one": "Revoke ({{count}})",
           "btnText_other": "Revoke ({{count}})"
         },
         "ViewMore": {
