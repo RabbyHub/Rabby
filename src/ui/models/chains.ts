@@ -77,7 +77,8 @@ export const chains = createModel<RootModel>()({
             ? pinnedChain.value
             : []) as CHAINS_ENUM[],
           matteredChainBalances: (balance.status === 'fulfilled'
-            ? balance.value
+            ? // only SUPPORT mainnet now
+              balance.value.matteredChainBalances
             : {}) as AccountState['matteredChainBalances'],
         };
       });

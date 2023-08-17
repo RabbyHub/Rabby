@@ -27,6 +27,9 @@ export interface AccountState {
   matteredChainBalances: {
     [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
   };
+  testnetMatteredChainBalances: {
+    [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
+  };
   tokens: {
     list: AbstractPortfolioToken[];
     customize: AbstractPortfolioToken[];
@@ -52,6 +55,7 @@ export const account = createModel<RootModel>()({
     keyrings: [],
     balanceMap: {},
     matteredChainBalances: {},
+    testnetMatteredChainBalances: {},
     mnemonicAccounts: [],
     tokens: {
       list: [],
@@ -151,6 +155,14 @@ export const account = createModel<RootModel>()({
       },
       currentAccountAddr() {
         return slice((account) => account.currentAccount?.address);
+      },
+      allMatteredChainBalances() {
+        return slice((account) => {
+          return {
+            ...account.testnetMatteredChainBalances,
+            ...account.matteredChainBalances,
+          };
+        });
       },
     };
   },
@@ -368,14 +380,25 @@ export const account = createModel<RootModel>()({
     async getMatteredChainBalance(
       options?: { isTestnet?: boolean },
       store?
-    ): Promise<AccountState['matteredChainBalances']> {
-      const wallet = store.app.wallet;
+    ): Promise<{
+      matteredChainBalances: AccountState['matteredChainBalances'];
+      testnetMatteredChainBalances: AccountState['testnetMatteredChainBalances'];
+    }> {
+      const wallet = store!.app.wallet;
       const isShowTestnet = store.preference.isShowTestnet;
 
       const currentAccountAddr = store.account.currentAccount?.address;
 
-      const cachedBalance = await requestOpenApiMultipleNets<TotalBalanceResponse | null>(
+      const result = await requestOpenApiMultipleNets<
+        TotalBalanceResponse | null,
+        {
+          mainnet: TotalBalanceResponse | null;
+          testnet: TotalBalanceResponse | null;
+        }
+      >(
         (ctx) => {
+          if (!isShowTestnet && ctx.isTestnetTask) return null;
+
           return wallet.getAddressCacheBalance(
             currentAccountAddr,
             ctx.isTestnetTask
@@ -385,12 +408,9 @@ export const account = createModel<RootModel>()({
           wallet,
           needTestnetResult: isShowTestnet,
           processResults: ({ mainnet, testnet }) => {
-            if (!mainnet) return null;
-
             return {
-              chain_list: mainnet.chain_list.concat(testnet?.chain_list || []),
-              // pointless here, just for type check
-              total_usd_value: mainnet.total_usd_value,
+              mainnet: mainnet,
+              testnet: testnet,
             };
           },
           fallbackValues: {
@@ -400,16 +420,15 @@ export const account = createModel<RootModel>()({
         }
       );
 
-      const totalUsdValue = (cachedBalance?.chain_list || []).reduce(
+      const mainnetTotalUsdValue = (result.mainnet?.chain_list || []).reduce(
         (accu, cur) => accu + coerceFloat(cur.usd_value),
         0
       );
-
-      const matteredChainBalances = (cachedBalance?.chain_list || []).reduce(
+      const matteredChainBalances = (result.mainnet?.chain_list || []).reduce(
         (accu, cur) => {
           const curUsdValue = coerceFloat(cur.usd_value);
           // TODO: only leave chain with blance greater than $1 and has percentage 1%
-          if (curUsdValue > 1 && curUsdValue / totalUsdValue > 0.01) {
+          if (curUsdValue > 1 && curUsdValue / mainnetTotalUsdValue > 0.01) {
             accu[cur.id] = formatChainToDisplay(cur);
           }
           return accu;
@@ -417,11 +436,30 @@ export const account = createModel<RootModel>()({
         {} as AccountState['matteredChainBalances']
       );
 
+      const testnetTotalUsdValue = (result.testnet?.chain_list || []).reduce(
+        (accu, cur) => accu + coerceFloat(cur.usd_value),
+        0
+      );
+      const testnetMatteredChainBalances = (
+        result.testnet?.chain_list || []
+      ).reduce((accu, cur) => {
+        const curUsdValue = coerceFloat(cur.usd_value);
+
+        if (curUsdValue > 1 && curUsdValue / testnetTotalUsdValue > 0.01) {
+          accu[cur.id] = formatChainToDisplay(cur);
+        }
+        return accu;
+      }, {} as AccountState['testnetMatteredChainBalances']);
+
       dispatch.account.setField({
         matteredChainBalances,
+        testnetMatteredChainBalances,
       });
 
-      return matteredChainBalances;
+      return {
+        matteredChainBalances,
+        testnetMatteredChainBalances,
+      };
     },
   }),
 });
