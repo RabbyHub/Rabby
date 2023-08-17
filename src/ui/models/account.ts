@@ -156,6 +156,14 @@ export const account = createModel<RootModel>()({
       currentAccountAddr() {
         return slice((account) => account.currentAccount?.address);
       },
+      allMatteredChainBalances() {
+        return slice((account) => {
+          return {
+            ...account.testnetMatteredChainBalances,
+            ...account.matteredChainBalances,
+          };
+        });
+      },
     };
   },
 

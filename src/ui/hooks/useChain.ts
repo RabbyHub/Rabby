@@ -13,6 +13,9 @@ export type ChainSelectorPurpose =
   | 'addAsset';
 
 type FetchDataStage = false | 'fetching' | 'fetched' | 'inited';
+/**
+ * @description support mainnet ONLY now
+ */
 export function useAsyncInitializeChainList({
   supportChains,
   onChainInitializedAsync,
