@@ -26,7 +26,6 @@ import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
 import { SignTestnetPermission } from './SignTestnetPermission';
-import { useRabbySelector } from '@/ui/store';
 
 interface ConnectProps {
   params: any;
@@ -109,10 +108,11 @@ const Footer = styled.div`
     }
   }
   .security-tip {
+    width: 100%;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    padding: 6px 12px;
+    padding: 6px;
     display: flex;
     align-items: center;
     border-radius: 4px;
@@ -280,7 +280,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     resultsWithoutDisable.forEach((result) => {
       if (result.level === Level.SAFE) {
         safeCount++;
-      } else if (result.level === Level.FORBIDDEN) {
+      } else if (
+        result.level === Level.FORBIDDEN &&
+        !processedRules.includes(result.id)
+      ) {
         forbiddenCount++;
       } else if (
         result.level !== Level.ERROR &&
@@ -556,6 +559,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     setDefaultChain(val);
   };
 
+  const onIgnoreAllRules = () => {
+    setProcessedRules(engineResults.map((item) => item.id));
+  };
+
   const handleSelectRule = (rule: {
     id: string;
     desc: string;
@@ -614,7 +621,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                   collectList={collectList}
                   popularLevel={originPopularLevel}
                   userListResult={userListResult}
-                  ignored={false}
+                  ignored={processedRules.includes(rule.id)}
                   hasSafe={hasSafe}
                   hasForbidden={hasForbidden}
                   onEditUserList={handleEditUserDataList}
@@ -674,11 +681,21 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                     className="icon icon-level"
                   />
                   <span
+                    className="flex-1"
                     style={{
                       color: SecurityLevelTipColor[connectBtnStatus.level].text,
                     }}
                   >
                     {connectBtnStatus.text}
+                  </span>
+                  <span
+                    className="underline text-13 font-medium cursor-pointer"
+                    style={{
+                      color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                    }}
+                    onClick={onIgnoreAllRules}
+                  >
+                    Ignore all
                   </span>
                 </div>
               )}
