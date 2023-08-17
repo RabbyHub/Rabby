@@ -326,6 +326,7 @@ const SendNFT = () => {
   const init = async () => {
     dispatch.whitelist.getWhitelistEnabled();
     dispatch.whitelist.getWhitelist();
+    dispatch.contactBook.getContactBookAsync();
     const account = await wallet.syncGetCurrentAccount();
 
     if (!account) {

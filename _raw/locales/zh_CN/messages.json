@@ -84,7 +84,7 @@
           "send": "发送",
           "receive": "接收",
           "gasTopUp": "充值 Gas",
-          "queue": "队列",
+          "queue": "Queue",
           "transactions": "交易记录",
           "approvals": "授权",
           "feedback": "反馈",
@@ -95,8 +95,8 @@
         "comingSoon": "即将推出",
         "soon": "很快",
         "flip": "切换",
-        "metamaskIsInUseAndRabbyIsBanned": "启用 MetaMask，禁用 Rabby",
-        "rabbyIsInUseAndMetamaskIsBanned": "启用 Rabby，禁用 Metamask",
+        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，禁用 Rabby",
+        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Rabby，禁用 Metamask",
         "refreshTheWebPageToTakeEffect": "刷新网页即可生效",
         "transactionNeedsToSign": "笔交易需要签名",
         "transactionsNeedToSign": "笔交易需要签名",
@@ -106,8 +106,8 @@
         "pendingCount": "1 待完成",
         "pendingCountPlural": "{{countStr}} 待完成",
         "queue": {
-          "title": "队列",
-          "count": "{{count}}"
+          "title": "Queue",
+          "count": "{{count}} in"
         },
         "whatsNew": "更新内容",
         "importType": "由 {{type}} 导入"
@@ -115,7 +115,7 @@
       "recentConnection": {
         "disconnected": "已断开连接",
         "rpcUnavailable": "自定义RPC不可用",
-        "metamaskTooltip": "你选择在该 Dapp 优先使用 MetaMask。\n你可在 “更多” > “MetaMask 优先 Dapp” 中更新此设置",
+        "metamaskTooltip": "你选择在该 Dapp 优先使用 MetaMask。\n你可在 “更多” > “优先使用MetaMask连接的Dapp” 中更新此设置",
         "notConnected": "未连接",
         "connected": "已连接",
         "connectedDapp": "Rabby 未连接到当前 Dapp。请在 Dapp 网页上单击连接按钮",
@@ -170,8 +170,8 @@
         "cancel": "取消",
         "claimRabbyBadge": "领取 Rabby Badge",
         "clearPending": "清除待完成交易",
-        "clearPendingTip1": "这将清除你所有待完成的交易。\n这可以帮助你解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题",
-        "clearPendingTip2": "这不会改变你帐户中的余额，也不会要求你重新输入助记词。\n你的所有资产和帐户信息都将保持安全",
+        "clearPendingTip1": "这将清除你所有待完成的交易。这可以帮助你解决在某些情况下 Rabby 中的交易状态与链上状态不匹配的问题。",
+        "clearPendingTip2": "这不会改变你帐户中的余额，也不会要求你重新输入助记词。你的所有资产和帐户信息都将保持安全。",
         "clearWatchAddressContent": "你确定删除所有观察地址吗？",
         "clearWatchMode": "清除观察地址",
         "currentVersion": "当前版本",
@@ -200,7 +200,7 @@
           "customRpc": "自定义 RPC",
           "enableWhitelistForSendingAssets": "启用转账白名单",
           "label": "设置",
-          "metamaskPreferredDapps": "MetaMask 优先 Dapp",
+          "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
           "enableTestnets": "启用测试网",
           "currentLanguage": "当前语言"
         },
@@ -242,39 +242,39 @@
           "subTitle": "该列表中的代币不会计算到总余额中"
         },
         "table": {
-          "assetAmount": "资产/金额",
-          "price": "价格",
-          "useValue": "美元价值",
-          "healthRate": "健康率",
-          "debtRatio": "资产负债率",
-          "unlockAt": "解锁于",
-          "lentAgainst": "lent against",
-          "type": "类型",
-          "strikePrice": "行权价",
-          "exerciseEnd": "练习结束",
-          "tradePair": "交易对",
-          "side": "边",
-          "leverage": "杠杆",
-          "PL": "PL",
-          "unsupportedPoolType": "不支持的池类型",
-          "claimable": "可索赔",
-          "endAt": "结束于",
-          "dailyUnlock": "每日解锁",
-          "pool": "流动池",
-          "token": "代币",
-          "balanceValue": "余额/价值",
-          "percent": "百分",
-          "summaryTips": "资产价值除以总净值",
-          "summaryDescription": "协议中的所有资产（例如LP代币）都解析为基础资产进行统计计算",
-          "noMatch": "没有匹配",
-          "lowValueDescription": "低价值资产将显示在这里",
-          "lowValueAssets": "{{count}} 低价值资产"
+          "assetAmount": "Asset / Amount",
+          "price": "Price",
+          "useValue": "USD Value",
+          "healthRate": "Health rate",
+          "debtRatio": "Debt Ratio",
+          "unlockAt": "Unlock at",
+          "lentAgainst": "LENT AGAINST",
+          "type": "Type",
+          "strikePrice": "Strike price",
+          "exerciseEnd": "Exercise end",
+          "tradePair": "Trade pair",
+          "side": "Side",
+          "leverage": "Leverage",
+          "PL": "P&L",
+          "unsupportedPoolType": "Unsupported pool type",
+          "claimable": "Claimable",
+          "endAt": "End at",
+          "dailyUnlock": "Daily unlock",
+          "pool": "POOL",
+          "token": "Token",
+          "balanceValue": "Balance / Value",
+          "percent": "Percent",
+          "summaryTips": "Asset value divided by total net worth",
+          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
+          "noMatch": "No Match",
+          "lowValueDescription": "Low value assets will be shown here",
+          "lowValueAssets": "{{count}} low value assets"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
         "blockDescription": "被你隐藏的代币将显示在此处",
         "unfoldChain": "展开 1 条链条",
-        "unfoldChainPlural": "展开 {{moreLen}} 链",
+        "unfoldChainPlural": "展开 {{moreLen}} 条链",
         "customLinkText": "搜索代币地址，添加代币",
         "customDescription": "你手动添加的代币将显示在此处",
         "comingSoon": "即将推出...",
@@ -641,8 +641,8 @@
       },
       "component": {
         "ApprovalContractItem": {
-          "ApprovalCount_one": "授权",
-          "ApprovalCount_other": "授权"
+          "ApprovalCount_one": "个授权",
+          "ApprovalCount_other": "个授权"
         },
         "table": {
           "bodyEmpty": {
@@ -725,7 +725,10 @@
       "sitePopularity": "网站热度",
       "title": "连接 Dapp",
       "trusted": "白名单",
-      "verifiedByRabby": "经 Rabby 验证"
+      "verifiedByRabby": "经 Rabby 验证",
+      "SignTestnetPermission": {
+        "title": "签名权限"
+      }
     },
     "gasTopUp": {
       "Amount": "数量",
@@ -742,7 +745,7 @@
       "Select-payment-token": "选择支付代币",
       "Token": "代币",
       "Value": "价值",
-      "description": "你可以在任意链上充值 Gas， 只需要支付已有链上的可用代币。\n付款一经确认立即到账，无需等待，不可撤销",
+      "description": "你可以向任意链上充值 Gas， 只需要支付已有链上的可用代币。\n付款一经确认立即到账，无需等待，不可撤销",
       "hightGasFees": "该充值金额太小，目标网络需要较高的 Gas 费",
       "payment": "Gas 充值付款",
       "service-fee-tip": "Rabby 通过提供 Gas 充值服务，需要承担代币波动的损失以及充值的 Gas 费用。\n因此要收取20%的服务费",
@@ -900,8 +903,8 @@
       },
       "tokenInfoPrice": "价格",
       "whitelistAlert__disabled": "转账白名单已关闭，你可以转账给任何地址",
-      "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 <1 /> 我批准此次转账",
-      "whitelistAlert__temporaryGranted": "已暂时批准",
+      "whitelistAlert__notWhitelisted": "该地址不属于转账白名单，授权此次转账权限",
+      "whitelistAlert__temporaryGranted": "已授权此次转账",
       "whitelistAlert__whitelisted": "白名单地址",
       "balanceError": {
         "insufficientBalance": "余额不足"
@@ -927,7 +930,7 @@
         "trezor": "Trezor 地址",
         "watchAddress": "无法使用观察地址进行签名"
       },
-      "beginSigning": "开始签名过程",
+      "beginSigning": "开始签名流程",
       "connectButton": "连接",
       "connecting": "正在连接...",
       "gridPlusConnected": "GridPlus 已连接",
@@ -941,7 +944,7 @@
       "walletConnect": {
         "chainSwitched": "你已在移动钱包上切换到不同的链\n请在手机钱包中切换到{{0}}",
         "connectBeforeSign": "{{0}}未连接到 Rabby，请在签名前连接",
-        "connected": "已连接并准备签名",
+        "connected": "已连接并准备好签名",
         "connectedButCantSign": "已连接但无法签名",
         "howToSwitch": "如何切换",
         "notConnectToMobile": "未连接到 {{brand}}",
@@ -999,7 +1002,7 @@
       "balanceChange": {
         "errorTitle": "获取余额变化失败",
         "failedTitle": "交易模拟失败",
-        "nftOut": "转出 NFT",
+        "nftOut": "减少的 NFT",
         "noBalanceChange": "未检测到余额变化",
         "notSupport": "该链暂不支持交易模拟",
         "successTitle": "交易模拟结果",
@@ -1088,19 +1091,19 @@
         "title": "取消 NFT 授权"
       },
       "revokeNFTCollectionApprove": {
-        "revokeCollection": "取消 NFT 系列授权",
-        "title": "取消 NFT 系列授权"
+        "revokeCollection": "取消授权的 NFT 系列",
+        "title": "取消授权的 NFT 系列"
       },
       "revokePermit2": {
         "title": "取消 Permit2 代币授权"
       },
       "revokeTokenApprove": {
-        "revokeFrom": "从",
-        "revokeToken": "取消代币授权",
-        "title": "取消代币授权"
+        "revokeFrom": "取消授权的合约",
+        "revokeToken": "取消授权的Token",
+        "title": "取消授权的Token"
       },
       "safeAddressNotSupportChain": "{{0}} 链不支持当前 Safe 地址",
-      "safeAdminSigned": "签",
+      "safeAdminSigned": "已签",
       "scamTokenAlert": "根据 Rabby 的检测，这可能是一个低质量的诈骗代币",
       "send": {
         "addressBalanceTitle": "地址余额",
@@ -1317,7 +1320,7 @@
       "source": "来源"
     },
     "preferMetamaskDapps": {
-      "title": "MetaMask 优先 Dapps",
+      "title": "优先使用MetaMask连接的Dapp",
       "howToAddDesc": "在网页空白处点击右键，找到该选项",
       "desc": "无论当前启用Rabby或者MetaMask，以下Dapp将保持连接至MetaMask",
       "howToAdd": "如何添加",
@@ -1349,7 +1352,7 @@
       "requestBtn": "获取"
     },
     "safeQueue": {
-      "title": "队列",
+      "title": "Queue",
       "sameNonceWarning": "这些交易nonce相同，无法同时完成。                   一笔交易完成后，其他交易将被替代",
       "loading": "加载待完成交易",
       "noData": "暂无待完成交易",
@@ -1582,6 +1585,10 @@
       "SimpleKeyring": "通过私钥导入",
       "WatchAddressKeyring": "联系人"
     },
-    "IMPORTED_HD_KEYRING": "通过助记词导入"
+    "IMPORTED_HD_KEYRING": "通过助记词导入",
+    "SIGN_PERMISSION_OPTIONS": {
+      "MAINNET_AND_TESTNET": "主网和测试网",
+      "TESTNET": "仅限测试网"
+    }
   }
 }

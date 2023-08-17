@@ -5,6 +5,7 @@ import IconArrowdown from '@/ui/assets/arrow-down.svg';
 import { Popup } from '@/ui/component';
 import { Radio } from 'antd';
 import { SIGN_PERMISSION_OPTIONS, SIGN_PERMISSION_TYPES } from '@/constant';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
   display: flex;
@@ -73,9 +74,15 @@ export const SignTestnetPermission = ({
   const value = _value || SIGN_PERMISSION_TYPES.MAINNET_AND_TESTNET;
 
   const [isShowPopup, setIsShowPopup] = React.useState(false);
-
+  const { t } = useTranslation();
+  const options = SIGN_PERMISSION_OPTIONS.map((item) => {
+    return {
+      ...item,
+      label: t(`constant.SIGN_PERMISSION_OPTIONS.${item.value}` as const),
+    };
+  });
   const label = React.useMemo(() => {
-    return SIGN_PERMISSION_OPTIONS.find((item) => item.value === value)?.label;
+    return options.find((item) => item.value === value)?.label;
   }, [value]);
 
   if (!isShowTestnet) {
@@ -86,7 +93,7 @@ export const SignTestnetPermission = ({
     <>
       <Container>
         <div className="text-13 text-[#3E495E] leading-[18px]">
-          Signing permission
+          {t('page.connect.SignTestnetPermission.title')}
         </div>
         <div
           className="flex items-center ml-auto gap-[2px] font-medium text-15 leading-[18px] text-gray-title cursor-pointer"
@@ -99,7 +106,7 @@ export const SignTestnetPermission = ({
         </div>
       </Container>
       <SelectPopup
-        title="Signing Permission"
+        title={t('page.connect.SignTestnetPermission.title')}
         visible={isShowPopup}
         onCancel={() => {
           setIsShowPopup(false);
@@ -115,7 +122,7 @@ export const SignTestnetPermission = ({
           }}
         >
           <div className="options">
-            {SIGN_PERMISSION_OPTIONS.map((item) => {
+            {options.map((item) => {
               return (
                 <label className="option" key={item.value}>
                   <div>{item.label}</div>

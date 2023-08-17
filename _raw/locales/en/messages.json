@@ -1259,7 +1259,10 @@
       "notOnAnyList": "Not on any list",
       "onYourBlacklist": "On your blacklist",
       "onYourWhitelist": "On your whitelist",
-      "manageWhiteBlackList": "Manage whitelist/blacklist"
+      "manageWhiteBlackList": "Manage whitelist/blacklist",
+      "SignTestnetPermission": {
+        "title": "Signing permission"
+      }
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -1582,6 +1585,10 @@
       "SimpleKeyring": "Imported by Private Key",
       "WatchAddressKeyring": "Contact"
     },
-    "IMPORTED_HD_KEYRING": "Imported by Seed Phrase"
+    "IMPORTED_HD_KEYRING": "Imported by Seed Phrase",
+    "SIGN_PERMISSION_OPTIONS": {
+      "MAINNET_AND_TESTNET": "Mainnet & Testnet",
+      "TESTNET": "Only Testnets"
+    }
   }
 }
