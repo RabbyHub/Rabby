@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "Rabby",
+    "message": "Rabby Wallet",
     "description": "The name of the application"
   },
   "appDescription": {
-    "message": "专为 DeFi 设计的插件钱包",
+    "message": "The game-changing wallet for Ethereum and all EVM chains",
     "description": "The description of the application"
   }
 }
