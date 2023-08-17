@@ -3491,10 +3491,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.4.tgz#9725232f71ea79867c1d5f159f7cdd79afde90db"
-  integrity sha512-09BaAb4LjpYo3q0KncjsHT28HuBL/rX+zh0ii5RwyVgQ/0qneKp88TPNe+FVqBVPHTtBJtJMWpKQqzo2XqWM6A==
+"@rabby-wallet/gnosis-sdk@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.5.tgz#fbd6f4dac8b6da68a7f2f74d0b64f270e56cf9a7"
+  integrity sha512-CIhMhWvUnhZD79+QYL9wz7xeqG81Muf99sqaZ8X/urPbB7r1jL21tp1KPKYs7GAI0Y8m5zk5i8Z/GOCtlqOVpg==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
@@ -3554,10 +3554,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@^0.0.27":
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.27.tgz#883b43259140250708f1ebb21d92cc0bc0adf6aa"
-  integrity sha512-lK7SbM7KAosti5U6O2JwcLuIlJRqk4c3Xne6QzTtPKOL0WATY8bVHNFYfeuB7R61kYlO1U9oVeE4EjJ85DvtDA==
+"@rabby-wallet/rabby-swap@^0.0.28":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.28.tgz#27ebda9932699ce291b1189586f7b38b0d81d7e9"
+  integrity sha512-CIUZi0zsNyDVBmI+1lSXxWXRu7pBqn615gQidROrpRcFUyhH46yGF0IW9b15OlLPg15deqsXrrka8Tgt9vvm4A==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
