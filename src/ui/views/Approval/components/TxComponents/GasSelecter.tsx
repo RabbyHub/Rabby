@@ -774,7 +774,7 @@ const GasSelector = ({
                         disabled={isGnosisAccount}
                       />
                     ) : (
-                      item.price / 1e9
+                      new BigNumber(item.price / 1e9).toFixed()
                     )}
                   </div>
                 </div>
@@ -1030,7 +1030,7 @@ const GasSelectPanel = ({
                   placeholder="0"
                 />
               ) : (
-                item.price / 1e9
+                new BigNumber(item.price / 1e9).toFixed()
               )}
             </div>
           </div>
