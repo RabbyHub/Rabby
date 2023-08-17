@@ -71,6 +71,7 @@ import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import LogoUniswap from 'ui/assets/swap/uniswap.svg';
+import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -965,6 +966,12 @@ export const DEX = {
     logo: LogoOpenOcean,
     name: 'OpenOcean',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+  [DEX_ENUM.KYBERSWAP]: {
+    id: DEX_ENUM.KYBERSWAP,
+    logo: LogoKyberSwap,
+    name: 'KyberSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
   },
 };
 
