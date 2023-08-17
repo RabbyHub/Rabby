@@ -295,6 +295,7 @@ const Address = ({
   chain?: Chain;
   iconWidth?: string;
 }) => {
+  const { t } = useTranslation();
   const handleClickContractId = () => {
     if (!chain) return;
     openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
@@ -314,7 +315,7 @@ const Address = ({
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{address}</div>
           </div>

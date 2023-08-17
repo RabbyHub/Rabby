@@ -835,13 +835,16 @@
       "sendButton": "发送",
       "tipAddToContacts": "添加为联系人",
       "tipNotOnAddressList": "不在地址列表中",
-      "whitelistAlert__disabled": "白名单已禁用，\n你可以转账到任何地址",
-      "whitelistAlert__notWhitelisted": "该地址未列入转账白名单 \n<1 /> 我批准此次转账",
-      "whitelistAlert__temporaryGranted": "已暂时获得批准",
-      "whitelistAlert__whitelisted": "该地址已列入转账白名单"
+      "whitelistAlert__temporaryGranted": "已授权此次转账",
+      "whitelistAlert__disabled": "转账白名单已关闭，你可以转账给任何地址",
+      "whitelistAlert__notWhitelisted": "该地址不属于转账白名单，授权此次转账权限",
+      "whitelistAlert__whitelisted": "白名单地址",
+      "confirmModal": {
+        "title": "输入密码进行确认"
+      }
     },
     "sendToken": {
-      "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
+      "addressNotInContract": "不在地址列表中, <1></1><2>添加为联系人</2>",
       "AddToContactsModal": {
         "addedAsContacts": "添加为联系人",
         "editAddr": {
@@ -1091,16 +1094,16 @@
         "title": "取消 NFT 授权"
       },
       "revokeNFTCollectionApprove": {
-        "revokeCollection": "取消授权的 NFT 系列",
-        "title": "取消授权的 NFT 系列"
+        "revokeCollection": "取消的 NFT 系列",
+        "title": "取消 NFT 系列授权 "
       },
       "revokePermit2": {
         "title": "取消 Permit2 代币授权"
       },
       "revokeTokenApprove": {
-        "revokeFrom": "取消授权的合约",
-        "revokeToken": "取消授权的Token",
-        "title": "取消授权的Token"
+        "revokeFrom": "取消的合约",
+        "revokeToken": "取消的 Token",
+        "title": "取消代币授权"
       },
       "safeAddressNotSupportChain": "{{0}} 链不支持当前 Safe 地址",
       "safeAdminSigned": "已签",
@@ -1227,7 +1230,7 @@
       "completedTip": "链上交易，解码数据生成记录",
       "confirm": "确认",
       "dex": "DEX",
-      "directlySwap": "直接使用智能合约 Wrap {{tokenName}} 代币",
+      "directlySwap": "直接使用智能合约 Wrap {{symbol}} 代币",
       "edit": "编辑",
       "enable-exchanges": "启用交易所",
       "enable-it": "启用",

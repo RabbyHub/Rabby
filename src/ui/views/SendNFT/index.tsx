@@ -239,9 +239,9 @@ const SendNFT = () => {
       wallet,
       toAddr,
       showAddToWhitelist: !!toAddressInContactBook,
-      title: 'Enter the Password to Confirm',
-      cancelText: 'Cancel',
-      confirmText: 'Confirm',
+      title: t('page.sendNFT.confirmModal.title'),
+      cancelText: t('global.Cancel'),
+      confirmText: t('global.Confirm'),
       onFinished(result) {
         dispatch.whitelist.getWhitelist();
         setTemporaryGrant(true);

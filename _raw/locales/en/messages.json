@@ -462,7 +462,10 @@
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
       "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
       "tipNotOnAddressList": "Not on address list.",
-      "tipAddToContacts": "Add to contacts"
+      "tipAddToContacts": "Add to contacts",
+      "confirmModal": {
+        "title": "Enter the Password to Confirm"
+      }
     },
     "approvals": {
       "header": {
@@ -591,7 +594,7 @@
       "QuoteLessWarning": "The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
       "by-transaction-simulation-the-quote-is-valid": "By transaction simulation, the quote is valid",
       "wrap-contract": "Wrap Contract",
-      "directlySwap": "Wrapping {{tokenName}} tokens directly with the smart contract",
+      "directlySwap": "Wrapping {{symbol}} tokens directly with the smart contract",
       "rates-from-cex": "Rates from CEX",
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",

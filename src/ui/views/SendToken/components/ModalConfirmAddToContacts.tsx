@@ -168,7 +168,7 @@ function ModalConfirmAddToContacts({
                     <div>
                       <div className="flex gap-4 mb-4">
                         <img src={IconSuccess} alt="" />
-                        Copied
+                        {t('global.copied')}
                       </div>
                       <div className="text-white">{addrToAdd}</div>
                     </div>

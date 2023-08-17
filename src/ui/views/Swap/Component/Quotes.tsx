@@ -16,6 +16,7 @@ import BigNumber from 'bignumber.js';
 import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const CexListWrapper = styled.div`
   border: 1px solid #e5e9ef;
@@ -170,7 +171,7 @@ export const Quotes = ({
 
         <div className="text-13 text-gray-content">
           {t('page.swap.directlySwap', {
-            tokenName: other.receiveToken.name,
+            symbol: getTokenSymbol(other.payToken),
           })}
         </div>
       </div>
