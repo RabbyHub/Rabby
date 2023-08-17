@@ -43,7 +43,7 @@
     "@rabby-wallet/page-provider": "^0.1.20",
     "@rabby-wallet/rabby-api": "^0.6.20",
     "@rabby-wallet/rabby-security-engine": "^1.1.16",
-    "@rabby-wallet/rabby-swap": "^0.0.28-alpha.2",
+    "@rabby-wallet/rabby-swap": "^0.0.28",
     "@rabby-wallet/widgets": "^1.0.9",
     "@rematch/core": "^2.2.0",
     "@rematch/select": "^3.1.2",
