@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { KEYRING_CLASS } from '@/constant';
+import { isSameAddress } from '../utils';
 
 export function useContactAccounts() {
   const dispatch = useRabbyDispatch();
@@ -14,12 +15,14 @@ export function useContactAccounts() {
   const isAddrOnContactBook = useCallback(
     (address?: string) => {
       if (!address) return false;
+      const laddr = address.toLowerCase();
 
       return (
-        !!contactsByAddr[address.toLowerCase()]?.isAlias &&
+        !!contactsByAddr[laddr]?.isAlias &&
         accountsList.find(
           (account) =>
-            account.address === address && account.type === KEYRING_CLASS.WATCH
+            isSameAddress(account.address, laddr) &&
+            account.type === KEYRING_CLASS.WATCH
         )
       );
     },
