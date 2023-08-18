@@ -1045,7 +1045,7 @@ const GasSelectPanel = ({
         </li>
         {gasPriceMedian !== null && (
           <li>
-            {t('page.signTx.gasPriceMedian')}{' '}
+            {t('page.signTx.gasPriceMedian')}
             {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
           </li>
         )}

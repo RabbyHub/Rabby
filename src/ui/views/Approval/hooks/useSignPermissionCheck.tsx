@@ -7,6 +7,7 @@ import { useEffect, useMemo } from 'react';
 import { Button, Modal } from 'antd';
 import styled from 'styled-components';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Content = styled.div`
   text-align: center;
@@ -77,6 +78,8 @@ export const useSignPermissionCheck = ({
     onDisconnect?.();
   });
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (
       connectedSite &&
@@ -91,7 +94,7 @@ export const useSignPermissionCheck = ({
         content: (
           <Content>
             <div className="title">
-              You only allow this Dapp to sign on testnets
+              {t('component.signPermissionCheckModal.title')}
             </div>
             <Button
               type="primary"
@@ -100,7 +103,7 @@ export const useSignPermissionCheck = ({
                 handleOk();
               }}
             >
-              OK
+              {t('global.ok')}
             </Button>
             <div className="footer">
               <span
@@ -110,7 +113,7 @@ export const useSignPermissionCheck = ({
                   handleDisconnect();
                 }}
               >
-                Reconnect Dapp
+                {t('component.signPermissionCheckModal.reconnect')}
               </span>
             </div>
           </Content>
