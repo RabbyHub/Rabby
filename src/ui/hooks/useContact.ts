@@ -19,11 +19,7 @@ export function useContactAccounts() {
 
       return (
         !!contactsByAddr[laddr]?.isAlias &&
-        accountsList.find(
-          (account) =>
-            isSameAddress(account.address, laddr) &&
-            account.type === KEYRING_CLASS.WATCH
-        )
+        accountsList.find((account) => isSameAddress(account.address, laddr))
       );
     },
     [accountsList, contactsByAddr]
