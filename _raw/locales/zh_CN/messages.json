@@ -712,7 +712,7 @@
       "markRuleText": "我的标记",
       "myMark": "我的标记",
       "noMark": "无标记",
-      "noWebsite": "未收录于任何社交平台",
+      "noWebsite": "没有收录信息",
       "notOnAnyList": "不在任何名单上",
       "onYourBlacklist": "已加入黑名单",
       "onYourWhitelist": "已加入白名单",
@@ -728,7 +728,8 @@
       "verifiedByRabby": "经 Rabby 验证",
       "SignTestnetPermission": {
         "title": "签名权限"
-      }
+      },
+      "ignoreAll": "忽略全部"
     },
     "gasTopUp": {
       "Amount": "数量",
@@ -1288,7 +1289,7 @@
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
       "title": "切换到{{chain}}",
-      "testnetTip": "连接测试网前，请在 “更多” 中点击“启用测试网”"
+      "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接"
     },
     "unlock": {
       "btn": {
@@ -1547,6 +1548,13 @@
         "PurschaseDate": "购买日期",
         "LastPrice": "最后价格"
       }
+    },
+    "signPermissionCheckModal": {
+      "title": "你已经设置该Dapp仅签名测试网",
+      "reconnect": "重新连接"
+    },
+    "testnetCheckModal": {
+      "title": "请在\"更多\"中打开“开启测试网”后再发起测试网签名"
     }
   },
   "background": {

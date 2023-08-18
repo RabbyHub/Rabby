@@ -1265,7 +1265,8 @@
       "manageWhiteBlackList": "Manage whitelist/blacklist",
       "SignTestnetPermission": {
         "title": "Signing permission"
-      }
+      },
+      "ignoreAll": "Ignore all"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -1514,6 +1515,13 @@
         "PurschaseDate": "Purchase Date",
         "LastPrice": "Last Price"
       }
+    },
+    "signPermissionCheckModal": {
+      "title": "You only allow this Dapp to sign on testnets",
+      "reconnect": "Reconnect Dapp"
+    },
+    "testnetCheckModal": {
+      "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
     }
   },
   "global": {

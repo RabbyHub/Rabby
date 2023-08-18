@@ -8,6 +8,7 @@ import { Button, Modal } from 'antd';
 import styled from 'styled-components';
 import React from 'react';
 import { useRabbySelector } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 const Content = styled.div`
   text-align: center;
@@ -50,6 +51,7 @@ export const useTestnetCheck = ({
     onOk?.();
   });
 
+  const { t } = useTranslation();
   useEffect(() => {
     if (!isShowTestnet && chain && chain?.isTestnet) {
       const { destroy } = Modal.info({
@@ -59,8 +61,7 @@ export const useTestnetCheck = ({
         content: (
           <Content>
             <div className="title">
-              Please turn on "Enable Testnets" under "More" before sign on
-              testnets
+              {t('component.testnetCheckModal.title')}
             </div>
             <Button
               type="primary"
@@ -69,7 +70,7 @@ export const useTestnetCheck = ({
                 handleOk();
               }}
             >
-              OK
+              {t('global.ok')}
             </Button>
           </Content>
         ),
