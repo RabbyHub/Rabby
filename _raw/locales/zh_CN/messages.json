@@ -228,8 +228,8 @@
         "send": "发送",
         "receive": "接收",
         "noTransactions": "没有交易记录",
-        "customizedButton": "已添加",
-        "blockedButton": "已隐藏"
+        "customizedButton": "个已添加",
+        "blockedButton": "个已隐藏"
       },
       "assets": {
         "usdValue": "美元价值",
@@ -266,9 +266,9 @@
           "percent": "Percent",
           "summaryTips": "Asset value divided by total net worth",
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
-          "noMatch": "No Match",
-          "lowValueDescription": "Low value assets will be shown here",
-          "lowValueAssets": "{{count}} low value assets"
+          "noMatch": "没有匹配",
+          "lowValueDescription": "低价值资产将显示在这里",
+          "lowValueAssets": "{{count}} 个低价值资产"
         },
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址，隐藏代币",
