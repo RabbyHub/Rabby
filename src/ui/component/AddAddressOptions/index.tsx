@@ -125,6 +125,12 @@ const AddAddressOptions = () => {
           if (!success) return;
           openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
         });
+      } else if (
+        item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
+      ) {
+        history.push({
+          pathname: '/import/cobo-argus',
+        });
       } else {
         history.push({
           pathname: '/import/wallet-connect',

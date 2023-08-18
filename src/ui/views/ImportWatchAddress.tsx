@@ -251,10 +251,7 @@ const ImportWatchAddress = () => {
             alt="back"
             onClick={handleClickBack}
           />
-          <img
-            className="unlock-logo w-[80px] h-[75px] mb-28 mx-auto"
-            src={WatchLogo}
-          />
+          <img className="w-[80px] h-[75px] mb-28 mx-auto" src={WatchLogo} />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
             {t('page.newAddress.addContacts.content')}
           </p>

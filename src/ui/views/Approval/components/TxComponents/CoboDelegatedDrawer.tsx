@@ -4,31 +4,28 @@ import { groupBy } from 'lodash';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
 import { useWallet, isSameAddress } from 'ui/utils';
-import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import { AddressItem, ownerPriority } from './DrawerAddressItem';
+import { CoboDelegatedAddressItem } from './CoboDelegatedAddressItem';
+import { ownerPriority } from './DrawerAddressItem';
+import EmptyIcon from '@/ui/assets/dashboard/empty.svg';
 
-interface GnosisDrawerProps {
-  // safeInfo: SafeInfo;
-  safeInfo: BasicSafeInfo;
+interface CoboDelegatedDrawerProps {
+  owners: string[];
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void>;
 }
 
-interface Signature {
-  data: string;
-  signer: string;
-}
-
-const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
+export const CoboDelegatedDrawer = ({
+  owners,
+  onCancel,
+  onConfirm,
+}: CoboDelegatedDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [signatures, setSignatures] = useState<Signature[]>([]);
   const [ownerAccounts, setOwnerAccounts] = useState<Account[]>([]);
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const sortOwners = async () => {
     const accounts: Account[] = await wallet.getAllVisibleAccountsArray();
-    const owners = safeInfo.owners;
     const ownersInWallet = accounts.filter((account) =>
       owners.find((owner) => isSameAddress(account.address, owner))
     );
@@ -49,17 +46,8 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
       }
       return target;
     });
-    const notInWalletOwners = owners.filter(
-      (owner) => !result.find((item) => isSameAddress(item.address, owner))
-    );
-    setOwnerAccounts([
-      ...result,
-      ...notInWalletOwners.map((owner) => ({
-        address: owner,
-        type: '',
-        brandName: '',
-      })),
-    ]);
+
+    setOwnerAccounts([...result]);
   };
 
   const handleSelectAccount = (account: Account) => {
@@ -69,8 +57,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   const handleConfirm = async () => {
     try {
       setIsLoading(true);
-      checkedAccount &&
-        (await onConfirm(checkedAccount, signatures.length <= 0));
+      checkedAccount && (await onConfirm(checkedAccount));
       setIsLoading(false);
     } catch (e) {
       console.error(e);
@@ -79,8 +66,6 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   };
 
   const init = async () => {
-    const sigs = await wallet.getGnosisTransactionSignatures();
-    setSignatures(sigs);
     sortOwners();
   };
 
@@ -90,35 +75,39 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
 
   return (
     <div className="gnosis-drawer-container">
-      <div className="title">
-        {safeInfo.threshold - signatures.length > 0
-          ? t('page.signTx.moreSafeSigNeeded', [
-              safeInfo.threshold - signatures.length,
-            ])
-          : t('page.signTx.enoughSafeSigCollected')}
-      </div>
-      <div className="list">
-        {ownerAccounts.map((owner) => (
-          <AddressItem
-            key={owner.address}
-            account={owner}
-            signed={
-              !!signatures.find((sig) =>
-                isSameAddress(sig.signer, owner.address)
-              )
-            }
-            onSelect={handleSelectAccount}
-            checked={
-              checkedAccount
-                ? isSameAddress(owner.address, checkedAccount.address)
-                : false
-            }
-          />
-        ))}
+      {ownerAccounts.length ? (
+        <div className="title mb-[16px]">Imported delegated address</div>
+      ) : null}
+      <div className="list space-y-8">
+        {ownerAccounts.length ? (
+          ownerAccounts.map((owner) => (
+            <CoboDelegatedAddressItem
+              key={owner.address}
+              signed={false}
+              account={owner}
+              onSelect={handleSelectAccount}
+              checked={
+                checkedAccount
+                  ? isSameAddress(owner.address, checkedAccount.address)
+                  : false
+              }
+            />
+          ))
+        ) : (
+          <div className="text-center mt-12">
+            <img className="w-[40px] mb-16 mx-auto" src={EmptyIcon} />
+            <p className="text-20 leading-[23px] mb-12 text-[#192945]">
+              No delegated address
+            </p>
+            <p className="text-15 text-[#3E495E]">
+              请先在Rabby钱包中导入后再重新发起签名
+            </p>
+          </div>
+        )}
       </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
-          {t('global.backButton')}
+          {t('Cancel')}
         </Button>
         <Button
           type="primary"
@@ -126,11 +115,9 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('global.proceedButton')}
+          {t('Proceed')}
         </Button>
       </div>
     </div>
   );
 };
-
-export default GnosisDrawer;

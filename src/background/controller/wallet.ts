@@ -95,6 +95,9 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
+import { getWeb3Provider } from './utils';
+import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
+import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3164,6 +3167,105 @@ export class WalletController extends BaseController {
         allowed: true,
       };
     }
+  };
+
+  coboSafeGetAccountAddress = async ({
+    chainServerId,
+    coboSafeAddress,
+  }: {
+    chainServerId: string;
+    coboSafeAddress: string;
+  }) => {
+    const provider = await getWeb3Provider({ chainServerId });
+    const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
+    return await coboSafe.getAddress();
+  };
+
+  coboSafeGetAllDelegates = async ({
+    chainServerId,
+    coboSafeAddress,
+  }: {
+    chainServerId: string;
+    coboSafeAddress: string;
+  }) => {
+    const provider = await getWeb3Provider({ chainServerId });
+    const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
+    return await coboSafe.getAllDelegates();
+  };
+
+  coboSafeBuildTransaction = async ({
+    tx,
+    chainServerId,
+    coboSafeAddress,
+    account,
+  }: {
+    tx: Tx;
+    chainServerId: string;
+    coboSafeAddress: string;
+    account;
+  }): Promise<Tx> => {
+    await preferenceService.saveCurrentCoboSafeAddress();
+    await preferenceService.setCurrentAccount(account);
+    const provider = await getWeb3Provider({ chainServerId, account });
+    const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
+    const res = await coboSafe.execRawTransaction(tx, account.address);
+    return res as any;
+  };
+
+  coboSafeImport = async ({
+    address,
+    safeModuleAddress,
+    networkId,
+  }: {
+    address: string;
+    networkId: string;
+    safeModuleAddress: string;
+  }) => {
+    let keyring, isNewKey;
+    const keyringType = KEYRING_CLASS.COBO_ARGUS;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const CoboArgusKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new CoboArgusKeyring({});
+      isNewKey = true;
+    }
+
+    keyring.setAccountToAdd(address);
+    keyring.setAccountDetail(address, {
+      networkId,
+      address,
+      safeModuleAddress,
+    });
+    await keyringService.addNewAccount(keyring);
+    if (isNewKey) {
+      await keyringService.addKeyring(keyring);
+    }
+
+    return this._setCurrentAccountFromKeyring(keyring, -1);
+  };
+
+  coboSafeGetAccountDetail = async (address: string) => {
+    const keyring = this._getKeyringByType(
+      KEYRING_CLASS.COBO_ARGUS
+    ) as CoboArgusKeyring;
+    if (!keyring) {
+      return;
+    }
+    const detail = await keyring.getAccountDetail(address);
+    const provider = await getWeb3Provider({ chainServerId: detail.networkId });
+    const cobo = new CoboSafeAccount(address, provider);
+    const isModuleEnabled = await cobo.checkIsModuleEnabled({
+      safeAddress: address,
+      coboSafeAddress: detail.safeModuleAddress,
+    });
+
+    return {
+      ...detail,
+      isModuleEnabled,
+    };
   };
 }
 

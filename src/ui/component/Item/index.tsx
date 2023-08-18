@@ -119,7 +119,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
 const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
   position: relative;
   height: 56px;
-  background: linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%);
+  background: var(--brand-default, #7084ff);
   display: flex;
   justify-content: center;
   align-items: center;

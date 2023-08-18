@@ -60,6 +60,7 @@ import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import ApprovalManagePage from './ApprovalManagePage';
 import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
+import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 
 declare global {
   interface Window {
@@ -190,6 +191,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/gnosis">
           <ImportGnosis />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/cobo-argus">
+          <ImportCoboArgus />
         </PrivateRoute>
         <PrivateRoute exact path="/add-address">
           <AddAddress />

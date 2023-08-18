@@ -59,6 +59,7 @@ import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
+import LogoCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
@@ -93,6 +94,7 @@ export const KEYRING_TYPE = {
   WatchAddressKeyring: 'Watch Address',
   WalletConnectKeyring: 'WalletConnect',
   GnosisKeyring: 'Gnosis',
+  CoboArgusKeyring: 'CoboArgus',
 };
 
 export const KEYRING_CLASS = {
@@ -109,6 +111,7 @@ export const KEYRING_CLASS = {
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
   GNOSIS: 'Gnosis',
+  CoboArgus: 'CoboArgus',
 };
 
 export const KEYRING_WITH_INDEX = [
@@ -284,6 +287,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   GnosisConnect = 'GnosisConnect',
   GridPlusConnect = 'GridPlusConnect',
   QRCodeBase = 'QR Hardware Wallet Device',
+  CoboArgusConnect = 'CoboArgusConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -363,6 +367,7 @@ export enum WALLET_BRAND_TYPES {
   Bitkeep = 'Bitkeep',
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
+  CoboArgus = 'CoboArgus',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -411,6 +416,7 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+    hidden: true,
   },
   [WALLET_BRAND_TYPES.COOLWALLET]: {
     id: 16,
@@ -602,6 +608,15 @@ export const WALLET_BRAND_CONTENT: {
   //   connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   //   category: WALLET_BRAND_CATEGORY.MOBILE,
   // },
+  [WALLET_BRAND_TYPES.CoboArgus]: {
+    id: 25,
+    name: 'Cobo Argus',
+    brand: WALLET_BRAND_TYPES.CoboArgus,
+    icon: LogoCoboArgus,
+    image: LogoCoboArgus,
+    connectType: BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
 };
 
 export const KEYRING_ICONS = {
@@ -908,6 +923,15 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.BASE,
 ]);
 
+export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
+  CHAINS_ENUM.ETH,
+  CHAINS_ENUM.OP,
+  CHAINS_ENUM.BSC,
+  CHAINS_ENUM.POLYGON,
+  CHAINS_ENUM.ARBITRUM,
+  CHAINS_ENUM.AVAX,
+]);
+
 export const WALLET_SORT_SCORE = [
   //mobile
   WALLET_BRAND_TYPES.METAMASK,
@@ -931,9 +955,10 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.AIRGAP,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
-  WALLET_BRAND_TYPES.FIREBLOCKS,
+  WALLET_BRAND_TYPES.CoboArgus,
   WALLET_BRAND_TYPES.AMBER,
-  WALLET_BRAND_TYPES.COBO,
+  WALLET_BRAND_TYPES.FIREBLOCKS,
+  // WALLET_BRAND_TYPES.COBO,
   WALLET_BRAND_TYPES.JADE,
 ].reduce((pre, now, i) => {
   pre[now] = i + 1;

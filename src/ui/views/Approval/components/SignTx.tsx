@@ -69,6 +69,14 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
+import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
+
+interface BasicCoboArgusInfo {
+  address: string;
+  safeModuleAddress: string;
+  networkId: string;
+  delegates: string[];
+}
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -699,7 +707,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
-  const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
+  const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
@@ -841,6 +850,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
+  const [coboArgusInfo, setCoboArgusInfo] = useState<BasicCoboArgusInfo>();
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
   const { executeEngine } = useSecurityEngine();
@@ -877,14 +887,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     tx,
-    isGnosisAccount,
+    isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
     nativeTokenBalance,
     recommendGasLimitRatio,
   });
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
-    if (!isGnosisAccount) {
+    if (!isGnosisAccount && !isCoboArugsAccount) {
       recommendNonce = await getRecommendNonce({
         tx,
         wallet,
@@ -892,7 +902,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
       setRecommendNonce(recommendNonce);
     }
-    if (updateNonce && !isGnosisAccount) {
+    if (updateNonce && !isGnosisAccount && !isCoboArugsAccount) {
       setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
     const { pendings } = await wallet.getTransactionHistory(address);
@@ -1130,6 +1140,53 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
+  const handleCoboArugsConfirm = async (account: Account) => {
+    if (!coboArgusInfo) return;
+
+    stats.report('signTransaction', {
+      type: KEYRING_TYPE.CoboArgusKeyring,
+      category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.CoboArgus],
+      chainId: chain.serverId,
+      preExecSuccess:
+        checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
+      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
+    });
+
+    const newTx = await wallet.coboSafeBuildTransaction({
+      tx: {
+        ...tx,
+      },
+      chainServerId: coboArgusInfo.networkId,
+      coboSafeAddress: coboArgusInfo.safeModuleAddress,
+      account,
+    });
+
+    const approval = await getApproval();
+
+    wallet.sendRequest({
+      $ctx: params.$ctx,
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          ...tx,
+          ...newTx,
+          isCoboSafe: true,
+        },
+      ],
+    });
+    resolveApproval({
+      ...tx,
+      nonce: realNonce || tx.nonce,
+      gas: gasLimit,
+      isSend,
+      traceId: txDetail?.trace_id,
+      signingTxId: approval.signingTxId,
+    });
+    wallet.clearPageStateCache();
+  };
+
   const { activeApprovalPopup } = useCommonPopupView();
   const handleAllow = async () => {
     if (!selectedGas) return;
@@ -1220,8 +1277,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
       return;
     }
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setGnosisDrawerVisble(true);
+    if (isGnosisAccount || isCoboArugsAccount) {
+      setDrawerVisible(true);
       return;
     }
 
@@ -1320,8 +1377,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     rejectApproval('User rejected the request.');
   };
 
-  const handleGnosisDrawerCancel = () => {
-    setGnosisDrawerVisble(false);
+  const handleDrawerCancel = () => {
+    setDrawerVisible(false);
   };
 
   const handleTxChange = (obj: Record<string, any>) => {
@@ -1444,6 +1501,24 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const getCoboDelegates = async () => {
+    const currentAccount = (await wallet.getCurrentAccount())!;
+    const accountDetail = await wallet.coboSafeGetAccountDetail(
+      currentAccount.address
+    );
+    if (!accountDetail) {
+      return;
+    }
+    const delegates = await wallet.coboSafeGetAllDelegates({
+      coboSafeAddress: accountDetail.safeModuleAddress,
+      chainServerId: chain.serverId,
+    });
+    setCoboArgusInfo({
+      ...accountDetail,
+      delegates,
+    });
+  };
+
   const handleIgnoreAllRules = () => {
     dispatch.securityEngine.processAllRules(
       engineResults.map((result) => result.id)
@@ -1516,6 +1591,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         setIsGnosisAccount(true);
         await getSafeInfo();
       }
+      if (currentAccount.type === KEYRING_TYPE.CoboArgusKeyring) {
+        setIsCoboArugsAccount(true);
+        await getCoboDelegates();
+      }
+
       checkCanProcess();
       const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
         chainId
@@ -1606,7 +1686,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     customRecommendGasLimitRatio?: number;
     block: BlockInfo | null;
   }) => {
-    if (isGnosisAccount) return; // Gnosis Safe transaction no need gasLimit
+    if (isGnosisAccount || isCoboArugsAccount) return; // Gnosis Safe transaction no need gasLimit
     const calcGasLimit = customGasLimit || gasLimit;
     const calcGasLimitRatio =
       customRecommendGasLimitRatio || recommendGasLimitRatio;
@@ -1648,7 +1728,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
-    console.log('processedRules', processedRules);
     const enableResults = engineResults.filter((item) => item.enable);
     // const hasForbidden = enableResults.find(
     //   (result) => result.level === Level.FORBIDDEN
@@ -1738,7 +1817,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               />
             )}
             <GasSelector
-              isGnosisAccount={isGnosisAccount}
+              disabled={isGnosisAccount || isCoboArugsAccount}
               isReady={isReady}
               gasLimit={gasLimit}
               noUpdate={isCancel || isSpeedUp}
@@ -1783,14 +1862,30 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             placement="bottom"
             height="400px"
             className="gnosis-drawer"
-            visible={gnosisDrawerVisible}
-            onClose={() => setGnosisDrawerVisble(false)}
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
             maskClosable
           >
             <GnosisDrawer
               safeInfo={safeInfo}
-              onCancel={handleGnosisDrawerCancel}
+              onCancel={handleDrawerCancel}
               onConfirm={handleGnosisConfirm}
+            />
+          </Drawer>
+        )}
+        {isCoboArugsAccount && coboArgusInfo && (
+          <Drawer
+            placement="bottom"
+            height="260px"
+            className="gnosis-drawer"
+            visible={drawerVisible}
+            onClose={() => setDrawerVisible(false)}
+            maskClosable
+          >
+            <CoboDelegatedDrawer
+              owners={coboArgusInfo.delegates}
+              onCancel={handleDrawerCancel}
+              onConfirm={handleCoboArugsConfirm}
             />
           </Drawer>
         )}
@@ -1830,6 +1925,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               !isReady ||
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
+              (isCoboArugsAccount ? !coboArgusInfo : false) ||
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
