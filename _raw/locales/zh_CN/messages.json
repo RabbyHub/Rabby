@@ -122,7 +122,7 @@
         "noDappFound": "未找到 Dapp",
         "disconnectAll": "全部断开",
         "disconnectRecentlyUsed": {
-          "title": "断开最近使用的<strong>{{count}}</strong>Dapp",
+          "title": "断开最近使用的 <strong>{{count}}</strong> 个Dapp",
           "description": "置顶的 DApp 将保持连接"
         },
         "title": "已连接的 Dapp",
@@ -146,7 +146,7 @@
         "imageLabel": "Rabby Badge",
         "learnMoreOnDebank": "跳转至 DeBank 领取",
         "noCode": "你尚未激活该地址的邀请码",
-        "rabbyValuedUserNo": "Rabby Valued User 编号{{num}}",
+        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
         "swapTip": "你需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
         "title": "领取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
@@ -869,8 +869,8 @@
           "normal": "快速",
           "slow": "标准"
         },
-        "popupDesc": "矿工费将根据你设置的 Gas 价格从转账金额中预留",
-        "popupTitle": "设置 Gas 价格 (Gwei)"
+        "popupDesc": "矿工费将根据你设置的 Gas Price 从转账金额中预留",
+        "popupTitle": "设置 Gas Price (Gwei)"
       },
       "header": {
         "title": "发送"
@@ -1015,7 +1015,7 @@
       "blocked": "拉黑",
       "canOnlyUseImportedAddress": "你只能使用导入的地址进行签名",
       "cancelTx": {
-        "gasPriceAlert": "将当前 Gas 价格设置为大于 {{value}} Gwei 以取消待处理的交易",
+        "gasPriceAlert": "将当前 Gas Price 设置为大于 {{value}} Gwei 以取消待处理的交易",
         "title": "取消待处理交易",
         "txToBeCanceled": "交易被取消"
       },
@@ -1054,7 +1054,7 @@
       "gasMoreButton": "更多",
       "gasNotRequireForSafeTransaction": "Safe 交易无需矿工费",
       "gasPriceMedian": "最近 100 笔链上交易的中位数：",
-      "gasPriceTitle": "Gas 价格 (Gwei)",
+      "gasPriceTitle": "Gas Price (Gwei)",
       "gasSelectorTitle": "矿工费",
       "hardwareSupport1559Alert": "确保你的硬件钱包固件已升级到支持 EIP 1559 的版本",
       "interactContract": "交互合约",
@@ -1081,7 +1081,7 @@
         "approveCollection": "授权 NFT collection",
         "title": "授权 NFT Collection"
       },
-      "nftIn": "NFT 在",
+      "nftIn": "增加的NFT",
       "noGasRequired": "无需 Gas",
       "noMark": "无标记",
       "nonceLowerThanExpect": "Nonce 太低，最小值应为 {{0}}",
@@ -1240,7 +1240,7 @@
       "est-receiving": "预计接收：",
       "exchanges": "交易所",
       "fail-to-simulate-transaction": "模拟交易失败",
-      "gas-x-price": "Gas 价格：{{price}} Gwei",
+      "gas-x-price": "Gas Price：{{price}} Gwei",
       "get-quotes": "获取报价",
       "i-understand-and-accept-it": "我理解并接受",
       "insufficient-balance": "余额不足",

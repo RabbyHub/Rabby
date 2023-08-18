@@ -42,7 +42,7 @@
       "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
-      "gasPriceMedian": "Median of last 100 on-chain transactions:",
+      "gasPriceMedian": "Median of last 100 on-chain transactions: ",
       "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
