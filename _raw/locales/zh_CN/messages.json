@@ -569,6 +569,14 @@
           "required": "请输入密码",
           "placeholder": "密码"
         }
+      },
+      "coboSafe": {
+        "inputSafeModuleAddress": "",
+        "invalidAddress": "",
+        "whichChainIsYourCoboAddressOn": "",
+        "addCoboArgusAddress": "",
+        "findTheAssociatedSafeAddress": "",
+        "import": ""
       }
     },
     "activities": {
@@ -932,7 +940,8 @@
         "safe": "Safe 地址",
         "seedPhrase": "助记词地址",
         "trezor": "Trezor 地址",
-        "watchAddress": "无法使用观察地址进行签名"
+        "watchAddress": "无法使用观察地址进行签名",
+        "coboSafe": ""
       },
       "beginSigning": "开始签名流程",
       "connectButton": "连接",
@@ -1173,7 +1182,10 @@
       "viewRaw": "查看原始数据",
       "wrapToken": "Wrap 代币",
       "contractPopularity": "No.{{0}} on {{1}}",
-      "myMarkWithContract": "My mark on {{chainName}} contract"
+      "myMarkWithContract": "My mark on {{chainName}} contract",
+      "importedDelegatedAddress": "",
+      "noDelegatedAddress": "",
+      "noDelegatedAddressTip": ""
     },
     "signTypedData": {
       "buyNFT": {
@@ -1321,7 +1333,10 @@
       "manage-seed-phrase": "管理助记词",
       "please-input-address-note": "请输入地址备注",
       "qr-code": "二维码",
-      "source": "来源"
+      "source": "来源",
+      "safeModuleAddress": "",
+      "coboSafeErrorModule": "",
+      "importedDelegatedAddress": ""
     },
     "preferMetamaskDapps": {
       "title": "优先使用MetaMask连接的Dapp",

@@ -76,7 +76,9 @@ export const CoboDelegatedDrawer = ({
   return (
     <div className="gnosis-drawer-container">
       {ownerAccounts.length ? (
-        <div className="title mb-[16px]">Imported delegated address</div>
+        <div className="title mb-[16px]">
+          {t('page.signTx.importedDelegatedAddress')}
+        </div>
       ) : null}
       <div className="list space-y-8">
         {ownerAccounts.length ? (
@@ -97,17 +99,17 @@ export const CoboDelegatedDrawer = ({
           <div className="text-center mt-12">
             <img className="w-[40px] mb-16 mx-auto" src={EmptyIcon} />
             <p className="text-20 leading-[23px] mb-12 text-[#192945]">
-              No delegated address
+              {t('page.signTx.noDelegatedAddress')}
             </p>
             <p className="text-15 text-[#3E495E]">
-              请先在Rabby钱包中导入后再重新发起签名
+              {t('page.signTx.noDelegatedAddressTip')}
             </p>
           </div>
         )}
       </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
-          {t('Cancel')}
+          {t('global.Cancel')}
         </Button>
         <Button
           type="primary"
@@ -115,7 +117,7 @@ export const CoboDelegatedDrawer = ({
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('Proceed')}
+          {t('global.proceedButton')}
         </Button>
       </div>
     </div>

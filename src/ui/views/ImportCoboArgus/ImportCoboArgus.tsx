@@ -9,10 +9,12 @@ import { useWallet } from '@/ui/utils';
 import { isAddress } from 'web3-utils';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
 export const ImportCoboArgus = () => {
+  const { t } = useTranslation();
   const [selectedChain, setSelectedChain] = React.useState<CHAINS_ENUM>();
   const [inputAddress, setInputAddress] = React.useState<string>('');
   const [step, setStep] = React.useState<Type>('select-chain');
@@ -27,7 +29,7 @@ export const ImportCoboArgus = () => {
       setStep('add-address');
     } else if (step === 'add-address') {
       if (!isAddress(inputAddress)) {
-        setError('Invalid address');
+        setError(t('page.newAddress.coboSafe.invalidAddress'));
         return;
       }
       try {
@@ -57,7 +59,7 @@ export const ImportCoboArgus = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: 'Imported Successfully',
+          title: t('page.newAddress.importedSuccessfully'),
           editing: true,
           importedAccount: true,
           importedLength: (
@@ -73,9 +75,10 @@ export const ImportCoboArgus = () => {
   return (
     <section className="bg-gray-bg relative">
       <Header>
-        {step === 'select-chain' && 'Which chain is your cobo address on'}
+        {step === 'select-chain' &&
+          t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}
         {(step === 'add-address' || step === 'select-address') &&
-          'Add Cobo Argus address'}
+          t('page.newAddress.coboSafe.addCoboArgusAddress')}
       </Header>
 
       <div className="p-20 h-[420px] overflow-y-scroll pb-[100px]">
@@ -122,7 +125,7 @@ export const ImportCoboArgus = () => {
           onClick={handleNext}
           loading={isLoading}
         >
-          Next
+          {t('global.next')}
         </Button>
       </footer>
     </section>

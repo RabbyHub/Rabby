@@ -190,7 +190,10 @@
       "collectionTitle": "Collection",
       "addressTypeTitle": "Address type",
       "firstOnChain": "First on-chain",
-      "trustValue": "Trust value"
+      "trustValue": "Trust value",
+      "importedDelegatedAddress": "Imported delegated address",
+      "noDelegatedAddress": "No delegated address",
+      "noDelegatedAddressTip": "请先在Rabby钱包中导入后再重新发起签名"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -230,7 +233,8 @@
         "privateKey": "Private Key address",
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
-        "safe": "Safe address"
+        "safe": "Safe address",
+        "coboSafe": "Cobo Safe address"
       },
       "qrcode": {
         "signWith": "Sign with {{brand}}",
@@ -1179,6 +1183,14 @@
           "required": "Please input Password",
           "placeholder": "Password"
         }
+      },
+      "coboSafe": {
+        "inputSafeModuleAddress": "Input Safe Module address",
+        "invalidAddress": "Invalid address",
+        "whichChainIsYourCoboAddressOn": "Which chain is your cobo address on",
+        "addCoboArgusAddress": "Add Cobo Argus address",
+        "findTheAssociatedSafeAddress": "Find the associated safe address",
+        "import": "Import"
       }
     },
     "unlock": {
@@ -1288,7 +1300,10 @@
       "source": "Source",
       "hd-path": "HD Path",
       "manage-seed-phrase": "Manage Seed Phrase",
-      "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase"
+      "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase",
+      "safeModuleAddress": "Safe Module Address",
+      "coboSafeErrorModule": "Module Address 已失效，请删除并导入新地址",
+      "importedDelegatedAddress": "Imported Delegated address"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",

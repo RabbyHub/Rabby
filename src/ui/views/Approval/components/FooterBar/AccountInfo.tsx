@@ -150,7 +150,7 @@ export const AccountInfo: React.FC<Props> = ({
       {account?.type === KEYRING_CLASS.CoboArgus && (
         <CommonAccount
           icon={WALLET_BRAND_CONTENT.CoboArgus.icon}
-          tip="Cobo Safe address"
+          tip={t('page.signFooterBar.addressTip.coboSafe')}
         />
       )}
     </div>

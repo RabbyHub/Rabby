@@ -6,6 +6,7 @@ import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconInfo from 'ui/assets/address/info.svg';
 import { SvgIconLoading } from 'ui/assets';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 const ErrorAlert = styled.div`
   margin-top: 6px;
@@ -32,6 +33,7 @@ const ErrorAlert = styled.div`
 `;
 
 export const CoboArgusInfo = ({ address }: { address: string }) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [accountDetail, setAccountDetail] = React.useState<
     Awaited<ReturnType<typeof wallet['coboSafeGetAccountDetail']>>
@@ -75,7 +77,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
           <div className="rabby-list-item-label">
-            Safe Module Address
+            {t('page.addressDetail.safeModuleAddress')}
             <div className="rabby-list-item-desc flex gap-4 text-[13px]">
               {accountDetail?.safeModuleAddress}
               <img
@@ -91,7 +93,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
             {accountDetail?.isModuleEnabled ? null : (
               <ErrorAlert className="bg-red-forbidden before:border-b-red-forbidden">
                 <img src={IconInfo} className="mr-6" />
-                <span>Module Address 已失效，请删除并导入新地址</span>
+                <span>{t('page.addressDetail.coboSafeErrorModule')}</span>
               </ErrorAlert>
             )}
           </div>
@@ -101,7 +103,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
       <div className="rabby-list-item no-hover">
         <div className="rabby-list-item-content border-0 p-0 pt-14 min-h-0">
           <div className="rabby-list-item-label">
-            Imported Delegated address
+            {t('page.addressDetail.importedDelegatedAddress')}
           </div>
         </div>
       </div>

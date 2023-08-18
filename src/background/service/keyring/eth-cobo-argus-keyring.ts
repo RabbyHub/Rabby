@@ -1,5 +1,6 @@
 import { addHexPrefix } from 'ethereumjs-util';
 import EventEmitter from 'events';
+import { t } from 'i18next';
 import { isAddress } from 'web3-utils';
 
 export const keyringType = 'CoboArgus';
@@ -80,7 +81,7 @@ export default class CoboArgusKeyring extends EventEmitter {
         (acct) => acct.toLowerCase() === prefixedAddress.toLowerCase()
       )
     ) {
-      throw new Error("The address you're are trying to import is duplicate");
+      throw new Error(t('page.newAddress.walletConnect.status.duplicate'));
     }
 
     this.accounts.push(prefixedAddress.toLowerCase());

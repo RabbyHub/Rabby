@@ -3,6 +3,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   address: string;
@@ -19,12 +20,13 @@ export const SelectAddressPopup: React.FC<Props> = ({
   onCancel,
   visible,
 }) => {
+  const { t } = useTranslation();
   const chain = CHAINS[chainEnum];
   return (
     <Popup
       maskClosable
       visible={visible}
-      title="Find the associated safe address"
+      title={t('page.newAddress.coboSafe.findTheAssociatedSafeAddress')}
       height={227}
     >
       <div
@@ -50,14 +52,14 @@ export const SelectAddressPopup: React.FC<Props> = ({
           onClick={onCancel}
           type="primary"
         >
-          Cancel
+          {t('global.Cancel')}
         </Button>
         <Button
           className="w-[172px] h-[44px]"
           onClick={onConfirm}
           type="primary"
         >
-          Import
+          {t('page.newAddress.coboSafe.import')}
         </Button>
       </footer>
     </Popup>
