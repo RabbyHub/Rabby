@@ -50,6 +50,7 @@ const FormInputItem = styled(Form.Item)`
 
 interface ConfirmAddToContactsModalProps extends WrappedComponentProps {
   onFinished: (result: { contactAddrAdded: string }) => void;
+  initAddressNote?: string;
   addrToAdd: string;
   confirmText?: string;
   cancelText?: string;
@@ -62,6 +63,7 @@ function ModalConfirmAddToContacts({
   onFinished,
   onCancel,
   wallet,
+  initAddressNote,
   addrToAdd,
   cancelText,
   confirmText = 'Confirm',
@@ -71,6 +73,12 @@ function ModalConfirmAddToContacts({
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const inputRef = useRef<Input>(null);
+
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue({ addressNote: initAddressNote });
+    }
+  }, [initAddressNote, visible]);
 
   const handleSubmit = async ({ addressNote }: { addressNote: string }) => {
     try {

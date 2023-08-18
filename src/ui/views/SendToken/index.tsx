@@ -54,6 +54,7 @@ import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import LessPalette from '@/ui/style/var-defs';
+import { useContactAccounts } from '@/ui/hooks/useContact';
 
 const MaxButton = styled.div`
   font-size: 12px;
@@ -127,13 +128,16 @@ const SendToken = () => {
   >({});
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
-  const { whitelist, whitelistEnabled, contactsByAddr } = useRabbySelector(
-    (s) => ({
-      whitelist: s.whitelist.whitelist,
-      whitelistEnabled: s.whitelist.enabled,
-      contactsByAddr: s.contactBook.contactsByAddr,
-    })
-  );
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
+
+  const {
+    getAddressNote,
+    isAddrOnContactBook,
+    fetchContactAccounts,
+  } = useContactAccounts();
 
   const {
     toAddressIsValid,
@@ -145,9 +149,9 @@ const SendToken = () => {
       toAddressInWhitelist: !!whitelist.find((item) =>
         isSameAddress(item, formSnapshot.to)
       ),
-      toAddressInContactBook: !!contactsByAddr[formSnapshot.to]?.isAlias,
+      toAddressInContactBook: isAddrOnContactBook(formSnapshot.to),
     };
-  }, [whitelist, contactsByAddr, formSnapshot]);
+  }, [whitelist, isAddrOnContactBook, formSnapshot]);
 
   const whitelistAlertContent = useMemo(() => {
     if (!whitelistEnabled) {
@@ -763,6 +767,7 @@ const SendToken = () => {
     const toAddr = form.getFieldValue('to');
     confirmAddToContactsModalPromise({
       wallet,
+      initAddressNote: getAddressNote(toAddr),
       addrToAdd: toAddr,
       title: t('page.sendToken.modalConfirmAddToContacts.title'),
       confirmText: t('page.sendToken.modalConfirmAddToContacts.confirmText'),
@@ -771,8 +776,11 @@ const SendToken = () => {
         // trigger fetch contactInfo
         const values = form.getFieldsValue();
         handleFormValuesChange(null, { ...values });
-        // trigger get balance of address
-        await wallet.getAddressBalance(result.contactAddrAdded, true);
+        await Promise.allSettled([
+          fetchContactAccounts(),
+          // trigger get balance of address
+          wallet.getAddressBalance(result.contactAddrAdded, true),
+        ]);
       },
     });
   };
