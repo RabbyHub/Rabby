@@ -287,7 +287,9 @@ class NotificationService extends Events {
           : undefined;
 
         const isSwitchMainOrTest =
-          chain && currentChain && chain.isTestnet !== currentChain.isTestnet;
+          chain &&
+          currentChain &&
+          !!chain.isTestnet !== !!currentChain.isTestnet;
 
         if (!isSwitchMainOrTest && chain) {
           this.resolveApproval(null);
