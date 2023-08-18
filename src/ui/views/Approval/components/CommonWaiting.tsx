@@ -168,8 +168,15 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   React.useEffect(() => {
-    setTitle(t('page.signFooterBar.qrcode.signWith'));
-    init();
+    (async () => {
+      const account = params.isGnosis
+        ? params.account!
+        : (await wallet.syncGetCurrentAccount())!;
+      setTitle(
+        t('page.signFooterBar.qrcode.signWith', { brand: account.brandName })
+      );
+      init();
+    })();
   }, []);
 
   React.useEffect(() => {
