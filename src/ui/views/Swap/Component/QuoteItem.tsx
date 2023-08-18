@@ -260,7 +260,7 @@ export const DexQuoteItem = (
           ?.amount;
     if (actualReceiveAmount || dexId === 'WrapToken') {
       const receiveAmount =
-        actualReceiveAmount || dexId === 'WrapToken' ? payAmount : 0;
+        actualReceiveAmount || (dexId === 'WrapToken' ? payAmount : 0);
       const bestQuoteAmount = new BigNumber(bestAmount);
       const receivedTokeAmountBn = new BigNumber(receiveAmount);
       const percent = new BigNumber(receiveAmount)
