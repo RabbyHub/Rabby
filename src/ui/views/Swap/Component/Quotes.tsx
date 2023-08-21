@@ -15,6 +15,8 @@ import {
 import BigNumber from 'bignumber.js';
 import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
+import { useTranslation } from 'react-i18next';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const CexListWrapper = styled.div`
   border: 1px solid #e5e9ef;
@@ -61,6 +63,7 @@ export const Quotes = ({
   inSufficient,
   ...other
 }: QuotesProps) => {
+  const { t } = useTranslation();
   const { swapViewList, swapTradeList } = useSwapSettings();
 
   const viewCount = useMemo(() => {
@@ -154,21 +157,22 @@ export const Quotes = ({
             active={activeName === dex?.name}
             isLoading={dex.loading}
             quoteProviderInfo={{
-              name: 'Wrap Contract',
+              name: t('page.swap.wrap-contract'),
               logo: other?.receiveToken?.logo_url,
             }}
             {...other}
           />
         ) : (
           <QuoteLoading
-            name="Wrap Contract"
+            name={t('page.swap.wrap-contract')}
             logo={other?.receiveToken?.logo_url}
           />
         )}
 
         <div className="text-13 text-gray-content">
-          Wrapping {other.receiveToken.name} tokens directly with the smart
-          contract
+          {t('page.swap.directlySwap', {
+            symbol: getTokenSymbol(other.payToken),
+          })}
         </div>
       </div>
     );
@@ -199,7 +203,9 @@ export const Quotes = ({
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
       {!noCex && (
-        <div className="text-gray-light text-12 mt-20 mb-8">Rates from CEX</div>
+        <div className="text-gray-light text-12 mt-20 mb-8">
+          {t('page.swap.rates-from-cex')}
+        </div>
       )}
       <CexListWrapper>
         {sortedList.map((params, idx) => {
@@ -220,12 +226,12 @@ export const Quotes = ({
       </CexListWrapper>
       <div className="pt-[40px]" />
       <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2  text-gray-light ">
-        {viewCount} exchanges offer quotes, and {tradeCount} enable trading
+        {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
         <span
           onClick={openSettings}
           className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
         >
-          Edit
+          {t('page.swap.edit')}
         </span>
       </div>
     </div>
@@ -245,6 +251,8 @@ export const QuoteList = (props: QuotesProps) => {
     refresh((e) => e + 1);
   }, [refresh]);
 
+  const { t } = useTranslation();
+
   return (
     <Popup
       closeIcon={
@@ -253,7 +261,7 @@ export const QuoteList = (props: QuotesProps) => {
       visible={visible}
       title={
         <div className="mb-[-2px] pb-10 flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
-          <div>The following swap rates are found</div>
+          <div>{t('page.swap.the-following-swap-rates-are-found')}</div>
           <div className="w-20 h-20 relative overflow-hidden">
             <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
               <IconRefresh onClick={refreshQuote} />

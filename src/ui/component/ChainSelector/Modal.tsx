@@ -23,6 +23,7 @@ import NetSwitchTabs, {
   NetSwitchTabsKey,
   useSwitchNetTab,
 } from '../PillsSwitch/NetSwitchTabs';
+import { useTranslation } from 'react-i18next';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -47,17 +48,18 @@ const useChainSeletorList = ({
   netTabKey?: NetSwitchTabsKey;
 }) => {
   const [search, setSearch] = useState('');
-  const { pinned, matteredChainBalances, isShowTestnet } = useRabbySelector(
-    (state) => {
-      return {
-        pinned: (state.preference.pinnedChain?.filter((item) =>
-          findChainByEnum(item)
-        ) || []) as CHAINS_ENUM[],
-        matteredChainBalances: state.account.matteredChainBalances,
-        isShowTestnet: state.preference.isShowTestnet,
-      };
-    }
-  );
+  const { pinned, chainBalances } = useRabbySelector((state) => {
+    return {
+      pinned: (state.preference.pinnedChain?.filter((item) =>
+        findChainByEnum(item)
+      ) || []) as CHAINS_ENUM[],
+      chainBalances:
+        netTabKey === 'testnet'
+          ? state.account.testnetMatteredChainBalances
+          : state.account.matteredChainBalances,
+      isShowTestnet: state.preference.isShowTestnet,
+    };
+  });
 
   const dispatch = useRabbyDispatch();
 
@@ -76,7 +78,7 @@ const useChainSeletorList = ({
     const result = varyAndSortChainItems({
       supportChains,
       searchKeyword: searchKw,
-      matteredChainBalances,
+      matteredChainBalances: chainBalances,
       pinned,
       netTabKey,
     });
@@ -86,7 +88,7 @@ const useChainSeletorList = ({
       matteredList: searchKw ? [] : result.matteredList,
       unmatteredList: searchKw ? [] : result.unmatteredList,
     };
-  }, [search, pinned, supportChains, matteredChainBalances, netTabKey]);
+  }, [search, pinned, supportChains, chainBalances, netTabKey]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
@@ -129,6 +131,8 @@ const ChainSelectorModal = ({
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
     hideTestnetTab,
   });
+
+  const { t } = useTranslation();
 
   const {
     matteredList,
@@ -190,7 +194,8 @@ const ChainSelectorModal = ({
         )}
         <Input
           prefix={<img src={IconSearch} />}
-          placeholder="Search chain"
+          // Search chain
+          placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           allowClear
@@ -221,7 +226,10 @@ const ChainSelectorModal = ({
         ></SelectChainList>
         {matteredList.length === 0 && unmatteredList.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">
-            <Empty>No chains</Empty>
+            <Empty>
+              {/* No chains */}
+              {t('component.ChainSelectorModal.noChains')}
+            </Empty>
           </div>
         ) : null}
       </div>

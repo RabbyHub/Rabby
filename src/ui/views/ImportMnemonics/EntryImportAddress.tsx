@@ -55,7 +55,7 @@ const EntryImportAddress = () => {
           />
 
           <p className="text-24 absolute bottom-[2px] text-white text-center font-bold">
-            {t('Select Import Method')}
+            {t('page.newAddress.selectImportMethod')}
           </p>
           <img
             src="/images/entry-import-mask.png"
@@ -73,7 +73,7 @@ const EntryImportAddress = () => {
             }
             onClick={() => openInternalPageInTab('import/mnemonics')}
           >
-            {t('Import Seed Phrase')}
+            {t('page.newAddress.importSeedPhrase')}
           </Field>
 
           <Field
@@ -84,7 +84,7 @@ const EntryImportAddress = () => {
             }
             onClick={() => history.push('/import/key')}
           >
-            {t('Import Private Key')}
+            {t('page.newAddress.importPrivateKey')}
           </Field>
 
           <Field
@@ -95,7 +95,7 @@ const EntryImportAddress = () => {
             }
             onClick={() => history.push('/import/json')}
           >
-            {t('Import KeyStore')}
+            {t('page.newAddress.importKeystore')}
           </Field>
         </ActionEntries>
       </div>

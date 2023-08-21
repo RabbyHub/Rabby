@@ -5,6 +5,7 @@ import { useWallet, useCommonPopupView } from '@/ui/utils';
 import { useDisplayBrandName } from './useDisplayBrandName';
 import { message } from 'antd';
 import { CommonStatusBar } from '../ConnectStatus/CommonStatusBar';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   address: string;
@@ -30,6 +31,7 @@ export const SessionStatusBar: React.FC<Props> = ({
     brandName,
     address
   );
+  const { t } = useTranslation();
 
   const tipStatus = React.useMemo(() => {
     switch (status) {
@@ -55,7 +57,7 @@ export const SessionStatusBar: React.FC<Props> = ({
     });
     if (tipStatus === 'CONNECTED') {
       wallet.killWalletConnectConnector(address, brandName, true);
-      message.success('Disconnected');
+      message.success(t('page.newAddress.walletConnect.disconnected'));
     } else if (tipStatus === 'DISCONNECTED') {
       wallet.killWalletConnectConnector(address, brandName, true, true);
       activePopup('WalletConnect');
@@ -69,16 +71,32 @@ export const SessionStatusBar: React.FC<Props> = ({
       case 'ACCOUNT_ERROR':
         return (
           <>
-            <div>Connected but unable to sign.</div>
-            <div>Please switch to the correct address in mobile wallet</div>
+            <div>
+              {t('page.newAddress.walletConnect.tip.accountError.tip1')}
+            </div>
+            <div>
+              {t('page.newAddress.walletConnect.tip.accountError.tip2')}
+            </div>
           </>
         );
 
       case 'DISCONNECTED':
-        return <div>Not connected to {displayBrandName}</div>;
+        return (
+          <div>
+            {t('page.newAddress.walletConnect.tip.disconnected.tip', {
+              brandName: displayBrandName,
+            })}
+          </div>
+        );
 
       default:
-        return <div>Connected to {displayBrandName}</div>;
+        return (
+          <div>
+            {t('page.newAddress.walletConnect.tip.connected.tip', {
+              brandName: displayBrandName,
+            })}
+          </div>
+        );
     }
   };
 
@@ -97,9 +115,12 @@ export const SessionStatusBar: React.FC<Props> = ({
       onClickButton={handleButton}
       ButtonText={
         <>
-          {tipStatus === 'CONNECTED' && 'Disconnect'}
-          {tipStatus === 'DISCONNECTED' && 'Connect'}
-          {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
+          {tipStatus === 'CONNECTED' &&
+            t('page.newAddress.walletConnect.button.disconnect')}
+          {tipStatus === 'DISCONNECTED' &&
+            t('page.newAddress.walletConnect.button.connect')}
+          {tipStatus === 'ACCOUNT_ERROR' &&
+            t('page.newAddress.walletConnect.button.howToSwitch')}
         </>
       }
       Content={<TipContent />}

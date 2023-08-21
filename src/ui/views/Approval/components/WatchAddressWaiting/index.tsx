@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Account } from 'background/service/preference';
@@ -54,6 +55,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   }>();
   const [isClickDone, setIsClickDone] = useState(false);
   const { status: sessionStatus } = useSessionStatus(currentAccount!);
+  const { t } = useTranslation();
 
   const initWalletConnect = async () => {
     const account = params.isGnosis
@@ -96,7 +98,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
     wallet.resendWalletConnect();
-    message.success('Request successfully sent.');
+    message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
   };
 
   const handleRefreshQrCode = () => {
@@ -300,7 +302,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   useEffect(() => {
     if (sessionStatus === 'DISCONNECTED') {
       setVisible(false);
-      message.error('Your wallet is not connected. Please re-connect.');
+      message.error(t('page.signFooterBar.ledger.notConnected'));
     }
   }, [sessionStatus]);
 

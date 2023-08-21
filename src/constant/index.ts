@@ -1,6 +1,7 @@
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
+import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';
 import {
@@ -71,6 +72,7 @@ import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import LogoUniswap from 'ui/assets/swap/uniswap.svg';
+import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -191,11 +193,12 @@ export const IS_AFTER_CHROME91 = IS_CHROME
   : false;
 
 export const GAS_LEVEL_TEXT = {
+  $unknown: 'Unknown',
   slow: 'Standard',
   normal: 'Fast',
   fast: 'Instant',
   custom: 'Custom',
-};
+} as const;
 
 export const IS_WINDOWS = /windows/i.test(global.navigator?.userAgent);
 
@@ -204,6 +207,11 @@ export const LANGS = [
     value: 'en',
     label: 'English',
     icon: IconEN,
+  },
+  {
+    value: 'zh_CN',
+    label: '中文',
+    icon: IconZH,
   },
 ];
 
@@ -707,7 +715,7 @@ export const KEYRING_CATEGORY_MAP = {
 
 export const SWAP_FEE_PRECISION = 1e5;
 
-export const DEFAULT_GAS_LIMIT_RATIO = 2;
+export const DEFAULT_GAS_LIMIT_RATIO = 1.5;
 
 export const SAFE_GAS_LIMIT_RATIO = {};
 export const GAS_TOP_UP_ADDRESS = '0x7559e1bbe06e94aeed8000d5671ed424397d25b5';
@@ -897,6 +905,7 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
+  CHAINS_ENUM.BASE,
 ]);
 
 export const WALLET_SORT_SCORE = [
@@ -965,6 +974,12 @@ export const DEX = {
     logo: LogoOpenOcean,
     name: 'OpenOcean',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+  [DEX_ENUM.KYBERSWAP]: {
+    id: DEX_ENUM.KYBERSWAP,
+    logo: LogoKyberSwap,
+    name: 'KyberSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
   },
 };
 

@@ -4,6 +4,7 @@ import { useSwapSettings } from '../hooks';
 import { CEX, CHAINS_ENUM, DEX } from '@/constant';
 import clsx from 'clsx';
 import { Button, Switch } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const list = [...Object.values(DEX), ...Object.values(CEX)] as {
   id: keyof typeof DEX | keyof typeof CEX;
@@ -19,6 +20,7 @@ export const TradingSettings = ({
   visible: boolean;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation();
   const {
     swapViewList,
     swapTradeList,
@@ -40,7 +42,7 @@ export const TradingSettings = ({
   return (
     <Popup
       visible={visible}
-      title={'Enable Exchanges'}
+      title={t('page.swap.enable-exchanges')}
       height={544}
       onClose={onClose}
       closable
@@ -50,9 +52,9 @@ export const TradingSettings = ({
     >
       <div>
         <div className="flex items-center text-gray-content text-12 pb-8 px-12">
-          <div className="w-[188px]">Exchanges</div>
-          <div className="w-[66px]">View quotes</div>
-          <div className="ml-auto">Trade</div>
+          <div className="w-[188px]">{t('page.swap.exchanges')}</div>
+          <div className="w-[66px]">{t('page.swap.view-quotes')}</div>
+          <div className="ml-auto">{t('page.swap.trade')}</div>
         </div>
 
         <div className="flex flex-col gap-8">
@@ -76,7 +78,7 @@ export const TradingSettings = ({
                       'border-[0.5px] border-solid border-gray-comment'
                     )}
                   >
-                    {item?.chains ? 'Dex' : 'Cex'}
+                    {item?.chains ? t('page.swap.dex') : t('page.swap.cex')}
                   </span>
                 </div>
                 <div className="w-[66px] flex justify-end">
@@ -133,24 +135,19 @@ export const TradingSettings = ({
 
 function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
   const [checked, setChecked] = useState(false);
+  const { t } = useTranslation();
   return (
     <div>
       <div className="relative -mt-8 mb-20  text-20 font-medium text-center text-gray-title">
-        Enable Trading
+        {t('page.swap.enable-trading')}
       </div>
       <div className="text-13 leading-[18px] text-gray-subTitle">
-        <p>
-          1. Once enabled, you will interact with the contract from the exchange
-          directly
-        </p>
-        <p>
-          2. Rabby is not liable for any risks arising from the contract of the
-          exchanges
-        </p>
+        <p>{t('page.swap.tradingSettingTip1')}</p>
+        <p>{t('page.swap.tradingSettingTip2')}</p>
       </div>
       <div className="flex flex-col justify-center items-center gap-16 text-gray-subTitle mt-[30px]">
         <Checkbox checked={checked} onChange={setChecked}>
-          I understand and accept it
+          {t('page.swap.i-understand-and-accept-it')}
         </Checkbox>
 
         <Button
@@ -160,7 +157,7 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
           className="h-[40px] w-[188px] text-13 font-medium mx-auto"
           onClick={onConfirm}
         >
-          Confirm
+          {t('page.swap.confirm')}
         </Button>
       </div>
     </div>

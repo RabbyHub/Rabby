@@ -2,17 +2,15 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 export const fetchLocale = async (locale) => {
-  const res = await window.fetch(`./_locales/${locale}/messages.json`);
-  const data: Record<
-    string,
-    { message: string; description: string }
-  > = await res.json();
-  return Object.keys(data).reduce((res, key) => {
-    return {
-      ...res,
-      [key.replace(/__/g, ' ')]: data[key].message,
-    };
-  }, {});
+  const res = await window.fetch(`./locales/${locale}/messages.json`);
+  const data = await res.json();
+  return data;
+  // return Object.keys(data).reduce((res, key) => {
+  //   return {
+  //     ...res,
+  //     [key.replace(/__/g, ' ')]: data[key].message,
+  //   };
+  // }, {});
 };
 
 i18n
@@ -22,16 +20,20 @@ i18n
     defaultNS: 'translations',
     interpolation: {
       escapeValue: false, // react already safes from xss
+      skipOnVariables: true,
     },
+    returnNull: false,
   });
 
 export const I18N_NS = 'translations';
 
 export const addResourceBundle = async (locale: string) => {
-  if (i18n.hasResourceBundle(locale, I18N_NS)) return;
+  if (i18n.hasResourceBundle(locale, I18N_NS)) {
+    return;
+  }
   const bundle = await fetchLocale(locale);
 
-  i18n.addResourceBundle(locale, 'translations', bundle);
+  i18n.addResourceBundle(locale, I18N_NS, bundle);
 };
 
 addResourceBundle('en');

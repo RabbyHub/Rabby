@@ -78,7 +78,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.requestKeyring(account?.type || '', 'resend', null);
     if (showToast) {
-      message.success(t('Resent'));
+      message.success(t('page.signFooterBar.ledger.resent'));
     }
   };
 
@@ -111,7 +111,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         const signingTx = await wallet.getSigningTx(signingTxId);
 
         if (!signingTx?.explain) {
-          setErrorMessage('Failed to get explain');
+          setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
 
@@ -196,7 +196,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     if (firstConnectRef.current) {
       if (sessionStatus === 'DISCONNECTED') {
         setVisible(false);
-        message.error('Your wallet is not connected. Please re-connect.');
+        message.error(t('page.signFooterBar.ledger.notConnected'));
       }
     }
 
@@ -206,7 +206,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [sessionStatus]);
 
   React.useEffect(() => {
-    setTitle('Sign with Ledger');
+    setTitle(t('page.signFooterBar.qrcode.signWith', { brand: 'Ledger' }));
     init();
     mountedRef.current = true;
   }, []);
@@ -237,22 +237,22 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setStatusProp('SENDING');
-        setContent('Sending signing request...');
+        setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setStatusProp('REJECTED');
-        setContent('Transaction rejected');
+        setContent(t('page.signFooterBar.ledger.txRejected'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.FAILD:
         setStatusProp('FAILED');
-        setContent('Transaction failed');
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SIBMITTED:
         setStatusProp('RESOLVED');
-        setContent('Signature completed');
+        setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
         break;
       default:
@@ -262,14 +262,14 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const currentDescription = React.useMemo(() => {
     if (description.includes('0x5515') || description.includes('0x6b0c')) {
-      return 'Please plug in and unlock your Ledger, open Ethereum on it';
+      return t('page.signFooterBar.ledger.unlockAlert');
     } else if (
       description.includes('0x6e00') ||
       description.includes('0x6b00')
     ) {
-      return 'Please update the firmware and Ethereum App on your Ledger';
+      return t('page.signFooterBar.ledger.updateFirmwareAlert');
     } else if (description.includes('0x6985')) {
-      return 'Transaction is rejected on your Ledger';
+      return t('page.signFooterBar.ledger.txRejectedByLedger');
     }
 
     return description;
@@ -298,7 +298,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
                 );
               }}
             >
-              Blind Signature Tutorial from Ledger
+              {t('page.signFooterBar.ledger.blindSigTutorial')}
             </a>
           )}
         </>

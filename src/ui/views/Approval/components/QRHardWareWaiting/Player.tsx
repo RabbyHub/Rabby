@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import QRCode from 'qrcode.react';
 import { UR, UREncoder } from '@ngraveio/bc-ur';
+import { useTranslation, Trans } from 'react-i18next';
 import { Button } from 'antd';
 import clsx from 'clsx';
 
@@ -10,6 +11,7 @@ const Player = ({ type, cbor, onSign, brandName }) => {
     [cbor, type]
   );
   const [currentQRCode, setCurrentQRCode] = useState(urEncoder.nextPart());
+  const { t } = useTranslation();
   useEffect(() => {
     const id = setInterval(() => {
       setCurrentQRCode(urEncoder.nextPart());
@@ -25,8 +27,12 @@ const Player = ({ type, cbor, onSign, brandName }) => {
         <QRCode value={currentQRCode.toUpperCase()} size={180} />
       </div>
       <p className="text-13 leading-[18px] mb-0 mt-6 text-gray-subTitle font-medium text-center whitespace-nowrap">
-        Scan with your {brandName} to sign<br></br>After signing, click the
-        button below to receive the signature
+        <Trans
+          i18nKey="page.signFooterBar.qrcode.qrcodeDesc"
+          values={{
+            brand: brandName,
+          }}
+        ></Trans>
       </p>
 
       <Button
@@ -37,7 +43,7 @@ const Player = ({ type, cbor, onSign, brandName }) => {
         )}
         type="primary"
       >
-        Get signature
+        {t('page.signFooterBar.qrcode.getSig')}
       </Button>
     </div>
   );

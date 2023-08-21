@@ -32,6 +32,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     importedLength?: number;
     supportChainList?: Chain[];
   }>();
+
   const dispatch = useRabbyDispatch();
   const addressItems = useRef(new Array(state.accounts.length));
   const { t } = useTranslation();
@@ -39,7 +40,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const {
     accounts,
     hasDivider = true,
-    title = t('Imported Successfully'),
+    title = t('page.importSuccess.title'),
     editing = false,
     showImportIcon = false,
     isMnemonics = false,
@@ -94,7 +95,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
       hasDivider={hasDivider}
-      NextButtonContent={t('Done')}
+      NextButtonContent={t('global.Done')}
       onNextClick={handleNextClick}
       footerFixed={false}
       noPadding={isPopup}
@@ -113,7 +114,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {title || t('Imported Successfully')}
+              {title || t('page.importSuccess.title')}
             </p>
             <img src="/images/success-mask.png" className="mask" />
           </header>
@@ -125,7 +126,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-                {title || t('Imported Successfully')}
+                {title || t('page.importSuccess.title')}
               </p>
             </div>
             <img src={Mask} className="mask" />
@@ -155,7 +156,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               <div className="text-green text-20 mb-2">{title}</div>
               <div className="text-title text-15 mb-12">
                 <Trans
-                  i18nKey="AddressCount"
+                  i18nKey="page.importSuccess.addressCount"
                   values={{ count: accounts?.length }}
                 />
               </div>
@@ -193,8 +194,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             {!!state?.supportChainList?.length && (
               <div className="chain-list-container">
                 <div className="desc">
-                  This address was found deployed on{' '}
-                  {state?.supportChainList?.length} chains
+                  {t('page.importSuccess.gnosisChainDesc', {
+                    count: state?.supportChainList?.length || 0,
+                  })}
                 </div>
                 <div className="chain-list">
                   {state?.supportChainList?.map((chain) => {

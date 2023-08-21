@@ -40,7 +40,10 @@ export const SelectChainItem = forwardRef(
   ) => {
     const { customRPC, cachedChainBalances } = useRabbySelector((s) => ({
       customRPC: s.customRPC.customRPC,
-      cachedChainBalances: s.account.matteredChainBalances,
+      cachedChainBalances: {
+        mainnet: s.account.matteredChainBalances,
+        testnet: s.account.testnetMatteredChainBalances,
+      },
     }));
     const dispatch = useRabbyDispatch();
 
@@ -55,6 +58,13 @@ export const SelectChainItem = forwardRef(
 
       return disabledTips;
     }, [disabledTips]);
+
+    const chainBalanceItem = useMemo(() => {
+      return (
+        cachedChainBalances.mainnet?.[data.serverId] ||
+        cachedChainBalances.testnet?.[data.serverId]
+      );
+    }, [cachedChainBalances]);
 
     return (
       <Tooltip
@@ -88,19 +98,15 @@ export const SelectChainItem = forwardRef(
             )}
             <div className="select-chain-item-info">
               <div className="select-chain-item-name">{data.name}</div>
-              {!!cachedChainBalances[data.serverId]?.usd_value && (
+              {!!chainBalanceItem?.usd_value && (
                 <div className="select-chain-item-balance">
                   <img
                     className="w-[14px] h-[14px] mt-2"
                     src={IconChainBalance}
-                    alt={formatUsdValue(
-                      cachedChainBalances[data.serverId]?.usd_value || 0
-                    )}
+                    alt={formatUsdValue(chainBalanceItem?.usd_value || 0)}
                   />
                   <div className="ml-[6px] relative top-[2px]">
-                    {formatUsdValue(
-                      cachedChainBalances[data.serverId]?.usd_value || 0
-                    )}
+                    {formatUsdValue(chainBalanceItem?.usd_value || 0)}
                   </div>
                 </div>
               )}

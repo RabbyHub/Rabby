@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import {
   ParseTextResponse,
   CreateKeyAction,
@@ -57,11 +58,13 @@ export const formatSecurityEngineCtx = ({
 };
 
 export const getActionTypeText = (data: TextActionData) => {
+  const { t } = i18n;
+
   if (data.createKey) {
-    return 'Create Key';
+    return t('page.signTypedData.createKey.title');
   }
   if (data.verifyAddress) {
-    return 'Verify Address';
+    return t('page.signTypedData.verifyAddress.title');
   }
   return '';
 };

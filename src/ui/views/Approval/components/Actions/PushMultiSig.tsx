@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { PushMultiSigAction } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from './components/Table';
 import * as Values from './components/Values';
@@ -18,6 +19,7 @@ const PushMultiSig = ({
   requireData: PushMultiSigRequireData;
   chain: Chain;
 }) => {
+  const { t } = useTranslation();
   const multiSigInfo = useMemo(() => {
     const contract = requireData.contract?.[chain.serverId];
     if (contract) {
@@ -29,7 +31,7 @@ const PushMultiSig = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Multisig address</Row>
+          <Row isTitle>{t('page.signTx.submitMultisig.multisigAddress')}</Row>
           <Row>
             <div>
               <Values.Address address={data.multisig_id} chain={chain} />

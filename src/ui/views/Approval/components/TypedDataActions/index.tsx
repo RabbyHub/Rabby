@@ -1,6 +1,7 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain } from 'background/service/openapi';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import {
@@ -188,6 +189,8 @@ const Actions = ({
   raw: Record<string, any>;
   message: string;
 }) => {
+  const { t } = useTranslation();
+
   const actionName = useMemo(() => {
     if (!data) return '';
     return getActionTypeText(data);
@@ -203,13 +206,15 @@ const Actions = ({
     <>
       <SignTitle>
         <div className="left relative">
-          Sign{chain ? ` ${chain.name}` : ''} Typed Data
+          {t('page.signTypedData.signTypeDataOnChain', {
+            chain: chain ? chain.name : '',
+          })}
         </div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
-          View Raw
+          {t('page.signTx.viewRaw')}
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
@@ -220,10 +225,10 @@ const Actions = ({
             <div className="right">
               {data.contractCall && (
                 <span className="flex items-center relative">
-                  Unknown action type{' '}
+                  {t('page.signTx.unknownActionType')}{' '}
                   <TooltipWithMagnetArrow
                     overlayClassName="rectangle w-[max-content]"
-                    title="This signature can't be decoded by Rabby, but it doesn't imply any risk"
+                    title={t('page.signTx.sigCantDecode')}
                     placement="top"
                   >
                     <IconQuestionMark className="icon icon-tip" />

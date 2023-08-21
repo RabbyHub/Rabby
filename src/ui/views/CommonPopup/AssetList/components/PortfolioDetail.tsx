@@ -12,6 +12,7 @@ import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconUnknown from 'ui/assets/token-default.svg';
 import IconTokenTip from 'ui/assets/dashboard/portfolio/token-tip.svg';
+import { useTranslation } from 'react-i18next';
 
 type TokenItem = {
   id: string;
@@ -95,7 +96,12 @@ export const TokenList = ({
     shareToken: PortfolioItemToken;
   };
 }) => {
-  const headers = [name, 'AMOUNT', 'USD VALUE'];
+  const { t } = useTranslation();
+  const headers = [
+    name,
+    t('page.dashboard.assets.amount'),
+    t('page.dashboard.assets.usdValue'),
+  ];
 
   const _tokens: TokenItem[] = useMemo(() => {
     return (tokens ?? [])
@@ -132,9 +138,7 @@ export const TokenList = ({
         _amount: `${_symbol} x${n.amount}`,
         _netWorth,
         _netWorthStr: _netWorth ? formatUsdValue(_netWorth) : '-',
-        tip: _netWorth
-          ? 'Calculated based on the floor price recognized by this protocol.'
-          : '',
+        tip: _netWorth ? t('page.dashboard.assets.portfolio.nftTips') : '',
       };
     });
   }, [nfts]);
@@ -156,7 +160,7 @@ export const TokenList = ({
             ? formatUsdValue(fraction.value ?? 0)
             : '-',
           tip: fraction.value
-            ? 'Calculate based on the price of the linked ERC20 token.'
+            ? t('page.dashboard.assets.portfolio.fractionTips')
             : '',
         }
       : null;

@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useDebounce } from 'react-use';
 import styled from 'styled-components';
 import { useCommonPopupView } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   onSearch?: (value: string) => void;
@@ -24,6 +25,7 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
     const [input, setInput] = React.useState<string>('');
     const [isFocus, setIsFocus] = React.useState<boolean>(false);
     const { visible } = useCommonPopupView();
+    const { t } = useTranslation();
 
     React.useEffect(() => {
       if (!visible) {
@@ -43,7 +45,7 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
       <InputStyled
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Tokens"
+        placeholder={t('page.dashboard.assets.searchPlaceholder')}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         className={clsx(

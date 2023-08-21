@@ -32,9 +32,9 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
           // );
           return;
         }
-        setErrorMessage(t('KesytoneMismatchedSignId'));
+        setErrorMessage(t('page.signFooterBar.qrcode.misMatchSignId'));
       } else {
-        setErrorMessage(t('unknownQrCode'));
+        setErrorMessage(t('page.signFooterBar.qrcode.unknownQRCode'));
       }
     }
   };
@@ -59,8 +59,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
         />
       </div>
       <p className="text-13 leading-[18px] mb-0 mt-24 text-gray-subTitle font-medium text-center">
-        After signing, place the QR code on {brandName} in front of your PC
-        camera
+        {t('page.signFooterBar.qrcode.afterSignDesc', { brand: brandName })}
       </p>
     </div>
   );

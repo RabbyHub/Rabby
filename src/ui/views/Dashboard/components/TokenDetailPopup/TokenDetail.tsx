@@ -224,7 +224,9 @@ const TokenDetail = ({
           )
         ) : null}
         <div className="balance">
-          <div className="balance-title">{getTokenSymbol(token)} balance</div>
+          <div className="balance-title">
+            {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
+          </div>
           <div className="balance-content overflow-hidden">
             <div
               className="balance-value truncate"
@@ -253,7 +255,7 @@ const TokenDetail = ({
             <Tooltip
               overlayClassName="rectangle token_swap__tooltip"
               placement="topLeft"
-              title={t('The token on this chain is not supported')}
+              title={t('page.dashboard.tokenDetail.notSupported')}
               visible={tokenSupportSwap ? false : undefined}
             >
               <Button
@@ -265,7 +267,7 @@ const TokenDetail = ({
                   width: 114,
                 }}
               >
-                Swap
+                {t('page.dashboard.tokenDetail.swap')}
               </Button>
             </Tooltip>
 
@@ -276,7 +278,7 @@ const TokenDetail = ({
               className="w-[114px] rabby-btn-ghost"
               onClick={goToSend}
             >
-              {t('Send')}
+              {t('page.dashboard.tokenDetail.send')}
             </Button>
             <Button
               type="primary"
@@ -285,7 +287,7 @@ const TokenDetail = ({
               className="w-[114px] rabby-btn-ghost"
               onClick={goToReceive}
             >
-              {t('Receive')}
+              {t('page.dashboard.tokenDetail.receive')}
             </Button>
           </div>
         )}
@@ -308,7 +310,7 @@ const TokenDetail = ({
           <div className="token-txs-history__empty">
             <img className="no-data" src="./images/nodata-tx.png" />
             <p className="text-14 text-gray-content mt-12">
-              {t('No Transactions')}
+              {t('page.dashboard.tokenDetail.noTransactions')}
             </p>
           </div>
         )}

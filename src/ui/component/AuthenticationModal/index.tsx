@@ -139,7 +139,9 @@ const AuthenticationModal = ({
       form.setFields([
         {
           name: 'password',
-          errors: [e?.message || t('incorrect password')],
+          errors: [
+            e?.message || t('component.AuthenticationModal.passwordError'),
+          ],
         },
       ]);
     }
@@ -196,11 +198,16 @@ const AuthenticationModal = ({
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="password"
-          rules={[{ required: true, message: t('Please input password') }]}
+          rules={[
+            {
+              required: true,
+              message: t('component.AuthenticationModal.passwordRequired'),
+            },
+          ]}
         >
           <Input
             className="popup-input"
-            placeholder={t('Enter the Password to Confirm')}
+            placeholder={t('component.AuthenticationModal.passwordPlaceholder')}
             type="password"
             size="large"
             autoFocus

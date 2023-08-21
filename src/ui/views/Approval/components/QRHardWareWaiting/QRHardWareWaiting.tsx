@@ -12,6 +12,7 @@ import {
 import eventBus from '@/eventBus';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
@@ -33,6 +34,7 @@ const QRHardWareWaiting = ({ params }) => {
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
+  const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
   const [walletBrandContent, setWalletBrandContent] = useState(
@@ -53,7 +55,9 @@ const QRHardWareWaiting = ({ params }) => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
-    setTitle('Sign with ' + account.brandName);
+    setTitle(
+      t('page.signFooterBar.qrcode.signWith', { brand: account.brandName })
+    );
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
@@ -140,7 +144,7 @@ const QRHardWareWaiting = ({ params }) => {
           const signingTx = await wallet.getSigningTx(signingTxId);
 
           if (!signingTx?.explain) {
-            setErrorMessage('Failed to get explain');
+            setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
             return;
           }
 
@@ -194,16 +198,16 @@ const QRHardWareWaiting = ({ params }) => {
 
   const popupStatus = React.useMemo(() => {
     if (errorMessage) {
-      setContent('Transaction failed');
+      setContent(t('page.signFooterBar.qrcode.txFailed'));
       return 'FAILED';
     }
 
     if (status === QRHARDWARE_STATUS.RECEIVED) {
-      setContent('Signature received');
+      setContent(t('page.signFooterBar.qrcode.sigReceived'));
       return 'SUBMITTING';
     }
     if (status === QRHARDWARE_STATUS.DONE) {
-      setContent('Signature completed');
+      setContent(t('page.signFooterBar.qrcode.sigCompleted'));
       return 'RESOLVED';
     }
     if ([QRHARDWARE_STATUS.SIGN, QRHARDWARE_STATUS.SYNC].includes(status)) {

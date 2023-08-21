@@ -2,6 +2,7 @@ import React, { useMemo, ReactNode } from 'react';
 import { message } from 'antd';
 import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
+import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
@@ -124,6 +125,7 @@ const AddressMark = ({
   const chainId = chain.serverId;
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const handleEditMark = () => {
     userDataDrawer({
       address: address,
@@ -200,7 +202,9 @@ const AddressMark = ({
               <div>
                 <div className="flex gap-4">
                   <img src={IconSuccess} alt="" />
-                  <div className="text-white">Mark removed</div>
+                  <div className="text-white">
+                    {t('page.signTx.markRemoved')}
+                  </div>
                 </div>
               </div>
             ),
@@ -214,9 +218,9 @@ const AddressMark = ({
   return (
     <AddressMarkWrapper onClick={handleEditMark}>
       <span className="mr-6">
-        {onWhitelist && 'Trusted'}
-        {onBlacklist && 'Blocked'}
-        {!onBlacklist && !onWhitelist && 'No mark'}
+        {onWhitelist && t('page.signTx.trusted')}
+        {onBlacklist && t('page.signTx.blocked')}
+        {!onBlacklist && !onWhitelist && t('page.signTx.noMark')}
       </span>
       <img src={IconEdit} className="icon-edit-alias icon" />
     </AddressMarkWrapper>
@@ -256,12 +260,13 @@ const TokenLabel = ({
   isScam: boolean;
   isFake: boolean;
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-4 shrink-0 relative">
       {isFake && (
         <TooltipWithMagnetArrow
           overlayClassName="rectangle w-[max-content]"
-          title="This is a scam token marked by Rabby"
+          title={t('page.signTx.fakeTokenAlert')}
         >
           <img src={IconFake} className="icon icon-fake w-12" />
         </TooltipWithMagnetArrow>
@@ -269,7 +274,7 @@ const TokenLabel = ({
       {isScam && (
         <TooltipWithMagnetArrow
           overlayClassName="rectangle w-[max-content]"
-          title="This is potentially a low-quality and scam token based on Rabby's detection"
+          title={t('page.signTx.scamTokenAlert')}
         >
           <img src={IconScam} className="icon icon-scam w-14" />
         </TooltipWithMagnetArrow>
@@ -290,6 +295,7 @@ const Address = ({
   chain?: Chain;
   iconWidth?: string;
 }) => {
+  const { t } = useTranslation();
   const handleClickContractId = () => {
     if (!chain) return;
     openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
@@ -309,7 +315,7 @@ const Address = ({
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{address}</div>
           </div>
@@ -369,16 +375,18 @@ const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
 };
 
 const Interacted = ({ value }: { value: boolean }) => {
+  const { t } = useTranslation();
   return (
     <span className="flex">
       {value ? (
         <>
-          <img src={IconInteracted} className="mr-4 w-14" /> Interacted before
+          <img src={IconInteracted} className="mr-4 w-14" />{' '}
+          {t('page.signTx.interacted')}
         </>
       ) : (
         <>
-          <img src={IconNotInteracted} className="mr-4 w-14" /> Never interacted
-          before
+          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
+          {t('page.signTx.neverInteracted')}
         </>
       )}
     </span>
@@ -386,16 +394,18 @@ const Interacted = ({ value }: { value: boolean }) => {
 };
 
 const Transacted = ({ value }: { value: boolean }) => {
+  const { t } = useTranslation();
   return (
     <span className="flex">
       {value ? (
         <>
-          <img src={IconInteracted} className="mr-4 w-14" /> Transacted before
+          <img src={IconInteracted} className="mr-4 w-14" />{' '}
+          {t('page.signTx.transacted')}
         </>
       ) : (
         <>
-          <img src={IconNotInteracted} className="mr-4 w-14" /> Never transacted
-          before
+          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
+          {t('page.signTx.neverTransacted')}
         </>
       )}
     </span>

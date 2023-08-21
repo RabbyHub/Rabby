@@ -2,6 +2,7 @@ import React from 'react';
 import { TokenButton } from './components/TokenButton';
 import { useRabbySelector } from '@/ui/store';
 import useSortToken from '@/ui/hooks/useSortTokens';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   onClickLink: () => void;
@@ -13,13 +14,14 @@ export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
     isTestnet ? store.account.testnetTokens : store.account.tokens
   );
   const list = useSortToken(blocked);
+  const { t } = useTranslation();
 
   return (
     <TokenButton
-      label="blocked"
+      label={t('page.dashboard.tokenDetail.blockedButton')}
       tokens={list}
-      linkText="Search address to block token"
-      description="Token blocked by you will be shown here"
+      linkText={t('page.dashboard.assets.blockLinkText')}
+      description={t('page.dashboard.assets.blockDescription')}
       onClickLink={onClickLink}
       hiddenSubTitle
     />

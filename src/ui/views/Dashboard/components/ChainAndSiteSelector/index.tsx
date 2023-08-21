@@ -32,6 +32,7 @@ import { useRabbySelector } from '@/ui/store';
 import FeedbackPopup from '../Feedback';
 import { GasPriceBar } from '../GasPriceBar';
 import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
+import { useTranslation } from 'react-i18next';
 
 export default ({
   gnosisPendingCount,
@@ -53,6 +54,7 @@ export default ({
   gnosisPendingCount?: number;
   setDashboardReload(): void;
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
@@ -157,38 +159,44 @@ export default ({
     disabled?: boolean;
     commingSoonBadge?: boolean;
     disableReason?: string;
+    eventKey: string;
   };
 
   const panelItems = {
     swap: {
       icon: IconSwap,
-      content: 'Swap',
+      eventKey: 'Swap',
+      content: t('page.dashboard.home.panel.swap'),
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
       },
     } as IPanelItem,
     send: {
       icon: IconSendToken,
-      content: 'Send',
+      eventKey: 'Send',
+      content: t('page.dashboard.home.panel.send'),
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
     receive: {
       icon: IconReceive,
-      content: 'Receive',
+      eventKey: 'Receive',
+      content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
         setIsShowReceiveModal(true);
       },
     } as IPanelItem,
     gasTopUp: {
       icon: IconGasTopUp,
-      content: 'Gas Top Up',
+      eventKey: 'Gas Top Up',
+      content: t('page.dashboard.home.panel.gasTopUp'),
       onClick: () => {
         history.push('/gas-top-up');
       },
     } as IPanelItem,
     queue: {
       icon: IconQuene,
-      content: 'Queue',
+      eventKey: 'Queue',
+      content: t('page.dashboard.home.panel.queue'),
       badge: gnosisPendingCount,
       onClick: () => {
         history.push('/gnosis-queue');
@@ -196,14 +204,16 @@ export default ({
     } as IPanelItem,
     transactions: {
       icon: IconTransactions,
-      content: 'Transactions',
+      eventKey: 'Transactions',
+      content: t('page.dashboard.home.panel.transactions'),
       onClick: () => {
         history.push('/history');
       },
     } as IPanelItem,
     security: {
       icon: IconSecurity,
-      content: 'Approvals',
+      eventKey: 'Approvals',
+      content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
         // history.push('/popup/approval-manage');
         if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
@@ -218,24 +228,28 @@ export default ({
     } as IPanelItem,
     feedback: {
       icon: IconFeedback,
-      content: 'Feedback',
+      eventKey: 'Feedback',
+      content: t('page.dashboard.home.panel.feedback'),
       onClick: showFeedbackModal,
     } as IPanelItem,
     more: {
       icon: IconMoreSettings,
-      content: 'More',
+      eventKey: 'More',
+      content: t('page.dashboard.home.panel.more'),
       onClick: toggleShowMoreSettings,
     } as IPanelItem,
     address: {
       icon: IconAddresses,
-      content: 'Manage Address',
+      eventKey: 'Manage Address',
+      content: t('page.dashboard.home.panel.manageAddress'),
       onClick: () => {
         history.push('/settings/address');
       },
     } as IPanelItem,
     nft: {
       icon: IconNFT,
-      content: 'NFT',
+      eventKey: 'NFT',
+      content: t('page.dashboard.home.panel.nft'),
       onClick: () => {
         history.push('/nft');
       },
@@ -290,7 +304,9 @@ export default ({
             return item.disabled ? (
               <Tooltip
                 {...(item.commingSoonBadge && { visible: false })}
-                title={item.disableReason || 'Coming soon'}
+                title={
+                  item.disableReason || t('page.dashboard.home.comingSoon')
+                }
                 overlayClassName="rectangle direction-tooltip"
                 autoAdjustOverflow={false}
               >
@@ -306,7 +322,7 @@ export default ({
                   matomoRequestEvent({
                     category: 'Dashboard',
                     action: 'clickEntry',
-                    label: item.content,
+                    label: item.eventKey,
                   });
                   item?.onClick(evt);
                 }}
@@ -333,7 +349,9 @@ export default ({
                 )}
                 <div>{item.content} </div>
                 {item.commingSoonBadge && (
-                  <div className="coming-soon-badge">Soon</div>
+                  <div className="coming-soon-badge">
+                    {t('page.dashboard.home.soon')}
+                  </div>
                 )}
               </div>
             );

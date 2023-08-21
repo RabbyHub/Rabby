@@ -8,6 +8,7 @@ import { splitNumberByStep, useCommonPopupView } from '@/ui/utils';
 import { Popup } from '@/ui/component';
 import { TokenTable } from './components/TokenTable';
 import { TokenListEmpty } from './TokenListEmpty';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   className?: string;
@@ -15,6 +16,7 @@ export interface Props {
 }
 
 export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
+  const { t } = useTranslation();
   const totalValue = React.useMemo(() => {
     return list
       ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
@@ -41,7 +43,11 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         onClick={() => setVisible(true)}
       >
         <LowValueSVG className="mr-12" />
-        <div className="font-medium">{list?.length} low value assets</div>
+        <div className="font-medium">
+          {t('page.dashboard.assets.table.lowValueAssets', {
+            count: list?.length,
+          })}
+        </div>
         <LowValueArrowSVG />
       </div>
       <div className="text-13 text-gray-title font-medium">
@@ -51,7 +57,9 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
       <Popup
         title={
           <div className="font-medium text-20">
-            {list?.length} low value assets
+            {t('page.dashboard.assets.table.lowValueAssets', {
+              count: list?.length,
+            })}
           </div>
         }
         height={494}

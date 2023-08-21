@@ -9,6 +9,7 @@ import { Popup, PageHeader } from 'ui/component';
 import { isValidateUrl } from 'ui/utils/url';
 import { RPCItem } from '@/background/service/rpc';
 import { findChainByEnum } from '@/utils/chain';
+import { useTranslation } from 'react-i18next';
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -69,13 +70,14 @@ const EditRPCModal = ({
   const canSubmit = useMemo(() => {
     return rpcUrl && !rpcErrorMsg && !isValidating;
   }, [rpcUrl, rpcErrorMsg, isValidating]);
+  const { t } = useTranslation();
 
   const inputRef = useRef<Input>(null);
 
   const handleRPCChanged = (url: string) => {
     setRpcUrl(url);
     if (!isValidateUrl(url)) {
-      setRpcErrorMsg('Invalid RPC URL');
+      setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidRPCUrl'));
     }
   };
 
@@ -90,13 +92,13 @@ const EditRPCModal = ({
       const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
       setIsValidating(false);
       if (!isValid) {
-        setRpcErrorMsg('Invalid Chain ID');
+        setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidChainId'));
       } else {
         setRpcErrorMsg('');
       }
     } catch (e) {
       setIsValidating(false);
-      setRpcErrorMsg('RPC authentication failed');
+      setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
     }
   };
 
@@ -134,7 +136,7 @@ const EditRPCModal = ({
     >
       <EditRPCWrapped>
         <PageHeader forceShowBack onBack={onCancel} className="pt-0">
-          Edit RPC
+          {t('page.customRpc.EditRPCModal.title')}
         </PageHeader>
         <div className="text-center">
           <img
@@ -144,13 +146,15 @@ const EditRPCModal = ({
           <div className="mb-8 text-20 text-gray-title leading-none">
             {chainItem?.name}
           </div>
-          <div className="mb-8 text-14 text-gray-title text-left">RPC URL</div>
+          <div className="mb-8 text-14 text-gray-title text-left">
+            {t('page.customRpc.EditRPCModal.rpcUrl')}
+          </div>
         </div>
         <Input
           ref={inputRef}
           className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
           value={rpcUrl}
-          placeholder="Enter the RPC URL"
+          placeholder={t('page.customRpc.EditRPCModal.rpcUrlPlaceholder')}
           onChange={(e) => handleRPCChanged(e.target.value)}
         />
         {rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>}
@@ -162,7 +166,7 @@ const EditRPCModal = ({
             ghost
             onClick={onCancel}
           >
-            Cancel
+            {t('global.Cancel')}
           </Button>
           <Button
             type="primary"
@@ -172,7 +176,7 @@ const EditRPCModal = ({
             disabled={!canSubmit}
             onClick={() => onConfirm(rpcUrl)}
           >
-            {isValidating ? 'Loading' : 'Save'}
+            {isValidating ? t('global.Loading') : t('global.Save')}
           </Button>
         </Footer>
       </EditRPCWrapped>

@@ -38,7 +38,7 @@ const LedgerConnectMethod = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: t('Connect Ledger'),
+        title: t('page.newAddress.ledger.title'),
         center: true,
       }}
       headerClassName="mb-40"
@@ -49,9 +49,9 @@ const LedgerConnectMethod = () => {
     >
       <div className="w-[300px]">
         <ul>
-          <li>Plug in a single Ledger</li>
-          <li>Enter pin to unlock</li>
-          <li>Open Ethereum App</li>
+          <li>{t('page.dashboard.hd.ledger.doc1')}</li>
+          <li>{t('page.dashboard.hd.ledger.doc2')}</li>
+          <li>{t('page.dashboard.hd.ledger.doc3')}</li>
         </ul>
         <img src="/images/ledger-plug.png" className="ledger-plug" />
       </div>

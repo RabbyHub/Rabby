@@ -138,8 +138,8 @@ export const StrayPageWithButton = ({
             nextLoading={nextLoading}
             hasBack={hasBack}
             hasDivider={hasDivider}
-            BackButtonContent={t('Back')}
-            NextButtonContent={NextButtonContent || t('Next')}
+            BackButtonContent={t('global.back')}
+            NextButtonContent={NextButtonContent || t('global.next')}
             className="z-10 footer"
           />
         </Form>
@@ -175,8 +175,8 @@ export const StrayPageWithButton = ({
           nextLoading={nextLoading}
           hasBack={hasBack}
           hasDivider={hasDivider}
-          BackButtonContent={t('Back')}
-          NextButtonContent={NextButtonContent || t('Next')}
+          BackButtonContent={t('global.back')}
+          NextButtonContent={NextButtonContent || t('global.next')}
           className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform z-10"
         />
       </Form>

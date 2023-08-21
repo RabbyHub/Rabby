@@ -70,7 +70,7 @@ export const ConfirmDrawer = ({
               ? undefined
               : false
           }
-          title={t('Insufficient balance')}
+          title={t('page.gasTopUp.InsufficientBalanceTips')}
         >
           <div
             key={item.id}
@@ -126,7 +126,7 @@ export const ConfirmDrawer = ({
     >
       <div className="relative w-full bg-white">
         <div className="text-20 font-medium text-center text-gray-title ">
-          {t('Gas Top Up Payment')}
+          {t('page.gasTopUp.payment')}
         </div>
         <div className="absolute top-1/2 -translate-y-1/2  right-[20px]">
           <IconClose className="cursor-pointer" onClick={onClose} />
@@ -144,7 +144,7 @@ export const ConfirmDrawer = ({
         </div>
         <div className="flex items-center">
           <span className="text-12 text-gray-content mr-4">
-            {t('Including service fee', {
+            {t('page.gasTopUp.Including-service-fee', {
               fee: new BigNumber(cost).times(0.2).toString(10),
             })}
           </span>
@@ -152,7 +152,7 @@ export const ConfirmDrawer = ({
           <Tooltip
             overlayClassName={clsx('rectangle max-w-[360px] left-[20px]')}
             placement="bottom"
-            title={t('service fee tip')}
+            title={t('page.gasTopUp.service-fee-tip')}
           >
             <IconInfo />
           </Tooltip>
@@ -166,7 +166,9 @@ export const ConfirmDrawer = ({
           }}
         >
           <div className="text-gray-title text-14">
-            {t(token ? 'Payment Token' : 'Select payment token')}
+            {token
+              ? t('page.gasTopUp.Payment-Token')
+              : t('page.gasTopUp.Select-payment-token')}
           </div>
           <div className="flex items-center ">
             {token ? (
@@ -192,7 +194,7 @@ export const ConfirmDrawer = ({
           onClick={onConfirm}
           disabled={!token}
         >
-          {t('Confirm')}
+          {t('page.gasTopUp.Confirm')}
         </Button>
       </div>
 
@@ -221,15 +223,15 @@ export const ConfirmDrawer = ({
                 onClick={() => setTokenModalVisible(false)}
               />
               <div className="text-20 font-medium text-center text-gray-title ">
-                {t('Select from supported tokens')}
+                {t('page.gasTopUp.Select-from-supported-tokens')}
               </div>
             </div>
             <div className="px-20">
               <div className="flex justify-between border-b-[0.5px] border-gray-divider text-12 text-gray-subTitle pt-[24px] pb-8">
                 <div>
-                  {t('Token')} / {t('Balance')}
+                  {t('page.gasTopUp.Token')} / {t('page.gasTopUp.Balance')}
                 </div>
-                <div>{t('Value')}</div>
+                <div>{t('page.gasTopUp.Value')}</div>
               </div>
             </div>
           </div>
@@ -237,7 +239,7 @@ export const ConfirmDrawer = ({
             {!loading && list.length === 0 && (
               <Empty className="pt-[80px]">
                 <div className="text-14 text-gray-subTitle mb-12">
-                  {t('No Tokens')}
+                  {t('page.gasTopUp.No_Tokens')}
                 </div>
               </Empty>
             )}
@@ -247,7 +249,7 @@ export const ConfirmDrawer = ({
                   className="animate-spin"
                   fill="var(--brand-default, #7084ff)"
                 />
-                <div className="mt-12">{t('Loading Tokens')}</div>
+                <div className="mt-12">{t('page.gasTopUp.Loading_Tokens')}</div>
               </div>
             )}
 

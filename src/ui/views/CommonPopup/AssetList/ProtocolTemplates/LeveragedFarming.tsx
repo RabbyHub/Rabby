@@ -3,15 +3,16 @@ import Card from '../components/Card';
 import PortfolioHeader from '../components/PortfolioHeader';
 import { TokenList, Supplements } from '../components/PortfolioDetail';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
+import { useTranslation } from 'react-i18next';
 
 export default React.memo(
   ({ name, data }: { name: string; data: AbstractPortfolio }) => {
     const portfolio = data._originPortfolio;
-
+    const { t } = useTranslation();
     const debtRatio = portfolio.detail.debt_ratio;
     const supplements = [
       !!debtRatio && {
-        label: 'Debt Ratio',
+        label: t('page.dashboard.assets.table.debtRatio'),
         content: debtRatio.toFixed(2),
       },
     ];

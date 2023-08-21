@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { TokenItem } from 'background/service/openapi';
 import { formatTokenAmount } from '@/ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { Trans, useTranslation } from 'react-i18next';
 
 const GasReservedDiv = styled.div`
   font-weight: 400;
@@ -32,13 +33,23 @@ interface GasReservedProps {
 }
 
 const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
+  const { t } = useTranslation();
+
   return (
     <GasReservedDiv>
-      Reserved{' '}
-      <TokenAmount title={amount} onClick={onClickAmount}>
-        {formatTokenAmount(amount, 4)}
-      </TokenAmount>
-      {getTokenSymbol(token)} for gas cost
+      <Trans
+        i18nKey="page.sendTokenComponents.GasReserved"
+        values={{
+          tokenName: getTokenSymbol(token),
+        }}
+        t={t}
+      >
+        Reserved
+        <TokenAmount title={amount} onClick={onClickAmount}>
+          {formatTokenAmount(amount, 4)}
+        </TokenAmount>
+        {getTokenSymbol(token)} for gas cost
+      </Trans>
     </GasReservedDiv>
   );
 };

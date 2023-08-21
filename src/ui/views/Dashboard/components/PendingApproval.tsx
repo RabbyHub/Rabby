@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import styled from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { useWallet } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 const Overlay = styled.div`
   width: 100vw;
@@ -69,23 +70,28 @@ const PendingApproval = ({
     await wallet.rejectAllApprovals();
     onRejectAll();
   };
+  const { t } = useTranslation();
 
   return (
     <Overlay>
       <Inner>
         <TextContent>
           <NumberText>{count}</NumberText>{' '}
-          {count === 1 ? 'transaction needs' : 'transactions need'} to sign
+          {count === 1
+            ? t('page.dashboard.home.transactionNeedsToSign')
+            : t('page.dashboard.home.transactionsNeedToSign')}
         </TextContent>
         <Button
           className="w-[200px] h-[40px] rounded"
           type="primary"
           onClick={handleActiveApproval}
         >
-          {count === 1 ? 'View' : 'View first one'}
+          {count === 1
+            ? t('page.dashboard.home.view')
+            : t('page.dashboard.home.viewFirstOne')}
         </Button>
         <RejectAllButton href="#" onClick={handleOnRejectAll}>
-          Reject All
+          {t('page.dashboard.home.rejectAll')}
         </RejectAllButton>
       </Inner>
     </Overlay>

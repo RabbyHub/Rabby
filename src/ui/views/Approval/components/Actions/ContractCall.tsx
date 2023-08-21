@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
@@ -64,6 +65,7 @@ const ContractCall = ({
   onChange(tx: Record<string, any>): void;
 }) => {
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
   const { contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
   });
@@ -92,7 +94,7 @@ const ContractCall = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -103,18 +105,18 @@ const ContractCall = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore
@@ -133,7 +135,7 @@ const ContractCall = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Operation</Row>
+          <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
           <Row>
             <div className="relative flex items-center">
               {requireData.call.func || '-'}
@@ -141,8 +143,8 @@ const ContractCall = ({
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   requireData.call.func
-                    ? 'Operation is decoded from ABI'
-                    : 'Operation is not decoded'
+                    ? t('page.signTx.contractCall.operationABIDesc')
+                    : t('page.signTx.contractCall.operationCantDecode')
                 }
               >
                 <img src={IconQuestionMark} className="w-12 ml-6" />
@@ -152,7 +154,11 @@ const ContractCall = ({
         </Col>
         {new BigNumber(requireData.payNativeTokenAmount).gt(0) && (
           <Col>
-            <Row isTitle>Pay {requireData.nativeTokenSymbol}</Row>
+            <Row isTitle>
+              {t('page.signTx.contractCall.payNativeToken', {
+                symbol: requireData.nativeTokenSymbol,
+              })}
+            </Row>
             {
               <Row>
                 {formatTokenAmount(

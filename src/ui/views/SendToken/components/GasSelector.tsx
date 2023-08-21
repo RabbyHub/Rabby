@@ -2,12 +2,13 @@ import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
 import { Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import Popup from 'ui/component/Popup';
 import { GasLevel, TokenItem } from 'background/service/openapi';
 import { formatTokenAmount } from 'ui/utils/number';
 import styled from 'styled-components';
 import { BigNumber } from 'bignumber.js';
+import { getGasLevelI18nKey } from '@/ui/utils/trans';
 
 interface GasSelectorProps {
   chainId: number;
@@ -125,7 +126,8 @@ const GasSelector = ({
   return (
     <Popup
       height={400}
-      title="Set Gas Price (Gwei)"
+      // Set Gas Price (Gwei)
+      title={t('page.sendToken.GasSelector.popupTitle')}
       visible={visible}
       onClose={onClose}
       placement="bottom"
@@ -133,8 +135,9 @@ const GasSelector = ({
       closable={false}
     >
       <Description>
-        The gas cost will be reserved from the transfer amount based on the gas
-        price you set
+        {/* The gas cost will be reserved from the transfer amount based on the gas
+        price you set */}
+        {t('page.sendToken.GasSelector.popupDesc')}
       </Description>
       <div className="gas-selector gray-section-block">
         <div className="top">
@@ -163,7 +166,9 @@ const GasSelector = ({
               })}
               onClick={(e) => panelSelection(e, item)}
             >
-              <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+              <div className="gas-level">
+                {t(getGasLevelI18nKey(item.level))}
+              </div>
               <div
                 className={clsx('cardTitle', {
                   'custom-input': item.level === 'custom',
@@ -198,7 +203,8 @@ const GasSelector = ({
           className="w-[200px]"
           onClick={handleConfirmGas}
         >
-          {t('Confirm')}
+          {/* Confirm */}
+          {t('page.sendToken.GasSelector.confirm')}
         </Button>
       </Footer>
     </Popup>

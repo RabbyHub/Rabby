@@ -82,12 +82,12 @@ const AddressItem = memo(
     }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
-        return t(KEYRING_TYPE_TEXT[type]);
+        return KEYRING_TYPE_TEXT[type];
       }
       if (WALLET_BRAND_CONTENT[brandName]) {
         return (
           <Trans
-            i18nKey="addressTypeTip"
+            i18nKey="page.manageAddress.addressTypeTip"
             values={{
               type: WALLET_BRAND_CONTENT[brandName].name,
             }}
@@ -128,7 +128,7 @@ const AddressItem = memo(
         ]);
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: t('Deleted'),
+          content: t('page.manageAddress.deleted'),
           duration: 0.5,
         });
       }
@@ -251,7 +251,7 @@ const AddressItem = memo(
                           <Tooltip
                             overlayClassName="rectangle"
                             placement="top"
-                            title={'Whitelisted address'}
+                            title={t('page.manageAddress.whitelisted-address')}
                           >
                             <img
                               src={IconWhitelist}

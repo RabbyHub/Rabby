@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import {
   CHAINS,
@@ -34,6 +35,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   const wallet = useWallet();
   const { setTitle, setVisible, closePopup } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const { t } = useTranslation();
   const { type } = params;
   const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
     .map((key) => HARDWARE_KEYRING_TYPES[key])
@@ -61,7 +63,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.requestKeyring(account?.type || '', 'resend', null);
-    message.success('Resent');
+    message.success(t('page.signFooterBar.ledger.resent'));
   };
 
   const handleCancel = () => {
@@ -98,7 +100,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         const signingTx = await wallet.getSigningTx(signingTxId);
 
         if (!signingTx?.explain) {
-          setErrorMessage('Failed to get explain');
+          setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
 
@@ -166,8 +168,15 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   React.useEffect(() => {
-    setTitle(`Sign with ${brandName}`);
-    init();
+    (async () => {
+      const account = params.isGnosis
+        ? params.account!
+        : (await wallet.syncGetCurrentAccount())!;
+      setTitle(
+        t('page.signFooterBar.qrcode.signWith', { brand: account.brandName })
+      );
+      init();
+    })();
   }, []);
 
   React.useEffect(() => {
@@ -187,17 +196,17 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setStatusProp('SENDING');
-        setContent('Sending signing request...');
+        setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILD:
         setStatusProp('REJECTED');
-        setContent('Transaction rejected');
+        setContent(t('page.signFooterBar.ledger.txRejected'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SIBMITTED:
         setStatusProp('RESOLVED');
-        setContent('Signature completed');
+        setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
         break;
       default:
@@ -206,7 +215,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [connectStatus, errorMessage]);
 
   if (!brandContent) {
-    throw new Error(`${brandName} is not supported`);
+    throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
   }
 
   return (

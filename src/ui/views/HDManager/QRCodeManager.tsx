@@ -14,6 +14,7 @@ import { useAsyncRetry } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   brand?: string;
@@ -76,12 +77,13 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       return;
     }
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
+  const { t } = useTranslation();
 
   const openSwitchHD = React.useCallback(async () => {
     Modal.error({
-      title: `Switch to a new ${brand} device`,
-      content: `It's not supported to import multiple ${brand} devices If you switch to a new ${brand} device, the current device's address list will be removed before starting the import process.`,
-      okText: 'Confirm',
+      title: t('page.newAddress.hd.qrCode.switch.title', [brand]),
+      content: t('page.newAddress.hd.qrCode.switch.content', [brand]),
+      okText: t('global.confirm'),
       onOk: async () => {
         await Promise.all(
           currentAccountsRef.current?.map(async (account) =>
@@ -109,11 +111,15 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       <div className="toolbar">
         <div className="toolbar-item" onClick={openSwitchHD}>
           <HardwareSVG className="icon" />
-          <span className="title">Switch to another {brand}</span>
+          <span className="title">
+            {t('page.newAddress.hd.qrCode.switchAnother', [brand])}
+          </span>
         </div>
         <div className="toolbar-item" onClick={openAdvanced}>
           <SettingSVG className="icon" />
-          <span className="title">Advanced Settings</span>
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
         </div>
       </div>
 
@@ -127,7 +133,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       <Modal
         destroyOnClose
         className="AdvancedModal"
-        title="Custom Address HD path"
+        title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered
         width={840}

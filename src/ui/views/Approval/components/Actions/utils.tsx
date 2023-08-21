@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { WalletControllerType, isSameAddress, useWallet } from '@/ui/utils';
 import {
   ExplainTxResponse,
@@ -37,7 +38,7 @@ import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { isTestnet } from '@/utils/chain';
-import { findChainByID, findChainByServerID } from '@/utils/chain';
+import { findChainByServerID } from '@/utils/chain';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -1334,59 +1335,61 @@ export const useUserData = () => {
 };
 
 export const getActionTypeText = (data: ParsedActionData) => {
+  const t = i18n.t;
+
   if (data.swap) {
-    return 'Swap Token';
+    return t('page.signTx.swap.title');
   }
   if (data.crossToken) {
-    return 'Cross Chain';
+    return t('page.signTx.crossChain.title');
   }
   if (data.crossSwapToken) {
-    return 'Swap Token and Cross Chain';
+    return t('page.signTx.swapAndCross.title');
   }
   if (data.wrapToken) {
-    return 'Wrap Token';
+    return t('page.signTx.wrapToken');
   }
   if (data.unWrapToken) {
-    return 'Unwrap Token';
+    return t('page.signTx.unwrap');
   }
   if (data.send) {
-    return 'Send Token';
+    return t('page.signTx.send.title');
   }
   if (data.approveToken) {
-    return 'Token Approval';
+    return t('page.signTx.tokenApprove.title');
   }
   if (data.revokeToken) {
-    return 'Revoke Token Approval';
+    return t('page.signTx.revokeTokenApprove.title');
   }
   if (data.sendNFT) {
-    return 'Send NFT';
+    return t('page.signTx.sendNFT.title');
   }
   if (data.approveNFT) {
-    return 'NFT Approval';
+    return t('page.signTx.nftApprove.title');
   }
   if (data.revokeNFT) {
-    return 'Revoke NFT Approval';
+    return t('page.signTx.revokeNFTApprove.title');
   }
   if (data.approveNFTCollection) {
-    return 'NFT Collection Approval';
+    return t('page.signTx.nftCollectionApprove.title');
   }
   if (data.revokeNFTCollection) {
-    return 'Revoke NFT Collection Approval';
+    return t('page.signTx.revokeNFTCollectionApprove.title');
   }
   if (data.deployContract) {
-    return 'Deploy a Contract';
+    return t('page.signTx.deployContract.title');
   }
   if (data.cancelTx) {
-    return 'Cancel Pending Transaction';
+    return t('page.signTx.cancelTx.title');
   }
   if (data.pushMultiSig) {
-    return 'Submit Multisig Transaction';
+    return t('page.signTx.submitMultisig.title');
   }
   if (data.contractCall) {
-    return 'Contract Call';
+    return t('page.signTx.contractCall.title');
   }
   if (data.revokePermit2) {
-    return 'Revoke Permit2 Token Approval';
+    return t('page.signTx.revokePermit2.title');
   }
-  return 'Unknown';
+  return t('page.signTx.unknownAction');
 };

@@ -614,7 +614,7 @@ class ProviderController extends BaseController {
         const errMsg = e.message || JSON.stringify(e);
         notification.create(
           undefined,
-          i18n.t('Transaction push failed'),
+          i18n.t('background.error.txPushFailed'),
           errMsg
         );
         transactionHistoryService.removeSigningTx(signingTxId!);

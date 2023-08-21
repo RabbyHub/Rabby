@@ -30,10 +30,11 @@ const Unlock = () => {
       }
     },
     onError(err) {
+      console.log('error', err);
       form.setFields([
         {
           name: 'password',
-          errors: [err?.message || t('incorrect password')],
+          errors: [err?.message || t('page.unlock.password.error')],
         },
       ]);
     },
@@ -63,12 +64,12 @@ const Unlock = () => {
           rules={[
             {
               required: true,
-              message: t('Enter the Password to Unlock'),
+              message: t('page.unlock.password.required'),
             },
           ]}
         >
           <Input
-            placeholder={t('Enter the Password to Unlock')}
+            placeholder={t('page.unlock.password.placeholder')}
             size="large"
             type="password"
             ref={inputEl}
@@ -82,7 +83,7 @@ const Unlock = () => {
             type="primary"
             size="large"
           >
-            {t('Unlock')}
+            {t('page.unlock.btn.unlock')}
           </Button>
         </Form.Item>
       </Form>

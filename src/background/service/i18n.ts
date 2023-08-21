@@ -1,17 +1,18 @@
 import i18n from 'i18next';
 
 export const fetchLocale = async (locale) => {
-  const res = await window.fetch(`./_locales/${locale}/messages.json`);
+  const res = await window.fetch(`./locales/${locale}/messages.json`);
   const data: Record<
     string,
     { message: string; description: string }
   > = await res.json();
-  return Object.keys(data).reduce((res, key) => {
-    return {
-      ...res,
-      [key.replace(/__/g, ' ')]: data[key].message,
-    };
-  }, {});
+  return data;
+  // return Object.keys(data).reduce((res, key) => {
+  //   return {
+  //     ...res,
+  //     [key.replace(/__/g, ' ')]: data[key].message,
+  //   };
+  // }, {});
 };
 
 i18n.init({

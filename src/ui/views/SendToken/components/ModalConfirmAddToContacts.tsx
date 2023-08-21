@@ -50,6 +50,7 @@ const FormInputItem = styled(Form.Item)`
 
 interface ConfirmAddToContactsModalProps extends WrappedComponentProps {
   onFinished: (result: { contactAddrAdded: string }) => void;
+  initAddressNote?: string;
   addrToAdd: string;
   confirmText?: string;
   cancelText?: string;
@@ -62,6 +63,7 @@ function ModalConfirmAddToContacts({
   onFinished,
   onCancel,
   wallet,
+  initAddressNote,
   addrToAdd,
   cancelText,
   confirmText = 'Confirm',
@@ -71,6 +73,12 @@ function ModalConfirmAddToContacts({
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const inputRef = useRef<Input>(null);
+
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue({ addressNote: initAddressNote });
+    }
+  }, [initAddressNote, visible]);
 
   const handleSubmit = async ({ addressNote }: { addressNote: string }) => {
     try {
@@ -84,7 +92,12 @@ function ModalConfirmAddToContacts({
             className="icon icon-success w-[16px] h-[16px]"
           />
         ),
-        content: <span className="text-white">Added as contacts</span>,
+        // Added as contacts
+        content: (
+          <span className="text-white">
+            {t('page.sendToken.AddToContactsModal.addedAsContacts')}
+          </span>
+        ),
         duration: 3,
       });
 
@@ -94,7 +107,7 @@ function ModalConfirmAddToContacts({
       form.setFields([
         {
           name: 'addressNote',
-          errors: [e?.message || t('Failed to add to contacts')],
+          errors: [e?.message || t('page.sendToken.AddToContactsModal.error')],
         },
       ]);
     }
@@ -121,13 +134,25 @@ function ModalConfirmAddToContacts({
     >
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
-          label={t('Edit address note')}
+          // Edit address note
+          label={t('page.sendToken.AddToContactsModal.editAddressNote')}
           name="addressNote"
-          rules={[{ required: true, message: t('Please enter address note') }]}
+          // Please enter address note
+          rules={[
+            {
+              required: true,
+              message: t(
+                'page.sendToken.AddToContactsModal.editAddr.validator__empty'
+              ),
+            },
+          ]}
         >
           <Input
             className="popup-input"
-            placeholder={t('Enter Address Note')}
+            // Enter Address Note
+            placeholder={t(
+              'page.sendToken.AddToContactsModal.editAddr.placeholder'
+            )}
             type="text"
             size="large"
             autoFocus
@@ -151,7 +176,7 @@ function ModalConfirmAddToContacts({
                     <div>
                       <div className="flex gap-4 mb-4">
                         <img src={IconSuccess} alt="" />
-                        Copied
+                        {t('global.copied')}
                       </div>
                       <div className="text-white">{addrToAdd}</div>
                     </div>

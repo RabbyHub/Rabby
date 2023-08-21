@@ -1,12 +1,12 @@
 import React, { useMemo, useEffect } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
 import { formatAmount } from 'ui/utils/number';
-import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import ViewMore from './components/ViewMore';
@@ -54,6 +54,7 @@ const WrapToken = ({
     })
   );
   const dispatch = useRabbyDispatch();
+  const { t } = useTranslation();
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
@@ -91,7 +92,7 @@ const WrapToken = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Pay</Row>
+          <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
@@ -106,7 +107,7 @@ const WrapToken = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Receive</Row>
+          <Row isTitle>{t('page.signTx.swap.receiveToken')}</Row>
           <Row>
             <LogoWithText
               logo={receiveToken.logo_url}
@@ -133,21 +134,21 @@ const WrapToken = ({
         </Col>
         {engineResultMap['1092'] && (
           <Col>
-            <Row isTitle>Receiver</Row>
+            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <SecurityListItem
                   engineResult={engineResultMap['1092']}
                   id="1092"
-                  dangerText="Not the payment address"
+                  dangerText={t('page.signTx.swap.notPaymentAddress')}
                 />
               </ul>
             </Row>
           </Col>
         )}
         <Col>
-          <Row isTitle>Interact contract</Row>
+          <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
             <div>
               <Values.Address address={requireData.id} chain={chain} />
@@ -162,18 +163,18 @@ const WrapToken = ({
                 <Values.Interacted value={requireData.hasInteraction} />
               </li>
 
-              {isInWhitelist && <li>Marked as trusted</li>}
+              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
 
               <SecurityListItem
                 id="1135"
                 engineResult={engineResultMap['1135']}
-                forbiddenText="Marked as blocked"
+                forbiddenText={t('page.signTx.markAsBlock')}
               />
 
               <SecurityListItem
                 id="1137"
                 engineResult={engineResultMap['1137']}
-                warningText="Marked as blocked"
+                warningText={t('page.signTx.markAsBlock')}
               />
               <li>
                 <ViewMore

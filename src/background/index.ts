@@ -71,7 +71,7 @@ function initAppMeta() {
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';
-  description.content = i18n.t('appDescription');
+  description.content = i18n.t('global.appDescription');
   head?.appendChild(description);
 }
 
@@ -298,15 +298,6 @@ declare global {
     wallet: WalletController;
   }
 }
-
-storage
-  .byteInUse()
-  .then((byte) => {
-    stats.report('byteInUse', { value: byte });
-  })
-  .catch(() => {
-    // IGNORE
-  });
 
 function startEnableUser() {
   const time = preferenceService.getSendEnableTime();

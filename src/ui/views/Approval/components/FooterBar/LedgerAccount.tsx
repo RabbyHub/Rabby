@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { WALLET_BRAND_CONTENT } from '@/constant';
 import { CommonAccount } from './CommonAccount';
@@ -8,6 +9,7 @@ const LegerIcon = WALLET_BRAND_CONTENT.LEDGER.icon;
 
 export const LedgerAccount: React.FC = () => {
   const { status, onClickConnect } = useLedgerStatus();
+  const { t } = useTranslation();
 
   const signal = React.useMemo(() => {
     switch (status) {
@@ -25,18 +27,24 @@ export const LedgerAccount: React.FC = () => {
       case 'DISCONNECTED':
         return (
           <div className="flex justify-between w-full">
-            <div className="text-red-forbidden">Ledger is not connected</div>
+            <div className="text-red-forbidden">
+              {t('page.signFooterBar.ledgerNotConnected')}
+            </div>
             <div
               onClick={onClickConnect}
               className={clsx('underline cursor-pointer', 'text-13 text-black')}
             >
-              Connect
+              {t('page.signFooterBar.connectButton')}
             </div>
           </div>
         );
 
       default:
-        return <div className="text-black">Ledger is connected</div>;
+        return (
+          <div className="text-black">
+            {t('page.signFooterBar.ledgerConnected')}
+          </div>
+        );
     }
   };
 

@@ -12,6 +12,7 @@ import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CopyChecked } from '../CopyChecked';
+import { useTranslation } from 'react-i18next';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
@@ -84,6 +85,8 @@ const AccountItem = ({
     whiteList: s.whitelist.whitelist,
   }));
 
+  const { t } = useTranslation();
+
   const isInWhiteList = useMemo(() => {
     return whiteList.some((e) => isSameAddress(e, account.address));
   }, [whiteList, account.address]);
@@ -95,7 +98,7 @@ const AccountItem = ({
   };
   const handleClickItem = () => {
     if (disabled) {
-      message.error('This address is not whitelisted');
+      message.error(t('component.Contact.AddressItem.notWhitelisted'));
       return;
     }
 
@@ -123,7 +126,7 @@ const AccountItem = ({
               <Tooltip
                 overlayClassName="rectangle"
                 placement="top"
-                title={'Whitelisted address'}
+                title={t('component.Contact.AddressItem.whitelistedTip')}
               >
                 <img src={IconWhitelist} className={'w-14 h-14'} />
               </Tooltip>

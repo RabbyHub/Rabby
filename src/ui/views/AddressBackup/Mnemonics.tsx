@@ -33,7 +33,7 @@ const AddressBackup = () => {
     copyTextToClipboard(data).then(() => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
+        content: t('global.copied'),
         duration: 0.5,
       });
     });
@@ -59,13 +59,11 @@ const AddressBackup = () => {
             onClick={() => history.goBack()}
           />
         )}
-        Backup Seed Phrase
+        {t('page.backupSeedPhrase.title')}
       </header>
       <div className="alert mb-[34px]">
         <InfoCircleOutlined />
-        This Seed Phrase is the credential to your assets. DO NOT lose it or
-        reveal it to others, otherwise you might lose your assets forever.
-        Please view it in a secure environment and keep it carefully.
+        {t('page.backupSeedPhrase.alert')}
       </div>
       <div className="mb-[74px]">
         <div className="relative">
@@ -75,7 +73,7 @@ const AddressBackup = () => {
           >
             <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
             <p className="mt-[16px] mb-0 text-white">
-              {t('Click to show Seed Phrase')}
+              {t('page.backupSeedPhrase.clickToShow')}
             </p>
           </div>
           <div
@@ -95,7 +93,7 @@ const AddressBackup = () => {
           className={clsx('copy', masked ? 'invisible' : 'visible')}
         >
           <img src={IconCopy} />
-          {'Copy seed phrase'}
+          {t('page.backupSeedPhrase.copySeedPhrase')}
         </div>
       </div>
       <div className="footer pb-[24px]">
@@ -105,7 +103,7 @@ const AddressBackup = () => {
           className="w-[200px]"
           onClick={() => history.goBack()}
         >
-          Done
+          {t('global.Done')}
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Account } from '@/background/service/preference';
 import { Chain } from '@debank/common';
 
@@ -19,6 +20,7 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
   children,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-[12px] relative justify-end">
       {children}
@@ -33,7 +35,7 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
         )}
         onClick={onCancel}
       >
-        Cancel
+        {t('global.cancelButton')}
       </Button>
     </div>
   );

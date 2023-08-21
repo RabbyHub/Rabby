@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox } from 'ui/component';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -104,13 +105,15 @@ const UserListDrawer = ({
   visible,
   onClose,
 }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Popup
       visible={visible}
       onClose={onClose}
       height="340"
       closable
-      title="Manage whitelist/blacklist"
+      title={t('page.connect.manageWhiteBlackList')}
       className="user-list-drawer"
     >
       <GlobalStyle />
@@ -127,7 +130,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: false })}
         >
-          <div>No mark</div>
+          <div>{t('page.connect.noMark')}</div>
           <div>
             <Checkbox
               checked={!onWhitelist && !onBlacklist}
@@ -141,7 +144,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
-          <div className="text-green">Trusted</div>
+          <div className="text-green">{t('page.connect.trusted')}</div>
           <div>
             <Checkbox
               checked={onWhitelist}
@@ -155,7 +158,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
-          <div className="text-red">Blocked</div>
+          <div className="text-red">{t('page.connect.blocked')}</div>
           <div>
             <Checkbox
               checked={onBlacklist}

@@ -11,6 +11,7 @@ import WordsMatrix from '@/ui/component/WordsMatrix';
 import IconMnemonicInk from '@/ui/assets/walletlogo/mnemonic-ink.svg';
 import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
+import { useTranslation } from 'react-i18next';
 
 const Toptip = styled.div`
   background: var(--blue-light, #eef1ff);
@@ -64,7 +65,7 @@ const ImportMnemonics = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
-
+  const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   let keyringId: number | null;
 
@@ -103,7 +104,8 @@ const ImportMnemonics = () => {
           },
         ]);
         setErrMsgs([
-          err?.message || 'The seed phrase is invalid, please check!',
+          err?.message ||
+            t('page.newAddress.theSeedPhraseIsInvalidPleaseCheck'),
         ]);
       },
     }
@@ -163,11 +165,11 @@ const ImportMnemonics = () => {
             )}
           >
             <img className="w-[24px]" src={IconMnemonicInk} />
-            <span>Import Seed Phrase</span>
+            <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>
           <div>
             <Toptip className="mb-[28px]">
-              You can paste your entire secret recovery phrase in 1st field
+              {t('page.newAddress.seedPhrase.importTips')}
             </Toptip>
             <FormItemWrapper className="relative">
               <Form.Item
@@ -182,14 +184,23 @@ const ImportMnemonics = () => {
             </FormItemWrapper>
             <TipTextList>
               <section>
-                <h3>What is a Seed Phrase?</h3>
-                <p>A 12, 18, or 24-word phrase used to control your assets.</p>
+                <h3>
+                  {t('page.newAddress.seedPhrase.whatIsASeedPhrase.question')}
+                </h3>
+                <p>
+                  {t('page.newAddress.seedPhrase.whatIsASeedPhrase.answer')}
+                </p>
               </section>
               <section>
-                <h3>Is it safe to import it in Rabby?</h3>
+                <h3>
+                  {t(
+                    'page.newAddress.seedPhrase.isItSafeToImportItInRabby.question'
+                  )}
+                </h3>
                 <p className="whitespace-nowrap">
-                  Yes, it will be stored locally on your browser and only
-                  accessible to you.
+                  {t(
+                    'page.newAddress.seedPhrase.isItSafeToImportItInRabby.answer'
+                  )}
                 </p>
               </section>
             </TipTextList>
@@ -200,7 +211,7 @@ const ImportMnemonics = () => {
               type="primary"
               className="w-[210px] h-[44px] mt-[40px]"
             >
-              Confirm
+              {t('global.confirm')}
             </Button>
           </div>
         </Form>

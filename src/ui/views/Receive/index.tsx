@@ -24,6 +24,7 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { findChainByEnum } from '@/utils/chain';
+import { useTranslation } from 'react-i18next';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -61,11 +62,15 @@ const useAccount = () => {
 };
 
 const useReceiveTitle = (search: string) => {
+  const { t } = useTranslation();
   const qs = useMemo(() => query2obj(search), [search]);
   const chain = findChainByEnum(qs.chain)?.name || 'Ethereum';
-  const token = qs.token || 'assets';
+  const token = qs.token || t('global.assets');
 
-  return `Receive ${token} on ${chain}`;
+  return t('page.receive.title', {
+    chain,
+    token,
+  });
 };
 
 const Receive = () => {
@@ -82,6 +87,8 @@ const Receive = () => {
     history.location.search,
   ]);
   const chain = findChainByEnum(qs.chain)?.name ?? 'Ethereum';
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const clipboard = new ClipboardJS(ref.current!, {
@@ -108,7 +115,7 @@ const Receive = () => {
           <div>
             <div className="flex gap-4 mb-4">
               <img src={IconSuccess} alt="" />
-              Copied
+              {t('global.copied')}
             </div>
             <div className="text-white">{account.address}</div>
           </div>
@@ -155,9 +162,9 @@ const Receive = () => {
         <div>
           <img className="icon" src={IconWarning} alt="" />
           <div className="content">
-            This is a Watch Mode address.
+            {t('page.receive.watchModeAlert1')}
             <br />
-            Are you sure to use it to receive assets?
+            {t('page.receive.watchModeAlert2')}
           </div>
           <div className="footer">
             <Button
@@ -168,7 +175,7 @@ const Receive = () => {
                 history.goBack();
               }}
             >
-              Cancel
+              {t('global.Cancel')}
             </Button>
             <Button
               type="primary"
@@ -179,7 +186,7 @@ const Receive = () => {
                 modal.destroy();
               }}
             >
-              Confirm
+              {t('global.Confirm')}
             </Button>
           </div>
         </div>
@@ -223,7 +230,9 @@ const Receive = () => {
                   </div>
                 </div>
                 {account.type === KEYRING_CLASS.WATCH && (
-                  <div className="account-type">Watch Mode address</div>
+                  <div className="account-type">
+                    {t('global.watchModeAddress')}
+                  </div>
                 )}
               </div>
             </div>
@@ -247,7 +256,7 @@ const Receive = () => {
         <div className="qr-card-address">{account?.address}</div>
         <button type="button" className="qr-card-btn" ref={ref}>
           <img src={IconCopy} alt="" className="icon-copy" />
-          Copy address
+          {t('global.copyAddress')}
         </button>
       </div>
       <div className="page-receive-footer">

@@ -40,12 +40,12 @@ const VerifyMnemonics = () => {
     (values: { mnemonics: string[] }) => {
       const mnemonicsList = (values.mnemonics || []).filter(Boolean);
       if (!mnemonicsList || mnemonicsList.length <= 0) {
-        setErrMsg(t('Please select words'));
+        setErrMsg(t('page.newAddress.seedPhrase.pleaseSelectWords'));
         return;
       }
 
       if (mnemonicsList.join(' ') !== mnemonics) {
-        setErrMsg(t('Verification failed'));
+        setErrMsg(t('page.newAddress.seedPhrase.verificationFailed'));
         return;
       }
       wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
@@ -76,7 +76,7 @@ const VerifyMnemonics = () => {
           pathname: '/popup/import/success',
           state: {
             // accounts: newAccounts,
-            title: t('Created Successfully'),
+            title: t('page.newAddress.seedPhrase.createdSuccessfully'),
             editing: true,
           },
         });
@@ -104,10 +104,10 @@ const VerifyMnemonics = () => {
     >
       <header className="create-new-header create-mnemonics-header h-[80px] flex items-center justify-center flex-col padding-0">
         <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
-          {t('Verify Seed Phrase')}
+          {t('page.newAddress.seedPhrase.verifySeedPhrase')}
         </h2>
         <h3 className="text-14 mb-0 mt-4 text-white text-center font-normal">
-          {t('Fill in the backup seed phrase in order')}
+          {t('page.newAddress.seedPhrase.fillInTheBackupSeedPhraseInOrder')}
         </h3>
       </header>
       <div className="rabby-container">

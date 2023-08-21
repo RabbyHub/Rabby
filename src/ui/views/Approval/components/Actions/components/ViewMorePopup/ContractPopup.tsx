@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
@@ -27,6 +28,7 @@ export interface ContractPopupProps extends Props {
 }
 
 export const ContractPopup: React.FC<Props> = ({ data }) => {
+  const { t } = useTranslation();
   const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
   });
@@ -48,7 +50,7 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        {data.title || 'Interact contract'}{' '}
+        {data.title || t('page.signTx.interactContract')}{' '}
         <Values.Address
           address={data.address}
           chain={data.chain}
@@ -57,35 +59,42 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">Protocol</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Interacted before</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Deployed time</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.deployTimeTitle')}</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Popularity</Row>
-          <Row>{data.rank ? `No.${data.rank} on ${data.chain.name}` : '-'}</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.popularity')}</Row>
+          <Row>
+            {data.rank
+              ? t('page.signTx.contractPopularity', [
+                  data.rank,
+                  data.chain.name,
+                ])
+              : '-'}
+          </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">Address note</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">My mark</Row>
+          <Row className="bg-[#F6F8FF]">{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract
