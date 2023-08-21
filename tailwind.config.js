@@ -1,13 +1,11 @@
 const colors = require('tailwindcss/colors');
 
-const { themeColors } = require('./src/constant/theme-colors');
+const { themeColors, rabbyCssPrefix } = require('./src/constant/theme-colors');
 const rabbyColors = Object.entries(themeColors.light).reduce((accu, [cssvarKey, cssvarValue]) => {
-  const splitorIdx = cssvarKey.indexOf('-');
-  const group = cssvarKey.slice(0, splitorIdx);
-  const suffix = cssvarKey.slice(splitorIdx + 1);
-
-  accu[group] = accu[group] || {};
-  accu[group][suffix] = `var(--${cssvarKey}, ${cssvarValue})`;
+  // const splitorIdx = cssvarKey.indexOf('-');
+  // const group = cssvarKey.slice(0, splitorIdx);
+  // const suffix = cssvarKey.slice(splitorIdx + 1);
+  accu[cssvarKey] = `var(--${rabbyCssPrefix}${cssvarKey}, ${cssvarValue})`;
   return accu;
 }, {});
 
@@ -118,7 +116,7 @@ module.exports = {
     /** @notice configuration here would override the default config above */
     extend: {
       colors: {
-        ...rabbyColors,
+        [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors,
       }
     },
   },

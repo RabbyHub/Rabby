@@ -16,7 +16,7 @@ const ItemWrapper = styled.div<{
   py: number | string;
   //default white;
   bgColor: string;
-  //default var(--blue-light, #eef1ff);
+  //default var(--r-blue-light, #eef1ff);
   hoverBgColor: string;
 }>`
   width: 100%;
@@ -37,7 +37,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: var(--blue-default, #7084ff);
+            border-color: var(--r-blue-default, #7084ff);
           }
         `
       : ''}
@@ -60,7 +60,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   py?: number | string;
   //default white;
   bgColor?: string;
-  //default var(--blue-light, #eef1ff);
+  //default var(--r-blue-light, #eef1ff);
   hoverBgColor?: string;
   className?: string;
 
@@ -82,7 +82,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     px = 16,
     py = 16,
     bgColor = '#fff',
-    hoverBgColor = 'var(--blue-light, #eef1ff)',
+    hoverBgColor = 'var(--r-blue-light, #eef1ff)',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',

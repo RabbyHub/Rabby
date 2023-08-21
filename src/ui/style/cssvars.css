@@ -2,52 +2,54 @@
 /* this file is genetared automatically, never modify it manually! */
 :root {
   /* -------------------- base define -------------------- */
-  --rabby-light-blue-default: rgba(238, 241, 255, 1);
-  --rabby-light-blue-light: rgba(238, 241, 255, 0.1);
+  --rabby-light-blue-default: rgba(112, 132, 255, 1);
+  --rabby-light-blue-light-1: rgba(238, 241, 255, 1);
+  --rabby-light-blue-light-2: rgba(222, 227, 252, 1);
   --rabby-light-blue-disable: rgba(112, 132, 255, 0.5);
-  --rabby-light-green-default: #2abb7f;
-  --rabby-light-green-light: #2abb7f26;
-  --rabby-light-orange-default: #ffb020;
-  --rabby-light-orange-light: #ffb02026;
-  --rabby-light-red-default: #e34935;
-  --rabby-light-red-light: #e3493526;
-  --rabby-light-red-dark: #ae2a19;
-  --rabby-light-red-light-2: #ffdada;
-  --rabby-light-neutral-title-1: #192945;
-  --rabby-light-neutral-body: #3e495e;
-  --rabby-light-neutral-foot: #6a7587;
-  --rabby-light-neutral-line: #d3d8e0;
+  --rabby-light-green-default: rgba(42, 187, 127, 1);
+  --rabby-light-green-light: rgba(42, 187, 127, 0.15);
+  --rabby-light-orange-default: rgba(255, 176, 32, 1);
+  --rabby-light-orange-light: rgba(255, 176, 32, 0.15);
+  --rabby-light-red-default: rgba(227, 73, 53, 1);
+  --rabby-light-red-light: rgba(227, 73, 53, 0.15);
+  --rabby-light-red-dark: rgba(174, 42, 25, 1);
+  --rabby-light-red-light-2: rgba(174, 42, 25, 0.2);
+  --rabby-light-neutral-title-1: rgba(25, 41, 69, 1);
+  --rabby-light-neutral-body: rgba(62, 73, 94, 1);
+  --rabby-light-neutral-foot: rgba(106, 117, 135, 1);
+  --rabby-light-neutral-line: rgba(211, 216, 224, 1);
   --rabby-light-neutral-bg-1: #ffffff;
-  --rabby-light-neutral-bg-2: #f2f4f7;
-  --rabby-light-neutral-bg-3: #f7fafc;
+  --rabby-light-neutral-bg-2: rgba(242, 244, 247, 1);
+  --rabby-light-neutral-bg-3: rgba(247, 250, 252, 1);
   --rabby-light-neutral-card-1: #ffffff;
-  --rabby-light-neutral-card-2: #f2f4f7;
-  --rabby-light-neutral-title-2: #192945;
+  --rabby-light-neutral-card-2: rgba(242, 244, 247, 1);
+  --rabby-light-neutral-title-2: rgba(255, 255, 255, 1);
   --rabby-light-neutral-black: #000000;
 }
 
 html, body {
   /* -------------------- default light mode -------------------- */
-  --blue-default: var(--rabby-light-blue-default);
-  --blue-light: var(--rabby-light-blue-light);
-  --blue-disable: var(--rabby-light-blue-disable);
-  --green-default: var(--rabby-light-green-default);
-  --green-light: var(--rabby-light-green-light);
-  --orange-default: var(--rabby-light-orange-default);
-  --orange-light: var(--rabby-light-orange-light);
-  --red-default: var(--rabby-light-red-default);
-  --red-light: var(--rabby-light-red-light);
-  --red-dark: var(--rabby-light-red-dark);
-  --red-light-2: var(--rabby-light-red-light-2);
-  --neutral-title-1: var(--rabby-light-neutral-title-1);
-  --neutral-body: var(--rabby-light-neutral-body);
-  --neutral-foot: var(--rabby-light-neutral-foot);
-  --neutral-line: var(--rabby-light-neutral-line);
-  --neutral-bg-1: var(--rabby-light-neutral-bg-1);
-  --neutral-bg-2: var(--rabby-light-neutral-bg-2);
-  --neutral-bg-3: var(--rabby-light-neutral-bg-3);
-  --neutral-card-1: var(--rabby-light-neutral-card-1);
-  --neutral-card-2: var(--rabby-light-neutral-card-2);
-  --neutral-title-2: var(--rabby-light-neutral-title-2);
-  --neutral-black: var(--rabby-light-neutral-black);
+  --r-blue-default: var(--rabby-light-blue-default);
+  --r-blue-light-1: var(--rabby-light-blue-light-1);
+  --r-blue-light-2: var(--rabby-light-blue-light-2);
+  --r-blue-disable: var(--rabby-light-blue-disable);
+  --r-green-default: var(--rabby-light-green-default);
+  --r-green-light: var(--rabby-light-green-light);
+  --r-orange-default: var(--rabby-light-orange-default);
+  --r-orange-light: var(--rabby-light-orange-light);
+  --r-red-default: var(--rabby-light-red-default);
+  --r-red-light: var(--rabby-light-red-light);
+  --r-red-dark: var(--rabby-light-red-dark);
+  --r-red-light-2: var(--rabby-light-red-light-2);
+  --r-neutral-title-1: var(--rabby-light-neutral-title-1);
+  --r-neutral-body: var(--rabby-light-neutral-body);
+  --r-neutral-foot: var(--rabby-light-neutral-foot);
+  --r-neutral-line: var(--rabby-light-neutral-line);
+  --r-neutral-bg-1: var(--rabby-light-neutral-bg-1);
+  --r-neutral-bg-2: var(--rabby-light-neutral-bg-2);
+  --r-neutral-bg-3: var(--rabby-light-neutral-bg-3);
+  --r-neutral-card-1: var(--rabby-light-neutral-card-1);
+  --r-neutral-card-2: var(--rabby-light-neutral-card-2);
+  --r-neutral-title-2: var(--rabby-light-neutral-title-2);
+  --r-neutral-black: var(--rabby-light-neutral-black);
 }

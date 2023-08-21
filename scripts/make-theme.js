@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const lessVarsToJs = require('less-vars-to-js');
 
-const { themeColors } = require('../src/constant/theme-colors');
+const { themeColors, rabbyCssPrefix } = require('../src/constant/theme-colors');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -27,7 +27,7 @@ html, body {
   /* -------------------- default light mode -------------------- */
 ${Object.entries(themeColors.light).map(([cssvarKey]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--${cssvarKey}: var(--rabby-light-${varcore});`;
+  return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-light-${varcore});`;
 }).join('\n')}
 }
 `;

@@ -41,7 +41,7 @@ const Footer = styled.div`
       }
       &.checked {
         .rabby-checkbox {
-          background-color: var(--blue-default, #7084ff) !important;
+          background-color: var(--r-blue-default, #7084ff) !important;
           border: none;
         }
       }
@@ -56,8 +56,8 @@ const Footer = styled.div`
       background-color: #e5e9ef;
     }
     &:hover {
-      background: var(--blue-light, #eef1ff);
-      border: 1px solid var(--blue-default, #7084ff);
+      background: var(--r-blue-light, #eef1ff);
+      border: 1px solid var(--r-blue-default, #7084ff);
       border-radius: 6px;
     }
     &:nth-last-child(1) {

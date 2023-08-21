@@ -30,7 +30,7 @@ const TabsStyled = styled(Tabs)`
 
     &.ant-tabs-tab-active {
       background: #fff;
-      color: var(--blue-default, #7084ff);
+      color: var(--r-blue-default, #7084ff);
     }
   }
 

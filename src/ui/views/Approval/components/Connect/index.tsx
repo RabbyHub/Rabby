@@ -62,7 +62,7 @@ const ConnectWrapper = styled.div`
         }
       }
       &.hover {
-        background: var(--blue-light, #eef1ff);
+        background: var(--r-blue-light, #eef1ff);
       }
     }
     .connect-card {

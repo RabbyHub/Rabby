@@ -228,7 +228,7 @@ const SupplementsWrapper = styled.div`
   width: calc(100% + 20px);
   background: linear-gradient(
     90deg,
-    var(--blue-light, #eef1ff) 0%,
+    var(--r-blue-light, #eef1ff) 0%,
     rgba(134, 151, 255, 0) 100%
   );
   row-gap: 8px;

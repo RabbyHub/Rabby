@@ -29,7 +29,7 @@ const CloseIcon = styled.img.attrs({
 `;
 
 const FocusingBox = styled.div`
-  border: 1px solid var(--blue-default, #7084ff);
+  border: 1px solid var(--r-blue-default, #7084ff);
   border-radius: 6px;
 `;
 
