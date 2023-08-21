@@ -3219,6 +3219,10 @@ export class WalletController extends BaseController {
     return res as any;
   };
 
+  coboSafeResetCurrentAccount = async () => {
+    preferenceService.resetCurrentCoboSafeAddress();
+  };
+
   coboSafeImport = async ({
     address,
     safeModuleAddress,

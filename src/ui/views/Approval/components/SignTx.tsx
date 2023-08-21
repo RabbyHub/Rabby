@@ -1166,6 +1166,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         account,
       });
     } catch (e) {
+      wallet.coboSafeResetCurrentAccount();
       Modal.error({
         title: 'Error',
         content: e.message || JSON.stringify(e),

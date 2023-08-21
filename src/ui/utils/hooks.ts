@@ -41,6 +41,10 @@ export const useApproval = () => {
 
   const rejectApproval = async (err?, stay = false, isInternal = false) => {
     const approval = await getApproval();
+    if (approval.data.params?.data?.[0]?.isCoboSafe) {
+      wallet.coboSafeResetCurrentAccount();
+    }
+
     if (approval) {
       await wallet.rejectApproval(err, stay, isInternal);
     }
