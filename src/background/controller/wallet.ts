@@ -3176,7 +3176,14 @@ export class WalletController extends BaseController {
     chainServerId: string;
     coboSafeAddress: string;
   }) => {
-    const provider = await getWeb3Provider({ chainServerId });
+    const provider = await getWeb3Provider({
+      chainServerId,
+      account: {
+        address: '0x0',
+        type: 'coboSafe',
+        brandName: 'cobo',
+      },
+    });
     const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
     return await coboSafe.getAddress();
   };

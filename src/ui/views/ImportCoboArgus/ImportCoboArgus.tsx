@@ -41,7 +41,7 @@ export const ImportCoboArgus = () => {
         setSafeAddress(accountAddress);
         setStep('select-address');
       } catch (e) {
-        setError(e.message);
+        setError(t('page.newAddress.coboSafe.invalidAddress'));
       } finally {
         setIsLoading(false);
       }

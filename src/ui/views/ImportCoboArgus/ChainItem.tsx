@@ -16,7 +16,12 @@ export const ChainItem: React.FC<Props> = ({ chain, checked, onChecked }) => {
         'flex justify-between bg-white items-center',
         'py-12 px-16',
         'rounded-[6px]',
-        'cursor-pointer'
+        'cursor-pointer',
+        'hover:border-blue-light border',
+        {
+          'border-blue-light': checked,
+          'border-transparent': !checked,
+        }
       )}
       onClick={onChecked}
     >

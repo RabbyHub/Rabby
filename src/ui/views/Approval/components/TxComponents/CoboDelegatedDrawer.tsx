@@ -4,20 +4,53 @@ import { groupBy } from 'lodash';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
 import { useWallet, isSameAddress } from 'ui/utils';
-import { CoboDelegatedAddressItem } from './CoboDelegatedAddressItem';
 import { ownerPriority } from './DrawerAddressItem';
 import EmptyIcon from '@/ui/assets/dashboard/empty.svg';
+import { KEYRING_CLASS } from '@/constant';
+import { AccountItem } from '@/ui/component/AccountSelectDrawer';
+import styled from 'styled-components';
+
+const ListStyled = styled.div`
+  .item {
+    height: 52px;
+    min-height: 52px;
+  }
+
+  .icon-keyring {
+    margin-right: 6px;
+  }
+
+  .alian-name {
+    font-size: 13px;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .address-viewer-text {
+    color: #4b4d59;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .item-container {
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 12px;
+  }
+`;
 
 interface CoboDelegatedDrawerProps {
   owners: string[];
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void>;
+  networkId: string;
 }
 
 export const CoboDelegatedDrawer = ({
   owners,
   onCancel,
   onConfirm,
+  networkId,
 }: CoboDelegatedDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -26,9 +59,11 @@ export const CoboDelegatedDrawer = ({
   const [isLoading, setIsLoading] = useState(false);
   const sortOwners = async () => {
     const accounts: Account[] = await wallet.getAllVisibleAccountsArray();
-    const ownersInWallet = accounts.filter((account) =>
-      owners.find((owner) => isSameAddress(account.address, owner))
-    );
+    const ownersInWallet = accounts
+      .filter((item) => item.type !== KEYRING_CLASS.WATCH)
+      .filter((account) =>
+        owners.find((owner) => isSameAddress(account.address, owner))
+      );
     const groupOwners = groupBy(ownersInWallet, 'address');
     const result = Object.keys(groupOwners).map((address) => {
       let target = groupOwners[address][0];
@@ -80,19 +115,19 @@ export const CoboDelegatedDrawer = ({
           {t('page.signTx.importedDelegatedAddress')}
         </div>
       ) : null}
-      <div className="list space-y-8">
+      <ListStyled className="list space-y-8">
         {ownerAccounts.length ? (
           ownerAccounts.map((owner) => (
-            <CoboDelegatedAddressItem
+            <AccountItem
               key={owner.address}
-              signed={false}
               account={owner}
-              onSelect={handleSelectAccount}
               checked={
                 checkedAccount
                   ? isSameAddress(owner.address, checkedAccount.address)
                   : false
               }
+              onSelect={handleSelectAccount}
+              networkId={networkId}
             />
           ))
         ) : (
@@ -106,7 +141,7 @@ export const CoboDelegatedDrawer = ({
             </p>
           </div>
         )}
-      </div>
+      </ListStyled>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
           {t('global.Cancel')}

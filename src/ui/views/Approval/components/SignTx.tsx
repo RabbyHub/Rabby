@@ -1154,14 +1154,24 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       trigger: params?.$ctx?.ga?.trigger || '',
     });
 
-    const newTx = await wallet.coboSafeBuildTransaction({
-      tx: {
-        ...tx,
-      },
-      chainServerId: coboArgusInfo.networkId,
-      coboSafeAddress: coboArgusInfo.safeModuleAddress,
-      account,
-    });
+    let newTx;
+
+    try {
+      newTx = await wallet.coboSafeBuildTransaction({
+        tx: {
+          ...tx,
+        },
+        chainServerId: coboArgusInfo.networkId,
+        coboSafeAddress: coboArgusInfo.safeModuleAddress,
+        account,
+      });
+    } catch (e) {
+      Modal.error({
+        title: 'Error',
+        content: e.message || JSON.stringify(e),
+      });
+      return;
+    }
 
     const approval = await getApproval();
 
@@ -1886,6 +1896,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               owners={coboArgusInfo.delegates}
               onCancel={handleDrawerCancel}
               onConfirm={handleCoboArugsConfirm}
+              networkId={chain.network}
             />
           </Drawer>
         )}
