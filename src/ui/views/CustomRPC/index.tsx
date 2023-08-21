@@ -76,7 +76,7 @@ const RPCItemWrapper = styled.div`
   }
   &:hover {
     background: var(--blue-light, #eef1ff);
-    border: 1px solid var(--brand-default, #7084ff);
+    border: 1px solid var(--blue-default, #7084ff);
     border-radius: 6px;
     .operation {
       opacity: 1;

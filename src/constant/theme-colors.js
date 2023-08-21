@@ -1,7 +1,6 @@
 const themeColors = {
   light: {
     /* -------------------- base define -------------------- */
-    'brand-default': 'rgba(238, 241, 255, 1)',
     'blue-default': 'rgba(238, 241, 255, 1)',
     /* blue/light #eef1ff */
     'blue-light': 'rgba(238, 241, 255, 0.1)',

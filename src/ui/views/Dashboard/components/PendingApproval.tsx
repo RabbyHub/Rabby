@@ -49,7 +49,7 @@ const RejectAllButton = styled.a`
 `;
 
 const NumberText = styled.span`
-  color: var(--brand-default, #7084ff);
+  color: var(--blue-default, #7084ff);
 `;
 
 const PendingApproval = ({

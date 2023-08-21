@@ -24,7 +24,7 @@ const ActionEntries = styled.div`
     border: 1px solid #ffffff;
 
     &:hover {
-      border-color: var(--brand-default, #7084ff);
+      border-color: var(--blue-default, #7084ff);
       background: var(--blue-light, #eef1ff);
     }
 

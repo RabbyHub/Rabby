@@ -12,7 +12,7 @@ const Wrapper = styled.div`
     font-weight: 500;
     font-size: 12px;
     line-height: 14px;
-    color: var(--brand-default, #7084ff);
+    color: var(--blue-default, #7084ff);
     padding: 4px 6px;
   }
   .description {

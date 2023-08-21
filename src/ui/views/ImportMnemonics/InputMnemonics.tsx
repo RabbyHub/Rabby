@@ -23,7 +23,7 @@ const Toptip = styled.div`
   font-size: 13px;
   line-height: 14px;
 
-  color: var(--brand-default, #7084ff);
+  color: var(--blue-default, #7084ff);
 `;
 
 const FormItemWrapper = styled.div`

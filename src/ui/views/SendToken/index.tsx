@@ -915,7 +915,7 @@ const SendToken = () => {
                     <span
                       onClick={handleClickAddContact}
                       className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: 'var(--brand-default, #7084ff)' }}
+                      style={{ color: 'var(--blue-default, #7084ff)' }}
                     >
                       Add to contacts
                     </span>

@@ -2,7 +2,6 @@
 /* this file is genetared automatically, never modify it manually! */
 :root {
   /* -------------------- base define -------------------- */
-  --rabby-light-brand-default: rgba(238, 241, 255, 1);
   --rabby-light-blue-default: rgba(238, 241, 255, 1);
   --rabby-light-blue-light: rgba(238, 241, 255, 0.1);
   --rabby-light-blue-disable: rgba(112, 132, 255, 0.5);
@@ -29,7 +28,6 @@
 
 html, body {
   /* -------------------- default light mode -------------------- */
-  --brand-default: var(--rabby-light-brand-default);
   --blue-default: var(--rabby-light-blue-default);
   --blue-light: var(--rabby-light-blue-light);
   --blue-disable: var(--rabby-light-blue-disable);

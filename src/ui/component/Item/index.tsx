@@ -37,7 +37,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: var(--brand-default, #7084ff);
+            border-color: var(--blue-default, #7084ff);
           }
         `
       : ''}

@@ -96,7 +96,7 @@ const Wrapper = styled.div`
     }
     &:hover,
     &:focus {
-      border-color: var(--brand-default, #7084ff);
+      border-color: var(--blue-default, #7084ff);
     }
 
     &.red,

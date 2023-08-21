@@ -20,7 +20,7 @@ const GasReservedDiv = styled.div`
 
 const TokenAmount = styled.span`
   cursor: pointer;
-  color: var(--brand-default, #7084ff);
+  color: var(--blue-default, #7084ff);
   text-decoration: underline;
   font-weight: 500;
   margin: 0 2px;
