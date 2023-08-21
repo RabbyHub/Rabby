@@ -132,10 +132,10 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
     >
       <div
         className={clsx('flex flex-col pb-80 h-full', {
-          'pb-20': !whitelistEnabled,
+          'pb-0': !whitelistEnabled,
         })}
       >
-        <div className="text-center mb-16 text-14 text-gray-content">
+        <div className="text-center mb-16 mx-[-10px] text-14 text-gray-content">
           {whitelistEnabled
             ? t('component.Contact.ListModal.whitelistEnabled')
             : t('component.Contact.ListModal.whitelistDisabled')}
