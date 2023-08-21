@@ -1,76 +1,55 @@
-:root {
-    /* -------------------- base define -------------------- */
-    --rabby-light-blue-default: #7084ff;
-    --rabby-light-blue-default-rgba: rgba(238, 241, 255, 1);
-    /* blue/light #eef1ff */
-    --rabby-light-blue-light: #eef1ff;
-    --rabby-light-blue-light-rgba: rgba(238, 241, 255, 0.1);
-    /* blue/disable #7084ff80 50% */
-    --rabby-light-blue-disable: #7084ff80;
-    --rabby-light-blue-disable-rgba: rgba(112, 132, 255, 0.5);
-    /* green/default #2abb7f */
-    --rabby-light-green-default: #2abb7f;
-    /* green/light #2abb7f26 15% */
-    --rabby-light-green-light: #2abb7f26;
-    /* orange/default #ffb020 */
-    --rabby-light-orange-default: #ffb020;
-    /* orange/light #ffb02026 15% */
-    --rabby-light-orange-light: #ffb02026;
-    /* red-default #e34935 */
-    --rabby-light-red-default: #e34935;
-    /* red/light #e3493526 15% */
-    --rabby-light-red-light: #e3493526;
-    /* red/dark #ae2a19 */
-    --rabby-light-red-dark: #ae2a19;
-    /* red/light2 red/light2 */
-    --rabby-light-red-light2: #ffdada;
 
-    /* neutral/title1 #192945 */
-    --rabby-light-neutral-title1: #192945;
-    /* neutral/body #3e495e */
-    --rabby-light-neutral-body: #3e495e;
-    /* neutral/foot #6a7587 */
-    --rabby-light-neutral-foot: #6a7587;
-    /* neutral/line #d3d8e0 */
-    --rabby-light-neutral-line: #d3d8e0;
-    /* neutral/bg1 #ffffff */
-    --rabby-light-neutral-bg1: #ffffff;
-    /* neutral/bg2 #f2f4f7 */
-    --rabby-light-neutral-bg2: #f2f4f7;
-    /* neutral/bg3 #f7fafc */
-    --rabby-light-neutral-bg3: #f7fafc;
-    /* neutral/card1 #ffffff */
-    --rabby-light-neutral-card1: #ffffff;
-    /* neutral/card2 #f2f4f7 */
-    --rabby-light-neutral-card2: #f2f4f7;
-    /* neutral/title2 neutral/title2 */
-    --rabby-light-neutral-title2: #192945;
-    /* neutral/black #000000 */
-    --rabby-light-neutral-black: #000000;
+/* this file is genetared automatically, never modify it manually! */
+:root {
+  /* -------------------- base define -------------------- */
+  --rabby-light-brand-default: rgba(238, 241, 255, 1);
+  --rabby-light-blue-default: rgba(238, 241, 255, 1);
+  --rabby-light-blue-light: rgba(238, 241, 255, 0.1);
+  --rabby-light-blue-disable: rgba(112, 132, 255, 0.5);
+  --rabby-light-green-default: #2abb7f;
+  --rabby-light-green-light: #2abb7f26;
+  --rabby-light-orange-default: #ffb020;
+  --rabby-light-orange-light: #ffb02026;
+  --rabby-light-red-default: #e34935;
+  --rabby-light-red-light: #e3493526;
+  --rabby-light-red-dark: #ae2a19;
+  --rabby-light-red-light-2: #ffdada;
+  --rabby-light-neutral-title-1: #192945;
+  --rabby-light-neutral-body: #3e495e;
+  --rabby-light-neutral-foot: #6a7587;
+  --rabby-light-neutral-line: #d3d8e0;
+  --rabby-light-neutral-bg-1: #ffffff;
+  --rabby-light-neutral-bg-2: #f2f4f7;
+  --rabby-light-neutral-bg-3: #f7fafc;
+  --rabby-light-neutral-card-1: #ffffff;
+  --rabby-light-neutral-card-2: #f2f4f7;
+  --rabby-light-neutral-title-2: #192945;
+  --rabby-light-neutral-black: #000000;
 }
 
 html, body {
-    /* -------------------- default light mode -------------------- */
-    --brand-default: var(--rabby-light-blue-default);
-    --blue-light: var(--rabby-light-blue-light);
-    --blue-disable: var(--rabby-light-blue-disable-rgba);
-    --green-default: var(--rabby-light-green-default);
-    --green-light: var(--rabby-light-green-light);
-    --orange-default: var(--rabby-light-orange-default);
-    --orange-light: var(--rabby-light-orange-light);
-    --red-default: var(--rabby-light-red-default);
-    --red-light: var(--rabby-light-red-light);
-    --red-dark: var(--rabby-light-red-dark);
-    --red-light-2: var(--rabby-light-red-light2);
-    --neutral-title-1: var(--rabby-light-neutral-title1);
-    --neutral-body: var(--rabby-light-neutral-body);
-    --neutral-foot: var(--rabby-light-neutral-foot);
-    --neutral-line: var(--rabby-light-neutral-line);
-    --neutral-bg-1: var(--rabby-light-neutral-bg1);
-    --neutral-bg-2: var(--rabby-light-neutral-bg2);
-    --neutral-bg-3: var(--rabby-light-neutral-bg3);
-    --neutral-card-1: var(--rabby-light-neutral-card1);
-    --neutral-card-2: var(--rabby-light-neutral-card2);
-    --neutral-title-2: var(--rabby-light-neutral-title2);
-    --neutral-black: var(--rabby-light-neutral-black);
+  /* -------------------- default light mode -------------------- */
+  --brand-default: var(--rabby-light-brand-default);
+  --blue-default: var(--rabby-light-blue-default);
+  --blue-light: var(--rabby-light-blue-light);
+  --blue-disable: var(--rabby-light-blue-disable);
+  --green-default: var(--rabby-light-green-default);
+  --green-light: var(--rabby-light-green-light);
+  --orange-default: var(--rabby-light-orange-default);
+  --orange-light: var(--rabby-light-orange-light);
+  --red-default: var(--rabby-light-red-default);
+  --red-light: var(--rabby-light-red-light);
+  --red-dark: var(--rabby-light-red-dark);
+  --red-light-2: var(--rabby-light-red-light-2);
+  --neutral-title-1: var(--rabby-light-neutral-title-1);
+  --neutral-body: var(--rabby-light-neutral-body);
+  --neutral-foot: var(--rabby-light-neutral-foot);
+  --neutral-line: var(--rabby-light-neutral-line);
+  --neutral-bg-1: var(--rabby-light-neutral-bg-1);
+  --neutral-bg-2: var(--rabby-light-neutral-bg-2);
+  --neutral-bg-3: var(--rabby-light-neutral-bg-3);
+  --neutral-card-1: var(--rabby-light-neutral-card-1);
+  --neutral-card-2: var(--rabby-light-neutral-card-2);
+  --neutral-title-2: var(--rabby-light-neutral-title-2);
+  --neutral-black: var(--rabby-light-neutral-black);
 }

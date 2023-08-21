@@ -1,5 +1,5 @@
 /* eslint-disable */
-/* this file is genetared by make-vars.js automatic, never modify it manually! */
+/* this file is genetared by make-theme.js automatically, never modify it manually! */
 const LessPalette = {
   "@primary-color": "#7084ff",
   "@primary-text-color": "#7084ff",
