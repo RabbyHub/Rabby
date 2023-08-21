@@ -42,7 +42,7 @@
       "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
-      "gasPriceMedian": "Median of last 100 on-chain transactions:",
+      "gasPriceMedian": "Median of last 100 on-chain transactions: ",
       "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
@@ -1265,7 +1265,8 @@
       "manageWhiteBlackList": "Manage whitelist/blacklist",
       "SignTestnetPermission": {
         "title": "Signing permission"
-      }
+      },
+      "ignoreAll": "Ignore all"
     },
     "addressDetail": {
       "add-to-whitelist": "Add to Whitelist",
@@ -1514,6 +1515,13 @@
         "PurschaseDate": "Purchase Date",
         "LastPrice": "Last Price"
       }
+    },
+    "signPermissionCheckModal": {
+      "title": "You only allow this Dapp to sign on testnets",
+      "reconnect": "Reconnect Dapp"
+    },
+    "testnetCheckModal": {
+      "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
     }
   },
   "global": {

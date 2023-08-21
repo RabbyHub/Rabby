@@ -702,7 +702,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                     }}
                     onClick={onIgnoreAllRules}
                   >
-                    Ignore all
+                    {t('page.connect.ignoreAll')}
                   </span>
                 </div>
               )}
