@@ -48,7 +48,6 @@ const Wrapper = styled.section`
     .origin {
       color: #333;
       flex: 1;
-      margin-left: 8px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -252,6 +251,7 @@ export const FooterBar: React.FC<Props> = ({
                 origin={origin}
                 width="20px"
                 height="20px"
+                className="mr-[8px]"
               />
             )}
             <span className="origin">{displayOirigin}</span>
