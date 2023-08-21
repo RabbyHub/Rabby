@@ -1,5 +1,13 @@
 const colors = require('tailwindcss/colors');
 
+const { themeColors } = require('./src/constant/theme-colors');
+const rabbyColors = Object.entries(themeColors.light).reduce((accu, [cssvarKey, cssvarValue]) => {
+  const [ name, suffix ] = cssvarKey.split('-');
+  accu[name] = accu[name] || {};
+  accu[name][suffix] = `var(--${cssvarKey}, ${cssvarValue})`;
+  return accu;
+}, {});
+
 module.exports = {
   mode: 'jit',
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
@@ -103,6 +111,12 @@ module.exports = {
           lineHeight: '33px',
         },
       ],
+    },
+    /** @notice configuration here would override the default config above */
+    extend: {
+      colors: {
+        ...rabbyColors,
+      }
     },
   },
   // use media-query prefers-color-scheme
