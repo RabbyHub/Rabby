@@ -1,13 +1,12 @@
 import { Popup } from '@/ui/component';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
 export interface Props {
   address: string;
-  chainEnum: CHAINS_ENUM;
   onConfirm: () => void;
   onCancel: () => void;
   visible: boolean;
@@ -15,13 +14,11 @@ export interface Props {
 
 export const SelectAddressPopup: React.FC<Props> = ({
   address,
-  chainEnum,
   onConfirm,
   onCancel,
   visible,
 }) => {
   const { t } = useTranslation();
-  const chain = CHAINS[chainEnum];
   return (
     <Popup
       maskClosable
@@ -38,7 +35,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
           'relative'
         )}
       >
-        <img className="w-20 h-20" src={chain.logo} alt={chain.name} />
+        <img className="w-20 h-20" src={IconGnosis} />
         <span className="text-13">{address}</span>
       </div>
       <footer

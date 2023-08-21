@@ -99,7 +99,6 @@ export const ImportCoboArgus = () => {
           )}
         {selectedChain && (
           <SelectAddressPopup
-            chainEnum={selectedChain}
             address={safeAddress}
             onCancel={() => setStep('add-address')}
             onConfirm={handleDone}
