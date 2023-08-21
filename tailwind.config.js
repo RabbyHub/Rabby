@@ -2,9 +2,12 @@ const colors = require('tailwindcss/colors');
 
 const { themeColors } = require('./src/constant/theme-colors');
 const rabbyColors = Object.entries(themeColors.light).reduce((accu, [cssvarKey, cssvarValue]) => {
-  const [ name, suffix ] = cssvarKey.split('-');
-  accu[name] = accu[name] || {};
-  accu[name][suffix] = `var(--${cssvarKey}, ${cssvarValue})`;
+  const splitorIdx = cssvarKey.indexOf('-');
+  const group = cssvarKey.slice(0, splitorIdx);
+  const suffix = cssvarKey.slice(splitorIdx + 1);
+
+  accu[group] = accu[group] || {};
+  accu[group][suffix] = `var(--${cssvarKey}, ${cssvarValue})`;
   return accu;
 }, {});
 
