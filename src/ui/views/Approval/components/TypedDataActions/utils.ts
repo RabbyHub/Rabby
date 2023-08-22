@@ -43,6 +43,7 @@ export interface TypedDataActionData {
   chainId?: string;
   contractId?: string;
   sender: string;
+  actionType: string | null;
   sellNFT?: SellNFTOrderAction;
   batchSellNFT?: BatchSellNFTOrderAction;
   signMultiSig?: SignMultiSigActions;
@@ -70,6 +71,7 @@ export const parseAction = (
 ): TypedDataActionData => {
   const result: TypedDataActionData = {
     sender,
+    actionType: null,
   };
   if (typedData?.domain) {
     if (typedData.domain.verifyingContract) {
@@ -79,6 +81,7 @@ export const parseAction = (
       result.chainId = typedData.domain.chainId;
     }
   }
+  result.actionType = data.action?.type || null;
   switch (data.action?.type) {
     case 'sell_nft_order': {
       const actionData = data.action.data as SellNFTOrderAction;
@@ -164,6 +167,9 @@ export const parseAction = (
   }
   if (result.chainId && result.contractId) {
     result.contractCall = {};
+    if (result.actionType) {
+      result.actionType = 'contractCall';
+    }
   }
   return result;
 };
