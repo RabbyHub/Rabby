@@ -941,7 +941,7 @@
         "seedPhrase": "助记词地址",
         "trezor": "Trezor 地址",
         "watchAddress": "无法使用观察地址进行签名",
-        "coboSafe": "Cobo Safe address"
+        "coboSafe": "Cobo Argus Address"
       },
       "beginSigning": "开始签名流程",
       "connectButton": "连接",

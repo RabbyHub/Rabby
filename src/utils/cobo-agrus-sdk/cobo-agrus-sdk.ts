@@ -48,7 +48,8 @@ export class CoboSafeAccount {
     flag = Operation.CALL,
     useHint = true,
     extra = '0x',
-    delegate = null
+    delegate = null,
+    chainId
   ) {
     let cobosafe = this.contract;
     if (delegate) {
@@ -147,7 +148,7 @@ export class CoboSafeAccount {
             'latest',
           ],
         },
-        'matic' // TODO: use real chainId
+        chainId
       );
       const ret = ((abiCoder as unknown) as AbiCoder).decodeParameter(
         'tuple(bool,bytes,bytes)',
@@ -163,6 +164,7 @@ export class CoboSafeAccount {
   async execRawTransaction(
     tx,
     delegate = null,
+    chainId,
     flag = Operation.CALL,
     useHint = true,
     extra = '0x'
@@ -177,7 +179,8 @@ export class CoboSafeAccount {
       flag,
       useHint,
       extra,
-      delegate
+      delegate,
+      chainId
     );
   }
 

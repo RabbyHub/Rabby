@@ -3215,7 +3215,11 @@ export class WalletController extends BaseController {
     await preferenceService.setCurrentAccount(account);
     const provider = await getWeb3Provider({ chainServerId, account });
     const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
-    const res = await coboSafe.execRawTransaction(tx, account.address);
+    const res = await coboSafe.execRawTransaction(
+      tx,
+      account.address,
+      chainServerId
+    );
     return res as any;
   };
 

@@ -234,7 +234,7 @@
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
         "safe": "Safe address",
-        "coboSafe": "Cobo Safe address"
+        "coboSafe": "Cobo Argus Address"
       },
       "qrcode": {
         "signWith": "Sign with {{brand}}",
