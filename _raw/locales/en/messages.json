@@ -1031,7 +1031,7 @@
           "accountErrorDesc": "Please switch address in your mobile wallet",
           "connected": "Connected",
           "duplicate": "The address you're are trying to import is duplicate",
-          "default": "Scan with your"
+          "default": "Scan with your {{brand}}"
         },
         "title": "Connect with {{brandName}}",
         "disconnected": "Disconnected",
