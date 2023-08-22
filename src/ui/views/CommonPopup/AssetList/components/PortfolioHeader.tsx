@@ -7,7 +7,7 @@ const Wrapper = styled.div`
   align-items: start;
   margin-bottom: 16px;
   .name {
-    background: var(--r-blue-light, #eef1ff);
+    background: var(--r-blue-light-1, #eef1ff);
     border-radius: 10px;
     font-weight: 500;
     font-size: 12px;

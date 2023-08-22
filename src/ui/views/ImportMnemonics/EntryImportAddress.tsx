@@ -25,7 +25,7 @@ const ActionEntries = styled.div`
 
     &:hover {
       border-color: var(--r-blue-default, #7084ff);
-      background: var(--r-blue-light, #eef1ff);
+      background: var(--r-blue-light-1, #eef1ff);
     }
 
     .left-icon > img {

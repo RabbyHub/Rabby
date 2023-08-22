@@ -14,7 +14,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
 
 const Toptip = styled.div`
-  background: var(--r-blue-light, #eef1ff);
+  background: var(--r-blue-light-1, #eef1ff);
   border-radius: 4px;
   padding: 9px 17px;
 

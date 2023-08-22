@@ -15,7 +15,7 @@ import IconAlert from 'ui/assets/sign/tx/alert.svg';
 const Wrapper = styled.div`
   .container {
     flex: 1;
-    background: var(--r-blue-light, #eef1ff);
+    background: var(--r-blue-light-1, #eef1ff);
     border: 1px solid var(--r-blue-default, #7084ff);
     border-radius: 6px;
     padding: 12px;

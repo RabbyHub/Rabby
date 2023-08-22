@@ -116,7 +116,7 @@ const CardBody = styled.div<{
             }
 
             &.active {
-              background: var(--r-blue-light, #eef1ff);
+              background: var(--r-blue-light-1, #eef1ff);
               border: 1px solid var(--r-blue-default, #7084ff);
             }
           }

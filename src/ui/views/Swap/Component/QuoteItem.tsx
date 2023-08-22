@@ -80,8 +80,8 @@ const ItemWrapper = styled.div`
   &:hover:not(.disabled, .inSufficient) {
     background: linear-gradient(
         0deg,
-        var(--r-blue-light, #eef1ff),
-        var(--r-blue-light, #eef1ff)
+        var(--r-blue-light-1, #eef1ff),
+        var(--r-blue-light-1, #eef1ff)
       ),
       #ffffff;
     border: 1px solid var(--r-blue-default, #7084ff);
