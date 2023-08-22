@@ -193,7 +193,7 @@
       "trustValue": "Trust value",
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This Cobo Safe address does not have permission to initiate this transaction"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
