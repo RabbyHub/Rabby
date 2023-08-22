@@ -136,9 +136,6 @@ export const CoboDelegatedDrawer = ({
             <p className="text-20 leading-[23px] mb-12 text-[#192945]">
               {t('page.signTx.noDelegatedAddress')}
             </p>
-            <p className="text-15 text-[#3E495E]">
-              {t('page.signTx.noDelegatedAddressTip')}
-            </p>
           </div>
         )}
       </ListStyled>

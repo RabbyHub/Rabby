@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import COBOSAFE_ABI from './abi/account.json';
 import L2_ABI from './abi/l2.json';
+import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import wallet from '@/background/controller/wallet';
 
 const Operation = {
   CALL: 0,
@@ -62,7 +64,95 @@ export class CoboSafeAccount {
       extra,
     ];
     if (useHint) {
-      const ret = await cobosafe.callStatic.execTransaction(tx);
+      const calldata = ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          inputs: [
+            {
+              components: [
+                {
+                  internalType: 'uint256',
+                  name: 'flag',
+                  type: 'uint256',
+                },
+                {
+                  internalType: 'address',
+                  name: 'to',
+                  type: 'address',
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'value',
+                  type: 'uint256',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'data',
+                  type: 'bytes',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'hint',
+                  type: 'bytes',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'extra',
+                  type: 'bytes',
+                },
+              ],
+              internalType: 'struct CallData',
+              name: 'callData',
+              type: 'tuple',
+            },
+          ],
+          name: 'execTransaction',
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: 'bool',
+                  name: 'success',
+                  type: 'bool',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'data',
+                  type: 'bytes',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'hint',
+                  type: 'bytes',
+                },
+              ],
+              internalType: 'struct TransactionResult',
+              name: 'result',
+              type: 'tuple',
+            },
+          ],
+          type: 'function',
+        },
+        [tx as any]
+      );
+      const hint = await wallet.requestETHRpc(
+        {
+          method: 'eth_call',
+          params: [
+            {
+              from: delegate,
+              to: cobosafe.address,
+              data: calldata,
+              value: '0x0',
+            },
+            'latest',
+          ],
+        },
+        'matic' // TODO: use real chainId
+      );
+      const ret = ((abiCoder as unknown) as AbiCoder).decodeParameter(
+        'tuple(bool,bytes,bytes)',
+        hint
+      );
       tx[4] = ret[2];
     }
     const newTx = await cobosafe.populateTransaction.execTransaction(tx);

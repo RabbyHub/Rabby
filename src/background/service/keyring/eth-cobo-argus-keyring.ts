@@ -12,8 +12,10 @@ interface DeserializeOption {
 
 interface AccountDetail {
   address: string;
-  safeModuleAddress: string;
-  networkId: string;
+  safeModules: {
+    address: string;
+    networkId: string;
+  }[];
 }
 
 interface SignTransactionOptions {

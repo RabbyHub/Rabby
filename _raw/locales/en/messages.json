@@ -192,8 +192,8 @@
       "firstOnChain": "First on-chain",
       "trustValue": "Trust value",
       "importedDelegatedAddress": "Imported delegated address",
-      "noDelegatedAddress": "No delegated address",
-      "noDelegatedAddressTip": "请先在Rabby钱包中导入后再重新发起签名"
+      "noDelegatedAddress": "No imported delegated address",
+      "coboSafeNotPermission": "This Cobo Safe address does not have permission to initiate this transaction"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -1302,7 +1302,7 @@
       "manage-seed-phrase": "Manage Seed Phrase",
       "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase",
       "safeModuleAddress": "Safe Module Address",
-      "coboSafeErrorModule": "Module Address 已失效，请删除并导入新地址",
+      "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
       "importedDelegatedAddress": "Imported Delegated address"
     },
     "preferMetamaskDapps": {

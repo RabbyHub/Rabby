@@ -3232,7 +3232,7 @@ export class WalletController extends BaseController {
     networkId: string;
     safeModuleAddress: string;
   }) => {
-    let keyring, isNewKey;
+    let keyring: CoboArgusKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.COBO_ARGUS;
     try {
       keyring = this._getKeyringByType(keyringType);
@@ -3246,9 +3246,13 @@ export class WalletController extends BaseController {
 
     keyring.setAccountToAdd(address);
     keyring.setAccountDetail(address, {
-      networkId,
       address,
-      safeModuleAddress,
+      safeModules: [
+        {
+          networkId,
+          address: safeModuleAddress,
+        },
+      ],
     });
     await keyringService.addNewAccount(keyring);
     if (isNewKey) {
@@ -3266,15 +3270,22 @@ export class WalletController extends BaseController {
       return;
     }
     const detail = await keyring.getAccountDetail(address);
-    const provider = await getWeb3Provider({ chainServerId: detail.networkId });
+    const networkId = detail.safeModules[0].networkId;
+    const safeModuleAddress = detail.safeModules[0].address;
+
+    const provider = await getWeb3Provider({
+      chainServerId: networkId,
+    });
     const cobo = new CoboSafeAccount(address, provider);
     const isModuleEnabled = await cobo.checkIsModuleEnabled({
       safeAddress: address,
-      coboSafeAddress: detail.safeModuleAddress,
+      coboSafeAddress: safeModuleAddress,
     });
 
     return {
-      ...detail,
+      safeModuleAddress,
+      networkId,
+      address: detail.address,
       isModuleEnabled,
     };
   };

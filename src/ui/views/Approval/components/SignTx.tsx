@@ -1167,9 +1167,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
     } catch (e) {
       wallet.coboSafeResetCurrentAccount();
+      let content = e.message || JSON.stringify(e);
+      if (content.includes('E48')) {
+        content = t('page.signTx.coboSafeNotPermission');
+      }
       Modal.error({
         title: 'Error',
-        content: e.message || JSON.stringify(e),
+        content,
       });
       return;
     }
