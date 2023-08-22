@@ -1,7 +1,5 @@
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import IconEN from 'ui/assets/langs/en.svg';
-import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';
 import {
@@ -73,6 +71,8 @@ import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import LogoUniswap from 'ui/assets/swap/uniswap.svg';
 import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
+
+export { default as LANGS } from '../../_raw/locales/index.json';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -201,19 +201,6 @@ export const GAS_LEVEL_TEXT = {
 } as const;
 
 export const IS_WINDOWS = /windows/i.test(global.navigator?.userAgent);
-
-export const LANGS = [
-  {
-    value: 'en',
-    label: 'English',
-    icon: IconEN,
-  },
-  {
-    value: 'zh_CN',
-    label: '中文',
-    icon: IconZH,
-  },
-];
 
 export const CHECK_METAMASK_INSTALLED_URL = {
   Chrome: 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/phishing.html',
