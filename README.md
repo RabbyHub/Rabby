@@ -53,13 +53,6 @@ Run `yarn build:dev` to develop with file watching and development log(you can s
 
 Run `yarn build:pro` to build a production package, it's in dist folder
 
-### Language
-
-1. Copy `_raw/_locales/en/messages.json` to `_raw/_locales/${localCode}/messages.json` (Find your locale code in [https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes))
-2. Replace content in `message` property to your locale language
-
-ATTENTION: When you create a new key, make sure the key should without space and not duplicate with exist(case insensitive)
-
 ## Architecture
 
 ![architecture](./docs/architecture.png)
@@ -119,3 +112,6 @@ it's used by 3 pages which share the same js code, but the template html is diff
 ## Thanks
 
 Thanks for contributions from MetaMask team to browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
+
+## Other Docs
+- [How to add a new translation to MetaMask](https://github.com/RabbyHub/Rabby/blob/develop/docs/translation.md)
