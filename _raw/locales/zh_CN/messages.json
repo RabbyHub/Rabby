@@ -1183,9 +1183,7 @@
       "wrapToken": "Wrap 代币",
       "contractPopularity": "No.{{0}} on {{1}}",
       "myMarkWithContract": "My mark on {{chainName}} contract",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
-      "importedDelegatedAddress": "Imported delegated address",
-      "noDelegatedAddress": "No imported delegated address"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
     },
     "signTypedData": {
       "buyNFT": {
