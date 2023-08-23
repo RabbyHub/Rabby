@@ -23,10 +23,10 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Rabby",
+    "default_title": "Companyon",
     "default_popup": "popup.html"
   },
-  "author": "https://rabby.io/",
+  "author": "https://via.exchange/",
   "background": {
     "page": "background.html",
     "persistent": true
@@ -34,15 +34,8 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -50,9 +43,7 @@
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"
       ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
