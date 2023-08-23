@@ -36,7 +36,7 @@ export const SelectAddressPopup: React.FC<Props> = ({
         )}
       >
         <img className="w-20 h-20" src={IconGnosis} />
-        <span className="text-13">{address}</span>
+        <span className="text-12">{address}</span>
       </div>
       <footer
         className={clsx(
