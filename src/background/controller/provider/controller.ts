@@ -41,6 +41,7 @@ import {
   SAFE_RPC_METHODS,
   KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
+  EVENTS,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
@@ -51,6 +52,7 @@ import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
+import eventBus from '@/eventBus';
 
 const reportSignText = (params: {
   method: string;
@@ -532,6 +534,9 @@ class ProviderController extends BaseController {
         createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
         source: options?.data?.$ctx?.ga?.source || '',
         trigger: options?.data?.$ctx?.ga?.trigger || '',
+      });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.TX_SUBMITTING,
       });
       try {
         validateGasPriceRange(approvalRes);

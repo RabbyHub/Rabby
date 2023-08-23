@@ -76,7 +76,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     explainRef.current = signingTx?.explain;
     if (
       status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
-      status !== WALLETCONNECT_STATUS_MAP.SIBMITTED
+      status !== WALLETCONNECT_STATUS_MAP.SUBMITTED
     ) {
       eventBus.emit(EVENTS.broadcastToBackground, {
         method: EVENTS.WALLETCONNECT.INIT,
@@ -207,7 +207,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         setVisible(true);
         setConnectStatus(status);
         if (
-          status !== WALLETCONNECT_STATUS_MAP.FAILD &&
+          status !== WALLETCONNECT_STATUS_MAP.FAILED &&
           status !== WALLETCONNECT_STATUS_MAP.REJECTED
         ) {
           if (!isText && !isSignTriggered) {
@@ -253,7 +253,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
             break;
-          case WALLETCONNECT_STATUS_MAP.FAILD:
+          case WALLETCONNECT_STATUS_MAP.FAILED:
           case WALLETCONNECT_STATUS_MAP.REJECTED:
             if (payload?.code) {
               setConnectError({ code: payload.code });
@@ -263,7 +263,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               );
             }
             break;
-          case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+          case WALLETCONNECT_STATUS_MAP.SUBMITTED:
             setResult(payload);
             break;
         }

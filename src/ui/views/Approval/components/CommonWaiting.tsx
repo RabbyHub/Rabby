@@ -8,6 +8,7 @@ import {
   KEYRING_CATEGORY_MAP,
   WALLETCONNECT_STATUS_MAP,
   WALLET_BRAND_CONTENT,
+  WALLET_BRAND_TYPES,
 } from 'consts';
 import {
   ApprovalPopupContainer,
@@ -128,14 +129,17 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
     eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
+    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+      setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
+    });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
@@ -148,7 +152,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
             }
           }
         } catch (e) {
-          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
           return;
         }
@@ -162,7 +166,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
           approvalId: approval.id,
         });
       } else {
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
       }
     });
   };
@@ -199,12 +203,17 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
-      case WALLETCONNECT_STATUS_MAP.FAILD:
+      case WALLETCONNECT_STATUS_MAP.SUBMITTING:
+        setStatusProp('SENDING');
+        setContent(t('page.signFooterBar.ledger.submitting'));
+        setDescription('');
+        break;
+      case WALLETCONNECT_STATUS_MAP.FAILED:
         setStatusProp('REJECTED');
         setContent(t('page.signFooterBar.ledger.txRejected'));
         setDescription(errorMessage);
         break;
-      case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+      case WALLETCONNECT_STATUS_MAP.SUBMITTED:
         setStatusProp('RESOLVED');
         setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
@@ -214,13 +223,23 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     }
   }, [connectStatus, errorMessage]);
 
+  const hdType = React.useMemo(() => {
+    switch (brandContent?.brand) {
+      case WALLET_BRAND_TYPES.GRIDPLUS:
+        return 'wireless';
+
+      default:
+        return 'wired';
+    }
+  }, [brandContent?.brand]);
+
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
   }
 
   return (
     <ApprovalPopupContainer
-      brandUrl={brandContent.icon}
+      hdType={hdType}
       status={statusProp}
       onRetry={handleRetry}
       content={content}

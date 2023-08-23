@@ -239,9 +239,9 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Transaction failed",
+        "txFailed": "Submission failed",
         "sigReceived": "Signature received",
-        "sigCompleted": "Signature completed",
+        "sigCompleted": "Transaction submitted",
         "getSig": "Get signature",
         "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
@@ -257,12 +257,13 @@
         "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger"
+        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
+        "submitting": "Signed,Transaction Submitting..."
       },
       "common": {
         "notSupport": "{{0}} is not supported"
       },
-      "resend": "Resend",
+      "resend": "Retry",
       "submitTx": "Submit Transaction",
       "testnet": "Testnet",
       "mainnet": "Mainnet"

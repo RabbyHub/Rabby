@@ -33,7 +33,7 @@ const useCommonPopupViewState = () => {
     CommonPopupComponentName | false
   >();
   const [visible, setVisible] = useState(false);
-  const [title, setTitle] = useState('Sign');
+  const [title, setTitle] = useState<React.ReactNode>('Sign');
   const [height, setHeight] = useState(360);
   const [className, setClassName] = useState<'isConnectView' | undefined>();
   const [account, setAccount] = useState<{

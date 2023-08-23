@@ -56,7 +56,14 @@ const QRHardWareWaiting = ({ params }) => {
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
     setTitle(
-      t('page.signFooterBar.qrcode.signWith', { brand: account.brandName })
+      <div className="flex justify-center items-center">
+        <img src={walletBrandContent.icon} className="w-20 mr-8" />
+        <span>
+          {t('page.signFooterBar.qrcode.signWith', {
+            brand: account.brandName,
+          })}
+        </span>
+      </div>
     );
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
@@ -219,7 +226,7 @@ const QRHardWareWaiting = ({ params }) => {
   if (popupStatus) {
     return (
       <ApprovalPopupContainer
-        brandUrl={walletBrandContent.icon}
+        hdType="qrcode"
         status={popupStatus}
         content={content}
         description={errorMessage}
