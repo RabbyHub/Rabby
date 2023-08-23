@@ -33,11 +33,11 @@ export const appVersion = createModel<RootModel>()({
       const firstOpen = await store.app.wallet.getIsFirstOpen();
       let updateContent = await getUpdateContent();
 
-      const local = store?.preference?.locale || 'en';
+      const locale = store?.preference?.locale || 'en';
       const version = process.env.release || '0';
       const versionMd = `${version.replace(/\./g, '')}.md`;
 
-      const path = local !== 'en' ? `${local}/${versionMd}` : versionMd;
+      const path = locale !== 'en' ? `${locale}/${versionMd}` : versionMd;
 
       try {
         // https://webpack.js.org/api/module-methods/#magic-comments
