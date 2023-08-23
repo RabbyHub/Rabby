@@ -99,7 +99,7 @@ const DisplayMnemonic = () => {
       <div
         className={clsx(
           'px-[100px] pt-[32px] pb-[40px]',
-          'bg-white rounded-[12px]',
+          'bg-form-bg rounded-[12px]',
           'relative'
         )}
       >
@@ -113,7 +113,7 @@ const DisplayMnemonic = () => {
           className={clsx(
             'flex items-center justify-center',
             'space-x-[16px] mb-[14px]',
-            'text-[20px] text-gray-title'
+            'text-[20px] text-white/80'
           )}
         >
           <span>{t('page.newAddress.seedPhrase.backup')}</span>

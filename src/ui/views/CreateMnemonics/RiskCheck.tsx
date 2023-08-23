@@ -13,7 +13,7 @@ const QuestionsWrapper = styled.div`
     font-weight: 500;
     font-size: 13px;
     line-height: 16px;
-    color: #13141a;
+    color: #ffffffcc;
   }
 `;
 
@@ -91,14 +91,14 @@ const RiskCheck = () => {
       <div
         className={clsx(
           'px-[120px] pt-[32px] pb-[40px]',
-          'bg-white rounded-[12px]'
+          'bg-form-bg rounded-[12px]'
         )}
       >
         <h1
           className={clsx(
             'flex items-center justify-center',
             'space-x-[16px] mb-[24px]',
-            'text-[20px] text-gray-title'
+            'text-[20px] text-white/80'
           )}
         >
           <span>{t('page.newAddress.createNewSeedPhrase')}</span>
@@ -116,7 +116,7 @@ const RiskCheck = () => {
                 <Field
                   key={`item-${q.index}`}
                   className={clsx(
-                    'bg-gray-bg flex justify-between items-center p-16 border transition-colors',
+                    'bg-label-bg flex justify-between items-center p-16 border transition-colors',
                     'border-transparent hover:border-blue-light',
                     'text-13'
                   )}
@@ -125,7 +125,7 @@ const RiskCheck = () => {
                       checked={q.checked}
                       width={'20px'}
                       height={'20px'}
-                      background="#27C193"
+                      background="#52C8A8"
                       onChange={handleClickItem}
                     />
                   }

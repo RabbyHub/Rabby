@@ -32,6 +32,12 @@ module.exports = {
       lg: { min: '600px' },
     },
     colors: {
+      form: {
+        bg: '#101010',
+      },
+      label: {
+        bg: '#191919',
+      },
       transparent: 'transparent',
       current: 'currentColor',
       blue: {

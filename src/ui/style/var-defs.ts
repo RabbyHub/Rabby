@@ -13,7 +13,7 @@ const LessPalette = {
   '@color-403': '#af160e',
   '@color-white': '#fff',
   '@color-black': '#000',
-  '@color-title': '#13141a',
+  '@color-title': '#ffffffcc',
   '@color-body': '#4b4d59',
   '@color-comment': '#707280',
   '@color-comment-1': '#707280',
