@@ -56,7 +56,7 @@ const MatrixWrapper = styled.div.withConfig<{
 
     font-size: 15px;
     font-weight: 500;
-    color: ${LessPalette['@color-title']};
+    color: ##7a7a7a;
     position: relative;
 
     border-right: 1px solid #e1e5f2;
