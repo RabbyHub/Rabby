@@ -1,6 +1,6 @@
 {
   "name": "Companyon",
-  "version": "0.92.17",
+  "version": "1.0.0",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
