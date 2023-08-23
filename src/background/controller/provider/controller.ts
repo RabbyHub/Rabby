@@ -332,6 +332,7 @@ class ProviderController extends BaseController {
     const traceId = approvalRes.traceId;
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
+    const isCoboSafe = !!txParams.isCoboSafe;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -344,6 +345,7 @@ class ProviderController extends BaseController {
     delete approvalRes.extra;
     delete approvalRes.$ctx;
     delete approvalRes.signingTxId;
+    delete txParams.isCoboSafe;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -409,7 +411,10 @@ class ProviderController extends BaseController {
         txParams.from,
         opts
       );
-      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      if (
+        currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
+        currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
+      ) {
         signedTransactionSuccess = true;
         stats.report('signedTransaction', {
           type: currentAccount.brandName,
@@ -483,6 +488,10 @@ class ProviderController extends BaseController {
             chain,
           }
         );
+
+        if (isCoboSafe) {
+          preferenceService.resetCurrentCoboSafeAddress();
+        }
       };
       if (typeof signedTx === 'string') {
         onTransactionSubmitted(signedTx);

@@ -97,6 +97,7 @@ class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
   hasOtherProvider = false;
+  currentCoboSafeAddress?: Account | null;
 
   init = async () => {
     const defaultLang = 'en';
@@ -683,6 +684,12 @@ class PreferenceService {
   };
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
+  };
+  saveCurrentCoboSafeAddress = async () => {
+    this.currentCoboSafeAddress = await this.getCurrentAccount();
+  };
+  resetCurrentCoboSafeAddress = async () => {
+    this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
   };
 }
 

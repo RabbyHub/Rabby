@@ -60,10 +60,6 @@ const EntryImportAddress = () => {
           <p className="text-24 absolute bottom-[2px] text-white text-center font-bold">
             {t('page.newAddress.selectImportMethod')}
           </p>
-          <img
-            src="/images/entry-import-mask.png"
-            className="mask left-[64%] top-[10%]"
-          />
         </div>
       </header>
       <div className="rabby-container pt-32">

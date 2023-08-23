@@ -13,7 +13,6 @@ import {
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_CATEGORY,
 } from 'consts';
-import Mask from 'ui/assets/import-mask.png';
 import './style.less';
 import clsx from 'clsx';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
@@ -237,7 +236,6 @@ const WalletConnectTemplate = () => {
         <p className="text-13 leading-none mb-0 text-white font-medium text-center">
           {t('page.newAddress.walletConnect.viaWalletConnect')}
         </p>
-        <img src={Mask} className="mask" />
       </div>
       <ScanCopyQRCode
         showURL={showURL}
