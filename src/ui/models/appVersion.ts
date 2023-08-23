@@ -31,7 +31,30 @@ export const appVersion = createModel<RootModel>()({
   effects: (dispatch) => ({
     async checkIfFirstLoginAsync(_?, store?) {
       const firstOpen = await store.app.wallet.getIsFirstOpen();
-      const updateContent = await getUpdateContent();
+      let updateContent = await getUpdateContent();
+
+      const local = store?.preference?.locale || 'en';
+      const version = process.env.release || '0';
+      const versionMd = `${version.replace(/\./g, '')}.md`;
+
+      const path = local !== 'en' ? `${local}/${versionMd}` : versionMd;
+
+      try {
+        // https://webpack.js.org/api/module-methods/#magic-comments
+        const data = await import(
+          /* webpackInclude: /\.md$/ */
+          /* webpackMode: "lazy" */
+          /* webpackPrefetch: true */
+          /* webpackPreload: true */
+          `changeLogs/${path}`
+        );
+        if (data.default && typeof data.default === 'string') {
+          updateContent = data.default;
+        }
+      } catch (error) {
+        console.error('Changelog loading error', error);
+      }
+
       dispatch.appVersion.setField({
         updateContent,
         ...(firstOpen &&
