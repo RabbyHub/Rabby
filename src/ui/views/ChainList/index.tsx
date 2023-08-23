@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
 import { useTranslation } from 'react-i18next';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const Null = () => null;
 
@@ -19,7 +20,14 @@ const List = ({ list }: { list: Chain[] }) => {
           return (
             <div className="chain-list-item" key={item.id}>
               <img src={item.logo} alt="" />
-              {item.name}
+              <TooltipWithMagnetArrow
+                title={item.name}
+                className="rectangle w-[max-content]"
+              >
+                <span className="overflow-hidden overflow-ellipsis">
+                  {item.name}
+                </span>
+              </TooltipWithMagnetArrow>
             </div>
           );
         })}
