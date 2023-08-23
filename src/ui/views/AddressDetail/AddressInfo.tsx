@@ -113,7 +113,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         <div className="rabby-list-item-content pr-11">
           <div className="rabby-list-item-label">
             {t('page.addressDetail.address')}
-            <div className="rabby-list-item-desc flex gap-4 text-[13px]">
+            <div className="rabby-list-item-desc flex gap-4 text-[12px]">
               {address}
               <img
                 src={IconCopy}
