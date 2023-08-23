@@ -82,8 +82,8 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     hoverBorder = true,
     px = 16,
     py = 16,
-    bgColor = '#fff',
-    hoverBgColor = 'rgba(134, 151, 255, 0.1)',
+    bgColor = '#191919',
+    hoverBgColor = '#292929',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',
@@ -119,7 +119,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
 const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
   position: relative;
   height: 56px;
-  background: var(--brand-default, #7084ff);
+  background: var(--brand-default, #141414);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,8 +135,8 @@ const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
       : ''}
 
   .title {
-    font-weight: 500;
-    font-size: 20px;
+    font-weight: 600;
+    font-size: 16px;
     line-height: 23px;
     display: flex;
     justify-content: center;

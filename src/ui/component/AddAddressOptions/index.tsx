@@ -255,11 +255,11 @@ const AddAddressOptions = () => {
   return (
     <div className="rabby-container pb-[12px]" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
-        <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
+        <div className="rounded-[6px] mb-[12px]" key={index}>
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
-                <div className="pl-[12px] text-13 leading-[15px] text-gray-title font-medium">
+                <div className="pl-[12px] text-13 leading-[15px] text-white/80 font-medium">
                   {e.content}
                 </div>
               </Item>
@@ -268,7 +268,7 @@ const AddAddressOptions = () => {
         </div>
       ))}
 
-      <div className="bg-white rounded-[6px] mb-[12px]">
+      <div className="rounded-[6px] mb-[12px]">
         {renderList.map((item) => {
           const isSelected = selectedWalletType === item.key;
           return (
@@ -276,7 +276,7 @@ const AddAddressOptions = () => {
               <Item
                 hoverBorder={false}
                 leftIcon={item.icon}
-                className={clsx('bg-transparent', item.key)}
+                className={clsx(item.key)}
                 rightIconClassName={clsx(
                   'ml-[8px] transition-transform',
                   isSelected ? '-rotate-90' : 'rotate-90'
@@ -287,7 +287,7 @@ const AddAddressOptions = () => {
                   );
                 }}
               >
-                <div className="pl-[12px] text-13 leading-[15px] text-gray-title font-medium">
+                <div className="pl-[12px] text-13 leading-[15px] text-white/80 font-medium">
                   {item.title}
                 </div>
                 <div className="ml-auto relative w-[52px] h-[20px]">
@@ -337,7 +337,7 @@ const AddAddressOptions = () => {
                         rightIcon={null}
                         onClick={v.onClick}
                       >
-                        <span className="text-12 font-medium text-gray-title mt-[8px]">
+                        <span className="text-12 font-medium text-white/80 mt-[8px]">
                           {v.content}
                         </span>
                       </Item>
@@ -350,12 +350,12 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px]">
+      <div className="rounded-[6px]">
         {bottomList.map((e) => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
               <div className="flex flex-col pl-[12px]">
-                <div className=" text-13 leading-[15px] text-gray-title font-medium">
+                <div className=" text-13 leading-[15px] text-white/80 font-medium">
                   {e.content}
                 </div>
                 <div className="text-12 text-gray-subTitle">{e.subText}</div>
