@@ -524,7 +524,7 @@ const getGasLimitBaseAccountBalance = ({
     )
   ) {
     // if avaliableGasToken is enough to pay gas fee of recommendGasLimit * recommendGasLimitRatio, use recommendGasLimit * recommendGasLimitRatio as gasLimit
-    return Math.floor(Number(recommendGasLimit) * recommendGasLimitRatio);
+    return Math.ceil(Number(recommendGasLimit) * recommendGasLimitRatio);
   }
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
   if (
