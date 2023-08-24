@@ -434,7 +434,15 @@
       "balanceError": {
         "insufficientBalance": "Insufficient balance"
       },
-      "max": "MAX"
+      "max": "MAX",
+      "sectionMsgDataForEOA": {
+        "placeholder": "Optional",
+        "title": "Message"
+      },
+      "sectionMsgDataForContract": {
+        "placeholder": "Optional",
+        "title": "Contract Call"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
