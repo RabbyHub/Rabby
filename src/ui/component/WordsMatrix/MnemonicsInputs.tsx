@@ -22,7 +22,7 @@ const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 
 const NumberFlag = styled.div`
-  color: ${LessPalette['@color-title']};
+  color: white;
   font-weight: 400;
   font-size: 12px;
   height: 14px;
