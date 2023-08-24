@@ -373,11 +373,13 @@ const Dashboard = () => {
                   <AddressViewer
                     address={currentAccount.address}
                     showArrow={false}
-                    className={'text-12 text-white opacity-60'}
+                    className={'text-12 text-[#7A7A7A]'}
                   />
                 </div>
               </div>
-              <div>W</div>
+              <div className="flex items-center justify-center text-12 text-[#3D3D3D]">
+                W
+              </div>
             </div>
           )}
           {/* {currentAccount && (
