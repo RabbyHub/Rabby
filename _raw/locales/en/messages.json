@@ -683,9 +683,9 @@
         "comingSoon": "Coming soon",
         "soon": "Soon",
         "refreshTheWebPageToTakeEffect": "Refresh the web page to take effect",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabby is in use and Metamask is banned",
+        "rabbyIsInUseAndMetamaskIsBanned": "Companyon is in use and Metamask is banned",
         "flip": "Flip",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMask is in use and Rabby is banned",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask is in use and Companyon is banned",
         "transactionNeedsToSign": "transaction needs to sign",
         "transactionsNeedToSign": "transactions need to sign",
         "view": "View",
@@ -706,7 +706,7 @@
         "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
         "connected": "Connected",
         "notConnected": "Not connected",
-        "connectedDapp": "Rabby is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage.",
+        "connectedDapp": "Companyon is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage.",
         "noDappFound": "No Dapp found",
         "disconnectAll": "Disconnect All",
         "disconnectRecentlyUsed": {
@@ -723,11 +723,11 @@
       "feedback": {
         "directMessage": {
           "content": "Direct Message",
-          "description": "Chat with Rabby Wallet Official on DeBank"
+          "description": "Chat with Companyon Wallet Official on DeBank"
         },
         "proposal": {
           "content": "Proposal",
-          "description": "Submit a proposal for Rabby Wallet on DeBank"
+          "description": "Submit a proposal for Companyon Wallet on DeBank"
         },
         "title": "Feedback"
       },
@@ -752,16 +752,16 @@
         }
       },
       "rabbyBadge": {
-        "imageLabel": "rabby badge",
-        "title": "Claim Rabby Badge for",
+        "imageLabel": "companyon badge",
+        "title": "Claim Companyon Badge for",
         "enterClaimCode": "Enter claim code",
-        "swapTip": "You need to complete a swap with notable dex within Rabby Wallet first.",
+        "swapTip": "You need to complete a swap with notable dex within Companyon Wallet first.",
         "goToSwap": "Go to Swap",
         "claim": "Claim",
         "viewYourClaimCode": "View your claim code",
         "noCode": "You haven’t activated claim code for this address",
         "learnMoreOnDebank": "Learn more on DeBank",
-        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
+        "rabbyValuedUserNo": "Companyon Valued User No.{{num}}",
         "claimSuccess": "Claim Success",
         "viewOnDebank": "View on DeBank"
       },
@@ -794,19 +794,19 @@
         "save": "Save",
         "pendingTransactionCleared": "Pending transaction cleared",
         "clearPending": "Clear Pending",
-        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
+        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Companyon does not match the state on-chain.",
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
         "autoLockTime": "Auto lock time",
-        "claimRabbyBadge": "Claim Rabby Badge!",
+        "claimRabbyBadge": "Claim Companyon Badge!",
         "cancel": "Cancel",
         "enableWhitelist": "Enable Whitelist",
         "disableWhitelist": "Disable Whitelist",
-        "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Rabby.",
+        "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Companyon.",
         "disableWhitelistTip": "You can send assets to any address once disabled",
         "warning": "Warning",
         "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
         "updateVersion": {
-          "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
+          "content": "A new update for Companyon Wallet is available. Click to check how to update manually.",
           "okText": "See Tutorial",
           "successTip": "You are using the latest version"
         },
@@ -837,8 +837,8 @@
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
         "blocked": "Blocked",
-        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
-        "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
+        "selectedCustom": "Token is not listed by Companyon. You've added it to the token list by custom.",
+        "notSelectedCustom": "Token is not listed by Companyon. It will be added to the token list if you switch on.",
         "customized": "Customized",
         "scamTx": "Scam tx",
         "txFailed": "Failed",
@@ -958,14 +958,14 @@
           "answer": "A 12, 18, or 24-word phrase used to control your assets."
         },
         "isItSafeToImportItInRabby": {
-          "question": "Is it safe to import it in Rabby?",
+          "question": "Is it safe to import it in Companyon?",
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
         "importError": "[CreateMnemonics] unexpected step {{0}}",
         "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
         "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
-        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
-        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
+        "importQuestion3": "The seed phrase is only stored on my computer, and Companyon has no access to it.",
+        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Companyon cannot retrieve it for me.",
         "riskTips": "Before you start, please read and keep the following security tips in mind.",
         "showSeedPhrase": "Show Seed Phrase",
         "backup": "Backup Seed Phrase",
@@ -982,12 +982,12 @@
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
-        "step2": "Import the seed phrase or private key in Rabby",
+        "step2": "Import the seed phrase or private key in Companyon",
         "step3": "Import is completed and all your assets will <br /> appear automatically",
         "how": "How to import my MetaMask Account?",
         "step": "Step",
         "importSeedPhrase": "Import the seed phrase or private key",
-        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Companyon will never have access to your private information."
       },
       "privateKey": {
         "required": "Please input Private key",
@@ -997,7 +997,7 @@
           "answer": "A string of letters and numbers used to control your assets."
         },
         "isItSafeToImportItInRabby": {
-          "question": "Is it safe to import it in Rabby?",
+          "question": "Is it safe to import it in Companyon?",
           "answer": "Yes, it will be stored locally on your browser and only accessible to you."
         },
         "isItPossibleToImportKeystore": {
