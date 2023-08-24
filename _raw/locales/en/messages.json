@@ -36,7 +36,7 @@
       "gasPriceTitle": "Gas Price (Gwei)",
       "maxPriorityFee": "Max Priority Fee (Gwei)",
       "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
-      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
+      "eip1559Desc2": "Here in Companyon, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
       "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
       "gasLimitTitle": "Gas limit",
       "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
@@ -105,7 +105,7 @@
         "trustValueLessThan": "Trust value ≤ {{value}}",
         "deployTimeLessThan": "Deployed time < {{value}} days",
         "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby",
+        "flagByRabby": "Flagged by Companyon",
         "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeTokenApprove": {
@@ -166,8 +166,8 @@
       "neverInteracted": "Never interacted before",
       "transacted": "Transacted before",
       "neverTransacted": "Never transacted before",
-      "fakeTokenAlert": "This is a scam token marked by Rabby",
-      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
+      "fakeTokenAlert": "This is a scam token marked by Companyon",
+      "scamTokenAlert": "This is potentially a low-quality and scam token based on Companyon's detection",
       "trusted": "Trusted",
       "blocked": "Blocked",
       "noMark": "No mark",
@@ -176,7 +176,7 @@
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
       "unknownActionType": "Unknown action type",
-      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
+      "sigCantDecode": "This signature can't be decoded by Companyon, but it doesn't imply any risk",
       "nftCollection": "NFT Collection",
       "floorPrice": "Floor price",
       "contractAddress": "Contract address",
@@ -214,7 +214,7 @@
         "connected": "Connected and ready to sign",
         "howToSwitch": "How to switch",
         "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
-        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
+        "connectBeforeSign": "{{0}} is not connected to Companyon, please connect before signing",
         "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
         "latency": "Latency",
         "requestSuccessToast": "Request successfully sent.",
@@ -313,7 +313,7 @@
         "label": "Transactions",
         "empty": {
           "title": "No signed transactions yet",
-          "desc": "All transactions signed via Rabby will be listed here."
+          "desc": "All transactions signed via Companyon will be listed here."
         },
         "common": {
           "unlimited": "unlimited",
@@ -353,7 +353,7 @@
         "label": "Text",
         "empty": {
           "title": "No signed texts yet",
-          "desc": "All texts signed via Rabby will be listed here."
+          "desc": "All texts signed via Companyon will be listed here."
         }
       }
     },
@@ -541,14 +541,14 @@
       "topUpChain": "Top Up Chain",
       "Amount": "Amount",
       "Continue": "Continue",
-      "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
+      "InsufficientBalance": "There is not enough balance in Companyon's contract address for the current chain. Please try again later.",
       "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
       "No_Tokens": "No Tokens",
       "InsufficientBalanceTips": "Insufficient balance",
       "payment": "Gas Top Up Payment",
       "Loading_Tokens": "Loading Tokens...",
       "Including-service-fee": "Including {{fee}} service fee",
-      "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
+      "service-fee-tip": "By providing the service for Gas Top Up, Companyon has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
       "Confirm": "Confirm",
       "Select-from-supported-tokens": "Select from supported tokens",
       "Value": "Value",
@@ -583,7 +583,7 @@
       "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
-      "rabby-fee": "Rabby fee",
+      "rabby-fee": "Companyon fee",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
       "approve-tips": "1.Approve → 2.Swap",
@@ -595,7 +595,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
       "enable-it": "Enable it",
       "this-token-pair-is-not-supported": "This token pair is not supported",
-      "QuoteLessWarning": "The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
+      "QuoteLessWarning": "The receiving amount is estimated from Companyon transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
       "by-transaction-simulation-the-quote-is-valid": "By transaction simulation, the quote is valid",
       "wrap-contract": "Wrap Contract",
       "directlySwap": "Wrapping {{symbol}} tokens directly with the smart contract",
@@ -623,7 +623,7 @@
       "i-understand-and-accept-it": "I understand and accept it",
       "confirm": "Confirm",
       "tradingSettingTip1": "1. Once enabled, you will interact with the contract from the exchange directly",
-      "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
+      "tradingSettingTip2": "2. Companyon is not liable for any risks arising from the contract of the exchanges",
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "Estimate:",
       "actual": "Actual:"
@@ -640,7 +640,7 @@
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
-      "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
+      "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Companyon will NOT be able to recover it.",
       "delete-checklist-2": "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
       "confirm": "Confirm",
       "cancel": "Cancel",
@@ -1009,9 +1009,9 @@
       "importedSuccessfully": "Imported Successfully",
       "ledger": {
         "title": "Connect Ledger",
-        "cameraPermissionTitle": "Allow Rabby to access the camera",
-        "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
-        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "cameraPermissionTitle": "Allow Companyon to access the camera",
+        "cameraPermission1": "Allow Companyon to access the camera in the browser pop-up",
+        "allowRabbyPermissionsTitle": "Allow Companyon permissions to:",
         "ledgerPermission1": "Connect to an HID device",
         "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
         "permissionsAuthorized": "Permissions Authorized",
@@ -1060,14 +1060,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "The address is removed from Rabby",
-          "added": "The address is added to Rabby",
+          "removed": "The address is removed from Companyon",
+          "added": "The address is added to Companyon",
           "connectError": "Connect has stopped. Please refresh the page to connect again.",
           "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
         },
         "waiting": "Waiting",
         "clickToGetInfo": "Click to get the information on-chain",
-        "addToRabby": "Add to Rabby",
+        "addToRabby": "Add to Companyon",
         "basicInformation": "Basic information",
         "addresses": "Addresses",
         "loadingAddress": "Loading {{0}}/{{1}} addresses",
@@ -1166,7 +1166,7 @@
         "manageBitbox02": "Manage BitBox02",
         "done": "Done",
         "addressesIn": "Addresses in {{0}}",
-        "addressesInRabby": "Addresses in Rabby{{0}}",
+        "addressesInRabby": "Addresses in Companyon{{0}}",
         "qrCode": {
           "switch": {
             "title": "Switch to a new {{0}} device",
@@ -1205,17 +1205,17 @@
     },
     "addToken": {
       "noTokenFound": "No token found",
-      "tokenSupported": "Token has been supported on Rabby",
+      "tokenSupported": "Token has been supported on Companyon",
       "tokenCustomized": "Current token has already been added to customized",
       "tokenNotFound": "Token not found from this contract address",
-      "title": "Add custom token to Rabby",
+      "title": "Add custom token to Companyon",
       "balance": "Balance",
       "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
       "noTokenFoundOnThisChain": "No token found on this chain"
     },
     "switchChain": {
       "title": "Switching to {{chain}}",
-      "chainNotSupport": "The requested chain is not supported by Rabby yet",
+      "chainNotSupport": "The requested chain is not supported by Companyon yet",
       "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
     },
     "signText": {
@@ -1248,10 +1248,10 @@
       "listedBy": "Listed by",
       "sitePopularity": "Site popularity",
       "myMark": "My Mark",
-      "flagByRabby": "Flagged by Rabby",
+      "flagByRabby": "Flagged by Companyon",
       "flagByMM": "Flagged by MetaMask",
       "flagByScamSniffer": "Flagged by ScamSniffer",
-      "verifiedByRabby": "Verified by Rabby",
+      "verifiedByRabby": "Verified by Companyon",
       "foundForbiddenRisk": "Found forbidden risks. Connection is blocked.",
       "markAsTrustToast": "Mark as \"Trusted\"",
       "markAsBlockToast": "Mark as \"Blocked\"",
@@ -1288,7 +1288,7 @@
       "backup-seed-phrase": "Backup Seed Phrase",
       "delete-address": "Delete address",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
-      "direct-delete-desc": "This address is a {{renderBrand}} address, Rabby does not store the private key or seed phrase for this address, you can just delete it",
+      "direct-delete-desc": "This address is a {{renderBrand}} address, Companyon does not store the private key or seed phrase for this address, you can just delete it",
       "admins": "Admins",
       "tx-requires": "Any transaction requires <2>{{num}}</2> confirmations",
       "edit-memo-title": "Edit address note",
@@ -1317,7 +1317,7 @@
       "closed": "Closed",
       "empty": "No custom RPC",
       "title": "Custom RPC",
-      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
+      "desc": "Enabling custom RPC will replace Companyon as the default node. To continue         using Companyon, please disable or remove the custom RPC node.",
       "add": "Add RPC",
       "EditRPCModal": {
         "invalidRPCUrl": "Invalid RPC URL",
@@ -1330,9 +1330,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "Request DeBank Testnet Gas Token",
-      "mintedTip": "Rabby Badge holders can request once a day",
+      "mintedTip": "Companyon Badge holders can request once a day",
       "notMintedTip": "Request available for Rabby Badge holders only",
-      "claimBadgeBtn": "Claim Rabby Badge",
+      "claimBadgeBtn": "Claim Companyon Badge",
       "time": "Per day",
       "requested": "You have requested today",
       "requestBtn": "Request"
@@ -1374,7 +1374,7 @@
       "clickToShowQr": "Click to show private key QR Code"
     },
     "ethSign": {
-      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Companyon does not support this method."
     },
     "createPassword": {
       "title": "Set Password",
@@ -1389,7 +1389,7 @@
     "welcome": {
       "step1": {
         "title": "Access All Dapps",
-        "desc": "Rabby connects to all Dapps that MetaMask supports"
+        "desc": "Companyon connects to all Dapps that MetaMask supports"
       },
       "step2": {
         "title": "Self-custodial",
