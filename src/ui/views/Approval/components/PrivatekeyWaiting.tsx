@@ -4,9 +4,9 @@ import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
-  KEYRINGS_LOGOS,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
+  KEYRING_ICONS,
   WALLETCONNECT_STATUS_MAP,
 } from 'consts';
 import {
@@ -69,12 +69,12 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       case KEYRING_CLASS.PRIVATE_KEY:
         return {
           name: 'Private Key',
-          icon: KEYRINGS_LOGOS[type],
+          icon: KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY],
         };
       case KEYRING_CLASS.MNEMONIC:
         return {
           name: 'Seed Phrase',
-          icon: KEYRINGS_LOGOS[type],
+          icon: KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY],
         };
       default:
         break;
