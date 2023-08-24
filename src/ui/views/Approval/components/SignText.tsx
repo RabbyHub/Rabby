@@ -52,6 +52,8 @@ export const WaitingSignComponent = {
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'CommonWaiting',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'CommonWaiting',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'CommonWaiting',
+  [KEYRING_CLASS.MNEMONIC]: 'PrivatekeyWaiting',
+  [KEYRING_CLASS.PRIVATE_KEY]: 'PrivatekeyWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {

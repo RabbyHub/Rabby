@@ -14,7 +14,7 @@ import { noop } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
 
 export interface Props {
-  hdType: 'wired' | 'wireless' | 'qrcode';
+  hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey';
   status:
     | 'SENDING'
     | 'WAITING'
@@ -55,6 +55,8 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         return ConnectWiredSVG;
       case 'wireless':
         return ConnectWirelessSVG;
+      case 'privatekey':
+        return;
       case 'qrcode':
       default:
         return ConnectQRCodeSVG;
@@ -92,9 +94,11 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
 
   return (
     <div className={clsx('flex flex-col items-center', 'relative flex-1')}>
-      <div className={clsx('p-10')}>
-        <img src={sendUrl} className={'w-[140px] h-[140px]'} />
-      </div>
+      {sendUrl ? (
+        <div className={clsx('p-10')}>
+          <img src={sendUrl} className={'w-[140px] h-[140px]'} />
+        </div>
+      ) : null}
       <div
         className={clsx(
           'text-[20px] font-medium leading-[24px]',

@@ -73,6 +73,10 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRetry = async (showToast = true) => {
+    if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
+      message.success(t('page.signFooterBar.ledger.resubmited'));
+      return;
+    }
     if (sessionStatus === 'DISCONNECTED') return;
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);

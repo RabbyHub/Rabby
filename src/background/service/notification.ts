@@ -39,6 +39,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'QRHardWareWaiting',
   'WatchAddressWaiting',
   'CommonWaiting',
+  'PrivatekeyWaiting',
 ];
 
 // something need user approval in window
