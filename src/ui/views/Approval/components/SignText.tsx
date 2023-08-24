@@ -31,6 +31,7 @@ import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { isTestnetChainId } from '@/utils/chain';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
+import { WaitingSignMessageComponent } from './map';
 
 interface SignTextProps {
   data: string[];
@@ -43,18 +44,6 @@ interface SignTextProps {
   account?: Account;
   method?: string;
 }
-
-export const WaitingSignComponent = {
-  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAddressWaiting',
-  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'QRHardWareWaiting',
-  [KEYRING_CLASS.HARDWARE.LEDGER]: 'LedgerHardwareWaiting',
-  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'CommonWaiting',
-  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'CommonWaiting',
-  [KEYRING_CLASS.HARDWARE.TREZOR]: 'CommonWaiting',
-  [KEYRING_CLASS.HARDWARE.BITBOX02]: 'CommonWaiting',
-  [KEYRING_CLASS.MNEMONIC]: 'PrivatekeyWaiting',
-  [KEYRING_CLASS.PRIVATE_KEY]: 'PrivatekeyWaiting',
-};
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -207,9 +196,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+    if (
+      currentAccount?.type &&
+      WaitingSignMessageComponent[currentAccount?.type]
+    ) {
       resolveApproval({
-        uiRequestComponent: WaitingSignComponent[currentAccount?.type],
+        uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
         type: currentAccount.type,
         address: currentAccount.address,
         extra: {

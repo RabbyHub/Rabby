@@ -19,7 +19,7 @@ import {
 } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
-import { WaitingSignComponent } from './SignText';
+import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -305,7 +305,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
     if (isGnosis && params.account) {
-      if (WaitingSignComponent[params.account.type]) {
+      if (WaitingSignMessageComponent[params.account.type]) {
         wallet.signTypedData(
           params.account.type,
           params.account.address,
@@ -316,7 +316,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           }
         );
         resolveApproval({
-          uiRequestComponent: WaitingSignComponent[params.account.type],
+          uiRequestComponent: WaitingSignMessageComponent[params.account.type],
           type: params.account.type,
           address: params.account.address,
           data: params.data,
@@ -363,9 +363,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.log(e);
       }
     }
-    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+    if (
+      currentAccount?.type &&
+      WaitingSignMessageComponent[currentAccount?.type]
+    ) {
       resolveApproval({
-        uiRequestComponent: WaitingSignComponent[currentAccount?.type],
+        uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
         type: currentAccount.type,
         address: currentAccount.address,
         extra: {
