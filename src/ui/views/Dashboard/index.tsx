@@ -54,6 +54,7 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import PageWrapper from '@/ui/component/PageWrapper';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -329,7 +330,7 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   return (
-    <>
+    <PageWrapper>
       <div
         className={clsx('dashboard', {
           'metamask-active': showGnosisWrongChainAlert && isGnosis,
@@ -412,10 +413,10 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-          <BalanceView
+          {/* <BalanceView
             currentAccount={currentAccount}
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}
-          />
+          /> */}
           {isGnosis ? (
             <Queue
               count={gnosisPendingCount || 0}
@@ -562,7 +563,7 @@ const Dashboard = () => {
           count={pendingApprovalCount}
         />
       )}
-    </>
+    </PageWrapper>
   );
 };
 

@@ -42,7 +42,7 @@ const TipTextList = styled.div`
     font-weight: 700;
     font-size: 13px;
     line-height: 15px;
-    color: #13141a;
+    color: white;
     margin-top: 0;
     margin-bottom: 8px;
   }
@@ -50,7 +50,7 @@ const TipTextList = styled.div`
     font-weight: 400;
     font-size: 13px;
     line-height: 15px;
-    color: #4b4d59;
+    color: #7a7a7a;
     margin: 0;
   }
   section + section {
@@ -138,14 +138,14 @@ const ImportMnemonics = () => {
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
   return (
-    <main className="w-screen h-screen bg-gray-bg">
+    <main className="w-screen h-screen">
       <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
         <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
         <Form
           form={form}
           className={clsx(
             'px-[100px] pt-[36px] pb-[40px]',
-            'bg-white rounded-[12px]'
+            'bg-form-bg rounded-[12px]'
           )}
           onFinish={({ mnemonics }: { mnemonics: string }) => run(mnemonics)}
           onValuesChange={(states) => {
@@ -161,7 +161,7 @@ const ImportMnemonics = () => {
             className={clsx(
               'flex items-center justify-center',
               'space-x-[16px] mb-[24px]',
-              'text-[20px] text-gray-title'
+              'text-[20px] text-white/80'
             )}
           >
             <img className="w-[24px]" src={IconMnemonicInk} />
@@ -171,7 +171,7 @@ const ImportMnemonics = () => {
             <Toptip className="mb-[28px]">
               {t('page.newAddress.seedPhrase.importTips')}
             </Toptip>
-            <FormItemWrapper className="relative">
+            <FormItemWrapper className="relative bg-[#292929]">
               <Form.Item
                 name="mnemonics"
                 className={clsx(
