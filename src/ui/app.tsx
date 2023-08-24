@@ -41,7 +41,7 @@ function initAppMeta() {
   head?.appendChild(icon);
   const name = document.createElement('meta');
   name.name = 'name';
-  name.content = 'Rabby';
+  name.content = 'Companyon';
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';

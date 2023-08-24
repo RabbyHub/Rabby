@@ -73,7 +73,7 @@ const MatrixWrapper = styled.div.withConfig<{
     position: absolute;
     top: 8px;
     left: 8px;
-    color: #707280;
+    color: #ffffffcc;
   }
 
   /* for MnemonicsInputs :start */
