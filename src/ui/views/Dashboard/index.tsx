@@ -336,8 +336,51 @@ const Dashboard = () => {
           'metamask-active': showGnosisWrongChainAlert && isGnosis,
         })}
       >
-        <div className={clsx('main', showChain && 'show-chain-bg')}>
+        <div
+          className={clsx('main px-[12px] flex', showChain && 'show-chain-bg')}
+        >
           {currentAccount && (
+            <div
+              className="flex px-[12px] gap-[10px] m-auto w-full items-center"
+              onClick={switchAddress}
+            >
+              <div className="flex items-center justify-center">
+                <img
+                  className={clsx(
+                    'icon w-[32px] h-[32px]',
+                    opacity60 && 'opacity-60'
+                  )}
+                  src={
+                    brandIcon ||
+                    WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
+                    KEYRING_ICONS_WHITE[currentAccount.type]
+                  }
+                />
+                <CommonSignal
+                  type={currentAccount.type}
+                  brandName={currentAccount.brandName}
+                  address={currentAccount.address}
+                />
+              </div>
+              <div className="flex-1 flex flex-col">
+                <div className="flex gap-2">
+                  <div className="text-white font-semibold" title={displayName}>
+                    {displayName}
+                  </div>
+                  <div className="font-semibold text-[#7A7A7A]">$28,981.02</div>
+                </div>
+                <div>
+                  <AddressViewer
+                    address={currentAccount.address}
+                    showArrow={false}
+                    className={'text-12 text-white opacity-60'}
+                  />
+                </div>
+              </div>
+              <div>W</div>
+            </div>
+          )}
+          {/* {currentAccount && (
             <div
               className={clsx('flex header items-center relative', topAnimate)}
             >
@@ -412,7 +455,7 @@ const Dashboard = () => {
                 <IconAddAddress className="text-white w-[20px] h-[20px]" />
               </div>
             </div>
-          )}
+          )} */}
           {/* <BalanceView
             currentAccount={currentAccount}
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}

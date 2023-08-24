@@ -13,8 +13,8 @@ const settingsIcon = (
 function PageWrapper(props: PropsWithChildren<any>) {
   const { children } = props;
   return (
-    <section className="w-full h-full flex flex-col bg-[#000000CC] h-8 fixed mb-8">
-      <header className="bg-[#0F0F0F] flex gap-3 items-center p-1">
+    <section className="w-full flex flex-col bg-[#000000CC] h-8 fixed mb-8">
+      <header className="bg-[#0F0F0F] flex gap-3 items-center p-[4px]">
         <button>{closeIcon}</button>
         <div className="flex-1 text-12 font-semibold">Companyon</div>
         <button>{settingsIcon}</button>
