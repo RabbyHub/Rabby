@@ -631,7 +631,7 @@ class ProviderController extends BaseController {
           i18n.t('background.error.txPushFailed'),
           errMsg
         );
-        transactionHistoryService.removeSigningTx(signingTxId!);
+        // transactionHistoryService.removeSigningTx(signingTxId!);
         throw new Error(errMsg);
       }
     } catch (e) {
@@ -649,7 +649,7 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
       }
-      transactionHistoryService.removeSigningTx(signingTxId!);
+      // transactionHistoryService.removeSigningTx(signingTxId!);
       throw new Error(e);
     }
   };

@@ -42,7 +42,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     (item) => item.id === (params.chainId || 1)
   )!;
   const [connectStatus, setConnectStatus] = React.useState(
-    WALLETCONNECT_STATUS_MAP.WAITING
+    WALLETCONNECT_STATUS_MAP.SUBMITTING
   );
   const [result, setResult] = React.useState('');
   const [isClickDone, setIsClickDone] = React.useState(false);
@@ -57,7 +57,13 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   const [description, setDescription] = React.useState('');
 
   const handleRetry = async () => {
-    message.success(t('page.signFooterBar.ledger.resubmited'));
+    if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
+      message.success(t('page.signFooterBar.ledger.resubmited'));
+      return;
+    }
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
+    await wallet.resendSign();
+    message.success(t('page.signFooterBar.ledger.resent'));
   };
 
   const handleCancel = () => {

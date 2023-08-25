@@ -49,6 +49,7 @@ class NotificationService extends Events {
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
   isLocked = false;
+  currentRequestDeferFn?: () => void;
 
   get approvals() {
     return this._approvals;
@@ -354,6 +355,14 @@ class NotificationService extends Events {
     winMgr.openNotification(winProps).then((winId) => {
       this.notifiWindowId = winId!;
     });
+  };
+
+  setCurrentRequestDeferFn = (fn: () => void) => {
+    this.currentRequestDeferFn = fn;
+  };
+
+  callCurrentRequestDeferFn = () => {
+    return this.currentRequestDeferFn?.();
   };
 }
 

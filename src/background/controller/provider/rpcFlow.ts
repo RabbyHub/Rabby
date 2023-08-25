@@ -219,37 +219,39 @@ const flowContext = flow
     const {
       session: { origin },
     } = request;
-    const requestDefer = Promise.resolve(
-      providerController[mapMethod]({
-        ...request,
-        approvalRes,
-      })
-    );
-
-    requestDefer
-      .then((result) => {
-        if (isSignApproval(approvalType)) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.SIGN_FINISHED,
-            params: {
-              success: true,
-              data: result,
-            },
+    const requestDeferFn = () =>
+      new Promise((resolve, reject) => {
+        return providerController[mapMethod]({
+          ...request,
+          approvalRes,
+        })
+          .then((result) => {
+            if (isSignApproval(approvalType)) {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.SIGN_FINISHED,
+                params: {
+                  success: true,
+                  data: result,
+                },
+              });
+            }
+            return result;
+          })
+          .then(resolve)
+          .catch((e: any) => {
+            if (isSignApproval(approvalType)) {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.SIGN_FINISHED,
+                params: {
+                  success: false,
+                  errorMsg: JSON.stringify(e),
+                },
+              });
+            }
           });
-        }
-        return result;
-      })
-      .catch((e: any) => {
-        if (isSignApproval(approvalType)) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.SIGN_FINISHED,
-            params: {
-              success: false,
-              errorMsg: JSON.stringify(e),
-            },
-          });
-        }
       });
+    notificationService.setCurrentRequestDeferFn(requestDeferFn);
+    const requestDefer = requestDeferFn();
     async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
       ctx.request.requestedApproval = true;
       const res = await notificationService.requestApproval({

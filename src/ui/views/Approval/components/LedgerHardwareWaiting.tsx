@@ -80,7 +80,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     if (sessionStatus === 'DISCONNECTED') return;
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.requestKeyring(account?.type || '', 'resend', null);
+    await wallet.resendSign();
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
@@ -251,7 +251,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setStatusProp('SENDING');
-        setContent(t('page.signFooterBar.ledger.siging'));
+        setContent(`${t('page.signFooterBar.ledger.siging')}...`);
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTING:

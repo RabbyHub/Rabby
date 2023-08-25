@@ -67,7 +67,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     }
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.requestKeyring(account?.type || '', 'resend', null);
+    await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
   };
 
