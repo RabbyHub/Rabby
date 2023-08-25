@@ -58,7 +58,7 @@ function BalanceInfo({ currentAccount, accountBalanceUpdateNonce = 0 }) {
       (balanceLoading && !balanceFromCache) ||
       currentBalance === null ||
       (balanceFromCache && currentBalance === 0) ? (
-        <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
+        <div />
       ) : (
         <BalanceLabel isCache={balanceFromCache} balance={currentBalance} />
       )}

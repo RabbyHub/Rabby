@@ -11,6 +11,7 @@ export { default as IconLedger } from './icon-ledger.svg';
 export { default as IconTrezor } from './icon-trezor.svg';
 export { default as IconOnekey } from './icon-onekey.svg';
 
+export { ReactComponent as SvgViaScore } from './icon-via-score.svg';
 export { ReactComponent as SvgIconCSetings } from './icon-c-settings.svg';
 export { ReactComponent as SvgIconCClose } from './icon-c-close.svg';
 export { ReactComponent as SvgIconCross } from './cross.svg';

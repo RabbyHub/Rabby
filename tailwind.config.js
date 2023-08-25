@@ -31,6 +31,9 @@ module.exports = {
       sm: { max: '600px' },
       lg: { min: '600px' },
     },
+    backgroundImage: {
+      buttonGradient: 'linear-gradient(180deg, #363636 0%, #292929 100%)',
+    },
     colors: {
       form: {
         bg: '#101010',
