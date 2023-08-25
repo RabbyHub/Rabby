@@ -258,7 +258,7 @@
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed,Transaction Submitting...",
+        "submitting": "Signed,Transaction Submitting",
         "resubmited": "Resubmited"
       },
       "common": {

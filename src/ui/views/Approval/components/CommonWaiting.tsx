@@ -250,6 +250,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
   return (
     <ApprovalPopupContainer
+      showAnimation
       hdType={hdType}
       status={statusProp}
       onRetry={handleRetry}

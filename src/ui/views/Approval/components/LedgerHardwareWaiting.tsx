@@ -251,7 +251,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setStatusProp('SENDING');
-        setContent(`${t('page.signFooterBar.ledger.siging')}...`);
+        setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTING:
@@ -296,6 +296,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
   return (
     <ApprovalPopupContainer
+      showAnimation
       hdType="wired"
       status={statusProp}
       onRetry={() => handleRetry()}

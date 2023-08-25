@@ -222,6 +222,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
 
   return (
     <ApprovalPopupContainer
+      showAnimation
       hdType={'privatekey'}
       status={statusProp}
       onRetry={handleRetry}

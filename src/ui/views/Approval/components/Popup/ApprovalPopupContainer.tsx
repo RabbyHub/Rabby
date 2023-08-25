@@ -12,6 +12,7 @@ import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
 import ConnectQRCodeSVG from 'ui/assets/approval/connect-qrcode.svg';
 import { noop } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
+import { Dots } from './Dots';
 
 export interface Props {
   hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey';
@@ -30,6 +31,7 @@ export interface Props {
   onSubmit?: () => void;
   hasMoreDescription?: boolean;
   children?: React.ReactNode;
+  showAnimation?: boolean;
 }
 
 export const ApprovalPopupContainer: React.FC<Props> = ({
@@ -43,6 +45,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   onSubmit = noop,
   hasMoreDescription,
   children,
+  showAnimation,
 }) => {
   const [image, setImage] = React.useState('');
   const [iconColor, setIconColor] = React.useState('');
@@ -109,6 +112,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       >
         {image ? <img src={image} className="w-20 mr-6" /> : null}
         <span>{content}</span>
+        {status === 'SENDING' && showAnimation ? <Dots /> : null}
       </div>
       {/* <div
         className={clsx(
