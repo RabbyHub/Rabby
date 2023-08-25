@@ -98,23 +98,6 @@ const Wrapper = styled.section`
       left: 115px;
     }
   }
-  .chain-watermark {
-    padding: 10px 18px;
-    border-radius: 6px;
-    opacity: 0.4;
-    position: absolute;
-    top: 26px;
-    right: 64px;
-    color: #7084ff;
-    border: 1px solid currentColor;
-    line-height: 1;
-    transform: rotate(-15deg);
-    font-size: 20px;
-    user-select: none;
-    &.testnet {
-      color: #8d91ab;
-    }
-  }
 `;
 
 const Shadow = styled.div`
@@ -130,6 +113,15 @@ const Shadow = styled.div`
     rgba(175, 175, 175, 0.168147) 41.66%,
     rgba(130, 130, 130, 0.35) 83.44%
   );
+`;
+
+const ChainLogo = styled.img`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
 `;
 
 const SecurityLevelTipColor = {
@@ -177,10 +169,9 @@ export const FooterBar: React.FC<Props> = ({
     return origin;
   }, [origin]);
 
-  const { rules, processedRules, isShowTestnet } = useRabbySelector((s) => ({
+  const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
-    isShowTestnet: s.preference.isShowTestnet,
   }));
 
   const currentChain = useMemo(() => {
@@ -245,14 +236,16 @@ export const FooterBar: React.FC<Props> = ({
       >
         {origin && (
           <div className="request-origin">
-            {originLogo && !(origin === INTERNAL_REQUEST_ORIGIN) && (
-              <FallbackSiteLogo
-                url={originLogo}
-                origin={origin}
-                width="20px"
-                height="20px"
-                className="mr-[8px]"
-              />
+            {originLogo && (
+              <div className="relative mr-8">
+                <FallbackSiteLogo
+                  url={originLogo}
+                  origin={origin}
+                  width="24px"
+                  height="24px"
+                />
+                <ChainLogo src={currentChain.logo} />
+              </div>
             )}
             <span className="origin">{displayOirigin}</span>
             <span className="right">{t('page.signFooterBar.requestFrom')}</span>
@@ -318,17 +311,6 @@ export const FooterBar: React.FC<Props> = ({
             >
               {t('page.signFooterBar.ignoreAll')}
             </span>
-          </div>
-        )}
-        {isShowTestnet && (
-          <div
-            className={clsx('chain-watermark', {
-              testnet: currentChain.isTestnet,
-            })}
-          >
-            {currentChain.isTestnet
-              ? t('page.signFooterBar.testnet')
-              : t('page.signFooterBar.mainnet')}
           </div>
         )}
       </Wrapper>
