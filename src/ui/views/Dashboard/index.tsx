@@ -34,6 +34,7 @@ import {
 } from 'ui/store';
 import { isSameAddress, useWallet } from 'ui/utils';
 import {
+  BalanceInfo,
   BalanceView,
   ChainAndSiteSelector,
   GnosisWrongChainAlertBar,
@@ -372,7 +373,10 @@ const Dashboard = () => {
                       {displayName}
                     </div>
                     <div className="font-semibold text-[#7A7A7A]">
-                      $28,981.02
+                      <BalanceInfo
+                        currentAccount={currentAccount}
+                        accountBalanceUpdateNonce={accountBalanceUpdateNonce}
+                      />
                     </div>
                   </div>
                   <div>
