@@ -991,7 +991,7 @@
         "getSig": "获取签名",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "qrcodeDesc": "请使用你的 {{brand}} 扫码签名。<br></br>签名后，点击下方按钮获取签名。",
-        "sigCompleted": "签名已完成",
+        "sigCompleted": "交易已提交",
         "sigReceived": "签名已获取",
         "signWith": "使用 {{brand}} 签名",
         "txFailed": "交易失败",
