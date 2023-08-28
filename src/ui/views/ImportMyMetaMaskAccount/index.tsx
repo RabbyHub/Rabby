@@ -7,9 +7,10 @@ import { useHistory } from 'react-router-dom';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconMnemonics from 'ui/assets/import/mnemonics.svg';
 import IconPrivatekey from 'ui/assets/import/privatekey.svg';
-import { ReactComponent as IconTinRightArrow } from 'ui/assets/address/tiny-arrow-right.svg';
+import IconTinRightArrow from 'ui/assets/address/tiny-arrow-right.svg';
 
 import './style.less';
+import clsx from 'clsx';
 
 export const ImportMyMetaMaskAccount = () => {
   const history = useHistory();
@@ -25,8 +26,13 @@ export const ImportMyMetaMaskAccount = () => {
           e.preventDefault();
           openInTab('https://rabby.io/metamask-export');
         }}
+        className="p-6 bg-[#EEF1FF] text-[#7084FF] text-12 font-medium relative top-8 rounded-[2px]"
       >
-        Guidance <IconTinRightArrow className="inline-block relative" />
+        Click to view tutorial
+        <img
+          src={IconTinRightArrow}
+          className="inline-block relative w-14 h-14"
+        />
       </a>
     </Trans>,
     <Trans i18nKey="page.newAddress.metamask.step2" />,
@@ -53,7 +59,7 @@ export const ImportMyMetaMaskAccount = () => {
     [t]
   );
   return (
-    <div className="add-metamask ">
+    <div className="add-metamask">
       <BlueHeader className="mx-[-20px]">
         {t('page.newAddress.importMyMetamaskAccount')}
       </BlueHeader>
@@ -61,29 +67,43 @@ export const ImportMyMetaMaskAccount = () => {
         <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
           <div className="metamask-shadow" />
 
-          <div className="flex items-center mb-[24px]">
+          <div className="flex items-center">
             <img
               src={IconMetamask}
-              className="w-[44px] h-[44px]"
+              className="w-[32px] h-[32px]"
               alt="MetaMask"
             />
-            <div className="pl-[10px] text-16 font-bold text-gray-title">
+            <div className="pl-[12px] text-[16px] font-medium text-[#192945]">
               {t('page.newAddress.metamask.how')}
             </div>
           </div>
+          <div className="relative rounded border border-[#7084FF] mt-14 mb-16">
+            <div className="absolute left-[9px] top-[-8px] bg-white text-[#7084FF] text-12 font-medium pl-2 pr-4">
+              {t('page.newAddress.metamask.tips')}
+            </div>
+            <div className="p-8 text-[#7084FF] text-12 font-normal leading-[16px]">
+              {t('page.newAddress.metamask.tipsDesc')}
+            </div>
+          </div>
 
-          <div className="">
+          <div className="relative left-[-5px]">
             <Timeline>
               {stepList.map((step, i) => (
                 <Timeline.Item
                   color="transparent"
                   dot={
-                    <span className="text-13 font-bold text-gray-title">
-                      {t('page.newAddress.metamask.step')} {i + 1} :{' '}
+                    <span className="text-13 font-medium text-[#192945]">
+                      {t('page.newAddress.metamask.step')}
+                      {i + 1}:
                     </span>
                   }
                 >
-                  <div className="text-12 leading-[18px] font-medium text-gray-title">
+                  <div
+                    className={clsx(
+                      'text-13 font-medium text-[#192945]',
+                      i === 0 && 'ml-[-2px]'
+                    )}
+                  >
                     {step}
                   </div>
                 </Timeline.Item>
@@ -94,11 +114,11 @@ export const ImportMyMetaMaskAccount = () => {
 
         <div className="bg-white rounded-[6px] ">
           <div className="border-b border-gray-divider py-[15px] px-[19px]">
-            <div className="text-13 leading-[20px] font-medium text-gray-title">
+            <div className="text-15 font-medium text-[#192945]">
               {t('page.newAddress.metamask.importSeedPhrase')}
             </div>
 
-            <div className="mt-[3px] text-12 leading-[18px] text-[#666]">
+            <div className="mt-[3px] text-12 text-[#3E495E]">
               {t('page.newAddress.metamask.importSeedPhraseTips')}
             </div>
           </div>
@@ -109,8 +129,9 @@ export const ImportMyMetaMaskAccount = () => {
               leftIcon={e.icon}
               leftIconClassName="icon"
               onClick={e.onClick}
+              py={15}
             >
-              <div className="pl-[12px] text-13 leading-[15px] font-medium text-gray-title">
+              <div className="pl-[12px] text-13 font-medium text-[#192945]">
                 {e.content}
               </div>
             </Item>
