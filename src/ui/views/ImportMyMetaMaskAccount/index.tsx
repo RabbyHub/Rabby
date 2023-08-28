@@ -64,7 +64,7 @@ export const ImportMyMetaMaskAccount = () => {
         {t('page.newAddress.importMyMetamaskAccount')}
       </BlueHeader>
       <div className="rabby-container">
-        <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
+        <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[12px] mb-[12px]">
           <div className="metamask-shadow" />
 
           <div className="flex items-center">
@@ -86,7 +86,7 @@ export const ImportMyMetaMaskAccount = () => {
             </div>
           </div>
 
-          <div className="relative left-[-5px]">
+          <div className="relative left-[-5px] mr-[-12px]">
             <Timeline>
               {stepList.map((step, i) => (
                 <Timeline.Item
@@ -100,7 +100,7 @@ export const ImportMyMetaMaskAccount = () => {
                 >
                   <div
                     className={clsx(
-                      'text-13 font-medium text-[#192945]',
+                      'text-13 font-medium text-[#192945] leading-[18px]',
                       i === 0 && 'ml-[-2px]'
                     )}
                   >
