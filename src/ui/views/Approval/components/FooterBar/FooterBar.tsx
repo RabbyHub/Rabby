@@ -2,6 +2,7 @@ import { Account } from '@/background/service/preference';
 import { FallbackSiteLogo } from '@/ui/component';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -244,7 +245,12 @@ export const FooterBar: React.FC<Props> = ({
                   width="24px"
                   height="24px"
                 />
-                <ChainLogo src={currentChain.logo} />
+                <TooltipWithMagnetArrow
+                  className="rectangle w-[max-content]"
+                  title={currentChain.name}
+                >
+                  <ChainLogo src={currentChain.logo} />
+                </TooltipWithMagnetArrow>
               </div>
             )}
             <span className="origin">{displayOirigin}</span>
