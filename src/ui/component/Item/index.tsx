@@ -118,7 +118,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
 const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
   position: relative;
   height: 56px;
-  background: var(--brand-default, #7084ff);
+  background: var(--r-brand-default, #7084ff);
   display: flex;
   justify-content: center;
   align-items: center;
