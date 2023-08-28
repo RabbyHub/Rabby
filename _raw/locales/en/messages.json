@@ -437,7 +437,9 @@
       "max": "MAX",
       "sectionMsgDataForEOA": {
         "placeholder": "Optional",
-        "title": "Message"
+        "title": "Message",
+        "currentIsOriginal": "The current input is Original Data. UTF-8 is:",
+        "currentIsUTF8": "The current input is UTF-8. Original Data is:"
       },
       "sectionMsgDataForContract": {
         "placeholder": "Optional",

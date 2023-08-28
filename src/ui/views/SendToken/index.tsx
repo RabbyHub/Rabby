@@ -131,17 +131,23 @@ const SendTokenMessageForEOA = ({ formData }: { formData: FormSendToken }) => {
         <div className="messagedata-parsed-input font-[12px]">
           {currentIsOriginal ? (
             <>
-              <span className="text-[#3e495e]">
-                The current input is Original Data. UTF-8 is:
+              <span className="text-r-neutral-body">
+                {/* The current input is Original Data. UTF-8 is: */}
+                {t('page.sendToken.sectionMsgDataForEOA.currentIsOriginal')}
               </span>
-              <p className="mt-3 break-all text-[#6a7587]">{currentData}</p>
+              <p className="mt-3 break-all text-r-neutral-foot">
+                {currentData}
+              </p>
             </>
           ) : (
             <>
-              <span className="text-[#3e495e]">
-                The current input is UTF-8. Original Data is:
+              <span className="text-r-neutral-body">
+                {/* The current input is UTF-8. Original Data is: */}
+                {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
               </span>
-              <p className="mt-3 break-all text-[#6a7587]">{originalData}</p>
+              <p className="mt-3 break-all text-r-neutral-foot">
+                {originalData}
+              </p>
             </>
           )}
         </div>
@@ -253,14 +259,14 @@ const SendTokenMessageForContract = ({
         <div className="messagedata-parsed-input text-[12px]">
           {!currentIsOriginal ? (
             <>
-              <span className="mt-16 text-[#e34935]">
+              <span className="mt-16 text-r-red-default">
                 {/* Only supported hex data */}
                 {t('page.sendToken.sectionMsgDataForContract.parseError')}
               </span>
             </>
           ) : (
             <>
-              <span className="mt-16 mb-8 text-[#3e495e]">
+              <span className="mt-16 mb-8 text-r-neutral-body">
                 {/* Contract call simulation: */}
                 {t('page.sendToken.sectionMsgDataForContract.simulation')}
               </span>
@@ -270,7 +276,7 @@ const SendTokenMessageForContract = ({
                 <>
                   {loadingExplainError ||
                     (!explain?.abi && (
-                      <span className="flex items-center text-[#e34935]">
+                      <span className="flex items-center text-r-red-default">
                         <img
                           src={IconAlertInfo}
                           className="w-14 h-14 mr-[3px]"
@@ -284,7 +290,7 @@ const SendTokenMessageForContract = ({
                       </span>
                     ))}
                   {!loadingExplainError && plainFuncCall && (
-                    <p className="mt-3 break-all text-[#6a7587]">
+                    <p className="mt-3 break-all text-r-neutral-foot">
                       {plainFuncCall}
                     </p>
                   )}
