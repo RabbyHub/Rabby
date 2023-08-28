@@ -4,11 +4,11 @@
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
-    "make-vars": "node scripts/make-vars.js",
-    "build:dev": "npm run clean && npm run make-vars && TAILWIND_MODE=watch webpack --progress --env config=dev",
-    "build:pro": "npm run clean && npm run make-vars && webpack --progress --env config=pro",
-    "build:debug": "npm run clean && npm run make-vars && webpack --progress --env config=debug",
-    "build:sourcemap": "npm run clean && npm run make-vars && webpack --progress --env config=sourcemap",
+    "make-theme": "node ./scripts/make-theme.js",
+    "build:dev": "npm run clean && npm run make-theme && TAILWIND_MODE=watch webpack --progress --env config=dev",
+    "build:pro": "npm run clean && npm run make-theme && webpack --progress --env config=pro",
+    "build:debug": "npm run clean && npm run make-theme && webpack --progress --env config=debug",
+    "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest",
     "pub": "node build/release.js"

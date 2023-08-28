@@ -26,7 +26,7 @@ export const ChainWrapper = styled.div`
   border: 1px solid transparent;
 
   &:hover {
-    border-color: #8697ff;
+    border-color: var(--r-blue-default, #7084ff);
   }
 
   & .icon {

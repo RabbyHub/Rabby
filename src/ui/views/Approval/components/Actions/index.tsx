@@ -73,7 +73,7 @@ export const ActionWrapper = styled.div`
   .action-header {
     display: flex;
     justify-content: space-between;
-    background: #8697ff;
+    background: var(--r-blue-default, #7084ff);
     padding: 14px;
     align-items: center;
     color: #fff;

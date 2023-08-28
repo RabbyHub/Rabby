@@ -1,4 +1,3 @@
-import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import React, {
   ComponentPropsWithoutRef,
@@ -17,7 +16,7 @@ const ItemWrapper = styled.div<{
   py: number | string;
   //default white;
   bgColor: string;
-  //default rgba(134, 151, 255, 0.1);
+  //default var(--r-blue-light-1, #eef1ff);
   hoverBgColor: string;
 }>`
   width: 100%;
@@ -38,7 +37,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: ${LessPalette['@primary-color']};
+            border-color: var(--r-blue-default, #7084ff);
           }
         `
       : ''}
@@ -61,7 +60,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   py?: number | string;
   //default white;
   bgColor?: string;
-  //default rgba(134, 151, 255, 0.1);
+  //default var(--r-blue-light-1, #eef1ff);
   hoverBgColor?: string;
   className?: string;
 
@@ -83,7 +82,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     px = 16,
     py = 16,
     bgColor = '#fff',
-    hoverBgColor = 'rgba(134, 151, 255, 0.1)',
+    hoverBgColor = 'var(--r-blue-light-1, #eef1ff)',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',
@@ -119,7 +118,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
 const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
   position: relative;
   height: 56px;
-  background: var(--brand-default, #7084ff);
+  background: var(--r-brand-default, #7084ff);
   display: flex;
   justify-content: center;
   align-items: center;
