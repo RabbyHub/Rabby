@@ -107,11 +107,11 @@ const WalletConnectTemplate = () => {
               stashId === null ? undefined : stashId,
             ]);
             break;
-          case WALLETCONNECT_STATUS_MAP.FAILD:
+          case WALLETCONNECT_STATUS_MAP.FAILED:
           case WALLETCONNECT_STATUS_MAP.REJECTED:
             handleImportByWalletconnect();
             break;
-          case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+          case WALLETCONNECT_STATUS_MAP.SUBMITTED:
             setResult(payload);
             break;
         }

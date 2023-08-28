@@ -27,6 +27,10 @@ const ComponentConfig = {
     closeable: true,
     padding: '20px 20px 24px',
   },
+  Approval: {
+    closeable: false,
+    maskClosable: false,
+  },
 };
 
 export const CommonPopup: React.FC = () => {
@@ -55,6 +59,7 @@ export const CommonPopup: React.FC = () => {
         ) : null
       }
       closable={config.closeable}
+      maskClosable={config.maskClosable}
       height={height}
       onClose={() => setVisible(false)}
       visible={visible && !!componentName}

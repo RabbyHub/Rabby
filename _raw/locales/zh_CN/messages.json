@@ -982,7 +982,8 @@
         "txRejected": "交易已拒绝",
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
         "unlockAlert": "请插入并解锁你的 Ledger 设备，打开 Ethereum 应用程序",
-        "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序"
+        "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序",
+        "submitting": "已签名，交易正在提交"
       },
       "qrcode": {
         "afterSignDesc": "签名确认后，请将 {{brand}} 的二维码放置于你的电脑摄像头前",
@@ -990,7 +991,7 @@
         "getSig": "获取签名",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "qrcodeDesc": "请使用你的 {{brand}} 扫码签名。<br></br>签名后，点击下方按钮获取签名。",
-        "sigCompleted": "签名已完成",
+        "sigCompleted": "交易已提交",
         "sigReceived": "签名已获取",
         "signWith": "使用 {{brand}} 签名",
         "txFailed": "交易失败",

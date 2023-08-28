@@ -4,11 +4,10 @@ import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
-  HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
   WALLETCONNECT_STATUS_MAP,
-  WALLET_BRAND_CONTENT,
-  WALLET_BRAND_TYPES,
 } from 'consts';
 import {
   ApprovalPopupContainer,
@@ -32,21 +31,18 @@ interface ApprovalParams {
   type: string;
 }
 
-export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
+export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   const wallet = useWallet();
-  const { setTitle, setVisible, closePopup } = useCommonPopupView();
+  const { setTitle, setVisible, closePopup, setHeight } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
-  const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
-    .map((key) => HARDWARE_KEYRING_TYPES[key])
-    .find((item) => item.type === type);
   const [errorMessage, setErrorMessage] = React.useState('');
   const chain = Object.values(CHAINS).find(
     (item) => item.id === (params.chainId || 1)
   )!;
   const [connectStatus, setConnectStatus] = React.useState(
-    WALLETCONNECT_STATUS_MAP.WAITING
+    WALLETCONNECT_STATUS_MAP.SUBMITTING
   );
   const [result, setResult] = React.useState('');
   const [isClickDone, setIsClickDone] = React.useState(false);
@@ -65,8 +61,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
-    const account = await wallet.syncGetCurrentAccount()!;
-    setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
   };
@@ -76,19 +71,21 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const brandContent = React.useMemo(() => {
-    switch (brandName) {
-      case HARDWARE_KEYRING_TYPES.BitBox02.brandName:
-        return WALLET_BRAND_CONTENT.BITBOX02;
-      case HARDWARE_KEYRING_TYPES.GridPlus.brandName:
-        return WALLET_BRAND_CONTENT.GRIDPLUS;
-      case HARDWARE_KEYRING_TYPES.Onekey.brandName:
-        return WALLET_BRAND_CONTENT.ONEKEY;
-      case HARDWARE_KEYRING_TYPES.Trezor.brandName:
-        return WALLET_BRAND_CONTENT.TREZOR;
+    switch (type) {
+      case KEYRING_CLASS.PRIVATE_KEY:
+        return {
+          name: 'Private Key',
+          icon: KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY],
+        };
+      case KEYRING_CLASS.MNEMONIC:
+        return {
+          name: 'Seed Phrase',
+          icon: KEYRING_ICONS[KEYRING_CLASS.MNEMONIC],
+        };
       default:
         break;
     }
-  }, [brandName]);
+  }, [type]);
 
   const init = async () => {
     const account = params.isGnosis
@@ -131,11 +128,6 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       });
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
-      setErrorMessage(data);
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-    });
-
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
@@ -163,7 +155,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: brandName,
+          label: type,
         });
         setSignFinishedData({
           data: sig,
@@ -178,19 +170,17 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
   React.useEffect(() => {
     (async () => {
-      const account = params.isGnosis
-        ? params.account!
-        : (await wallet.syncGetCurrentAccount())!;
       setTitle(
         <div className="flex justify-center items-center">
           <img src={brandContent?.icon} className="w-20 mr-8" />
           <span>
             {t('page.signFooterBar.qrcode.signWith', {
-              brand: account.brandName,
+              brand: brandContent?.name,
             })}
           </span>
         </div>
       );
+      setHeight(208);
       init();
     })();
   }, []);
@@ -211,18 +201,14 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     setVisible(true);
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
-        setStatusProp('SENDING');
-        setContent(t('page.signFooterBar.ledger.siging'));
-        setDescription('');
-        break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTING:
         setStatusProp('SENDING');
         setContent(t('page.signFooterBar.ledger.submitting'));
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
-        setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setStatusProp('FAILED');
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -231,35 +217,22 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         setDescription('');
         break;
       default:
+        setDescription('');
         break;
     }
   }, [connectStatus, errorMessage]);
 
-  const hdType = React.useMemo(() => {
-    switch (brandContent?.brand) {
-      case WALLET_BRAND_TYPES.GRIDPLUS:
-        return 'wireless';
-
-      default:
-        return 'wired';
-    }
-  }, [brandContent?.brand]);
-
-  if (!brandContent) {
-    throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));
-  }
-
   return (
     <ApprovalPopupContainer
       showAnimation
-      hdType={hdType}
+      hdType={'privatekey'}
       status={statusProp}
       onRetry={handleRetry}
       content={content}
       description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
-      hasMoreDescription={!!errorMessage}
+      hasMoreDescription={!!description}
     />
   );
 };

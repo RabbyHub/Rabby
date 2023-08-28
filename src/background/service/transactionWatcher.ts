@@ -56,11 +56,11 @@ class TransactionWatcher {
     }
 
     const url = format(chainItem.scanLink, hash);
-    notification.create(
-      url,
-      i18n.t('background.transactionWatcher.submitted'),
-      i18n.t('background.transactionWatcher.more')
-    );
+    // notification.create(
+    //   url,
+    //   i18n.t('background.transactionWatcher.submitted'),
+    //   i18n.t('background.transactionWatcher.more')
+    // );
   };
 
   checkStatus = async (id: string) => {

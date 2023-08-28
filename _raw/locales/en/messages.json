@@ -217,7 +217,7 @@
         "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
         "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
         "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent.",
+        "requestSuccessToast": "Request successfully sent",
         "sendingRequest": "Sending signing request",
         "signOnYourMobileWallet": "Please sign on your mobile wallet.",
         "requestFailedToSend": "Signing request failed to send"
@@ -239,9 +239,9 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Transaction failed",
+        "txFailed": "Fail to submit",
         "sigReceived": "Signature received",
-        "sigCompleted": "Signature completed",
+        "sigCompleted": "Transaction submitted",
         "getSig": "Get signature",
         "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
@@ -252,17 +252,19 @@
         "resent": "Resent",
         "signError": "Ledger sign error:",
         "notConnected": "Your wallet is not connected. Please re-connect.",
-        "siging": "Sending signing request...",
+        "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
         "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger"
+        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
+        "submitting": "Signed. Submitting transaction",
+        "resubmited": "Resubmited"
       },
       "common": {
         "notSupport": "{{0}} is not supported"
       },
-      "resend": "Resend",
+      "resend": "Retry",
       "submitTx": "Submit Transaction",
       "testnet": "Testnet",
       "mainnet": "Mainnet"
@@ -594,7 +596,7 @@
       "need-to-approve-token-before-swap": "Need to approve token before swap",
       "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
       "enable-it": "Enable it",
-      "this-token-pair-is-not-supported": "This token pair is not supported",
+      "this-token-pair-is-not-supported": "Token pair is not supported",
       "QuoteLessWarning": "The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
       "by-transaction-simulation-the-quote-is-valid": "By transaction simulation, the quote is valid",
       "wrap-contract": "Wrap Contract",

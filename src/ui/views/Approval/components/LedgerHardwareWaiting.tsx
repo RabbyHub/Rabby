@@ -73,10 +73,14 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRetry = async (showToast = true) => {
+    if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
+      message.success(t('page.signFooterBar.ledger.resubmited'));
+      return;
+    }
     if (sessionStatus === 'DISCONNECTED') return;
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.requestKeyring(account?.type || '', 'resend', null);
+    await wallet.resendSign();
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
@@ -147,11 +151,14 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       }
       setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
     });
+    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+      setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
+    });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
@@ -165,7 +172,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           }
         } catch (e) {
           Sentry.captureException(e);
-          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           return;
         }
         matomoRequestEvent({
@@ -187,7 +194,8 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         Sentry.captureException(
           new Error('Ledger sign error: ' + JSON.stringify(data))
         );
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+        setErrorMessage(data.errorMsg);
       }
     });
   };
@@ -206,7 +214,14 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [sessionStatus]);
 
   React.useEffect(() => {
-    setTitle(t('page.signFooterBar.qrcode.signWith', { brand: 'Ledger' }));
+    setTitle(
+      <div className="flex justify-center items-center">
+        <img src={LedgerSVG} className="w-20 mr-8" />
+        <span>
+          {t('page.signFooterBar.qrcode.signWith', { brand: 'Ledger' })}
+        </span>
+      </div>
+    );
     init();
     mountedRef.current = true;
   }, []);
@@ -240,17 +255,22 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
+      case WALLETCONNECT_STATUS_MAP.SUBMITTING:
+        setStatusProp('SENDING');
+        setContent(t('page.signFooterBar.ledger.submitting'));
+        setDescription('');
+        break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setStatusProp('REJECTED');
         setContent(t('page.signFooterBar.ledger.txRejected'));
         setDescription(errorMessage);
         break;
-      case WALLETCONNECT_STATUS_MAP.FAILD:
+      case WALLETCONNECT_STATUS_MAP.FAILED:
         setStatusProp('FAILED');
         setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
-      case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+      case WALLETCONNECT_STATUS_MAP.SUBMITTED:
         setStatusProp('RESOLVED');
         setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
@@ -277,7 +297,8 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
   return (
     <ApprovalPopupContainer
-      brandUrl={LedgerSVG}
+      showAnimation
+      hdType="wired"
       status={statusProp}
       onRetry={() => handleRetry()}
       onDone={() => setIsClickDone(true)}
