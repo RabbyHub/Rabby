@@ -10,12 +10,13 @@ import TxSucceedSVG from 'ui/assets/approval/tx-succeed.svg';
 import ConnectWiredSVG from 'ui/assets/approval/connect-wired.svg';
 import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
 import ConnectQRCodeSVG from 'ui/assets/approval/connect-qrcode.svg';
+import ConnectWalletConnectSVG from 'ui/assets/approval/connect-walletconnect.svg';
 import { noop } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
 import { Dots } from './Dots';
 
 export interface Props {
-  hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey';
+  hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey' | 'walletconnect';
   status:
     | 'SENDING'
     | 'WAITING'
@@ -60,6 +61,8 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         return ConnectWirelessSVG;
       case 'privatekey':
         return;
+      case 'walletconnect':
+        return ConnectWalletConnectSVG;
       case 'qrcode':
       default:
         return ConnectQRCodeSVG;

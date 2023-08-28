@@ -221,10 +221,12 @@ const flowContext = flow
     } = request;
     const requestDeferFn = () =>
       new Promise((resolve, reject) => {
-        return providerController[mapMethod]({
-          ...request,
-          approvalRes,
-        })
+        return Promise.resolve(
+          providerController[mapMethod]({
+            ...request,
+            approvalRes,
+          })
+        )
           .then((result) => {
             if (isSignApproval(approvalType)) {
               eventBus.emit(EVENTS.broadcastToUI, {

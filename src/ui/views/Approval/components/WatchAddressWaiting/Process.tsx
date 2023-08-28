@@ -130,7 +130,8 @@ const Process = ({
 
   return (
     <ApprovalPopupContainer
-      hdType="qrcode"
+      hdType="walletconnect"
+      showAnimation
       status={statusProp}
       onRetry={handleRetry}
       onDone={onDone}

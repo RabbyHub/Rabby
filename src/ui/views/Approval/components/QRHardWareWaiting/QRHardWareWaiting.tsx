@@ -91,7 +91,7 @@ const QRHardWareWaiting = ({ params }) => {
           }
         } catch (e) {
           setErrorMessage(e.message);
-          rejectApproval(e.message);
+          // rejectApproval(e.message);
           return;
         }
         setStatus(QRHARDWARE_STATUS.DONE);
@@ -102,7 +102,7 @@ const QRHardWareWaiting = ({ params }) => {
         });
       } else {
         setErrorMessage(data.errorMsg);
-        rejectApproval(data.errorMsg);
+        // rejectApproval(data.errorMsg);
       }
     });
     await wallet.acquireKeystoneMemStoreData();
@@ -127,7 +127,6 @@ const QRHardWareWaiting = ({ params }) => {
         false,
         signFinishedData.approvalId
       );
-      handleDone();
     }
   }, [signFinishedData, isClickDone]);
 
