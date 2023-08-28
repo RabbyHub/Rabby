@@ -367,7 +367,7 @@
         "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词"
       },
       "metamask": {
-        "step1": "从 MetaMask 导出助记词或私钥 <1>查看指南<2/></1>",
+        "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看指南<1/></1>",
         "step2": "在 Rabby 中导入助记词或私钥",
         "step3": "导入完成，你的所有资产将自动展示<br />",
         "how": "如何导入我的 MetaMask 帐户？",
