@@ -517,7 +517,9 @@ export const Main = () => {
             }
             gotoSwap();
           }}
-          disabled={!payToken || !receiveToken || !payAmount}
+          disabled={
+            !payToken || !receiveToken || !payAmount || Number(payAmount) === 0
+          }
         >
           {btnText}
         </Button>
