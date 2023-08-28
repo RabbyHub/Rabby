@@ -374,7 +374,7 @@
         "step": "步骤",
         "importSeedPhrase": "导入助记词或私钥",
         "importSeedPhraseTips": "它只会存储在本地浏览器上。 \nRabby 永远不会访问你的私人信息。",
-        "tipsDesc": "你的私钥和助记词不属于Metamask或者某个具体钱包，它只属于你自己。"
+        "tipsDesc": "你的私钥和助记词不属于MetaMask或者某个具体钱包，它只属于你自己。"
       },
       "privateKey": {
         "required": "请输入私钥",
