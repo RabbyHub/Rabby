@@ -29,7 +29,6 @@ import buildinProvider, {
 } from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
-import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
@@ -43,6 +42,7 @@ import {
   CHAINS_ENUM,
   KEYRING_TYPE,
   GNOSIS_SUPPORT_CHAINS,
+  INTERNAL_REQUEST_SESSION,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -149,11 +149,7 @@ export class WalletController extends BaseController {
     return providerController.ethRpc(
       {
         data,
-        session: {
-          name: 'Rabby',
-          origin: INTERNAL_REQUEST_ORIGIN,
-          icon: './images/icon-128.png',
-        },
+        session: INTERNAL_REQUEST_SESSION,
       },
       chainId
     );
@@ -162,11 +158,7 @@ export class WalletController extends BaseController {
   sendRequest = <T = any>(data: ProviderRequest['data']) => {
     return provider<T>({
       data,
-      session: {
-        name: 'Rabby',
-        origin: INTERNAL_REQUEST_ORIGIN,
-        icon: './images/icon-128.png',
-      },
+      session: INTERNAL_REQUEST_SESSION,
     });
   };
 
