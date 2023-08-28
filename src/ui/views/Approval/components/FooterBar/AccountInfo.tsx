@@ -54,7 +54,7 @@ export const AccountInfo: React.FC<Props> = ({
         'space-y-10'
       )}
     >
-      <div className={clsx('flex items-center justify-between', 'h-20')}>
+      <div className={clsx('flex items-center justify-between', 'h-18')}>
         <div className="space-x-6 flex items-center">
           <Tooltip title={nickname}>
             <div

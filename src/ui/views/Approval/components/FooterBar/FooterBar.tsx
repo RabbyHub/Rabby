@@ -30,13 +30,13 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 }
 
 const Wrapper = styled.section`
-  height: 208px;
   padding: 20px;
   padding-top: 12px;
   box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 16px 16px 0px 0px;
   position: relative;
   .request-origin {
+    height: 30px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
