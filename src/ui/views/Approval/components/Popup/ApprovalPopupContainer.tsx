@@ -109,8 +109,8 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         className={clsx(
           'text-[20px] font-medium leading-[24px]',
           contentColor,
-          'mt-[24px]',
-          'flex items-center'
+          hasMoreDescription ? 'mt-[16px]' : 'mt-[24px]',
+          'flex items-center '
         )}
       >
         {image ? <img src={image} className="w-20 mr-6" /> : null}
@@ -122,9 +122,8 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       <div
         className={clsx(
           contentColor,
-          hasMoreDescription
-            ? 'text-[13px] mt-12 leading-[18px] text-center'
-            : 'text-[20px] font-bold'
+          'mt-[12px]',
+          'text-15 font-normal text-center'
         )}
       >
         {description}

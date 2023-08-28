@@ -207,8 +207,8 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
-        setStatusProp('REJECTED');
-        setContent(t('page.signFooterBar.ledger.txRejected'));
+        setStatusProp('FAILED');
+        setContent(t('page.signFooterBar.qrcode.txFailed'));
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -217,11 +217,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setDescription('');
         break;
       default:
+        setDescription('');
         break;
     }
   }, [connectStatus, errorMessage]);
-
-  console.log(errorMessage);
 
   return (
     <ApprovalPopupContainer
@@ -233,7 +232,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
-      hasMoreDescription={!!errorMessage}
+      hasMoreDescription={!!description}
     />
   );
 };
