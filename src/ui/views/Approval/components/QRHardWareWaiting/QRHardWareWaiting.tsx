@@ -225,6 +225,7 @@ const QRHardWareWaiting = ({ params }) => {
   if (popupStatus) {
     return (
       <ApprovalPopupContainer
+        showAnimation
         hdType="qrcode"
         status={popupStatus}
         content={content}

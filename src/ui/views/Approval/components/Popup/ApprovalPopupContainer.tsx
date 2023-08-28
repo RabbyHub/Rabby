@@ -115,7 +115,9 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       >
         {image ? <img src={image} className="w-20 mr-6" /> : null}
         <span>{content}</span>
-        {status === 'SENDING' && showAnimation ? <Dots /> : null}
+        {(status === 'SENDING' || status === 'WAITING') && showAnimation ? (
+          <Dots />
+        ) : null}
       </div>
       {/* <div
         className={clsx(

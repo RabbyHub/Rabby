@@ -100,7 +100,7 @@ const Process = ({
         setStatusProp('SENDING');
         break;
       case WALLETCONNECT_STATUS_MAP.WAITING:
-        setContent(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+        setContent(t('page.signFooterBar.walletConnect.sendingRequest'));
         setDescription(
           t('page.signFooterBar.walletConnect.signOnYourMobileWallet')
         );

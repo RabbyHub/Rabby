@@ -80,7 +80,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       case KEYRING_CLASS.MNEMONIC:
         return {
           name: 'Seed Phrase',
-          icon: KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY],
+          icon: KEYRING_ICONS[KEYRING_CLASS.MNEMONIC],
         };
       default:
         break;

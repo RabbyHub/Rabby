@@ -239,7 +239,7 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Submission failed",
+        "txFailed": "Fail to submit",
         "sigReceived": "Signature received",
         "sigCompleted": "Transaction submitted",
         "getSig": "Get signature",
@@ -258,7 +258,7 @@
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed,Transaction Submitting",
+        "submitting": "Signed. Submitting transaction",
         "resubmited": "Resubmited"
       },
       "common": {

@@ -982,7 +982,8 @@
         "txRejected": "交易已拒绝",
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
         "unlockAlert": "请插入并解锁你的 Ledger 设备，打开 Ethereum 应用程序",
-        "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序"
+        "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序",
+        "submitting": "已签名，交易正在提交"
       },
       "qrcode": {
         "afterSignDesc": "签名确认后，请将 {{brand}} 的二维码放置于你的电脑摄像头前",
