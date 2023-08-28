@@ -6,8 +6,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsync, useDebounce } from 'react-use';
-import { Input, Form, Skeleton, message, Button, FormInstance } from 'antd';
-import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import { Input, Form, Skeleton, message, Button, InputProps } from 'antd';
+import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, intToHex } from 'ethereumjs-util';
 
 import styled from 'styled-components';
@@ -55,10 +55,16 @@ import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
-import { useCheckAddressType } from '@/ui/hooks/useCheckAddress';
+import {
+  useCheckAddressType,
+  useParseContractAddress,
+} from '@/ui/hooks/useParseAddress';
 import { hexToString, isHex, isHexStrict, toHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
+import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
+
+const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
 const MaxButton = styled.div`
   font-size: 12px;
@@ -71,48 +77,24 @@ const MaxButton = styled.div`
   color: #8697ff;
 `;
 
-const SendTokenMessageForEOA = ({ formData }: { formData: FormSendToken }) => {
+type SendTokenMessageForEoAProps = {
+  active: boolean;
+  formData: FormSendToken;
+} & InputProps;
+const SendTokenMessageForEoa = React.forwardRef<
+  typeof Input,
+  SendTokenMessageForEoAProps
+>(({ active, formData }, ref) => {
   const { t } = useTranslation();
 
   const { messageDataForSendToEoa = '' } = formData;
 
-  const {
-    withInputData,
-    currentIsOriginal,
-    currentData,
-    originalData,
-  } = useMemo(() => {
-    const maybeHex = messageDataForSendToEoa;
-    const result = {
-      withInputData: false,
-      currentIsOriginal: false,
-      currentData: '',
-      originalData: '',
-    };
-
-    if (!maybeHex) return result;
-
-    result.currentIsOriginal = maybeHex.startsWith('0x') && isHex(maybeHex);
-
-    if (result.currentIsOriginal) {
-      try {
-        result.currentData = hexToString(maybeHex);
-        result.withInputData = true;
-        result.originalData = maybeHex;
-      } catch (err) {
-        result.currentData = '';
-      }
-    } else {
-      result.currentData = maybeHex;
-      result.originalData = toHex(maybeHex);
-      result.withInputData = true;
-    }
-
-    return result;
+  const { withInputData, currentIsHex, currentData, hexData } = useMemo(() => {
+    return formatTxInputDataOnERC20(messageDataForSendToEoa);
   }, [messageDataForSendToEoa]);
 
   return (
-    <div className="section">
+    <div className={clsx('section', !active && 'hidden')}>
       <div className="section-title flex justify-between items-center">
         {/* Message */}
         {t('page.sendToken.sectionMsgDataForEOA.title')}
@@ -121,6 +103,7 @@ const SendTokenMessageForEOA = ({ formData }: { formData: FormSendToken }) => {
       <div className="messagedata-input-wrapper">
         <Form.Item name="messageDataForSendToEoa">
           <Input.TextArea
+            ref={ref as any}
             placeholder={t('page.sendToken.sectionMsgDataForEOA.placeholder')}
             className="max-h-[84px] padding-12px overflow-y-auto"
           />
@@ -129,7 +112,7 @@ const SendTokenMessageForEOA = ({ formData }: { formData: FormSendToken }) => {
 
       {withInputData && (
         <div className="messagedata-parsed-input font-[12px]">
-          {currentIsOriginal ? (
+          {currentIsHex ? (
             <>
               <span className="text-r-neutral-body">
                 {/* The current input is Original Data. UTF-8 is: */}
@@ -145,100 +128,55 @@ const SendTokenMessageForEOA = ({ formData }: { formData: FormSendToken }) => {
                 {/* The current input is UTF-8. Original Data is: */}
                 {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
               </span>
-              <p className="mt-3 break-all text-r-neutral-foot">
-                {originalData}
-              </p>
+              <p className="mt-3 break-all text-r-neutral-foot">{hexData}</p>
             </>
           )}
         </div>
       )}
     </div>
   );
-};
+});
 
-const SendTokenMessageForContract = ({
-  formData,
-  userAddress,
-  chain,
-}: {
+type SendTokenMessageForContractProps = {
+  active: boolean;
   formData: FormSendToken;
   userAddress?: string;
   chain?: Chain | null;
-}) => {
+} & InputProps;
+const SendTokenMessageForContract = React.forwardRef<
+  typeof Input,
+  SendTokenMessageForContractProps
+>(({ active, formData, userAddress, chain }, ref) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
 
   const { messageDataForContractCall = '' } = formData;
 
-  const { currentIsOriginal, originalData } = useMemo(() => {
+  const { currentIsHex, hexData } = useMemo(() => {
     const maybeHex = messageDataForContractCall;
-    const result = { currentIsOriginal: false, originalData: '' };
+    const result = { currentIsHex: false, hexData: '' };
 
     if (!maybeHex) return result;
 
-    result.currentIsOriginal = maybeHex.startsWith('0x') && isHex(maybeHex);
-    result.originalData = maybeHex;
+    result.currentIsHex = maybeHex.startsWith('0x') && isHex(maybeHex);
+    result.hexData = maybeHex;
 
     return result;
   }, [messageDataForContractCall]);
 
   const {
-    value: explain,
-    loading: isLoadingExplain,
-    error: loadingExplainError,
-  } = useAsync(async () => {
-    if (!userAddress || !chain?.network) {
-      return null;
-    }
-
-    try {
-      const nonce = await wallet.getRecommendNonce({
-        from: userAddress,
-        chainId: chain.id,
-      });
-
-      const res = await wallet.openapi.preExecTx({
-        tx: {
-          chainId: Number(chain.id),
-          from: userAddress,
-          to: formData.to,
-          data: originalData || '0x',
-          // value: `0x${Number(originalData).toString(16)}`,
-          value: originalData,
-          nonce,
-          gasPrice: '0x0',
-          gas: '0x0',
-        },
-        origin: INTERNAL_REQUEST_ORIGIN,
-        address: userAddress,
-        updateNonce: false,
-        pending_tx_list: [],
-      });
-
-      return res;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }, [chain, formData, originalData]);
-
-  const plainFuncCall = useMemo(() => {
-    if (!explain?.abi?.func) return '';
-
-    return [
-      explain?.abi?.func,
-      '(',
-      (explain?.abi?.params || [])
-        ?.map((argValue, idx) => {
-          return `arg${idx}=${JSON.stringify(argValue)}`;
-        })
-        .join(', '),
-      ')',
-    ].join('');
-  }, [explain]);
+    explain,
+    isLoadingExplain,
+    loadingExplainError,
+    contractCallPlainText,
+  } = useParseContractAddress({
+    userAddress,
+    contractAddress: formData.to,
+    chain: chain || null,
+    inputDataHex: hexData,
+  });
 
   return (
-    <div className="section">
+    <div className={clsx('section', !active && 'hidden')}>
       <div className="section-title flex justify-between items-center">
         {/* Message */}
         {t('page.sendToken.sectionMsgDataForContract.title')}
@@ -247,6 +185,7 @@ const SendTokenMessageForContract = ({
       <div className="messagedata-input-wrapper">
         <Form.Item name="messageDataForContractCall">
           <Input.TextArea
+            ref={ref as any}
             placeholder={t(
               'page.sendToken.sectionMsgDataForContract.placeholder'
             )}
@@ -257,7 +196,7 @@ const SendTokenMessageForContract = ({
 
       {!!messageDataForContractCall && (
         <div className="messagedata-parsed-input text-[12px]">
-          {!currentIsOriginal ? (
+          {!currentIsHex ? (
             <>
               <span className="mt-16 text-r-red-default">
                 {/* Only supported hex data */}
@@ -289,9 +228,9 @@ const SendTokenMessageForContract = ({
                         </span>
                       </span>
                     ))}
-                  {!loadingExplainError && plainFuncCall && (
+                  {!loadingExplainError && contractCallPlainText && (
                     <p className="mt-3 break-all text-r-neutral-foot">
-                      {plainFuncCall}
+                      {contractCallPlainText}
                     </p>
                   )}
                 </>
@@ -299,20 +238,20 @@ const SendTokenMessageForContract = ({
             </>
           )}
           {/* {explain ? (
-            <PreExecTransactionExplain
-              className="mt-3"
-              explain={explain}
-              // onView={handleView}
-              isViewLoading={isLoadingExplain}
-            />
-          ) : (
-            <Skeleton.Button active style={{ width: '100%', height: 25 }} />
-          )} */}
+              <PreExecTransactionExplain
+                className="mt-3"
+                explain={explain}
+                // onView={handleView}
+                isViewLoading={isLoadingExplain}
+              />
+            ) : (
+              <Skeleton.Button active style={{ width: '100%', height: 25 }} />
+            )} */}
         </div>
       )}
     </div>
   );
-};
+});
 
 type FormSendToken = {
   to: string;
@@ -535,10 +474,9 @@ const SendToken = () => {
   const handleSubmit = async ({
     to,
     amount,
-  }: {
-    to: string;
-    amount: string;
-  }) => {
+    messageDataForSendToEoa,
+    messageDataForContractCall,
+  }: FormSendToken) => {
     setIsSubmitLoading(true);
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
@@ -546,33 +484,45 @@ const SendToken = () => {
     const sendValue = new BigNumber(amount).multipliedBy(
       10 ** currentToken.decimals
     );
+    const dataInput = [
+      {
+        name: 'transfer',
+        type: 'function',
+        inputs: [
+          {
+            type: 'address',
+            name: 'to',
+          },
+          {
+            type: 'uint256',
+            name: 'value',
+          },
+        ] as any[],
+      } as const,
+      [to, sendValue.toFixed(0)] as any[],
+    ] as const;
+
     const params: Record<string, any> = {
       chainId: chain.id,
       from: currentAccount!.address,
       to: currentToken.id,
       value: '0x0',
-      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-        {
-          name: 'transfer',
-          type: 'function',
-          inputs: [
-            {
-              type: 'address',
-              name: 'to',
-            },
-            {
-              type: 'uint256',
-              name: 'value',
-            },
-          ],
-        },
-        [to, sendValue.toFixed(0)]
-      ),
+      data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
       isSend: true,
     };
     if (isNativeToken) {
       params.to = to;
       delete params.data;
+
+      if (isShowMessageDataForToken && messageDataForSendToEoa) {
+        const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
+          .hexData;
+
+        params.data = encodedValue;
+      } else if (isShowMessageDataForContract && messageDataForContractCall) {
+        params.data = messageDataForContractCall;
+      }
+
       params.value = `0x${sendValue.toString(16)}`;
       try {
         const code = await wallet.requestETHRpc(
@@ -633,7 +583,7 @@ const SendToken = () => {
           },
         },
       });
-      window.close();
+      // window.close();
     } catch (e) {
       message.error(e.message);
       console.error(e);
@@ -726,7 +676,11 @@ const SendToken = () => {
     } else {
       setBalanceError(null);
     }
-    const nextFormValues = { ...restForm, to, amount: resultAmount };
+    const nextFormValues = {
+      ...restForm,
+      to,
+      amount: resultAmount,
+    };
     form.setFieldsValue(nextFormValues);
     setFormSnapshot(nextFormValues);
     setCacheAmount(resultAmount);
@@ -1280,16 +1234,16 @@ const SendToken = () => {
               </div>
             </div>
           </div>
-          {isShowMessageDataForToken && (
-            <SendTokenMessageForEOA formData={formSnapshot} />
-          )}
-          {isShowMessageDataForContract && (
-            <SendTokenMessageForContract
-              formData={formSnapshot}
-              chain={findChainByEnum(chain)}
-              userAddress={currentAccount?.address}
-            />
-          )}
+          <SendTokenMessageForEoa
+            active={isShowMessageDataForToken}
+            formData={formSnapshot}
+          />
+          <SendTokenMessageForContract
+            active={isShowMessageDataForContract}
+            formData={formSnapshot}
+            chain={findChainByEnum(chain)}
+            userAddress={currentAccount?.address}
+          />
         </div>
 
         <div className="footer">

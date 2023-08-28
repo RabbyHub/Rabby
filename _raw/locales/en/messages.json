@@ -10,6 +10,13 @@
         "approve": "Approve {{amount}} {{symbol}} for {{project}}",
         "unknown": "Contract Interaction",
         "cancel": "Canceled a pending transaction"
+      },
+      "txHistory": {
+        "tipInputData": "The transaction includes a message",
+        "parseInputDataError": "Parse message failed"
+      },
+      "modalViewMessage": {
+        "title": "View Message"
       }
     },
     "chainList": {

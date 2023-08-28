@@ -127,3 +127,41 @@
     }
   }
 }
+  
+.J_tipInputData .ant-tooltip-inner {
+  padding: 8px 6px !important;
+  background-color: var(--r-neutral-title-1, #192945) !important;
+}
+
+.view-tx-message-modal {
+  @body-padding: 16px;
+  .ant-modal-header {
+    border-bottom-color: transparent;
+  }
+
+  .ant-modal-content {
+    min-height: 160px;
+    padding-bottom: @body-padding;
+  }
+
+  .ant-modal-title {
+    text-align: center;
+    color: var(--r-neutral-title-1, #192945);
+  }
+
+  .ant-modal-body {    
+    max-height: 400px;
+    overflow: auto;
+    padding: @body-padding;
+    padding-bottom: 0;
+  }
+
+  .parsed-content {
+    color: var(--r-neutral-body, #3E495E);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0.5px;
+    word-break: break-all;
+  }
+}

@@ -2,6 +2,8 @@ import abi from 'human-standard-token-abi';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
+import { formatNumber } from './number';
+import { hexToString, isHex, toHex } from 'web3-utils';
 
 const hstInterface = new ethers.utils.Interface(abi);
 
@@ -129,4 +131,77 @@ export function varyTxSignType(txDetail: ExplainTxResponse | null) {
     isNFT,
     isToken,
   };
+}
+
+/**
+ * @description accept input data as hex or string, and return the formatted result
+ */
+export function formatTxInputDataOnERC20(maybeHex: string) {
+  const result = {
+    withInputData: false,
+    currentIsHex: false,
+    currentData: '',
+    hexData: '',
+    utf8Data: '',
+  };
+
+  if (!maybeHex) return result;
+
+  result.currentIsHex = maybeHex.startsWith('0x') && isHex(maybeHex);
+
+  if (result.currentIsHex) {
+    try {
+      result.currentData = hexToString(maybeHex);
+      result.withInputData = true;
+      result.hexData = maybeHex;
+      result.utf8Data = result.currentData;
+    } catch (err) {
+      result.currentData = '';
+    }
+  } else {
+    result.currentData = maybeHex;
+    result.hexData = toHex(maybeHex);
+    result.utf8Data = maybeHex;
+    result.withInputData = true;
+  }
+
+  return result;
+}
+
+function formatNumberArg(
+  arg: string | number,
+  decimal = 2,
+  opt = {} as BigNumber.Format
+) {
+  const bn = new BigNumber(arg);
+  const format = {
+    prefix: '',
+    decimalSeparator: '.',
+    groupSeparator: ',',
+    groupSize: 3,
+    secondaryGroupSize: 0,
+    fractionGroupSeparator: ' ',
+    fractionGroupSize: 0,
+    suffix: '',
+    ...opt,
+  };
+
+  return bn.toFormat(decimal, format);
+}
+
+export function formatTxExplainAbiData(abi?: ExplainTxResponse['abi'] | null) {
+  return [
+    abi?.func,
+    '(',
+    (abi?.params || [])
+      ?.map((argValue, idx) => {
+        const argValueText =
+          typeof argValue === 'number'
+            ? formatNumberArg(argValue, 0, { groupSeparator: '' })
+            : argValue;
+        return `arg${idx}=${argValueText}`;
+      })
+      .join(', '),
+    ')',
+  ].join('');
 }
