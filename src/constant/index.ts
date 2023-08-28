@@ -291,7 +291,7 @@ export const INTERNAL_REQUEST_ORIGIN = location.origin;
 export const INTERNAL_REQUEST_SESSION = {
   name: 'Rabby',
   origin: INTERNAL_REQUEST_ORIGIN,
-  icon: './images/icon-128.png',
+  icon: './images/rabby-site-logo.png',
 };
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';

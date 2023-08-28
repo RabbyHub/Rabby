@@ -991,13 +991,15 @@
         "clearAll": "Clear All"
       },
       "metamask": {
-        "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
+        "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
         "step2": "Import the seed phrase or private key in Rabby",
         "step3": "Import is completed and all your assets will <br /> appear automatically",
         "how": "How to import my MetaMask Account?",
         "step": "Step",
         "importSeedPhrase": "Import the seed phrase or private key",
-        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information.",
+        "tips": "Tips:",
+        "tipsDesc": "Your seed phrase/private key does not belong to MetaMask or any specific wallet; it only belongs to you."
       },
       "privateKey": {
         "required": "Please input Private key",

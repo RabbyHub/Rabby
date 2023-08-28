@@ -14,7 +14,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
 
 const Toptip = styled.div`
-  background: rgba(134, 151, 255, 0.1);
+  background: var(--r-blue-light-1, #eef1ff);
   border-radius: 4px;
   padding: 9px 17px;
 
@@ -23,7 +23,7 @@ const Toptip = styled.div`
   font-size: 13px;
   line-height: 14px;
 
-  color: ${LessPalette['@primary-color']};
+  color: var(--r-blue-default, #7084ff);
 `;
 
 const FormItemWrapper = styled.div`

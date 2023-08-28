@@ -20,7 +20,7 @@
       cursor: pointer;
 
       &.is-active {
-        color: #8697ff;
+        color: var(--r-blue-default, #7084ff);
         &::after {
           position: absolute;
           content: '';
@@ -28,7 +28,7 @@
           left: 0;
           right: 0;
           height: 2px;
-          background-color: #8697ff;
+          background-color: var(--r-blue-default, #7084ff);
         }
       }
     }
@@ -55,7 +55,7 @@
 
       &:not(.no-hover):hover {
         background-color: rgba(134, 151, 255, 0.2);
-        border-color: #8697ff;
+        border-color: var(--r-blue-default, #7084ff);
       }
 
       &-label {

@@ -977,7 +977,7 @@
         "clearAll": "Limpiar Todo"
       },
       "metamask": {
-        "step1": "Exporta la frase de semilla o la clave privada desde MetaMask <1>Guía <2/></1>",
+        "step1": "Exporta la frase de semilla o la clave privada desde MetaMask <br/><1>Guía <1/></1>",
         "step2": "Importa la frase de semilla o la clave privada en Rabby",
         "step3": "La importación se ha completado y todos tus activos se mostrarán <br /> automáticamente",
         "how": "¿Cómo importar mi cuenta de MetaMask?",

@@ -75,8 +75,8 @@ const RPCItemWrapper = styled.div`
     }
   }
   &:hover {
-    background: rgba(134, 151, 255, 0.1);
-    border: 1px solid #8697ff;
+    background: var(--r-blue-light-1, #eef1ff);
+    border: 1px solid var(--r-blue-default, #7084ff);
     border-radius: 6px;
     .operation {
       opacity: 1;

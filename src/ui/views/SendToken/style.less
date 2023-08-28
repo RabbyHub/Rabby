@@ -55,7 +55,7 @@
   .account-card {
     height: 36px;
     padding: 0;
-    background: rgba(134, 151, 255, 0.1);
+    background: var(--r-blue-light-1, #eef1ff);
     border-radius: 4px;
     margin-bottom: 10px;
     .title {
@@ -65,7 +65,7 @@
       width: 18px;
       height: 18px;
       path {
-        fill: #8697ff;
+        fill: var(--r-blue-default, #7084ff);
       }
     }
     .account-detail {
@@ -73,11 +73,11 @@
       width: 100%;
       padding: 10px 12px;
       .send-text {
-        color: #8697ff !important;
+        color: var(--r-blue-default, #7084ff) !important;
       }
       .address-viewer-text,
       .amount {
-        color: #8697ff !important;
+        color: var(--r-blue-default, #7084ff) !important;
         font-size: 13px;
         line-height: 15px;
         font-weight: 500;
@@ -121,7 +121,7 @@
     padding: 3px 6px;
     border: 0.5px solid rgba(134, 151, 255, 0.5);
     border-radius: 2px;
-    color: #8697ff;
+    color: var(--r-blue-default, #7084ff);
     font-size: 12px;
     line-height: 14px;
     cursor: pointer;
@@ -133,7 +133,7 @@
       margin-right: 4px;
     }
     &:hover {
-      background-color: rgba(134, 151, 255, 0.1);
+      background-color: var(--r-blue-light-1, #eef1ff);
     }
     &.disabled {
       opacity: 0.5;
@@ -410,11 +410,11 @@
           margin-right: 0;
         }
         &:hover {
-          border: 1px solid @primary-color;
+          border: 1px solid var(--r-blue-default, #7084ff);
         }
         &.active {
-          background: rgba(134, 151, 255, 0.1);
-          border: 1px solid #8697ff;
+          background: var(--r-blue-light-1, #eef1ff);
+          border: 1px solid var(--r-blue-default, #7084ff);
         }
         .gas-level {
           text-align: center;
@@ -430,7 +430,7 @@
           margin: 4px auto 0;
           font-weight: 500;
           &.active {
-            color: #8697ff !important;
+            color: var(--r-blue-default, #7084ff) !important;
           }
         }
         .custom-input {
@@ -442,7 +442,7 @@
           padding-top: 0;
           font-weight: 500;
           &.active {
-            color: #8697ff !important;
+            color: var(--r-blue-default, #7084ff) !important;
           }
         }
         .ant-input:focus,

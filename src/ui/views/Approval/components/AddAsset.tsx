@@ -55,7 +55,7 @@ const AddAssetWrapper = styled.div`
   .header {
     padding: 20px;
     text-align: center;
-    background-color: #8697ff;
+    background-color: var(--r-blue-default, #7084ff);
     color: #fff;
     font-size: 20px;
     font-weight: 500;

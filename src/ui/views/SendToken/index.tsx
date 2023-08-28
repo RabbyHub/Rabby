@@ -54,7 +54,6 @@ import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
-import LessPalette from '@/ui/style/var-defs';
 import { useContactAccounts } from '@/ui/hooks/useContact';
 import { useCheckAddressType } from '@/ui/hooks/useCheckAddress';
 import { hexToString, isHex, isHexStrict, toHex } from 'web3-utils';
@@ -1167,7 +1166,7 @@ const SendToken = () => {
                     <span
                       onClick={handleClickAddContact}
                       className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: LessPalette['@primary-text-color'] }}
+                      style={{ color: 'var(--r-blue-default, #7084ff)' }}
                     >
                       Add to contacts
                     </span>
