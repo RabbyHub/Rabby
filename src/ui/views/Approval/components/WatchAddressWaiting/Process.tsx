@@ -101,9 +101,7 @@ const Process = ({
         break;
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setContent(t('page.signFooterBar.walletConnect.sendingRequest'));
-        setDescription(
-          t('page.signFooterBar.walletConnect.signOnYourMobileWallet')
-        );
+        setDescription('');
         setStatusProp('WAITING');
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:

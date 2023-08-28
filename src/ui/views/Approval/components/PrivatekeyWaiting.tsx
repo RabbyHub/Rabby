@@ -163,6 +163,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+        setErrorMessage(data.errorMsg);
       }
     });
   };
@@ -219,6 +220,8 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         break;
     }
   }, [connectStatus, errorMessage]);
+
+  console.log(errorMessage);
 
   return (
     <ApprovalPopupContainer

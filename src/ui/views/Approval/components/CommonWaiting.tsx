@@ -171,6 +171,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+        setErrorMessage(data.errorMsg);
       }
     });
   };

@@ -119,7 +119,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
           <Dots />
         ) : null}
       </div>
-      {/* <div
+      <div
         className={clsx(
           contentColor,
           hasMoreDescription
@@ -128,7 +128,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         )}
       >
         {description}
-      </div> */}
+      </div>
 
       <div className="absolute bottom-0">
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}

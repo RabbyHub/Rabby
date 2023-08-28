@@ -246,7 +246,7 @@ const flowContext = flow
                 method: EVENTS.SIGN_FINISHED,
                 params: {
                   success: false,
-                  errorMsg: JSON.stringify(e),
+                  errorMsg: e?.message || JSON.stringify(e),
                 },
               });
             }
