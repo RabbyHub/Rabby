@@ -9,6 +9,7 @@ import { useAsync, useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button, FormInstance } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, intToHex } from 'ethereumjs-util';
+
 import styled from 'styled-components';
 import {
   CHAINS,
@@ -26,11 +27,7 @@ import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
-import {
-  ExplainTxResponse,
-  GasLevel,
-  TokenItem,
-} from 'background/service/openapi';
+import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
@@ -44,7 +41,6 @@ import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
-import ButtonMax from 'ui/assets/send-token/max.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -63,7 +59,7 @@ import { useContactAccounts } from '@/ui/hooks/useContact';
 import { useCheckAddressType } from '@/ui/hooks/useCheckAddress';
 import { hexToString, isHex, isHexStrict, toHex } from 'web3-utils';
 import { Chain } from '@debank/common';
-import { PreExecTransactionExplain } from './components/PreExecTransactionExplain';
+import IconAlertInfo from './alert-info.svg';
 
 const MaxButton = styled.div`
   font-size: 12px;
@@ -181,7 +177,11 @@ const SendTokenMessageForContract = ({
     return result;
   }, [messageDataForContractCall]);
 
-  const { value: explain, loading: isLoadingExplain } = useAsync(async () => {
+  const {
+    value: explain,
+    loading: isLoadingExplain,
+    error: loadingExplainError,
+  } = useAsync(async () => {
     if (!userAddress || !chain?.network) {
       return null;
     }
@@ -215,7 +215,22 @@ const SendTokenMessageForContract = ({
       console.error(error);
       return null;
     }
-  }, [chain, formData, currentIsOriginal, originalData]);
+  }, [chain, formData, originalData]);
+
+  const plainFuncCall = useMemo(() => {
+    if (!explain?.abi?.func) return '';
+
+    return [
+      explain?.abi?.func,
+      '(',
+      (explain?.abi?.params || [])
+        ?.map((argValue, idx) => {
+          return `arg${idx}=${JSON.stringify(argValue)}`;
+        })
+        .join(', '),
+      ')',
+    ].join('');
+  }, [explain]);
 
   return (
     <div className="section">
@@ -230,32 +245,64 @@ const SendTokenMessageForContract = ({
             placeholder={t(
               'page.sendToken.sectionMsgDataForContract.placeholder'
             )}
-            className="max-h-[84px] padding-12px overflow-y-auto"
+            className="max-h-[84px] text-[12px] text-[#192945] padding-12px overflow-y-auto"
           />
         </Form.Item>
       </div>
 
       {!!messageDataForContractCall && (
-        <div className="messagedata-parsed-input font-[12px]">
+        <div className="messagedata-parsed-input text-[12px]">
           {!currentIsOriginal ? (
             <>
-              <span className="text-[#e34935]">Only supported hex data</span>
+              <span className="mt-16 text-[#e34935]">
+                {/* Only supported hex data */}
+                {t('page.sendToken.sectionMsgDataForContract.parseError')}
+              </span>
             </>
           ) : (
             <>
-              <span className="text-[#3e495e]">Result of pre execution:</span>
-              {explain ? (
-                <PreExecTransactionExplain
-                  className="mt-3"
-                  explain={explain}
-                  // onView={handleView}
-                  isViewLoading={isLoadingExplain}
-                />
-              ) : (
+              <span className="mt-16 mb-8 text-[#3e495e]">
+                {/* Contract call simulation: */}
+                {t('page.sendToken.sectionMsgDataForContract.simulation')}
+              </span>
+              {isLoadingExplain ? (
                 <Skeleton.Button active style={{ width: '100%', height: 25 }} />
+              ) : (
+                <>
+                  {loadingExplainError ||
+                    (!explain?.abi && (
+                      <span className="flex items-center text-[#e34935]">
+                        <img
+                          src={IconAlertInfo}
+                          className="w-14 h-14 mr-[3px]"
+                        />
+                        <span>
+                          {/* Parse contract failed */}
+                          {t(
+                            'page.sendToken.sectionMsgDataForContract.parseError'
+                          )}
+                        </span>
+                      </span>
+                    ))}
+                  {!loadingExplainError && plainFuncCall && (
+                    <p className="mt-3 break-all text-[#6a7587]">
+                      {plainFuncCall}
+                    </p>
+                  )}
+                </>
               )}
             </>
           )}
+          {/* {explain ? (
+            <PreExecTransactionExplain
+              className="mt-3"
+              explain={explain}
+              // onView={handleView}
+              isViewLoading={isLoadingExplain}
+            />
+          ) : (
+            <Skeleton.Button active style={{ width: '100%', height: 25 }} />
+          )} */}
         </div>
       )}
     </div>

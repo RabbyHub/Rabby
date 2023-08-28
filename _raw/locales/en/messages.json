@@ -441,7 +441,9 @@
       },
       "sectionMsgDataForContract": {
         "placeholder": "Optional",
-        "title": "Contract Call"
+        "title": "Contract call",
+        "parseError": "Parse contract failed",
+        "simulation": "Contract call simulation:"
       }
     },
     "sendTokenComponents": {
