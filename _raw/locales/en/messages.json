@@ -217,7 +217,7 @@
         "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
         "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
         "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent.",
+        "requestSuccessToast": "Request successfully sent",
         "sendingRequest": "Sending signing request",
         "signOnYourMobileWallet": "Please sign on your mobile wallet.",
         "requestFailedToSend": "Signing request failed to send"
