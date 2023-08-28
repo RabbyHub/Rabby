@@ -123,7 +123,7 @@ const QRHardWareWaiting = ({ params }) => {
       closePopup();
       resolveApproval(
         signFinishedData.data,
-        signFinishedData.stay,
+        false,
         false,
         signFinishedData.approvalId
       );
