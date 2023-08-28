@@ -30,6 +30,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 }
 
 const Wrapper = styled.section`
+  height: 208px;
   padding: 20px;
   padding-top: 12px;
   box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
