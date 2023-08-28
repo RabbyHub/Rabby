@@ -58,7 +58,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
   const idRef = React.useRef<number | null>(null);
   const { t } = useTranslation();
   const closeConnect = React.useCallback(() => {
-    wallet.requestKeyring(keyring, 'cleanUp', idRef.current);
+    wallet.requestKeyring(keyring, 'cleanUp', idRef.current, true);
   }, []);
 
   const LOGO_NAME_MAP = {
