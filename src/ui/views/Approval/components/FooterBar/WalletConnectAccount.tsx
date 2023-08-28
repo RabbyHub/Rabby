@@ -163,7 +163,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         className={clsx(
           'underline cursor-pointer',
           'absolute right-0 top-[-1px]',
-          'text-12 font-medium text-gray-subTitle'
+          'text-12 leading-[20px] font-medium text-gray-subTitle'
         )}
       >
         {tipStatus === 'ACCOUNT_ERROR' &&

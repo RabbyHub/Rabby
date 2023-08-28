@@ -32,7 +32,7 @@ interface AccountItemProps {
   networkId: string;
 }
 
-const AccountItem = ({
+export const AccountItem = ({
   account,
   onSelect,
   checked,
@@ -104,7 +104,7 @@ const AccountItem = ({
           className="bottom-[2px] right-0"
         />
       </div>
-      <div className="flex w-full">
+      <div className="flex w-full item-container">
         <div>
           <p className="alian-name">{alianName}</p>
           <AddressViewer address={account.address} showArrow={false} />

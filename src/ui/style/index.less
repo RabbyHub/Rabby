@@ -9,7 +9,8 @@
 
 html,
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
+    'PingFang SC', 'Microsoft Yahei', sans-serif;
 }
 
 h1,
@@ -36,14 +37,19 @@ button:focus {
 }
 
 .font-roboto-mono {
-  font-family: 'Roboto', sans-serif;
-  font-family: 'Roboto Mono', monospace;
+  // font-family: 'Roboto Mono', monospace;
 }
 
 .create-new-header {
   position: relative;
-  background: linear-gradient(111.24deg, #8babff 9.66%, #8094ff 85.59%);
+  background: var(--brand-default, #7084ff);
   padding: 32px 20px;
+
+  .unlock-logo {
+    border: 1px solid #fff;
+    border-radius: 100%;
+  }
+  
   &.res {
     padding: 0;
 

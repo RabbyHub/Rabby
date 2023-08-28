@@ -147,6 +147,12 @@ export const AccountInfo: React.FC<Props> = ({
           tip={t('page.signFooterBar.addressTip.safe')}
         />
       )}
+      {account?.type === KEYRING_CLASS.CoboArgus && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.CoboArgus.icon}
+          tip={t('page.signFooterBar.addressTip.coboSafe')}
+        />
+      )}
     </div>
   );
 };

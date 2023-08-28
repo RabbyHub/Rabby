@@ -5,6 +5,7 @@ import {
   CHAINS,
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
+  LANGS,
 } from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,17 +79,6 @@ const useAutoLockOptions = () => {
     },
   ];
 };
-
-const LANG_OPTIONS = [
-  {
-    value: 'en',
-    label: 'English',
-  },
-  {
-    value: 'zh_CN',
-    label: '简体中文',
-  },
-];
 
 interface SettingsProps {
   visible?: boolean;
@@ -400,17 +390,17 @@ const SwitchLangModal = ({
         {t('page.dashboard.settings.settings.currentLanguage')}
       </PageHeader>
       <div className="auto-lock-option-list">
-        {LANG_OPTIONS.map((item) => {
+        {LANGS.map((item) => {
           return (
             <div
               className="auto-lock-option-list-item"
-              key={item.value}
+              key={item.code}
               onClick={() => {
-                handleSelect(item.value);
+                handleSelect(item.code);
               }}
             >
-              {item.label}
-              {locale === item.value && (
+              {item.name}
+              {locale === item.code && (
                 <img
                   src={IconCheck}
                   alt=""
@@ -520,7 +510,7 @@ const Settings = ({
   }, [autoLockTime, AUTO_LOCK_OPTIONS]);
 
   const langLabel = useMemo(() => {
-    return LANG_OPTIONS.find((item) => item.value === locale)?.label;
+    return LANGS.find((item) => item.code === locale)?.name;
   }, [locale]);
 
   const handleSwitchWhitelistEnable = async (checked: boolean) => {

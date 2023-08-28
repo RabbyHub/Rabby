@@ -58,7 +58,7 @@ interface GasSelectorProps {
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
   }>;
-  isGnosisAccount?: boolean;
+  disabled?: boolean;
   manuallyChangeGasLimit: boolean;
   errors: {
     code: number;
@@ -217,7 +217,7 @@ const GasSelector = ({
   isHardware,
   version,
   gasCalcMethod,
-  isGnosisAccount,
+  disabled,
   manuallyChangeGasLimit,
   errors,
   engineResults = [],
@@ -278,7 +278,7 @@ const GasSelector = ({
   }, [engineResults]);
 
   const handleSetRecommendTimes = () => {
-    if (isGnosisAccount) return;
+    if (disabled) return;
     const value = new BigNumber(recommendGasLimit).times(1.5).toFixed(0);
     setGasLimit(value);
   };
@@ -413,7 +413,7 @@ const GasSelector = ({
   };
 
   const handlePanelSelection = (e, gas: GasLevel) => {
-    if (isGnosisAccount) return;
+    if (disabled) return;
     return panelSelection(e, gas);
   };
 
@@ -618,7 +618,7 @@ const GasSelector = ({
               {t('page.signTx.gasSelectorTitle')}
             </div>
             <div className="gas-selector-card-content ml-4">
-              {isGnosisAccount ? (
+              {disabled ? (
                 <div className="font-semibold">
                   {t('page.signTx.noGasRequired')}
                 </div>
@@ -672,7 +672,7 @@ const GasSelector = ({
           panelSelection={externalPanelSelection}
           customGas={customGas}
           handleCustomGasChange={externalHandleCustomGasChange}
-          isGnosisAccount={isGnosisAccount}
+          disabled={disabled}
           chain={chain}
           nativeTokenBalance={nativeTokenBalance}
           gasPriceMedian={gasPriceMedian}
@@ -703,7 +703,7 @@ const GasSelector = ({
         closable
       >
         <div className="gas-selector-modal-top">
-          {isGnosisAccount ? (
+          {disabled ? (
             <div className="gas-selector-modal-amount">
               {t('page.signTx.noGasRequired')}
             </div>
@@ -736,7 +736,7 @@ const GasSelector = ({
         <div className="card-container">
           <div
             className={clsx('card-container-title', {
-              disabled: isGnosisAccount,
+              disabled: disabled,
             })}
           >
             {t('page.signTx.gasPriceTitle')}
@@ -744,12 +744,10 @@ const GasSelector = ({
           <Tooltip
             overlayClassName="rectangle"
             title={
-              isGnosisAccount
-                ? t('page.signTx.gasNotRequireForSafeTransaction')
-                : null
+              disabled ? t('page.signTx.gasNotRequireForSafeTransaction') : null
             }
           >
-            <CardBody $disabled={isGnosisAccount}>
+            <CardBody $disabled={disabled}>
               {gasList.map((item, idx) => (
                 <div
                   key={`gas-item-${item.level}-${idx}`}
@@ -778,7 +776,7 @@ const GasSelector = ({
                         autoFocus={selectedGas?.level === item.level}
                         min={0}
                         bordered={false}
-                        disabled={isGnosisAccount}
+                        disabled={disabled}
                       />
                     ) : (
                       new BigNumber(item.price / 1e9).toFixed()
@@ -830,7 +828,7 @@ const GasSelector = ({
             <div className="gas-limit">
               <p
                 className={clsx('gas-limit-label flex leading-[16px]', {
-                  disabled: isGnosisAccount,
+                  disabled: disabled,
                 })}
               >
                 <span className="flex-1">{t('page.signTx.gasLimitTitle')}</span>
@@ -839,14 +837,14 @@ const GasSelector = ({
                 <Tooltip
                   overlayClassName="rectangle"
                   title={
-                    isGnosisAccount
+                    disabled
                       ? t('page.signTx.gasNotRequireForSafeTransaction')
                       : null
                   }
                 >
                   <Form.Item
                     className={clsx('gas-limit-panel mb-0', {
-                      disabled: isGnosisAccount,
+                      disabled: disabled,
                     })}
                     validateStatus={validateStatus.gasLimit.status}
                   >
@@ -854,7 +852,7 @@ const GasSelector = ({
                       className="popup-input"
                       value={afterGasLimit}
                       onChange={handleGasLimitChange}
-                      disabled={isGnosisAccount}
+                      disabled={disabled}
                     />
                   </Form.Item>
                 </Tooltip>
@@ -863,7 +861,7 @@ const GasSelector = ({
                     {validateStatus.gasLimit.message}
                   </p>
                 ) : (
-                  <p className={clsx('tip', { disabled: isGnosisAccount })}>
+                  <p className={clsx('tip', { disabled: disabled })}>
                     <Trans
                       i18nKey="page.signTx.recommendGasLimitTip"
                       values={{
@@ -960,7 +958,7 @@ const GasSelectPanel = ({
   customGas,
   customGasConfirm = () => null,
   handleCustomGasChange,
-  isGnosisAccount,
+  disabled,
   chain,
   nativeTokenBalance,
   gasPriceMedian,
@@ -974,14 +972,13 @@ const GasSelectPanel = ({
   customGas: string | number;
   customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isGnosisAccount?: boolean;
+  disabled?: boolean;
   chain: Chain;
   nativeTokenBalance: string;
   gasPriceMedian: number | null;
 }) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
-  const disabled = isGnosisAccount;
   const handlePanelSelection = (e, item) => {
     if (disabled) return;
     return panelSelection(e, item);

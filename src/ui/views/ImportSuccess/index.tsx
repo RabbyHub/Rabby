@@ -14,7 +14,6 @@ import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
-import Mask from 'ui/assets/import-mask.png';
 import { connectStore, useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 
@@ -110,7 +109,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               alt="rabby logo"
             />
             <img
-              className="unlock-logo w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
+              className="w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
@@ -122,14 +121,13 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           <div className="create-new-header create-password-header h-[200px]">
             <div className="rabby-container">
               <img
-                className="unlock-logo w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
+                className="w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
                 {title || t('page.importSuccess.title')}
               </p>
             </div>
-            <img src={Mask} className="mask" />
           </div>
         ))}
       <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>

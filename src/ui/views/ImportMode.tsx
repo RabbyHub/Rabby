@@ -83,7 +83,6 @@ const ImportMode = () => {
         <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
           {t('Import')}
         </p>
-        <img src="/images/import-mask.png" className="mask" />
       </header>
       <div className="pt-32 px-20">
         {modes.map((e) => (

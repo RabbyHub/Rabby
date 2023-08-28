@@ -165,7 +165,7 @@ const MessageWrapper = styled.div`
     color: #4b4d59;
     height: 320px;
     overflow-y: auto;
-    font-family: 'Roboto Mono';
+    /* font-family: 'Roboto Mono'; */
   }
   &.no-action {
     .content {
@@ -218,7 +218,7 @@ const Actions = ({
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
-      {data && (
+      {data?.actionType && (
         <ActionWrapper>
           <div className="action-header">
             <div className="left">{actionName}</div>
@@ -326,7 +326,7 @@ const Actions = ({
           </div>
         </ActionWrapper>
       )}
-      {!data && (
+      {(!data || !data.actionType) && (
         <NoActionAlert>
           <img src={IconAlert} className="icon icon-alert" />
           This signature can't be decoded by Rabby, but it doesn't imply any

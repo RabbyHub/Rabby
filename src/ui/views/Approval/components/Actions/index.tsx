@@ -52,6 +52,7 @@ export const SignTitle = styled.div`
     font-size: 18px;
     line-height: 21px;
     color: #333333;
+    flex: 1;
     .icon-speedup {
       width: 10px;
       margin-right: 6px;

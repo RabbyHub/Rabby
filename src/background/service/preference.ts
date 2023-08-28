@@ -8,7 +8,7 @@ import {
   permissionService,
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
+import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM, LANGS } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 import semver from 'semver-compare';
 
@@ -93,12 +93,11 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
 }
 
-const SUPPORT_LOCALES = ['en', 'zh_CN'];
-
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
   hasOtherProvider = false;
+  currentCoboSafeAddress?: Account | null;
 
   init = async () => {
     const defaultLang = 'en';
@@ -136,7 +135,10 @@ class PreferenceService {
         isShowTestnet: false,
       },
     });
-    if (!this.store.locale || !SUPPORT_LOCALES.includes(this.store.locale)) {
+    if (
+      !this.store.locale ||
+      !LANGS.find((item) => item.code === this.store.locale)
+    ) {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
@@ -315,7 +317,7 @@ class PreferenceService {
     if (!langs) langs = [];
     return langs
       .map((lang) => lang.replace(/-/g, '_'))
-      .filter((lang) => SUPPORT_LOCALES.includes(lang));
+      .filter((lang) => LANGS.find((item) => item.code === lang));
   };
 
   /**
@@ -682,6 +684,12 @@ class PreferenceService {
   };
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
+  };
+  saveCurrentCoboSafeAddress = async () => {
+    this.currentCoboSafeAddress = await this.getCurrentAccount();
+  };
+  resetCurrentCoboSafeAddress = async () => {
+    this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
   };
 }
 
