@@ -25,35 +25,33 @@ import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { findChainByServerID } from '@/utils/chain';
 
 export type HistoryItemActionContext = {
-  targetAddressType: AddressType;
-  targetAddress: string;
-  chain: Chain | null;
-  inputDataHex: any;
   parsedInputData: string;
-  // data: TxDisplayItem | TxHistoryItem;
+};
+
+type ViewMessageTriggerProps = {
+  userAddress: string;
+  /**
+   * @description tx input data, hex format or utf8 format
+   */
+  txInputData: string | null;
+  chainItem: Chain;
+  onViewInputData?: (ctx: HistoryItemActionContext) => void;
 };
 
 function ViewMessageTriggerForEoa({
-  eoaAddress,
   userAddress,
-  inputDataHex,
+  txInputData,
   chainItem,
   onViewInputData,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement> & {
-  eoaAddress: string;
-  userAddress: string;
-  inputDataHex: string | null;
-  chainItem: Chain;
-  onViewInputData?: (ctx: HistoryItemActionContext) => void;
-}) {
+}: React.HTMLAttributes<HTMLSpanElement> & ViewMessageTriggerProps) {
   const { t } = useTranslation();
 
   const utf8Data = useMemo(() => {
-    if (!inputDataHex) return null;
+    if (!txInputData) return null;
 
-    return formatTxInputDataOnERC20(inputDataHex).utf8Data;
-  }, [inputDataHex]);
+    return formatTxInputDataOnERC20(txInputData).utf8Data;
+  }, [txInputData]);
 
   if (!utf8Data) return null;
 
@@ -72,11 +70,7 @@ function ViewMessageTriggerForEoa({
           if (!utf8Data) return;
 
           onViewInputData?.({
-            targetAddressType: AddressType.CONTRACT,
-            targetAddress: eoaAddress,
-            inputDataHex,
             parsedInputData: utf8Data,
-            chain: chainItem || null,
           });
         }}
       >
@@ -89,17 +83,13 @@ function ViewMessageTriggerForEoa({
 function ViewMessageTriggerForContract({
   contractAddress,
   userAddress,
-  inputDataHex,
+  txInputData,
   chainItem,
   onViewInputData,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement> & {
   contractAddress: string;
-  userAddress: string;
-  inputDataHex: string | null;
-  chainItem: Chain;
-  onViewInputData?: (ctx: HistoryItemActionContext) => void;
-}) {
+} & ViewMessageTriggerProps) {
   const {
     explain,
     isLoadingExplain,
@@ -108,7 +98,9 @@ function ViewMessageTriggerForContract({
   } = useParseContractAddress({
     contractAddress,
     chain: chainItem,
-    inputDataHex,
+    inputDataHex: txInputData
+      ? formatTxInputDataOnERC20(txInputData).hexData
+      : null,
     userAddress,
   });
 
@@ -138,11 +130,7 @@ function ViewMessageTriggerForContract({
               if (loadingExplainError) return;
 
               onViewInputData?.({
-                targetAddressType: AddressType.CONTRACT,
-                targetAddress: contractAddress,
-                inputDataHex,
                 parsedInputData: contractCallPlainText,
-                chain: chainItem || null,
               });
             }}
           >
@@ -161,27 +149,19 @@ function isTokenItemNative(tokenItem?: TokenItem | null) {
   return !!chainItem?.nativeTokenSymbol;
 }
 
-type HistoryItemProps = {
-  data: TxDisplayItem | TxHistoryItem;
-  onViewInputData?: (ctx: HistoryItemActionContext) => void;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
-
-export const HistoryItem = ({
+/**
+ * @description parse tx from client, request remote info(server & chain api)
+ */
+function useClientParseTx({
+  chainItem,
   data,
-  cateDict,
-  projectDict,
   tokenDict,
-  onViewInputData,
-}: HistoryItemProps) => {
-  const chainItem = getChain(data.chain);
-  const isFailed = data.tx?.status === 0;
-  const isScam = data.is_scam;
-
-  const { addressType } = useCheckAddressType(data.tx?.to_addr, chainItem);
-
-  const { t } = useTranslation();
+}: {
+  chainItem: Chain | null;
+  data: TxDisplayItem | TxHistoryItem;
+  tokenDict: Record<string, TokenItem>;
+}) {
   const wallet = useWallet();
-  const account = useRabbySelector((state) => state.account.currentAccount);
 
   const [txInputData, setTxInputData] = React.useState<string | null>(null);
   const isTxNeedInputData = useMemo(() => {
@@ -196,7 +176,7 @@ export const HistoryItem = ({
         data.sends?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
           .length === 1)
     );
-  }, [data, chainItem?.nativeTokenSymbol]);
+  }, [data, chainItem?.nativeTokenSymbol, tokenDict]);
 
   useAsync(async () => {
     if (!isTxNeedInputData || !chainItem) {
@@ -222,9 +202,36 @@ export const HistoryItem = ({
       setTxInputData(null);
     }
   }, [isTxNeedInputData, data.id, chainItem?.serverId]);
+}
+
+type HistoryItemProps = {
+  data: TxDisplayItem | TxHistoryItem;
+  onViewInputData?: (ctx: HistoryItemActionContext) => void;
+} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+
+export const HistoryItem = ({
+  data,
+  cateDict,
+  projectDict,
+  tokenDict,
+  onViewInputData,
+}: HistoryItemProps) => {
+  const chainItem = getChain(data.chain);
+  const isFailed = data.tx?.status === 0;
+  const isScam = data.is_scam;
+
+  const { addressType } = useCheckAddressType(data.tx?.to_addr, chainItem);
+
+  const { t } = useTranslation();
+  const wallet = useWallet();
+  const account = useRabbySelector((state) => state.account.currentAccount);
 
   if (!chainItem) {
     return null;
+  }
+
+  if (data.tx?.message) {
+    console.log('[feat] data', data);
   }
 
   return (
@@ -241,16 +248,15 @@ export const HistoryItem = ({
               <ViewMessageTriggerForContract
                 contractAddress={data.other_addr}
                 userAddress={account?.address || ''}
-                inputDataHex={txInputData}
+                txInputData={data.tx?.message || ''}
                 chainItem={chainItem}
                 onViewInputData={onViewInputData}
               />
             )} */}
             {addressType === AddressType.EOA && !data.is_scam && (
               <ViewMessageTriggerForEoa
-                eoaAddress={data.other_addr}
                 userAddress={account?.address || ''}
-                inputDataHex={txInputData}
+                txInputData={data.tx?.message || ''}
                 chainItem={chainItem}
                 onViewInputData={onViewInputData}
               />
