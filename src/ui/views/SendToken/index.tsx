@@ -190,8 +190,6 @@ const SendTokenMessageForContract = React.forwardRef<
     return null;
   }, [t, maybeHex, currentIsHex, loadingExplainError, explain?.abi]);
 
-  console.log('[feat] currentIsHex, explainError', currentIsHex, explainError);
-
   return (
     <div className={clsx('section', !active && 'hidden')}>
       <div className="section-title flex justify-between items-center">
@@ -599,7 +597,7 @@ const SendToken = () => {
           },
         },
       });
-      // window.close();
+      window.close();
     } catch (e) {
       message.error(e.message);
       console.error(e);
@@ -881,7 +879,6 @@ const SendToken = () => {
         lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
-        console.log('[feat] cache', cache);
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);

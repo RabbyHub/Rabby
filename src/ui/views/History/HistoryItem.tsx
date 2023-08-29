@@ -1,4 +1,8 @@
-import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
+import {
+  TokenItem,
+  TxDisplayItem,
+  TxHistoryItem,
+} from '@/background/service/openapi';
 import { sinceTime, useWallet } from 'ui/utils';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
@@ -18,6 +22,7 @@ import {
   useParseContractAddress,
 } from '@/ui/hooks/useParseAddress';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
+import { findChainByServerID } from '@/utils/chain';
 
 export type HistoryItemActionContext = {
   targetAddressType: AddressType;
@@ -147,6 +152,13 @@ function ViewMessageTriggerForContract({
   );
 }
 
+function isTokenItemNative(tokenItem?: TokenItem | null) {
+  if (!tokenItem) return false;
+
+  const chainItem = findChainByServerID(tokenItem.chain);
+  return !!chainItem?.nativeTokenSymbol;
+}
+
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
   onViewInputData?: (ctx: HistoryItemActionContext) => void;
@@ -170,8 +182,24 @@ export const HistoryItem = ({
   const account = useRabbySelector((state) => state.account.currentAccount);
 
   const [txInputData, setTxInputData] = React.useState<string | null>(null);
+  const isTxNeedInputData = useMemo(() => {
+    return (
+      !data.is_scam &&
+      !!chainItem?.nativeTokenSymbol &&
+      data.cate_id &&
+      ['send', 'receive'].includes(data.cate_id) &&
+      (data.receives?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
+        .length === 1 ||
+        data.sends?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
+          .length === 1)
+    );
+  }, [data, chainItem?.nativeTokenSymbol]);
+
   useAsync(async () => {
-    if (!chainItem) return null;
+    if (!isTxNeedInputData || !chainItem) {
+      setTxInputData(null);
+      return;
+    }
 
     try {
       const hashDetail = await wallet.requestETHRpc(
@@ -190,7 +218,7 @@ export const HistoryItem = ({
     } catch (err) {
       setTxInputData(null);
     }
-  }, [data.id, chainItem?.serverId]);
+  }, [isTxNeedInputData, data.id, chainItem?.serverId]);
 
   if (!chainItem) {
     return null;
@@ -206,7 +234,7 @@ export const HistoryItem = ({
           <div className="time">{sinceTime(data.time_at)}</div>
           <div className="txs-history-card-header-right flex items-center justify-end flex-shrink-1 w-[100%]">
             <TxId chain={data.chain} id={data.id} />
-            {addressType === AddressType.CONTRACT && (
+            {addressType === AddressType.CONTRACT && !data.is_scam && (
               <ViewMessageTriggerForContract
                 contractAddress={data.other_addr}
                 userAddress={account?.address || ''}
@@ -215,7 +243,7 @@ export const HistoryItem = ({
                 onViewInputData={onViewInputData}
               />
             )}
-            {addressType === AddressType.EOA && (
+            {addressType === AddressType.EOA && !data.is_scam && (
               <ViewMessageTriggerForEoa
                 eoaAddress={data.other_addr}
                 userAddress={account?.address || ''}
