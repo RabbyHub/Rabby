@@ -61,6 +61,7 @@ function ViewMessageTriggerForEoa({
     <Tooltip
       overlayClassName="rectangle J_tipInputData text-r-neutral-title-2 text-[12px]"
       placement="topLeft"
+      arrowPointAtCenter
       // The transaction includes a message
       title={t('page.transactions.txHistory.tipInputData')}
     >
@@ -122,6 +123,7 @@ function ViewMessageTriggerForContract({
         <Tooltip
           overlayClassName="rectangle J_tipInputData text-r-neutral-title-2 text-[12px]"
           placement="topLeft"
+          arrowPointAtCenter
           // The transaction includes a message
           title={
             loadingExplainError
