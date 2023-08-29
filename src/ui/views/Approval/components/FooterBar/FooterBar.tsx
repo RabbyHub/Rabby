@@ -36,6 +36,7 @@ const Wrapper = styled.section`
   border-radius: 16px 16px 0px 0px;
   position: relative;
   .request-origin {
+    height: 30px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;

@@ -1,18 +1,22 @@
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FooterDoneButton } from './FooterDoneButton';
 import { FooterResend } from './FooterResend';
 import { FooterButton } from './FooterButton';
 import { FooterResendCancelGroup } from './FooterResendCancelGroup';
-
 import TXWaitingSVG from 'ui/assets/approval/tx-waiting.svg';
-import TXErrorSVG from 'ui/assets/approval/tx-error.svg';
-import TXSubmittedSVG from 'ui/assets/approval/tx-submitted.svg';
+import TxFailedSVG from 'ui/assets/approval/tx-failed.svg';
+import TxSucceedSVG from 'ui/assets/approval/tx-succeed.svg';
+import ConnectWiredSVG from 'ui/assets/approval/connect-wired.svg';
+import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
+import ConnectQRCodeSVG from 'ui/assets/approval/connect-qrcode.svg';
+import ConnectWalletConnectSVG from 'ui/assets/approval/connect-walletconnect.svg';
 import { noop } from '@/ui/utils';
+import { FooterDoneButton } from './FooterDoneButton';
+import { Dots } from './Dots';
 
 export interface Props {
-  brandUrl: string;
+  hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey' | 'walletconnect';
   status:
     | 'SENDING'
     | 'WAITING'
@@ -28,10 +32,11 @@ export interface Props {
   onSubmit?: () => void;
   hasMoreDescription?: boolean;
   children?: React.ReactNode;
+  showAnimation?: boolean;
 }
 
 export const ApprovalPopupContainer: React.FC<Props> = ({
-  brandUrl,
+  hdType,
   status,
   content,
   description,
@@ -41,35 +46,52 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   onSubmit = noop,
   hasMoreDescription,
   children,
+  showAnimation,
 }) => {
   const [image, setImage] = React.useState('');
   const [iconColor, setIconColor] = React.useState('');
   const [contentColor, setContentColor] = React.useState('');
   const { t } = useTranslation();
 
+  const sendUrl = React.useMemo(() => {
+    switch (hdType) {
+      case 'wired':
+        return ConnectWiredSVG;
+      case 'wireless':
+        return ConnectWirelessSVG;
+      case 'privatekey':
+        return;
+      case 'walletconnect':
+        return ConnectWalletConnectSVG;
+      case 'qrcode':
+      default:
+        return ConnectQRCodeSVG;
+    }
+  }, [hdType]);
+
   React.useEffect(() => {
     switch (status) {
       case 'SENDING':
-        setImage('/images/tx-sending.gif');
+        setImage('');
         setIconColor('bg-blue-light');
         setContentColor('text-gray-title');
         break;
       case 'WAITING':
       case 'SUBMITTING':
-        setImage(TXWaitingSVG);
+        setImage('');
         setIconColor('bg-blue-light');
         setContentColor('text-gray-title');
         break;
       case 'FAILED':
       case 'REJECTED':
-        setImage(TXErrorSVG);
+        setImage(TxFailedSVG);
         setIconColor('bg-red-forbidden');
         setContentColor('text-red-forbidden');
         break;
       case 'RESOLVED':
-        setImage(TXSubmittedSVG);
+        setImage(TxSucceedSVG);
         setIconColor('bg-green');
-        setContentColor('text-gray-title');
+        setContentColor('text-green');
         break;
       default:
         break;
@@ -77,66 +99,43 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   }, [status]);
 
   return (
-    <div
-      className={clsx(
-        'flex flex-col items-center',
-        'relative flex-1',
-        hasMoreDescription ? 'mt-4' : 'mt-20'
-      )}
-    >
-      <div
-        className={clsx(
-          'w-[80px] h-[80px] rounded-full',
-          'border-[#E5E9EF] border-[2px]',
-          'relative'
-        )}
-      >
-        <img src={brandUrl} className={'w-full h-full'} />
-        <div
-          className={clsx(
-            'w-[32px] h-[32px] rounded-full',
-            'absolute bottom-[-6px] right-[-6px]',
-            'border border-[#E5E9EF]',
-            iconColor,
-            'flex'
-          )}
-        >
-          <img src={image} className={'m-auto'} />
+    <div className={clsx('flex flex-col items-center', 'relative flex-1')}>
+      {sendUrl ? (
+        <div className={clsx('p-10')}>
+          <img src={sendUrl} className={'w-[140px] h-[140px]'} />
         </div>
-      </div>
+      ) : null}
       <div
         className={clsx(
-          'text-[20px] font-bold leading-[24px]',
+          'text-[20px] font-medium leading-[24px]',
           contentColor,
-          hasMoreDescription ? 'mt-[24px]' : 'mt-[40px]'
+          hasMoreDescription ? 'mt-[16px]' : 'mt-[24px]',
+          'flex items-center '
         )}
       >
-        {content}
+        {image ? <img src={image} className="w-20 mr-6" /> : null}
+        <span>{content}</span>
+        {(status === 'SENDING' || status === 'WAITING') && showAnimation ? (
+          <Dots />
+        ) : null}
       </div>
       <div
         className={clsx(
           contentColor,
-          hasMoreDescription
-            ? 'text-[13px] mt-12 leading-[18px] text-center'
-            : 'text-[20px] font-bold'
+          'mt-[12px]',
+          'text-15 font-normal text-center',
+          'overflow-auto h-[36px]'
         )}
       >
         {description}
       </div>
 
-      <div className="absolute bottom-[10px]">
+      <div className="absolute bottom-0">
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}
         {status === 'WAITING' && <FooterResend onResend={onRetry} />}
-        {status === 'FAILED' && (
-          <FooterButton
-            text={t('page.signFooterBar.resend')}
-            onClick={onRetry}
-          />
-        )}
-        {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} />}
-        {status === 'REJECTED' && (
-          <FooterResendCancelGroup onResend={onRetry} onCancel={onCancel} />
-        )}
+        {status === 'FAILED' && <FooterResend onResend={onRetry} />}
+        {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
+        {status === 'REJECTED' && <FooterResend onResend={onRetry} />}
         {status === 'SUBMITTING' && (
           <FooterButton
             text={t('page.signFooterBar.submitTx')}

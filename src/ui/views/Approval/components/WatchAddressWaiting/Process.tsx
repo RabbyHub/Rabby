@@ -72,14 +72,19 @@ const Process = ({
 
   const mergedStatus = React.useMemo(() => {
     if (sendingCounter <= 0 && status === WALLETCONNECT_STATUS_MAP.CONNECTED) {
-      return WALLETCONNECT_STATUS_MAP.FAILD;
+      return WALLETCONNECT_STATUS_MAP.FAILED;
     }
     return status;
   }, [status, sendingCounter]);
 
   React.useEffect(() => {
     setPopupViewTitle(
-      t('page.signFooterBar.qrcode.signWith', { brand: displayBrandName })
+      <div className="flex justify-center items-center">
+        <img src={brandUrl} className="w-20 mr-8" />
+        <span>
+          {t('page.signFooterBar.qrcode.signWith', { brand: displayBrandName })}
+        </span>
+      </div>
     );
   }, [displayBrandName]);
 
@@ -95,18 +100,16 @@ const Process = ({
         setStatusProp('SENDING');
         break;
       case WALLETCONNECT_STATUS_MAP.WAITING:
-        setContent(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-        setDescription(
-          t('page.signFooterBar.walletConnect.signOnYourMobileWallet')
-        );
+        setContent(t('page.signFooterBar.walletConnect.sendingRequest'));
+        setDescription('');
         setStatusProp('WAITING');
         break;
-      case WALLETCONNECT_STATUS_MAP.FAILD:
+      case WALLETCONNECT_STATUS_MAP.FAILED:
         setContent(t('page.signFooterBar.walletConnect.requestFailedToSend'));
         setDescription('');
         setStatusProp('FAILED');
         break;
-      case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+      case WALLETCONNECT_STATUS_MAP.SUBMITTED:
         setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
         setStatusProp('RESOLVED');
@@ -125,7 +128,8 @@ const Process = ({
 
   return (
     <ApprovalPopupContainer
-      brandUrl={brandUrl}
+      hdType="walletconnect"
+      showAnimation
       status={statusProp}
       onRetry={handleRetry}
       onDone={onDone}

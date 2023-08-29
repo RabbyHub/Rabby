@@ -45,7 +45,7 @@ import {
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import { WaitingSignComponent } from './SignText';
+import { WaitingSignComponent } from './map';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';

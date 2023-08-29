@@ -5,9 +5,10 @@ import { useInterval } from 'react-use';
 
 export interface Props {
   onDone: () => void;
+  hide?: boolean;
 }
 
-export const FooterDoneButton: React.FC<Props> = ({ onDone }) => {
+export const FooterDoneButton: React.FC<Props> = ({ onDone, hide }) => {
   const [counter, setCounter] = React.useState(0.5);
   const { visible } = useCommonPopupView();
 
@@ -26,6 +27,10 @@ export const FooterDoneButton: React.FC<Props> = ({ onDone }) => {
       onDone();
     }
   }, [visible]);
+
+  if (hide) {
+    return null;
+  }
 
   return (
     <div>
