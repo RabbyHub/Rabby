@@ -105,13 +105,14 @@ const SendTokenMessageForEoa = React.forwardRef<
           <Input.TextArea
             ref={ref as any}
             placeholder={t('page.sendToken.sectionMsgDataForEOA.placeholder')}
-            className="max-h-[84px] padding-12px overflow-y-auto"
+            autoSize={{ minRows: 1 }}
+            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto"
           />
         </Form.Item>
       </div>
 
       {withInputData && (
-        <div className="messagedata-parsed-input font-[12px]">
+        <div className="messagedata-parsed-input text-[12px]">
           {currentIsHex ? (
             <>
               <span className="text-r-neutral-body">
@@ -149,10 +150,9 @@ const SendTokenMessageForContract = React.forwardRef<
 >(({ active, formData, userAddress, chain }, ref) => {
   const { t } = useTranslation();
 
-  const { messageDataForContractCall = '' } = formData;
+  const { messageDataForContractCall: maybeHex = '' } = formData;
 
   const { currentIsHex, hexData } = useMemo(() => {
-    const maybeHex = messageDataForContractCall;
     const result = { currentIsHex: false, hexData: '' };
 
     if (!maybeHex) return result;
@@ -161,7 +161,7 @@ const SendTokenMessageForContract = React.forwardRef<
     result.hexData = maybeHex;
 
     return result;
-  }, [messageDataForContractCall]);
+  }, [maybeHex]);
 
   const {
     explain,
@@ -174,6 +174,23 @@ const SendTokenMessageForContract = React.forwardRef<
     chain: chain || null,
     inputDataHex: hexData,
   });
+
+  const explainError = useMemo(() => {
+    if (maybeHex && !currentIsHex) {
+      return t('page.sendToken.sectionMsgDataForContract.notHexData');
+    }
+
+    if (loadingExplainError || !explain?.abi) {
+      {
+        /* Parse contract failed */
+      }
+      return t('page.sendToken.sectionMsgDataForContract.parseError');
+    }
+
+    return null;
+  }, [t, maybeHex, currentIsHex, loadingExplainError, explain?.abi]);
+
+  console.log('[feat] currentIsHex, explainError', currentIsHex, explainError);
 
   return (
     <div className={clsx('section', !active && 'hidden')}>
@@ -189,18 +206,19 @@ const SendTokenMessageForContract = React.forwardRef<
             placeholder={t(
               'page.sendToken.sectionMsgDataForContract.placeholder'
             )}
-            className="max-h-[84px] text-[12px] text-[#192945] padding-12px overflow-y-auto"
+            autoSize={{ minRows: 1 }}
+            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto text-[12px] text-[#192945]"
           />
         </Form.Item>
       </div>
 
-      {!!messageDataForContractCall && (
+      {!!maybeHex && (
         <div className="messagedata-parsed-input text-[12px]">
           {!currentIsHex ? (
             <>
               <span className="mt-16 text-r-red-default">
                 {/* Only supported hex data */}
-                {t('page.sendToken.sectionMsgDataForContract.parseError')}
+                {t('page.sendToken.sectionMsgDataForContract.notHexData')}
               </span>
             </>
           ) : (
@@ -210,24 +228,22 @@ const SendTokenMessageForContract = React.forwardRef<
                 {t('page.sendToken.sectionMsgDataForContract.simulation')}
               </span>
               {isLoadingExplain ? (
-                <Skeleton.Button active style={{ width: '100%', height: 25 }} />
+                <Skeleton.Button
+                  active
+                  className="block min-w-[50px] w-[50%] h-[24px] mt-3"
+                />
               ) : (
                 <>
-                  {loadingExplainError ||
-                    (!explain?.abi && (
-                      <span className="flex items-center text-r-red-default">
-                        <img
-                          src={IconAlertInfo}
-                          className="w-14 h-14 mr-[3px]"
-                        />
-                        <span>
-                          {/* Parse contract failed */}
-                          {t(
-                            'page.sendToken.sectionMsgDataForContract.parseError'
-                          )}
-                        </span>
+                  {(loadingExplainError || !explain?.abi) && (
+                    <span className="flex items-center text-r-red-default">
+                      <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
+                      <span>
+                        {t(
+                          'page.sendToken.sectionMsgDataForContract.parseError'
+                        )}
                       </span>
-                    ))}
+                    </span>
+                  )}
                   {!loadingExplainError && contractCallPlainText && (
                     <p className="mt-3 break-all text-r-neutral-foot">
                       {contractCallPlainText}
@@ -865,6 +881,7 @@ const SendToken = () => {
         lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
+        console.log('[feat] cache', cache);
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);

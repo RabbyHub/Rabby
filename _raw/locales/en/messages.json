@@ -454,7 +454,8 @@
         "placeholder": "Optional",
         "title": "Contract call",
         "parseError": "Parse contract failed",
-        "simulation": "Contract call simulation:"
+        "simulation": "Contract call simulation:",
+        "notHexData": "Only supported hex data"
       }
     },
     "sendTokenComponents": {
