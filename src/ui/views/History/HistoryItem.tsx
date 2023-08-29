@@ -175,7 +175,7 @@ export const HistoryItem = ({
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
 
-  const { addressType } = useCheckAddressType(data.other_addr, chainItem);
+  const { addressType } = useCheckAddressType(data.tx?.to_addr, chainItem);
 
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -188,8 +188,9 @@ export const HistoryItem = ({
       !!chainItem?.nativeTokenSymbol &&
       data.cate_id &&
       ['send', 'receive'].includes(data.cate_id) &&
-      (data.receives?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
-        .length === 1 ||
+      ((!data.receives.length && !data.receives.length) ||
+        data.receives?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
+          .length === 1 ||
         data.sends?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
           .length === 1)
     );
@@ -234,7 +235,7 @@ export const HistoryItem = ({
           <div className="time">{sinceTime(data.time_at)}</div>
           <div className="txs-history-card-header-right flex items-center justify-end flex-shrink-1 w-[100%]">
             <TxId chain={data.chain} id={data.id} />
-            {addressType === AddressType.CONTRACT && !data.is_scam && (
+            {/* {addressType === AddressType.CONTRACT && !data.is_scam && (
               <ViewMessageTriggerForContract
                 contractAddress={data.other_addr}
                 userAddress={account?.address || ''}
@@ -242,7 +243,7 @@ export const HistoryItem = ({
                 chainItem={chainItem}
                 onViewInputData={onViewInputData}
               />
-            )}
+            )} */}
             {addressType === AddressType.EOA && !data.is_scam && (
               <ViewMessageTriggerForEoa
                 eoaAddress={data.other_addr}

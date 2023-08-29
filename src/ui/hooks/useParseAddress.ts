@@ -8,7 +8,7 @@ import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { formatTxExplainAbiData } from '../utils/transaction';
 
 export function useCheckAddressType(
-  addr: string,
+  addr?: string,
   chain?: Pick<Chain, 'serverId' | 'enum'> | null
 ) {
   const [addressType, setAddressType] = useState<AddressType>(
@@ -17,7 +17,7 @@ export function useCheckAddressType(
   const wallet = useWallet();
 
   useAsync(async () => {
-    if (!chain || !isValidAddress(addr)) {
+    if (!chain || !addr || !isValidAddress(addr)) {
       setAddressType(AddressType.UNKNOWN);
       return;
     }
