@@ -641,10 +641,19 @@ const SendToken = () => {
   const handleFormValuesChange = async (
     changedValues,
     { to, amount, ...restForm }: FormSendToken,
-    token?: TokenItem
+    opts?: {
+      token?: TokenItem;
+      isInitFromCache?: boolean;
+    }
   ) => {
+    const { token, isInitFromCache } = opts || {};
     if (changedValues && changedValues.to) {
       setTemporaryGrant(false);
+
+      if (!isInitFromCache) {
+        restForm.messageDataForSendToEoa = '';
+        restForm.messageDataForContractCall = '';
+      }
     }
     const targetToken = token || currentToken;
     if (!to || !isValidAddress(to)) {
@@ -882,11 +891,10 @@ const SendToken = () => {
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
-            handleFormValuesChange(
-              cache.states.values,
-              form.getFieldsValue(),
-              cache.states.currentToken
-            );
+            handleFormValuesChange(cache.states.values, form.getFieldsValue(), {
+              token: cache.states.currentToken,
+              isInitFromCache: true,
+            });
           }
           if (cache.states.currentToken) {
             setCurrentToken(cache.states.currentToken);
