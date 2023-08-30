@@ -95,6 +95,7 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
           tokenDict={item.tokenDict}
           key={item.id}
           onViewInputData={setFocusingHistoryItem}
+          isTestnet={!isMainnet}
         />
       ))}
       {(loadingMore || loading) && <Loading count={5} active />}

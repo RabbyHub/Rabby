@@ -36,6 +36,7 @@ type ViewMessageTriggerProps = {
   txInputData: string | null;
   chainItem: Chain;
   onViewInputData?: (ctx: HistoryItemActionContext) => void;
+  isTestnet?: boolean;
 };
 
 function ViewMessageTriggerForEoa({
@@ -86,6 +87,7 @@ function ViewMessageTriggerForContract({
   txInputData,
   chainItem,
   onViewInputData,
+  isTestnet,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement> & {
   contractAddress: string;
@@ -95,14 +97,19 @@ function ViewMessageTriggerForContract({
     isLoadingExplain,
     loadingExplainError,
     contractCallPlainText,
-  } = useParseContractAddress({
-    contractAddress,
-    chain: chainItem,
-    inputDataHex: txInputData
-      ? formatTxInputDataOnERC20(txInputData).hexData
-      : null,
-    userAddress,
-  });
+  } = useParseContractAddress(
+    {
+      contractAddress,
+      chain: chainItem,
+      inputDataHex: txInputData
+        ? formatTxInputDataOnERC20(txInputData).hexData
+        : null,
+      userAddress,
+    },
+    {
+      isTestnet,
+    }
+  );
 
   const { t } = useTranslation();
 
@@ -207,6 +214,7 @@ function useClientParseTx({
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
   onViewInputData?: (ctx: HistoryItemActionContext) => void;
+  isTestnet?: boolean;
 } & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
 
 export const HistoryItem = ({
@@ -215,6 +223,7 @@ export const HistoryItem = ({
   projectDict,
   tokenDict,
   onViewInputData,
+  isTestnet,
 }: HistoryItemProps) => {
   const chainItem = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
@@ -223,7 +232,6 @@ export const HistoryItem = ({
   const { addressType } = useCheckAddressType(data.tx?.to_addr, chainItem);
 
   const { t } = useTranslation();
-  const wallet = useWallet();
   const account = useRabbySelector((state) => state.account.currentAccount);
 
   if (!chainItem) {
@@ -247,6 +255,7 @@ export const HistoryItem = ({
                 txInputData={data.tx?.message || ''}
                 chainItem={chainItem}
                 onViewInputData={onViewInputData}
+                isTestnet={isTestnet}
               />
             )} */}
             {addressType === AddressType.EOA && !data.is_scam && (
