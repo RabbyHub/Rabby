@@ -119,7 +119,7 @@ const SendTokenMessageForEoa = React.forwardRef<
                 {/* The current input is Original Data. UTF-8 is: */}
                 {t('page.sendToken.sectionMsgDataForEOA.currentIsOriginal')}
               </span>
-              <p className="mt-3 break-all text-r-neutral-foot">
+              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
                 {currentData}
               </p>
             </>
@@ -129,7 +129,9 @@ const SendTokenMessageForEoa = React.forwardRef<
                 {/* The current input is UTF-8. Original Data is: */}
                 {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
               </span>
-              <p className="mt-3 break-all text-r-neutral-foot">{hexData}</p>
+              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
+                {hexData}
+              </p>
             </>
           )}
         </div>
@@ -174,21 +176,6 @@ const SendTokenMessageForContract = React.forwardRef<
     chain: chain || null,
     inputDataHex: hexData,
   });
-
-  const explainError = useMemo(() => {
-    if (maybeHex && !currentIsHex) {
-      return t('page.sendToken.sectionMsgDataForContract.notHexData');
-    }
-
-    if (loadingExplainError || !explain?.abi) {
-      {
-        /* Parse contract failed */
-      }
-      return t('page.sendToken.sectionMsgDataForContract.parseError');
-    }
-
-    return null;
-  }, [t, maybeHex, currentIsHex, loadingExplainError, explain?.abi]);
 
   return (
     <div className={clsx('section', !active && 'hidden')}>
@@ -236,6 +223,7 @@ const SendTokenMessageForContract = React.forwardRef<
                     <span className="flex items-center text-r-red-default">
                       <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
                       <span>
+                        {/* Fail to decode contract call */}
                         {t(
                           'page.sendToken.sectionMsgDataForContract.parseError'
                         )}
@@ -243,7 +231,7 @@ const SendTokenMessageForContract = React.forwardRef<
                     </span>
                   )}
                   {!loadingExplainError && contractCallPlainText && (
-                    <p className="mt-3 break-all text-r-neutral-foot">
+                    <p className="mt-3 mb-0 break-all text-r-neutral-foot">
                       {contractCallPlainText}
                     </p>
                   )}
@@ -889,7 +877,6 @@ const SendToken = () => {
         lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
-        console.log('[feat] cache', cache);
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);

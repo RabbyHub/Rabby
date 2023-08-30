@@ -236,7 +236,7 @@ export const HistoryItem = ({
     >
       <div className="txs-history-card-header">
         {isScam && <div className="tag-scam">{t('global.scamTx')}</div>}
-        <div className="txs-history-card-header-inner">
+        <div className="txs-history-card-header-inner text-12">
           <div className="time">{sinceTime(data.time_at)}</div>
           <div className="txs-history-card-header-right flex items-center justify-end flex-shrink-1 w-[100%]">
             <TxId chain={data.chain} id={data.id} />

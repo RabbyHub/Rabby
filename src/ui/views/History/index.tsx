@@ -83,7 +83,7 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
         }}
         maxHeight="360px"
       >
-        <div className="parsed-content">
+        <div className="parsed-content text-14">
           {focusingHistoryItem?.parsedInputData}
         </div>
       </Modal>

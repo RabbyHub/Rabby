@@ -453,7 +453,7 @@
       "sectionMsgDataForContract": {
         "placeholder": "Optional",
         "title": "Contract call",
-        "parseError": "Parse contract failed",
+        "parseError": "Fail to decode contract call",
         "simulation": "Contract call simulation:",
         "notHexData": "Only supported hex data"
       }
