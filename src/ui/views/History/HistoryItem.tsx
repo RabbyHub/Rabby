@@ -230,10 +230,6 @@ export const HistoryItem = ({
     return null;
   }
 
-  if (data.tx?.message) {
-    console.log('[feat] data', data);
-  }
-
   return (
     <div
       className={clsx('txs-history-card', (isScam || isFailed) && 'is-gray')}

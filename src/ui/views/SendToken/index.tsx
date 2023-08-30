@@ -650,11 +650,12 @@ const SendToken = () => {
     if (changedValues && changedValues.to) {
       setTemporaryGrant(false);
 
-      if (!isInitFromCache) {
+      if (!isInitFromCache && changedValues.to !== formSnapshot.to) {
         restForm.messageDataForSendToEoa = '';
         restForm.messageDataForContractCall = '';
       }
     }
+
     const targetToken = token || currentToken;
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
@@ -888,6 +889,7 @@ const SendToken = () => {
         lastTimeToken || tokenFromOrder || currentToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
+        console.log('[feat] cache', cache);
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
