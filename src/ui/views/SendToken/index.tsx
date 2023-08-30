@@ -415,9 +415,7 @@ const SendToken = () => {
 
   useDebounce(
     async () => {
-      const targetChain = Object.values(CHAINS).find(
-        (item) => item.enum === chain
-      )!;
+      const targetChain = findChainByEnum(chain)!;
       let gasList: GasLevel[];
       if (
         gasPriceMap[targetChain.enum] &&
@@ -704,9 +702,10 @@ const SendToken = () => {
       amount: resultAmount,
     };
 
-    if (Object.values(nextFormValues).some((v) => !!v)) {
-      await persistPageStateCache({ values: nextFormValues });
-    }
+    await persistPageStateCache({
+      values: nextFormValues,
+      currentToken: targetToken,
+    });
 
     form.setFieldsValue(nextFormValues);
     setFormSnapshot(nextFormValues);
@@ -805,7 +804,18 @@ const SendToken = () => {
       chain: chain.serverId,
       time_at: 0,
     });
-    loadCurrentToken(chain.nativeTokenAddress, chain.serverId, account.address);
+
+    let nextToken: TokenItem | null = null;
+    try {
+      nextToken = await loadCurrentToken(
+        chain.nativeTokenAddress,
+        chain.serverId,
+        account.address
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -817,6 +827,9 @@ const SendToken = () => {
       {
         ...values,
         amount: '',
+      },
+      {
+        ...(nextToken && { token: nextToken }),
       }
     );
   };
@@ -858,6 +871,8 @@ const SendToken = () => {
     const t = await wallet.openapi.getToken(address, chainId, id);
     if (t) setCurrentToken(t);
     setIsLoading(false);
+
+    return t;
   };
 
   const initByCache = async () => {
@@ -907,11 +922,10 @@ const SendToken = () => {
           }
         }
       }
+
       if (chainItem && needLoadToken.chain !== chainItem.serverId) {
-        const target = Object.values(CHAINS).find(
-          (item) => item.serverId === needLoadToken.chain
-        )!;
-        setChain(target.enum);
+        const target = findChainByServerID(needLoadToken.chain);
+        if (target?.enum) setChain(target.enum);
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
