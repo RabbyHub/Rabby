@@ -279,7 +279,7 @@ export const HistoryItem = ({
         <TokenChange data={data} tokenDict={tokenDict} />
       </div>
       {(data.tx && data.tx?.eth_gas_fee) || isFailed ? (
-        <div className="txs-history-card-footer">
+        <div className="txs-history-card-footer text-12">
           {data.tx && data.tx?.eth_gas_fee ? (
             <div>
               {t('global.gas')}:{' '}
