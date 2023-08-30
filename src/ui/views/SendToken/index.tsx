@@ -5,10 +5,10 @@ import BigNumber from 'bignumber.js';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useAsync, useDebounce } from 'react-use';
+import { useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button, InputProps } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
-import { isValidAddress, intToHex } from 'ethereumjs-util';
+import { isValidAddress, intToHex, zeroAddress } from 'ethereumjs-util';
 
 import styled from 'styled-components';
 import {
@@ -19,6 +19,7 @@ import {
   MINIMUM_GAS_LIMIT,
   L2_ENUMS,
   INTERNAL_REQUEST_ORIGIN,
+  OP_STACK_ENUMS,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
@@ -334,6 +335,7 @@ const SendToken = () => {
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
+  const [estimateGas, setEstimateGas] = useState(0);
   const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
@@ -499,9 +501,9 @@ const SendToken = () => {
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
     )!;
-    const sendValue = new BigNumber(amount).multipliedBy(
-      10 ** currentToken.decimals
-    );
+    const sendValue = new BigNumber(amount)
+      .multipliedBy(10 ** currentToken.decimals)
+      .decimalPlaces(0, BigNumber.ROUND_DOWN);
     const dataInput = [
       {
         name: 'transfer',
@@ -519,7 +521,6 @@ const SendToken = () => {
       } as const,
       [to, sendValue.toFixed(0)] as any[],
     ] as const;
-
     const params: Record<string, any> = {
       chainId: chain.id,
       from: currentAccount!.address,
@@ -550,7 +551,9 @@ const SendToken = () => {
           },
           chain.serverId
         );
-        if (
+        if (estimateGas > 0) {
+          params.gas = intToHex(estimateGas);
+        } else if (
           code &&
           (code === '0x' || code === '0x0') &&
           !L2_ENUMS.includes(chain.enum)
@@ -742,12 +745,14 @@ const SendToken = () => {
   };
 
   const handleClickTokenBalance = async () => {
+    if (!currentAccount) return;
     if (isLoading) return;
     if (showGasReserved) return;
     const tokenBalance = new BigNumber(
       currentToken.raw_amount_hex_str || 0
     ).div(10 ** currentToken.decimals);
     let amount = tokenBalance.toFixed();
+    const to = form.getFieldValue('to');
 
     if (isNativeToken && !isGnosisSafe) {
       setShowGasReserved(true);
@@ -760,7 +765,40 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const gasTokenAmount = handleGasChange(instant, false);
+        const gasUsed = await wallet.requestETHRpc(
+          {
+            method: 'eth_estimateGas',
+            params: [
+              {
+                from: currentAccount.address,
+                to: to && isValidAddress(to) ? to : zeroAddress(),
+                value: currentToken.raw_amount_hex_str,
+              },
+            ],
+          },
+          CHAINS[chain].serverId
+        );
+        setEstimateGas(Number(gasUsed));
+        let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
+        if (OP_STACK_ENUMS.includes(chain)) {
+          const l1GasFee = await wallet.fetchEstimatedL1Fee(
+            {
+              txParams: {
+                chainId: CHAINS[chain].id,
+                from: currentAccount.address,
+                to: to && isValidAddress(to) ? to : zeroAddress(),
+                value: currentToken.raw_amount_hex_str,
+                gas: intToHex(21000),
+                gasPrice: `0x${new BigNumber(instant.price).toString(16)}`,
+                data: '0x',
+              },
+            },
+            chain
+          );
+          gasTokenAmount = gasTokenAmount
+            .plus(new BigNumber(l1GasFee).div(1e18))
+            .times(1.1);
+        }
         const tokenForSend = tokenBalance.minus(gasTokenAmount);
         amount = tokenForSend.gt(0) ? tokenForSend.toFixed() : '0';
         if (tokenForSend.lt(0)) {
@@ -968,11 +1006,13 @@ const SendToken = () => {
     setGasSelectorVisible(false);
   };
 
-  const handleGasChange = (gas: GasLevel, updateTokenAmount = true) => {
+  const handleGasChange = (
+    gas: GasLevel,
+    updateTokenAmount = true,
+    gasLimit = MINIMUM_GAS_LIMIT
+  ) => {
     setSelectedGasLevel(gas);
-    const gasTokenAmount = new BigNumber(gas.price)
-      .times(MINIMUM_GAS_LIMIT)
-      .div(1e18);
+    const gasTokenAmount = new BigNumber(gas.price).times(gasLimit).div(1e18);
     setTokenAmountForGas(gasTokenAmount.toFixed());
     if (updateTokenAmount) {
       const values = form.getFieldsValue();

@@ -63,7 +63,7 @@
     "antd": "^4.15.3",
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.3",
-    "bitbox02-api": "0.15.0",
+    "bitbox02-api": "^0.15.1",
     "browser-passworder": "^2.0.3",
     "buffer": "^6.0.3",
     "clipboard": "^2.0.8",

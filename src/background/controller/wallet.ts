@@ -617,14 +617,15 @@ export class WalletController extends BaseController {
   fetchEstimatedL1Fee = async (
     txMeta: Record<string, any> & {
       txParams: any;
-    }
+    },
+    chain = CHAINS_ENUM.OP
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = CHAINS['OP'].network;
+    buildinProvider.currentProvider.chainId = CHAINS[chain].network;
 
     const provider = new ethers.providers.Web3Provider(
       buildinProvider.currentProvider

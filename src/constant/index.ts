@@ -58,7 +58,11 @@ import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 import LogoCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
-import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
+import {
+  CHAINS_BY_NET,
+  ensureChainHashValid,
+  ensureChainListValid,
+} from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
@@ -822,11 +826,20 @@ export const ALIAS_ADDRESS = {
   [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
 };
 
+// non-opstack L2 chains
 export const L2_ENUMS = [
-  CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.NOVA,
+];
+
+// opstack L2 chains
+export const OP_STACK_ENUMS = [
+  CHAINS_ENUM.OP,
+  CHAINS_ENUM.TDEBANK,
+  CHAINS_ENUM.BASE,
+  CHAINS_ENUM.ZORA,
+  CHAINS_ENUM.MANTLE,
 ];
 
 export const SecurityEngineLevelOrder = [

@@ -565,8 +565,8 @@ class LedgerBridgeKeyring extends EventEmitter {
               hdPath,
               ethUtil.stripHexPrefix(message)
             );
-            let v: string | number = res.v - 27;
-            v = v.toString(16);
+            // let v: string | number = res.v - 27;
+            let v = res.v.toString(16);
             if (v.length < 2) {
               v = `0${v}`;
             }
@@ -723,8 +723,7 @@ class LedgerBridgeKeyring extends EventEmitter {
               domainSeparatorHex,
               hashStructMessageHex
             );
-            let v: any = res.v - 27;
-            v = v.toString(16);
+            let v = res.v.toString(16);
             if (v.length < 2) {
               v = `0${v}`;
             }
