@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -298,6 +298,24 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+  const persistPageStateCache = useCallback(
+    async (nextStateCache?: {
+      values?: FormSendToken;
+      currentToken?: TokenItem | null;
+    }) => {
+      await wallet.setPageStateCache({
+        path: history.location.pathname,
+        search: history.location.search,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          currentToken,
+          ...nextStateCache,
+        },
+      });
+    },
+    [wallet, history, form, currentToken]
+  );
   const [inited, setInited] = useState(false);
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
@@ -553,15 +571,7 @@ const SendToken = () => {
     }
     try {
       await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-      await wallet.setPageStateCache({
-        path: history.location.pathname,
-        search: history.location.search,
-        params: {},
-        states: {
-          values: form.getFieldsValue(),
-          currentToken,
-        },
-      });
+      await persistPageStateCache();
       matomoRequestEvent({
         category: 'Send',
         action: 'createTx',
@@ -637,11 +647,11 @@ const SendToken = () => {
     const { token, isInitFromCache } = opts || {};
     if (changedValues && changedValues.to) {
       setTemporaryGrant(false);
+    }
 
-      if (!isInitFromCache && changedValues.to !== formSnapshot.to) {
-        restForm.messageDataForSendToEoa = '';
-        restForm.messageDataForContractCall = '';
-      }
+    if ((!isInitFromCache && changedValues?.to) || (!changedValues && to)) {
+      restForm.messageDataForSendToEoa = '';
+      restForm.messageDataForContractCall = '';
     }
 
     const targetToken = token || currentToken;
@@ -693,6 +703,11 @@ const SendToken = () => {
       to,
       amount: resultAmount,
     };
+
+    if (Object.values(nextFormValues).some((v) => !!v)) {
+      await persistPageStateCache({ values: nextFormValues });
+    }
+
     form.setFieldsValue(nextFormValues);
     setFormSnapshot(nextFormValues);
     setCacheAmount(resultAmount);
@@ -720,6 +735,7 @@ const SendToken = () => {
     const chainItem = findChainByServerID(token.chain);
     setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
+    await persistPageStateCache({ currentToken: token });
     setBalanceError(null);
     setBalanceWarn(null);
     setIsLoading(true);
