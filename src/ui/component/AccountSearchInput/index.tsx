@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, InputProps, Popover } from 'antd';
+import { TextAreaProps } from 'antd/lib/input/TextArea';
 import { groupBy } from 'lodash';
 import { useClickAway } from 'react-use';
 
@@ -138,11 +139,11 @@ function NoSearchedAddressUI() {
   );
 }
 
-interface AccountSearchInputProps extends InputProps {
+interface AccountSearchInputProps extends TextAreaProps {
   onSelectedAccount?: (account: IDisplayedAccountWithBalance) => void;
 }
 
-const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
+const AccountSearchInput = React.forwardRef<any, AccountSearchInputProps>(
   (
     {
       onSelectedAccount,
@@ -214,9 +215,10 @@ const AccountSearchInput = React.forwardRef<Input, AccountSearchInputProps>(
             </div>
           }
         >
-          <Input
+          <Input.TextArea
             autoComplete="off"
             autoFocus
+            autoSize
             spellCheck={false}
             {...inputProps}
             ref={ref}

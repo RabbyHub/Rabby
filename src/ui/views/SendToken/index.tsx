@@ -59,7 +59,7 @@ import {
   useCheckAddressType,
   useParseContractAddress,
 } from '@/ui/hooks/useParseAddress';
-import { hexToString, isHex, isHexStrict, toHex } from 'web3-utils';
+import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
