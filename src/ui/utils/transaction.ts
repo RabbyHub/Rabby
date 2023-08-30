@@ -2,7 +2,6 @@ import abi from 'human-standard-token-abi';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
-import { formatNumber } from './number';
 import { hexToString, isHex, toHex } from 'web3-utils';
 
 const hstInterface = new ethers.utils.Interface(abi);
