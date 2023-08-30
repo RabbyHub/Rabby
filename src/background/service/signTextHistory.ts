@@ -95,6 +95,9 @@ class PermissionService {
         list.splice(index, 1);
       }
     });
+    this.store.history = {
+      ...this.store.history,
+    };
   };
 }
 
