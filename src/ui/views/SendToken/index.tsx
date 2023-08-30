@@ -565,6 +565,12 @@ const SendToken = () => {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       }
+      if (
+        isShowMessageDataForToken &&
+        (messageDataForContractCall || messageDataForSendToEoa)
+      ) {
+        delete params.gas;
+      }
       setIsSubmitLoading(false);
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
