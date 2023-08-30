@@ -168,16 +168,12 @@ export function formatTxInputDataOnERC20(maybeHex: string) {
   return result;
 }
 
-function formatNumberArg(
-  arg: string | number,
-  decimal = 2,
-  opt = {} as BigNumber.Format
-) {
+function formatNumberArg(arg: string | number, opt = {} as BigNumber.Format) {
   const bn = new BigNumber(arg);
   const format = {
     prefix: '',
     decimalSeparator: '.',
-    groupSeparator: ',',
+    groupSeparator: '',
     groupSize: 3,
     secondaryGroupSize: 0,
     fractionGroupSeparator: ' ',
@@ -186,7 +182,7 @@ function formatNumberArg(
     ...opt,
   };
 
-  return bn.toFormat(decimal, format);
+  return bn.toFormat(0, format);
 }
 
 export function formatTxExplainAbiData(abi?: ExplainTxResponse['abi'] | null) {
@@ -196,9 +192,7 @@ export function formatTxExplainAbiData(abi?: ExplainTxResponse['abi'] | null) {
     (abi?.params || [])
       ?.map((argValue, idx) => {
         const argValueText =
-          typeof argValue === 'number'
-            ? formatNumberArg(argValue, 0, { groupSeparator: '' })
-            : argValue;
+          typeof argValue === 'number' ? formatNumberArg(argValue) : argValue;
         return `arg${idx}=${argValueText}`;
       })
       .join(', '),
