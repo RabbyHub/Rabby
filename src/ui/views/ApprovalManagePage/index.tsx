@@ -722,7 +722,33 @@ function getColumnsForAsset({
 
         const spendValues = getSpenderApprovalAmount(spender);
 
-        return spendValues.displayText;
+        return (
+          <div className="text-14">
+            <Tooltip
+              overlayClassName="J-table__tooltip disable-ant-overwrite"
+              // Approved Amount
+              overlay={t(
+                'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipApprovedAmount'
+              )}
+            >
+              <div className="text-r-neutral-title-1">
+                {spendValues.displayAmountText}
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              overlayClassName="J-table__tooltip disable-ant-overwrite"
+              // My Balance
+              overlay={t(
+                'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+              )}
+            >
+              <div className="text-r-neutral-foot mt-4">
+                {spendValues.displayBalanceText}
+              </div>
+            </Tooltip>
+          </div>
+        );
       },
       width: 160,
     },
