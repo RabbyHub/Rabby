@@ -12,6 +12,7 @@
   border-radius: 6px;
   padding: 8px 4px 8px 8px;
   font-weight: 500;
+  max-width: 180px;
   .chain-logo {
     width: 16px;
     height: 16px;
@@ -25,7 +26,7 @@
 }
 
 .hover {
-  background: rgba(134, 151, 255, 0.1);
+  background: var(--r-blue-light-1, #eef1ff);
   border: 1px solid rgba(134, 151, 255, 0.5);
 }
 .chain-selector-options {
@@ -223,9 +224,9 @@
       margin-left: 16px;
     }
     &:hover {
-      // background: rgba(134, 151, 255, 0.1);
+      // background: var(--r-blue-light-1, #eef1ff);
       background-color: #dce0f9;
-      border: 1px solid #8697ff;
+      border: 1px solid var(--r-blue-default, #7084ff);
       &::after {
         display: none;
       }

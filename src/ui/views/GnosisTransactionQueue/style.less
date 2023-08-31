@@ -34,7 +34,7 @@
       cursor: pointer;
 
       &.is-active {
-        color: #8697ff;
+        color: var(--r-blue-default, #7084ff);
         &::after {
           position: absolute;
           content: '';
@@ -42,7 +42,7 @@
           left: 0;
           right: 0;
           height: 2px;
-          background-color: #8697ff;
+          background-color: var(--r-blue-default, #7084ff);
         }
       }
     }
@@ -161,13 +161,13 @@
       }
       .tx-explain__view {
         background-color: rgba(134, 151, 255, 0.2);
-        color: #8697ff;
+        color: var(--r-blue-default, #7084ff);
         border-color: transparent;
         text-shadow: none;
         &:hover {
           background: rgba(134, 151, 255, 0.2) !important;
           background-color: rgba(134, 151, 255, 0.2) !important;
-          color: #8697ff !important;
+          color: var(--r-blue-default, #7084ff) !important;
         }
         &::before {
           display: none;
@@ -177,7 +177,7 @@
   }
   .queue-group {
     background-color: #ffffff;
-    border: 1px solid #8697ff;
+    border: 1px solid var(--r-blue-default, #7084ff);
     border-radius: 6px;
     margin-bottom: 20px;
     &__header {
@@ -185,8 +185,8 @@
       font-weight: 500;
       font-size: 12px;
       line-height: 16px;
-      color: #8697ff;
-      border-bottom: 1px solid #8697ff;
+      color: var(--r-blue-default, #7084ff);
+      border-bottom: 1px solid var(--r-blue-default, #7084ff);
       padding: 14px 12px;
       .icon-information {
         width: 12px;
@@ -196,7 +196,7 @@
       }
     }
     .queue-item {
-      border-bottom: 1px solid #8697ff;
+      border-bottom: 1px solid var(--r-blue-default, #7084ff);
       border-radius: 0;
       margin-bottom: 0;
       background-color: transparent;

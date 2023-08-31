@@ -136,10 +136,6 @@ export const getProtocol = (
 ) => {
   if (!protocolMap) return null;
   if (protocolMap[chainId]) return protocolMap[chainId];
-  const protocols = Object.values(protocolMap);
-  if (protocols.length > 0) {
-    return protocols[0];
-  }
   return null;
 };
 

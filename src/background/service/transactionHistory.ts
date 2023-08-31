@@ -13,6 +13,7 @@ import {
   ActionRequireData,
   ParsedActionData,
 } from '@/ui/views/Approval/components/Actions/utils';
+import { sortBy } from 'lodash';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -72,6 +73,7 @@ class TxHistory {
 
   private _signingTxList: TransactionSigningItem[] = [];
   private _availableTxs: TxHistory['store']['transactions'] = {};
+  private _txHistoryLimit = 100;
 
   addSigningTx(tx: Tx) {
     const id = nanoid();
@@ -328,6 +330,8 @@ class TxHistory {
       });
     }
 
+    this.clearAllExpiredTxs();
+
     // this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
@@ -561,6 +565,44 @@ class TxHistory {
           };
         }, {});
     }
+  }
+
+  /**
+   * @description clear expired txs, keep this.txHistoryLimit 100 compoleted transactions
+   */
+  clearAllExpiredTxs() {
+    const transactionGroups: {
+      address: string;
+      key: string;
+      value: TransactionGroup;
+    }[] = [];
+
+    Object.entries(this.store.transactions).map(([address, record]) => {
+      Object.entries(record).map(([key, value]) => {
+        const isPending = value.isPending && !value.isSubmitFailed;
+        if (isPending) {
+          return;
+        }
+        transactionGroups.push({
+          address,
+          key: key,
+          value,
+        });
+      });
+    });
+
+    const txsToDelete = sortBy(
+      transactionGroups,
+      (item) => item.value.createdAt
+    )
+      .reverse()
+      .slice(this._txHistoryLimit);
+
+    const transactions = this.store.transactions;
+    txsToDelete.forEach((item) => {
+      delete transactions[item.address][item.key];
+    });
+    this._setStoreTransaction(transactions);
   }
 
   clearBefore({

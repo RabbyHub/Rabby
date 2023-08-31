@@ -1322,10 +1322,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.24":
-  version "0.3.24"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.24.tgz#9b9f11186f65c04a0f79e4574a4dd83264af560d"
-  integrity sha512-bBCxScQTzY0XuTXfLcBgbBa3JF9FiuP0AtHJGQMCXDPMq7Wn/ZEhDsqoiuOP9EJLloETxjNU9YaFdWaeUEZXmA==
+"@debank/common@^0.3.29":
+  version "0.3.29"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.29.tgz#4d6a8435e5c639ef63838af86332cca9cdd85f23"
+  integrity sha512-8TfQa+2vHWQQwMtWEMhVNphJyHKxeRw7tqNJkDqlCcsK1v+ngdf+IdGxMyjd/8oeIiNNst+z46llZ5Q/rrqTiw==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3527,10 +3527,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-api@^0.6.20":
-  version "0.6.20"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.20.tgz#809c157a39ba2cb029005d932f2bc49f1aa8a2cb"
-  integrity sha512-+iQOlmDvDay4TXyurazBERd1pjgS82pp+QtyiXUVZVdp80DBnf0K07CiQ/bEnGCREbmXP4a2XXNYKaFuliqWZw==
+"@rabby-wallet/rabby-api@^0.6.21":
+  version "0.6.21"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.21.tgz#380b4384b95785e2a7f732d38a89554749cbe38c"
+  integrity sha512-QWaZITMIiLwQg/iHdfztf39teDSax/rIqgjCVDmLnT56O+g0MkG0FAsE46eqou8eE8HX0M5wYjueMNAYZ69cxA==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -5943,10 +5943,10 @@ bip66@^1.1.0, bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitbox02-api@0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.15.0.tgz#29d5b61d366f0568b2761a9efeec308e2c59ab62"
-  integrity sha512-/jiL+Q85On9v0Q+jDkaSOi59wSp41wsjie1ogIW9roCZ1kTTuD0+PqPZJiMAghmXbmYkgmL696jv07KE0fFQLA==
+bitbox02-api@^0.15.1:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.15.1.tgz#9fff84c761a11fb7b423153ec05aa5f38274a8db"
+  integrity sha512-zeuHVF3kAQsJsa2q1fCtktVFiJV/G8nMuKonwMMsCx1RY0mzqc33RGlayTrvLrgs3fj30wLkWmXrgPmQCIJxmg==
 
 bitcoin-ops@^1.3.0, bitcoin-ops@^1.4.1:
   version "1.4.1"

@@ -41,6 +41,7 @@ import {
   SAFE_RPC_METHODS,
   KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
+  EVENTS,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
@@ -51,6 +52,7 @@ import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
+import eventBus from '@/eventBus';
 
 const reportSignText = (params: {
   method: string;
@@ -533,6 +535,9 @@ class ProviderController extends BaseController {
         source: options?.data?.$ctx?.ga?.source || '',
         trigger: options?.data?.$ctx?.ga?.trigger || '',
       });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.TX_SUBMITTING,
+      });
       try {
         validateGasPriceRange(approvalRes);
         let hash = '';
@@ -621,12 +626,12 @@ class ProviderController extends BaseController {
           );
         }
         const errMsg = e.message || JSON.stringify(e);
-        notification.create(
-          undefined,
-          i18n.t('background.error.txPushFailed'),
-          errMsg
-        );
-        transactionHistoryService.removeSigningTx(signingTxId!);
+        // notification.create(
+        //   undefined,
+        //   i18n.t('background.error.txPushFailed'),
+        //   errMsg
+        // );
+        // transactionHistoryService.removeSigningTx(signingTxId!);
         throw new Error(errMsg);
       }
     } catch (e) {
@@ -644,7 +649,7 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
       }
-      transactionHistoryService.removeSigningTx(signingTxId!);
+      // transactionHistoryService.removeSigningTx(signingTxId!);
       throw new Error(e);
     }
   };

@@ -1,23 +1,23 @@
 import { NFTApproval, TokenItem } from '@/background/service/openapi';
 import { TokenWithChain } from '@/ui/component';
-import { Alert, Button, Modal } from 'antd';
+import { Alert, Button, Modal, Tooltip } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { ApprovalContractItem } from './ApprovalContractItem';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import { IconChecked, IconNotChecked } from '@/ui/assets';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatNumber, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
-import BigNumber from 'bignumber.js';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
   SpenderInNFTApproval,
+  getSpenderApprovalAmount,
 } from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
@@ -85,6 +85,62 @@ function NFTItemBadge({
   return null;
 }
 
+function ApprovalAmountInfo({
+  className,
+  amountValue,
+  balanceValue,
+}: {
+  className?: string;
+  amountValue: string | number;
+  balanceValue: string | number;
+}) {
+  const { t } = useTranslation();
+
+  const amountText = useMemo(() => {
+    if (typeof amountValue !== 'number') return amountValue;
+
+    return formatNumber(amountValue);
+  }, [amountValue]);
+
+  const balanceText = useMemo(() => {
+    if (typeof balanceValue !== 'number') return balanceValue;
+
+    return formatNumber(balanceValue);
+  }, [balanceValue]);
+
+  return (
+    <div className={clsx('approval-amount-info text-right', className)}>
+      {amountText && (
+        <Tooltip
+          overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
+          // Approved Amount
+          overlay={t(
+            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipApprovedAmount'
+          )}
+        >
+          <div className="text-12 font-medium text-r-neutral-body">
+            {amountText}
+          </div>
+        </Tooltip>
+      )}
+
+      {balanceText && (
+        <Tooltip
+          overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
+          // My Balance
+          overlay={t(
+            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+          )}
+        >
+          <div className="text-12 font-nomral text-r-neutral-foot mt-4">
+            {balanceText}
+          </div>
+        </Tooltip>
+      )}
+    </div>
+  );
+}
+
 export const RevokeApprovalModal = (props: {
   item?: ApprovalItem;
   visible: boolean;
@@ -146,6 +202,14 @@ export const RevokeApprovalModal = (props: {
           : 'inner_id' in e
           ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
           : e.contract_name || 'Unknown';
+
+        // non-token type contract
+        const spender =
+          'spender' in e ? e.spender : 'spenders' in e ? e.spenders?.[0] : null;
+
+        const spenderValues = spender
+          ? getSpenderApprovalAmount(spender)
+          : null;
 
         return (
           <div
@@ -218,7 +282,19 @@ export const RevokeApprovalModal = (props: {
               </div>
             )}
 
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center justify-between">
+              <ApprovalAmountInfo
+                className="mr-[8px]"
+                {...(spenderValues
+                  ? {
+                      amountValue: spenderValues.displayAmountText,
+                      balanceValue: spenderValues.displayBalanceText,
+                    }
+                  : {
+                      amountValue: 'amount' in e ? e.amount : '',
+                      balanceValue: '',
+                    })}
+              />
               <img
                 src={
                   selectedList.includes(index) ? IconChecked : IconNotChecked
@@ -231,13 +307,8 @@ export const RevokeApprovalModal = (props: {
       });
     }
 
+    // in fact, it's impossible to reach here because all items passed to this components are contract
     return item?.list.map((spender, index) => {
-      const value = new BigNumber(spender.value || 0);
-      const isUnlimited = value.gte(10 ** 9);
-      const displayApprovalValue = isUnlimited
-        ? 'Unlimited'
-        : splitNumberByStep(value.toFixed(2));
-
       const risky = ['danger', 'warning'].includes(spender.risk_level);
       const chainItem = findChainByServerID(spender.chain as Chain['serverId']);
 
@@ -248,6 +319,8 @@ export const RevokeApprovalModal = (props: {
               ` #${spender.nftToken.inner_id}`
             )
           : spender.name || 'Unknown';
+
+      const spendValues = spender ? getSpenderApprovalAmount(spender) : null;
 
       return (
         <div
@@ -288,14 +361,12 @@ export const RevokeApprovalModal = (props: {
             </div>
 
             <div className="ml-auto flex justify-center items-center">
-              <span
-                className={clsx(
-                  'mr-[14px] text-[13px] text-gray-subTitle',
-                  item.type !== 'token' && 'hidden'
-                )}
-              >
-                {displayApprovalValue}
-              </span>
+              {item.type === 'token' && spendValues && (
+                <ApprovalAmountInfo
+                  amountValue={spendValues.displayAmountText}
+                  balanceValue={spendValues.displayBalanceText}
+                />
+              )}
               <img
                 src={
                   selectedList.includes(index) ? IconChecked : IconNotChecked

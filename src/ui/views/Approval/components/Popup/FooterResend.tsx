@@ -1,20 +1,23 @@
 import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   onResend: () => void;
 }
 
 export const FooterResend: React.FC<Props> = ({ onResend }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className={clsx(
-        'text-[15px] underline text-gray-subTitle font-medium',
+        'text-[15px] underline text-gray-subTitle',
         'cursor-pointer'
       )}
       onClick={onResend}
     >
-      Resend
+      {t('page.signFooterBar.resend')}
     </div>
   );
 };

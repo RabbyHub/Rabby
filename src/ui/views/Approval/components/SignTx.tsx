@@ -30,6 +30,7 @@ import {
   SAFE_GAS_LIMIT_RATIO,
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
+  OP_STACK_ENUMS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -45,7 +46,7 @@ import {
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import { WaitingSignComponent } from './SignText';
+import { WaitingSignComponent } from './map';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
@@ -280,11 +281,15 @@ const explainGas = async ({
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
-  const isOp = chain?.enum === CHAINS_ENUM.OP;
-  if (isOp) {
-    const res = await wallet.fetchEstimatedL1Fee({
-      txParams: tx,
-    });
+  if (!chain) throw new Error(`${chainId} is not found in supported chains`);
+  const isOpStack = OP_STACK_ENUMS.includes(chain.enum);
+  if (isOpStack) {
+    const res = await wallet.fetchEstimatedL1Fee(
+      {
+        txParams: tx,
+      },
+      chain.enum
+    );
     gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
     maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
   }

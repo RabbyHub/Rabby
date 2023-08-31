@@ -58,7 +58,11 @@ import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 import LogoCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
-import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
+import {
+  CHAINS_BY_NET,
+  ensureChainHashValid,
+  ensureChainListValid,
+} from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
@@ -281,9 +285,10 @@ export const WALLETCONNECT_STATUS_MAP = {
   PENDING: 1,
   CONNECTED: 2,
   WAITING: 3,
-  SIBMITTED: 4,
+  SUBMITTED: 4,
   REJECTED: 5,
-  FAILD: 6,
+  FAILED: 6,
+  SUBMITTING: 7,
 };
 
 export const INTERNAL_REQUEST_ORIGIN = location.origin;
@@ -291,7 +296,7 @@ export const INTERNAL_REQUEST_ORIGIN = location.origin;
 export const INTERNAL_REQUEST_SESSION = {
   name: 'Rabby',
   origin: INTERNAL_REQUEST_ORIGIN,
-  icon: './images/icon-128.png',
+  icon: './images/rabby-site-logo.png',
 };
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
@@ -303,6 +308,7 @@ export const EVENTS = {
   broadcastToBackground: 'broadcastToBackground',
   TX_COMPLETED: 'TX_COMPLETED',
   SIGN_FINISHED: 'SIGN_FINISHED',
+  TX_SUBMITTING: 'TX_SUBMITTING',
   WALLETCONNECT: {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
     SESSION_STATUS_CHANGED: 'SESSION_STATUS_CHANGED',
@@ -820,11 +826,20 @@ export const ALIAS_ADDRESS = {
   [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
 };
 
+// non-opstack L2 chains
 export const L2_ENUMS = [
-  CHAINS_ENUM.OP,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.NOVA,
+];
+
+// opstack L2 chains
+export const OP_STACK_ENUMS = [
+  CHAINS_ENUM.OP,
+  CHAINS_ENUM.TDEBANK,
+  CHAINS_ENUM.BASE,
+  CHAINS_ENUM.ZORA,
+  CHAINS_ENUM.MANTLE,
 ];
 
 export const SecurityEngineLevelOrder = [
@@ -919,6 +934,7 @@ export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.POLYGON,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AVAX,
+  CHAINS_ENUM.BASE,
 ]);
 
 export const WALLET_SORT_SCORE = [
