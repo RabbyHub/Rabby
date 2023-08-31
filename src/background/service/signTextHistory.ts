@@ -1,5 +1,7 @@
+import { sign } from './../../ui/models/sign';
 import { createPersistStore } from 'background/utils';
 import permissionService, { ConnectedSite } from './permission';
+import { sortBy } from 'lodash';
 
 export interface SignTextHistoryItem {
   site: ConnectedSite;
@@ -21,6 +23,7 @@ class PermissionService {
   store: SignTextHistoryStore = {
     history: {},
   };
+  private _txHistoryLimit = 100;
 
   init = async () => {
     const storage = await createPersistStore<SignTextHistoryStore>({
@@ -59,6 +62,7 @@ class PermissionService {
         },
       ],
     };
+    this.clearAllExpiredHistory();
   };
 
   getHistory = (address: string) => {
@@ -68,6 +72,32 @@ class PermissionService {
 
   removeList = (address: string) => {
     delete this.store.history[address.toLowerCase()];
+  };
+
+  clearAllExpiredHistory = () => {
+    const history: {
+      address: string;
+      data: SignTextHistoryItem;
+    }[] = [];
+
+    Object.entries(this.store.history).forEach(([address, list]) => {
+      history.push(...list.map((data) => ({ address, data })));
+    });
+    const txsToDelete = sortBy(history, (item) => item.data.createAt)
+      .reverse()
+      .slice(this._txHistoryLimit);
+
+    txsToDelete.forEach(({ address, data }) => {
+      const list = this.store.history[address];
+      if (!list) return;
+      const index = list.findIndex((item) => item === data);
+      if (index !== -1) {
+        list.splice(index, 1);
+      }
+    });
+    this.store.history = {
+      ...this.store.history,
+    };
   };
 }
 
