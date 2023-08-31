@@ -949,7 +949,8 @@
         "simulation": "合约调用模拟",
         "notHexData": "只支持 16 进制格式数据",
         "title": "合约调用",
-        "placeholder": "可选"
+        "placeholder": "可选",
+        "parseError": "合约调用模拟失败"
       }
     },
     "sendTokenComponents": {
