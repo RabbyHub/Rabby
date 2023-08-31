@@ -43,6 +43,13 @@
         "approve": "授权 {{amount}} {{symbol}} 给  {{project}} ",
         "cancel": "取消了待完成的交易",
         "unknown": "合约交互"
+      },
+      "modalViewMessage": {
+        "title": "查看留言"
+      },
+      "txHistory": {
+        "tipInputData": "这笔交易有留言",
+        "parseInputDataError": "解析留言失败"
       }
     },
     "dashboard": {
@@ -925,7 +932,19 @@
       "balanceWarn": {
         "gasFeeReservation": "需要预留 Gas"
       },
-      "max": "全部"
+      "max": "全部",
+      "sectionMsgDataForEOA": {
+        "title": "留言",
+        "currentIsOriginal": "当前输入内容为原始数据, UTF8 格式为:",
+        "currentIsUTF8": "当前输入内容编码为 UTF-8, 原始数据是:",
+        "placeholder": "可选"
+      },
+      "sectionMsgDataForContract": {
+        "simulation": "合约调用模拟",
+        "notHexData": "只支持 16 进制格式数据",
+        "title": "合约调用",
+        "placeholder": "可选"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费"

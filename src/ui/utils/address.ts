@@ -3,3 +3,9 @@ export const ellipsis = (text: string) => {
 };
 
 export const ellipsisAddress = ellipsis;
+
+export const enum AddressType {
+  EOA = 'EOA',
+  CONTRACT = 'CONTRACT',
+  UNKNOWN = 'UNKNOWN',
+}

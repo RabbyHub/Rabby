@@ -10,6 +10,13 @@
         "approve": "Approve {{amount}} {{symbol}} for {{project}}",
         "unknown": "Contract Interaction",
         "cancel": "Canceled a pending transaction"
+      },
+      "txHistory": {
+        "tipInputData": "The transaction includes a message",
+        "parseInputDataError": "Parse message failed"
+      },
+      "modalViewMessage": {
+        "title": "View Message"
       }
     },
     "chainList": {
@@ -436,7 +443,20 @@
       "balanceError": {
         "insufficientBalance": "Insufficient balance"
       },
-      "max": "MAX"
+      "max": "MAX",
+      "sectionMsgDataForEOA": {
+        "placeholder": "Optional",
+        "title": "Message",
+        "currentIsOriginal": "The current input is Original Data. UTF-8 is:",
+        "currentIsUTF8": "The current input is UTF-8. Original Data is:"
+      },
+      "sectionMsgDataForContract": {
+        "placeholder": "Optional",
+        "title": "Contract call",
+        "parseError": "Fail to decode contract call",
+        "simulation": "Contract call simulation:",
+        "notHexData": "Only supported hex data"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"

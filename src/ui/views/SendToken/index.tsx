@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -6,9 +6,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useDebounce } from 'react-use';
-import { Form, Skeleton, message, Button } from 'antd';
-import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import { Input, Form, Skeleton, message, Button, InputProps } from 'antd';
+import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, intToHex, zeroAddress } from 'ethereumjs-util';
+
 import styled from 'styled-components';
 import {
   CHAINS,
@@ -17,6 +18,7 @@ import {
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
   L2_ENUMS,
+  INTERNAL_REQUEST_ORIGIN,
   OP_STACK_ENUMS,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
@@ -40,7 +42,6 @@ import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
-import ButtonMax from 'ui/assets/send-token/max.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -55,6 +56,16 @@ import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from './components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from './components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
+import {
+  useCheckAddressType,
+  useParseContractAddress,
+} from '@/ui/hooks/useParseAddress';
+import { isHex } from 'web3-utils';
+import { Chain } from '@debank/common';
+import IconAlertInfo from './alert-info.svg';
+import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
+
+const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
 const MaxButton = styled.div`
   font-size: 12px;
@@ -67,6 +78,190 @@ const MaxButton = styled.div`
   color: #8697ff;
 `;
 
+type SendTokenMessageForEoAProps = {
+  active: boolean;
+  formData: FormSendToken;
+} & InputProps;
+const SendTokenMessageForEoa = React.forwardRef<
+  typeof Input,
+  SendTokenMessageForEoAProps
+>(({ active, formData }, ref) => {
+  const { t } = useTranslation();
+
+  const { messageDataForSendToEoa = '' } = formData;
+
+  const { withInputData, currentIsHex, currentData, hexData } = useMemo(() => {
+    return formatTxInputDataOnERC20(messageDataForSendToEoa);
+  }, [messageDataForSendToEoa]);
+
+  return (
+    <div className={clsx('section', !active && 'hidden')}>
+      <div className="section-title flex justify-between items-center">
+        {/* Message */}
+        {t('page.sendToken.sectionMsgDataForEOA.title')}
+      </div>
+
+      <div className="messagedata-input-wrapper">
+        <Form.Item name="messageDataForSendToEoa">
+          <Input.TextArea
+            ref={ref as any}
+            placeholder={t('page.sendToken.sectionMsgDataForEOA.placeholder')}
+            autoSize={{ minRows: 1 }}
+            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto"
+          />
+        </Form.Item>
+      </div>
+
+      {withInputData && (
+        <div className="messagedata-parsed-input text-[12px]">
+          {currentIsHex ? (
+            <>
+              <span className="text-r-neutral-body">
+                {/* The current input is Original Data. UTF-8 is: */}
+                {t('page.sendToken.sectionMsgDataForEOA.currentIsOriginal')}
+              </span>
+              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
+                {currentData}
+              </p>
+            </>
+          ) : (
+            <>
+              <span className="text-r-neutral-body">
+                {/* The current input is UTF-8. Original Data is: */}
+                {t('page.sendToken.sectionMsgDataForEOA.currentIsUTF8')}
+              </span>
+              <p className="mt-3 mb-0 break-all text-r-neutral-foot">
+                {hexData}
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+
+type SendTokenMessageForContractProps = {
+  active: boolean;
+  formData: FormSendToken;
+  userAddress?: string;
+  chain?: Chain | null;
+} & InputProps;
+const SendTokenMessageForContract = React.forwardRef<
+  typeof Input,
+  SendTokenMessageForContractProps
+>(({ active, formData, userAddress, chain }, ref) => {
+  const { t } = useTranslation();
+
+  const { messageDataForContractCall: maybeHex = '' } = formData;
+
+  const { currentIsHex, hexData } = useMemo(() => {
+    const result = { currentIsHex: false, hexData: '' };
+
+    if (!maybeHex) return result;
+
+    result.currentIsHex = maybeHex.startsWith('0x') && isHex(maybeHex);
+    result.hexData = maybeHex;
+
+    return result;
+  }, [maybeHex]);
+
+  const {
+    explain,
+    isLoadingExplain,
+    loadingExplainError,
+    contractCallPlainText,
+  } = useParseContractAddress({
+    userAddress,
+    contractAddress: formData.to,
+    chain: chain || null,
+    inputDataHex: hexData,
+  });
+
+  return (
+    <div className={clsx('section', !active && 'hidden')}>
+      <div className="section-title flex justify-between items-center">
+        {/* Message */}
+        {t('page.sendToken.sectionMsgDataForContract.title')}
+      </div>
+
+      <div className="messagedata-input-wrapper">
+        <Form.Item name="messageDataForContractCall">
+          <Input.TextArea
+            ref={ref as any}
+            placeholder={t(
+              'page.sendToken.sectionMsgDataForContract.placeholder'
+            )}
+            autoSize={{ minRows: 1 }}
+            className="min-h-[40px] max-h-[84px] padding-12px overflow-y-auto text-[12px] text-[#192945]"
+          />
+        </Form.Item>
+      </div>
+
+      {!!maybeHex && (
+        <div className="messagedata-parsed-input text-[12px]">
+          {!currentIsHex ? (
+            <>
+              <span className="mt-16 text-r-red-default">
+                {/* Only supported hex data */}
+                {t('page.sendToken.sectionMsgDataForContract.notHexData')}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="mt-16 mb-8 text-r-neutral-body">
+                {/* Contract call simulation: */}
+                {t('page.sendToken.sectionMsgDataForContract.simulation')}
+              </span>
+              {isLoadingExplain ? (
+                <Skeleton.Button
+                  active
+                  className="block min-w-[50px] w-[50%] h-[24px] mt-3"
+                />
+              ) : (
+                <>
+                  {(loadingExplainError || !explain?.abi) && (
+                    <span className="flex items-center text-r-red-default">
+                      <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
+                      <span>
+                        {/* Fail to decode contract call */}
+                        {t(
+                          'page.sendToken.sectionMsgDataForContract.parseError'
+                        )}
+                      </span>
+                    </span>
+                  )}
+                  {!loadingExplainError && contractCallPlainText && (
+                    <p className="mt-3 mb-0 break-all text-r-neutral-foot">
+                      {contractCallPlainText}
+                    </p>
+                  )}
+                </>
+              )}
+            </>
+          )}
+          {/* {explain ? (
+              <PreExecTransactionExplain
+                className="mt-3"
+                explain={explain}
+                // onView={handleView}
+                isViewLoading={isLoadingExplain}
+              />
+            ) : (
+              <Skeleton.Button active style={{ width: '100%', height: 25 }} />
+            )} */}
+        </div>
+      )}
+    </div>
+  );
+});
+
+type FormSendToken = {
+  to: string;
+  amount: string;
+  messageDataForSendToEoa: string;
+  messageDataForContractCall: string;
+};
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
@@ -82,7 +277,7 @@ const SendToken = () => {
 
   const rbisource = useRbiSource();
 
-  const [form] = useForm<{ to: string; amount: string }>();
+  const [form] = useForm<FormSendToken>();
   const [formSnapshot, setFormSnapshot] = useState(form.getFieldsValue());
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
@@ -104,6 +299,24 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+  const persistPageStateCache = useCallback(
+    async (nextStateCache?: {
+      values?: FormSendToken;
+      currentToken?: TokenItem | null;
+    }) => {
+      await wallet.setPageStateCache({
+        path: history.location.pathname,
+        search: history.location.search,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          currentToken,
+          ...nextStateCache,
+        },
+      });
+    },
+    [wallet, history, form, currentToken]
+  );
   const [inited, setInited] = useState(false);
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
@@ -204,9 +417,7 @@ const SendToken = () => {
 
   useDebounce(
     async () => {
-      const targetChain = Object.values(CHAINS).find(
-        (item) => item.enum === chain
-      )!;
+      const targetChain = findChainByEnum(chain)!;
       let gasList: GasLevel[];
       if (
         gasPriceMap[targetChain.enum] &&
@@ -268,13 +479,24 @@ const SendToken = () => {
     return costTokenAmount;
   };
 
+  const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
+
+  const {
+    isShowMessageDataForToken,
+    isShowMessageDataForContract,
+  } = useMemo(() => {
+    return {
+      isShowMessageDataForToken: isNativeToken && addressType === 'EOA',
+      isShowMessageDataForContract: isNativeToken && addressType === 'CONTRACT',
+    };
+  }, [isNativeToken, addressType]);
+
   const handleSubmit = async ({
     to,
     amount,
-  }: {
-    to: string;
-    amount: string;
-  }) => {
+    messageDataForSendToEoa,
+    messageDataForContractCall,
+  }: FormSendToken) => {
     setIsSubmitLoading(true);
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
@@ -282,33 +504,44 @@ const SendToken = () => {
     const sendValue = new BigNumber(amount)
       .multipliedBy(10 ** currentToken.decimals)
       .decimalPlaces(0, BigNumber.ROUND_DOWN);
+    const dataInput = [
+      {
+        name: 'transfer',
+        type: 'function',
+        inputs: [
+          {
+            type: 'address',
+            name: 'to',
+          },
+          {
+            type: 'uint256',
+            name: 'value',
+          },
+        ] as any[],
+      } as const,
+      [to, sendValue.toFixed(0)] as any[],
+    ] as const;
     const params: Record<string, any> = {
       chainId: chain.id,
       from: currentAccount!.address,
       to: currentToken.id,
       value: '0x0',
-      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-        {
-          name: 'transfer',
-          type: 'function',
-          inputs: [
-            {
-              type: 'address',
-              name: 'to',
-            },
-            {
-              type: 'uint256',
-              name: 'value',
-            },
-          ],
-        },
-        [to, sendValue.toFixed(0)]
-      ),
+      data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
       isSend: true,
     };
     if (isNativeToken) {
       params.to = to;
       delete params.data;
+
+      if (isShowMessageDataForToken && messageDataForSendToEoa) {
+        const encodedValue = formatTxInputDataOnERC20(messageDataForSendToEoa)
+          .hexData;
+
+        params.data = encodedValue;
+      } else if (isShowMessageDataForContract && messageDataForContractCall) {
+        params.data = messageDataForContractCall;
+      }
+
       params.value = `0x${sendValue.toString(16)}`;
       try {
         const code = await wallet.requestETHRpc(
@@ -332,6 +565,12 @@ const SendToken = () => {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       }
+      if (
+        isShowMessageDataForToken &&
+        (messageDataForContractCall || messageDataForSendToEoa)
+      ) {
+        delete params.gas;
+      }
       setIsSubmitLoading(false);
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
@@ -339,15 +578,7 @@ const SendToken = () => {
     }
     try {
       await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-      await wallet.setPageStateCache({
-        path: history.location.pathname,
-        search: history.location.search,
-        params: {},
-        states: {
-          values: form.getFieldsValue(),
-          currentToken,
-        },
-      });
+      await persistPageStateCache();
       matomoRequestEvent({
         category: 'Send',
         action: 'createTx',
@@ -414,18 +645,22 @@ const SendToken = () => {
 
   const handleFormValuesChange = async (
     changedValues,
-    {
-      to,
-      amount,
-    }: {
-      to: string;
-      amount: string;
-    },
-    token?: TokenItem
+    { to, amount, ...restForm }: FormSendToken,
+    opts?: {
+      token?: TokenItem;
+      isInitFromCache?: boolean;
+    }
   ) => {
+    const { token, isInitFromCache } = opts || {};
     if (changedValues && changedValues.to) {
       setTemporaryGrant(false);
     }
+
+    if ((!isInitFromCache && changedValues?.to) || (!changedValues && to)) {
+      restForm.messageDataForSendToEoa = '';
+      restForm.messageDataForContractCall = '';
+    }
+
     const targetToken = token || currentToken;
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
@@ -471,9 +706,16 @@ const SendToken = () => {
       setBalanceError(null);
     }
     const nextFormValues = {
+      ...restForm,
       to,
       amount: resultAmount,
     };
+
+    await persistPageStateCache({
+      values: nextFormValues,
+      currentToken: targetToken,
+    });
+
     form.setFieldsValue(nextFormValues);
     setFormSnapshot(nextFormValues);
     setCacheAmount(resultAmount);
@@ -501,6 +743,7 @@ const SendToken = () => {
     const chainItem = findChainByServerID(token.chain);
     setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
+    await persistPageStateCache({ currentToken: token });
     setBalanceError(null);
     setBalanceWarn(null);
     setIsLoading(true);
@@ -605,7 +848,18 @@ const SendToken = () => {
       chain: chain.serverId,
       time_at: 0,
     });
-    loadCurrentToken(chain.nativeTokenAddress, chain.serverId, account.address);
+
+    let nextToken: TokenItem | null = null;
+    try {
+      nextToken = await loadCurrentToken(
+        chain.nativeTokenAddress,
+        chain.serverId,
+        account.address
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -617,6 +871,9 @@ const SendToken = () => {
       {
         ...values,
         amount: '',
+      },
+      {
+        ...(nextToken && { token: nextToken }),
       }
     );
   };
@@ -658,6 +915,8 @@ const SendToken = () => {
     const t = await wallet.openapi.getToken(address, chainId, id);
     if (t) setCurrentToken(t);
     setIsLoading(false);
+
+    return t;
   };
 
   const initByCache = async () => {
@@ -696,11 +955,10 @@ const SendToken = () => {
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
-            handleFormValuesChange(
-              cache.states.values,
-              form.getFieldsValue(),
-              cache.states.currentToken
-            );
+            handleFormValuesChange(cache.states.values, form.getFieldsValue(), {
+              token: cache.states.currentToken,
+              isInitFromCache: true,
+            });
           }
           if (cache.states.currentToken) {
             setCurrentToken(cache.states.currentToken);
@@ -708,11 +966,10 @@ const SendToken = () => {
           }
         }
       }
+
       if (chainItem && needLoadToken.chain !== chainItem.serverId) {
-        const target = Object.values(CHAINS).find(
-          (item) => item.serverId === needLoadToken.chain
-        )!;
-        setChain(target.enum);
+        const target = findChainByServerID(needLoadToken.chain);
+        if (target?.enum) setChain(target.enum);
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
@@ -1064,7 +1321,18 @@ const SendToken = () => {
               </div>
             </div>
           </div>
+          <SendTokenMessageForEoa
+            active={isShowMessageDataForToken}
+            formData={formSnapshot}
+          />
+          <SendTokenMessageForContract
+            active={isShowMessageDataForContract}
+            formData={formSnapshot}
+            chain={findChainByEnum(chain)}
+            userAddress={currentAccount?.address}
+          />
         </div>
+
         <div className="footer">
           {showWhitelistAlert && (
             <div

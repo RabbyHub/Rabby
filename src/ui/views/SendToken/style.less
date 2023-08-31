@@ -319,6 +319,23 @@
     flex-direction: column;
   }
 
+  .messagedata-input-wrapper {
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    .ant-input {
+      @border-w: 0.5px;
+      border: @border-w solid var(--r-neutral-line, #D3D8E0);
+      background: var(--r-neutral-card-2, #F2F4F7);
+      line-height: 1.5;
+
+      &:focus, &:hover {
+        box-shadow: none;
+        border-right-width: @border-w !important;
+      }
+    }
+  }
+
   .footer {
     padding: 16px 0 20px;
     margin-left: -20px;

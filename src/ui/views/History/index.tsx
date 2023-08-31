@@ -8,9 +8,9 @@ import { connectStore } from '@/ui/store';
 import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
 import { TxHistoryResult } from 'background/service/openapi';
-import { Empty, PageHeader } from 'ui/component';
+import { Empty, PageHeader, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { HistoryItem } from './HistoryItem';
+import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 import NetSwitchTabs, {
@@ -66,8 +66,27 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
 
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
+  const [
+    focusingHistoryItem,
+    setFocusingHistoryItem,
+  ] = React.useState<HistoryItemActionContext | null>(null);
+
   return (
     <div className="overflow-auto h-full" ref={ref}>
+      <Modal
+        visible={!!focusingHistoryItem}
+        // View Message
+        title={t('page.transactions.modalViewMessage.title')}
+        className="view-tx-message-modal"
+        onCancel={() => {
+          setFocusingHistoryItem(null);
+        }}
+        maxHeight="360px"
+      >
+        <div className="parsed-content text-14">
+          {focusingHistoryItem?.parsedInputData}
+        </div>
+      </Modal>
       {data?.list.map((item) => (
         <HistoryItem
           data={item}
@@ -75,7 +94,9 @@ const HistoryList = ({ isMainnet = true }: { isMainnet?: boolean }) => {
           cateDict={item.cateDict}
           tokenDict={item.tokenDict}
           key={item.id}
-        ></HistoryItem>
+          onViewInputData={setFocusingHistoryItem}
+          isTestnet={!isMainnet}
+        />
       ))}
       {(loadingMore || loading) && <Loading count={5} active />}
       {isEmpty && (
