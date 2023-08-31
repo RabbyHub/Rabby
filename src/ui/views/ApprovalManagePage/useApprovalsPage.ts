@@ -141,10 +141,13 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
+  const [isLoadingOnAsyncFn, setIsLoadingOnAsyncFn] = useState(false);
   const [
-    { value: allData, loading, error },
+    { value: allData, loading: loadingMaybeWrong, error },
     loadData,
   ] = useAsyncFn(async () => {
+    setIsLoadingOnAsyncFn(true);
+
     const openapiClient = options?.isTestnet
       ? wallet.testnetOpenapi
       : wallet.openapi;
@@ -352,8 +355,12 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
     sortTokenOrNFTApprovalsSpenderList(tokenMap);
     sortTokenOrNFTApprovalsSpenderList(nftMap);
 
+    setIsLoadingOnAsyncFn(false);
+
     return [contractMap, tokenMap, nftMap];
   }, [account?.address, options?.isTestnet]);
+
+  const isLoading = isLoadingOnAsyncFn && loadingMaybeWrong;
 
   const loadApprovals = useCallback(async () => {
     await loadData();
@@ -449,7 +456,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
   }, [loadApprovals]);
 
   return {
-    isLoading: loading,
+    isLoading,
     loadApprovals,
     searchKw,
     debouncedSearchKw,
