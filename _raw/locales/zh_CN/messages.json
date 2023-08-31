@@ -693,6 +693,12 @@
             "asset": "资产",
             "myApprovalTime": "我的授权时间",
             "type": "类型"
+          },
+          "columnCell": {
+            "approvedAmount": {
+              "tipApprovedAmount": "授权额度",
+              "tipMyBalance": "我的余额"
+            }
           }
         },
         "byContracts": {
