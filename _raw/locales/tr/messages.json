@@ -912,7 +912,7 @@
         }
       },
       "nft": {
-        "floorPrice": "/ Taban Fiyat:",
+        "floorPrice": "Taban Fiyat:",
         "title": "NFT",
         "all": "Hepsi",
         "starred": "Yıldızlı ({{count}})",
