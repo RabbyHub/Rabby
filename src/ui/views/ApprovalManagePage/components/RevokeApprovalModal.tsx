@@ -271,7 +271,9 @@ export const RevokeApprovalModal = (props: {
             {'spender' in e ? (
               <div className="flex flex-col ml-[8px]">
                 <div className="text-13 font-medium leading-[15px] inline-flex items-center justify-start">
-                  {itemName}
+                  <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
+                    {itemName}
+                  </span>
 
                   {maybeContractForNFT && (
                     <img
@@ -283,7 +285,9 @@ export const RevokeApprovalModal = (props: {
                         );
                       }}
                       src={IconExternal}
-                      className={clsx('w-[12px] h-[12px] ml-6 cursor-pointer')}
+                      className={clsx(
+                        'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
+                      )}
                     />
                   )}
                 </div>
@@ -299,7 +303,7 @@ export const RevokeApprovalModal = (props: {
               </div>
             )}
 
-            <div className="ml-auto flex items-center justify-between">
+            <div className="ml-auto flex items-center justify-between flex-shrink-0">
               <ApprovalAmountInfo
                 className="mr-[8px]"
                 {...(spenderValues
@@ -377,7 +381,7 @@ export const RevokeApprovalModal = (props: {
               />
             </div>
 
-            <div className="ml-auto flex justify-center items-center">
+            <div className="ml-auto flex justify-center items-center flex-shrink-0">
               {item.type === 'token' && spendValues && (
                 <ApprovalAmountInfo
                   amountValue={spendValues.displayAmountText}

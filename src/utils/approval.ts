@@ -343,8 +343,12 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
 
     if (spender.$assetParent?.nftContract) {
       displayAmountText = '1 Collection';
-      displayBalanceText = '1 Collection';
-      // displayBalanceText = `${spender.$assetParent?.nftContract.amount} Collection` || '-';
+      const nftCount = spender.$assetParent?.nftContract.amount || 0;
+      displayBalanceText = nftCount
+        ? `${formatNumber(nftCount, 0)} ${
+            parseInt(nftCount) > 1 ? 'NFTs' : 'NFT'
+          }`
+        : '-';
 
       if (spender.$assetParent?.nftContract?.is_erc1155) {
         nftOrderScore = 102;
