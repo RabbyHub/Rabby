@@ -1002,10 +1002,6 @@ const ApprovalManagePage = () => {
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
-  useEffect(() => {
-    loadApprovals();
-  }, [selectedTab]);
-
   const {
     isLoading,
     loadApprovals,
@@ -1021,6 +1017,10 @@ const ApprovalManagePage = () => {
     vGridRefContracts,
     vGridRefAsset,
   } = useApprovalsPage({ isTestnet: selectedTab === 'testnet' });
+
+  useEffect(() => {
+    loadApprovals();
+  }, [selectedTab]);
 
   const { yValue } = useTableScrollableHeight({ isShowTestnet });
 
