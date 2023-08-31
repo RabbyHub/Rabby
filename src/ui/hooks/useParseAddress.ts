@@ -39,7 +39,7 @@ export function useCheckAddressType(
     } catch (e) {
       setAddressType(AddressType.UNKNOWN);
     }
-  }, [addr]);
+  }, [addr, chain?.serverId, wallet]);
 
   return {
     addressType,

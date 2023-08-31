@@ -40,6 +40,10 @@ const ModalStyled = styled(Modal)`
   .ant-modal-header {
     border-bottom: none;
   }
+
+  .ant-modal-body {
+    padding-top: 16px;
+  }
 `;
 
 function NFTItemBadge({
@@ -109,33 +113,46 @@ function ApprovalAmountInfo({
   }, [balanceValue]);
 
   return (
-    <div className={clsx('approval-amount-info text-right', className)}>
+    <div
+      className={clsx(
+        'approval-amount-info text-right flex flex-col justify-center',
+        className
+      )}
+    >
       {amountText && (
-        <Tooltip
-          overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
-          // Approved Amount
-          overlay={t(
-            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipApprovedAmount'
-          )}
-        >
-          <div className="text-12 font-medium text-r-neutral-body">
-            {amountText}
-          </div>
-        </Tooltip>
+        <div>
+          <Tooltip
+            overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
+            // Approved Amount
+            overlay={t(
+              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipApprovedAmount'
+            )}
+            align={{ offset: [0, 3] }}
+            arrowPointAtCenter
+          >
+            <span className="text-12 font-medium text-r-neutral-body">
+              {amountText}
+            </span>
+          </Tooltip>
+        </div>
       )}
 
       {balanceText && (
-        <Tooltip
-          overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
-          // My Balance
-          overlay={t(
-            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
-          )}
-        >
-          <div className="text-12 font-nomral text-r-neutral-foot mt-4">
-            {balanceText}
-          </div>
-        </Tooltip>
+        <div className="inline-flex">
+          <Tooltip
+            overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
+            // My Balance
+            overlay={t(
+              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+            )}
+            align={{ offset: [0, 3] }}
+            arrowPointAtCenter
+          >
+            <span className="text-12 font-nomral text-r-neutral-foot">
+              {balanceText}
+            </span>
+          </Tooltip>
+        </div>
       )}
     </div>
   );
@@ -254,7 +271,9 @@ export const RevokeApprovalModal = (props: {
             {'spender' in e ? (
               <div className="flex flex-col ml-[8px]">
                 <div className="text-13 font-medium leading-[15px] inline-flex items-center justify-start">
-                  {itemName}
+                  <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
+                    {itemName}
+                  </span>
 
                   {maybeContractForNFT && (
                     <img
@@ -266,7 +285,9 @@ export const RevokeApprovalModal = (props: {
                         );
                       }}
                       src={IconExternal}
-                      className={clsx('w-[12px] h-[12px] ml-6 cursor-pointer')}
+                      className={clsx(
+                        'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
+                      )}
                     />
                   )}
                 </div>
@@ -282,7 +303,7 @@ export const RevokeApprovalModal = (props: {
               </div>
             )}
 
-            <div className="ml-auto flex items-center justify-between">
+            <div className="ml-auto flex items-center justify-between flex-shrink-0">
               <ApprovalAmountInfo
                 className="mr-[8px]"
                 {...(spenderValues
@@ -360,7 +381,7 @@ export const RevokeApprovalModal = (props: {
               />
             </div>
 
-            <div className="ml-auto flex justify-center items-center">
+            <div className="ml-auto flex justify-center items-center flex-shrink-0">
               {item.type === 'token' && spendValues && (
                 <ApprovalAmountInfo
                   amountValue={spendValues.displayAmountText}
@@ -434,7 +455,7 @@ export const RevokeApprovalModal = (props: {
       closeIcon={<IconClose />}
     >
       <div>
-        <div className="mt-16 mb-18">
+        <div className="mt-0 mb-18">
           <ApprovalContractItem data={[item]} index={0} />
         </div>
 
