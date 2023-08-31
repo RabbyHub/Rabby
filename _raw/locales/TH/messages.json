@@ -1,151 +1,151 @@
 {
   "page": {
     "transactions": {
-      "title": "Transactions",
+      "title": "แก๊ส",
       "empty": {
-        "title": "No transactions",
-        "desc": " No transactions found on <1>supported chains</1>"
+        "title": "ไม่พบแก๊ส",
+        "desc": " ไม่พบแก๊สบน <1>supported chains</1>"
       },
       "explain": {
-        "approve": "Approve {{amount}} {{symbol}} for {{project}}",
+        "approve": "อนุมัติ {{amount}} {{symbol}} สำหรับ {{project}}",
         "unknown": "Contract Interaction",
-        "cancel": "Canceled a pending transaction"
+        "cancel": "ยกเลิกส่งแก๊สที่รอดำเนินการ"
       }
     },
     "chainList": {
-      "title": "{{count}} chains supported",
+      "title": "{{count}} เชนที่รองรับ",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
     "signTx": {
-      "nftIn": "NFT in",
-      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
-      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
-      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
-      "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
-      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
+      "nftIn": "ได้รับ NFT",
+      "gasLimitNotEnough": "ค่าลิมิตของค่าแก๊สต่ำกว่า 21000 จะไม่สามารถส่งแก๊สได้",
+      "gasLimitLessThanExpect": "ค่าลิมิตของค่าแก๊สต่ำเกินไป There is 1% chance that the transaction may fail.",
+      "gasLimitLessThanGasUsed": "ลิมิตของค่าแก๊สต่ำไป There is 95% chance that the transaction may fail.",
+      "nativeTokenNotEngouthForGas": "คุณมีค่าแก๊สในกระเป๋าไม่เพียงพอ",
+      "nonceLowerThanExpect": "Nonce ต่ำเกินไป ขั้นต่ำควรเป็น {{0}}",
+      "canOnlyUseImportedAddress": "คุณสามารถนำเข้า Addresses สำหรับ sign เท่านั้น",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
-      "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
-      "noGasRequired": "No gas required",
-      "gasSelectorTitle": "Gas",
-      "failToFetchGasCost": "Fail to fetch gas cost",
-      "gasMoreButton": "More",
-      "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
-      "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
-      "gasPriceTitle": "Gas Price (Gwei)",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "safeAddressNotSupportChain": "ไม่รองรับที่ Address ปลอดภัยในปัจจุบันบน {{0}} เชน",
+      "noGasRequired": "ไม่ต้องใช้ค่าแก๊ส",
+      "gasSelectorTitle": "ค่าแก๊ส",
+      "failToFetchGasCost": "ไม่สามารถประเมินค่าแก๊สได้",
+      "gasMoreButton": "เพิ่ม",
+      "manuallySetGasLimitAlert": "ได้ตั้งค่าลิมิตของค่าแก๊สด้วยตนเอง",
+      "gasNotRequireForSafeTransaction": "ไม่จำเป็นต้องเสียค่าแก๊สสำหรับการทำธุรกรรมบน Safe",
+      "gasPriceTitle": "ค่าแก๊ส (Gwei)",
+      "maxPriorityFee": "ค่าแก๊สของความสำคัญสูงสุด (Gwei)",
       "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
       "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
       "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
-      "gasLimitTitle": "Gas limit",
-      "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
+      "gasLimitTitle": "ลิมิตของค่าแก๊ส",
+      "recommendGasLimitTip": "ประมาณ {{est}}. ปัจจุบัน {{current}}x, แนะนำ ",
       "nonceTitle": "Nonce",
-      "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
-      "gasPriceMedian": "Median of last 100 on-chain transactions: ",
-      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
-      "gasLimitEmptyAlert": "Please input gas limit",
-      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "gasLimitModifyOnlyNecessaryAlert": "แก้ไขเมื่อจำเป็นเท่านั้น",
+      "gasPriceMedian": "ค่ากลางของ 100 Transaction ล่าสุด: ",
+      "myNativeTokenBalance": "{{symbol}} ที่มีจำนวน: {{amount}} {{symbol}}",
+      "gasLimitEmptyAlert": "กรุณาระบุค่าสูงสุดของแก๊ส",
+      "gasLimitMinValueAlert": "ค่าแก๊สสูงสุดควรมากกว่า 21000",
       "balanceChange": {
-        "successTitle": "Transaction Simulation Results",
-        "failedTitle": "Transaction Simulation Failed",
-        "noBalanceChange": "No balance change",
-        "tokenOut": "Token out",
-        "tokenIn": "Token in",
-        "errorTitle": "Fail to fetch balance change",
-        "notSupport": "Transaction Simulation Not Supported",
-        "nftOut": "NFT out"
+        "successTitle": "ผลลัพธ์ของธุรกรรมจำลอง",
+        "failedTitle": "คาดว่าธุรกรรมจะล้มเหลว",
+        "noBalanceChange": "ไม่มีพบการเปลี่ยนแปลงของยอดเงิน", 
+        "tokenOut": "ส่งไป",
+        "tokenIn": "ได้รับ",
+        "errorTitle": "ไม่สามารถดึงข้อมูลการเปลี่ยนแปลงยอดคงเหลือ",
+        "notSupport": "ไม่รองรับการจำลองธุรกรรม",
+        "nftOut": "NFT ส่งไป"
       },
-      "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{{0}} more confirmation needed",
+      "enoughSafeSigCollected": "ได้รับ signature ครบถ้วยแล้ว",
+      "moreSafeSigNeeded": "{{0}} ต้องการการยืนยันเพิ่มเติม",
       "safeAdminSigned": "Signed",
       "swap": {
-        "title": "Swap Token",
-        "payToken": "Pay",
-        "receiveToken": "Receive",
-        "failLoadReceiveToken": "Fail to load",
-        "valueDiff": "Value diff",
-        "simulationFailed": "Transaction simulation failed",
-        "simulationNotSupport": "Transaction simulation not supported on this chain",
-        "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Slippage tolerance fail to load",
-        "slippageTolerance": "Slippage tolerance",
-        "receiver": "Receiver",
-        "notPaymentAddress": "Not the payment address"
+        "title": "แลกเปลี่ยนโทเคน",
+        "payToken": "จ่าย",
+        "receiveToken": "ได้รับ",
+        "failLoadReceiveToken": "โหลดไม่สำเร็จ",
+        "valueDiff": "มูลค่าที่ต่าง",
+        "simulationFailed": "ธุรกรรมจำลองล้มเหลว",
+        "simulationNotSupport": "ธุรกรรมจำลอง ไม่รองรับการใช้งานบนเชนนี้",
+        "minReceive": "ขั้นต่ำที่จะได้รับ",
+        "slippageFailToLoad": "ไม่สามารถประมาณความคลาดเคลื่อนของ Slippage ได้",
+        "slippageTolerance": "ความคลาดเคลื่อนของ Slippage",
+        "receiver": "ปลายทาง",
+        "notPaymentAddress": "ไม่ใช่ Address สำหรับจ่ายค่าแก๊ส"
       },
       "crossChain": {
         "title": "Cross Chain"
       },
       "swapAndCross": {
-        "title": "Swap Token and Cross Chain"
+        "title": "แลกเปลี่ยนและ Cross Chain"
       },
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
       "send": {
-        "title": "Send Token",
-        "sendToken": "Send token",
-        "sendTo": "Send to",
+        "title": "ส่ง",
+        "sendToken": "ส่ง",
+        "sendTo": "ส่งถึง",
         "receiverIsTokenAddress": "Token address",
-        "contractNotOnThisChain": "Contract address not on this chain",
-        "notTopupAddress": "Not top up address",
-        "tokenNotSupport": "{{0}} not supported",
-        "onMyWhitelist": "On my whitelist",
-        "notOnThisChain": "Not on this chain",
-        "cexAddress": "CEX address",
-        "addressBalanceTitle": "Address balance",
+        "contractNotOnThisChain": "ไม่พบ Contract Address บนเชน",
+        "notTopupAddress": "ไม่ใช่ Address สำหรับเติมเงิน",
+        "tokenNotSupport": "{{0}} ไม่รองรับ",
+        "onMyWhitelist": "Whitelist ในระบบ",
+        "notOnThisChain": "ไม่พบบนเชน",
+        "cexAddress": "CEX Address",
+        "addressBalanceTitle": "ยอดรวมของ Address",
         "whitelistTitle": "Whitelist",
-        "notOnWhitelist": "Not on my whitelist"
+        "notOnWhitelist": "ไม่พบ Whitelist ในระบบ"
       },
       "tokenApprove": {
-        "title": "Token Approval",
-        "approveToken": "Approve token",
-        "myBalance": "My balance",
-        "approveTo": "Approve to",
+        "title": "โทเคนที่อนุมัติ",
+        "approveToken": "อนุมัติโทเคน",
+        "myBalance": "ยอดรวม",
+        "approveTo": "อนุมัติให้",
         "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
-        "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "trustValueLessThan": "มูลค่าความน่าเชื่อถือ ≤ {{value}}",
+        "deployTimeLessThan": "ระยะเวลา Deployed < {{value}} วัน",
+        "amountPopupTitle": "จำนวน",
+        "flagByRabby": "ตั้งค่าสถานะโดย Rabby",
+        "contractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึงโทเค็นทั้งหมดที่ได้รับการอนุมัติและเปิดเผยตาม Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
       },
       "revokeTokenApprove": {
-        "title": "Revoke Token Approval",
+        "title": "Revoke โทเคนที่อนุมัติ",
         "revokeFrom": "Revoke from",
         "revokeToken": "Revoke token"
       },
       "sendNFT": {
-        "title": "Send NFT",
-        "nftNotSupport": "NFT not supported"
+        "title": "ส่ง NFT",
+        "nftNotSupport": "ไม่รองรับ NFT"
       },
       "nftApprove": {
-        "title": "NFT Approval",
-        "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "title": "NFT ที่อนุมัติ",
+        "approveNFT": "อนุมัติ NFT",
+        "nftContractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึง Top NFT ที่ได้รับอนุมัติและเปิดเผยต่อสัญญานี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
       },
       "revokeNFTApprove": {
-        "title": "Revoke NFT Approval",
+        "title": "Revoke NFT ที่อนุมัติ",
         "revokeNFT": "Revoke NFT"
       },
       "nftCollectionApprove": {
-        "title": "NFT Collection Approval",
-        "approveCollection": "Approve collection"
+        "title": "NFT Collection ที่อนุมัติ",
+        "approveCollection": "อนุมัติ Collection"
       },
       "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection Approval",
+        "title": "Revoke NFT Collection ที่อนุมัติ",
         "revokeCollection": "Revoke collection"
       },
       "deployContract": {
-        "title": "Deploy a Contract",
-        "descriptionTitle": "Description",
-        "description": "You are deploying a smart contract"
+        "title": "สร้าง Contract",
+        "descriptionTitle": "คำอธิบาย",
+        "description": "กำลังสร้าง Smart Contract"
       },
       "cancelTx": {
-        "title": "Cancel Pending Transaction",
-        "txToBeCanceled": "Transaction to be canceled",
+        "title": "ยกเลิกธุรกรรมที่กำลังดำเนินการ",
+        "txToBeCanceled": "ํธุรกรรมถูกยกเลิก",
         "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
       },
       "submitMultisig": {
-        "title": "Submit Multisig Transaction",
+        "title": "ส่ง Multisig Transaction",
         "multisigAddress": "Multisig address"
       },
       "contractCall": {
@@ -168,10 +168,10 @@
       "neverTransacted": "Never transacted before",
       "fakeTokenAlert": "This is a scam token marked by Rabby",
       "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
-      "trusted": "Trusted",
-      "blocked": "Blocked",
-      "noMark": "No mark",
-      "markRemoved": "Mark removed",
+      "trusted": "เชื่อถือ",
+      "blocked": "บล๊อค",
+      "noMark": "ไม่มีเครื่องหมาย",
+      "markRemoved": "ลบเครื่องหมาย",
       "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
@@ -212,12 +212,12 @@
         "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
         "notConnectToMobile": "Not connected to {{brand}}",
         "connected": "Connected and ready to sign",
-        "howToSwitch": "How to switch",
+        "howToSwitch": "วิธีการเปลี่ยน",
         "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
         "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
         "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
         "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent",
+        "requestSuccessToast": "Request successfully sent.",
         "sendingRequest": "Sending signing request",
         "signOnYourMobileWallet": "Please sign on your mobile wallet.",
         "requestFailedToSend": "Signing request failed to send"
@@ -239,9 +239,9 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to submit",
+        "txFailed": "Transaction failed",
         "sigReceived": "Signature received",
-        "sigCompleted": "Transaction submitted",
+        "sigCompleted": "Signature completed",
         "getSig": "Get signature",
         "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
@@ -252,20 +252,18 @@
         "resent": "Resent",
         "signError": "Ledger sign error:",
         "notConnected": "Your wallet is not connected. Please re-connect.",
-        "siging": "Sending signing request",
+        "siging": "Sending signing request...",
         "txRejected": "Transaction rejected",
         "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Submitting transaction",
-        "resubmited": "Resubmited"
+        "blindSigTutorial": "Blind Signature Tutorial from Ledger"
       },
       "common": {
-        "notSupport": "{{0}} is not supported"
+        "notSupport": "{{0}} ไม่รองรับ"
       },
-      "resend": "Retry",
-      "submitTx": "Submit Transaction",
+      "resend": "ส่งอีกครั้ง",
+      "submitTx": "ส่ง Transaction",
       "testnet": "Testnet",
       "mainnet": "Mainnet"
     },
@@ -286,15 +284,15 @@
       },
       "sellNFT": {
         "title": "NFT Order",
-        "receiveToken": "Receive token",
+        "receiveToken": "ได้รับ token",
         "listNFT": "List NFT",
         "specificBuyer": "Specific buyer"
       },
       "signMultiSig": {
-        "title": "ยืนยันธุรกรรม"
+        "title": "ยืนยันแก๊ส"
       },
       "createKey": {
-        "title": "สร้าง Key"
+        "title": "สร้างรหัส"
       },
       "verifyAddress": {
         "title": "Verify Address"
@@ -318,27 +316,27 @@
           "desc": "All transactions signed via Rabby will be listed here."
         },
         "common": {
-          "unlimited": "unlimited",
-          "unknownProtocol": "Unknown protocol",
-          "unknown": "Unknown",
+          "unlimited": "ไม่จำกัด",
+          "unknownProtocol": "ไม่รู้จัก protocol",
+          "unknown": "ไม่รู้จัก",
           "speedUp": "Speed up",
-          "cancel": "Cancel",
-          "pendingDetail": "Pending detail"
+          "cancel": "ยกเลิก",
+          "pendingDetail": "อยู่ระหว่างการพิจารณารายละเอียด"
         },
         "tips": {
           "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
           "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
         },
         "status": {
-          "canceled": "Canceled",
-          "failed": "Failed",
+          "canceled": "ยกเลิก",
+          "failed": "ล้มเหลว",
           "submitFailed": "Failed to submit",
-          "pending": "Pending"
+          "pending": "รอดำเนินการ"
         },
         "txType": {
           "initial": "Initial tx",
-          "cancel": "Cancel tx",
-          "speedUp": "Speed up tx"
+          "cancel": "ยกเลิก tx",
+          "speedUp": "เพิ่มความเร็ว tx"
         },
         "explain": {
           "unknown": "Unknown Transaction",
@@ -352,7 +350,7 @@
         }
       },
       "signedText": {
-        "label": "Text",
+        "label": "ช้อความ",
         "empty": {
           "title": "No signed texts yet",
           "desc": "All texts signed via Rabby will be listed here."
@@ -378,32 +376,32 @@
       "allowTransferModal": {
         "error": "incorrect password",
         "placeholder": "Enter the Password to Confirm",
-        "validator__empty": "Please input password",
+        "validator__empty": "โปรดใส่ password",
         "addWhitelist": "Add to whitelist"
       },
       "GasSelector": {
-        "confirm": "Confirm",
+        "confirm": "ยืนยัน",
         "level": {
-          "$unknown": "Unknown",
-          "custom": "Custom",
-          "fast": "Instant",
-          "normal": "Fast",
-          "slow": "Standard"
+          "$unknown": "ผิดพลาด",
+          "custom": "กำหนดเอง",
+          "fast": "ทันที",
+          "normal": "ปกติ",
+          "slow": "ช้า"
         },
         "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
-        "popupTitle": "Set Gas Price (Gwei)"
+        "popupTitle": "ตั้งค่า แก๊ส (Gwei)"
       },
       "header": {
-        "title": "Send"
+        "title": "ส่ง"
       },
       "modalConfirmAddToContacts": {
-        "confirmText": "Confirm",
-        "title": "Add to contacts"
+        "confirmText": "ยืนยัน",
+        "title": "เพิ่มในรายชื่อติดต่อ"
       },
       "modalConfirmAllowTransferTo": {
-        "cancelText": "Cancel",
-        "confirmText": "Confirm",
-        "title": "Enter the Password to Confirm"
+        "cancelText": "ยกเลิก",
+        "confirmText": "ยืนยัน",
+        "title": "กรุณาใส่รหัสผ่านเพื่อยืนยัน"
       },
       "sectionBalance": {
         "title": "Balance"
@@ -412,20 +410,20 @@
         "title": "Chain"
       },
       "sectionFrom": {
-        "title": "From"
+        "title": "จาก"
       },
       "sectionTo": {
-        "addrValidator__empty": "Please input address",
-        "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search",
-        "title": "To"
+        "addrValidator__empty": "กรุณาใส่ Address",
+        "addrValidator__invalid": "Address ที่ใส่ไม่ถูกต้อง",
+        "searchInputPlaceholder": "ใส่ Address หรือค้นหา",
+        "title": "ถึง"
       },
-      "sendButton": "Send",
+      "sendButton": "ส่ง",
       "tokenInfoFieldLabel": {
         "chain": "Chain",
         "contract": "Contract Address"
       },
-      "tokenInfoPrice": "Price",
+      "tokenInfoPrice": "มูลค่า",
       "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
       "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
@@ -434,63 +432,63 @@
         "gasFeeReservation": "Gas fee reservation required"
       },
       "balanceError": {
-        "insufficientBalance": "Insufficient balance"
+        "insufficientBalance": "ยอดคงเหลือไม่เพียงพอ"
       },
-      "max": "MAX"
+      "max": "สูงสุด"
     },
     "sendTokenComponents": {
-      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
+      "GasReserved": "สำรอง <1>0</1> {{ tokenName }} สำหรับจ่ายค่าแก๊ส"
     },
     "sendNFT": {
       "header": {
-        "title": "Send"
+        "title": "ส่ง"
       },
       "sectionChain": {
         "title": "Chain"
       },
       "sectionFrom": {
-        "title": "From"
+        "title": "จาก"
       },
       "sectionTo": {
-        "title": "To",
-        "addrValidator__empty": "Please input address",
-        "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search"
+        "title": "ถึง",
+        "addrValidator__empty": "กรุณาใส่ Address",
+        "addrValidator__invalid": "Address ที่ใส่ไม่ถูกต้อง",
+        "searchInputPlaceholder": "ใส่ Address หรือค้นหา"
       },
       "nftInfoFieldLabel": {
-        "Collection": "Collection",
+        "Collection": "คอลเลกชัน",
         "Contract": "Contract",
-        "sendAmount": "Send Amount"
+        "sendAmount": "ส่งจำนวน"
       },
-      "sendButton": "Send",
+      "sendButton": "ส่ง",
       "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
-      "whitelistAlert__whitelisted": "The address is whitelisted",
+      "whitelistAlert__whitelisted": "Address อยู่ในรายชื่อที่อนุญาต",
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
-      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
-      "tipNotOnAddressList": "Not on address list.",
-      "tipAddToContacts": "Add to contacts",
+      "whitelistAlert__notWhitelisted": "Address ไม่ได้อยู่ในรายชื่อ Whitelisted <1 /> อนุญาตชั่วคราวในการโอนโทเคน",
+      "tipNotOnAddressList": "ไม่พบในรายชื่อติดต่อ",
+      "tipAddToContacts": "เพิ่มในรายชื่อติดต่อ",
       "confirmModal": {
-        "title": "Enter the Password to Confirm"
+        "title": "ใส่รหัสผ่านเพื่อยืนยัน"
       }
     },
     "approvals": {
       "header": {
-        "title": "Approvals on {{ address }}"
+        "title": "อนุมัติ {{ address }}"
       },
       "tab-switch": {
-        "contract": "By Contracts",
-        "assets": "By Assets"
+        "contract": "เรียงจาก Contracts",
+        "assets": "เรียงจาก Assets"
       },
       "component": {
         "table": {
           "bodyEmpty": {
-            "loadingText": "Loading...",
-            "noMatchText": "No Match"
+            "loadingText": "กำลังค้นหา...",
+            "noMatchText": "ไม่พบ"
           }
         },
         "ApprovalContractItem": {
-          "ApprovalCount_one": "Approval",
-          "ApprovalCount_other": "Approvals"
+          "ApprovalCount_one": "อนุมัติสำหรับ 1 ครั้ง",
+          "ApprovalCount_other": "อนุมัติ"
         },
         "RevokeButton": {
           "btnText_zero": "Revoke",
@@ -498,55 +496,55 @@
           "btnText_other": "Revoke ({{count}})"
         },
         "ViewMore": {
-          "text": "View more"
+          "text": "เพิ่มเติม"
         }
       },
       "search": {
-        "placeholder": "Search {{ type }} by name/address"
+        "placeholder": "ค้นหา {{ type }} ด้วยชื่อ หรือ Address"
       },
       "tableConfig": {
         "byContracts": {
           "columnTitle": {
             "contract": "Contract",
-            "contractTrustValue": "Contract Trust value",
-            "revokeTrends": "24h Revoke Trends",
-            "myApprovedAssets": "My Approved Assets",
-            "myApprovalTime": "My Approval Time"
+            "contractTrustValue": "มูลค่าความน่าเชื่อถือของ Contract",
+            "revokeTrends": "แนวโน้มการ Revoke ในช่วงเวลา 24 ชั่วโมง",
+            "myApprovedAssets": "อนุมัติ Assets",
+            "myApprovalTime": "ระยะเวลาการอนุมัติ"
           },
           "columnTip": {
             "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
-            "contractTrustValueWarning": "The contract trust value < $100,000",
-            "contractTrustValueDanger": "The contract trust value < $10,000"
+            "contractTrustValueWarning": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $100,000",
+            "contractTrustValueDanger": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $10,000"
           }
         },
         "byAssets": {
           "columnTitle": {
             "asset": "Asset",
-            "type": "Type",
-            "approvedAmount": "Approved Amount",
-            "approvedSpender": "Approved Spender",
-            "myApprovalTime": "My Approval Time"
+            "type": "ประเภท",
+            "approvedAmount": "จำนวนที่อนุมัติ",
+            "approvedSpender": "ผู้รับที่อนุมัติ",
+            "myApprovalTime": "ระยะเวลาการอนุมัติ"
           }
         }
       },
       "RevokeApprovalModal": {
-        "subTitleTokenAndNFT": "Approved Token and NFT",
-        "subTitleContract": "Approved to the following Contracts",
-        "selectAll": "Select All",
-        "confirm": "Confirm {{ selectedCount }}",
-        "title": "Approvals"
+        "subTitleTokenAndNFT": "อนุมัติและ NFT",
+        "subTitleContract": "อนุมัติ Contracts ดังต่อไปนี้",
+        "selectAll": "เลือกทั้งหมด",
+        "confirm": "ยืนยัน {{ selectedCount }}",
+        "title": "อนุมัติ"
       }
     },
     "gasTopUp": {
-      "title": "Instant Gas Top Up",
+      "title": "เติมแก๊สทันที",
       "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
-      "topUpChain": "Top Up Chain",
-      "Amount": "Amount",
-      "Continue": "Continue",
+      "topUpChain": "เติมแก๊สบน Chain",
+      "Amount": "จำนวน",
+      "Continue": "ดำเนินการต่อ",
       "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
       "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
-      "No_Tokens": "No Tokens",
-      "InsufficientBalanceTips": "Insufficient balance",
+      "No_Tokens": "ไม่มีโทเคน",
+      "InsufficientBalanceTips": "ยอดคงเหลือไม่เพียงพอ",
       "payment": "Gas Top Up Payment",
       "Loading_Tokens": "Loading Tokens...",
       "Including-service-fee": "Including {{fee}} service fee",
@@ -555,12 +553,12 @@
       "Select-from-supported-tokens": "Select from supported tokens",
       "Value": "Value",
       "Payment-Token": "Payment Token",
-      "Select-payment-token": "Select payment token",
-      "Token": "Token",
-      "Balance": "Balance"
+      "Select-payment-token": "เลือกโทเคนที่ต้องการชำระเงิน",
+      "Token": "โทเคน",
+      "Balance": "ยอดคงเหลือ"
     },
     "swap": {
-      "title": "Swap",
+      "title": "แลกเปลี่ยน",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
       "Pending": "Pending",
       "completedTip": "Transaction on chain, decoding data to generate record",
@@ -570,75 +568,75 @@
       "gas-x-price": "Gas price: {{price}} Gwei.",
       "no-transaction-records": "No transaction records",
       "swap-history": "Swap history",
-      "InSufficientTip": "Insufficient balance to do transaction simulation and gas estimation. Original aggregator quotes are displayed",
-      "testnet-is-not-supported": "Testnet is not supported",
-      "not-supported": "Not supported",
+      "InSufficientTip": "ยอดคงเหลือไม่เพียงพอ to do ธุรกรรมจำลองล้มเหลว and gas estimation. Original aggregator quotes are displayed",
+      "testnet-is-not-supported": "Testnet นี้ไม่รองรับ",
+      "not-supported": "ไม่รองรับ",
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
       "price-expired-refresh-quote": "Price expired. Refresh quote.",
       "approve-x-symbol": "Approve {{symbol}}",
-      "swap-via-x": "Swap via {{name}}",
-      "get-quotes": "Get quotes",
+      "swap-via-x": "แลกผ่าน {{name}}",
+      "get-quotes": "รับข้อเสนอ",
       "chain": "Chain",
-      "swap-from": "Swap from",
-      "to": "To",
-      "search-by-name-address": "Search by Name / Address",
-      "amount-in": "Amount in {{symbol}}",
-      "unlimited-allowance": "Unlimited allowance",
-      "insufficient-balance": "Insufficient balance",
-      "rabby-fee": "Rabby fee",
+      "swap-from": "แลกจาก",
+      "to": "เป็น",
+      "search-by-name-address": "ค้นหาด้วยชื่อ หรือ Address",
+      "amount-in": "จำนวนเงินเข้า {{symbol}}",
+      "unlimited-allowance": "อนมัติไม่จำกัด",
+      "insufficient-balance": "ยอดคงเหลือไม่เพียงพอ",
+      "rabby-fee": "ค่าธรรมเนียมของ Rabby",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
-      "approve-tips": "1.Approve → 2.Swap",
-      "best": "Best",
+      "approve-tips": "1.อนุมัติ → 2.แลกเปลี่ยน",
+      "best": "ดีที่สุด",
       "unable-to-fetch-the-price": "Unable to fetch the price",
       "fail-to-simulate-transaction": "Fail to simulate transaction",
       "security-verification-failed": "Security verification failed",
       "need-to-approve-token-before-swap": "Need to approve token before swap",
       "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
-      "enable-it": "Enable it",
-      "this-token-pair-is-not-supported": "Token pair is not supported",
-      "QuoteLessWarning": "The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
-      "by-transaction-simulation-the-quote-is-valid": "By transaction simulation, the quote is valid",
+      "enable-it": "เปิดใช้งานมัน",
+      "this-token-pair-is-not-supported": "ไม่รองรับคู่โทเคนนี้",
+      "QuoteLessWarning": "The receiving amount is estimated from Rabby ธุรกรรมจำลอง. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
+      "by-transaction-simulation-the-quote-is-valid": "By ธุรกรรมจำลอง, the quote is valid",
       "wrap-contract": "Wrap Contract",
       "directlySwap": "Wrapping {{symbol}} tokens directly with the smart contract",
-      "rates-from-cex": "Rates from CEX",
-      "edit": "Edit",
-      "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
+      "rates-from-cex": "อัตราแลกเปลี่ยนของ CEX",
+      "edit": "แก้ไข",
+      "tradingSettingTips": "{{viewCount}} ราคาที่ Exchange เสนอ และ {{tradeCount}} อนุญาตการซื้อขาย",
       "the-following-swap-rates-are-found": "The following swap rates are found",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
       "est-difference": "Est. Difference:",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Selected offer differs greatly from current rate, may cause big losses",
-      "rate": "Rate",
+      "rate": "อัตราแลกเปลี่ยน",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Low slippage may cause failed transactions due to high volatility",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaction might be frontrun because of high slippage tolerance",
       "recommend-slippage": "To prevent front-running, we recommend a slippage of <2>{{ slippage }}</2>%",
-      "slippage-tolerance": "Slippage tolerance",
-      "select-token": "Select Token",
-      "enable-exchanges": "Enable Exchanges",
+      "slippage-tolerance": "ความดาดเคลื่อนของ Slippage",
+      "select-token": "เลือกโทเคน",
+      "enable-exchanges": "อนุญาต Exchanges",
       "exchanges": "Exchanges",
-      "view-quotes": "View quotes",
-      "trade": "Trade",
-      "dex": "Dex",
-      "cex": "Cex",
-      "enable-trading": "Enable Trading",
-      "i-understand-and-accept-it": "I understand and accept it",
-      "confirm": "Confirm",
-      "tradingSettingTip1": "1. Once enabled, you will interact with the contract from the exchange directly",
+      "view-quotes": "ดูข้อเสนอ",
+      "trade": "การซื้อขาย",
+      "dex": "DEX",
+      "cex": "CEX",
+      "enable-trading": "เปิดใช้งานการซื้อขาย",
+      "i-understand-and-accept-it": "ฉันเข้าใจและยอมรับข้อเสนอ",
+      "confirm": "ยืนยัน",
+      "tradingSettingTip1": "1. เมื่อเปิดใช้งานแล้ว คุณจะสามารถแลกเปลี่ยนกับ Contract ของ Exchange โดยตรง",
       "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
       "gas-fee": "GasFee: {{gasUsed}}",
-      "estimate": "Estimate:",
-      "actual": "Actual:"
+      "estimate": "ประมาณ:",
+      "actual": "ค่าที่แท้จริง:"
     },
     "manageAddress": {
-      "no-address": "No address",
-      "no-match": "No match",
-      "current-address": "Current Address",
-      "address-management": "Address Management",
-      "update-balance-data": "Update balance data",
-      "search": "Search",
-      "manage-address": "Manage Address",
-      "deleted": "Deleted",
+      "no-address": "ไม่พบ Address",
+      "no-match": "ไม่พบ",
+      "current-address": "Address ปัจจุบัน",
+      "address-management": "การจัดการ Address",
+      "update-balance-data": "อัพเดทยอดคงเหลือ",
+      "search": "ค้นหา",
+      "manage-address": "จัดการ Address",
+      "deleted": "ลบ",
       "whitelisted-address": "Whitelisted address",
       "addressTypeTip": "Imported by {{type}}",
       "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
@@ -668,7 +666,7 @@
     },
     "dashboard": {
       "home": {
-        "offline": "The network is disconnected and no data is obtained",
+        "offline": "The network is disconnected and ไม่พบข้อมูล is obtained",
         "panel": {
           "swap": "Swap",
           "send": "Send",
@@ -678,146 +676,146 @@
           "transactions": "Transactions",
           "approvals": "Approvals",
           "feedback": "Feedback",
-          "more": "More",
+          "more": "เพิ่มเติม",
           "manageAddress": "Manage Address",
           "nft": "NFT"
         },
-        "comingSoon": "Coming soon",
-        "soon": "Soon",
+        "comingSoon": "แล้วพบกันเร็วๆ นี้",
+        "soon": "เร็วๆ นี้",
         "refreshTheWebPageToTakeEffect": "Refresh the web page to take effect",
         "rabbyIsInUseAndMetamaskIsBanned": "Rabby is in use and Metamask is banned",
         "flip": "Flip",
         "metamaskIsInUseAndRabbyIsBanned": "MetaMask is in use and Rabby is banned",
         "transactionNeedsToSign": "transaction needs to sign",
         "transactionsNeedToSign": "transactions need to sign",
-        "view": "View",
-        "viewFirstOne": "View first one",
-        "rejectAll": "Reject All",
-        "pendingCount": "1 Pending",
+        "view": "ดู",
+        "viewFirstOne": "ดูอันแรก",
+        "rejectAll": "ปฎิเสธทั้งหมด",
+        "pendingCount": "รอดำเนินการ 1 รายการ",
         "pendingCountPlural": "{{countStr}} Pendings",
         "queue": {
-          "title": "Queue",
-          "count": "{{count}} in"
+          "title": "คิว",
+          "count": "ภายใน {{count}}"
         },
-        "whatsNew": "What's new",
-        "importType": "Imported by {{type}}"
+        "whatsNew": "มีอะไรใหม่",
+        "importType": "เชื่อมต่อด้วย {{type}}"
       },
       "recentConnection": {
-        "disconnected": "Disconnected",
-        "rpcUnavailable": "The custom RPC is unavailable",
+        "disconnected": "ตัดการเชื่อมต่อแล้ว",
+        "rpcUnavailable": "Custom RPC ไม่พร้อมใช้งาน",
         "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
-        "connected": "Connected",
-        "notConnected": "Not connected",
-        "connectedDapp": "Rabby is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage.",
-        "noDappFound": "No Dapp found",
-        "disconnectAll": "Disconnect All",
+        "connected": "เชื่อมต่อแล้ว",
+        "notConnected": "ไม่ได้เชื่อมต่อ",
+        "connectedDapp": "Rabby ไม่ได้เชื่อมต่อกับ Dapp ปัจจุบัน หากต้องการเชื่อมต่อ ให้ค้นหาและคลิกปุ่มเชื่อมต่อบนหน้าเว็บของ Dapp",
+        "noDappFound": "ไม่พบ DApp",
+        "disconnectAll": "ตัดการเชื่อมต่อทั้งหมด",
         "disconnectRecentlyUsed": {
-          "title": "Disconnect recently used <strong>{{count}}</strong> DApps",
-          "description": "Pinned DApps will remain connected"
+          "title": "ยกเลิกการเชื่อมต่อที่ใช้ล่าสุด <strong>{{count}}</strong> DApps",
+          "description": "DApps ที่ปักหมุดจะยังคงเชื่อมต่ออยู่"
         },
-        "title": "Connected Dapp",
-        "pinned": "Pinned",
-        "noPinnedDapps": "No pinned dapps",
-        "dragToSort": "Drag to sort",
-        "recentlyConnected": "Recently connected",
-        "noRecentlyConnectedDapps": "No recently connected Dapps"
+        "title": "เชื่อมต่อ DApp",
+        "pinned": "ปักหมุด",
+        "noPinnedDapps": "ไม่พบ DApps ที่ปักหมุด",
+        "dragToSort": "ลากเพื่อจัดเรียง",
+        "recentlyConnected": "เพิ่งเชื่อมต่อ",
+        "noRecentlyConnectedDapps": "ไม่พบ DApps ที่เพิ่งเชื่อมต่อ"
       },
       "feedback": {
         "directMessage": {
-          "content": "Direct Message",
-          "description": "Chat with Rabby Wallet Official on DeBank"
+          "content": "ข้อความโดยตรง (DM)",
+          "description": "แชทกับ Rabby Wallet Official บน DeBank"
         },
         "proposal": {
-          "content": "Proposal",
-          "description": "Submit a proposal for Rabby Wallet on DeBank"
+          "content": "ข้อเสนอ",
+          "description": "ส่งข้อเสนอสำหรับ Rabby Wallet บน DeBank"
         },
-        "title": "Feedback"
+        "title": "ข้อเสนอแนะ"
       },
       "nft": {
-        "empty": "No NFTs found in supported Collections",
+        "empty": "ไม่พบ NFT ในคอลเลกชันที่รองรับ",
         "collectionList": {
           "collections": {
-            "label": "Collections"
+            "label": "คอลเลกชัน"
           },
           "all_nfts": {
-            "label": "All NFTs"
+            "label": "NFTs ทั้งหมด"
           }
         },
-        "listEmpty": "You haven't gotten any NFT yet",
+        "listEmpty": "ยังไม่ได้รับ NFT",
         "modal": {
-          "collection": "Collection",
+          "collection": "คอลเลกชัน",
           "chain": "Chain",
-          "lastPrice": "Last Price",
-          "purchaseDate": "Purchase Date",
+          "lastPrice": "ราคาล่าสุด",
+          "purchaseDate": "วันที่ซื้อ",
           "sendTooltip": "Only ERC 721 and ERC 1155 NFTs are supported for now",
-          "send": "Send"
+          "send": "ส่ง"
         }
       },
       "rabbyBadge": {
-        "imageLabel": "rabby badge",
-        "title": "Claim Rabby Badge for",
-        "enterClaimCode": "Enter claim code",
-        "swapTip": "You need to complete a swap with notable dex within Rabby Wallet first.",
-        "goToSwap": "Go to Swap",
-        "claim": "Claim",
-        "viewYourClaimCode": "View your claim code",
-        "noCode": "You haven’t activated claim code for this address",
-        "learnMoreOnDebank": "Learn more on DeBank",
-        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
-        "claimSuccess": "Claim Success",
-        "viewOnDebank": "View on DeBank"
+        "imageLabel": "Rabby Badge",
+        "title": "ขอเคลม Rabby Badge สำหรับ",
+        "enterClaimCode": "กรอกรหัสสำหรับเคลม",
+        "swapTip": "ต้องทำการแลกเปลี่ยนบน DEX บน Rabby Wallet ก่อน",
+        "goToSwap": "ไปที่แลกเปลี่ยน",
+        "claim": "รับ",
+        "viewYourClaimCode": "ดู Claim Code ของคุณ",
+        "noCode": "คุณยังไม่ได้เปิดใช้ Claim Code สำหรับ Address",
+        "learnMoreOnDebank": "เรียนรู้เพิ่มเติมเกี่ยวกับ DeBank",
+        "rabbyValuedUserNo": "หมายเลขผู้ใช้งาน Rabby No.{{num}}",
+        "claimSuccess": "รับเรียบร้อย",
+        "viewOnDebank": "ดูได้ที่ DeBank"
       },
       "contacts": {
-        "noDataLabel": "no data",
-        "noData": "No data",
-        "oldContactList": "Old Contact List",
+        "noDataLabel": "ไม่พบข้อมูล",
+        "noData": "ไม่พบข้อมูล",
+        "oldContactList": "รายชื่อ Contract ที่ผ่านมา",
         "oldContactListDescription": "Because of the merging of contacts and watch model addresses, the old contacts will be backed up for you here and after some time we will delete the list.Please add in time if you continue to use."
       },
       "security": {
-        "tokenApproval": "Token Approval",
-        "nftApproval": "NFT Approval",
-        "comingSoon": "More features coming soon",
-        "title": "Security"
+        "tokenApproval": "การอนุมัติ Token",
+        "nftApproval": "การอนุมัติ NFT",
+        "comingSoon": "features อื่นเร็วๆ นี้",
+        "title": "ความปลอดภัย"
       },
       "settings": {
         "lock": {
-          "never": "Never"
+          "never": "ไม่เคย"
         },
-        "7Days": "7 days",
-        "1Day": "1 day",
-        "4Hours": "4 hours",
-        "1Hour": "1 hour",
-        "10Minutes": "10 minutes",
+        "7Days": "7 วัน",
+        "1Day": "1 วัน",
+        "4Hours": "4 ชั่วโมง",
+        "1Hour": "1 ชั่วโมง",
+        "10Minutes": "10 นาที",
         "backendServiceUrl": "Backend Service URL",
-        "inputOpenapiHost": "Please input openapi host",
-        "pleaseCheckYourHost": "Please check your host",
-        "host": "Host",
-        "reset": "Restore initial setting",
-        "save": "Save",
+        "inputOpenapiHost": "โปรดใส่ Openapi Host",
+        "pleaseCheckYourHost": "กรุณาตรวจสอบความเป็นเจ้าของของคุณ",
+        "host": "เจ้าของ",
+        "reset": "คืนค่าเริ่มต้น",
+        "save": "บันทึก",
         "pendingTransactionCleared": "Pending transaction cleared",
         "clearPending": "Clear Pending",
         "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
         "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
-        "autoLockTime": "Auto lock time",
-        "claimRabbyBadge": "Claim Rabby Badge!",
-        "cancel": "Cancel",
+        "autoLockTime": "เวลาล็อคอัตโนมัติ",
+        "claimRabbyBadge": "รับ Rabby Badge!",
+        "cancel": "ยกเลิก",
         "enableWhitelist": "Enable Whitelist",
         "disableWhitelist": "Disable Whitelist",
         "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Rabby.",
         "disableWhitelistTip": "You can send assets to any address once disabled",
-        "warning": "Warning",
-        "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
+        "warning": "คำเตือน",
+        "clearWatchAddressContent": "แน่ใจหรือไม่ว่าจะลบ Watch Mode Address ทั้งหมด",
         "updateVersion": {
-          "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
-          "okText": "See Tutorial",
-          "successTip": "You are using the latest version"
+          "content": "มีการอัปเดตใหม่สำหรับ Rabby Wallet แล้ว คลิกเพื่อตรวจสอบวิธีการอัพเดตด้วยตนเอง",
+          "okText": "ดูคำแนะนำ",
+          "successTip": "คุณกำลังใช้งานเวอร์ชันล่าสุด"
         },
         "features": {
           "label": "Features",
-          "lockWallet": "Lock Wallet",
-          "signatureRecord": "Signature Record",
-          "manageAddress": "Manage Address",
-          "connectedDapp": "Connected Dapp"
+          "lockWallet": "ล็อคกระเป๋า",
+          "signatureRecord": "บันทึก Signature",
+          "manageAddress": "จัดการ Address",
+          "connectedDapp": "เชื่อมต่อ DApp"
         },
         "settings": {
           "label": "Settings",
@@ -827,7 +825,7 @@
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets"
         },
-        "aboutUs": "About us",
+        "aboutUs": "เกี่ยวกับเรา",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
         "supportedChains": "Supported Chains",
@@ -844,7 +842,7 @@
         "customized": "Customized",
         "scamTx": "Scam tx",
         "txFailed": "Failed",
-        "notSupported": "The token on this chain is not supported",
+        "notSupported": "The token on this chain is ไม่รองรับ",
         "swap": "Swap",
         "send": "Send",
         "receive": "Receive",
@@ -864,7 +862,7 @@
         },
         "table": {
           "assetAmount": "Asset / Amount",
-          "price": "Price",
+          "price": "PRICE",
           "useValue": "USD Value",
           "healthRate": "Health rate",
           "debtRatio": "Debt Ratio",
@@ -873,12 +871,12 @@
           "type": "Type",
           "strikePrice": "Strike price",
           "exerciseEnd": "Exercise end",
-          "tradePair": "Trade pair",
+          "tradePair": "คู่เทรด",
           "side": "Side",
           "leverage": "Leverage",
           "PL": "P&L",
           "unsupportedPoolType": "Unsupported pool type",
-          "claimable": "เคลมได้",
+          "claimable": "Claimable",
           "endAt": "End at",
           "dailyUnlock": "Daily unlock",
           "pool": "POOL",
@@ -902,21 +900,21 @@
         "searchPlaceholder": "Tokens"
       },
       "hd": {
-        "howToConnectLedger": "How to Connect Ledger",
-        "userRejectedTheRequest": "User rejected the request.",
+        "howToConnectLedger": "วิธีการเชื่อมต่อ Ledger",
+        "userRejectedTheRequest": "ปฏิเสธการเชื่อมต่อ",
         "ledger": {
-          "doc1": "Plug in a single Ledger",
-          "doc2": "Enter pin to unlock",
-          "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+          "doc1": "เชื่อมต่อกับ Ledger เท่านั้น",
+          "doc2": "ใส่ รหัส PIN เพื่อปลดล็อค",
+          "doc3": "เปิด Ethereum App",
+          "reconnect": "หากไม่ได้ผล โปรดลอง <1>เชื่อมต่อใหม่ตั้งแต่ต้น</1>"
         },
-        "howToSwitch": "How to switch"
+        "howToSwitch": "วิธีการเปลี่ยน"
       }
     },
     "nft": {
-      "floorPrice": "/ Floor Price:",
+      "floorPrice": "/ ราคา Floor:",
       "title": "NFT",
-      "all": "All",
+      "all": "ทั้งหมด",
       "starred": "Starred ({{count}})",
       "empty": {
         "title": "No Starred NFT",
@@ -932,7 +930,7 @@
       "addContacts": {
         "content": "Add Contacts",
         "description": "You can also use it as a watch-only address",
-        "required": "Please input address",
+        "required": "โปรดใส่ address",
         "notAValidAddress": "Not a valid address",
         "scanViaMobileWallet": "Scan via mobile wallet",
         "scanViaPcCamera": "Scan via PC camera",
@@ -944,7 +942,7 @@
       },
       "unableToImport": {
         "title": "Unable to import",
-        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{0}} before importing another device."
+        "description": "Importing multiple QR-based hardware wallets is ไม่รองรับ. Please delete all addresses from {{0}} before importing another device."
       },
       "connectHardwareWallets": "Connect Hardware Wallets",
       "connectMobileWalletApps": "Connect Mobile Wallet Apps",
@@ -983,22 +981,20 @@
         "clearAll": "Clear All"
       },
       "metamask": {
-        "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
+        "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
         "step2": "Import the seed phrase or private key in Rabby",
         "step3": "Import is completed and all your assets will <br /> appear automatically",
         "how": "How to import my MetaMask Account?",
-        "step": "Step",
+        "step": "ขั้นตอน",
         "importSeedPhrase": "Import the seed phrase or private key",
-        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information.",
-        "tips": "Tips:",
-        "tipsDesc": "Your seed phrase/private key does not belong to MetaMask or any specific wallet; it only belongs to you."
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
       },
       "privateKey": {
-        "required": "Please input Private key",
-        "placeholder": "Enter your Private key",
+        "required": "กรุณาใส่ Private Key",
+        "placeholder": "ใส่ Private Key",
         "whatIsAPrivateKey": {
-          "question": "What is a private key?",
-          "answer": "A string of letters and numbers used to control your assets."
+          "question": "อะไรคือ Private Key",
+          "answer": "รหัสผ่านในการเข้าถึงเงินภายในกระเป๋า"
         },
         "isItSafeToImportItInRabby": {
           "question": "Is it safe to import it in Rabby?",
@@ -1059,7 +1055,7 @@
         "button": {
           "disconnect": "Disconnect",
           "connect": "Connect",
-          "howToSwitch": "How to switch"
+          "howToSwitch": "วิธีการเปลี่ยน"
         }
       },
       "hd": {
@@ -1133,7 +1129,7 @@
           },
           "switch": {
             "title": "Switch to a new GridPlus device",
-            "content": "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
+            "content": "It's ไม่รองรับ to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
           },
           "switchToAnotherGridplus": "Switch to another GridPlus"
         },
@@ -1174,7 +1170,7 @@
         "qrCode": {
           "switch": {
             "title": "Switch to a new {{0}} device",
-            "content": "It's not supported to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
+            "content": "It's ไม่รองรับ to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
           },
           "switchAnother": "Switch to another {{0}}"
         }
@@ -1184,7 +1180,7 @@
       "keystore": {
         "description": "Select the keystore file you want to import and enter the corresponding password",
         "password": {
-          "required": "Please input Password",
+          "required": "โปรดใส่ Password",
           "placeholder": "Password"
         }
       },
@@ -1219,7 +1215,7 @@
     },
     "switchChain": {
       "title": "Switching to {{chain}}",
-      "chainNotSupport": "The requested chain is not supported by Rabby yet",
+      "chainNotSupport": "The requested chain is ไม่รองรับ by Rabby yet",
       "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
     },
     "signText": {
@@ -1296,7 +1292,7 @@
       "admins": "Admins",
       "tx-requires": "Any transaction requires <2>{{num}}</2> confirmations",
       "edit-memo-title": "Edit address note",
-      "please-input-address-note": "Please input address note",
+      "please-input-address-note": "โปรดใส่ address note",
       "address": "Address",
       "address-note": "Address Note",
       "assets": "Assets",
@@ -1311,7 +1307,7 @@
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",
-      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
+      "desc": "The following dapps จะยังคงเชื่อมต่ออยู่ through MetaMask, regardless           of the wallet you've flipped to",
       "howToAdd": "How to Add",
       "howToAddDesc": "Right click on the website and find this option",
       "empty": "No dapps"
@@ -1382,7 +1378,7 @@
     },
     "createPassword": {
       "title": "Set Password",
-      "passwordRequired": "Please input Password",
+      "passwordRequired": "โปรดใส่ Password",
       "passwordMin": "Password must be at least 8 characters long",
       "passwordPlaceholder": "Password must be at least 8 characters long",
       "confirmRequired": "Please Confirm Password",
@@ -1403,10 +1399,10 @@
     },
     "importSafe": {
       "title": "Add Safe address",
-      "placeholder": "Please input address",
+      "placeholder": "โปรดใส่ address",
       "error": {
         "invalid": "Not a valid address",
-        "required": "Please input address"
+        "required": "โปรดใส่ address"
       },
       "loading": "Searching the deployed chain of this address",
       "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
@@ -1431,17 +1427,17 @@
     },
     "AddressList": {
       "AddressItem": {
-        "addressTypeTip": "Imported by {{type}}"
+        "addressTypeTip": "นำเข้าด้วย {{type}}"
       }
     },
     "AuthenticationModal": {
-      "passwordError": "incorrect password",
-      "passwordRequired": "Please input password",
-      "passwordPlaceholder": "Enter the Password to Confirm"
+      "passwordError": "รหัสผ่านไม่ถูกต้อง",
+      "passwordRequired": "โปรดใส่รหัสผ่าน",
+      "passwordPlaceholder": "ใส่รหัสผ่านเพื่อยืนยัน"
     },
     "ConnectStatus": {
-      "connecting": "Connecting...",
-      "connect": "Connect",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "connect": "เชื่อมต่อ",
       "gridPlusConnected": "GridPlus is connected",
       "gridPlusNotConnected": "GridPlus is not connected",
       "ledgerNotConnected": "Ledger is not connected",
@@ -1450,17 +1446,17 @@
     "Contact": {
       "AddressItem": {
         "notWhitelisted": "This address is not whitelisted",
-        "whitelistedTip": "Whitelisted address"
+        "whitelistedTip": "Whitelisted Address"
       },
       "EditModal": {
-        "title": "Edit address note"
+        "title": "แก้ไขบันทีกของ Address"
       },
       "EditWhitelist": {
-        "backModalTitle": "Discard Changes",
+        "backModalTitle": "ยกเลิกการเปลี่ยนแปลง",
         "backModalContent": "Changes you made will not be saved",
         "title": "Edit Whitelist",
         "tip": "Select the address you want to whitelist and save.",
-        "save": "Save to Whitelist ({{count}})"
+        "save": "บันทึกลงใน Whitelist ({{count}})"
       },
       "ListModal": {
         "title": "Select Address",
@@ -1469,15 +1465,15 @@
         "editWhitelist": "Edit Whitelist",
         "whitelistUpdated": "Whitelist Updated",
         "authModal": {
-          "title": "Save to Whitelist"
+          "title": "บันทึกลงใน Whitelist"
         }
       }
     },
     "LoadingOverlay": {
-      "loadingData": "Loading data..."
+      "loadingData": "กำลังโหลดข้อมูล..."
     },
     "MultiSelectAddressList": {
-      "imported": "Imported"
+      "imported": "เขื่อมต่อ"
     },
     "NFTNumberInput": {
       "erc1155Tips": "Your balance is {{amount}}",
@@ -1491,7 +1487,7 @@
     },
     "WalletConnectBridgeModal": {
       "title": "Bridge server URL",
-      "requiredMsg": "Please input bridge server host",
+      "requiredMsg": "โปรดใส่ bridge server host",
       "invalidMsg": "Please check your host",
       "restore": "Restore initial setting"
     },
@@ -1502,8 +1498,8 @@
       }
     },
     "ChainSelectorModal": {
-      "searchPlaceholder": "Search chain",
-      "noChains": "No chains"
+      "searchPlaceholder": "ค้นหา chain",
+      "noChains": "ไม่พบเชนที่ค้นหา"
     },
     "TokenSelector": {
       "listTableHead": {
@@ -1518,26 +1514,26 @@
         }
       },
       "searchInput": {
-        "placeholder": "Search by Name / Address"
+        "placeholder": "ค้นหาด้วย ชื่อ หรือ Address"
       },
       "header": {
-        "title": "Select a token"
+        "title": "เลือกโทเคน"
       },
-      "noTokens": "No Tokens",
-      "noMatch": "No Match",
+      "noTokens": "ไม่มีโทเคน",
+      "noMatch": "ไม่พบ",
       "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
         "Collection": "Collection",
         "Chain": "Chain",
-        "PurschaseDate": "Purchase Date",
+        "PurschaseDate": "วันที่ซื้อ",
         "LastPrice": "Last Price"
       }
     },
     "signPermissionCheckModal": {
       "title": "You only allow this Dapp to sign on testnets",
-      "reconnect": "Reconnect Dapp"
+      "reconnect": "เชื่อมต่อ DApp อีกครั้ง"
     },
     "testnetCheckModal": {
       "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
@@ -1546,17 +1542,17 @@
   "global": {
     "appName": "Rabby Wallet",
     "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
-    "copied": "Copied",
-    "confirm": "Confirm",
-    "next": "Next",
-    "back": "Back",
+    "copied": "ตักลอก",
+    "confirm": "ยืนยัน",
+    "next": "ไปต่อ",
+    "back": "ย้อนกลับ",
     "ok": "OK",
-    "refresh": "Refresh",
-    "failed": "Failed",
+    "refresh": "รีเฟรช",
+    "failed": "ล้มเหลว",
     "scamTx": "Scam tx",
     "gas": "Gas",
-    "unknownNFT": "Unknown NFT",
-    "copyAddress": "Copy address",
+    "unknownNFT": "NFT ที่ไม่รู้จัก",
+    "copyAddress": "คัดลอง Address",
     "watchModeAddress": "Watch Mode address",
     "assets": "assets",
     "Confirm": "Confirm",
@@ -1611,14 +1607,14 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "HdKeyring": "Created by Seed Phrase",
-      "SimpleKeyring": "Imported by Private Key",
+      "HdKeyring": "สร้างด้วย Seed Phrase",
+      "SimpleKeyring": "นำเข้าด้วย Private Key",
       "WatchAddressKeyring": "Contact"
     },
-    "IMPORTED_HD_KEYRING": "Imported by Seed Phrase",
+    "IMPORTED_HD_KEYRING": "นำเข้าด้วย Seed Phrase",
     "SIGN_PERMISSION_OPTIONS": {
-      "MAINNET_AND_TESTNET": "Mainnet & Testnet",
-      "TESTNET": "Only Testnets"
+      "MAINNET_AND_TESTNET": "สำหรับ Mainnet และ Testnet",
+      "TESTNET": "สำหรับ Testnets เท่านั้น"
     }
   }
 }
