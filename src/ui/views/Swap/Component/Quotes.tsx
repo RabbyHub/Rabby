@@ -111,7 +111,7 @@ export const Quotes = ({
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || [],
-    [inSufficient, list]
+    [inSufficient, list, other.receiveToken.decimals]
   );
 
   const bestAmount = useMemo(() => {
