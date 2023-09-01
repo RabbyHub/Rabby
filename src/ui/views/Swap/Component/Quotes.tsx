@@ -93,7 +93,10 @@ export const Quotes = ({
         const getNumber = (quote: typeof a) => {
           if (quote.isDex) {
             if (inSufficient) {
-              return new BigNumber(quote.data?.toTokenAmount || 0);
+              return new BigNumber(quote.data?.toTokenAmount || 0).div(
+                10 **
+                  (quote.data?.toTokenDecimals || other.receiveToken.decimals)
+              );
             }
             if (!quote.preExecResult) {
               return new BigNumber(0);
