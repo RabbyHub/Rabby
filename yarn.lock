@@ -6802,10 +6802,10 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitbox02-api@0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.15.1.tgz#9fff84c761a11fb7b423153ec05aa5f38274a8db"
-  integrity sha512-zeuHVF3kAQsJsa2q1fCtktVFiJV/G8nMuKonwMMsCx1RY0mzqc33RGlayTrvLrgs3fj30wLkWmXrgPmQCIJxmg==
+bitbox-api@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.3.1.tgz#4954289233bc69513ac027ec04e93aaad1726511"
+  integrity sha512-9ZXcNZj0hbRle1jPycPmOGuht3HaolD9aXYddfN3rUAaPhQuHnHSs4Jr+rPhVYutHgOMCvT6NVdIotqNQ3QX1g==
 
 bitcoin-ops@^1.3.0, bitcoin-ops@^1.4.1:
   version "1.4.1"

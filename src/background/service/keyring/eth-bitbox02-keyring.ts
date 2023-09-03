@@ -2,7 +2,7 @@ import 'regenerator-runtime/runtime';
 import EventEmitter from 'events';
 import browser from 'webextension-polyfill';
 
-import { BitBox02API, getDevicePath, constants } from 'bitbox02-api';
+import * as bitbox from 'bitbox-api';
 
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from '@metamask/eth-sig-util';
@@ -78,38 +78,31 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async withDevice(f) {
-    const devicePath = await getDevicePath({ forceBridge: true });
-    const bitbox02 = new BitBox02API(devicePath);
+    let bitbox02: bitbox.PairedBitBox | undefined = undefined;
     try {
-      await bitbox02.connect(
-        (pairingCode) => {
-          this.openPopup(
-            `vendor/bitbox02/bitbox02-pairing.html?code=${encodeURIComponent(
-              pairingCode
-            )}`
-          );
-        },
-        async () => {
-          this.maybeClosePopup();
-        },
-        (attestationResult) => {
-          console.info(attestationResult);
-        },
-        () => {
-          this.maybeClosePopup();
-        },
-        (status) => {
-          if (status === constants.Status.PairingFailed) {
-            this.maybeClosePopup();
-          }
-        }
+      const onCloseCb = () => {
+        this.maybeClosePopup();
+      };
+      const device: bitbox.BitBox = await bitbox.bitbox02ConnectBridge(
+        onCloseCb
       );
+      const pairing = await device.unlockAndPair();
+      const pairingCode = pairing.getPairingCode();
+      if (pairingCode) {
+        await this.openPopup(
+          `vendor/bitbox02/bitbox02-pairing.html?code=${encodeURIComponent(
+            pairingCode
+          )}`
+        );
+      }
+      bitbox02 = await pairing.waitConfirm();
+      this.maybeClosePopup();
 
-      if (bitbox02.firmware().Product() !== constants.Product.BitBox02Multi) {
+      if (!bitbox02.ethSupported()) {
         throw new Error('Unsupported device');
       }
 
-      const rootPub = await bitbox02.ethGetRootPubKey(this.hdPath);
+      const rootPub = await bitbox02.ethXpub(this.hdPath);
       const hdk = HDKey.fromExtendedKey(rootPub);
       this.hdk = hdk;
       const result = await f(bitbox02);
@@ -117,7 +110,9 @@ class BitBox02Keyring extends EventEmitter {
       return result;
     } catch (err) {
       console.error(err);
-      bitbox02.close();
+      if (bitbox02) {
+        bitbox02.close();
+      }
       throw err;
     }
   }
@@ -241,18 +236,18 @@ class BitBox02Keyring extends EventEmitter {
               : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
           }`,
         };
-        const result = await bitbox02.ethSignTransaction({
-          keypath: this._pathFromAddress(address),
-          chainId: tx.common.chainIdBN().toNumber(),
-          tx: {
+        const result = await bitbox02.ethSignTransaction(
+          tx.common.chainIdBN(),
+          this._pathFromAddress(address),
+          {
             nonce: tx.nonce.toArrayLike(Buffer),
             gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
             gasLimit: tx.gasLimit.toArrayLike(Buffer),
-            to: tx.to?.toBuffer(),
+            recipient: tx.to?.toBuffer(),
             value: tx.value.toArrayLike(Buffer),
             data: tx.data,
-          },
-        });
+          }
+        );
         txData.r = result.r;
         txData.s = result.s;
         txData.v = result.v;
@@ -276,10 +271,11 @@ class BitBox02Keyring extends EventEmitter {
   async signPersonalMessage(withAccount, message) {
     return this.signHelper.invoke(async () => {
       return await this.withDevice(async (bitbox02) => {
-        const result = await bitbox02.ethSignMessage({
-          keypath: this._pathFromAddress(withAccount),
-          message: ethUtil.toBuffer(message),
-        });
+        const result = await bitbox02.ethSignMessage(
+          BigInt(1),
+          this._pathFromAddress(withAccount),
+          ethUtil.toBuffer(message)
+        );
         const sig = Buffer.concat([
           Buffer.from(result.r),
           Buffer.from(result.s),
@@ -300,11 +296,11 @@ class BitBox02Keyring extends EventEmitter {
     }
     return this.signHelper.invoke(async () => {
       return await this.withDevice(async (bitbox02) => {
-        const result = await bitbox02.ethSignTypedMessage({
-          chainId: data.domain.chainId || 1,
-          keypath: this._pathFromAddress(withAccount),
-          message: data,
-        });
+        const result = await bitbox02.ethSignTypedMessage(
+          BigInt(data.domain.chainId || 1),
+          this._pathFromAddress(withAccount),
+          data
+        );
         const sig = Buffer.concat([
           Buffer.from(result.r),
           Buffer.from(result.s),
