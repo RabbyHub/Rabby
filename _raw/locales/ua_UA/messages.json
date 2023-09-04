@@ -946,7 +946,7 @@
       "starred": "Позначено ({{count}})",
       "empty": {
         "title": "Немає позначених NFT",
-        "description": "Ви можете вибрати NFT з \"All\" і додати до \"Starred\""
+        "description": "Ви можете вибрати NFT з \"Усіх\" і додати до \"Позначених\""
       },
       "noNft": "Немає NFT"
     },
@@ -1043,7 +1043,7 @@
         "cameraPermission1": "Дозволити Rabby доступ до камери у спливаючому вікні браузера",
         "allowRabbyPermissionsTitle": "Дозволити Rabby доступ до:",
         "ledgerPermission1": "Підключення до HID-пристрою",
-        "ledgerPermissionTip": "Будь ласка, натисніть \\\"Allow\\\" нижче та авторизуйте доступ до вашого Ledger у наступному спливаючому вікні.",
+        "ledgerPermissionTip": "Будь ласка, натисніть \\\"Дозволити\\\" нижче та авторизуйте доступ до вашого Ledger у наступному спливаючому вікні.",
         "permissionsAuthorized": "Дозволи авторизовано",
         "nowYouCanReInitiateYourTransaction": "Тепер ви можете повторно ініціювати вашу транзакцію.",
         "allow": "Дозволити"
@@ -1246,7 +1246,7 @@
     "switchChain": {
       "title": "Перемикання на {{chain}}",
       "chainNotSupport": "Запитуваний ланцюжок ще не підтримується Rabby",
-      "testnetTip": "Будь ласка, увімкніть \"Enable Testnets\" у розділі \"More\" перед підключенням до тестових мереж"
+      "testnetTip": "Будь ласка, увімкніть \"Увімкнути тестові мережі\" у розділі \"Більше\" перед підключенням до тестових мереж"
     },
     "signText": {
       "title": "Текст підпису",
@@ -1283,8 +1283,8 @@
       "flagByScamSniffer": "Позначено ScamSniffer",
       "verifiedByRabby": "Перевірено Rabby",
       "foundForbiddenRisk": "Знайдено заборонені ризики. З'єднання заблоковано.",
-      "markAsTrustToast": "Позначити як \"Trusted\"",
-      "markAsBlockToast": "Позначити як \"Blocked\"",
+      "markAsTrustToast": "Позначити як \"Довірені\"",
+      "markAsBlockToast": "Позначити як \"Заблоковані\"",
       "markRemovedToast": "Позначку вилучено",
       "title": "Підключитися до Dapp",
       "selectChainToConnect": "Виберіть ланцюжок для підключення",
@@ -1566,7 +1566,7 @@
       "reconnect": "Перепідключити Dapp"
     },
     "testnetCheckModal": {
-      "title": "Будь ласка, увімкніть \"Enable Testnets\" у розділі \"More\" перед тим, як реєструватися у тестових мережах"
+      "title": "Будь ласка, увімкніть \"Увімкнути тестові мережі\" у розділі \"Більше\" перед тим, як реєструватися у тестових мережах"
     }
   },
   "global": {
