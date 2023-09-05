@@ -1190,7 +1190,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       method: 'eth_sendTransaction',
       params: [
         {
-          ...tx,
+          gas: tx.gas,
+          gasPrice: tx.gasPrice,
+          chainId: tx.chainId,
           ...newTx,
           isCoboSafe: true,
         },

@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.20",
+  "version": "0.92.21",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
@@ -14,7 +14,7 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@debank/common": "^0.3.29",
+    "@debank/common": "^0.3.30",
     "@debank/festats": "1.0.0",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",

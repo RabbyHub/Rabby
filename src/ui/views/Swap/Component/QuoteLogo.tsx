@@ -19,7 +19,9 @@ export const QuoteLogo = ({
         <img
           className={clsx(
             'rounded-full',
-            !loaded && (isLoading || isCex) ? 'w-18 h-18' : 'w-24 h-24'
+            !loaded && (isLoading || isCex)
+              ? 'min-w-[18px] w-18 h-18'
+              : 'min-w-[24px] w-24 h-24'
           )}
           src={logo}
         />
