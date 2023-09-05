@@ -65,7 +65,7 @@ const ChainList = () => {
 
   return (
     <div className="page-chain-list">
-      <PageHeader onBack={goBack} fixed>
+      <PageHeader canBack={false} closeable fixed>
         {t('page.chainList.title', { count: list.length })}
       </PageHeader>
       <PillsSwitch
