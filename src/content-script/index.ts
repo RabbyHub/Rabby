@@ -1,6 +1,5 @@
 import { Message } from '@/utils';
 import { nanoid } from 'nanoid';
-import { browser } from 'webextension-polyfill-ts';
 
 const channelName = nanoid();
 

@@ -1,4 +1,4 @@
-import { Runtime, browser } from 'webextension-polyfill-ts';
+import browser, { Runtime } from 'webextension-polyfill';
 import Message from './index';
 class PortMessage extends Message {
   port: Runtime.Port | null = null;

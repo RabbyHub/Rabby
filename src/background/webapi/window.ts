@@ -1,4 +1,4 @@
-import { browser, Windows } from 'webextension-polyfill-ts';
+import browser, { Windows } from 'webextension-polyfill';
 import { EventEmitter } from 'events';
 import { IS_WINDOWS } from 'consts';
 
