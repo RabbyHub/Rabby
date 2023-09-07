@@ -42,9 +42,7 @@ const Wrapper = styled.div`
     color: #fff;
     text-align: center;
     font-size: 17px;
-    font-style: normal;
     font-weight: 500;
-    line-height: normal;
   }
 
   .container {
@@ -249,7 +247,12 @@ const RequestDeBankTestnetGasToken = () => {
     <Wrapper>
       <div className="header-bg" />
       <div className="body">
-        <PageHeader className="pt-[24px]" invertBack>
+        <PageHeader
+          className="pt-[24px]"
+          canBack={false}
+          closeable
+          closeCn="brightness-[10]"
+        >
           <span className="title">
             {t('page.requestDebankTestnetGasToken.title')}
           </span>

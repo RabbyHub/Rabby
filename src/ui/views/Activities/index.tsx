@@ -17,7 +17,9 @@ const Activities = () => {
 
   return (
     <div className="activities">
-      <PageHeader fixed>{t('page.activities.title')}</PageHeader>
+      <PageHeader canBack={false} closeable fixed>
+        {t('page.activities.title')}
+      </PageHeader>
       <div className="bg-[#f5f6fa] sticky top-[64px] z-10">
         <PillsSwitch
           value={selectedTab}

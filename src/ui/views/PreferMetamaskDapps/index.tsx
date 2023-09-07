@@ -69,7 +69,9 @@ export const PreferMetamaskDapps = () => {
   return (
     <div className="page-prefer-metamask-dapps">
       <header className="header">
-        <PageHeader>{t('page.preferMetamaskDapps.title')}</PageHeader>
+        <PageHeader canBack={false} closeable>
+          {t('page.preferMetamaskDapps.title')}
+        </PageHeader>
         <div className="desc">{t('page.preferMetamaskDapps.desc')}</div>
       </header>
       {sites?.length ? (
