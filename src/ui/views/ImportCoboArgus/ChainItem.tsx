@@ -26,7 +26,7 @@ export const ChainItem: React.FC<Props> = ({ chain, checked, onChecked }) => {
       onClick={onChecked}
     >
       <div className="flex gap-[12px] items-center">
-        <img src={chain.logo} />
+        <img src={chain.logo} className="w-28" />
         <span className="font-medium text-15">{chain.name}</span>
       </div>
       <div>

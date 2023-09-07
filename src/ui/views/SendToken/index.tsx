@@ -178,6 +178,8 @@ const SendTokenMessageForContract = React.forwardRef<
     inputDataHex: hexData,
   });
 
+  const parseContractError = loadingExplainError || !explain?.abi;
+
   return (
     <div className={clsx('section', !active && 'hidden')}>
       <div className="section-title flex justify-between items-center">
@@ -209,10 +211,12 @@ const SendTokenMessageForContract = React.forwardRef<
             </>
           ) : (
             <>
-              <span className="mt-16 mb-8 text-r-neutral-body">
-                {/* Contract call simulation: */}
-                {t('page.sendToken.sectionMsgDataForContract.simulation')}
-              </span>
+              {!parseContractError && (
+                <span className="mt-16 mb-8 text-r-neutral-body">
+                  {/* Contract call simulation: */}
+                  {t('page.sendToken.sectionMsgDataForContract.simulation')}
+                </span>
+              )}
               {isLoadingExplain ? (
                 <Skeleton.Button
                   active
@@ -220,7 +224,7 @@ const SendTokenMessageForContract = React.forwardRef<
                 />
               ) : (
                 <>
-                  {(loadingExplainError || !explain?.abi) && (
+                  {parseContractError && (
                     <span className="flex items-center text-r-red-default">
                       <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
                       <span>

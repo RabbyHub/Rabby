@@ -4,7 +4,12 @@ import {
   Spender,
   TokenApproval,
 } from '@/background/service/openapi';
-import { coerceFloat, coerceInteger, splitNumberByStep } from '@/ui/utils';
+import {
+  coerceFloat,
+  coerceInteger,
+  formatNumber,
+  splitNumberByStep,
+} from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { appIsDev, appIsProd } from './env';
 
@@ -328,7 +333,8 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let bigValue = new BigNumber(absValue);
 
   const isUnlimited = bigValue.gte(10 ** 9);
-  let displayText = '';
+  let displayAmountText = '';
+  let displayBalanceText = '';
   let nftOrderScore = 0;
 
   if (spender.$assetParent?.type === 'nft') {
@@ -336,7 +342,13 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
     bigValue = new BigNumber(absValue);
 
     if (spender.$assetParent?.nftContract) {
-      displayText = '1 Collection';
+      displayAmountText = '1 Collection';
+      const nftCount = spender.$assetParent?.nftContract.amount || 0;
+      displayBalanceText = nftCount
+        ? `${formatNumber(nftCount, 0)} ${
+            parseInt(nftCount) > 1 ? 'NFTs' : 'NFT'
+          }`
+        : '-';
 
       if (spender.$assetParent?.nftContract?.is_erc1155) {
         nftOrderScore = 102;
@@ -345,18 +357,27 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
       }
     } else if (spender.$assetParent?.nftToken) {
       if (spender.$assetParent?.nftToken?.is_erc1155) {
-        displayText = '1 Collection';
+        displayAmountText = '1 Collection';
+        displayBalanceText = '1 Collection';
         nftOrderScore = 202;
       } else if (spender.$assetParent?.nftToken?.is_erc721) {
-        displayText = '1 NFT';
+        displayAmountText = '1 NFT';
+        displayBalanceText = '1 NFT';
         nftOrderScore = 201;
       }
     }
   } else if (spender.$assetParent?.type === 'token') {
     const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
-    displayText = isUnlimited
+    displayAmountText = isUnlimited
       ? 'Unlimited'
       : `${stepNumberText} ${spender.$assetParent?.name || ''}`;
+
+    const absBalance = spender.$assetParent?.balance;
+    displayBalanceText = `${
+      typeof absBalance === 'number'
+        ? formatNumber(absBalance)
+        : absBalance || '-'
+    }`;
   } else if (appIsDev) {
     console.debug('unknown type spender', spender);
   }
@@ -364,7 +385,8 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   return {
     bigValue,
     isUnlimited,
-    displayText,
+    displayAmountText,
+    displayBalanceText,
     nftOrderScore,
     get spender() {
       return spender;

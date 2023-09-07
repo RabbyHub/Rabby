@@ -136,7 +136,7 @@ const RecentConnections = ({
   return (
     <Popup
       visible={visible}
-      height={580}
+      height={523}
       onClose={onClose}
       title={t('page.dashboard.recentConnection.title')}
       closable

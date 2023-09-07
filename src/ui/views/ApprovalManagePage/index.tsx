@@ -722,7 +722,40 @@ function getColumnsForAsset({
 
         const spendValues = getSpenderApprovalAmount(spender);
 
-        return spendValues.displayText;
+        return (
+          <div className="text-14">
+            <div>
+              <Tooltip
+                overlayClassName="J-table__tooltip disable-ant-overwrite"
+                // Approved Amount
+                overlay={t(
+                  'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipApprovedAmount'
+                )}
+                align={{ offset: [0, 3] }}
+                arrowPointAtCenter
+              >
+                <span className="text-r-neutral-title-1">
+                  {spendValues.displayAmountText}
+                </span>
+              </Tooltip>
+            </div>
+            <div className="mt-4">
+              <Tooltip
+                overlayClassName="J-table__tooltip disable-ant-overwrite"
+                // My Balance
+                overlay={t(
+                  'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+                )}
+                align={{ offset: [0, 3] }}
+                arrowPointAtCenter
+              >
+                <span className="text-r-neutral-foot">
+                  {spendValues.displayBalanceText}
+                </span>
+              </Tooltip>
+            </div>
+          </div>
+        );
       },
       width: 160,
     },
@@ -1002,10 +1035,6 @@ const ApprovalManagePage = () => {
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
-  useEffect(() => {
-    loadApprovals();
-  }, [selectedTab]);
-
   const {
     isLoading,
     loadApprovals,
@@ -1021,6 +1050,10 @@ const ApprovalManagePage = () => {
     vGridRefContracts,
     vGridRefAsset,
   } = useApprovalsPage({ isTestnet: selectedTab === 'testnet' });
+
+  useEffect(() => {
+    loadApprovals();
+  }, [selectedTab]);
 
   const { yValue } = useTableScrollableHeight({ isShowTestnet });
 

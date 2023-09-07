@@ -546,6 +546,12 @@
             "approvedAmount": "Approved Amount",
             "approvedSpender": "Approved Spender",
             "myApprovalTime": "My Approval Time"
+          },
+          "columnCell": {
+            "approvedAmount": {
+              "tipApprovedAmount": "Approved Amount",
+              "tipMyBalance": "My Balance"
+            }
           }
         }
       },

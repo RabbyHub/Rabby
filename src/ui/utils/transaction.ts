@@ -2,7 +2,7 @@ import abi from 'human-standard-token-abi';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
-import { hexToString, isHex, toHex } from 'web3-utils';
+import { hexToString, isHex, stringToHex } from 'web3-utils';
 
 const hstInterface = new ethers.utils.Interface(abi);
 
@@ -159,7 +159,7 @@ export function formatTxInputDataOnERC20(maybeHex: string) {
     }
   } else {
     result.currentData = maybeHex;
-    result.hexData = toHex(maybeHex);
+    result.hexData = stringToHex(maybeHex);
     result.utf8Data = maybeHex;
     result.withInputData = true;
   }

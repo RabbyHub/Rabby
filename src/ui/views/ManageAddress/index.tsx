@@ -228,7 +228,7 @@ const ManageAddress = () => {
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="px-20">
-          <PageHeader className="pt-[24px]">
+          <PageHeader className="pt-[24px]" canBack={false} closeable>
             {t('page.manageAddress.manage-address')}
           </PageHeader>
         </div>
