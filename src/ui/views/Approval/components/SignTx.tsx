@@ -71,6 +71,8 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
+import { BroadcastMode } from './BroadcastMode';
+import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -732,6 +734,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
+  const [pushInfo, setPushInfo] = useState<{
+    type: TxPushType;
+    lowGasDeadline?: number;
+  }>({
+    type: 'default',
+  });
 
   useSignPermissionCheck({
     origin,
@@ -1879,6 +1887,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             />
           </>
         )}
+        <BroadcastMode
+          className="mt-[12px]"
+          chain={chain.enum}
+          value={pushInfo}
+          onChange={(value) => {
+            setPushInfo(value);
+          }}
+        />
+
         {isGnosisAccount && safeInfo && (
           <Drawer
             placement="bottom"
