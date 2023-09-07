@@ -19,9 +19,6 @@ interface Props {
   changeShowURL: (active: boolean) => void;
   refreshFun(): void;
   qrcodeURL: string;
-  onBridgeChange(val: string): void;
-  bridgeURL: string;
-  defaultBridge: string;
   canChangeBridge?: boolean;
   brandName?: string;
   account?: Account;
@@ -31,9 +28,6 @@ const ScanCopyQRCode: React.FC<Props> = ({
   changeShowURL,
   qrcodeURL,
   refreshFun,
-  onBridgeChange,
-  bridgeURL,
-  defaultBridge,
   canChangeBridge = true,
   brandName,
   account,
@@ -67,11 +61,6 @@ const ScanCopyQRCode: React.FC<Props> = ({
       });
       clipboard.destroy();
     });
-  };
-
-  const handleBridgeServerChange = (val: string) => {
-    onBridgeChange(val);
-    setShowOpenApiModal(false);
   };
 
   React.useEffect(() => {
@@ -145,13 +134,6 @@ const ScanCopyQRCode: React.FC<Props> = ({
           {t('page.newAddress.walletConnect.changeBridgeServer')}
         </div>
       )}
-      <WalletConnectBridgeModal
-        defaultValue={defaultBridge}
-        value={bridgeURL}
-        visible={showOpenApiModal}
-        onChange={handleBridgeServerChange}
-        onCancel={() => setShowOpenApiModal(false)}
-      />
       <ConnectStatus account={account} uri={qrcodeURL} brandName={brandName} />
     </div>
   );

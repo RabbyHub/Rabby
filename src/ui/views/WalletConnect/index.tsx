@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { getCurrentTab, useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/icon-back.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
@@ -18,6 +17,8 @@ import clsx from 'clsx';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { useBrandNameHasWallet } from '@/ui/component/WalletConnect/useBrandNameHasWallet';
+import { getOriginFromUrl } from '@/utils';
+import { ConnectedSite } from '@/background/service/permission';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
@@ -29,7 +30,7 @@ const WalletConnectTemplate = () => {
   const [result, setResult] = useState('');
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
-  const [bridgeURL, setBridgeURL] = useState(DEFAULT_BRIDGE);
+  const [bridgeURL, setBridgeURL] = useState('');
   const [brand, setBrand] = useState(location.state?.brand || {});
   const [ready, setReady] = useState(false);
   const { status: sessionStatus, currAccount } = useSessionStatus();
@@ -37,6 +38,15 @@ const WalletConnectTemplate = () => {
     Parameters<typeof run> | undefined
   >();
   const [curStashId, setCurStashId] = useState<number | null>();
+  const [site, setSite] = useState<ConnectedSite | null>(null);
+
+  const getCurrentSite = useCallback(async () => {
+    const tab = await getCurrentTab();
+    if (!tab.id || !tab.url) return;
+    const domain = getOriginFromUrl(tab.url);
+    const current = await wallet.getCurrentSite(tab.id, domain);
+    setSite(current);
+  }, []);
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
@@ -62,15 +72,17 @@ const WalletConnectTemplate = () => {
   });
 
   const handleRun = async (options: Parameters<typeof run>) => {
-    const [payload, brandName] = options;
-    const { account, peerMeta } = payload as any;
+    const [payload, brandName, account] = options as any;
+    const {
+      peer: { metadata },
+    } = payload as any;
 
-    options[0] = account;
+    options[0] = account.address;
     if (brandName === WALLET_BRAND_CONTENT['WALLETCONNECT'].brand) {
-      if (peerMeta?.name) {
+      if (metadata?.name) {
         options[1] = currAccount!.brandName;
-        options[4] = peerMeta.name;
-        options[5] = peerMeta.icons?.[0];
+        options[4] = metadata.name;
+        options[5] = metadata.icons?.[0];
       }
     }
     run(...options);
@@ -82,28 +94,19 @@ const WalletConnectTemplate = () => {
       curStashId
     );
     setCurStashId(stashId);
-    setWalletconnectUri(uri);
-    // await wallet.setPageStateCache({
-    //   path: '/import/wallet-connect',
-    //   params: {},
-    //   states: {
-    //     uri,
-    //     stashId,
-    //     brand,
-    //     bridgeURL,
-    //   },
-    // });
+    setWalletconnectUri(uri!);
+
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
-      ({ status, payload }) => {
+      ({ status, account, payload }) => {
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
-            setResult(payload.account);
+            setResult(account.address);
             setRunParams([
               payload,
               brand.brand,
-              bridgeURL,
+              account,
               stashId === null ? undefined : stashId,
             ]);
             break;
@@ -242,9 +245,6 @@ const WalletConnectTemplate = () => {
         changeShowURL={setShowURL}
         qrcodeURL={walletconnectUri}
         refreshFun={handleRefresh}
-        bridgeURL={bridgeURL}
-        onBridgeChange={handleBridgeChange}
-        defaultBridge={DEFAULT_BRIDGE}
         canChangeBridge={false}
         brandName={brandName}
       />

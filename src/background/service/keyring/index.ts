@@ -21,9 +21,7 @@ import LatticeKeyring from './eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
 import CoboArgusKeyring from './eth-cobo-argus-keyring';
-import WalletConnectKeyring, {
-  keyringType,
-} from '@rabby-wallet/eth-walletconnect-keyring';
+import { WalletConnectKeyring } from '@rabby-wallet/eth-walletconnect-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -37,6 +35,7 @@ import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
+import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -859,7 +858,10 @@ export class KeyringService extends EventEmitter {
   async _restoreKeyring(serialized: any): Promise<any> {
     const { type, data } = serialized;
     const Keyring = this.getKeyringClassForType(type);
-    const keyring = new Keyring();
+    const keyring =
+      Keyring?.type === KEYRING_CLASS.WALLETCONNECT
+        ? new Keyring(GET_WALLETCONNECT_CONFIG())
+        : new Keyring();
     await keyring.deserialize(data);
     if (
       keyring.type === HARDWARE_KEYRING_TYPES.Ledger.type &&
