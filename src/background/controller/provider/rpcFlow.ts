@@ -10,6 +10,7 @@ import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
+import * as Sentry from '@sentry/browser';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -241,6 +242,7 @@ const flowContext = flow
           })
           .then(resolve)
           .catch((e: any) => {
+            Sentry.captureException(e);
             if (isSignApproval(approvalType)) {
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.SIGN_FINISHED,
