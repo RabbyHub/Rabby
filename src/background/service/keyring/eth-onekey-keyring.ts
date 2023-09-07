@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import OneKeyConnect from '@onekeyfe/connect';
 import * as ethUtil from 'ethereumjs-util';
+import * as sigUtil from 'eth-sig-util';
 import {
   TransactionFactory,
   TypedTransaction,
@@ -11,16 +11,16 @@ import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
+import HardwareSDK from '@onekeyfe/hd-web-sdk';
+import { UI_RESPONSE, UI_EVENT, UI_REQUEST } from '@onekeyfe/hd-core';
+
+const { HardwareWebSdk } = HardwareSDK;
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
 const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
-const ONEKEY_CONNECT_MANIFEST = {
-  email: 'support@debank.com/',
-  appUrl: 'https://debank.com/',
-};
 
 interface Account {
   address: string;
@@ -41,6 +41,9 @@ class OneKeyKeyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
+  deviceId: string | null = null;
+  connectId: string | null = null;
+  passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
 
   signHelper = new SignHelper({
@@ -51,7 +54,34 @@ class OneKeyKeyring extends EventEmitter {
     super();
     this.accountDetails = {};
     this.deserialize(opts);
-    OneKeyConnect.manifest(ONEKEY_CONNECT_MANIFEST);
+    HardwareWebSdk.init({
+      debug: false,
+      // The official iframe page deployed by OneKey
+      // of course you can also deploy it yourself
+      connectSrc: 'https://jssdk.onekey.so/0.3.27/',
+    });
+    HardwareWebSdk.on(UI_EVENT, (e) => {
+      switch (e.type) {
+        case UI_REQUEST.REQUEST_PIN:
+          HardwareWebSdk.uiResponse({
+            type: UI_RESPONSE.RECEIVE_PIN,
+            payload: '@@ONEKEY_INPUT_PIN_IN_DEVICE',
+          });
+          break;
+        case UI_REQUEST.REQUEST_PASSPHRASE:
+          HardwareWebSdk.uiResponse({
+            type: UI_RESPONSE.RECEIVE_PASSPHRASE,
+            payload: {
+              value: '',
+              passphraseOnDevice: true,
+              save: true,
+            },
+          });
+          break;
+        default:
+        // NOTHING
+      }
+    });
   }
 
   serialize(): Promise<any> {
@@ -93,25 +123,62 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   unlock(): Promise<string> {
-    if (this.isUnlocked()) {
-      return Promise.resolve('already unlocked');
-    }
+    // if (this.isUnlocked()) {
+    //   return Promise.resolve('already unlocked');
+    // }
     return new Promise((resolve, reject) => {
-      OneKeyConnect.getPublicKey({
-        path: this.hdPath,
-        coin: 'ETH',
-      })
-        .then((response) => {
-          if (response.success) {
-            this.hdk.publicKey = Buffer.from(response.payload.publicKey, 'hex');
-            this.hdk.chainCode = Buffer.from(response.payload.chainCode, 'hex');
-            resolve('just unlocked');
+      HardwareWebSdk.searchDevices()
+        .then(async (result) => {
+          if (!result.success) {
+            reject('searchDevices failed');
+            return;
           } else {
-            reject(
-              new Error(
-                (response.payload && response.payload.error) || 'Unknown error'
-              )
+            if (result.payload.length <= 0) {
+              reject('No OneKey Device found');
+            }
+            const device = result.payload[0];
+            const { deviceId, connectId } = device;
+            if (!deviceId || !connectId) {
+              reject('no deviceId or connectId');
+              return;
+            }
+            if (
+              this.deviceId &&
+              this.connectId &&
+              this.isUnlocked() &&
+              this.deviceId === deviceId &&
+              this.connectId === connectId
+            ) {
+              resolve('already unlocked');
+              return;
+            }
+            this.deviceId = deviceId;
+            this.connectId = connectId;
+            const passphraseState = await HardwareWebSdk.getPassphraseState(
+              connectId
             );
+            if (!passphraseState.success) {
+              reject('getPassphraseState failed');
+              return;
+            }
+            this.passphraseState = passphraseState.payload;
+            HardwareWebSdk.evmGetPublicKey(connectId, deviceId, {
+              showOnOneKey: false,
+              chainId: 1,
+              path: hdPathString,
+              passphraseState: passphraseState.payload,
+            }).then((res) => {
+              if (res.success) {
+                this.hdk.publicKey = Buffer.from(res.payload.publicKey, 'hex');
+                this.hdk.chainCode = Buffer.from(
+                  res.payload.node.chain_code,
+                  'hex'
+                );
+                resolve('just unlocked');
+              } else {
+                reject('getPublicKey failed');
+              }
+            });
           }
         })
         .catch((e) => {
@@ -241,56 +308,56 @@ class OneKeyKeyring extends EventEmitter {
           .then((status) => {
             setTimeout(
               (_) => {
-                OneKeyConnect.ethereumSignTransaction({
-                  path: this._pathFromAddress(address),
-                  transaction: {
-                    to: tx.to!.toString(),
-                    value: `0x${tx.value.toString('hex')}`,
-                    data: this._normalize(tx.data),
-                    chainId: tx.common.chainIdBN().toNumber(),
-                    nonce: `0x${tx.nonce.toString('hex')}`,
-                    gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-                    gasPrice: `0x${
-                      (tx as Transaction).gasPrice
-                        ? (tx as Transaction).gasPrice.toString('hex')
-                        : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
-                            'hex'
-                          )
-                    }`,
-                  },
-                })
-                  .then((response) => {
-                    if (response.success) {
-                      const txData = tx.toJSON();
-                      txData.v = response.payload.v;
-                      txData.r = response.payload.r;
-                      txData.s = response.payload.s;
+                HardwareWebSdk.evmSignTransaction(
+                  this.connectId!,
+                  this.deviceId!,
+                  {
+                    path: this._pathFromAddress(address),
+                    passphraseState: this.passphraseState,
+                    transaction: {
+                      to: tx.to!.toString(),
+                      value: `0x${tx.value.toString('hex')}`,
+                      data: this._normalize(tx.data),
+                      chainId: tx.common.chainIdBN().toNumber(),
+                      nonce: `0x${tx.nonce.toString('hex')}`,
+                      gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+                      gasPrice: `0x${
+                        (tx as Transaction).gasPrice
+                          ? (tx as Transaction).gasPrice.toString('hex')
+                          : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
+                              'hex'
+                            )
+                      }`,
+                    },
+                  }
+                ).then((res) => {
+                  if (res.success) {
+                    const txData = tx.toJSON();
+                    txData.v = res.payload.v;
+                    txData.r = res.payload.r;
+                    txData.s = res.payload.s;
 
-                      const signedTx = TransactionFactory.fromTxData(txData);
+                    const signedTx = TransactionFactory.fromTxData(txData);
 
-                      const addressSignedWith = ethUtil.toChecksumAddress(
-                        address
-                      );
-                      const correctAddress = ethUtil.toChecksumAddress(address);
-                      if (addressSignedWith !== correctAddress) {
-                        reject(
-                          new Error('signature doesnt match the right address')
-                        );
-                      }
-
-                      resolve(signedTx);
-                    } else {
+                    const addressSignedWith = ethUtil.toChecksumAddress(
+                      address
+                    );
+                    const correctAddress = ethUtil.toChecksumAddress(address);
+                    if (addressSignedWith !== correctAddress) {
                       reject(
-                        new Error(
-                          (response.payload && response.payload.error) ||
-                            'Unknown error'
-                        )
+                        new Error('signature doesnt match the right address')
                       );
                     }
-                  })
-                  .catch((e) => {
-                    reject(new Error((e && e.toString()) || 'Unknown error'));
-                  });
+
+                    resolve(signedTx);
+                  } else {
+                    reject(
+                      new Error(
+                        (res.payload && res.payload.error) || 'Unknown error'
+                      )
+                    );
+                  }
+                });
 
                 // This is necessary to avoid popup collision
                 // between the unlock & sign trezor popups
@@ -317,12 +384,12 @@ class OneKeyKeyring extends EventEmitter {
           .then((status) => {
             setTimeout(
               (_) => {
-                OneKeyConnect.ethereumSignMessage({
+                HardwareWebSdk.evmSignMessage(this.connectId!, this.deviceId!, {
                   path: this._pathFromAddress(withAccount),
-                  message: ethUtil.stripHexPrefix(message),
-                  hex: true,
+                  messageHex: ethUtil.stripHexPrefix(message),
+                  passphraseState: this.passphraseState,
                 })
-                  .then((response: any) => {
+                  .then((response) => {
                     if (response.success) {
                       if (
                         response.payload.address !==
@@ -389,17 +456,45 @@ class OneKeyKeyring extends EventEmitter {
   ) {
     return this.signHelper.invoke(async () => {
       return new Promise((resolve, reject) => {
-        const { version = 'V4' } = opts;
+        const isV4 = opts.version === 'V4';
+        const {
+          domain,
+          types,
+          primaryType,
+          message,
+        } = sigUtil.TypedDataUtils.sanitizeData(typedData);
+        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+          'EIP712Domain',
+          domain,
+          types,
+          isV4
+        ).toString('hex');
+        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+          primaryType as string,
+          message,
+          types,
+          isV4
+        ).toString('hex');
         this.unlock()
           .then((status) => {
             setTimeout(
               (_) => {
                 try {
-                  OneKeyConnect.ethereumSignMessageEIP712({
-                    path: this._pathFromAddress(address),
-                    version,
-                    data: typedData,
-                  })
+                  HardwareWebSdk.evmSignTypedData(
+                    this.connectId!,
+                    this.deviceId!,
+                    {
+                      path: this._pathFromAddress(address),
+                      data: typedData,
+                      passphraseState: this.passphraseState,
+                      metamaskV4Compat: isV4,
+                      domainHash: domainSeparatorHex,
+                      messageHash: hashStructMessageHex,
+                      chainId: domain.chainId
+                        ? Number(domain.chainId)
+                        : undefined,
+                    }
+                  )
                     .then((response) => {
                       if (response.success) {
                         if (
