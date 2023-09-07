@@ -32,7 +32,7 @@ import {
 } from 'background/service';
 import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
-import { Tx } from 'background/service/openapi';
+import { Tx, TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
 import {
@@ -91,6 +91,8 @@ interface ApprovalRes extends Tx {
   traceId?: string;
   $ctx?: any;
   signingTxId?: string;
+  pushType?: TxPushType;
+  lowGasDeadline?: number;
 }
 
 interface Web3WalletPermission {
@@ -335,6 +337,8 @@ class ProviderController extends BaseController {
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
     const isCoboSafe = !!txParams.isCoboSafe;
+    const pushType = approvalRes.pushType || 'default';
+    const lowGasDeadline = approvalRes.lowGasDeadline;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -347,6 +351,8 @@ class ProviderController extends BaseController {
     delete approvalRes.extra;
     delete approvalRes.$ctx;
     delete approvalRes.signingTxId;
+    delete approvalRes.pushType;
+    delete approvalRes.lowGasDeadline;
     delete txParams.isCoboSafe;
 
     let is1559 = is1559Tx(approvalRes);
@@ -569,16 +575,29 @@ class ProviderController extends BaseController {
             // DO nothing
           }
         } else {
-          hash = await openapiService.pushTx(
-            {
+          // hash = await openapiService.pushTx(
+          //   {
+          //     ...approvalRes,
+          //     r: bufferToHex(signedTx.r),
+          //     s: bufferToHex(signedTx.s),
+          //     v: bufferToHex(signedTx.v),
+          //     value: approvalRes.value || '0x0',
+          //   },
+          //   traceId
+          // );
+          const res = await openapiService.submitTx({
+            tx: {
               ...approvalRes,
               r: bufferToHex(signedTx.r),
               s: bufferToHex(signedTx.s),
               v: bufferToHex(signedTx.v),
               value: approvalRes.value || '0x0',
             },
-            traceId
-          );
+            push_type: pushType,
+            low_gas_deadline: lowGasDeadline,
+          });
+          // TOFIX
+          hash = res.tx_id || '';
         }
         onTransactionSubmitted(hash);
         return hash;

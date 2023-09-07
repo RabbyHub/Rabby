@@ -1213,6 +1213,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isSend,
       traceId: txDetail?.trace_id,
       signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
     });
     wallet.clearPageStateCache();
   };
@@ -1303,6 +1305,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         },
         $ctx: params.$ctx,
         signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
       });
 
       return;
@@ -1335,6 +1339,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isSend,
       traceId: txDetail?.trace_id,
       signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
     });
   };
 
