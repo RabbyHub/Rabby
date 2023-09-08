@@ -48,7 +48,7 @@ import IconI18n from 'ui/assets/dashboard/settings/i18n.svg';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
-import { Contacts } from '..';
+import { Contacts, RecentConnections } from '..';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -83,7 +83,6 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
-  onOpenConnectedDapps?: () => void;
   onOpenBadgeModal: () => void;
 }
 
@@ -472,10 +471,9 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
-const Settings = ({
+const SettingsInner = ({
   visible,
   onClose,
-  onOpenConnectedDapps,
   onOpenBadgeModal,
 }: SettingsProps) => {
   const wallet = useWallet();
@@ -488,6 +486,7 @@ const Settings = ({
   const [isShowLangModal, setIsShowLangModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
+  const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
@@ -661,7 +660,7 @@ const Settings = ({
           leftIcon: IconSettingsFeatureConnectedDapps,
           content: t('page.dashboard.settings.features.connectedDapp'),
           onClick: () => {
-            onOpenConnectedDapps?.();
+            setConnectedDappsVisible(true);
             matomoRequestEvent({
               category: 'Setting',
               action: 'clickToUse',
@@ -966,16 +965,9 @@ const Settings = ({
   }, []);
 
   return (
-    <>
-      <Popup
-        visible={visible}
-        onClose={handleClose}
-        height={523}
-        bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
-      >
-        <div className="popup-settings">
-          <div className="content">
-            {/* <Button
+    <div className="popup-settings">
+      <div className="content">
+        {/* <Button
               block
               size="large"
               type="primary"
@@ -985,96 +977,115 @@ const Settings = ({
               <img src={IconLock} className="icon icon-lock" />{' '}
               {'Lock Wallet'}
             </Button> */}
-            <ClaimRabbyBadge onClick={onOpenBadgeModal} />
-            <RequestDeBankTestnetGasToken />
-            {Object.values(renderData).map((group, idxl1) => {
-              return (
-                <div key={`g-${idxl1}`} className="setting-block">
-                  <div className="setting-title">{group.label}</div>
-                  <div className="setting-items">
-                    {group.items.map((data, idxl2) => (
-                      <Field
-                        key={`g-${idxl1}-item-${idxl2}`}
-                        leftIcon={<img src={data.leftIcon} className="icon" />}
-                        rightIcon={
-                          data.rightIcon || (
-                            <img
-                              src={IconArrowRight}
-                              className="icon icon-arrow-right"
-                            />
-                          )
-                        }
-                        onClick={data.onClick}
-                        className={clsx(data.description ? 'has-desc' : null)}
-                      >
-                        {data.content}
-                        {data.description && (
-                          <p className="desc">{data.description}</p>
-                        )}
-                      </Field>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <footer className="footer">
-            <div className="px-8 py-2 rounded hover:bg-[#EEF1FF] inline-block">
-              <img
-                className="inline-block cursor-pointer"
-                src={LogoRabby}
-                alt="https://rabby.io"
-                onClick={() => {
-                  openInTab('https://rabby.io', false);
-                }}
-              />
+        <ClaimRabbyBadge onClick={onOpenBadgeModal} />
+        <RequestDeBankTestnetGasToken />
+        {Object.values(renderData).map((group, idxl1) => {
+          return (
+            <div key={`g-${idxl1}`} className="setting-block">
+              <div className="setting-title">{group.label}</div>
+              <div className="setting-items">
+                {group.items.map((data, idxl2) => (
+                  <Field
+                    key={`g-${idxl1}-item-${idxl2}`}
+                    leftIcon={<img src={data.leftIcon} className="icon" />}
+                    rightIcon={
+                      data.rightIcon || (
+                        <img
+                          src={IconArrowRight}
+                          className="icon icon-arrow-right"
+                        />
+                      )
+                    }
+                    onClick={data.onClick}
+                    className={clsx(data.description ? 'has-desc' : null)}
+                  >
+                    {data.content}
+                    {data.description && (
+                      <p className="desc">{data.description}</p>
+                    )}
+                  </Field>
+                ))}
+              </div>
             </div>
-          </footer>
-          <Contacts
-            visible={contactsVisible}
-            onCancel={() => {
-              setContactsVisible(false);
+          );
+        })}
+      </div>
+      <footer className="footer">
+        <div className="px-8 py-2 rounded hover:bg-[#EEF1FF] inline-block">
+          <img
+            className="inline-block cursor-pointer"
+            src={LogoRabby}
+            alt="https://rabby.io"
+            onClick={() => {
+              openInTab('https://rabby.io', false);
             }}
-          />
-          <OpenApiModal
-            visible={showOpenApiModal}
-            value={openapiStore.host}
-            defaultValue={INITIAL_OPENAPI_URL}
-            onFinish={(host) => {
-              dispatch.openapi.setHost(host);
-              setShowOpenApiModal(false);
-            }}
-            onCancel={() => setShowOpenApiModal(false)}
-          />
-          <OpenApiModal
-            visible={showTestnetOpenApiModal}
-            value={openapiStore.testnetHost}
-            defaultValue={INITIAL_TESTNET_OPENAPI_URL}
-            title={t('page.dashboard.settings.testnetBackendServiceUrl')}
-            onFinish={(host) => {
-              dispatch.openapi.setTestnetHost(host);
-              setShowTestnetOpenApiModal(false);
-            }}
-            onCancel={() => setShowTestnetOpenApiModal(false)}
-          />
-          <ResetAccountModal
-            visible={showResetAccountModal}
-            onFinish={() => setShowResetAccountModal(false)}
-            onCancel={() => setShowResetAccountModal(false)}
-          />
-          <AutoLockModal
-            visible={isShowAutoLockModal}
-            onFinish={() => setIsShowAutoLockModal(false)}
-            onCancel={() => setIsShowAutoLockModal(false)}
-          />
-          <SwitchLangModal
-            visible={isShowLangModal}
-            onFinish={() => setIsShowLangModal(false)}
-            onCancel={() => setIsShowLangModal(false)}
           />
         </div>
-      </Popup>
-    </>
+      </footer>
+      <Contacts
+        visible={contactsVisible}
+        onCancel={() => {
+          setContactsVisible(false);
+        }}
+      />
+      <OpenApiModal
+        visible={showOpenApiModal}
+        value={openapiStore.host}
+        defaultValue={INITIAL_OPENAPI_URL}
+        onFinish={(host) => {
+          dispatch.openapi.setHost(host);
+          setShowOpenApiModal(false);
+        }}
+        onCancel={() => setShowOpenApiModal(false)}
+      />
+      <OpenApiModal
+        visible={showTestnetOpenApiModal}
+        value={openapiStore.testnetHost}
+        defaultValue={INITIAL_TESTNET_OPENAPI_URL}
+        title={t('page.dashboard.settings.testnetBackendServiceUrl')}
+        onFinish={(host) => {
+          dispatch.openapi.setTestnetHost(host);
+          setShowTestnetOpenApiModal(false);
+        }}
+        onCancel={() => setShowTestnetOpenApiModal(false)}
+      />
+      <ResetAccountModal
+        visible={showResetAccountModal}
+        onFinish={() => setShowResetAccountModal(false)}
+        onCancel={() => setShowResetAccountModal(false)}
+      />
+      <AutoLockModal
+        visible={isShowAutoLockModal}
+        onFinish={() => setIsShowAutoLockModal(false)}
+        onCancel={() => setIsShowAutoLockModal(false)}
+      />
+      <SwitchLangModal
+        visible={isShowLangModal}
+        onFinish={() => setIsShowLangModal(false)}
+        onCancel={() => setIsShowLangModal(false)}
+      />
+      <RecentConnections
+        visible={connectedDappsVisible}
+        onClose={() => {
+          setConnectedDappsVisible(false);
+        }}
+      />
+    </div>
+  );
+};
+
+const Settings = (props: SettingsProps) => {
+  const { visible, onClose } = props;
+  return (
+    <Popup
+      visible={visible}
+      onClose={onClose}
+      height={523}
+      bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
+      destroyOnClose
+    >
+      <SettingsInner {...props} />
+    </Popup>
   );
 };
 

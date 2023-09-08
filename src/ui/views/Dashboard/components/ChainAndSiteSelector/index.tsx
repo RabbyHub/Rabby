@@ -24,7 +24,7 @@ import {
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import { RecentConnections, Settings } from '../index';
+import { Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
@@ -387,10 +387,6 @@ export default ({
       <Settings
         visible={settingVisible}
         onClose={toggleShowMoreSettings}
-        onOpenConnectedDapps={() => {
-          setConnectedDappsVisible(true);
-          setSettingVisible(false);
-        }}
         onOpenBadgeModal={() => {
           setBadgeModalVisible(true);
           setSettingVisible(false);
@@ -406,12 +402,6 @@ export default ({
       <FeedbackPopup
         visible={feedbackVisible}
         onClose={() => showFeedbackModal(false)}
-      />
-      <RecentConnections
-        visible={connectedDappsVisible}
-        onClose={() => {
-          setConnectedDappsVisible(false);
-        }}
       />
     </div>
   );

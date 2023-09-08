@@ -1,4 +1,4 @@
-import { Empty, Modal, Popup } from '@/ui/component';
+import { Empty, Modal, PageHeader, Popup } from '@/ui/component';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,6 +8,7 @@ import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
+import clsx from 'clsx';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -132,63 +133,77 @@ const RecentConnections = ({
   useEffect(() => {
     dispatch.permission.getWebsites();
   }, []);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose?.();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
 
   return (
-    <Popup
-      visible={visible}
-      height={523}
-      onClose={onClose}
-      title={t('page.dashboard.recentConnection.title')}
-      closable
+    <div
+      className={clsx('recent-connections-popup', {
+        show: isVisible,
+        hidden: !visible,
+      })}
     >
-      <div className="recent-connections-popup">
-        {visible && (
-          <ConnectionList
-            onRemove={handleRemove}
-            data={pinnedList}
-            onFavoriteChange={handleFavoriteChange}
-            title={t('page.dashboard.recentConnection.pinned')}
-            empty={
-              <div className="list-empty">
-                {t('page.dashboard.recentConnection.noPinnedDapps')}
-              </div>
-            }
-            extra={
-              pinnedList.length > 0
-                ? t('page.dashboard.recentConnection.dragToSort')
-                : null
-            }
-            onClick={handleClick}
-            onSort={handleSort}
-            sortable={true}
-          ></ConnectionList>
-        )}
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('page.dashboard.recentConnection.title')}
+      </PageHeader>
+      {visible && (
         <ConnectionList
           onRemove={handleRemove}
-          onClick={handleClick}
+          data={pinnedList}
           onFavoriteChange={handleFavoriteChange}
-          data={recentList}
-          title={t('page.dashboard.recentConnection.recentlyConnected')}
-          extra={
-            recentList.length > 0 ? (
-              <a onClick={handleRemoveAll}>
-                {t('page.dashboard.recentConnection.disconnectAll')}
-              </a>
-            ) : null
-          }
+          title={t('page.dashboard.recentConnection.pinned')}
           empty={
-            <div className="list-empty mb-[-24px] rounded-b-none">
-              <Empty
-                desc={t(
-                  'page.dashboard.recentConnection.noRecentlyConnectedDapps'
-                )}
-                className="pt-[68px] pb-[181px]"
-              ></Empty>
+            <div className="list-empty">
+              {t('page.dashboard.recentConnection.noPinnedDapps')}
             </div>
           }
+          extra={
+            pinnedList.length > 0
+              ? t('page.dashboard.recentConnection.dragToSort')
+              : null
+          }
+          onClick={handleClick}
+          onSort={handleSort}
+          sortable={true}
         ></ConnectionList>
-      </div>
-    </Popup>
+      )}
+      <ConnectionList
+        onRemove={handleRemove}
+        onClick={handleClick}
+        onFavoriteChange={handleFavoriteChange}
+        data={recentList}
+        title={t('page.dashboard.recentConnection.recentlyConnected')}
+        extra={
+          recentList.length > 0 ? (
+            <a onClick={handleRemoveAll}>
+              {t('page.dashboard.recentConnection.disconnectAll')}
+            </a>
+          ) : null
+        }
+        empty={
+          <div className="list-empty mb-[-24px] rounded-b-none">
+            <Empty
+              desc={t(
+                'page.dashboard.recentConnection.noRecentlyConnectedDapps'
+              )}
+              className="pt-[68px] pb-[181px]"
+            ></Empty>
+          </div>
+        }
+      ></ConnectionList>
+    </div>
   );
 };
 export default RecentConnections;
