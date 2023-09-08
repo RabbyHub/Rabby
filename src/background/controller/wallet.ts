@@ -1110,6 +1110,9 @@ export class WalletController extends BaseController {
   getLastSelectedGasTopUpChain = preferenceService.getLastSelectedGasTopUpChain;
   setLastSelectedGasTopUpChain = preferenceService.setLastSelectedGasTopUpChain;
 
+  getAddressSortStoreValue = preferenceService.getAddressSortStoreValue;
+  setAddressSortStoreValue = preferenceService.setAddressSortStoreValue;
+
   getLastSelectedSwapChain = swapService.getSelectedChain;
   setLastSelectedSwapChain = swapService.setSelectedChain;
   getSwap = swapService.getSwap;
