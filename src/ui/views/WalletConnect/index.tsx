@@ -19,6 +19,7 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { useBrandNameHasWallet } from '@/ui/component/WalletConnect/useBrandNameHasWallet';
 import { getOriginFromUrl } from '@/utils';
 import { ConnectedSite } from '@/background/service/permission';
+import { findChainByEnum } from '@/utils/chain';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
@@ -38,14 +39,14 @@ const WalletConnectTemplate = () => {
     Parameters<typeof run> | undefined
   >();
   const [curStashId, setCurStashId] = useState<number | null>();
-  const [site, setSite] = useState<ConnectedSite | null>(null);
+  const siteRef = React.useRef<ConnectedSite | null>(null);
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
     if (!tab.id || !tab.url) return;
     const domain = getOriginFromUrl(tab.url);
     const current = await wallet.getCurrentSite(tab.id, domain);
-    setSite(current);
+    siteRef.current = current;
   }, []);
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
@@ -89,9 +90,11 @@ const WalletConnectTemplate = () => {
   };
 
   const handleImportByWalletconnect = async () => {
+    const chain = findChainByEnum(siteRef.current?.chain);
     const { uri, stashId } = await wallet.initWalletConnect(
       brand.brand,
-      curStashId
+      curStashId,
+      chain?.id
     );
     setCurStashId(stashId);
     setWalletconnectUri(uri!);
@@ -178,28 +181,7 @@ const WalletConnectTemplate = () => {
   }, [sessionStatus]);
 
   const init = async () => {
-    // const cache = await wallet.getPageStateCache();
-    // if (cache && cache.path === history.location.pathname) {
-    //   const { states } = cache;
-    //   if (states.uri) setWalletconnectUri(states.uri);
-    //   if (states.brand) {
-    //     setBrand(states.brand);
-    //   }
-    //   if (states.data) {
-    //     setRunParams([
-    //       states.data.payload,
-    //       states.brand.brand,
-    //       states.bridgeURL,
-    //       states.stashId,
-    //     ]);
-    //   }
-    //   if (states.bridgeURL && states.bridgeURL !== bridgeURL) {
-    //     setBridgeURL(states.bridgeURL);
-    //   }
-    // } else {
-    //   handleImportByWalletconnect();
-    // }
-
+    await getCurrentSite();
     handleImportByWalletconnect();
     setReady(true);
   };

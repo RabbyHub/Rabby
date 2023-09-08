@@ -1710,7 +1710,11 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  initWalletConnect = async (brandName: string, curStashId?: number | null) => {
+  initWalletConnect = async (
+    brandName: string,
+    curStashId?: number | null,
+    chainId = 1
+  ) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -1725,14 +1729,14 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(brandName, 1);
+    const { uri } = await keyring.initConnector(brandName, chainId);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName);
+        ({ address, brandName, chainId }) => {
+          (keyring as WalletConnectKeyring).init(address, brandName, chainId);
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
