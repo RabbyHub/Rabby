@@ -21,10 +21,15 @@ import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/utils/ledger';
 import { useTranslation } from 'react-i18next';
+import { query2obj } from '@/ui/utils/url';
 
 const ManageAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { search } = useLocation();
+  const [{ back = false }] = useState<{
+    back?: boolean;
+  }>(query2obj(search));
 
   const wallet = useWallet();
 
@@ -228,7 +233,7 @@ const ManageAddress = () => {
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="px-20">
-          <PageHeader className="pt-[24px]" canBack={false} closeable>
+          <PageHeader className="pt-[24px]" canBack={back} closeable={!back}>
             {t('page.manageAddress.manage-address')}
           </PageHeader>
         </div>
