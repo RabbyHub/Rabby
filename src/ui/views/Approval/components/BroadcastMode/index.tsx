@@ -129,11 +129,10 @@ const OptionList = styled.div`
     background: var(--r-neutral-card-2, #f2f4f7);
     border: 1px solid transparent;
     cursor: pointer;
-    margin-bottom: 12px;
 
-    /* &:not(:last-child) {
-      margin-bottom: 12px;
-    } */
+    & + .option {
+      margin-top: 12px;
+    }
 
     &.is-selected {
       border: 1px solid var(--r-blue-default, #7084ff);
@@ -175,6 +174,8 @@ interface BroadcastModeProps {
   className?: string;
   style?: React.CSSProperties;
   chain: CHAINS_ENUM;
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
 }
 export const BroadcastMode = ({
   value,
@@ -182,6 +183,8 @@ export const BroadcastMode = ({
   className,
   style,
   chain,
+  isSpeedUp,
+  isCancel,
 }: BroadcastModeProps) => {
   const [drawerVisible, setDrawerVisible] = React.useState(false);
   const { t } = useTranslation();
@@ -228,6 +231,7 @@ export const BroadcastMode = ({
 
       return result;
     }
+
     Object.entries(supportedPushType || {}).forEach(([key, value]) => {
       if (!value) {
         result[key] = {
@@ -236,6 +240,10 @@ export const BroadcastMode = ({
         };
       }
     });
+    if (isSpeedUp || isCancel) {
+      result.low_gas.disabled = true;
+      result.low_gas.tips = t('page.signTx.BroadcastMode.tips.notSupported');
+    }
     return result;
   }, [supportedPushType, account?.type]);
 
@@ -350,6 +358,8 @@ export const BroadcastMode = ({
               align={{
                 offset: [0, 34],
               }}
+              placement="top"
+              arrowPointAtCenter
               key={option.value}
             >
               <div

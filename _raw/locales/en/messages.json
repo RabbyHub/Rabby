@@ -218,7 +218,8 @@
         "tips": {
           "walletConnect": "Not supported by WalletConnect",
           "notSupportChain": "Not supported on this chain",
-          "customRPC": "Not supported when using custom RPC"
+          "customRPC": "Not supported when using custom RPC",
+          "notSupported": "Not supported"
         },
         "lowGasDeadline": {
           "label": "Timeout",
@@ -366,7 +367,10 @@
           "canceled": "Canceled",
           "failed": "Failed",
           "submitFailed": "Failed to submit",
-          "pending": "Pending"
+          "pending": "Pending",
+          "withdrawed": "Quick cancel",
+          "pendingBroadcasted": "Pending broadcasted",
+          "pendingBroadcast": "Pending broadcast"
         },
         "txType": {
           "initial": "Initial tx",
@@ -382,6 +386,20 @@
           "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
           "singleNFTApproval": "Single NFT Approval for {{protocol}}",
           "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "title": "Cancel transaction",
+          "options": {
+            "quickCancel": {
+              "title": "Quick Cancel",
+              "desc": "Cancel before broadcasting, no gas fee",
+              "tips": "Only supported for transactions that haven't broadcast"
+            },
+            "onChainCancel": {
+              "title": "On-chain Cancel",
+              "desc": "New transaction to cancel, requires gas"
+            }
+          }
         }
       },
       "signedText": {

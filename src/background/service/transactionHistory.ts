@@ -2,7 +2,7 @@ import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
-import openapiService, { Tx, ExplainTxResponse } from './openapi';
+import openapiService, { Tx, ExplainTxResponse, TxPushType } from './openapi';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
@@ -13,17 +13,22 @@ import {
   ActionRequireData,
   ParsedActionData,
 } from '@/ui/views/Approval/components/Actions/utils';
-import { sortBy } from 'lodash';
+import { sortBy, max } from 'lodash';
+import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
   createdAt: number;
   isCompleted: boolean;
-  hash: string;
+  hash?: string;
   failed: boolean;
   gasUsed?: number;
   isSubmitFailed?: boolean;
   site?: ConnectedSite;
+
+  pushType?: TxPushType;
+  reqId?: string;
+  isWithdrawed?: boolean;
 }
 
 export interface TransactionSigningItem {
@@ -194,7 +199,9 @@ class TxHistory {
   getPendingCount(address: string) {
     const normalizedAddress = address.toLowerCase();
     return Object.values(this._availableTxs[normalizedAddress] || {}).filter(
-      (item) => item.isPending && !item.isSubmitFailed
+      (item) => {
+        return checkIsPendingTxGroup(item);
+      }
     ).length;
   }
 
@@ -202,7 +209,9 @@ class TxHistory {
     const normalizedAddress = address.toLowerCase();
     const pendingTxs = Object.values(
       this.store.transactions[normalizedAddress] || {}
-    ).filter((item) => item.isPending && !item.isSubmitFailed);
+    ).filter((item) => {
+      return checkIsPendingTxGroup(item);
+    });
     return pendingTxs.filter(
       (item) => item.nonce === nonce && item.chainId === chainId
     );
@@ -342,7 +351,14 @@ class TxHistory {
     const from = tx.rawTx.from.toLowerCase();
     const target = this.store.transactions[from][key];
     if (!this.store.transactions[from] || !target) return;
-    const index = target.txs.findIndex((t) => t.hash === tx.hash);
+    const index = target.txs.findIndex(
+      (t) => (t.hash && t.hash === tx.hash) || (t.reqId && t.reqId === tx.reqId)
+    );
+
+    if (index === -1) {
+      return;
+    }
+
     target.txs[index] = tx;
     this._setStoreTransaction({
       ...this.store.transactions,
@@ -371,18 +387,43 @@ class TxHistory {
     const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
     if (!target) return;
     const { txs } = target;
+
+    const unbroadcastedTxs = txs.filter(
+      (tx) =>
+        tx && tx.reqId && !tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
+    ) as (TransactionHistoryItem & { reqId: string })[];
+
+    const broadcastedTxs = txs.filter(
+      (tx) => tx && tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
+    ) as (TransactionHistoryItem & { hash: string })[];
+
+    if (unbroadcastedTxs.length) {
+      await openapiService
+        .getTxRequests(unbroadcastedTxs.map((tx) => tx.reqId))
+        .then((res) => {
+          res.forEach((item, index) => {
+            const tx = unbroadcastedTxs[index];
+            const isFailed = item.push_status === 'failed' && item.is_finished;
+            this.updateSingleTx({
+              ...tx,
+              hash: item.tx_id || undefined,
+              isWithdrawed: item.is_withdraw,
+              isSubmitFailed: isFailed,
+            });
+          });
+        })
+        .catch((e) => console.error(e));
+    }
+
     try {
       const results = await Promise.all(
-        txs
-          .filter((tx) => !!tx)
-          .filter((tx) => !tx.isSubmitFailed)
-          .map((tx) =>
-            openapiService.getTx(
-              chain.serverId,
-              tx.hash,
-              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-            )
+        broadcastedTxs.map((tx) =>
+          openapiService.getTx(
+            chain.serverId,
+            tx.hash!,
+            Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
           )
+        )
       );
       const completed = results.find(
         (result) => result.code === 0 && result.status !== 0
@@ -401,12 +442,14 @@ class TxHistory {
         ...completedTx,
         gasUsed: completed.gas_used,
       });
+      // TOFIX
       this.completeTx({
         address,
         chainId,
         nonce,
         hash: completedTx.hash,
         success: completed.status === 1,
+        reqId: completedTx.reqId,
       });
     } catch (e) {
       if (duration !== false && duration < 1000 * 15) {
@@ -463,11 +506,16 @@ class TxHistory {
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
     for (let i = 0; i < list.length; i++) {
-      if (list[i].isPending && !list[i].isSubmitFailed) {
+      if (checkIsPendingTxGroup(list[i])) {
         pendings.push(list[i]);
       } else {
         completeds.push(list[i]);
       }
+      // if (list[i].isPending && !list[i].isSubmitFailed) {
+      //   pendings.push(list[i]);
+      // } else {
+      //   completeds.push(list[i]);
+      // }
     }
 
     return {
@@ -499,11 +547,13 @@ class TxHistory {
     hash,
     success = true,
     gasUsed,
+    reqId,
   }: {
     address: string;
     chainId: number;
     nonce: number;
-    hash: string;
+    hash?: string;
+    reqId?: string;
     success?: boolean;
     gasUsed?: number;
   }) {
@@ -515,7 +565,9 @@ class TxHistory {
     }
     target.isPending = false;
     target.isFailed = !success;
-    const index = target.txs.findIndex((tx) => tx.hash === hash);
+    const index = target.txs.findIndex(
+      (tx) => (tx.hash && tx.hash === hash) || (tx.reqId && tx.reqId === reqId)
+    );
     if (index !== -1) {
       target.txs[index].isCompleted = true;
       target.txs[index].failed = !success;
@@ -579,7 +631,7 @@ class TxHistory {
 
     Object.entries(this.store.transactions).map(([address, record]) => {
       Object.entries(record).map(([key, value]) => {
-        const isPending = value.isPending && !value.isSubmitFailed;
+        const isPending = checkIsPendingTxGroup(value);
         if (isPending) {
           return;
         }
@@ -676,13 +728,20 @@ class TxHistory {
       this.store.transactions[address.toLowerCase()] || {}
     );
     const maxNonceTx = maxBy(
-      list.filter((item) => item.chainId === chainId && !item.isSubmitFailed),
+      list.filter((item) => {
+        const maxGasTx = findMaxGasTx(item.txs);
+        return (
+          item.chainId === chainId &&
+          !item.isSubmitFailed &&
+          !maxGasTx.isWithdrawed
+        );
+      }),
       (item) => item.nonce
     );
 
-    const firstSigningTx = this._signingTxList.find(
-      (item) => item.rawTx.chainId === chainId && !item.isSubmitted
-    );
+    const firstSigningTx = this._signingTxList.find((item) => {
+      return item.rawTx.chainId === chainId && !item.isSubmitted;
+    });
     const processingTx = this._signingTxList.find(
       (item) => item.rawTx.chainId === chainId && item.isSubmitted
     );

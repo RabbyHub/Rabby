@@ -93,6 +93,7 @@ interface ApprovalRes extends Tx {
   signingTxId?: string;
   pushType?: TxPushType;
   lowGasDeadline?: number;
+  reqId?: string;
 }
 
 interface Web3WalletPermission {
@@ -339,6 +340,7 @@ class ProviderController extends BaseController {
     const isCoboSafe = !!txParams.isCoboSafe;
     const pushType = approvalRes.pushType || 'default';
     const lowGasDeadline = approvalRes.lowGasDeadline;
+    const preReqId = approvalRes.reqId;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -353,6 +355,7 @@ class ProviderController extends BaseController {
     delete approvalRes.signingTxId;
     delete approvalRes.pushType;
     delete approvalRes.lowGasDeadline;
+    delete approvalRes.reqId;
     delete txParams.isCoboSafe;
 
     let is1559 = is1559Tx(approvalRes);
@@ -438,6 +441,129 @@ class ProviderController extends BaseController {
         });
         return;
       }
+
+      const onTransactionCreated = (info: {
+        hash?: string;
+        reqId?: string;
+        pushType?: TxPushType;
+      }) => {
+        const { hash, reqId, pushType } = info;
+        if (
+          options?.data?.$ctx?.stats?.afterSign?.length &&
+          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
+        ) {
+          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
+            if (name && params) {
+              stats.report(name, params);
+            }
+          });
+        }
+
+        const { r, s, v, ...other } = approvalRes;
+
+        stats.report('submitTransaction', {
+          type: currentAccount.brandName,
+          chainId: chainItem?.serverId || '',
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: true,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
+          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
+        });
+        if (isSend) {
+          pageStateCacheService.clear();
+        }
+        transactionHistoryService.addTx(
+          {
+            rawTx: {
+              ...rawTx,
+              ...approvalRes,
+              r: bufferToHex(signedTx.r),
+              s: bufferToHex(signedTx.s),
+              v: bufferToHex(signedTx.v),
+            },
+            createdAt: Date.now(),
+            isCompleted: false,
+            hash,
+            failed: false,
+            reqId,
+            pushType,
+          },
+          cacheExplain,
+          action,
+          origin,
+          options?.data?.$ctx
+        );
+        transactionHistoryService.removeSigningTx(signingTxId!);
+        transactionWatchService.addTx(
+          `${txParams.from}_${approvalRes.nonce}_${chain}`,
+          {
+            nonce: approvalRes.nonce,
+            hash,
+            chain,
+            reqId,
+          }
+        );
+
+        if (isCoboSafe) {
+          preferenceService.resetCurrentCoboSafeAddress();
+        }
+      };
+      const onTransactionSubmitFailed = (e: any) => {
+        if (
+          options?.data?.$ctx?.stats?.afterSign?.length &&
+          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
+        ) {
+          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
+            if (name && params) {
+              stats.report(name, params);
+            }
+          });
+        }
+
+        stats.report('submitTransaction', {
+          type: currentAccount.brandName,
+          chainId: chainItem?.serverId || '',
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: false,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
+          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
+        });
+        if (!isSpeedUp && !isCancel) {
+          // const cacheExplain = transactionHistoryService.getExplainCache({
+          //   address: txParams.from,
+          //   chainId: Number(approvalRes.chainId),
+          //   nonce: Number(approvalRes.nonce),
+          // });
+          transactionHistoryService.addSubmitFailedTransaction(
+            {
+              rawTx: approvalRes,
+              createdAt: Date.now(),
+              isCompleted: true,
+              hash: '',
+              failed: false,
+              isSubmitFailed: true,
+            },
+            cacheExplain,
+            origin
+          );
+        }
+        const errMsg = e.message || JSON.stringify(e);
+        // notification.create(
+        //   undefined,
+        //   i18n.t('background.error.txPushFailed'),
+        //   errMsg
+        // );
+        // transactionHistoryService.removeSigningTx(signingTxId!);
+        throw new Error(errMsg);
+      };
       const onTransactionSubmitted = (hash: string) => {
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
@@ -546,7 +672,8 @@ class ProviderController extends BaseController {
       });
       try {
         validateGasPriceRange(approvalRes);
-        let hash = '';
+        let hash: string | undefined = undefined;
+        let reqId: string | undefined = undefined;
         if (RPCService.hasCustomRPC(chain)) {
           const txData: any = {
             ...approvalRes,
@@ -567,13 +694,14 @@ class ProviderController extends BaseController {
           );
           try {
             openapiService.traceTx(
-              hash,
+              hash!,
               traceId || '',
               chainItem?.serverId || ''
             );
           } catch (e) {
             // DO nothing
           }
+          onTransactionCreated({ hash, reqId, pushType });
         } else {
           // hash = await openapiService.pushTx(
           //   {
@@ -595,63 +723,21 @@ class ProviderController extends BaseController {
             },
             push_type: pushType,
             low_gas_deadline: lowGasDeadline,
+            req_id: preReqId || '',
           });
-          // TOFIX
-          hash = res.tx_id || '';
-        }
-        onTransactionSubmitted(hash);
-        return hash;
-      } catch (e: any) {
-        if (
-          options?.data?.$ctx?.stats?.afterSign?.length &&
-          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
-        ) {
-          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
-            if (name && params) {
-              stats.report(name, params);
-            }
-          });
+          hash = res.req.tx_id || undefined;
+          reqId = res.req.id || undefined;
+          if (res.req.push_status === 'failed') {
+            onTransactionSubmitFailed(new Error('Submit tx failed'));
+          } else {
+            onTransactionCreated({ hash, reqId, pushType });
+          }
         }
 
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: false,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
-        if (!isSpeedUp && !isCancel) {
-          // const cacheExplain = transactionHistoryService.getExplainCache({
-          //   address: txParams.from,
-          //   chainId: Number(approvalRes.chainId),
-          //   nonce: Number(approvalRes.nonce),
-          // });
-          transactionHistoryService.addSubmitFailedTransaction(
-            {
-              rawTx: approvalRes,
-              createdAt: Date.now(),
-              isCompleted: true,
-              hash: '',
-              failed: false,
-              isSubmitFailed: true,
-            },
-            cacheExplain,
-            origin
-          );
-        }
-        const errMsg = e.message || JSON.stringify(e);
-        // notification.create(
-        //   undefined,
-        //   i18n.t('background.error.txPushFailed'),
-        //   errMsg
-        // );
-        // transactionHistoryService.removeSigningTx(signingTxId!);
-        throw new Error(errMsg);
+        return hash;
+      } catch (e: any) {
+        console.log('submit tx failed', e);
+        onTransactionSubmitFailed(e);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {

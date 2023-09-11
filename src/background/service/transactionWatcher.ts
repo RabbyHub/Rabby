@@ -17,8 +17,9 @@ class Transaction {
 
   constructor(
     public nonce: string,
-    public hash: string,
-    public chain: CHAINS_ENUM
+    public chain: CHAINS_ENUM,
+    public hash?: string,
+    public reqId?: string
   ) {
     this.createdTime = +new Date();
   }
@@ -43,11 +44,16 @@ class TransactionWatcher {
 
   addTx = (
     id: string,
-    { hash, chain, nonce }: { hash: string; chain: CHAINS_ENUM; nonce: string }
+    {
+      hash,
+      chain,
+      nonce,
+      reqId,
+    }: { hash?: string; chain: CHAINS_ENUM; nonce: string; reqId?: string }
   ) => {
     this.store.pendingTx = {
       ...this.store.pendingTx,
-      [id]: new Transaction(nonce, hash, chain),
+      [id]: new Transaction(nonce, chain, hash, reqId),
     };
 
     const chainItem = findChainByEnum(chain);
@@ -73,15 +79,46 @@ class TransactionWatcher {
       return;
     }
 
-    return openapiService
-      .ethRpc(chainItem.serverId, {
-        method: 'eth_getTransactionReceipt',
-        params: [hash],
-      })
-      .catch(() => null);
+    if (hash) {
+      return openapiService
+        .ethRpc(chainItem.serverId, {
+          method: 'eth_getTransactionReceipt',
+          params: [hash],
+        })
+        .catch(() => null);
+    }
   };
 
-  notify = async (id: string, txReceipt) => {
+  checkTxRequest = async (id: string) => {
+    if (!this.store.pendingTx[id]) {
+      return;
+    }
+    const { hash, chain, reqId } = this.store.pendingTx[id];
+    if (!reqId || hash) {
+      return;
+    }
+    // todo testnet
+    const res = await openapiService.getTxRequests(reqId);
+    const txRequest = res[0];
+    if (!txRequest) {
+      return;
+    }
+    if (txRequest.tx_id) {
+      this.store.pendingTx[id].hash = txRequest.tx_id;
+      return;
+    }
+    return txRequest.push_status === 'failed' && txRequest.is_finished;
+  };
+
+  notify = async ({
+    id,
+    txReceipt,
+    isPushFailed,
+  }: {
+    id: string;
+    txReceipt?: any;
+    isPushFailed?: boolean;
+  }) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
@@ -95,7 +132,7 @@ class TransactionWatcher {
     const url = format(chainItem.scanLink, hash);
     const [address] = id.split('_');
 
-    if (txReceipt) {
+    if (txReceipt || isPushFailed) {
       await transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
@@ -104,7 +141,7 @@ class TransactionWatcher {
     }
 
     const title =
-      txReceipt.status === '0x1'
+      txReceipt?.status === '0x1'
         ? i18n.t('background.transactionWatcher.completed')
         : i18n.t('background.transactionWatcher.failed');
 
@@ -150,10 +187,15 @@ class TransactionWatcher {
   _queryList = async (ids: string[]) => {
     for (const id of ids) {
       try {
+        const isPushFailed = await this.checkTxRequest(id);
         const txReceipt = await this.checkStatus(id);
 
-        if (txReceipt) {
-          this.notify(id, txReceipt);
+        if (txReceipt || isPushFailed) {
+          this.notify({
+            id,
+            txReceipt,
+            isPushFailed,
+          });
           this._removeTx(id);
         }
       } catch (error) {

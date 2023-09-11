@@ -829,6 +829,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSend,
     isSwap,
     isViewGnosisSafe,
+    reqId,
   } = normalizeTxParams(params.data[0]);
 
   let updateNonce = true;
@@ -1215,6 +1216,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       signingTxId: approval.signingTxId,
       pushType: pushInfo.type,
       lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
     });
     wallet.clearPageStateCache();
   };
@@ -1307,6 +1309,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         signingTxId: approval.signingTxId,
         pushType: pushInfo.type,
         lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
       });
 
       return;
@@ -1341,6 +1344,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       signingTxId: approval.signingTxId,
       pushType: pushInfo.type,
       lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
     });
   };
 
@@ -1897,6 +1901,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           className="mt-[12px]"
           chain={chain.enum}
           value={pushInfo}
+          isCancel={isCancel}
+          isSpeedUp={isSpeedUp}
           onChange={(value) => {
             setPushInfo(value);
           }}
