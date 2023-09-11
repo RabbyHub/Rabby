@@ -7,11 +7,9 @@ import ImgChecked from '@/ui/assets/address/checked.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressSortStore } from '@/background/service/preference';
+import { useTranslation } from 'react-i18next';
 
-export const AddressSortIconMapping: Record<
-  AddressSortStore['sortType'],
-  string
-> = {
+const AddressSortImgMapping: Record<AddressSortStore['sortType'], string> = {
   usd: ImgSortByUsd,
   addressType: ImgSortByType,
   alphabet: ImgSortByAlphabet,
@@ -24,6 +22,7 @@ export const AddressSortPopup = ({
   open: boolean;
   onCancel: () => void;
 }) => {
+  const { t } = useTranslation();
   const sortType = useRabbySelector(
     (s) => s.preference.addressSortStore.sortType
   );
@@ -38,22 +37,22 @@ export const AddressSortPopup = ({
       [
         {
           key: 'usd',
-          label: '按地址金额排序',
+          label: t('page.manageAddress.sort-by-balance'),
         },
         {
           key: 'addressType',
-          label: '按地址类型排序',
+          label: t('page.manageAddress.sort-by-address-type'),
         },
         {
           key: 'alphabet',
-          label: '按地址备注首字母排序',
+          label: t('page.manageAddress.sort-by-address-note'),
         },
       ] as const,
     []
   );
   return (
     <Popup
-      title={'地址排序'}
+      title={t('page.manageAddress.sort-address')}
       closable
       visible={open}
       height={258}
@@ -65,7 +64,7 @@ export const AddressSortPopup = ({
             key={e.key}
             py={13}
             bgColor="var(--r-neutral-card-2, #F2F4F7)"
-            leftIcon={AddressSortIconMapping[e.key]}
+            leftIcon={AddressSortImgMapping[e.key]}
             onClick={handleChange(e.key)}
             className="text-14 text-r-neutral-title-1 font-normal"
             leftIconClassName="mr-12 w-20"

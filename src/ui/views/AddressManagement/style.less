@@ -250,3 +250,51 @@
     overflow: auto;
   }
 }
+
+.sort-input {
+  display: inline-flex;
+  border-radius: 6px;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  background: var(--r-neutral-card-1, #fff);
+  width: 160px;
+  height: 32px;
+  transition: width 0.3s;
+  padding-right: 4px;
+
+  &:has(> .search-input:hover),
+  &:has(> .ant-input-affix-wrapper-focused) {
+    width: 220px;
+    border-color: var(--r-blue-default, #7084ff);
+  }
+
+  .sort {
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--r-neutral-foot);
+    border-right: 0.5px solid var(--r-neutral-line, #d3d8e0);
+
+    &:hover {
+      color: var(--r-blue-default, #7084ff);
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .search-input {
+    padding-left: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+
+    &:placeholder-shown {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--r-neutral-foot);
+    }
+  }
+}

@@ -6,7 +6,6 @@ import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
-import IconSearch from 'ui/assets/search.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
@@ -20,17 +19,18 @@ import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
 
 import { groupBy } from 'lodash';
 import { KEYRING_CLASS } from '@/constant';
-import { Input, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import LessPalette from '@/ui/style/var-defs';
-import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
+// import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { useSwitch } from '@/ui/utils/switch';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { SortInput } from './SortInput';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -433,6 +433,17 @@ const AddressManagement = () => {
     }
   }, []);
 
+  const getItemSize = React.useCallback(
+    (i: number) => {
+      if (addressSortStore.sortType === 'addressType') {
+        return 56 * (filteredAccounts as typeof accountsList[])[i].length + 16;
+      }
+
+      return i !== sortedAccountsList.length - 1 ? 64 : 78;
+    },
+    [filteredAccounts, sortedAccountsList, addressSortStore.sortType]
+  );
+
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
@@ -516,34 +527,10 @@ const AddressManagement = () => {
             </AddressItem>
           </div>
           <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
-            <div className="search-address-wrapper">
-              <Input
-                className="radius-6px pl-0"
-                placeholder={t('page.manageAddress.search')}
-                prefix={
-                  <div className="flex items-center justify-center">
-                    <div
-                      className={clsx(
-                        'relative w-32 flex items-center justify-center cursor-pointer',
-                        'after:absolute after:w-[0.5px] after:h-32 after:right-0 after:top-[50%] after:translate-y-[-50%] after:bg-r-neutral-line'
-                      )}
-                      onClick={turnOn}
-                    >
-                      <img
-                        className="w-16 h-16"
-                        src={AddressSortIconMapping[addressSortStore.sortType]}
-                      />
-                    </div>
-                    <img src={IconSearch} className="ml-8 w-16 h-16" />
-                  </div>
-                }
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                value={searchKeyword}
-                allowClear
-              />
-
-              <AddressSortPopup open={on} onCancel={turnOff} />
-            </div>
+            <SortInput
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />
             <div
               className="flex items-center cursor-pointer"
               onClick={gotoManageAddress}
@@ -567,16 +554,7 @@ const AddressManagement = () => {
             width="100%"
             itemData={filteredAccounts}
             itemCount={filteredAccounts.length}
-            itemSize={(i) => {
-              if (addressSortStore.sortType === 'addressType') {
-                return (
-                  56 * (filteredAccounts as typeof accountsList[])[i].length +
-                  16
-                );
-              }
-
-              return i !== sortedAccountsList.length - 1 ? 64 : 78;
-            }}
+            itemSize={getItemSize}
             className="scroll-container"
           >
             {Row}
