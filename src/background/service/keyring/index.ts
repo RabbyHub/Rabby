@@ -873,7 +873,11 @@ export class KeyringService extends EventEmitter {
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
         ({ address, brandName, chainId }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName, chainId);
+          (keyring as WalletConnectKeyring).init(
+            address,
+            brandName,
+            !chainId ? 1 : chainId
+          );
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {

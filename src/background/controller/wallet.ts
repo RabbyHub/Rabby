@@ -3,7 +3,7 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
-import { groupBy, uniq } from 'lodash';
+import { chain, groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -1729,14 +1729,21 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(brandName, chainId);
+    const { uri } = await keyring.initConnector(
+      brandName,
+      !chainId ? 1 : chainId
+    );
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
         ({ address, brandName, chainId }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName, chainId);
+          (keyring as WalletConnectKeyring).init(
+            address,
+            brandName,
+            !chainId ? 1 : chainId
+          );
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
