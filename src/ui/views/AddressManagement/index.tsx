@@ -313,7 +313,7 @@ const AddressManagement = () => {
           )}
           style={!isGroup ? style : undefined}
           key={account.address}
-          onMouseOver={() => {
+          onMouseEnter={() => {
             recordLatestAddress(`${account.type}-${account.address}`);
           }}
         >
