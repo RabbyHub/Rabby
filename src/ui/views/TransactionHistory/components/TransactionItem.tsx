@@ -1,7 +1,10 @@
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Tooltip, message } from 'antd';
-import { GasLevel, TokenItem } from 'background/service/openapi';
-import { TransactionGroup } from 'background/service/transactionHistory';
+import { GasLevel, TokenItem, TxRequest } from 'background/service/openapi';
+import {
+  TransactionGroup,
+  TransactionHistoryItem,
+} from 'background/service/transactionHistory';
 import clsx from 'clsx';
 import { CANCEL_TX_TYPE, CHAINS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
@@ -21,7 +24,8 @@ import { TransactionExplain } from './TransactionExplain';
 import { TransactionWebsite } from './TransactionWebsite';
 import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
-import { findMaxGasTx } from '@/utils/tx';
+import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
+import { useGetTx, useLoadTxData } from '../hooks';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -32,10 +36,16 @@ export const TransactionItem = ({
   item,
   canCancel,
   onComplete,
+  onQuickCancel,
+  onRetry,
+  txRequests,
 }: {
   item: TransactionGroup;
   canCancel: boolean;
   onComplete?(): void;
+  txRequests: Record<string, TxRequest>;
+  onQuickCancel?(): void;
+  onRetry?(): void;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -45,37 +55,18 @@ export const TransactionItem = ({
   const maxGasTx = findMaxGasTx(item.txs);
   const completedTx = item.txs.find((tx) => tx.isCompleted);
   const isCompleted =
-    !item.isPending || item.isSubmitFailed || maxGasTx.isWithdrawed;
+    !item.isPending || item.isSubmitFailed || maxGasTx?.isWithdrawed;
   const isCanceled =
     !item.isPending &&
     item.txs.length > 1 &&
     isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
-  const [txQueues, setTxQueues] = useState<
-    Record<
-      string,
-      {
-        frontTx?: number;
-        gasUsed?: number;
-        token?: TokenItem;
-        tokenCount?: number;
-      }
-    >
-  >({});
-  const hasTokenPrice = !!item.explain?.native_token;
-  const gasTokenCount =
-    hasTokenPrice && completedTx
-      ? (Number(
-          completedTx.rawTx.gasPrice || completedTx.rawTx.maxFeePerGas || 0
-        ) *
-          (completedTx.gasUsed || 0)) /
-        1e18
-      : 0;
-  const gasUSDValue = gasTokenCount
-    ? (item.explain.native_token.price * gasTokenCount).toFixed(2)
-    : 0;
-  const gasTokenSymbol = hasTokenPrice
-    ? getTokenSymbol(item.explain.native_token)
-    : '';
+
+  const {
+    txQueues,
+    gasTokenCount,
+    gasTokenSymbol,
+    gasUSDValue,
+  } = useLoadTxData(item);
 
   const handleClickCancel = () => {
     setIsShowCancelPopup(true);
@@ -94,20 +85,31 @@ export const TransactionItem = ({
     console.log('todo quick cancel');
     const maxGasTx = findMaxGasTx(item.txs);
     if (maxGasTx?.reqId) {
-      await wallet.openapi.withdrawTx(maxGasTx.reqId);
+      await wallet.quickCancelTx({
+        reqId: maxGasTx.reqId,
+        chainId: maxGasTx.rawTx.chainId,
+        nonce: +maxGasTx.rawTx.nonce,
+        address: maxGasTx.rawTx.from,
+      });
+      onQuickCancel?.();
       message.success('Canceled');
     }
   };
 
-  const handleReBroadcast = async (reqId: string) => {
+  const handleReBroadcast = async (tx: TransactionHistoryItem) => {
+    if (!tx.reqId) {
+      message.error('Can not re-broadcast');
+      return;
+    }
     try {
-      const res = await wallet.openapi.retryPushTx(reqId);
-      if (res.req.push_status === 'success') {
-        message.success('Broadcasted');
-      } else {
-        message.error('Broadcast failed');
-      }
+      await wallet.retryPushTx({
+        reqId: tx.reqId,
+        chainId: tx.rawTx.chainId,
+        nonce: +tx.rawTx.nonce,
+        address: tx.rawTx.from,
+      });
     } catch (e) {
+      console.error(e);
       message.error(e.message);
     }
   };
@@ -187,8 +189,7 @@ export const TransactionItem = ({
     openInTab(chain.scanLink.replace(/_s_/, hash));
   };
 
-  const isPending =
-    item.isPending && !item.isSubmitFailed && !maxGasTx.isWithdrawed;
+  const isPending = checkIsPendingTxGroup(item);
 
   return (
     <div
@@ -201,7 +202,11 @@ export const TransactionItem = ({
       })}
     >
       <div className="tx-history__item--main">
-        <TransactionPendingTag item={item} onReBroadcast={handleReBroadcast} />
+        <TransactionPendingTag
+          item={item}
+          onReBroadcast={handleReBroadcast}
+          txRequests={txRequests}
+        />
         <div className="tx-id">
           <span>{isPending ? null : sinceTime(item.createdAt / 1000)}</span>
           {!item.isSubmitFailed && (
@@ -278,7 +283,6 @@ export const TransactionItem = ({
           <div className="tx-footer">
             {originTx.site && <TransactionWebsite site={originTx.site} />}
             <div className="ahead">
-              {/* tofix */}
               {txQueues[originTx.hash!] ? (
                 <>
                   {Number(
@@ -304,19 +308,19 @@ export const TransactionItem = ({
                 )}
                 <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-right">
                   Gas:{' '}
-                  {/* {gasTokenCount
+                  {gasTokenCount
                     ? `${gasTokenCount.toFixed(
                         6
                       )} ${gasTokenSymbol} ($${gasUSDValue})`
-                    : txQueues[completedTx!.hash]
-                    ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
+                    : txQueues[completedTx!.hash!]
+                    ? txQueues[completedTx!.hash!].tokenCount?.toFixed(8) +
                       ` ${getTokenSymbol(
-                        txQueues[completedTx!.hash].token
+                        txQueues[completedTx!.hash!].token
                       )} ($${(
-                        txQueues[completedTx!.hash].tokenCount! *
-                        (txQueues[completedTx!.hash].token?.price || 1)
+                        txQueues[completedTx!.hash!].tokenCount! *
+                        (txQueues[completedTx!.hash!].token?.price || 1)
                       ).toFixed(2)})`
-                    : t('page.activities.signedTx.common.unknown')} */}
+                    : t('page.activities.signedTx.common.unknown')}
                 </span>
               </>
             )}

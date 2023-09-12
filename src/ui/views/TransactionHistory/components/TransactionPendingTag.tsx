@@ -1,6 +1,9 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Popover } from 'antd';
-import { TransactionGroup } from 'background/service/transactionHistory';
+import {
+  TransactionGroup,
+  TransactionHistoryItem,
+} from 'background/service/transactionHistory';
 import { CHAINS } from 'consts';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
@@ -9,16 +12,26 @@ import { useTranslation } from 'react-i18next';
 import { SvgPendingSpin } from 'ui/assets';
 import IconDropdown from 'ui/assets/signature-record/dropdown.svg';
 import IconInfo from 'ui/assets/signature-record/info.svg';
-import { isSameAddress, useWallet } from 'ui/utils';
+import {
+  fromNow,
+  isSameAddress,
+  sinceTime,
+  timeago,
+  useWallet,
+} from 'ui/utils';
 import { MempoolList } from './MempoolList';
 import { findMaxGasTx } from '@/utils/tx';
+import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
+import { formatTimeFromNow } from '../../ApprovalManagePage/utils';
 
 export const TransactionPendingTag = ({
   item,
   onReBroadcast,
+  txRequests,
 }: {
   item: TransactionGroup;
-  onReBroadcast?(reqId: string): void;
+  onReBroadcast?(tx: TransactionHistoryItem): void;
+  txRequests: Record<string, TxRequest>;
 }) => {
   console.log(item);
   const { t } = useTranslation();
@@ -37,6 +50,10 @@ export const TransactionPendingTag = ({
   const isPending =
     item.isPending && !item.isSubmitFailed && !maxGasTx.isWithdrawed;
 
+  if (isPending) {
+    console.log('maxGasTx', maxGasTx);
+  }
+
   if (!isPending) {
     return null;
   }
@@ -48,9 +65,8 @@ export const TransactionPendingTag = ({
         destroyTooltipOnHide
         content={
           <MempoolList
-            hash={maxGasTx.hash}
-            reqId={maxGasTx.reqId}
-            onReBroadcast={onReBroadcast}
+            tx={maxGasTx}
+            onReBroadcast={() => onReBroadcast?.(maxGasTx)}
           />
         }
       >
@@ -61,6 +77,39 @@ export const TransactionPendingTag = ({
           <img src={IconDropdown} alt="" />
         </div>
       </Popover>
+    );
+  }
+
+  const pushAt = maxGasTx?.reqId
+    ? txRequests[maxGasTx.reqId]?.push_at
+    : undefined;
+
+  if (pushAt) {
+    return (
+      <div className="pending">
+        <SvgPendingSpin className="icon icon-pending-spin" />
+        {t('page.activities.signedTx.status.pendingBroadcast')}{' '}
+        <TooltipWithMagnetArrow
+          className="rectangle w-[max-content]"
+          autoAdjustOverflow={false}
+          placement="top"
+          title={
+            <>
+              Broadcast failed. Last attempt: {sinceTime(pushAt)}{' '}
+              <span
+                className="cursor-pointer underline"
+                onClick={() => {
+                  onReBroadcast?.(maxGasTx);
+                }}
+              >
+                Re-broadcast
+              </span>
+            </>
+          }
+        >
+          <img src={IconInfo} alt="" />
+        </TooltipWithMagnetArrow>
+      </div>
     );
   }
 
@@ -78,9 +127,7 @@ export const TransactionPendingTag = ({
             <span
               className="cursor-pointer underline"
               onClick={() => {
-                if (maxGasTx?.reqId) {
-                  onReBroadcast?.(maxGasTx?.reqId);
-                }
+                onReBroadcast?.(maxGasTx);
               }}
             >
               Broadcast now

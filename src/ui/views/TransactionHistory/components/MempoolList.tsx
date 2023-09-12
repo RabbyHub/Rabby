@@ -1,4 +1,8 @@
+import { TransactionHistoryItem } from '@/background/service/transactionHistory';
+import { getChain } from '@/utils';
+import { CHAINS_LIST } from '@debank/common';
 import { useRequest } from 'ahooks';
+import BigNumber from 'bignumber.js';
 import React from 'react';
 import styled from 'styled-components';
 import IconChecked from 'ui/assets/signature-record/checked.svg';
@@ -50,24 +54,28 @@ const Wrapper = styled.div`
 `;
 
 export const MempoolList = ({
-  reqId,
-  hash,
+  tx,
   onReBroadcast,
 }: {
-  reqId?: string;
-  hash?: string;
-  onReBroadcast?(reqId: string): void;
+  tx: TransactionHistoryItem;
+  onReBroadcast?(): void;
 }) => {
   const wallet = useWallet();
   const { data } = useRequest(
     async () => {
-      if (!hash) {
+      if (!tx.hash) {
         return undefined;
       }
-      return wallet.openapi.mempoolChecks(hash);
+      const chain = CHAINS_LIST.find((item) =>
+        new BigNumber(item.hex).isEqualTo(tx.rawTx.chainId)
+      );
+      if (!chain) {
+        return undefined;
+      }
+      return wallet.openapi.mempoolChecks(tx.hash, chain?.serverId);
     },
     {
-      refreshDeps: [hash],
+      refreshDeps: [tx.hash, tx.rawTx.chainId],
     }
   );
 
@@ -78,11 +86,11 @@ export const MempoolList = ({
       {isEmpty ? (
         <>
           <div className="title">Not found in any node</div>
-          {reqId ? (
+          {tx.reqId ? (
             <div
               className="btn"
               onClick={() => {
-                onReBroadcast?.(reqId);
+                onReBroadcast?.();
               }}
             >
               Re-broadcast
@@ -102,11 +110,11 @@ export const MempoolList = ({
               );
             })}
           </div>
-          {reqId ? (
+          {tx.reqId ? (
             <div
               className="btn"
               onClick={() => {
-                onReBroadcast?.(reqId);
+                onReBroadcast?.();
               }}
             >
               Re-broadcast

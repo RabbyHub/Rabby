@@ -11,6 +11,7 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
 import { findChainByEnum } from '@/utils/chain';
+import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 
 class Transaction {
   createdTime = 0;
@@ -89,36 +90,55 @@ class TransactionWatcher {
     }
   };
 
+  // todo
   checkTxRequest = async (id: string) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
-    const { hash, chain, reqId } = this.store.pendingTx[id];
+    const { hash, chain, reqId, nonce } = this.store.pendingTx[id];
     if (!reqId || hash) {
       return;
     }
-    // todo testnet
-    const res = await openapiService.getTxRequests(reqId);
-    const txRequest = res[0];
-    if (!txRequest) {
+    const chainItem = findChainByEnum(chain);
+    if (!chainItem) {
+      throw new Error(`[transactionWatcher::notify] chain ${chain} not found`);
+    }
+
+    const [address] = id.split('_');
+    const txGroup = transactionHistoryService.getTxGroup({
+      address,
+      nonce: Number(nonce),
+      chainId: chainItem.id,
+    });
+    if (!txGroup) {
+      this._removeTx(id);
       return;
     }
-    if (txRequest.tx_id) {
-      this.store.pendingTx[id].hash = txRequest.tx_id;
+
+    const maxGasTx = findMaxGasTx(txGroup.txs);
+    if (txGroup.isSubmitFailed || maxGasTx.isWithdrawed) {
+      this._removeTx(id);
       return;
     }
-    return txRequest.push_status === 'failed' && txRequest.is_finished;
+    const isPendingBroadcast =
+      txGroup.isPending &&
+      !txGroup.isSubmitFailed &&
+      !maxGasTx.isWithdrawed &&
+      !maxGasTx.hash &&
+      maxGasTx.reqId;
+    if (isPendingBroadcast) {
+      await transactionHistoryService.reloadTx(
+        {
+          address,
+          nonce: Number(nonce),
+          chainId: chainItem.id,
+        },
+        false
+      );
+    }
   };
 
-  notify = async ({
-    id,
-    txReceipt,
-    isPushFailed,
-  }: {
-    id: string;
-    txReceipt?: any;
-    isPushFailed?: boolean;
-  }) => {
+  notify = async ({ id, txReceipt }: { id: string; txReceipt?: any }) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
@@ -132,7 +152,7 @@ class TransactionWatcher {
     const url = format(chainItem.scanLink, hash);
     const [address] = id.split('_');
 
-    if (txReceipt || isPushFailed) {
+    if (txReceipt) {
       await transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
@@ -187,14 +207,13 @@ class TransactionWatcher {
   _queryList = async (ids: string[]) => {
     for (const id of ids) {
       try {
-        const isPushFailed = await this.checkTxRequest(id);
+        this.checkTxRequest(id);
         const txReceipt = await this.checkStatus(id);
 
-        if (txReceipt || isPushFailed) {
+        if (txReceipt) {
           this.notify({
             id,
             txReceipt,
-            isPushFailed,
           });
           this._removeTx(id);
         }

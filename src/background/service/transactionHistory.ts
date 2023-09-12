@@ -3,7 +3,7 @@ import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse, TxPushType } from './openapi';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
+import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
@@ -13,8 +13,9 @@ import {
   ActionRequireData,
   ParsedActionData,
 } from '@/ui/views/Approval/components/Actions/utils';
-import { sortBy, max } from 'lodash';
+import { sortBy, max, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
+import eventBus from '@/eventBus';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -403,12 +404,24 @@ class TxHistory {
         .then((res) => {
           res.forEach((item, index) => {
             const tx = unbroadcastedTxs[index];
-            const isFailed = item.push_status === 'failed' && item.is_finished;
+            const isSubmitFailed =
+              item.push_status === 'failed' && item.is_finished;
+
             this.updateSingleTx({
               ...tx,
               hash: item.tx_id || undefined,
               isWithdrawed: item.is_withdraw,
-              isSubmitFailed: isFailed,
+              isSubmitFailed: isSubmitFailed,
+            });
+            if (isSubmitFailed) {
+              target.isSubmitFailed = isSubmitFailed;
+            }
+            console.log('reloadTx', target);
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.RELOAD_TX,
+              params: {
+                address,
+              },
             });
           });
         })
@@ -450,6 +463,12 @@ class TxHistory {
         hash: completedTx.hash,
         success: completed.status === 1,
         reqId: completedTx.reqId,
+      });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.RELOAD_TX,
+        params: {
+          address,
+        },
       });
     } catch (e) {
       if (duration !== false && duration < 1000 * 15) {
@@ -733,7 +752,7 @@ class TxHistory {
         return (
           item.chainId === chainId &&
           !item.isSubmitFailed &&
-          !maxGasTx.isWithdrawed
+          !maxGasTx?.isWithdrawed
         );
       }),
       (item) => item.nonce
@@ -761,6 +780,76 @@ class TxHistory {
 
     return maxLocalOrProcessingNonce + 1;
   }
+
+  getSkipedTxs(address: string) {
+    const dict = groupBy(
+      Object.values(this.store.transactions[address.toLowerCase()] || {}),
+      (item) => item.chainId
+    );
+
+    return Object.entries(dict).reduce((res, [key, list]) => {
+      const maxNonce = max(list.map((item) => item.nonce)) || 0;
+      res[key] = sortBy(
+        list.filter((item) => item.nonce < maxNonce && item.isPending),
+        (item) => -item.nonce
+      );
+      return res;
+    }, {} as Record<string, TransactionGroup[]>);
+  }
+
+  quickCancelTx = async ({
+    address,
+    chainId,
+    nonce,
+    reqId,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    reqId: string;
+  }) => {
+    // todo isTestnet
+    await openapiService.withdrawTx(reqId);
+    // todo reload
+    this.reloadTx({ address, chainId, nonce }, false);
+  };
+
+  retryPushTx = async ({
+    address,
+    chainId,
+    nonce,
+    reqId,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    reqId: string;
+  }) => {
+    // todo testnet
+    try {
+      await openapiService.retryPushTx(reqId);
+      this.reloadTx({ address, chainId, nonce }, false);
+    } catch (e) {
+      this.reloadTx({ address, chainId, nonce }, false);
+      throw e;
+    }
+  };
+
+  getTxGroup = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    const key = `${chainId}-${nonce}`;
+    const normalizedAddress = address.toLowerCase();
+    const target = this.store.transactions[normalizedAddress][key];
+    if (!target) return null;
+    return target;
+  };
 }
 
 export default new TxHistory();

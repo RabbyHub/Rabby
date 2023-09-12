@@ -2709,6 +2709,13 @@ export class WalletController extends BaseController {
   getPendingTxsByNonce = (address: string, chainId: number, nonce: number) =>
     transactionHistoryService.getPendingTxsByNonce(address, chainId, nonce);
 
+  getSkipedTxs = (address: string) =>
+    transactionHistoryService.getSkipedTxs(address);
+
+  quickCancelTx = transactionHistoryService.quickCancelTx;
+
+  retryPushTx = transactionHistoryService.retryPushTx;
+
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);
   };
