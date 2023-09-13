@@ -129,9 +129,11 @@ const AddressManagement = () => {
     }
     if (addressSortStore.sortType === 'alphabet') {
       return [
-        normalAccounts.sort((a, b) => a.alianName.localeCompare(b.alianName)),
+        normalAccounts.sort((a, b) =>
+          a.alianName.localeCompare(b.alianName, undefined, { numeric: true })
+        ),
         watchModeAccounts.sort((a, b) =>
-          a.alianName.localeCompare(b.alianName)
+          a.alianName.localeCompare(b.alianName, undefined, { numeric: true })
         ),
       ];
     }
