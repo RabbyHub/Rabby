@@ -196,7 +196,9 @@ export const TransactionExplain = ({
         <span className="text-red-light text-14 font-normal text-right">
           {isCancel && t('page.activities.signedTx.status.canceled')}
           {isFailed && t('page.activities.signedTx.status.failed')}
-          {isSubmitFailed && t('page.activities.signedTx.status.submitFailed')}
+          {isSubmitFailed &&
+            !isWithdrawed &&
+            t('page.activities.signedTx.status.submitFailed')}
           {isWithdrawed && t('page.activities.signedTx.status.withdrawed')}
         </span>
       </div>

@@ -1,15 +1,20 @@
 import { TransactionHistoryItem } from '@/background/service/transactionHistory';
-import { getChain } from '@/utils';
 import { CHAINS_LIST } from '@debank/common';
 import { useRequest } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconChecked from 'ui/assets/signature-record/checked.svg';
 import { useWallet } from 'ui/utils';
 
 const Wrapper = styled.div`
   min-width: 168px;
+  max-width: 240px;
+  max-height: 210px;
+  overflow: auto;
+  padding: 16px;
+
   .title {
     color: var(--r-neutral-title-1, #192945);
     font-size: 13px;
@@ -61,6 +66,7 @@ export const MempoolList = ({
   onReBroadcast?(): void;
 }) => {
   const wallet = useWallet();
+  const { t } = useTranslation();
   const { data } = useRequest(
     async () => {
       if (!tx.hash) {
@@ -85,7 +91,9 @@ export const MempoolList = ({
     <Wrapper>
       {isEmpty ? (
         <>
-          <div className="title">Not found in any node</div>
+          <div className="title">
+            {t('page.activities.signedTx.MempoolList.empty')}
+          </div>
           {tx.reqId ? (
             <div
               className="btn"
@@ -93,19 +101,23 @@ export const MempoolList = ({
                 onReBroadcast?.();
               }}
             >
-              Re-broadcast
+              {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
             </div>
           ) : null}
         </>
       ) : (
         <>
-          <div className="title">Found in the below memopools</div>
+          <div className="title">
+            {t('page.activities.signedTx.MempoolList.title')}
+          </div>
           <div className="mempool-list">
             {data?.map((item) => {
               return (
-                <div className="mempool-item">
-                  <img src={IconChecked} alt="" />
-                  {item.rpc}
+                <div className="mempool-item" key={item.id}>
+                  <img src={IconChecked} alt="" className="flex-shrink-0" />
+                  <div className="min-w-0 truncate" title={item.rpc}>
+                    {item.rpc}
+                  </div>
                 </div>
               );
             })}
@@ -117,7 +129,7 @@ export const MempoolList = ({
                 onReBroadcast?.();
               }}
             >
-              Re-broadcast
+              {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
             </div>
           ) : null}
         </>

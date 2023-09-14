@@ -53,9 +53,12 @@ export const TransactionItem = ({
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const maxGasTx = findMaxGasTx(item.txs);
+  // todo: whate is completedTx ?
   const completedTx = item.txs.find((tx) => tx.isCompleted);
+  // todo: what is isComplted
   const isCompleted =
     !item.isPending || item.isSubmitFailed || maxGasTx?.isWithdrawed;
+
   const isCanceled =
     !item.isPending &&
     item.txs.length > 1 &&
@@ -85,14 +88,18 @@ export const TransactionItem = ({
     console.log('todo quick cancel');
     const maxGasTx = findMaxGasTx(item.txs);
     if (maxGasTx?.reqId) {
-      await wallet.quickCancelTx({
-        reqId: maxGasTx.reqId,
-        chainId: maxGasTx.rawTx.chainId,
-        nonce: +maxGasTx.rawTx.nonce,
-        address: maxGasTx.rawTx.from,
-      });
-      onQuickCancel?.();
-      message.success('Canceled');
+      try {
+        await wallet.quickCancelTx({
+          reqId: maxGasTx.reqId,
+          chainId: maxGasTx.rawTx.chainId,
+          nonce: +maxGasTx.rawTx.nonce,
+          address: maxGasTx.rawTx.from,
+        });
+        onQuickCancel?.();
+        message.success('Canceled');
+      } catch (e) {
+        message.error(e.message);
+      }
     }
   };
 
@@ -108,6 +115,7 @@ export const TransactionItem = ({
         nonce: +tx.rawTx.nonce,
         address: tx.rawTx.from,
       });
+      message.success('Broadcasted');
     } catch (e) {
       console.error(e);
       message.error(e.message);
@@ -175,12 +183,17 @@ export const TransactionItem = ({
   };
 
   const handleOpenScan = () => {
-    if (completedTx?.isSubmitFailed) return;
+    if (completedTx?.isSubmitFailed || maxGasTx?.isWithdrawed) {
+      return;
+    }
+    console.log(completedTx, maxGasTx);
+
     let hash: string | undefined = '';
-    if (isCompleted) {
+    if (isCompleted && completedTx) {
       hash = completedTx!.hash;
     } else {
       const maxGasTx = findMaxGasTx(item.txs)!;
+      console.log(maxGasTx);
       hash = maxGasTx.hash;
     }
     if (!hash) {
@@ -283,7 +296,7 @@ export const TransactionItem = ({
           <div className="tx-footer">
             {originTx.site && <TransactionWebsite site={originTx.site} />}
             <div className="ahead">
-              {txQueues[originTx.hash!] ? (
+              {/* {txQueues[originTx.hash!] ? (
                 <>
                   {Number(
                     maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
@@ -292,13 +305,24 @@ export const TransactionItem = ({
                 </>
               ) : (
                 t('page.activities.signedTx.common.unknown')
-              )}
+              )} */}
+              <>
+                {Number(
+                  maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
+                ) / 1e9}{' '}
+                Gwei{' '}
+              </>
             </div>
           </div>
         ) : (
           <div className="tx-footer justify-between text-12">
             {item.isSubmitFailed || maxGasTx.isWithdrawed ? (
-              originTx.site && <TransactionWebsite site={originTx.site} />
+              <>
+                {originTx.site && <TransactionWebsite site={originTx.site} />}
+                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-right">
+                  No Gas cost
+                </span>
+              </>
             ) : (
               <>
                 {completedTx?.site ? (

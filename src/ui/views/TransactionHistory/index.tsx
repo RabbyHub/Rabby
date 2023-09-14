@@ -1,20 +1,19 @@
 import { Account } from '@/background/service/preference';
+import { EVENTS } from '@/constant';
+import eventBus from '@/eventBus';
+import { useAccount } from '@/ui/store-hooks';
 import { findChainByID } from '@/utils/chain';
+import { useMemoizedFn } from 'ahooks';
 import { TransactionGroup } from 'background/service/transactionHistory';
-import interval from 'interval-promise';
 import minBy from 'lodash/minBy';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Empty } from 'ui/component';
 import { isSameAddress, useWallet } from 'ui/utils';
-import { TransactionItem } from './components/TransactionItem';
-import './style.less';
-import { useInterval, useMemoizedFn } from 'ahooks';
-import { useSetup } from './hooks';
 import { SkipNonceAlert } from './components/SkipNonceAlert';
-import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
-import { useAccount } from '@/ui/store-hooks';
+import { TransactionItem } from './components/TransactionItem';
+import { useLoadTxRequests } from './hooks';
+import './style.less';
 
 const TransactionHistory = () => {
   const wallet = useWallet();
@@ -64,13 +63,16 @@ const TransactionHistory = () => {
     init();
   }, []);
 
-  const { txRequests, reloadTxRequests } = useSetup(pendingList);
+  const { txRequests, reloadTxRequests } = useLoadTxRequests(pendingList);
 
-  const handleReload = useMemoizedFn((params: { address: string }) => {
+  const handleReload = useMemoizedFn((params: { addressList: string[] }) => {
     if (
       account?.address &&
-      isSameAddress(params?.address || '', account?.address || '')
+      params?.addressList?.find((item) => {
+        return isSameAddress(item || '', account?.address || '');
+      })
     ) {
+      console.log('reload');
       init();
       reloadTxRequests();
     }

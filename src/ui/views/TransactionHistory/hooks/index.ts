@@ -1,11 +1,15 @@
-import { TransactionGroup } from '@/background/service/transactionHistory';
+import {
+  TransactionGroup,
+  TransactionHistoryItem,
+} from '@/background/service/transactionHistory';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { findChainByID } from '@/utils/chain';
 import { getPendingGroupCategory } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
 import { TokenItem, TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { useInterval, useRequest } from 'ahooks';
-import { get, keyBy, maxBy, minBy } from 'lodash';
+import { flatten, get, keyBy, maxBy, minBy } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,43 +58,50 @@ export const useGetTx = ({
   );
 };
 
-export const useSetup = (
+// todo fix
+export const useLoadTxRequests = (
   pendings: TransactionGroup[],
   options?: {
     onSuccess?: (data: Record<string, TxRequest>) => void;
   }
 ) => {
   const { unbroadcastedTxs } = getPendingGroupCategory(pendings);
+  const wallet = useWallet();
+  const testnetTxs: TransactionHistoryItem[] = [];
+  const mainnetTxs: TransactionHistoryItem[] = [];
+
+  unbroadcastedTxs.forEach((tx) => {
+    const chain = findChainByID(tx.rawTx.chainId);
+    if (chain?.isTestnet) {
+      testnetTxs.push(tx);
+    } else {
+      mainnetTxs.push(tx);
+    }
+  });
+
   const onSuccess = options?.onSuccess;
-  const { data, runAsync } = useTxRequests(
-    unbroadcastedTxs.map((tx) => tx.reqId),
+  const { data, runAsync } = useRequest(
+    async () => {
+      const res = await Promise.all([
+        testnetTxs?.length
+          ? wallet.testnetOpenapi
+              .getTxRequests(testnetTxs.map((tx) => tx.reqId) as string[])
+              .catch(() => [])
+          : [],
+        mainnetTxs?.length
+          ? wallet.openapi
+              .getTxRequests(mainnetTxs.map((tx) => tx.reqId) as string[])
+              .catch(() => [])
+          : [],
+      ]);
+      const map = keyBy(flatten(res), 'id');
+      return map;
+    },
     {
-      onSuccess: (data) => {
-        unbroadcastedTxs.forEach((tx) => {
-          const txRequest = data[tx.reqId];
-          if (!txRequest) {
-            return;
-          }
-          // todo 更新 background 中的状态
-          // updateSingleTx(tx, txRequest);
-          onSuccess?.(data);
-        });
-      },
+      onSuccess,
+      refreshDeps: [unbroadcastedTxs.map((tx) => tx.reqId).join(',')],
     }
   );
-
-  // useInterval(
-  //   () => {
-  //     if (unbroadcastedTxs.length === 0) {
-  //       return;
-  //     }
-  //     runAsync();
-  //   },
-  //   5000,
-  //   {
-  //     immediate: false,
-  //   }
-  // );
 
   return {
     txRequests: data || {},

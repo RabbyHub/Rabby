@@ -29,6 +29,7 @@ import {
   RPCService,
   i18n,
   swapService,
+  transactionBroadcastWatchService,
 } from 'background/service';
 import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
@@ -53,6 +54,8 @@ import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
 import eventBus from '@/eventBus';
+
+console.log('transactionWatchService', transactionWatchService);
 
 const reportSignText = (params: {
   method: string;
@@ -447,7 +450,7 @@ class ProviderController extends BaseController {
         reqId?: string;
         pushType?: TxPushType;
       }) => {
-        const { hash, reqId, pushType } = info;
+        const { hash, reqId, pushType = 'default' } = info;
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -476,8 +479,8 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
-        transactionHistoryService.addTx(
-          {
+        transactionHistoryService.addTx({
+          tx: {
             rawTx: {
               ...rawTx,
               ...approvalRes,
@@ -492,21 +495,31 @@ class ProviderController extends BaseController {
             reqId,
             pushType,
           },
-          cacheExplain,
-          action,
+          explain: cacheExplain,
+          actionData: action,
           origin,
-          options?.data?.$ctx
-        );
+          $ctx: options?.data?.$ctx,
+          isDropFailed: true,
+        });
         transactionHistoryService.removeSigningTx(signingTxId!);
-        transactionWatchService.addTx(
-          `${txParams.from}_${approvalRes.nonce}_${chain}`,
-          {
-            nonce: approvalRes.nonce,
-            hash,
-            chain,
+        if (hash) {
+          transactionWatchService.addTx(
+            `${txParams.from}_${approvalRes.nonce}_${chain}`,
+            {
+              nonce: approvalRes.nonce,
+              hash,
+              chain,
+            }
+          );
+        }
+        if (reqId && !hash) {
+          transactionBroadcastWatchService.addTx(reqId, {
             reqId,
-          }
-        );
+            address: txParams.from,
+            chainId: CHAINS[chain].id,
+            nonce: approvalRes.nonce,
+          });
+        }
 
         if (isCoboSafe) {
           preferenceService.resetCurrentCoboSafeAddress();
@@ -564,71 +577,74 @@ class ProviderController extends BaseController {
         // transactionHistoryService.removeSigningTx(signingTxId!);
         throw new Error(errMsg);
       };
-      const onTransactionSubmitted = (hash: string) => {
-        if (
-          options?.data?.$ctx?.stats?.afterSign?.length &&
-          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
-        ) {
-          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
-            if (name && params) {
-              stats.report(name, params);
-            }
-          });
-        }
+      // const onTransactionSubmitted = (hash: string) => {
+      //   if (
+      //     options?.data?.$ctx?.stats?.afterSign?.length &&
+      //     Array.isArray(options?.data?.$ctx?.stats?.afterSign)
+      //   ) {
+      //     options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
+      //       if (name && params) {
+      //         stats.report(name, params);
+      //       }
+      //     });
+      //   }
 
-        const { r, s, v, ...other } = approvalRes;
-        swapService.postSwap(chain, hash, other);
+      //   const { r, s, v, ...other } = approvalRes;
+      //   swapService.postSwap(chain, hash, other);
 
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: true,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
-        if (isSend) {
-          pageStateCacheService.clear();
-        }
-        transactionHistoryService.addTx(
-          {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
-            createdAt: Date.now(),
-            isCompleted: false,
-            hash,
-            failed: false,
-          },
-          cacheExplain,
-          action,
-          origin,
-          options?.data?.$ctx
-        );
-        transactionHistoryService.removeSigningTx(signingTxId!);
-        transactionWatchService.addTx(
-          `${txParams.from}_${approvalRes.nonce}_${chain}`,
-          {
-            nonce: approvalRes.nonce,
-            hash,
-            chain,
-          }
-        );
+      //   stats.report('submitTransaction', {
+      //     type: currentAccount.brandName,
+      //     chainId: chainItem?.serverId || '',
+      //     category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      //     success: true,
+      //     preExecSuccess: cacheExplain
+      //       ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+      //       : true,
+      //     createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      //     source: options?.data?.$ctx?.ga?.source || '',
+      //     trigger: options?.data?.$ctx?.ga?.trigger || '',
+      //   });
+      //   if (isSend) {
+      //     pageStateCacheService.clear();
+      //   }
+      //   transactionHistoryService.addTx(
+      //     {
+      //       rawTx: {
+      //         ...rawTx,
+      //         ...approvalRes,
+      //         r: bufferToHex(signedTx.r),
+      //         s: bufferToHex(signedTx.s),
+      //         v: bufferToHex(signedTx.v),
+      //       },
+      //       createdAt: Date.now(),
+      //       isCompleted: false,
+      //       hash,
+      //       failed: false,
+      //     },
+      //     cacheExplain,
+      //     action,
+      //     origin,
+      //     options?.data?.$ctx
+      //   );
+      //   transactionHistoryService.removeSigningTx(signingTxId!);
+      //   transactionWatchService.addTx(
+      //     `${txParams.from}_${approvalRes.nonce}_${chain}`,
+      //     {
+      //       nonce: approvalRes.nonce,
+      //       hash,
+      //       chain,
+      //     }
+      //   );
 
-        if (isCoboSafe) {
-          preferenceService.resetCurrentCoboSafeAddress();
-        }
-      };
+      //   if (isCoboSafe) {
+      //     preferenceService.resetCurrentCoboSafeAddress();
+      //   }
+      // };
       if (typeof signedTx === 'string') {
-        onTransactionSubmitted(signedTx);
+        onTransactionCreated({
+          hash: signedTx,
+          pushType: 'default',
+        });
         return signedTx;
       }
 

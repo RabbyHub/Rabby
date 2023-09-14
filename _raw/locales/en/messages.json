@@ -361,7 +361,11 @@
         },
         "tips": {
           "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
-          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
+          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
+          "pendingBroadcast": "Gas-saving mode: waiting for lower network fees. Max {{deadline}}h  wait.",
+          "pendingBroadcastBtn": "Broadcast now",
+          "pendingBroadcastRetry": "Broadcast failed. Last attempt: {{pushAt}}",
+          "pendingBroadcastRetryBtn": "Re-broadcast"
         },
         "status": {
           "canceled": "Canceled",
@@ -400,6 +404,11 @@
               "desc": "New transaction to cancel, requires gas"
             }
           }
+        },
+        "MempoolList": {
+          "empty": "Not found in any node",
+          "reBroadcastBtn": "Re-broadcast",
+          "title": "Found in the below memopools"
         }
       },
       "signedText": {

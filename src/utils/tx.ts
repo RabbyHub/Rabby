@@ -10,12 +10,10 @@ const getGasPrice = (tx: TransactionHistoryItem) => {
 export const findMaxGasTx = (txs: TransactionHistoryItem[]) => {
   const list = sortBy(
     txs,
-    (tx) => (tx.isSubmitFailed || tx.isWithdrawed ? 1 : -1),
+    (tx) =>
+      tx.isSubmitFailed && !tx.isWithdrawed ? 2 : tx.isWithdrawed ? 1 : -1,
     (tx) => -getGasPrice(tx)
   );
-  // if (isSubmited) {
-  //   return list.find((tx) => !tx.isWithdrawed && !tx.isSubmitFailed);
-  // }
 
   return list[0];
 };
@@ -23,7 +21,6 @@ export const findMaxGasTx = (txs: TransactionHistoryItem[]) => {
 export const checkIsPendingTxGroup = (txGroup: TransactionGroup) => {
   const maxGasTx = findMaxGasTx(txGroup.txs);
 
-  // const isSubmitFailed = txGroup.isSubmitFailed || maxGasTx?.isSubmitFailed;
   const isSubmitFailed = txGroup.isSubmitFailed;
 
   return txGroup.isPending && !isSubmitFailed && !maxGasTx?.isWithdrawed;

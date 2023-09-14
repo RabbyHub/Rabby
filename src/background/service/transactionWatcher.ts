@@ -11,16 +11,14 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
 import { findChainByEnum } from '@/utils/chain';
-import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 
 class Transaction {
   createdTime = 0;
 
   constructor(
     public nonce: string,
-    public chain: CHAINS_ENUM,
-    public hash?: string,
-    public reqId?: string
+    public hash: string,
+    public chain: CHAINS_ENUM
   ) {
     this.createdTime = +new Date();
   }
@@ -45,16 +43,11 @@ class TransactionWatcher {
 
   addTx = (
     id: string,
-    {
-      hash,
-      chain,
-      nonce,
-      reqId,
-    }: { hash?: string; chain: CHAINS_ENUM; nonce: string; reqId?: string }
+    { hash, chain, nonce }: { hash: string; chain: CHAINS_ENUM; nonce: string }
   ) => {
     this.store.pendingTx = {
       ...this.store.pendingTx,
-      [id]: new Transaction(nonce, chain, hash, reqId),
+      [id]: new Transaction(nonce, hash, chain),
     };
 
     const chainItem = findChainByEnum(chain);
@@ -80,65 +73,15 @@ class TransactionWatcher {
       return;
     }
 
-    if (hash) {
-      return openapiService
-        .ethRpc(chainItem.serverId, {
-          method: 'eth_getTransactionReceipt',
-          params: [hash],
-        })
-        .catch(() => null);
-    }
+    return openapiService
+      .ethRpc(chainItem.serverId, {
+        method: 'eth_getTransactionReceipt',
+        params: [hash],
+      })
+      .catch(() => null);
   };
 
-  // todo
-  checkTxRequest = async (id: string) => {
-    if (!this.store.pendingTx[id]) {
-      return;
-    }
-    const { hash, chain, reqId, nonce } = this.store.pendingTx[id];
-    if (!reqId || hash) {
-      return;
-    }
-    const chainItem = findChainByEnum(chain);
-    if (!chainItem) {
-      throw new Error(`[transactionWatcher::notify] chain ${chain} not found`);
-    }
-
-    const [address] = id.split('_');
-    const txGroup = transactionHistoryService.getTxGroup({
-      address,
-      nonce: Number(nonce),
-      chainId: chainItem.id,
-    });
-    if (!txGroup) {
-      this._removeTx(id);
-      return;
-    }
-
-    const maxGasTx = findMaxGasTx(txGroup.txs);
-    if (txGroup.isSubmitFailed || maxGasTx.isWithdrawed) {
-      this._removeTx(id);
-      return;
-    }
-    const isPendingBroadcast =
-      txGroup.isPending &&
-      !txGroup.isSubmitFailed &&
-      !maxGasTx.isWithdrawed &&
-      !maxGasTx.hash &&
-      maxGasTx.reqId;
-    if (isPendingBroadcast) {
-      await transactionHistoryService.reloadTx(
-        {
-          address,
-          nonce: Number(nonce),
-          chainId: chainItem.id,
-        },
-        false
-      );
-    }
-  };
-
-  notify = async ({ id, txReceipt }: { id: string; txReceipt?: any }) => {
+  notify = async (id: string, txReceipt) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
@@ -161,7 +104,7 @@ class TransactionWatcher {
     }
 
     const title =
-      txReceipt?.status === '0x1'
+      txReceipt.status === '0x1'
         ? i18n.t('background.transactionWatcher.completed')
         : i18n.t('background.transactionWatcher.failed');
 
@@ -207,14 +150,10 @@ class TransactionWatcher {
   _queryList = async (ids: string[]) => {
     for (const id of ids) {
       try {
-        this.checkTxRequest(id);
         const txReceipt = await this.checkStatus(id);
 
         if (txReceipt) {
-          this.notify({
-            id,
-            txReceipt,
-          });
+          this.notify(id, txReceipt);
           this._removeTx(id);
         }
       } catch (error) {

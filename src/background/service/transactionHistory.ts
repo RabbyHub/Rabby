@@ -2,7 +2,13 @@ import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
-import openapiService, { Tx, ExplainTxResponse, TxPushType } from './openapi';
+import openapiService, {
+  Tx,
+  ExplainTxResponse,
+  TxPushType,
+  testnetOpenapiService,
+  TxRequest,
+} from './openapi';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
@@ -277,13 +283,21 @@ class TxHistory {
     }
   }
 
-  addTx(
-    tx: TransactionHistoryItem,
-    explain: TransactionGroup['explain'],
-    actionData: TransactionGroup['action'],
-    origin: string,
-    $ctx?: any
-  ) {
+  addTx({
+    tx,
+    explain,
+    actionData,
+    origin,
+    $ctx,
+    isDropFailed = true,
+  }: {
+    tx: TransactionHistoryItem;
+    explain: TransactionGroup['explain'];
+    actionData: TransactionGroup['action'];
+    origin: string;
+    $ctx?: any;
+    isDropFailed?: boolean;
+  }) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
@@ -307,20 +321,8 @@ class TxHistory {
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
     }
-    if (this.store.transactions[from][key]) {
-      const group = this.store.transactions[from][key];
-      group.txs.push(tx);
-      if (group.isSubmitFailed) {
-        group.isSubmitFailed = false;
-      }
-      this._setStoreTransaction({
-        ...this.store.transactions,
-        [from]: {
-          ...this.store.transactions[from],
-          [key]: group,
-        },
-      });
-    } else {
+
+    const addNewTxGroup = () => {
       this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
@@ -338,6 +340,31 @@ class TxHistory {
           },
         },
       });
+    };
+
+    if (this.store.transactions[from][key]) {
+      const group = this.store.transactions[from][key];
+      const maxGasTx = findMaxGasTx(group.txs);
+      const isFailed = group.isSubmitFailed || maxGasTx?.isWithdrawed;
+
+      if (isDropFailed && isFailed) {
+        addNewTxGroup();
+      } else {
+        group.txs.push(tx);
+        if (group.isSubmitFailed) {
+          group.isSubmitFailed = false;
+        }
+
+        this._setStoreTransaction({
+          ...this.store.transactions,
+          [from]: {
+            ...this.store.transactions[from],
+            [key]: group,
+          },
+        });
+      }
+    } else {
+      addNewTxGroup();
     }
 
     this.clearAllExpiredTxs();
@@ -370,6 +397,97 @@ class TxHistory {
     });
   }
 
+  updateTxByTxRequest = (txRequest: TxRequest) => {
+    const { chainId, from } = txRequest.signed_tx;
+    const nonce = txRequest.nonce;
+
+    const key = `${chainId}-${nonce}`;
+    const address = from.toLowerCase();
+
+    console.log('TxRequest', txRequest);
+    const group = this.store.transactions[address][key];
+    console.log('group', group);
+    if (!this.store.transactions[address] || !group) {
+      return;
+    }
+
+    const tx = group.txs.find(
+      (item) => item.reqId && item.reqId === txRequest.id
+    );
+    console.log(tx);
+    if (!tx) {
+      return;
+    }
+
+    const isSubmitFailed =
+      txRequest.push_status === 'failed' && txRequest.is_finished;
+
+    this.updateSingleTx({
+      ...tx,
+      hash: txRequest.tx_id || undefined,
+      isWithdrawed:
+        txRequest.is_withdraw ||
+        (txRequest.is_finished && !txRequest.tx_id && !txRequest.push_status),
+      isSubmitFailed: isSubmitFailed,
+    });
+    const target = this.store.transactions[from][key];
+    const maxGasTx = findMaxGasTx(target.txs);
+    if (maxGasTx.isSubmitFailed) {
+      target.isSubmitFailed = isSubmitFailed;
+      this._setStoreTransaction({
+        ...this.store.transactions,
+        [from]: {
+          ...this.store.transactions[from],
+          [key]: target,
+        },
+      });
+    }
+  };
+
+  reloadTxRequest = async ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    const key = `${chainId}-${nonce}`;
+    const from = address.toLowerCase();
+    const target = this.store.transactions[from][key];
+    const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
+    console.log('reloadTxRequest', target);
+    if (!target) {
+      return;
+    }
+    const { txs } = target;
+    const unbroadcastedTxs = txs.filter(
+      (tx) =>
+        tx && tx.reqId && !tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
+    ) as (TransactionHistoryItem & { reqId: string })[];
+
+    console.log('reloadTxRequest', unbroadcastedTxs);
+    if (unbroadcastedTxs.length) {
+      const openapi = chain?.isTestnet ? testnetOpenapiService : openapiService;
+      await openapi
+        .getTxRequests(unbroadcastedTxs.map((tx) => tx.reqId))
+        .then((res) => {
+          res.forEach((item, index) => {
+            this.updateTxByTxRequest(item);
+
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.RELOAD_TX,
+              params: {
+                addressList: [address],
+              },
+            });
+          });
+        })
+        .catch((e) => console.error(e));
+    }
+  };
+
   async reloadTx(
     {
       address,
@@ -389,44 +507,9 @@ class TxHistory {
     if (!target) return;
     const { txs } = target;
 
-    const unbroadcastedTxs = txs.filter(
-      (tx) =>
-        tx && tx.reqId && !tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
-    ) as (TransactionHistoryItem & { reqId: string })[];
-
     const broadcastedTxs = txs.filter(
       (tx) => tx && tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
     ) as (TransactionHistoryItem & { hash: string })[];
-
-    if (unbroadcastedTxs.length) {
-      await openapiService
-        .getTxRequests(unbroadcastedTxs.map((tx) => tx.reqId))
-        .then((res) => {
-          res.forEach((item, index) => {
-            const tx = unbroadcastedTxs[index];
-            const isSubmitFailed =
-              item.push_status === 'failed' && item.is_finished;
-
-            this.updateSingleTx({
-              ...tx,
-              hash: item.tx_id || undefined,
-              isWithdrawed: item.is_withdraw,
-              isSubmitFailed: isSubmitFailed,
-            });
-            if (isSubmitFailed) {
-              target.isSubmitFailed = isSubmitFailed;
-            }
-            console.log('reloadTx', target);
-            eventBus.emit(EVENTS.broadcastToUI, {
-              method: EVENTS.RELOAD_TX,
-              params: {
-                address,
-              },
-            });
-          });
-        })
-        .catch((e) => console.error(e));
-    }
 
     try {
       const results = await Promise.all(
@@ -467,7 +550,7 @@ class TxHistory {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.RELOAD_TX,
         params: {
-          address,
+          addressList: [address],
         },
       });
     } catch (e) {
@@ -480,6 +563,11 @@ class TxHistory {
     }
   }
 
+  /**
+   * @deprecated
+   * @param address
+   * @returns
+   */
   async loadPendingListQueue(address) {
     const { pendings: pendingList } = await this.getList(address);
 
@@ -790,7 +878,7 @@ class TxHistory {
     return Object.entries(dict).reduce((res, [key, list]) => {
       const maxNonce = max(list.map((item) => item.nonce)) || 0;
       res[key] = sortBy(
-        list.filter((item) => item.nonce < maxNonce && item.isPending),
+        list.filter((item) => item.nonce > maxNonce && item.isPending),
         (item) => -item.nonce
       );
       return res;
@@ -808,10 +896,18 @@ class TxHistory {
     nonce: number;
     reqId: string;
   }) => {
-    // todo isTestnet
-    await openapiService.withdrawTx(reqId);
-    // todo reload
-    this.reloadTx({ address, chainId, nonce }, false);
+    const chain = findChainByID(chainId);
+    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
+    let error: any = null;
+    try {
+      await service.withdrawTx(reqId);
+    } catch (e) {
+      error = e;
+    }
+    this.reloadTxRequest({ address, chainId, nonce });
+    if (error) {
+      throw error;
+    }
   };
 
   retryPushTx = async ({
@@ -825,12 +921,13 @@ class TxHistory {
     nonce: number;
     reqId: string;
   }) => {
-    // todo testnet
+    const chain = findChainByID(chainId);
+    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
     try {
-      await openapiService.retryPushTx(reqId);
-      this.reloadTx({ address, chainId, nonce }, false);
+      await service.retryPushTx(reqId);
+      this.reloadTxRequest({ address, chainId, nonce });
     } catch (e) {
-      this.reloadTx({ address, chainId, nonce }, false);
+      this.reloadTxRequest({ address, chainId, nonce });
       throw e;
     }
   };
