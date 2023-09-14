@@ -55,8 +55,6 @@ import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
 import eventBus from '@/eventBus';
 
-console.log('transactionWatchService', transactionWatchService);
-
 const reportSignText = (params: {
   method: string;
   account: Account;
