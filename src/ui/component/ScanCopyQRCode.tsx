@@ -13,6 +13,7 @@ import IconRefresh from 'ui/assets/urlrefresh.svg';
 import { ConnectStatus } from './WalletConnect/ConnectStatus';
 import { useSessionStatus } from './WalletConnect/useSessionStatus';
 import { Account } from '@/background/service/preference';
+import Spin from './Spin';
 
 interface Props {
   showURL: boolean;
@@ -87,8 +88,19 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       </div>
       {!showURL && (
-        <div className="qrcode mb-0" {...hoverProps}>
-          <QRCode value={qrcodeURL} size={170} />
+        <div className="qrcode mb-0 relative" {...hoverProps}>
+          {!qrcodeURL ? (
+            <div
+              className={clsx(
+                'bg-white bg-opacity-70 absolute inset-0',
+                'flex items-center justify-center'
+              )}
+            >
+              <Spin />
+            </div>
+          ) : (
+            <QRCode value={qrcodeURL} size={170} />
+          )}
           {isHovering && (
             <div className="refresh-container">
               <div className="refresh-wrapper">
