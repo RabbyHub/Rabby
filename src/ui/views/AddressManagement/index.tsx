@@ -30,9 +30,7 @@ import LessPalette from '@/ui/style/var-defs';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
-import { useWallet } from '@/ui/utils';
 import { nanoid } from 'nanoid';
-import { useAsync } from 'react-use';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -76,7 +74,6 @@ const AddressManagement = () => {
   const history = useHistory();
   const location = useLocation();
   const enableSwitch = location.pathname === '/switch-address';
-  const wallet = useWallet();
 
   const addressSortStore = useRabbySelector(
     (s) => s.preference.addressSortStore
@@ -91,39 +88,6 @@ const AddressManagement = () => {
     ...s.accountToDisplay,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
-
-  const { value } = useAsync(async () => {
-    const ledgerAccounts = await Promise.all(
-      sortAccountsByBalance(
-        accountsList?.filter(
-          (e) => e.brandName === KEYRING_CLASS.HARDWARE.LEDGER
-        ) || []
-      ).map(async (e) => {
-        try {
-          const res = await wallet.requestKeyring(
-            KEYRING_CLASS.HARDWARE.LEDGER,
-            'getAccountInfo',
-            null,
-            e.address
-          );
-          return {
-            ...e,
-            hdPathBasePublicKey: res.hdPathBasePublicKey,
-            hdPathType: res.hdPathType,
-          };
-        } catch (error) {
-          return { ...e, hdPathBasePublicKey: nanoid() };
-        }
-      })
-    );
-
-    const ledgersGroup = groupBy(
-      ledgerAccounts,
-      (a) => a.hdPathBasePublicKey
-    ) as Dictionary<IDisplayedAccountWithBalance[]>;
-
-    return Object.values(ledgersGroup).sort((a, b) => b.length - a.length);
-  }, [accountsList]);
 
   const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
     const restAccounts = [...accountsList];
@@ -187,22 +151,27 @@ const AddressManagement = () => {
       normalArr[KEYRING_TYPE.HdKeyring],
       (a) => a.publicKey
     );
-
+    const ledgersGroup = groupBy(
+      normalArr[KEYRING_CLASS.HARDWARE.LEDGER],
+      (a) => a.hdPathBasePublicKey || nanoid()
+    ) as Dictionary<IDisplayedAccountWithBalance[]>;
     return [
       [
-        ...(value || []),
+        ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
         ...Object.values(hdKeyringGroup).sort((a, b) => b.length - a.length),
         ...Object.values(
           omit(normalArr, [
             KEYRING_TYPE.HdKeyring,
             KEYRING_CLASS.HARDWARE.LEDGER,
           ])
-        ).sort((a, b) => getWalletScore(a) - getWalletScore(b)),
+        ),
         sortAccountsByBalance(watchModeAccounts),
-      ].filter((e) => Array.isArray(e) && e.length > 0),
+      ]
+        .filter((e) => Array.isArray(e) && e.length > 0)
+        .sort((a, b) => getWalletScore(a) - getWalletScore(b)),
       [],
     ];
-  }, [accountsList, highlightedAddresses, addressSortStore.sortType, value]);
+  }, [accountsList, highlightedAddresses, addressSortStore.sortType]);
 
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
@@ -234,10 +203,7 @@ const AddressManagement = () => {
       const lKeyword = debouncedSearchKeyword.toLowerCase();
 
       if (addressSortStore.sortType === 'addressType') {
-        result.filteredAccounts = ([
-          ...(sortedAccountsList || []),
-          ...(watchSortedAccountsList || []),
-        ] as IDisplayedAccountWithBalance[][])
+        result.filteredAccounts = (result.filteredAccounts as IDisplayedAccountWithBalance[][])
           .map((group) =>
             group.filter((account) => {
               const lowerAddress = account.address.toLowerCase();
@@ -361,7 +327,7 @@ const AddressManagement = () => {
         <div
           className={clsx(
             'address-wrap-with-padding px-[20px]',
-            isGroup && 'group'
+            isGroup && 'row-group'
           )}
           style={!isGroup ? style : undefined}
           key={account.address}
