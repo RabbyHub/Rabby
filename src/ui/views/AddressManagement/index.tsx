@@ -95,25 +95,27 @@ const AddressManagement = () => {
 
   const { value } = useAsync(async () => {
     const ledgerAccounts = await Promise.all(
-      accountsList
-        ?.filter((e) => e.brandName === KEYRING_CLASS.HARDWARE.LEDGER)
-        .map(async (e) => {
-          try {
-            const res = await wallet.requestKeyring(
-              KEYRING_CLASS.HARDWARE.LEDGER,
-              'getAccountInfo',
-              null,
-              e.address
-            );
-            return {
-              ...e,
-              hdPathBasePublicKey: res.hdPathBasePublicKey,
-              hdPathType: res.hdPathType,
-            };
-          } catch (error) {
-            return { ...e, hdPathBasePublicKey: nanoid() };
-          }
-        })
+      sortAccountsByBalance(
+        accountsList?.filter(
+          (e) => e.brandName === KEYRING_CLASS.HARDWARE.LEDGER
+        ) || []
+      ).map(async (e) => {
+        try {
+          const res = await wallet.requestKeyring(
+            KEYRING_CLASS.HARDWARE.LEDGER,
+            'getAccountInfo',
+            null,
+            e.address
+          );
+          return {
+            ...e,
+            hdPathBasePublicKey: res.hdPathBasePublicKey,
+            hdPathType: res.hdPathType,
+          };
+        } catch (error) {
+          return { ...e, hdPathBasePublicKey: nanoid() };
+        }
+      })
     );
 
     const ledgersGroup = groupBy(
