@@ -200,7 +200,7 @@ const AddressManagement = () => {
   };
 
   const gotoManageAddress = () => {
-    history.push('/settings/address');
+    history.push('/settings/address?back=true');
   };
 
   const switchAccount = async (account: typeof sortedAccountsList[number]) => {

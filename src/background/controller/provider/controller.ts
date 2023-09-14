@@ -416,6 +416,13 @@ class ProviderController extends BaseController {
 
     const chainItem = findChainByEnum(chain);
 
+    // wait ui
+    if (
+      currentAccount.type === KEYRING_TYPE.SimpleKeyring ||
+      currentAccount.type === KEYRING_TYPE.HdKeyring
+    ) {
+      await new Promise((r) => setTimeout(r, 200));
+    }
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,

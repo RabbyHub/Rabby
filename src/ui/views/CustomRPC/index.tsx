@@ -278,7 +278,11 @@ const CustomRPC = () => {
 
   return (
     <div className="custom-rpc">
-      <PageHeader className="pt-[24px] mx-[20px] mb-16">
+      <PageHeader
+        className="pt-[24px] mx-[20px] mb-16"
+        canBack={false}
+        closeable
+      >
         {t('page.customRpc.title')}
       </PageHeader>
       <p className="text-gray-subTitle text-14 mb-20 px-20">

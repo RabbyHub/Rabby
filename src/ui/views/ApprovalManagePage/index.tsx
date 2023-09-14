@@ -809,7 +809,10 @@ function getColumnsForAsset({
                   <img
                     onClick={(evt) => {
                       evt.stopPropagation();
-                      openScanLinkFromChainItem(chainItem?.scanLink, asset.id);
+                      openScanLinkFromChainItem(
+                        chainItem?.scanLink,
+                        spender.id
+                      );
                     }}
                     src={IconExternal}
                     className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
