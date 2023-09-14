@@ -12,7 +12,13 @@ import { isSameAddress } from '@/background/utils';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
 import HardwareSDK from '@onekeyfe/hd-web-sdk';
-import { UI_RESPONSE, UI_EVENT, UI_REQUEST } from '@onekeyfe/hd-core';
+import {
+  UI_RESPONSE,
+  UI_EVENT,
+  UI_REQUEST,
+  EVMTransaction,
+  EVMTransactionEIP1559,
+} from '@onekeyfe/hd-core';
 
 const { HardwareWebSdk } = HardwareSDK;
 
@@ -29,6 +35,23 @@ interface Account {
 
 interface AccountDetail {
   hdPathBasePublicKey?: string;
+}
+
+/**
+ * Check if the given transaction is made with ethereumjs-tx or @ethereumjs/tx
+ *
+ * Transactions built with older versions of ethereumjs-tx have a
+ * getChainId method that newer versions do not.
+ * Older versions are mutable
+ * while newer versions default to being immutable.
+ * Expected shape and type
+ * of data for v, r and s differ (Buffer (old) vs BN (new)).
+ *
+ * @param {TypedTransaction | OldEthJsTransaction} tx
+ * @returns {tx is OldEthJsTransaction} Returns `true` if tx is an old-style ethereumjs-tx transaction.
+ */
+function isOldStyleEthereumjsTx(tx) {
+  return typeof tx.getChainId === 'function';
 }
 
 class OneKeyKeyring extends EventEmitter {
@@ -301,64 +324,55 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address: string, tx: TypedTransaction): Promise<any> {
+  signTransaction(address: string, tx): Promise<any> {
     return this.signHelper.invoke(async () => {
       return new Promise((resolve, reject) => {
         this.unlock()
           .then((status) => {
             setTimeout(
               (_) => {
-                HardwareWebSdk.evmSignTransaction(
-                  this.connectId!,
-                  this.deviceId!,
-                  {
-                    path: this._pathFromAddress(address),
-                    passphraseState: this.passphraseState,
-                    transaction: {
-                      to: tx.to!.toString(),
-                      value: `0x${tx.value.toString('hex')}`,
-                      data: this._normalize(tx.data),
-                      chainId: tx.common.chainIdBN().toNumber(),
-                      nonce: `0x${tx.nonce.toString('hex')}`,
-                      gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-                      gasPrice: `0x${
-                        (tx as Transaction).gasPrice
-                          ? (tx as Transaction).gasPrice.toString('hex')
-                          : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
-                              'hex'
-                            )
-                      }`,
-                    },
-                  }
-                ).then((res) => {
-                  if (res.success) {
-                    const txData = tx.toJSON();
-                    txData.v = res.payload.v;
-                    txData.r = res.payload.r;
-                    txData.s = res.payload.s;
-
-                    const signedTx = TransactionFactory.fromTxData(txData);
-
-                    const addressSignedWith = ethUtil.toChecksumAddress(
-                      address
-                    );
-                    const correctAddress = ethUtil.toChecksumAddress(address);
-                    if (addressSignedWith !== correctAddress) {
-                      reject(
-                        new Error('signature doesnt match the right address')
-                      );
+                if (isOldStyleEthereumjsTx(tx)) {
+                  // In this version of ethereumjs-tx we must add the chainId in hex format
+                  // to the initial v value. The chainId must be included in the serialized
+                  // transaction which is only communicated to ethereumjs-tx in this
+                  // value. In newer versions the chainId is communicated via the 'Common'
+                  // object.
+                  this._signTransaction(
+                    address,
+                    tx.getChainId(),
+                    tx,
+                    (payload) => {
+                      tx.v = Buffer.from(payload.v, 'hex');
+                      tx.r = Buffer.from(payload.r, 'hex');
+                      tx.s = Buffer.from(payload.s, 'hex');
+                      return tx;
                     }
-
-                    resolve(signedTx);
-                  } else {
-                    reject(
-                      new Error(
-                        (res.payload && res.payload.error) || 'Unknown error'
-                      )
-                    );
-                  }
-                });
-
+                  ).then(resolve);
+                } else {
+                  this._signTransaction(
+                    address,
+                    Number(tx.common.chainId()),
+                    tx,
+                    (payload) => {
+                      // Because tx will be immutable, first get a plain javascript object that
+                      // represents the transaction. Using txData here as it aligns with the
+                      // nomenclature of ethereumjs/tx.
+                      const txData = tx.toJSON();
+                      // The fromTxData utility expects a type to support transactions with a type other than 0
+                      txData.type = tx.type;
+                      // The fromTxData utility expects v,r and s to be hex prefixed
+                      txData.v = ethUtil.addHexPrefix(payload.v);
+                      txData.r = ethUtil.addHexPrefix(payload.r);
+                      txData.s = ethUtil.addHexPrefix(payload.s);
+                      // Adopt the 'common' option from the original transaction and set the
+                      // returned object to be frozen if the original is frozen.
+                      return TransactionFactory.fromTxData(txData, {
+                        common: tx.common,
+                        freeze: Object.isFrozen(tx),
+                      });
+                    }
+                  ).then(resolve);
+                }
                 // This is necessary to avoid popup collision
                 // between the unlock & sign trezor popups
               },
@@ -369,6 +383,53 @@ class OneKeyKeyring extends EventEmitter {
             reject(new Error((e && e.toString()) || 'Unknown error'));
           });
       });
+    });
+  }
+
+  async _signTransaction(address, chainId, tx, handleSigning) {
+    let transaction: EVMTransaction | EVMTransactionEIP1559;
+    if (isOldStyleEthereumjsTx(tx)) {
+      // legacy transaction from ethereumjs-tx package has no .toJSON() function,
+      // so we need to convert to hex-strings manually manually
+      transaction = {
+        to: this._normalize(tx.to),
+        value: this._normalize(tx.value),
+        data: this._normalize(tx.data),
+        chainId,
+        nonce: this._normalize(tx.nonce),
+        gasLimit: this._normalize(tx.gasLimit),
+        gasPrice: this._normalize(tx.gasPrice),
+      };
+    } else {
+      // new-style transaction from @ethereumjs/tx package
+      // we can just copy tx.toJSON() for everything except chainId, which must be a number
+      transaction = {
+        ...tx.toJSON(),
+        chainId,
+        to: this._normalize(tx.to),
+      };
+    }
+    return HardwareWebSdk.evmSignTransaction(this.connectId!, this.deviceId!, {
+      path: this._pathFromAddress(address),
+      passphraseState: this.passphraseState,
+      transaction,
+    }).then((res) => {
+      if (res.success) {
+        const newOrMutatedTx = handleSigning(res.payload);
+        const addressSignedWith = ethUtil.toChecksumAddress(
+          ethUtil.addHexPrefix(
+            newOrMutatedTx.getSenderAddress().toString('hex')
+          )
+        );
+        const correctAddress = ethUtil.toChecksumAddress(address);
+        if (addressSignedWith !== correctAddress) {
+          throw new Error('signature doesnt match the right address');
+        }
+
+        return newOrMutatedTx;
+      } else {
+        throw new Error((res.payload && res.payload.error) || 'Unknown error');
+      }
     });
   }
 
