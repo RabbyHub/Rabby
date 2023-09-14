@@ -837,10 +837,8 @@ export const L2_ENUMS = [
 // opstack L2 chains
 export const OP_STACK_ENUMS = [
   CHAINS_ENUM.OP,
-  CHAINS_ENUM.TDEBANK,
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
-  CHAINS_ENUM.MANTLE,
 ];
 
 export const SecurityEngineLevelOrder = [
