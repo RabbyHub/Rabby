@@ -27,7 +27,6 @@ import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBa
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import LessPalette from '@/ui/style/var-defs';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
-import { useSwitch } from '@/ui/utils/switch';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
@@ -419,7 +418,6 @@ const AddressManagement = () => {
     };
 
     if (addressSortStore.sortType === 'addressType') {
-      console.log('account', account);
       return (
         <div style={style}>
           {(account as typeof accountsList)?.map((e) => render(e, true))}
@@ -448,8 +446,6 @@ const AddressManagement = () => {
   const listRef = useRef<
     VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>
   >(null);
-
-  console.log('filteredAccounts', filteredAccounts);
 
   useEffect(() => {
     if (addressSortStore.lastCurrent && filteredAccounts?.length) {
