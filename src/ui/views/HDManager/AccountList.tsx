@@ -87,7 +87,7 @@ export const AccountList: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (!hiddenInfo) {
-      createTask(() => fetchAccountsInfo(wallet, data ?? []).then(setList));
+      fetchAccountsInfo(wallet, data ?? []).then(setList);
     } else {
       setList(data ?? []);
     }
