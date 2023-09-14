@@ -17,8 +17,8 @@ import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
 import { ReactComponent as IconLoading } from '@/ui/assets/address/loading.svg';
 import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
 
-import { groupBy } from 'lodash';
-import { KEYRING_CLASS } from '@/constant';
+import { groupBy, omit } from 'lodash';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { Tooltip } from 'antd';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
@@ -31,6 +31,9 @@ import { useSwitch } from '@/ui/utils/switch';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
+import { useWallet } from '@/ui/utils';
+import { nanoid } from 'nanoid';
+import { useAsync } from 'react-use';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -74,6 +77,7 @@ const AddressManagement = () => {
   const history = useHistory();
   const location = useLocation();
   const enableSwitch = location.pathname === '/switch-address';
+  const wallet = useWallet();
 
   const addressSortStore = useRabbySelector(
     (s) => s.preference.addressSortStore
@@ -89,7 +93,12 @@ const AddressManagement = () => {
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
-  const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
+  const { value } = useAsync(async (): Promise<
+    [
+      IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][],
+      IDisplayedAccountWithBalance[] | never[]
+    ]
+  > => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
     let watchModeHighlightedAccounts: typeof accountsList = [];
@@ -143,16 +152,53 @@ const AddressManagement = () => {
       (e) => e.brandName
     );
 
+    const hdKeyringGroup = groupBy(
+      normalArr[KEYRING_TYPE.HdKeyring],
+      (a) => a.publicKey
+    );
+
+    const ledgerAccounts = await Promise.all(
+      (normalArr[KEYRING_CLASS.HARDWARE.LEDGER] || []).map(async (e) => {
+        try {
+          const res = await wallet.requestKeyring(
+            KEYRING_CLASS.HARDWARE.LEDGER,
+            'getAccountInfo',
+            null,
+            e.address
+          );
+          return {
+            ...e,
+            hdPathBasePublicKey: res.hdPathBasePublicKey,
+            hdPathType: res.hdPathType,
+          };
+        } catch (error) {
+          return { ...e, hdPathBasePublicKey: nanoid() };
+        }
+      })
+    );
+
+    const ledgersGroup = groupBy(ledgerAccounts, (a) => a.hdPathBasePublicKey);
+
     return [
       [
-        ...Object.values(normalArr).sort(
-          (a, b) => getWalletScore(a) - getWalletScore(b)
-        ),
+        ...Object.values(hdKeyringGroup).sort((a, b) => b.length - a.length),
+        ...Object.values(ledgersGroup).sort((a, b) => b.length - a.length),
+        ...Object.values(
+          omit(normalArr, [
+            KEYRING_TYPE.HdKeyring,
+            KEYRING_CLASS.HARDWARE.LEDGER,
+          ])
+        ).sort((a, b) => getWalletScore(a) - getWalletScore(b)),
         sortAccountsByBalance(watchModeAccounts),
       ],
       [],
     ];
   }, [accountsList, highlightedAddresses, addressSortStore.sortType]);
+
+  const [sortedAccountsList, watchSortedAccountsList] = (value || [[], []]) as [
+    IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][],
+    IDisplayedAccountWithBalance[] | never[]
+  ];
 
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
