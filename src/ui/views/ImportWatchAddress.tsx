@@ -1,14 +1,17 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
+import WalletConnect from '@rabby-wallet/wc-client';
+import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import { EVENTS, KEYRING_CLASS } from 'consts';
+import { KEYRING_CLASS } from 'consts';
+
 import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
@@ -18,7 +21,6 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
-import eventBus from '@/eventBus';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -30,6 +32,7 @@ const ImportWatchAddress = () => {
     false
   );
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
+  const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
@@ -38,8 +41,11 @@ const ImportWatchAddress = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
+
   const [isValidAddr, setIsValidAddr] = useState(false);
+
   const ModalComponent = isWide ? Modal : Popup;
+
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       setDisableKeydown(false);
@@ -69,6 +75,7 @@ const ImportWatchAddress = () => {
       ]);
     },
   });
+
   const handleConfirmENS = (result: string) => {
     form.setFieldsValue({
       address: result,
@@ -77,6 +84,7 @@ const ImportWatchAddress = () => {
     setTags([`ENS: ${ensResult!.name}`]);
     setEnsResult(null);
   };
+
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'enter') {
@@ -88,39 +96,56 @@ const ImportWatchAddress = () => {
     };
     return handler;
   }, [ensResult]);
-  const handleScanAccount = useCallback((data) => {
-    const address = data.address;
-    form.setFieldsValue({
-      address,
-    });
-    if (isValidAddress(address)) {
-      setIsValidAddr(true);
-    }
-    setWalletconnectModalVisible(false);
-  }, []);
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-    eventBus.addEventListener(
-      EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
-      handleScanAccount
-    );
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      eventBus.removeEventListener(
-        EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
-        handleScanAccount
-      );
     };
   }, [handleKeyDown]);
-  const handleImportByWalletconnect = async () => {
-    const uri = await wallet.walletConnectScanAccount();
 
-    setWalletconnectUri(uri!);
+  const handleImportByWalletconnect = async () => {
+    localStorage.removeItem('walletconnect');
+    connector.current = new WalletConnect({
+      bridge: DEFAULT_BRIDGE,
+      clientMeta: {
+        description: t('global.appDescription'),
+        url: 'https://rabby.io',
+        icons: ['https://rabby.io/assets/images/logo.png'],
+        name: t('global.appName'),
+      },
+    });
+    connector.current.on('connect', async (error, payload) => {
+      if (error) {
+        handleImportByWalletconnect();
+      } else {
+        const { accounts } = payload.params[0];
+        form.setFieldsValue({
+          address: accounts[0],
+        });
+        if (isValidAddress(accounts[0])) {
+          setIsValidAddr(true);
+        }
+        await connector.current?.killSession();
+        setWalletconnectModalVisible(false);
+        setWalletconnectUri('');
+      }
+    });
+    connector.current.on('disconnect', () => {
+      setWalletconnectModalVisible(false);
+    });
+    await connector.current.createSession();
+    setWalletconnectUri(connector.current.uri);
     setWalletconnectModalVisible(true);
   };
+
   const handleWalletconnectModalCancel = () => {
+    if (connector.current && connector.current.connected) {
+      connector.current.killSession();
+    }
     setWalletconnectModalVisible(false);
   };
+
   const handleScanQRCodeSuccess = (data) => {
     form.setFieldsValue({
       address: data,
@@ -131,9 +156,11 @@ const ImportWatchAddress = () => {
     setQRScanModalVisible(false);
     wallet.clearPageStateCache();
   };
+
   const handleQRScanModalCancel = () => {
     setQRScanModalVisible(false);
   };
+
   const handleScanQRCodeError = async () => {
     await wallet.setPageStateCache({
       path: history.location.pathname,
@@ -142,15 +169,18 @@ const ImportWatchAddress = () => {
     });
     openInternalPageInTab('request-permission?type=camera');
   };
+
   const handleLoadCache = async () => {
     const cache = await wallet.getPageStateCache();
     if (cache && cache.path === history.location.pathname) {
       form.setFieldsValue(cache.states);
     }
   };
+
   const handleImportByQrcode = () => {
     setQRScanModalVisible(true);
   };
+
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
     if (!isValidAddress(address)) {
@@ -169,10 +199,12 @@ const ImportWatchAddress = () => {
       setEnsResult(null);
     }
   };
+
   const handleNextClick = () => {
     const address = form.getFieldValue('address');
     run(address);
   };
+
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -193,6 +225,7 @@ const ImportWatchAddress = () => {
       wallet.clearPageStateCache();
     };
   }, []);
+
   return (
     <StrayPageWithButton
       custom={isWide}

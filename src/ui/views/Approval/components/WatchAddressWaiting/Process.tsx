@@ -17,9 +17,9 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from '../Popup/ApprovalPopupContainer';
+import { NetworkStatus } from './NetworkStatus';
 
 type Valueof<T> = T[keyof T];
-const INIT_SENDING_COUNTER = 10;
 
 const Process = ({
   status,
@@ -51,9 +51,7 @@ const Process = ({
       WALLET_BRAND_CONTENT.WALLETCONNECT.icon
     );
   }, [brandRealUrl]);
-  const [sendingCounter, setSendingCounter] = React.useState(
-    INIT_SENDING_COUNTER
-  );
+  const [sendingCounter, setSendingCounter] = React.useState(5);
   const [content, setContent] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [statusProp, setStatusProp] = React.useState<
@@ -62,7 +60,7 @@ const Process = ({
 
   const handleRetry = () => {
     onRetry();
-    setSendingCounter(INIT_SENDING_COUNTER);
+    setSendingCounter(5);
   };
   const handleCancel = () => {
     onCancel();
@@ -108,7 +106,7 @@ const Process = ({
         break;
       case WALLETCONNECT_STATUS_MAP.FAILED:
         setContent(t('page.signFooterBar.walletConnect.requestFailedToSend'));
-        setDescription(error?.message || '');
+        setDescription('');
         setStatusProp('FAILED');
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
@@ -118,7 +116,7 @@ const Process = ({
         break;
       case WALLETCONNECT_STATUS_MAP.REJECTED:
         setContent(t('page.signFooterBar.ledger.txRejected'));
-        setDescription(error?.message || '');
+        setDescription('');
         setStatusProp('REJECTED');
         break;
     }
@@ -137,7 +135,6 @@ const Process = ({
       onDone={onDone}
       onCancel={handleCancel}
       description={description}
-      hasMoreDescription={!!description}
       content={
         <>
           {content}
@@ -146,7 +143,12 @@ const Process = ({
           )}
         </>
       }
-    ></ApprovalPopupContainer>
+    >
+      <NetworkStatus
+        account={account}
+        className="absolute left-[-12px] bottom-[-16px]"
+      />
+    </ApprovalPopupContainer>
   );
 };
 

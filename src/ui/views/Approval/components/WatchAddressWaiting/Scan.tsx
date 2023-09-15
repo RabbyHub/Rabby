@@ -6,11 +6,17 @@ import { useCommonPopupView } from 'ui/utils';
 const Scan = ({
   uri,
   onRefresh,
+  bridgeURL,
+  onBridgeChange,
+  defaultBridge,
   account,
 }: {
   uri: string;
+  bridgeURL: string;
+  defaultBridge: string;
   account: Account;
   onRefresh(): void;
+  onBridgeChange(val: string): void;
 }) => {
   const [showURL, setShowURL] = useState(false);
   const [brandName, setBrandName] = useState<string | null>(null);
@@ -35,6 +41,9 @@ const Scan = ({
         changeShowURL={setShowURL}
         qrcodeURL={uri || ''}
         refreshFun={handleRefresh}
+        onBridgeChange={onBridgeChange}
+        bridgeURL={bridgeURL}
+        defaultBridge={defaultBridge}
         canChangeBridge={false}
         brandName={brandName!}
         account={account}

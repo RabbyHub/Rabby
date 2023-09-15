@@ -117,7 +117,6 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       address,
       brandName,
       realBrandName,
-      chainId: chain?.id,
     });
     if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');
