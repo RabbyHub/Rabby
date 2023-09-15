@@ -5,6 +5,6 @@
   { "code": "fr_FR", "name": "Français" },
   { "code": "ua_UA", "name": "Українська" },
   { "code": "tr", "name": "Türkçe" },
-  { "code": "pt_BR", "name": "Português Brasileiro"}
+  { "code": "pt_BR", "name": "Português Brasileiro"},
   { "code": "ru", "name": "Русский"}
 ]
