@@ -5,7 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { CHAINS, KEYRING_CATEGORY_MAP, IS_LINUX, IS_CHROME } from 'consts';
+import {
+  CHAINS,
+  KEYRING_CATEGORY_MAP,
+  IS_LINUX,
+  IS_CHROME,
+  KEYRING_CATEGORY,
+} from 'consts';
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
@@ -42,6 +48,20 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'PrivatekeyWaiting',
 ];
 
+type StatsData = {
+  signed: boolean;
+  signedSuccess: boolean;
+  submit: boolean;
+  submitSuccess: boolean;
+  type: string;
+  chainId: string;
+  category: KEYRING_CATEGORY;
+  preExecSuccess: boolean;
+  createBy: string;
+  source: any;
+  trigger: any;
+};
+
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
@@ -50,6 +70,7 @@ class NotificationService extends Events {
   notifiWindowId: null | number = null;
   isLocked = false;
   currentRequestDeferFn?: () => void;
+  statsData: StatsData | undefined;
 
   get approvals() {
     return this._approvals;
@@ -363,6 +384,14 @@ class NotificationService extends Events {
 
   callCurrentRequestDeferFn = () => {
     return this.currentRequestDeferFn?.();
+  };
+
+  setStatsData = (data?: StatsData) => {
+    this.statsData = data;
+  };
+
+  getStatsData = () => {
+    return this.statsData;
   };
 }
 

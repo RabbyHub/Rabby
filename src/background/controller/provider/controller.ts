@@ -29,6 +29,7 @@ import {
   RPCService,
   i18n,
   swapService,
+  notificationService,
 } from 'background/service';
 import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
@@ -413,6 +414,23 @@ class ProviderController extends BaseController {
     ) {
       await new Promise((r) => setTimeout(r, 200));
     }
+
+    const statsData = {
+      signed: false,
+      signedSuccess: false,
+      submit: false,
+      submitSuccess: false,
+      type: currentAccount.brandName,
+      chainId: chainItem?.serverId || '',
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      preExecSuccess: cacheExplain
+        ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        : true,
+      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: options?.data?.$ctx?.ga?.source || '',
+      trigger: options?.data?.$ctx?.ga?.trigger || '',
+    };
+
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,
@@ -425,18 +443,20 @@ class ProviderController extends BaseController {
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
       ) {
         signedTransactionSuccess = true;
-        stats.report('signedTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: true,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('signedTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: true,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.signed = true;
+        statsData.signedSuccess = true;
         return;
       }
       const onTransactionSubmitted = (hash: string) => {
@@ -454,18 +474,20 @@ class ProviderController extends BaseController {
         const { r, s, v, ...other } = approvalRes;
         swapService.postSwap(chain, hash, other);
 
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: true,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('submitTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: true,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.submit = true;
+        statsData.submitSuccess = true;
         if (isSend) {
           pageStateCacheService.clear();
         }
@@ -504,6 +526,7 @@ class ProviderController extends BaseController {
       };
       if (typeof signedTx === 'string') {
         onTransactionSubmitted(signedTx);
+        notificationService.setStatsData(statsData);
         return signedTx;
       }
 
@@ -530,18 +553,20 @@ class ProviderController extends BaseController {
         }
       }
       signedTransactionSuccess = true;
-      stats.report('signedTransaction', {
-        type: currentAccount.brandName,
-        chainId: chainItem?.serverId || '',
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        success: true,
-        preExecSuccess: cacheExplain
-          ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-          : true,
-        createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: options?.data?.$ctx?.ga?.source || '',
-        trigger: options?.data?.$ctx?.ga?.trigger || '',
-      });
+      // stats.report('signedTransaction', {
+      //   type: currentAccount.brandName,
+      //   chainId: chainItem?.serverId || '',
+      //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      //   success: true,
+      //   preExecSuccess: cacheExplain
+      //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+      //     : true,
+      //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      //   source: options?.data?.$ctx?.ga?.source || '',
+      //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+      // });
+      statsData.signed = true;
+      statsData.signedSuccess = true;
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
@@ -588,6 +613,7 @@ class ProviderController extends BaseController {
           );
         }
         onTransactionSubmitted(hash);
+        notificationService.setStatsData(statsData);
         return hash;
       } catch (e: any) {
         if (
@@ -601,18 +627,20 @@ class ProviderController extends BaseController {
           });
         }
 
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: false,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('submitTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: false,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.submit = true;
+        statsData.submitSuccess = false;
         if (!isSpeedUp && !isCancel) {
           // const cacheExplain = transactionHistoryService.getExplainCache({
           //   address: txParams.from,
@@ -639,24 +667,28 @@ class ProviderController extends BaseController {
         //   errMsg
         // );
         // transactionHistoryService.removeSigningTx(signingTxId!);
+        notificationService.setStatsData(statsData);
         throw new Error(errMsg);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
-        stats.report('signedTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: false,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('signedTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: false,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.signed = true;
+        statsData.signedSuccess = false;
       }
       // transactionHistoryService.removeSigningTx(signingTxId!);
+      notificationService.setStatsData(statsData);
       throw new Error(e);
     }
   };
