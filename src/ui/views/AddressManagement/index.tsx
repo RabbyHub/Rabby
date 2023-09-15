@@ -460,6 +460,10 @@ const AddressManagement = () => {
     [filteredAccounts, sortedAccountsList, addressSortStore.sortType]
   );
 
+  useEffect(() => {
+    listRef.current?.resetAfterIndex(0);
+  }, [accountsList.length]);
+
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
@@ -542,21 +546,21 @@ const AddressManagement = () => {
               )}
             </AddressItem>
           </div>
-          <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
-            <SortInput
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-            <div
-              className="flex items-center cursor-pointer"
-              onClick={gotoManageAddress}
-            >
-              <span>{t('page.manageAddress.manage-address')}</span>
-              <IconRight />
-            </div>
-          </div>
         </>
       )}
+      <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
+        <SortInput
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={gotoManageAddress}
+        >
+          <span>{t('page.manageAddress.manage-address')}</span>
+          <IconRight />
+        </div>
+      </div>
       {noAnyAccount ? (
         <NoAddressUI />
       ) : noAnySearchedAccount ? (
