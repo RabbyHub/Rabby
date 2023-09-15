@@ -231,10 +231,10 @@ const TokenDetail = ({
             <div
               className="balance-value truncate"
               title={splitNumberByStep(
-                (tokenWithAmount.amount || 0)?.toFixed(4)
+                (tokenWithAmount.amount || 0)?.toFixed(8)
               )}
             >
-              {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(4))}
+              {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
             </div>
             <div
               className="balance-value-usd truncate"
