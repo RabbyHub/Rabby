@@ -451,11 +451,16 @@ const AddressManagement = () => {
 
   const getItemSize = React.useCallback(
     (i: number) => {
+      const lastPadding = i === filteredAccounts.length - 1 ? 24 : 0;
       if (addressSortStore.sortType === 'addressType') {
-        return 52 * (filteredAccounts as typeof accountsList[])[i].length + 16;
+        return (
+          52 * (filteredAccounts as typeof accountsList[])[i].length +
+          16 +
+          lastPadding
+        );
       }
 
-      return i !== sortedAccountsList.length - 1 ? 60 : 76;
+      return lastPadding + (i !== sortedAccountsList.length - 1 ? 60 : 76);
     },
     [filteredAccounts, sortedAccountsList, addressSortStore.sortType]
   );
@@ -464,6 +469,7 @@ const AddressManagement = () => {
     listRef.current?.resetAfterIndex(0);
   }, [accountsList.length]);
 
+  console.log('currentAccountIndex', currentAccountIndex);
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
@@ -570,7 +576,7 @@ const AddressManagement = () => {
           <VList
             ref={listRef}
             key={addressSortStore.sortType + debouncedSearchKeyword}
-            height={hasStatusBar ? 450 : 500}
+            height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417}
             width="100%"
             itemData={filteredAccounts}
             itemCount={filteredAccounts.length}
