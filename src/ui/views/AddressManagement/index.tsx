@@ -582,6 +582,7 @@ const AddressManagement = () => {
             itemCount={filteredAccounts.length}
             itemSize={getItemSize}
             className="scroll-container"
+            overscanCount={6}
           >
             {Row}
           </VList>
