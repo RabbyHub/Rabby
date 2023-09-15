@@ -52,8 +52,10 @@ export const TradingSettings = ({
     >
       <div>
         <div className="flex items-center text-gray-content text-12 pb-8 px-12">
-          <div className="w-[188px]">{t('page.swap.exchanges')}</div>
-          <div className="w-[66px]">{t('page.swap.view-quotes')}</div>
+          <div className="w-[252px] flex justify-between">
+            <div>{t('page.swap.exchanges')}</div>
+            <div>{t('page.swap.view-quotes')}</div>
+          </div>
           <div className="ml-auto">{t('page.swap.trade')}</div>
         </div>
 
