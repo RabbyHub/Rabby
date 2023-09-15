@@ -385,7 +385,7 @@ const AddressManagement = () => {
 
     if (addressSortStore.sortType === 'addressType') {
       return (
-        <div style={style}>
+        <div style={style} className="address-type-container">
           {(account as typeof accountsList)?.map((e) => render(e, true))}
         </div>
       );

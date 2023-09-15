@@ -5,11 +5,20 @@
   height: 100vh;
   padding-bottom: 118px;
 
+  .address-type-container:nth-last-child(1) {
+    .row-group:nth-last-child(1) {
+      padding-bottom: 104px;
+    }
+  }
+
   .address-wrap-with-padding {
     margin-bottom: 0;
 
     .rabby-address-item-container .rabby-address-item-left {
       height: 52px;
+    }
+    &:nth-last-child(1) {
+      padding-bottom: 160px;
     }
 
     &.row-group:nth-child(n + 2) {
@@ -30,6 +39,9 @@
         border-bottom-left-radius: 6px;
         border-bottom-right-radius: 6px;
       }
+    }
+    &.row-group:nth-last-child(1) {
+      padding-bottom: 0;
     }
 
     &.row-group .rabby-address-item-container .rabby-address-item {
