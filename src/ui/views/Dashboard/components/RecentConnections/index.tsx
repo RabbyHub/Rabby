@@ -158,51 +158,53 @@ const RecentConnections = ({
       <PageHeader forceShowBack onBack={handleCancel}>
         {t('page.dashboard.recentConnection.title')}
       </PageHeader>
-      {visible && (
+      <div className="auto-lock-option-list">
+        {visible && (
+          <ConnectionList
+            onRemove={handleRemove}
+            data={pinnedList}
+            onFavoriteChange={handleFavoriteChange}
+            title={t('page.dashboard.recentConnection.pinned')}
+            empty={
+              <div className="list-empty">
+                {t('page.dashboard.recentConnection.noPinnedDapps')}
+              </div>
+            }
+            extra={
+              pinnedList.length > 0
+                ? t('page.dashboard.recentConnection.dragToSort')
+                : null
+            }
+            onClick={handleClick}
+            onSort={handleSort}
+            sortable={true}
+          ></ConnectionList>
+        )}
         <ConnectionList
           onRemove={handleRemove}
-          data={pinnedList}
+          onClick={handleClick}
           onFavoriteChange={handleFavoriteChange}
-          title={t('page.dashboard.recentConnection.pinned')}
+          data={recentList}
+          title={t('page.dashboard.recentConnection.recentlyConnected')}
+          extra={
+            recentList.length > 0 ? (
+              <a onClick={handleRemoveAll}>
+                {t('page.dashboard.recentConnection.disconnectAll')}
+              </a>
+            ) : null
+          }
           empty={
-            <div className="list-empty">
-              {t('page.dashboard.recentConnection.noPinnedDapps')}
+            <div className="list-empty mb-[-24px] rounded-b-none">
+              <Empty
+                desc={t(
+                  'page.dashboard.recentConnection.noRecentlyConnectedDapps'
+                )}
+                className="pt-[68px] pb-[181px]"
+              ></Empty>
             </div>
           }
-          extra={
-            pinnedList.length > 0
-              ? t('page.dashboard.recentConnection.dragToSort')
-              : null
-          }
-          onClick={handleClick}
-          onSort={handleSort}
-          sortable={true}
         ></ConnectionList>
-      )}
-      <ConnectionList
-        onRemove={handleRemove}
-        onClick={handleClick}
-        onFavoriteChange={handleFavoriteChange}
-        data={recentList}
-        title={t('page.dashboard.recentConnection.recentlyConnected')}
-        extra={
-          recentList.length > 0 ? (
-            <a onClick={handleRemoveAll}>
-              {t('page.dashboard.recentConnection.disconnectAll')}
-            </a>
-          ) : null
-        }
-        empty={
-          <div className="list-empty mb-[-24px] rounded-b-none">
-            <Empty
-              desc={t(
-                'page.dashboard.recentConnection.noRecentlyConnectedDapps'
-              )}
-              className="pt-[68px] pb-[181px]"
-            ></Empty>
-          </div>
-        }
-      ></ConnectionList>
+      </div>
     </div>
   );
 };
