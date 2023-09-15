@@ -13,13 +13,15 @@ import IconRefresh from 'ui/assets/urlrefresh.svg';
 import { ConnectStatus } from './WalletConnect/ConnectStatus';
 import { useSessionStatus } from './WalletConnect/useSessionStatus';
 import { Account } from '@/background/service/preference';
-import Spin from './Spin';
 
 interface Props {
   showURL: boolean;
   changeShowURL: (active: boolean) => void;
   refreshFun(): void;
   qrcodeURL: string;
+  onBridgeChange(val: string): void;
+  bridgeURL: string;
+  defaultBridge: string;
   canChangeBridge?: boolean;
   brandName?: string;
   account?: Account;
@@ -29,6 +31,9 @@ const ScanCopyQRCode: React.FC<Props> = ({
   changeShowURL,
   qrcodeURL,
   refreshFun,
+  onBridgeChange,
+  bridgeURL,
+  defaultBridge,
   canChangeBridge = true,
   brandName,
   account,
@@ -64,6 +69,11 @@ const ScanCopyQRCode: React.FC<Props> = ({
     });
   };
 
+  const handleBridgeServerChange = (val: string) => {
+    onBridgeChange(val);
+    setShowOpenApiModal(false);
+  };
+
   React.useEffect(() => {
     // refresh when status is not connected
     if (status && status !== 'CONNECTED') {
@@ -88,19 +98,8 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       </div>
       {!showURL && (
-        <div className="qrcode mb-0 relative" {...hoverProps}>
-          {!qrcodeURL ? (
-            <div
-              className={clsx(
-                'bg-white bg-opacity-70 absolute inset-0',
-                'flex items-center justify-center'
-              )}
-            >
-              <Spin />
-            </div>
-          ) : (
-            <QRCode value={qrcodeURL} size={170} />
-          )}
+        <div className="qrcode mb-0" {...hoverProps}>
+          <QRCode value={qrcodeURL} size={170} />
           {isHovering && (
             <div className="refresh-container">
               <div className="refresh-wrapper">
@@ -146,6 +145,13 @@ const ScanCopyQRCode: React.FC<Props> = ({
           {t('page.newAddress.walletConnect.changeBridgeServer')}
         </div>
       )}
+      <WalletConnectBridgeModal
+        defaultValue={defaultBridge}
+        value={bridgeURL}
+        visible={showOpenApiModal}
+        onChange={handleBridgeServerChange}
+        onCancel={() => setShowOpenApiModal(false)}
+      />
       <ConnectStatus account={account} uri={qrcodeURL} brandName={brandName} />
     </div>
   );
