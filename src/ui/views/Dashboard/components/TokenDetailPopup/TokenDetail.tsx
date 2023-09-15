@@ -230,15 +230,13 @@ const TokenDetail = ({
           <div className="balance-content overflow-hidden">
             <div
               className="balance-value truncate"
-              title={splitNumberByStep(tokenWithAmount.amount || 0)}
+              title={(tokenWithAmount.amount || 0).toString()}
             >
               {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
             </div>
             <div
               className="balance-value-usd truncate"
-              title={splitNumberByStep(
-                tokenWithAmount.amount * token.price || 0
-              )}
+              title={(tokenWithAmount.amount * token.price || 0).toString()}
             >
               ≈ $
               {splitNumberByStep(
