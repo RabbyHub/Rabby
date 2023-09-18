@@ -8,13 +8,11 @@ import { useMedia } from 'react-use';
 
 const OpenApiModal = ({
   value,
-  defaultValue,
   visible,
   onChange,
   onCancel,
 }: {
   value: string;
-  defaultValue: string;
   visible: boolean;
   onChange(val: string): void;
   onCancel(): void;
@@ -36,9 +34,7 @@ const OpenApiModal = ({
   };
 
   const restoreInitial = () => {
-    form.setFieldsValue({
-      host: defaultValue,
-    });
+    form.setFieldsValue({});
   };
 
   useEffect(() => {
