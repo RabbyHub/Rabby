@@ -65,7 +65,7 @@ const WalletConnectTemplate = () => {
     },
     onError(err) {
       if (!err?.message.includes('duplicate')) {
-        message.error(t(err?.message));
+        message.error(t(err?.message as any));
       }
       handleImportByWalletconnect();
       return;
@@ -91,13 +91,12 @@ const WalletConnectTemplate = () => {
 
   const handleImportByWalletconnect = async () => {
     const chain = findChainByEnum(siteRef.current?.chain);
-    const { uri, stashId } = await wallet.initWalletConnect(
+    const { stashId } = await wallet.initWalletConnect(
       brand.brand,
       curStashId,
       chain?.id
     );
     setCurStashId(stashId);
-    setWalletconnectUri(uri!);
 
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
@@ -181,6 +180,9 @@ const WalletConnectTemplate = () => {
   }, [sessionStatus]);
 
   const init = async () => {
+    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
+      setWalletconnectUri(uri);
+    });
     await getCurrentSite();
     handleImportByWalletconnect();
     setReady(true);

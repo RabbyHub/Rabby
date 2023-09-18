@@ -1726,11 +1726,16 @@ export class WalletController extends BaseController {
     return null;
   };
 
+  _currentWalletConnectStashId?: undefined | null | number;
+
   initWalletConnect = async (
     brandName: string,
     curStashId?: number | null,
     chainId = 1
   ) => {
+    if (!curStashId && this._currentWalletConnectStashId) {
+      curStashId = this._currentWalletConnectStashId;
+    }
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -1745,10 +1750,7 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(
-      brandName,
-      !chainId ? 1 : chainId
-    );
+    keyring.initConnector(brandName, !chainId ? 1 : chainId);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
@@ -1808,8 +1810,8 @@ export class WalletController extends BaseController {
         Sentry.captureException(error);
       });
     }
+    this._currentWalletConnectStashId = stashId;
     return {
-      uri,
       stashId,
     };
   };
@@ -1851,19 +1853,18 @@ export class WalletController extends BaseController {
   ) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    if (stashId !== null && stashId !== undefined) {
-      keyring = stashKeyrings[stashId];
-      isNewKey = true;
-    } else {
-      try {
-        keyring = this._getKeyringByType(keyringType);
-      } catch {
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      if (stashId !== null && stashId !== undefined) {
+        keyring = stashKeyrings[stashId];
+      } else {
         const WalletConnectKeyring = keyringService.getKeyringClassForType(
           keyringType
         );
         keyring = new WalletConnectKeyring();
-        isNewKey = true;
       }
+      isNewKey = true;
     }
 
     keyring.setAccountToAdd({
