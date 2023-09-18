@@ -1,46 +1,25 @@
-import { Button, Form, Input, Skeleton, Slider, Spin, Tooltip } from 'antd';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel } from 'background/service/openapi';
-import BigNumber from 'bignumber.js';
+import { useAccount } from '@/ui/store-hooks';
+import { useWallet } from '@/ui/utils';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { useRequest } from 'ahooks';
+import { Form, Input, Skeleton, Spin } from 'antd';
 import clsx from 'clsx';
-import {
-  CHAINS,
-  GAS_LEVEL_TEXT,
-  INTERNAL_REQUEST_ORIGIN,
-  MINIMUM_GAS_LIMIT,
-} from 'consts';
+import { INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { maxBy, sortBy, uniqBy } from 'lodash';
 import React, {
   MouseEventHandler,
   ReactNode,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
-import IconInfo from 'ui/assets/infoicon.svg';
-import { Popup } from 'ui/component';
-import { formatTokenAmount, intToHex } from 'ui/utils/number';
-import { calcMaxPriorityFee } from '@/utils/transaction';
-import styled, { css } from 'styled-components';
-import { Result } from '@rabby-wallet/rabby-security-engine';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import LessPalette from '@/ui/style/var-defs';
-import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconAlert from 'ui/assets/sign/tx/alert.svg';
-import { Chain } from '@debank/common';
-import { getGasLevelI18nKey } from '@/ui/utils/trans';
-import { useWallet } from '@/ui/utils';
-import { useRequest } from 'ahooks';
-import { useAccount } from '@/ui/store-hooks';
-import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { maxBy, sortBy, uniqBy } from 'lodash';
-import IconDown from 'ui/assets/safe-nonce-select/down.svg';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import IconChecked from 'ui/assets/safe-nonce-select/checked.svg';
+import IconDown from 'ui/assets/safe-nonce-select/down.svg';
 import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
+import { intToHex } from 'ui/utils/number';
 
 const Wrapper = styled.div`
   border-radius: 6px;
@@ -130,22 +109,72 @@ const Wrapper = styled.div`
       }
     }
   }
+
+  .ant-form-item-has-error .nonce-input {
+    border-color: var(--r-red-default, #e34935) !important;
+  }
+
+  .ant-form-item-explain,
+  .ant-form-item-extra {
+    min-height: unset;
+  }
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .ant-form-item-explain.ant-form-item-explain-error {
+    color: var(--r-red-default, #e34935);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+  }
 `;
 
 interface SafeNonceSelectorProps {
-  value?: number;
-  onChange?(value: number): void;
+  value?: string;
+  onChange?(value: string): void;
   isReady?: boolean;
   chainId: number;
+  safeInfo?: BasicSafeInfo | null;
 }
 export const SafeNonceSelector = ({
   value,
   onChange,
   isReady,
   chainId,
+  safeInfo,
 }: SafeNonceSelectorProps) => {
   const { t } = useTranslation();
   const [isShowOptionList, setIsShowOptionList] = useState(false);
+
+  const [form] = Form.useForm();
+
+  const val = useMemo(() => {
+    if (value == null || value === '') {
+      return '';
+    }
+    const res = +value;
+    if (Number.isNaN(res)) {
+      return '';
+    }
+    return res;
+  }, [value]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      nonce: val,
+    });
+    form.validateFields();
+  }, [val]);
+
+  const handleOnChange = (_v: string | number) => {
+    const v = +_v;
+    if (Number.isNaN(v)) {
+      onChange?.('');
+    } else {
+      onChange?.(intToHex(v));
+    }
+  };
+
   if (!isReady) {
     return (
       <Wrapper className="pt-[14px] pb-[16px]">
@@ -172,25 +201,55 @@ export const SafeNonceSelector = ({
     <Wrapper>
       <div className="nonce-select">
         <div className="nonce-select-label">{t('global.Nonce')}</div>
-        <Input
-          className="nonce-input"
-          value={value}
-          onChange={(e) => {
-            onChange?.(+e.target.value);
-          }}
-          suffix={
-            <img
-              src={IconDown}
-              onClick={() => setIsShowOptionList((v) => !v)}
-              className={clsx(
-                'cursor-pointer',
-                isShowOptionList && 'rotate-180'
-              )}
-            ></img>
-          }
-        ></Input>
+        <Form form={form}>
+          <Form.Item
+            name="nonce"
+            rules={[
+              {
+                validator(rule, value, callback) {
+                  if (value == null || value === '') {
+                    callback('Please input nonce');
+                  } else if ((value || 0) < (safeInfo?.nonce || 0)) {
+                    callback(
+                      `Nonce is too low, the minimum should be ${
+                        safeInfo?.nonce || 0
+                      }`
+                    );
+                  } else {
+                    callback();
+                  }
+                },
+              },
+            ]}
+          >
+            <Input
+              className="nonce-input"
+              value={value}
+              onChange={(e) => {
+                const v = e.target.value;
+                handleOnChange(v);
+              }}
+              // type="number"
+              suffix={
+                <img
+                  src={IconDown}
+                  onClick={() => setIsShowOptionList((v) => !v)}
+                  className={clsx(
+                    'cursor-pointer',
+                    isShowOptionList && 'rotate-180'
+                  )}
+                ></img>
+              }
+            ></Input>
+          </Form.Item>
+        </Form>
         {isShowOptionList ? (
-          <OptionList chainId={chainId} value={value} onChange={onChange} />
+          <OptionList
+            chainId={chainId}
+            value={val === '' ? undefined : val}
+            onChange={handleOnChange}
+            safeInfo={safeInfo}
+          />
         ) : null}
       </div>
     </Wrapper>
@@ -201,31 +260,17 @@ const OptionList = ({
   chainId,
   value,
   onChange,
+  safeInfo,
 }: {
   chainId: number;
   value?: number;
   onChange?(value: number): void;
+  safeInfo?: BasicSafeInfo | null;
 }) => {
   const wallet = useWallet();
   const [account] = useAccount();
 
   const { t } = useTranslation();
-  const { data: safeInfo, loading: isLoadingSafeInfo } = useRequest(
-    async () => {
-      if (!account?.address) {
-        return;
-      }
-      const safeInfo = await wallet.getBasicSafeInfo({
-        address: account.address,
-        networkId: chainId.toString(),
-      });
-
-      return safeInfo;
-    },
-    {
-      cacheKey: `safeInfo-${account?.address}-${chainId}`,
-    }
-  );
 
   const { data: pendingList, loading: isLoadingPendingList } = useRequest(
     async () => {
@@ -250,10 +295,7 @@ const OptionList = ({
     return maxNonceTx != null ? maxNonceTx.nonce + 1 : safeInfo?.nonce;
   }, [pendingList, safeInfo]);
 
-  if (
-    (isLoadingPendingList || isLoadingSafeInfo) &&
-    (!safeInfo || !pendingList)
-  ) {
+  if (isLoadingPendingList && !pendingList) {
     return (
       <div className="mt-[8px] p-[16px] flex justify-center">
         <Spin spinning></Spin>

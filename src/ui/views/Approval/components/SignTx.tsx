@@ -1843,13 +1843,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               <SafeNonceSelector
                 isReady={isReady}
                 chainId={chainId}
-                value={+(realNonce || tx.nonce)}
+                value={realNonce}
+                safeInfo={safeInfo}
                 onChange={(v) => {
-                  if (safeInfo && safeInfo.nonce <= v) {
-                    setRealNonce(intToHex(v));
-                  } else {
-                    safeInfo && setRealNonce(intToHex(safeInfo.nonce));
-                  }
+                  setRealNonce(v);
                   setNonceChanged(true);
                 }}
               />
@@ -1969,7 +1966,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
-              hasUnProcessSecurityResult
+              hasUnProcessSecurityResult ||
+              (isGnosisAccount &&
+                new BigNumber(realNonce || 0).isLessThan(safeInfo?.nonce || 0))
             }
           />
         </>
