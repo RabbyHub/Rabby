@@ -92,22 +92,42 @@
     }
     &__footer {
       display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      .submit-btn {
-        width: 172px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+
+      .ant-btn {
+        font-size: 13px;
+        border-radius: 4px;
         height: 36px;
         padding: 0;
-        .ant-btn {
-          width: 172px;
-          height: 36px;
-          padding: 0;
+      }
+      .ant-btn-primary[disabled],
+      .ant-btn-primary[disabled]:hover,
+      .ant-btn-primary[disabled]:focus,
+      .ant-btn-primary[disabled]:active {
+        background-color: rgba(112, 132, 255, 0.4);
+        border: none;
+        &:before {
+          display: none;
         }
+      }
+
+      .submit-btn {
+        width: 204px;
+
         span {
           font-weight: 500;
           font-size: 13px;
           line-height: 15px;
           text-align: center;
+        }
+      }
+      .replace-btn {
+        width: 120px;
+        &:hover::before {
+          opacity: 0.1;
         }
       }
     }

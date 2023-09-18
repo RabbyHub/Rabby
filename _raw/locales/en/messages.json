@@ -200,7 +200,21 @@
       "trustValue": "Trust value",
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "SafeNonceSelector": {
+        "explain": {
+          "contractCall": "Contract Call",
+          "send": "Send Token",
+          "unknown": "Unknown Transaction"
+        },
+        "optionGroup": {
+          "recommendTitle": "Recommended nonce",
+          "replaceTitle": "Replace the transaction in Queue "
+        },
+        "option": {
+          "new": "New Transaction"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -1388,7 +1402,16 @@
       "action": {
         "send": "Send"
       },
-      "viewBtn": "View"
+      "viewBtn": "View",
+      "replaceBtn": "Replace",
+      "ReplacePopup": {
+        "options": {
+          "send": "Send Token",
+          "reject": "Reject Transaction"
+        },
+        "title": "Select how to replace this transaction",
+        "desc": " A signed transaction cannot be removed but it can be replaced with a           new transaction with the same nonce."
+      }
     },
     "importSuccess": {
       "title": "Imported Successfully",
@@ -1604,7 +1627,8 @@
     "Loading": "Loading",
     "nonce": "nonce",
     "Balance": "Balance",
-    "Done": "Done"
+    "Done": "Done",
+    "Nonce": "Nonce"
   },
   "background": {
     "error": {

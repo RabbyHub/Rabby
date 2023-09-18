@@ -1521,6 +1521,27 @@ export class WalletController extends BaseController {
     };
   };
 
+  getGnosisPendingTxs = async (address: string, networkId: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundGnosisKeyring'));
+    }
+    if (!networkId) {
+      return [];
+    }
+    try {
+      const safe = await createSafeService({
+        networkId: networkId,
+        address,
+      });
+      const { results } = await safe.getPendingTransactions();
+      return results;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  };
+
   getGnosisOwners = async (
     account: Account,
     safeAddress: string,

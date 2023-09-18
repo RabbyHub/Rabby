@@ -30,7 +30,8 @@
     "Loading": "加载中",
     "Balance": "余额",
     "Done": "完成",
-    "nonce": "nonce"
+    "nonce": "nonce",
+    "Nonce": "Nonce"
   },
   "page": {
     "transactions": {
@@ -1215,7 +1216,13 @@
       "wrapToken": "Wrap 代币",
       "contractPopularity": "No.{{0}} on {{1}}",
       "myMarkWithContract": "My mark on {{chainName}} contract",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "SafeNonceSelector": {
+        "optionGroup": {
+          "recommendTitle": "推荐的Nonce",
+          "replaceTitle": "替换Queue中的交易"
+        }
+      }
     },
     "signTypedData": {
       "buyNFT": {
@@ -1417,7 +1424,16 @@
       "action": {
         "send": "发送"
       },
-      "viewBtn": "查看"
+      "viewBtn": "查看",
+      "replaceBtn": "替换",
+      "ReplacePopup": {
+        "title": "请选择替换交易的方式",
+        "desc": "已经签名的交易无法被清除，但是可以通过发起一笔相同 Nonce的交易来替换。",
+        "options": {
+          "send": "发送代币",
+          "reject": "拒绝交易"
+        }
+      }
     },
     "importSuccess": {
       "title": "成功导入",

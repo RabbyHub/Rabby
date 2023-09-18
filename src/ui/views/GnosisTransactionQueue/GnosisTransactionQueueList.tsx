@@ -42,6 +42,8 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
+import { ReplacePopup } from './components/ReplacePopup';
+import { useHistory } from 'react-router-dom';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -272,8 +274,10 @@ const GnosisTransactionItem = ({
   const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const submitAt = dayjs(data.submissionDate).valueOf();
+
+  const [isShowReplacePopup, setIsShowReplacePopup] = useState(false);
+
   const now = dayjs().valueOf();
-  // todo
   const ago = timeago(now, submitAt);
   let agoText = '';
 
@@ -359,67 +363,117 @@ const GnosisTransactionItem = ({
     window.close();
   };
 
+  const history = useHistory();
+  const handleReplace = async (type: string) => {
+    if (type === 'send') {
+      history.push({
+        pathname: '/send-token',
+        state: {
+          safeInfo: {
+            nonce: data.nonce,
+            chainId: Number(networkId),
+          },
+        },
+      });
+    } else if (type === 'reject') {
+      const params = {
+        chainId: Number(networkId),
+        from: toChecksumAddress(data.safe),
+        to: toChecksumAddress(data.safe),
+        data: '0x',
+        value: `0x`,
+        nonce: intToHex(data.nonce),
+        safeTxGas: 0,
+        gasPrice: '0',
+        baseGas: 0,
+      };
+      wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [params],
+      });
+      window.close();
+    }
+  };
+
   useEffect(() => {
     init();
   }, []);
 
   return (
-    <div
-      className={clsx('queue-item', {
-        canExec:
-          data.confirmations.length >= safeInfo.threshold &&
-          data.nonce === safeInfo.nonce,
-      })}
-    >
-      <div className="queue-item__time">
-        <span>{agoText}</span>
-        <span>
-          {t('global.nonce')}: {data.nonce}
-        </span>
-      </div>
-      <div className="queue-item__info">
-        {explain ? (
-          <TransactionExplain
-            explain={explain}
-            onView={handleView}
-            isViewLoading={isLoading}
-          />
-        ) : (
-          <Skeleton.Button active style={{ width: 336, height: 25 }} />
-        )}
-      </div>
-      <TransactionConfirmations
-        confirmations={data.confirmations}
-        threshold={safeInfo.threshold}
-        owners={safeInfo.owners}
-      />
-      <div className="queue-item__footer">
-        <Tooltip
-          overlayClassName="rectangle"
-          title={
-            data.nonce !== safeInfo.nonce ? (
-              <Trans
-                i18nKey="page.safeQueue.LowerNonceError"
-                values={{ nonce: safeInfo.nonce }}
-              />
-            ) : null
-          }
-        >
+    <>
+      <div
+        className={clsx('queue-item', {
+          canExec:
+            data.confirmations.length >= safeInfo.threshold &&
+            data.nonce === safeInfo.nonce,
+        })}
+      >
+        <div className="queue-item__time">
+          <span>{agoText}</span>
+          <span>
+            {t('global.nonce')}: {data.nonce}
+          </span>
+        </div>
+        <div className="queue-item__info">
+          {explain ? (
+            <TransactionExplain
+              explain={explain}
+              onView={handleView}
+              isViewLoading={isLoading}
+            />
+          ) : (
+            <Skeleton.Button active style={{ width: 336, height: 25 }} />
+          )}
+        </div>
+        <TransactionConfirmations
+          confirmations={data.confirmations}
+          threshold={safeInfo.threshold}
+          owners={safeInfo.owners}
+        />
+        <div className="queue-item__footer">
+          <Tooltip
+            overlayClassName="rectangle"
+            title={
+              data.nonce !== safeInfo.nonce ? (
+                <Trans
+                  i18nKey="page.safeQueue.LowerNonceError"
+                  values={{ nonce: safeInfo.nonce }}
+                />
+              ) : null
+            }
+          >
+            <div>
+              <Button
+                type="primary"
+                size="large"
+                className="submit-btn"
+                onClick={() => onSubmit(data)}
+                disabled={
+                  data.confirmations.length < safeInfo.threshold ||
+                  data.nonce !== safeInfo.nonce
+                }
+              >
+                {t('page.safeQueue.submitBtn')}
+              </Button>
+            </div>
+          </Tooltip>
           <Button
             type="primary"
             size="large"
-            className="submit-btn"
-            onClick={() => onSubmit(data)}
-            disabled={
-              data.confirmations.length < safeInfo.threshold ||
-              data.nonce !== safeInfo.nonce
-            }
+            ghost
+            className="replace-btn"
+            onClick={() => setIsShowReplacePopup(true)}
           >
-            {t('page.safeQueue.submitBtn')}
+            {t('page.safeQueue.replaceBtn')}
           </Button>
-        </Tooltip>
+        </div>
       </div>
-    </div>
+      <ReplacePopup
+        visible={isShowReplacePopup}
+        onClose={() => setIsShowReplacePopup(false)}
+        onSelect={handleReplace}
+      />
+    </>
   );
 };
 
