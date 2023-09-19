@@ -604,6 +604,7 @@ class ProviderController extends BaseController {
         //   errMsg
         // );
         // transactionHistoryService.removeSigningTx(signingTxId!);
+        notificationService.setStatsData(statsData);
         throw new Error(errMsg);
       };
       // const onTransactionSubmitted = (hash: string) => {
@@ -784,6 +785,7 @@ class ProviderController extends BaseController {
             onTransactionSubmitFailed(new Error('Submit tx failed'));
           } else {
             onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
           }
         }
 
