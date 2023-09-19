@@ -1,0 +1,22 @@
+.progress {
+  text-align: center;
+  &-bar {
+    width: 100%;
+    background-color: #dadada;
+    border-radius: 3px;
+    overflow: hidden;
+    &::before {
+      content: " ";
+      display: block;
+      height: 6px;
+      width: var(--percent);
+      background-color: #7084ff;
+    }
+  }
+  &-num {
+    font-size: 12px;
+    color: #7084ff;
+    margin-top: 12px;
+    line-height: 1;
+  }
+}
