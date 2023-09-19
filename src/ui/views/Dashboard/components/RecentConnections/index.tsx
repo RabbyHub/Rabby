@@ -158,7 +158,7 @@ const RecentConnections = ({
       <PageHeader forceShowBack onBack={handleCancel}>
         {t('page.dashboard.recentConnection.title')}
       </PageHeader>
-      <div className="auto-lock-option-list">
+      <div className="auto-lock-option-list mx-[-20px] px-[20px]">
         {visible && (
           <ConnectionList
             onRemove={handleRemove}
