@@ -423,6 +423,7 @@ const PendingOptionContent = ({
     },
     {
       cacheKey: `gnosis-pre-exec-${data.safe}-${data.to}-${data.nonce}-${data?.data}`,
+      staleTime: 10000,
     }
   );
 
