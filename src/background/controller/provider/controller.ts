@@ -526,6 +526,10 @@ class ProviderController extends BaseController {
       };
       if (typeof signedTx === 'string') {
         onTransactionSubmitted(signedTx);
+        if (currentAccount.type === KEYRING_TYPE.WalletConnectKeyring) {
+          statsData.signed = true;
+          statsData.signedSuccess = true;
+        }
         notificationService.setStatsData(statsData);
         return signedTx;
       }
