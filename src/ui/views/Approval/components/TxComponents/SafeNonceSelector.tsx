@@ -14,11 +14,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconChecked from 'ui/assets/safe-nonce-select/checked.svg';
 import IconDown from 'ui/assets/safe-nonce-select/down.svg';
 import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
+import IconFind from 'ui/assets/safe-nonce-select/find.svg';
 import { intToHex } from 'ui/utils/number';
 
 const Wrapper = styled.div`
@@ -126,6 +127,28 @@ const Wrapper = styled.div`
     font-size: 12px;
     font-weight: 400;
     line-height: 14px;
+  }
+
+  .alert-error {
+    display: flex;
+    padding: 40px 40px 36px 40px;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    border-radius: 6px;
+    background: var(--r-neutral-bg-3, #f7fafc);
+    margin-top: 8px;
+
+    &-message {
+      color: var(--r-neutral-body, #3e495e);
+      text-align: center;
+      font-family: SF Pro;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
   }
 `;
 
@@ -272,7 +295,12 @@ const OptionList = ({
 
   const { t } = useTranslation();
 
-  const { data: pendingList, loading: isLoadingPendingList } = useRequest(
+  const {
+    data: pendingList,
+    loading: isLoadingPendingList,
+    refreshAsync,
+    error,
+  } = useRequest(
     async () => {
       if (!account?.address) {
         return;
@@ -299,6 +327,27 @@ const OptionList = ({
     return (
       <div className="mt-[8px] p-[16px] flex justify-center">
         <Spin spinning></Spin>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert-error">
+        <img src={IconFind} alt="" />
+        <div className="alert-error-message">
+          <Trans i18nKey="page.signTx.SafeNonceSelector.error.pendingList">
+            Fail to load pending transactions,{' '}
+            <span
+              onClick={() => {
+                refreshAsync();
+              }}
+              className="underline cursor-pointer"
+            >
+              Retry
+            </span>
+          </Trans>
+        </div>
       </div>
     );
   }

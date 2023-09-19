@@ -1529,17 +1529,12 @@ export class WalletController extends BaseController {
     if (!networkId) {
       return [];
     }
-    try {
-      const safe = await createSafeService({
-        networkId: networkId,
-        address,
-      });
-      const { results } = await safe.getPendingTransactions();
-      return results;
-    } catch (e) {
-      console.error(e);
-      return [];
-    }
+    const safe = await createSafeService({
+      networkId: networkId,
+      address,
+    });
+    const { results } = await safe.getPendingTransactions();
+    return results;
   };
 
   getGnosisOwners = async (

@@ -1,4 +1,4 @@
-import { Field, Popup } from '@/ui/component';
+import { Popup } from '@/ui/component';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';

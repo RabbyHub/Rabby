@@ -1,49 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Button, message, Skeleton, Tabs, Tooltip } from 'antd';
-import clsx from 'clsx';
-import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
-import {
-  SafeTransactionItem,
-  SafeInfo,
-} from '@rabby-wallet/gnosis-sdk/dist/api';
-import { useTranslation, Trans } from 'react-i18next';
-import { toChecksumAddress, numberToHex } from 'web3-utils';
-import dayjs from 'dayjs';
-import { groupBy, sortBy } from 'lodash';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { Button, Skeleton, Tooltip, message } from 'antd';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
+import clsx from 'clsx';
+import dayjs from 'dayjs';
+import { groupBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { numberToHex, toChecksumAddress } from 'web3-utils';
 
-import { intToHex } from 'ethereumjs-util';
-import { timeago, isSameAddress, useWallet } from 'ui/utils';
-import {
-  validateEOASign,
-  validateETHSign,
-  crossCompareOwners,
-} from 'ui/utils/gnosis';
+import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
+import { useAccount } from '@/ui/store-hooks';
+import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import { splitNumberByStep } from 'ui/utils/number';
-import { PageHeader, NameAndAddress } from 'ui/component';
-import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import {
   CHAINS,
   CHAINS_ENUM,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
 } from 'consts';
-import IconUnknown from 'ui/assets/icon-unknown.svg';
+import { intToHex } from 'ethereumjs-util';
+import { useHistory } from 'react-router-dom';
 import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
-import IconUnCheck from 'ui/assets/uncheck.svg';
-import { SvgIconLoading } from 'ui/assets';
-import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconInformation from 'ui/assets/information.svg';
-import './style.less';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
-import { useAccount } from '@/ui/store-hooks';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUnCheck from 'ui/assets/uncheck.svg';
+import { NameAndAddress } from 'ui/component';
+import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
+import { isSameAddress, timeago, useWallet } from 'ui/utils';
+import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
+import { splitNumberByStep } from 'ui/utils/number';
 import { ReplacePopup } from './components/ReplacePopup';
-import { useHistory } from 'react-router-dom';
+import './style.less';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -366,13 +357,14 @@ const GnosisTransactionItem = ({
   const history = useHistory();
   const handleReplace = async (type: string) => {
     if (type === 'send') {
-      history.push({
+      history.replace({
         pathname: '/send-token',
         state: {
           safeInfo: {
             nonce: data.nonce,
             chainId: Number(networkId),
           },
+          from: '/gnosis-queue',
         },
       });
     } else if (type === 'reject') {

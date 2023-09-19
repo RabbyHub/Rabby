@@ -213,6 +213,9 @@
         },
         "option": {
           "new": "New Transaction"
+        },
+        "error": {
+          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
         }
       }
     },

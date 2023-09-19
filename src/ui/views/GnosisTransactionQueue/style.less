@@ -126,8 +126,12 @@
       }
       .replace-btn {
         width: 120px;
-        &:hover::before {
-          opacity: 0.1;
+        &:hover {
+          &::before {
+            display: none;
+          }
+          background-color: #8697ff1a !important;
+          box-shadow: none;
         }
       }
     }

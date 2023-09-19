@@ -822,6 +822,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSend,
     isSwap,
     isViewGnosisSafe,
+    safeTxGas,
   } = normalizeTxParams(params.data[0]);
 
   let updateNonce = true;
@@ -1125,6 +1126,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         to: tx.to,
         data: tx.data,
         value: tx.value,
+        safeTxGas: safeTxGas,
       };
       params.nonce = realNonce;
       await wallet.buildGnosisTransaction(

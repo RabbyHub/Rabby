@@ -1221,6 +1221,9 @@
         "optionGroup": {
           "recommendTitle": "推荐的Nonce",
           "replaceTitle": "替换Queue中的交易"
+        },
+        "error": {
+          "pendingList": "Pending列表获取失败, <1/><2>重试</2>"
         }
       }
     },

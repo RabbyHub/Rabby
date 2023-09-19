@@ -922,7 +922,12 @@ const SendToken = () => {
   };
 
   const handleClickBack = () => {
-    history.replace('/');
+    const from = (history.location.state as any)?.from;
+    if (from) {
+      history.replace(from);
+    } else {
+      history.replace('/');
+    }
   };
 
   const loadCurrentToken = async (
