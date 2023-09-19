@@ -1057,3 +1057,5 @@ export const SIGN_PERMISSION_OPTIONS = [
     value: SIGN_PERMISSION_TYPES.TESTNET,
   },
 ];
+
+export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

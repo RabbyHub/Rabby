@@ -16,6 +16,7 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   CHAINS,
+  REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
@@ -387,6 +388,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
+    if (
+      currentAccount?.type &&
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+    ) {
+      rejectApproval('This address can not sign text message', false, true);
+    }
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
