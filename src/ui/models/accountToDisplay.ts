@@ -4,12 +4,15 @@ import { RootModel } from '.';
 import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
 import PQueue from 'p-queue';
+import { TotalBalanceResponse } from '@/background/service/openapi';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
   balance: number;
   byImport?: boolean;
   publicKey?: string;
+  hdPathBasePublicKey?: string;
+  hdPathType?: string;
 };
 
 type IState = {
@@ -42,7 +45,6 @@ export const accountToDisplay = createModel<RootModel>()({
         store.app.wallet.getAllVisibleAccounts(),
         store.app.wallet.getAllAlianNameByMap(),
       ]);
-
       const result = await Promise.all<IDisplayedAccountWithBalance>(
         displayedKeyrings
           .map((item) => {
@@ -60,9 +62,30 @@ export const accountToDisplay = createModel<RootModel>()({
           })
           .flat(1)
           .map(async (item) => {
-            let balance = await store.app.wallet.getAddressCacheBalance(
-              item?.address
-            );
+            let balance: TotalBalanceResponse | null = null;
+
+            let accountInfo = {} as {
+              hdPathBasePublicKey?: string;
+              hdPathType?: string;
+            };
+
+            await Promise.allSettled([
+              store.app.wallet.getAddressCacheBalance(item?.address),
+              store.app.wallet.requestKeyring(
+                item.type,
+                'getAccountInfo',
+                null,
+                item.address
+              ),
+            ]).then(([res1, res2]) => {
+              if (res1.status === 'fulfilled') {
+                balance = res1.value;
+              }
+              if (res2.status === 'fulfilled') {
+                accountInfo = res2.value;
+              }
+            });
+
             if (!balance) {
               balance = {
                 total_usd_value: 0,
@@ -72,6 +95,8 @@ export const accountToDisplay = createModel<RootModel>()({
             return {
               ...item,
               balance: balance?.total_usd_value || 0,
+              hdPathBasePublicKey: accountInfo?.hdPathBasePublicKey,
+              hdPathType: accountInfo?.hdPathType,
             };
           })
       );

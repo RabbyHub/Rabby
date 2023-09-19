@@ -743,7 +743,11 @@
       "backup-seed-phrase": "Backup Seed Phrase",
       "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
       "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
-      "seed-phrase-delete-title": "Delete seed phrase?"
+      "seed-phrase-delete-title": "Delete seed phrase?",
+      "sort-by-balance": "Sort by balance",
+      "sort-by-address-type": "Sort by address type",
+      "sort-by-address-note": "Sort by address note",
+      "sort-address": "Sort Address"
     },
     "dashboard": {
       "home": {

@@ -152,19 +152,18 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             //   address: from,
             //   chainId: Number(chainId),
             // });
-
-            wallet.reportStats('signedTransaction', {
-              type: account.brandName,
-              chainId: findChainByEnum(chain)?.serverId || '',
-              category: KEYRING_CATEGORY_MAP[account.type],
-              success: true,
-              preExecSuccess: explain
-                ? explain?.calcSuccess && explain?.pre_exec.success
-                : true,
-              createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-              source: params?.$ctx?.ga?.source || '',
-              trigger: params?.$ctx?.ga?.trigger || '',
-            });
+            //   wallet.reportStats('signedTransaction', {
+            //     type: account.brandName,
+            //     chainId: findChainByEnum(chain)?.serverId || '',
+            //     category: KEYRING_CATEGORY_MAP[account.type],
+            //     success: true,
+            //     preExecSuccess: explain
+            //       ? explain?.calcSuccess && explain?.pre_exec.success
+            //       : true,
+            //     createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            //     source: params?.$ctx?.ga?.source || '',
+            //     trigger: params?.$ctx?.ga?.trigger || '',
+            //   });
           }
         }
         setSignFinishedData({
@@ -182,19 +181,18 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             //   address: from,
             //   chainId: Number(chainId),
             // });
-
-            wallet.reportStats('signedTransaction', {
-              type: account.brandName,
-              chainId: findChainByEnum(chain)?.serverId || '',
-              category: KEYRING_CATEGORY_MAP[account.type],
-              success: false,
-              preExecSuccess: explain
-                ? explain?.calcSuccess && explain?.pre_exec.success
-                : true,
-              createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-              source: params?.$ctx?.ga?.source || '',
-              trigger: params?.$ctx?.ga?.trigger || '',
-            });
+            // wallet.reportStats('signedTransaction', {
+            //   type: account.brandName,
+            //   chainId: findChainByEnum(chain)?.serverId || '',
+            //   category: KEYRING_CATEGORY_MAP[account.type],
+            //   success: false,
+            //   preExecSuccess: explain
+            //     ? explain?.calcSuccess && explain?.pre_exec.success
+            //     : true,
+            //   createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            //   source: params?.$ctx?.ga?.source || '',
+            //   trigger: params?.$ctx?.ga?.trigger || '',
+            // });
           }
         }
         rejectApproval(data.errorMsg);
