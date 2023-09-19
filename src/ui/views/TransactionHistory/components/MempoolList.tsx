@@ -1,6 +1,7 @@
 import { TransactionHistoryItem } from '@/background/service/transactionHistory';
 import { CHAINS_LIST } from '@debank/common';
 import { useRequest } from 'ahooks';
+import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -67,7 +68,7 @@ export const MempoolList = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { data } = useRequest(
+  const { data, loading } = useRequest(
     async () => {
       if (!tx.hash) {
         return undefined;
@@ -86,6 +87,14 @@ export const MempoolList = ({
   );
 
   const isEmpty = !data || !data.length;
+
+  if (loading) {
+    return (
+      <Wrapper className="flex justify-center items-center">
+        <Spin spinning></Spin>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>

@@ -239,7 +239,7 @@
       "connecting": "Connecting...",
       "ledgerNotConnected": "Ledger is not connected",
       "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Submit",
+      "signAndSubmitButton": "Sign and Create",
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
         "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
@@ -273,9 +273,9 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to submit",
+        "txFailed": "Fail to created",
         "sigReceived": "Signature received",
-        "sigCompleted": "Transaction submitted",
+        "sigCompleted": "Transaction created",
         "getSig": "Get signature",
         "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
@@ -292,7 +292,7 @@
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Submitting transaction",
+        "submitting": "Signed. Creating transaction",
         "resubmited": "Resubmited"
       },
       "common": {
