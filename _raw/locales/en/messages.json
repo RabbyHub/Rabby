@@ -1403,7 +1403,8 @@
       "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
       "unlimited": "unlimited",
       "action": {
-        "send": "Send"
+        "send": "Send",
+        "cancel": "Cancel Pending Transaction"
       },
       "viewBtn": "View",
       "replaceBtn": "Replace",

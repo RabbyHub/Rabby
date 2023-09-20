@@ -12,6 +12,7 @@ import React, {
   ReactNode,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -21,6 +22,8 @@ import IconDown from 'ui/assets/safe-nonce-select/down.svg';
 import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
 import IconFind from 'ui/assets/safe-nonce-select/find.svg';
 import { intToHex } from 'ui/utils/number';
+import { findChainByID } from '@/utils/chain';
+import { getActionTypeText, getActionTypeTextByType } from '../Actions/utils';
 
 const Wrapper = styled.div`
   border-radius: 6px;
@@ -198,6 +201,20 @@ export const SafeNonceSelector = ({
     }
   };
 
+  const optionListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const parent = document.querySelector('.approval-tx');
+    if (optionListRef.current && parent) {
+      const shouldScroll =
+        optionListRef.current.getBoundingClientRect().top + 52 >
+        parent.getBoundingClientRect().height;
+      if (shouldScroll) {
+        parent.scrollTo(0, parent.scrollTop + 128);
+      }
+    }
+  }, [isShowOptionList]);
+
   if (!isReady) {
     return (
       <Wrapper className="pt-[14px] pb-[16px]">
@@ -267,12 +284,14 @@ export const SafeNonceSelector = ({
           </Form.Item>
         </Form>
         {isShowOptionList ? (
-          <OptionList
-            chainId={chainId}
-            value={val === '' ? undefined : val}
-            onChange={handleOnChange}
-            safeInfo={safeInfo}
-          />
+          <div ref={optionListRef}>
+            <OptionList
+              chainId={chainId}
+              value={val === '' ? undefined : val}
+              onChange={handleOnChange}
+              safeInfo={safeInfo}
+            />
+          </div>
         ) : null}
       </div>
     </Wrapper>
@@ -402,9 +421,11 @@ const PendingOptionContent = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { data: explain, loading } = useRequest(
+  const { data: res, loading } = useRequest(
     async () => {
-      return wallet.openapi.preExecTx({
+      const chain = findChainByID(chainId)!;
+      return wallet.openapi.parseTx({
+        chainId: chain.serverId,
         tx: {
           chainId,
           from: data.safe,
@@ -415,42 +436,22 @@ const PendingOptionContent = ({
           gasPrice: '0x0',
           gas: '0x0',
         },
-        origin: INTERNAL_REQUEST_ORIGIN,
-        address: data.safe,
-        updateNonce: false,
-        pending_tx_list: [],
+        origin: origin || '',
+        addr: data.safe,
       });
     },
     {
-      cacheKey: `gnosis-pre-exec-${data.safe}-${data.to}-${data.nonce}-${data?.data}`,
+      cacheKey: `gnosis-parse-tx-${data.safe}-${data.to}-${data.nonce}-${data?.data}`,
       staleTime: 10000,
     }
   );
 
   const content = useMemo(() => {
-    if (
-      explain?.type_call ||
-      explain?.type_cancel_nft_collection_approval ||
-      explain?.type_cancel_single_nft_approval ||
-      explain?.type_cancel_token_approval ||
-      explain?.type_cancel_tx ||
-      explain?.type_deploy_contract ||
-      explain?.type_list_nft ||
-      explain?.type_nft_collection_approval ||
-      explain?.type_nft_send ||
-      explain?.type_single_nft_approval ||
-      explain?.type_token_approval
-    ) {
-      return t('page.signTx.SafeNonceSelector.explain.contractCall');
-    } else if (explain?.type_send) {
-      return t('page.signTx.SafeNonceSelector.explain.send');
-    } else {
-      return t('page.signTx.SafeNonceSelector.explain.unknown');
-    }
-  }, [explain]);
+    return getActionTypeTextByType(res?.action?.type || '');
+  }, [res?.action?.type]);
 
   return (
-    <div>
+    <div className="truncate">
       {data.nonce} - {loading ? '' : content}
     </div>
   );

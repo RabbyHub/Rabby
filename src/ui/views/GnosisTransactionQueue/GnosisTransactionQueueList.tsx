@@ -1,11 +1,17 @@
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { Button, Skeleton, Tooltip, message } from 'antd';
-import { ExplainTxResponse } from 'background/service/openapi';
+import {
+  ApproveAction,
+  ExplainTxResponse,
+  ParseTxResponse,
+  RevokeTokenApproveAction,
+  SendAction,
+} from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import { groupBy } from 'lodash';
+import { get, groupBy } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { numberToHex, toChecksumAddress } from 'web3-utils';
@@ -35,6 +41,10 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ReplacePopup } from './components/ReplacePopup';
 import './style.less';
+import { findChainByID } from '@/utils/chain';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { useRequest } from 'ahooks';
+import { getProtocol } from '../Approval/components/Actions/utils';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -158,25 +168,47 @@ const TransactionExplain = ({
   explain,
   onView,
   isViewLoading,
+  serverId,
 }: {
-  explain: ExplainTxResponse;
+  explain: ParseTxResponse;
   isViewLoading: boolean;
   onView(): void;
+  serverId: string;
 }) => {
   const { t } = useTranslation();
   let icon: React.ReactNode = (
     <img className="icon icon-explain" src={IconUnknown} />
   );
   let content: string | React.ReactNode = t('page.safeQueue.unknownTx');
+  const wallet = useWallet();
+  const { data: spenderProtocol } = useRequest(async () => {
+    if (explain?.action?.data && 'spender' in explain.action.data) {
+      const { desc } = await wallet.openapi.addrDesc(
+        explain?.action?.data?.spender
+      );
+      return getProtocol(desc.protocol, serverId);
+    }
+  });
+
+  const { data: contractProtocol } = useRequest(async () => {
+    if (
+      explain?.action?.data &&
+      !('spender' in (explain?.action?.data || {})) &&
+      explain?.contract_call?.contract?.id
+    ) {
+      const { desc } = await wallet.openapi.addrDesc(
+        explain?.contract_call?.contract?.id
+      );
+      return getProtocol(desc.protocol, serverId);
+    }
+  });
 
   if (explain) {
-    if (explain.type_cancel_token_approval) {
+    if (explain?.action?.type === 'revoke_token') {
+      const data = explain.action.data as RevokeTokenApproveAction;
       icon = (
         <img
-          src={
-            explain.type_cancel_token_approval.spender_protocol_logo_url ||
-            IconUnknown
-          }
+          src={spenderProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
@@ -184,20 +216,17 @@ const TransactionExplain = ({
         <Trans
           i18nKey="page.safeQueue.cancelExplain"
           values={{
-            token: explain.type_cancel_token_approval.token_symbol,
+            token: getTokenSymbol(data.token),
             protocol:
-              explain.type_cancel_token_approval.spender_protocol_name ||
-              t('page.safeQueue.unknownProtocol'),
+              spenderProtocol?.name || t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
-    }
-    if (explain.type_token_approval) {
+    } else if (explain?.action?.type === 'approve_token') {
+      const data = explain.action.data as ApproveAction;
       icon = (
         <img
-          src={
-            explain.type_token_approval.spender_protocol_logo_url || IconUnknown
-          }
+          src={spenderProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
@@ -205,31 +234,32 @@ const TransactionExplain = ({
         <Trans
           i18nKey="page.safeQueue.approvalExplain"
           values={{
-            token: explain.type_token_approval.token_symbol,
-            count: explain.type_token_approval.is_infinity
-              ? t('page.safeQueue.unlimited')
-              : splitNumberByStep(explain.type_token_approval.token_amount),
+            token: getTokenSymbol(data.token),
+            count:
+              data.token.amount < 1e9
+                ? splitNumberByStep(data.token.amount)
+                : t('page.safeQueue.unlimited'),
             protocol:
-              explain.type_token_approval.spender_protocol_name ||
-              t('page.safeQueue.unknownProtocol'),
+              spenderProtocol?.name || t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
-    }
-    if (explain.type_send) {
+    } else if (explain?.action?.type === 'send_token') {
+      const data = explain.action.data as SendAction;
       icon = <img className="icon icon-explain" src={IconUser} />;
       content = `${t('page.safeQueue.action.send')} ${splitNumberByStep(
-        explain.type_send.token_amount
-      )} ${explain.type_send.token_symbol}`;
-    }
-    if (explain.type_call) {
+        data.token.amount
+      )} ${getTokenSymbol(data.token)}`;
+    } else if (explain?.action?.type === 'cancel_tx') {
+      content = t('page.safeQueue.action.cancel');
+    } else if (explain?.contract_call) {
       icon = (
         <img
-          src={explain.type_call.contract_protocol_logo_url || IconUnknown}
+          src={contractProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
-      content = explain.type_call.action;
+      content = explain.contract_call.func;
     }
   }
 
@@ -262,7 +292,7 @@ const GnosisTransactionItem = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
+  const [explain, setExplain] = useState<ParseTxResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const submitAt = dayjs(data.submissionDate).valueOf();
 
@@ -290,7 +320,9 @@ const GnosisTransactionItem = ({
   }
 
   const init = async () => {
-    const res = await wallet.openapi.preExecTx({
+    const chain = findChainByID(+networkId)!;
+    const res = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
       tx: {
         chainId: Number(networkId),
         from: data.safe,
@@ -302,9 +334,7 @@ const GnosisTransactionItem = ({
         gas: '0x0',
       },
       origin: INTERNAL_REQUEST_ORIGIN,
-      address: data.safe,
-      updateNonce: false,
-      pending_tx_list: [],
+      addr: data.safe,
     });
     setExplain(res);
   };
@@ -411,6 +441,7 @@ const GnosisTransactionItem = ({
             <TransactionExplain
               explain={explain}
               onView={handleView}
+              serverId={findChainByID(+networkId)!.serverId}
               isViewLoading={isLoading}
             />
           ) : (
