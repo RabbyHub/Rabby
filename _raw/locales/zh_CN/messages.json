@@ -1215,7 +1215,30 @@
       "wrapToken": "Wrap 代币",
       "contractPopularity": "No.{{0}} on {{1}}",
       "myMarkWithContract": "My mark on {{chainName}} contract",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "BroadcastMode": {
+        "instant": {
+          "title": "立即广播",
+          "desc": "交易创建后将被立即广播到链上节点"
+        },
+        "lowGas": {
+          "title": "省 Gas 广播",
+          "desc": "交易创建后会等链上Gas较低的时广播从而节省Gas"
+        },
+        "mev": {
+          "title": "MEV 广播",
+          "desc": "交易创建后会被广播到指定MEV节点"
+        },
+        "tips": {
+          "notSupportChain": "当前链不支持该模式",
+          "customRPC": "使用自定义RPC时不支持该模式",
+          "walletConnect": "Wallet Connect 签名不支持该模式",
+          "notSupported": "不支持该模式"
+        },
+        "lowGasDeadline": {
+          "label": "最长等待时间"
+        }
+      }
     },
     "signTypedData": {
       "buyNFT": {

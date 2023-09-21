@@ -716,6 +716,7 @@ class ProviderController extends BaseController {
             push_type: pushType,
             low_gas_deadline: lowGasDeadline,
             req_id: preReqId || '',
+            origin,
           });
           hash = res.req.tx_id || undefined;
           reqId = res.req.id || undefined;
