@@ -359,7 +359,7 @@ export enum WALLET_BRAND_TYPES {
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
   Rainbow = 'Rainbow',
-  Bitkeep = 'Bitkeep',
+  Bitkeep = 'Bitget',
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
@@ -383,7 +383,7 @@ export type IWalletBrandContent = {
 };
 
 export const WALLET_BRAND_CONTENT: {
-  [K in WALLET_BRAND_TYPES]: IWalletBrandContent;
+  [K in string]: IWalletBrandContent;
 } = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
@@ -576,9 +576,22 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
+  /**
+   * @deprecated
+   * for backward compatibility
+   */
+  Bitkeep: {
+    id: 22,
+    name: 'Bitget Wallet',
+    brand: WALLET_BRAND_TYPES.Bitkeep,
+    icon: LogoBitkeep,
+    image: LogoBitkeep,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
   [WALLET_BRAND_TYPES.Bitkeep]: {
     id: 22,
-    name: 'Bitkeep',
+    name: 'Bitget Wallet',
     brand: WALLET_BRAND_TYPES.Bitkeep,
     icon: LogoBitkeep,
     image: LogoBitkeep,
