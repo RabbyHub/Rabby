@@ -3,7 +3,7 @@ export { default as SignTx } from './SignTx';
 export { default as SignTypedData } from './SignTypedData';
 export { default as Connect } from './Connect';
 export { default as WatchAddressWaiting } from './WatchAddressWaiting';
-export { default as AddChain } from './AddChain';
+export { default as AddChain } from './AddChain/AddChain';
 export { default as QRHardWareWaiting } from './QRHardWareWaiting';
 export { default as LedgerHardwareWaiting } from './LedgerHardwareWaiting';
 export { CommonWaiting } from './CommonWaiting';

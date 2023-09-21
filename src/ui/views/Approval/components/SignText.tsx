@@ -349,6 +349,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             engineResults={engineResults}
             raw={hexData}
             message={signText}
+            origin={params.session.origin}
           />
         )}
       </div>

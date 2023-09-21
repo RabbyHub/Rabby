@@ -10,6 +10,7 @@ import VerifyAddress from './VerifyAddress';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import clsx from 'clsx';
 import { Popup } from 'ui/component';
+import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 
 const { TabPane } = Tabs;
 
@@ -87,24 +88,6 @@ export const ActionWrapper = styled.div`
   }
 `;
 
-const NoActionAlert = styled.div`
-  display: flex;
-  align-items: flex-start;
-  background: #e8eaf3;
-  border-radius: 6px;
-  padding: 15px;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 18px;
-  color: #333333;
-  margin-bottom: 15px;
-  .icon-alert {
-    margin-right: 8px;
-    width: 15px;
-    margin-top: 1px;
-  }
-`;
-
 const MessageWrapper = styled.div`
   .title {
     position: relative;
@@ -161,11 +144,13 @@ const Actions = ({
   engineResults,
   raw,
   message,
+  origin,
 }: {
   data: TextActionData | null;
   engineResults: Result[];
   raw: string;
   message: string;
+  origin: string;
 }) => {
   const actionName = useMemo(() => {
     if (!data) return '';
@@ -223,10 +208,12 @@ const Actions = ({
         </ActionWrapper>
       )}
       {!data && (
-        <NoActionAlert>
-          <img src={IconAlert} className="icon icon-alert" />
-          {t('page.signTx.sigCantDecode')}
-        </NoActionAlert>
+        <NoActionAlert
+          data={{
+            origin,
+            text: message,
+          }}
+        />
       )}
       <MessageWrapper
         className={clsx({

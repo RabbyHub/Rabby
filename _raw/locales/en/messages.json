@@ -1250,7 +1250,13 @@
     "switchChain": {
       "title": "Switching to {{chain}}",
       "chainNotSupport": "The requested chain is not supported by Rabby yet",
-      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets",
+      "chainNotSupportYet": "The requested chain is not supported by Rabby yet",
+      "chainId": "Chain ID:",
+      "unknownChain": "Unknown chain",
+      "requestsReceived": "1 request received",
+      "requestsReceivedPlural": "{{count}} requests received",
+      "requestRabbyToSupport": "Request Rabby to Support"
     },
     "signText": {
       "title": "Sign Text",
