@@ -1522,10 +1522,6 @@ export class WalletController extends BaseController {
   };
 
   getGnosisPendingTxs = async (address: string, networkId: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) {
-      throw new Error(t('background.error.notFoundGnosisKeyring'));
-    }
     if (!networkId) {
       return [];
     }
