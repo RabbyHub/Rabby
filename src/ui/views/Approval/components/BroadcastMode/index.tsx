@@ -383,7 +383,7 @@ export const BroadcastMode = ({
                 }}
               >
                 <div className="flex items-center gap-[4px]">
-                  <div>
+                  <div className="mr-auto">
                     <div className="option-title">{option.title}</div>
                     <div className="option-desc">{option.desc}</div>
                   </div>

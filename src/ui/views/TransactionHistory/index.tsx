@@ -49,12 +49,6 @@ const TransactionHistory = () => {
     setCompleteList(completeds);
   };
 
-  // useInterval(() => {
-  //   if (pendingList.length > 0) {
-  //     loadList();
-  //   }
-  // }, 5000);
-
   const handleTxComplete = () => {
     init();
   };

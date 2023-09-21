@@ -9,6 +9,7 @@ import { ConnectedSite } from 'background/service/permission';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { flatten, maxBy } from 'lodash';
 import React from 'react';
+import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
 
@@ -57,17 +58,25 @@ const AlertDetail = ({
     <div className="alert-detail">
       <img src={IconWarning} alt="" />
       <div className="alert-detail-content">
-        Nonce #{data.nonce} skipped on {chain?.name || 'Unkown'} chain. This may
-        cause pending transactions ahead.{' '}
-        <span
-          className="link"
-          onClick={() => {
-            onSubmitTx?.(data);
+        <Trans
+          i18nKey="page.activities.signedTx.SkipNonceAlert.alert"
+          values={{
+            nonce: data.nonce,
+            chainName: chain?.name || 'Unknown',
           }}
         >
-          Submit a tx
-        </span>{' '}
-        on chain to resolve
+          Nonce #{data.nonce} skipped on {chain?.name || 'Unknown'} chain. This
+          may cause pending transactions ahead.{' '}
+          <span
+            className="link"
+            onClick={() => {
+              onSubmitTx?.(data);
+            }}
+          >
+            Submit a tx
+          </span>{' '}
+          on chain to resolve
+        </Trans>
       </div>
     </div>
   );

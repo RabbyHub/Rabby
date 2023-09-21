@@ -94,7 +94,7 @@ export const TransactionItem = ({
           address: maxGasTx.rawTx.from,
         });
         onQuickCancel?.();
-        message.success('Canceled');
+        message.success(t('page.activities.signedTx.message.cancelSuccess'));
       } catch (e) {
         message.error(e.message);
       }
@@ -113,7 +113,7 @@ export const TransactionItem = ({
         nonce: +tx.rawTx.nonce,
         address: tx.rawTx.from,
       });
-      message.success('Broadcasted');
+      message.success(t('page.activities.signedTx.message.broadcastSuccess'));
     } catch (e) {
       console.error(e);
       message.error(e.message);

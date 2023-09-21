@@ -409,6 +409,16 @@
           "empty": "Not found in any node",
           "reBroadcastBtn": "Re-broadcast",
           "title": "Found in the below memopools"
+        },
+        "message": {
+          "broadcastSuccess": "Broadcasted",
+          "cancelSuccess": "Canceled"
+        },
+        "gas": {
+          "noCost": "No Gas cost"
+        },
+        "SkipNonceAlert": {
+          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <1/> <2>Submit a tx</2> <3/> on chain to resolve"
         }
       },
       "signedText": {

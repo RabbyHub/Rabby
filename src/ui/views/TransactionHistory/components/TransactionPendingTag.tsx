@@ -32,6 +32,15 @@ export const TransactionPendingTag = ({
     return null;
   }
 
+  if (maxGasTx.hash && !maxGasTx.reqId) {
+    return (
+      <div className="pending">
+        <SvgPendingSpin className="icon icon-pending-spin" />
+        {t('page.activities.signedTx.status.pending')}
+      </div>
+    );
+  }
+
   if (maxGasTx.hash) {
     return (
       <Popover
@@ -66,9 +75,11 @@ export const TransactionPendingTag = ({
         <SvgPendingSpin className="icon icon-pending-spin" />
         {t('page.activities.signedTx.status.pendingBroadcast')}{' '}
         <TooltipWithMagnetArrow
-          overlayClassName="rectangle max-w-[360px] w-[max-content]"
-          autoAdjustOverflow={false}
+          overlayClassName="rectangle max-w-[330px] w-[max-content]"
           placement="top"
+          align={{
+            offset: [20, 0],
+          }}
           title={
             <>
               {t('page.activities.signedTx.tips.pendingBroadcastRetry', {
@@ -96,9 +107,11 @@ export const TransactionPendingTag = ({
       <SvgPendingSpin className="icon icon-pending-spin" />
       {t('page.activities.signedTx.status.pendingBroadcast')}{' '}
       <TooltipWithMagnetArrow
-        overlayClassName="rectangle max-w-[360px] w-[max-content]"
-        autoAdjustOverflow={false}
+        overlayClassName="rectangle max-w-[330px] w-[max-content]"
         placement="top"
+        align={{
+          offset: [20, 0],
+        }}
         title={
           <>
             {t('page.activities.signedTx.tips.pendingBroadcast', {

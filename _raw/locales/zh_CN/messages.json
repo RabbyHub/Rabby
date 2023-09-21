@@ -623,16 +623,49 @@
           "canceled": "已取消",
           "failed": "交易失败",
           "pending": "待完成",
-          "submitFailed": "提交失败"
+          "submitFailed": "提交失败",
+          "pendingBroadcast": "Pending: 等待广播",
+          "pendingBroadcasted": "Pending: 已广播",
+          "withdrawed": "已快捷取消"
         },
         "tips": {
           "canNotCancel": "无法加速或取消：不是第一个待完成的交易",
-          "pendingDetail": "只会有一笔交易成功完成，而且一般是 Gas Price 最高的一笔交易将成功"
+          "pendingDetail": "只会有一笔交易成功完成，而且一般是 Gas Price 最高的一笔交易将成功",
+          "pendingBroadcastRetry": "广播失败，上次广播时间：{{pushAt}}",
+          "pendingBroadcastRetryBtn": "重新广播",
+          "pendingBroadcast": "已设置为省Gas广播模式，正在等链上Gas较低的时广播。最晚将在创建后{{deadline}}后广播。",
+          "pendingBroadcastBtn": "立即广播"
         },
         "txType": {
           "cancel": "取消交易",
           "initial": "发起交易",
           "speedUp": "加速交易"
+        },
+        "MempoolList": {
+          "empty": "未发现包含这笔交易的节点",
+          "reBroadcastBtn": "重新广播",
+          "title": "已在以下节点的memopool发现这笔交易"
+        },
+        "message": {
+          "broadcastSuccess": "已广播",
+          "cancelSuccess": "已取消"
+        },
+        "CancelTxPopup": {
+          "title": "取消交易",
+          "options": {
+            "quickCancel": {
+              "title": "快捷取消",
+              "desc": "不需要发起链上取消，不需要Gasfee",
+              "tips": "不是等待广播的交易，不支持快捷取消"
+            },
+            "onChainCancel": {
+              "title": "链上取消",
+              "desc": "发起新的链上交易来取消，需要Gasfee"
+            }
+          }
+        },
+        "SkipNonceAlert": {
+          "alert": "当前{{chainName}}链因快捷取消导致Nonce#{{nonce}}被跳过, 导致后续Pending交易无法完成, 可<1/><2>发起一笔链上交易</2><3/>来填充"
         }
       },
       "title": "签名记录"
