@@ -1,3 +1,4 @@
+import { findMaxGasTx } from './../../../../utils/tx';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -5,7 +6,7 @@ import {
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChainByID } from '@/utils/chain';
-import { getPendingGroupCategory } from '@/utils/tx';
+import { checkIsPendingTxGroup, getPendingGroupCategory } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
 import { TokenItem, TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { useInterval, useRequest } from 'ahooks';
@@ -58,7 +59,6 @@ export const useGetTx = ({
   );
 };
 
-// todo fix
 export const useLoadTxRequests = (
   pendings: TransactionGroup[],
   options?: {
@@ -114,20 +114,10 @@ export const useLoadTxData = (item: TransactionGroup) => {
   const wallet = useWallet();
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
 
-  const completedTx = item.txs.find((tx) => tx.isCompleted);
-  const isCompleted = !item.isPending || item.isSubmitFailed;
+  const completedTx = item.txs.find(
+    (tx) => tx.isCompleted && !tx.isSubmitFailed && !tx.isWithdrawed
+  );
 
-  // const [txQueues, setTxQueues] = useState<
-  //   Record<
-  //     string,
-  //     {
-  //       frontTx?: number;
-  //       gasUsed?: number;
-  //       token?: TokenItem;
-  //       tokenCount?: number;
-  //     }
-  //   >
-  // >({});
   const hasTokenPrice = !!item.explain?.native_token;
   const gasTokenCount =
     hasTokenPrice && completedTx
@@ -145,7 +135,43 @@ export const useLoadTxData = (item: TransactionGroup) => {
     : '';
 
   const loadTxData = async () => {
-    if (gasTokenCount) return;
+    if (gasTokenCount) {
+      return;
+    }
+    let map: Record<
+      string,
+      {
+        frontTx?: number;
+        gasUsed?: number;
+        token?: TokenItem;
+        tokenCount?: number;
+      }
+    > = {};
+    if (completedTx) {
+      const res = await wallet.openapi.getTx(
+        chain.serverId,
+        completedTx.hash!,
+        Number(
+          completedTx.rawTx.gasPrice || completedTx.rawTx.maxFeePerGas || 0
+        )
+      );
+      map = {
+        ...map,
+        [res.hash]: {
+          token: res.token,
+          tokenCount:
+            (res.gas_used *
+              Number(
+                completedTx!.rawTx.gasPrice ||
+                  completedTx!.rawTx.maxFeePerGas ||
+                  0
+              )) /
+            1e18,
+          gasUsed: res.gas_used,
+        },
+      };
+      return map;
+    }
 
     const results = await Promise.all(
       item.txs
@@ -158,76 +184,18 @@ export const useLoadTxData = (item: TransactionGroup) => {
           )
         )
     );
-    let map: Record<
-      string,
-      {
-        frontTx?: number;
-        gasUsed?: number;
-        token?: TokenItem;
-        tokenCount?: number;
-      }
-    > = {};
 
     results.forEach(
       ({ code, status, front_tx_count, gas_used, token }, index) => {
-        if (isCompleted) {
-          if (!completedTx!.gasUsed) {
-            map = {
-              ...map,
-              [item.txs[index].hash!]: {
-                token,
-                tokenCount:
-                  (gas_used *
-                    Number(
-                      completedTx!.rawTx.gasPrice ||
-                        completedTx!.rawTx.maxFeePerGas ||
-                        0
-                    )) /
-                  1e18,
-                gasUsed: gas_used,
-              },
-            };
-          } else if (code === 0) {
-            map = {
-              ...map,
-              [item.txs[index].hash!]: {
-                token,
-                gasUsed: completedTx!.gasUsed,
-                tokenCount:
-                  (completedTx!.gasUsed *
-                    Number(
-                      completedTx!.rawTx.gasPrice ||
-                        completedTx!.rawTx.maxFeePerGas ||
-                        0
-                    )) /
-                  1e18,
-              },
-            };
-          }
-        } else if (status !== 0 && code === 0) {
-          // wallet.completedTransaction({
-          //   address: item.txs[index].rawTx.from,
-          //   chainId: Number(item.txs[index].rawTx.chainId),
-          //   nonce: Number(item.txs[index].rawTx.nonce),
-          //   hash: item.txs[index].hash,
-          //   success: status === 1,
-          //   gasUsed: gas_used,
-          // });
-        } else {
-          map = {
-            ...map,
-            [item.txs[index].hash!]: {
-              frontTx: front_tx_count,
-            },
-          };
-        }
+        map = {
+          ...map,
+          [item.txs[index].hash!]: {
+            frontTx: front_tx_count,
+          },
+        };
       }
     );
-    if (!isCompleted && results.some((i) => i.status !== 0 && i.code === 0)) {
-      // onComplete && onComplete();
-    } else {
-      return map;
-    }
+    return map;
   };
 
   const { data: txQueues, runAsync: runLoadTxData } = useRequest(loadTxData);

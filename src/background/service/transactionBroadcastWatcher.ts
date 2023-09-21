@@ -1,7 +1,11 @@
 import { findChainByID } from '@/utils/chain';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
-import { openapiService, transactionWatchService } from 'background/service';
-import { createPersistStore } from 'background/utils';
+import {
+  openapiService,
+  swapService,
+  transactionWatchService,
+} from 'background/service';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import interval from 'interval-promise';
 import { flatten } from 'lodash';
 import { testnetOpenapiService } from './openapi';
@@ -96,6 +100,12 @@ class TransactionBroadcastWatcher {
         this.removeTx(item.id);
         transactionHistory.updateTxByTxRequest(item);
         addressList.push(item.signed_tx.from);
+        if (item.tx_id) {
+          const chain = findChainByID(item.signed_tx.chainId);
+          if (chain) {
+            swapService.postSwap(chain?.enum, item.tx_id, item.signed_tx);
+          }
+        }
       }
       if (item.tx_id) {
         const chain = findChainByID(item.signed_tx.chainId);
@@ -136,6 +146,20 @@ class TransactionBroadcastWatcher {
     interval(async () => {
       this.queryTxRequests();
     }, 5000);
+  };
+
+  clearPendingTx = (address: string) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // keep pending txs of other addresses
+        if (v && !isSameAddress(address, v.address)) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
   };
 }
 

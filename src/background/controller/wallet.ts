@@ -23,6 +23,7 @@ import {
   unTriggerTxCounter,
   contextMenuService,
   securityEngineService,
+  transactionBroadcastWatchService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1952,6 +1953,7 @@ export class WalletController extends BaseController {
   clearAddressPendingTransactions = (address: string) => {
     transactionHistoryService.clearPendingTransactions(address);
     transactionWatcher.clearPendingTx(address);
+    transactionBroadcastWatchService.clearPendingTx(address);
     return;
   };
 

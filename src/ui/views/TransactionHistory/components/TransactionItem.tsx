@@ -53,11 +53,9 @@ export const TransactionItem = ({
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const maxGasTx = findMaxGasTx(item.txs);
-  // todo: whate is completedTx ?
-  const completedTx = item.txs.find((tx) => tx.isCompleted);
-  // todo: what is isComplted
-  const isCompleted =
-    !item.isPending || item.isSubmitFailed || maxGasTx?.isWithdrawed;
+  const completedTx = item.txs.find(
+    (tx) => tx.isCompleted && !tx.isSubmitFailed && !tx.isWithdrawed
+  );
 
   const isCanceled =
     !item.isPending &&
@@ -183,13 +181,8 @@ export const TransactionItem = ({
   };
 
   const handleOpenScan = () => {
-    if (completedTx?.isSubmitFailed || maxGasTx?.isWithdrawed) {
-      return;
-    }
-    console.log(completedTx, maxGasTx);
-
     let hash: string | undefined = '';
-    if (isCompleted && completedTx) {
+    if (completedTx) {
       hash = completedTx!.hash;
     } else {
       const maxGasTx = findMaxGasTx(item.txs)!;

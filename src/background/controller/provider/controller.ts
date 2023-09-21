@@ -488,8 +488,9 @@ class ProviderController extends BaseController {
 
         const { r, s, v, ...other } = approvalRes;
 
-        // todo
-        // swapService.postSwap(chain, hash, other);
+        if (hash) {
+          swapService.postSwap(chain, hash, other);
+        }
 
         // stats.report('submitTransaction', {
         //   type: currentAccount.brandName,
@@ -607,75 +608,12 @@ class ProviderController extends BaseController {
         notificationService.setStatsData(statsData);
         throw new Error(errMsg);
       };
-      // const onTransactionSubmitted = (hash: string) => {
-      //   if (
-      //     options?.data?.$ctx?.stats?.afterSign?.length &&
-      //     Array.isArray(options?.data?.$ctx?.stats?.afterSign)
-      //   ) {
-      //     options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
-      //       if (name && params) {
-      //         stats.report(name, params);
-      //       }
-      //     });
-      //   }
 
-      //   const { r, s, v, ...other } = approvalRes;
-      //   swapService.postSwap(chain, hash, other);
-
-      //   stats.report('submitTransaction', {
-      //     type: currentAccount.brandName,
-      //     chainId: chainItem?.serverId || '',
-      //     category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      //     success: true,
-      //     preExecSuccess: cacheExplain
-      //       ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-      //       : true,
-      //     createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-      //     source: options?.data?.$ctx?.ga?.source || '',
-      //     trigger: options?.data?.$ctx?.ga?.trigger || '',
-      //   });
-      //   if (isSend) {
-      //     pageStateCacheService.clear();
-      //   }
-      //   transactionHistoryService.addTx(
-      //     {
-      //       rawTx: {
-      //         ...rawTx,
-      //         ...approvalRes,
-      //         r: bufferToHex(signedTx.r),
-      //         s: bufferToHex(signedTx.s),
-      //         v: bufferToHex(signedTx.v),
-      //       },
-      //       createdAt: Date.now(),
-      //       isCompleted: false,
-      //       hash,
-      //       failed: false,
-      //     },
-      //     cacheExplain,
-      //     action,
-      //     origin,
-      //     options?.data?.$ctx
-      //   );
-      //   transactionHistoryService.removeSigningTx(signingTxId!);
-      //   transactionWatchService.addTx(
-      //     `${txParams.from}_${approvalRes.nonce}_${chain}`,
-      //     {
-      //       nonce: approvalRes.nonce,
-      //       hash,
-      //       chain,
-      //     }
-      //   );
-
-      //   if (isCoboSafe) {
-      //     preferenceService.resetCurrentCoboSafeAddress();
-      //   }
-      // };
       if (typeof signedTx === 'string') {
         onTransactionCreated({
           hash: signedTx,
           pushType: 'default',
         });
-        // onTransactionSubmitted(signedTx);
         if (currentAccount.type === KEYRING_TYPE.WalletConnectKeyring) {
           statsData.signed = true;
           statsData.signedSuccess = true;
