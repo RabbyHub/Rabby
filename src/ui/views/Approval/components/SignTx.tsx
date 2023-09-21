@@ -1142,6 +1142,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       data: [account.address, JSON.stringify(typedData)],
       session: params.session,
       isGnosis: true,
+      isSend,
       account: account,
       method: 'ethSignTypedDataV4',
       uiRequestComponent: 'SignTypedData',

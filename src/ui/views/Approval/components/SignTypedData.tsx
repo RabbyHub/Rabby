@@ -50,6 +50,7 @@ interface SignTypedDataProps {
     name: string;
   };
   isGnosis?: boolean;
+  isSend?: boolean;
   account?: Account;
 }
 
@@ -144,7 +145,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   }, [engineResults, currentTx]);
 
-  const { data, session, method, isGnosis, account } = params;
+  const { data, session, method, isGnosis, isSend, account } = params;
   let parsedMessage = '';
   let _message = '';
   try {
@@ -315,6 +316,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             version: 'V4',
           }
         );
+        if (isSend) {
+          wallet.clearPageStateCache();
+        }
         resolveApproval({
           uiRequestComponent: WaitingSignMessageComponent[params.account.type],
           type: params.account.type,
@@ -343,6 +347,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           } else {
             await wallet.gnosisAddSignature(params.account.address, result);
             await wallet.postGnosisTransaction();
+          }
+          if (isSend) {
+            wallet.clearPageStateCache();
           }
           resolveApproval(result, false, true);
         } catch (e) {
