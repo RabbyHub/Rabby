@@ -298,6 +298,9 @@
           "reconnect": "如果无法连接，请尝试<1>从头开始重新连接</1>"
         },
         "howToSwitch": "如何切换"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe 地址不支持 {{chain}}"
       }
     },
     "chainList": {
