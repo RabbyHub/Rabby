@@ -149,8 +149,6 @@ const Actions = ({
     });
   };
 
-  console.log(raw, requireData, data, txDetail);
-
   return (
     <>
       <SignTitle>
