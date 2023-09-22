@@ -9,6 +9,8 @@ import { IGAEventSource } from '@/ui/utils/ga-event';
 import { ReactComponent as LinkSVG } from '@/ui/assets/nft-view/link.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { openNFTLinkFromChainItem } from '@/ui/views/ApprovalManagePage/utils';
+import { findChainByServerID } from '@/utils/chain';
 
 interface ContentProps {
   data?: NFTItem;
@@ -49,7 +51,10 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   };
 
   const onDetail = () => {
-    if (data) openInTab(data.detail_url);
+    if (!data) return;
+    const chainItem = findChainByServerID(data?.chain);
+
+    openNFTLinkFromChainItem(chainItem, data.contract_id, true);
   };
 
   return (
