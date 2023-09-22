@@ -239,7 +239,9 @@ const TokenDetail = ({
               </div>
             </TooltipWithMagnetArrow>
             <TooltipWithMagnetArrow
-              title={(tokenWithAmount.amount * token.price || 0).toString()}
+              title={`≈ $${(
+                tokenWithAmount.amount * token.price || 0
+              ).toString()}`}
               className="rectangle w-[max-content]"
               placement="bottom"
             >
