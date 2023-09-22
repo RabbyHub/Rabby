@@ -469,7 +469,6 @@ const AddressManagement = () => {
     listRef.current?.resetAfterIndex(0);
   }, [accountsList.length]);
 
-  console.log('currentAccountIndex', currentAccountIndex);
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
@@ -575,13 +574,13 @@ const AddressManagement = () => {
         <div className={'address-group-list management'}>
           <VList
             ref={listRef}
-            key={addressSortStore.sortType + debouncedSearchKeyword}
+            // key={addressSortStore.sortType + debouncedSearchKeyword}
             height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417}
             width="100%"
             itemData={filteredAccounts}
             itemCount={filteredAccounts.length}
             itemSize={getItemSize}
-            className="scroll-container"
+            className="address-scroll-container"
             overscanCount={6}
           >
             {Row}
