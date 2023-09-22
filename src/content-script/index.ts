@@ -4,18 +4,21 @@ import { browser } from 'webextension-polyfill-ts';
 
 const channelName = nanoid();
 
-// the script element with src won't execute immediately
-// use inline script element instead!
-const container = document.head || document.documentElement;
-const ele = document.createElement('script');
-// in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
-// seperate content assignment to two line
-// use AssetReplacePlugin to replace pageprovider content
-let content = `var channelName = '${channelName}';`;
-content += '#PAGEPROVIDER#';
-ele.textContent = content;
-container.insertBefore(ele, container.children[0]);
-container.removeChild(ele);
+const injectProviderScript = (isDefaultWallet: boolean) => {
+  // the script element with src won't execute immediately
+  // use inline script element instead!
+  const container = document.head || document.documentElement;
+  const ele = document.createElement('script');
+  // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+  // seperate content assignment to two line
+  // use AssetReplacePlugin to replace pageprovider content
+  let content = `var __rabby__channelName = '${channelName}';`;
+  content += `var __rabby__isDefaultWallet = ${isDefaultWallet};`;
+  content += '#PAGEPROVIDER#';
+  ele.textContent = content;
+  container.insertBefore(ele, container.children[0]);
+  container.removeChild(ele);
+};
 
 const { BroadcastChannelMessage, PortMessage } = Message;
 
@@ -32,3 +35,18 @@ document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
 });
+
+const getIsDefaultWallet = () => {
+  return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
+};
+
+const start = performance.now();
+getIsDefaultWallet()
+  .then((isDefaultWallet) => {
+    injectProviderScript(!!isDefaultWallet);
+    console.log('end', performance.now() - start);
+  })
+  .catch((err) => {
+    console.log('getIsDefaultWallet', err);
+    injectProviderScript(true);
+  });
