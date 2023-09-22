@@ -302,6 +302,13 @@
   transition: width 0.3s;
   padding-right: 4px;
 
+  &.searching {
+    width: 220px;
+    .search-input .ant-input-suffix {
+      opacity: 1;
+    }
+  }
+
   &:has(> .search-input:hover),
   &:has(> .search-input.ant-input-affix-wrapper-focused) {
     width: 220px;

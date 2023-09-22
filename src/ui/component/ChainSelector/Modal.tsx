@@ -178,6 +178,7 @@ const ChainSelectorModal = ({
       visible={visible}
       onClose={handleCancel}
       className={clsx(
+        'custom-popup',
         'chain-selector__modal',
         connection && 'connection',
         className
