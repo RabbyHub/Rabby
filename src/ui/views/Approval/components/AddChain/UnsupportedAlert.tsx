@@ -1,14 +1,14 @@
 import { Button } from 'antd';
 import React from 'react';
 import { ReactComponent as IconInfo } from '@/ui/assets/add-chain/info.svg';
-import { ReactComponent as IconEmail } from '@/ui/assets/add-chain/email.svg';
-import { noop, useApproval, useWallet } from '@/ui/utils';
+import { useApproval, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { Footer } from './style';
 import { AddEthereumChainParams } from './type';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import clsx from 'clsx';
 import { useAccount } from '@/ui/store-hooks';
+import { NoActionBody } from '../NoActionAlert/NoActionBody';
 
 interface Props {
   data: AddEthereumChainParams;
@@ -80,32 +80,12 @@ export const UnsupportedAlert: React.FC<Props> = ({ data }) => {
             <IconInfo className="w-14" />
             <span>{t('page.switchChain.chainNotSupportYet')}</span>
           </div>
-          <div className="h-1 bg-r-neutral-line w-full my-12" />
-          <div className="leading-[16px]">
-            {isRequested ? (
-              <div className="text-r-neutral-foot">
-                {requestedCount > 1
-                  ? t('page.switchChain.requestsReceivedPlural', {
-                      count: requestedCount,
-                    })
-                  : t('page.switchChain.requestsReceived')}
-              </div>
-            ) : (
-              <div
-                className={clsx(
-                  'gap-x-6 flex items-center justify-center',
-                  'cursor-pointer hover:opacity-70',
-                  isRequesting ? 'opacity-70' : ''
-                )}
-                onClick={isRequesting ? noop : handleRequest}
-              >
-                <IconEmail className="w-16" />
-                <span className="text-r-blue-default">
-                  {t('page.switchChain.requestRabbyToSupport')}
-                </span>
-              </div>
-            )}
-          </div>
+          <NoActionBody
+            requestedCount={requestedCount}
+            handleRequest={handleRequest}
+            isRequested={isRequested}
+            isRequesting={isRequesting}
+          />
         </div>
       </div>
       <Footer className="justify-center">
