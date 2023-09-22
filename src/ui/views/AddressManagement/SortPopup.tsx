@@ -2,7 +2,7 @@ import { Item, Popup } from '@/ui/component';
 import React, { useMemo } from 'react';
 import ImgSortByUsd from '@/ui/assets/address/sort-by-usd-l.svg';
 import ImgSortByType from '@/ui/assets/address/sort-by-type.svg';
-import ImgSortByAlphabet from '@/ui/assets/address/sort-by-alphabet.svg';
+import ImgSortByAlphabet from '@/ui/assets/address/sort-by-alphabet-2.svg';
 import ImgChecked from '@/ui/assets/address/checked.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
