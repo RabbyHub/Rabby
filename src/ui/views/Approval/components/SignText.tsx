@@ -11,6 +11,7 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   CHAINS,
+  REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -286,6 +287,13 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     signText: string,
     sender: string
   ) => {
+    const currentAccount = await wallet.getCurrentAccount();
+    if (
+      currentAccount?.type &&
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+    ) {
+      rejectApproval('This address can not sign text message', false, true);
+    }
     const parsed = parseAction(textActionData, signText, sender);
     setParsedActionData(parsed);
     const ctx = formatSecurityEngineCtx({
