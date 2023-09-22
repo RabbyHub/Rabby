@@ -574,7 +574,7 @@ const AddressManagement = () => {
         <div className={'address-group-list management'}>
           <VList
             ref={listRef}
-            // key={addressSortStore.sortType + debouncedSearchKeyword}
+            key={addressSortStore.sortType + debouncedSearchKeyword}
             height={currentAccountIndex === -1 ? 471 : hasStatusBar ? 368 : 417}
             width="100%"
             itemData={filteredAccounts}
