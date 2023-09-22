@@ -1730,7 +1730,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
 
     if (block && res > Number(block.gasLimit)) {
-      res = Number(block.gasLimit);
+      res = Math.floor(Number(block.gasLimit) * 0.95); // use 95% of block gasLimit when gasLimit greater than block gasLimit
     }
     if (!new BigNumber(res).eq(calcGasLimit)) {
       setGasLimit(`0x${new BigNumber(res).toNumber().toString(16)}`);
