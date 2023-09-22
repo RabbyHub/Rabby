@@ -2,10 +2,9 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconAlert from '@/ui/assets/sign/tx/alert.svg';
 import React from 'react';
-import clsx from 'clsx';
-import { ReactComponent as IconEmail } from '@/ui/assets/add-chain/email.svg';
 import { useAccount } from '@/ui/store-hooks';
-import { noop, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
+import { NoActionBody } from './NoActionBody';
 
 const NoActionAlertStyled = styled.div`
   display: flex;
@@ -79,31 +78,12 @@ export const NoActionAlert: React.FC<Props> = ({ data }) => {
         <img src={IconAlert} className="icon icon-alert" />
         {t('page.signTx.sigCantDecode')}
       </div>
-      <div className="h-1 bg-r-neutral-line w-full my-12" />
-      <div className="leading-[16px]">
-        {isRequested ? (
-          <div className="text-r-neutral-foot">
-            {requestedCount > 1
-              ? t('page.switchChain.requestsReceivedPlural', {
-                  count: requestedCount,
-                })
-              : t('page.switchChain.requestsReceived')}
-          </div>
-        ) : (
-          <div
-            className={clsx(
-              'gap-x-6 flex items-center justify-center',
-              'cursor-pointer hover:opacity-70'
-            )}
-            onClick={isRequesting ? noop : handleRequest}
-          >
-            <IconEmail className="w-16" />
-            <span className="text-r-blue-default">
-              {t('page.switchChain.requestRabbyToSupport')}
-            </span>
-          </div>
-        )}
-      </div>
+      <NoActionBody
+        requestedCount={requestedCount}
+        handleRequest={handleRequest}
+        isRequested={isRequested}
+        isRequesting={isRequesting}
+      />
     </NoActionAlertStyled>
   );
 };
