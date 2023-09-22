@@ -1,11 +1,11 @@
 import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
+import { findChainByID } from '@/utils/chain';
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { useRequest } from 'ahooks';
 import { Form, Input, Skeleton, Spin } from 'antd';
 import clsx from 'clsx';
-import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { maxBy, sortBy, uniqBy } from 'lodash';
 import React, {
   MouseEventHandler,
@@ -19,11 +19,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconChecked from 'ui/assets/safe-nonce-select/checked.svg';
 import IconDown from 'ui/assets/safe-nonce-select/down.svg';
-import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
 import IconFind from 'ui/assets/safe-nonce-select/find.svg';
+import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
 import { intToHex } from 'ui/utils/number';
-import { findChainByID } from '@/utils/chain';
-import { getActionTypeText, getActionTypeTextByType } from '../Actions/utils';
+import { getActionTypeTextByType } from '../Actions/utils';
 
 const Wrapper = styled.div`
   border-radius: 6px;
@@ -199,18 +198,21 @@ export const SafeNonceSelector = ({
     } else {
       onChange?.(intToHex(v));
     }
+    setIsShowOptionList(false);
   };
 
   const optionListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const parent = document.querySelector('.approval-tx');
-    if (optionListRef.current && parent) {
-      const shouldScroll =
-        optionListRef.current.getBoundingClientRect().top + 52 >
-        parent.getBoundingClientRect().height;
-      if (shouldScroll) {
-        parent.scrollTo(0, parent.scrollTop + 128);
+    if (isShowOptionList) {
+      const parent = document.querySelector('.approval-tx');
+      if (optionListRef.current && parent) {
+        const shouldScroll =
+          optionListRef.current.getBoundingClientRect().top + 52 >
+          parent.getBoundingClientRect().height;
+        if (shouldScroll) {
+          parent.scrollTo(0, parent.scrollTop + 128);
+        }
       }
     }
   }, [isShowOptionList]);
