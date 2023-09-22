@@ -1,47 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Button, message, Skeleton, Tabs, Tooltip } from 'antd';
-import clsx from 'clsx';
-import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
+import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { Button, Skeleton, Tooltip, message } from 'antd';
 import {
-  SafeTransactionItem,
-  SafeInfo,
-} from '@rabby-wallet/gnosis-sdk/dist/api';
-import { useTranslation, Trans } from 'react-i18next';
-import { toChecksumAddress, numberToHex } from 'web3-utils';
-import dayjs from 'dayjs';
-import { groupBy, sortBy } from 'lodash';
-import { ExplainTxResponse } from 'background/service/openapi';
+  ApproveAction,
+  ExplainTxResponse,
+  ParseTxResponse,
+  RevokeTokenApproveAction,
+  SendAction,
+} from 'background/service/openapi';
 import { Account } from 'background/service/preference';
+import clsx from 'clsx';
+import dayjs from 'dayjs';
+import { get, groupBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { numberToHex, toChecksumAddress } from 'web3-utils';
 
-import { intToHex } from 'ethereumjs-util';
-import { timeago, isSameAddress, useWallet } from 'ui/utils';
-import {
-  validateEOASign,
-  validateETHSign,
-  crossCompareOwners,
-} from 'ui/utils/gnosis';
+import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
+import { useAccount } from '@/ui/store-hooks';
+import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import { splitNumberByStep } from 'ui/utils/number';
-import { PageHeader, NameAndAddress } from 'ui/component';
-import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import {
   CHAINS,
   CHAINS_ENUM,
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
 } from 'consts';
-import IconUnknown from 'ui/assets/icon-unknown.svg';
+import { intToHex } from 'ethereumjs-util';
+import { useHistory } from 'react-router-dom';
 import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
-import IconUnCheck from 'ui/assets/uncheck.svg';
-import { SvgIconLoading } from 'ui/assets';
-import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconInformation from 'ui/assets/information.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUnCheck from 'ui/assets/uncheck.svg';
+import { NameAndAddress } from 'ui/component';
+import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
+import { isSameAddress, timeago, useWallet } from 'ui/utils';
+import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
+import { splitNumberByStep } from 'ui/utils/number';
+import { ReplacePopup } from './components/ReplacePopup';
 import './style.less';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
-import { useAccount } from '@/ui/store-hooks';
+import { findChainByID } from '@/utils/chain';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { useRequest } from 'ahooks';
+import { getProtocol } from '../Approval/components/Actions/utils';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -165,25 +168,47 @@ const TransactionExplain = ({
   explain,
   onView,
   isViewLoading,
+  serverId,
 }: {
-  explain: ExplainTxResponse;
+  explain: ParseTxResponse;
   isViewLoading: boolean;
   onView(): void;
+  serverId: string;
 }) => {
   const { t } = useTranslation();
   let icon: React.ReactNode = (
     <img className="icon icon-explain" src={IconUnknown} />
   );
   let content: string | React.ReactNode = t('page.safeQueue.unknownTx');
+  const wallet = useWallet();
+  const { data: spenderProtocol } = useRequest(async () => {
+    if (explain?.action?.data && 'spender' in explain.action.data) {
+      const { desc } = await wallet.openapi.addrDesc(
+        explain?.action?.data?.spender
+      );
+      return getProtocol(desc.protocol, serverId);
+    }
+  });
+
+  const { data: contractProtocol } = useRequest(async () => {
+    if (
+      explain?.action?.data &&
+      !('spender' in (explain?.action?.data || {})) &&
+      explain?.contract_call?.contract?.id
+    ) {
+      const { desc } = await wallet.openapi.addrDesc(
+        explain?.contract_call?.contract?.id
+      );
+      return getProtocol(desc.protocol, serverId);
+    }
+  });
 
   if (explain) {
-    if (explain.type_cancel_token_approval) {
+    if (explain?.action?.type === 'revoke_token') {
+      const data = explain.action.data as RevokeTokenApproveAction;
       icon = (
         <img
-          src={
-            explain.type_cancel_token_approval.spender_protocol_logo_url ||
-            IconUnknown
-          }
+          src={spenderProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
@@ -191,20 +216,17 @@ const TransactionExplain = ({
         <Trans
           i18nKey="page.safeQueue.cancelExplain"
           values={{
-            token: explain.type_cancel_token_approval.token_symbol,
+            token: getTokenSymbol(data.token),
             protocol:
-              explain.type_cancel_token_approval.spender_protocol_name ||
-              t('page.safeQueue.unknownProtocol'),
+              spenderProtocol?.name || t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
-    }
-    if (explain.type_token_approval) {
+    } else if (explain?.action?.type === 'approve_token') {
+      const data = explain.action.data as ApproveAction;
       icon = (
         <img
-          src={
-            explain.type_token_approval.spender_protocol_logo_url || IconUnknown
-          }
+          src={spenderProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
@@ -212,31 +234,32 @@ const TransactionExplain = ({
         <Trans
           i18nKey="page.safeQueue.approvalExplain"
           values={{
-            token: explain.type_token_approval.token_symbol,
-            count: explain.type_token_approval.is_infinity
-              ? t('page.safeQueue.unlimited')
-              : splitNumberByStep(explain.type_token_approval.token_amount),
+            token: getTokenSymbol(data.token),
+            count:
+              data.token.amount < 1e9
+                ? splitNumberByStep(data.token.amount)
+                : t('page.safeQueue.unlimited'),
             protocol:
-              explain.type_token_approval.spender_protocol_name ||
-              t('page.safeQueue.unknownProtocol'),
+              spenderProtocol?.name || t('page.safeQueue.unknownProtocol'),
           }}
         />
       );
-    }
-    if (explain.type_send) {
+    } else if (explain?.action?.type === 'send_token') {
+      const data = explain.action.data as SendAction;
       icon = <img className="icon icon-explain" src={IconUser} />;
       content = `${t('page.safeQueue.action.send')} ${splitNumberByStep(
-        explain.type_send.token_amount
-      )} ${explain.type_send.token_symbol}`;
-    }
-    if (explain.type_call) {
+        data.token.amount
+      )} ${getTokenSymbol(data.token)}`;
+    } else if (explain?.action?.type === 'cancel_tx') {
+      content = t('page.safeQueue.action.cancel');
+    } else if (explain?.contract_call) {
       icon = (
         <img
-          src={explain.type_call.contract_protocol_logo_url || IconUnknown}
+          src={contractProtocol?.logo_url || IconUnknown}
           className="icon icon-explain"
         />
       );
-      content = explain.type_call.action;
+      content = explain.contract_call.func;
     }
   }
 
@@ -269,11 +292,13 @@ const GnosisTransactionItem = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
+  const [explain, setExplain] = useState<ParseTxResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const submitAt = dayjs(data.submissionDate).valueOf();
+
+  const [isShowReplacePopup, setIsShowReplacePopup] = useState(false);
+
   const now = dayjs().valueOf();
-  // todo
   const ago = timeago(now, submitAt);
   let agoText = '';
 
@@ -295,7 +320,9 @@ const GnosisTransactionItem = ({
   }
 
   const init = async () => {
-    const res = await wallet.openapi.preExecTx({
+    const chain = findChainByID(+networkId)!;
+    const res = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
       tx: {
         chainId: Number(networkId),
         from: data.safe,
@@ -307,9 +334,7 @@ const GnosisTransactionItem = ({
         gas: '0x0',
       },
       origin: INTERNAL_REQUEST_ORIGIN,
-      address: data.safe,
-      updateNonce: false,
-      pending_tx_list: [],
+      addr: data.safe,
     });
     setExplain(res);
   };
@@ -359,67 +384,119 @@ const GnosisTransactionItem = ({
     window.close();
   };
 
+  const history = useHistory();
+  const handleReplace = async (type: string) => {
+    if (type === 'send') {
+      history.replace({
+        pathname: '/send-token',
+        state: {
+          safeInfo: {
+            nonce: data.nonce,
+            chainId: Number(networkId),
+          },
+          from: '/gnosis-queue',
+        },
+      });
+    } else if (type === 'reject') {
+      const params = {
+        chainId: Number(networkId),
+        from: toChecksumAddress(data.safe),
+        to: toChecksumAddress(data.safe),
+        data: '0x',
+        value: `0x`,
+        nonce: intToHex(data.nonce),
+        safeTxGas: 0,
+        gasPrice: '0',
+        baseGas: 0,
+      };
+      wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [params],
+      });
+      window.close();
+    }
+  };
+
   useEffect(() => {
     init();
   }, []);
 
   return (
-    <div
-      className={clsx('queue-item', {
-        canExec:
-          data.confirmations.length >= safeInfo.threshold &&
-          data.nonce === safeInfo.nonce,
-      })}
-    >
-      <div className="queue-item__time">
-        <span>{agoText}</span>
-        <span>
-          {t('global.nonce')}: {data.nonce}
-        </span>
-      </div>
-      <div className="queue-item__info">
-        {explain ? (
-          <TransactionExplain
-            explain={explain}
-            onView={handleView}
-            isViewLoading={isLoading}
-          />
-        ) : (
-          <Skeleton.Button active style={{ width: 336, height: 25 }} />
-        )}
-      </div>
-      <TransactionConfirmations
-        confirmations={data.confirmations}
-        threshold={safeInfo.threshold}
-        owners={safeInfo.owners}
-      />
-      <div className="queue-item__footer">
-        <Tooltip
-          overlayClassName="rectangle"
-          title={
-            data.nonce !== safeInfo.nonce ? (
-              <Trans
-                i18nKey="page.safeQueue.LowerNonceError"
-                values={{ nonce: safeInfo.nonce }}
-              />
-            ) : null
-          }
-        >
+    <>
+      <div
+        className={clsx('queue-item', {
+          canExec:
+            data.confirmations.length >= safeInfo.threshold &&
+            data.nonce === safeInfo.nonce,
+        })}
+      >
+        <div className="queue-item__time">
+          <span>{agoText}</span>
+          <span>
+            {t('global.nonce')}: {data.nonce}
+          </span>
+        </div>
+        <div className="queue-item__info">
+          {explain ? (
+            <TransactionExplain
+              explain={explain}
+              onView={handleView}
+              serverId={findChainByID(+networkId)!.serverId}
+              isViewLoading={isLoading}
+            />
+          ) : (
+            <Skeleton.Button active style={{ width: 336, height: 25 }} />
+          )}
+        </div>
+        <TransactionConfirmations
+          confirmations={data.confirmations}
+          threshold={safeInfo.threshold}
+          owners={safeInfo.owners}
+        />
+        <div className="queue-item__footer">
+          <Tooltip
+            overlayClassName="rectangle"
+            title={
+              data.nonce !== safeInfo.nonce ? (
+                <Trans
+                  i18nKey="page.safeQueue.LowerNonceError"
+                  values={{ nonce: safeInfo.nonce }}
+                />
+              ) : null
+            }
+          >
+            <div>
+              <Button
+                type="primary"
+                size="large"
+                className="submit-btn"
+                onClick={() => onSubmit(data)}
+                disabled={
+                  data.confirmations.length < safeInfo.threshold ||
+                  data.nonce !== safeInfo.nonce
+                }
+              >
+                {t('page.safeQueue.submitBtn')}
+              </Button>
+            </div>
+          </Tooltip>
           <Button
             type="primary"
             size="large"
-            className="submit-btn"
-            onClick={() => onSubmit(data)}
-            disabled={
-              data.confirmations.length < safeInfo.threshold ||
-              data.nonce !== safeInfo.nonce
-            }
+            ghost
+            className="replace-btn"
+            onClick={() => setIsShowReplacePopup(true)}
           >
-            {t('page.safeQueue.submitBtn')}
+            {t('page.safeQueue.replaceBtn')}
           </Button>
-        </Tooltip>
+        </div>
       </div>
-    </div>
+      <ReplacePopup
+        visible={isShowReplacePopup}
+        onClose={() => setIsShowReplacePopup(false)}
+        onSelect={handleReplace}
+      />
+    </>
   );
 };
 
