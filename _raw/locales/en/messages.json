@@ -958,6 +958,9 @@
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
         "howToSwitch": "How to switch"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe address does not support {{chain}}"
       }
     },
     "nft": {
