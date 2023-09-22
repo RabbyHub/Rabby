@@ -1,4 +1,4 @@
-import { browser } from 'webextension-polyfill-ts';
+import { Windows, browser } from 'webextension-polyfill-ts';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -376,6 +376,12 @@ class NotificationService extends Events {
     winMgr.openNotification(winProps).then((winId) => {
       this.notifiWindowId = winId!;
     });
+  };
+
+  updateNotificationWinProps = (winProps: Windows.UpdateUpdateInfoType) => {
+    if (this.notifiWindowId !== null) {
+      browser.windows.update(this.notifiWindowId!, winProps);
+    }
   };
 
   setCurrentRequestDeferFn = (fn: () => void) => {

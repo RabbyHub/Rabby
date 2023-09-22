@@ -3,28 +3,17 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS_LIST, Chain } from '@debank/common';
 import { useSetState } from 'ahooks';
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import BigNumber from 'bignumber.js';
 import { CHAINS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import IconWarning from 'ui/assets/warning.svg';
 import { FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-
-export interface AddEthereumChainParams {
-  chainId: string;
-  chainName: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  rpcUrls: string[];
-  blockExplorerUrls: string[];
-}
+import { OptionsWrapper, Footer } from './style';
+import { UnsupportedAlert } from './UnsupportedAlert';
+import { AddEthereumChainParams } from './type';
 
 interface AddChainProps {
   data: AddEthereumChainParams[];
@@ -34,94 +23,6 @@ interface AddChainProps {
     name: string;
   };
 }
-
-const OptionsWrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .content {
-    padding: 20px;
-  }
-
-  .title {
-    color: #13141a;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-bottom: 40px;
-  }
-  .connect-site-card {
-    border-radius: 8px;
-    background: #f5f6fa;
-    display: inline-flex;
-    padding: 28px 28px 32px 28px;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 40px;
-
-    .site-origin {
-      color: #13141a;
-      text-align: center;
-      font-size: 22px;
-      font-style: normal;
-      font-weight: 500;
-      line-height: normal;
-    }
-  }
-  .switch-chain {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
-  .chain-card {
-    display: flex;
-    width: 260px;
-    padding: 12px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border-radius: 6px;
-    border: 1px solid #e5e9ef;
-
-    color: #13141a;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-
-    img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-  }
-`;
-
-const Footer = styled.div`
-  margin-top: auto;
-  height: 76px;
-  border-top: 1px solid #e5e9ef;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  .ant-btn-primary[disabled],
-  .ant-btn-primary[disabled]:hover,
-  .ant-btn-primary[disabled]:focus,
-  .ant-btn-primary[disabled]:active {
-    background-color: rgba(112, 132, 255, 0.4);
-    border: none;
-    &:before {
-      display: none;
-    }
-  }
-`;
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
@@ -182,6 +83,14 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     init();
   }, []);
 
+  useEffect(() => {
+    if (state.isShowUnsupportAlert) {
+      wallet.updateNotificationWinProps({
+        height: 388,
+      });
+    }
+  }, [state.isShowUnsupportAlert]);
+
   const handleConfirm = () => {
     resolveApproval();
   };
@@ -200,26 +109,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   if (!inited) return <></>;
 
   if (state.isShowUnsupportAlert) {
-    return (
-      <OptionsWrapper>
-        <div className="flex-1 px-28 pt-80">
-          <img src={IconWarning} className="w-[68px] h-[68px] mb-28 mx-auto" />
-          <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
-            {t('page.switchChain.chainNotSupport')}
-          </div>
-        </div>
-        <Footer className="justify-center">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[200px]"
-            onClick={() => rejectApproval()}
-          >
-            {t('global.ok')}
-          </Button>
-        </Footer>
-      </OptionsWrapper>
-    );
+    return <UnsupportedAlert data={data[0]} />;
   }
 
   if (state.isSwitchToMainnet || state.isSwitchToTestnet) {

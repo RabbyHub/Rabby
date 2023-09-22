@@ -520,6 +520,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
             message={parsedMessage}
+            origin={params.session.origin}
           />
         )}
       </div>

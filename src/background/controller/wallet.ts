@@ -3296,6 +3296,8 @@ export class WalletController extends BaseController {
       isModuleEnabled,
     };
   };
+
+  updateNotificationWinProps = notificationService.updateNotificationWinProps;
 }
 
 const wallet = new WalletController();
