@@ -1080,7 +1080,7 @@ const Settings = (props: SettingsProps) => {
     <Popup
       visible={visible}
       onClose={onClose}
-      height={523}
+      height={488}
       bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
       destroyOnClose
     >
