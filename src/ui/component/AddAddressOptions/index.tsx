@@ -259,7 +259,7 @@ const AddAddressOptions = () => {
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
-                <div className="pl-[12px] text-13 leading-[15px] text-gray-title font-medium">
+                <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
               </Item>
@@ -355,10 +355,10 @@ const AddAddressOptions = () => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
               <div className="flex flex-col pl-[12px]">
-                <div className=" text-13 leading-[15px] text-gray-title font-medium">
+                <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
-                <div className="text-12 text-gray-subTitle">{e.subText}</div>
+                <div className="text-12 text-r-neutral-body">{e.subText}</div>
               </div>
             </Item>
           );
