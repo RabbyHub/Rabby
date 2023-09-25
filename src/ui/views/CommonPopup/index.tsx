@@ -7,6 +7,7 @@ import { SwitchAddress } from './SwitchAddress';
 import { SwitchChain } from './SwitchChain';
 import { Ledger } from './Ledger';
 import { AssetList } from './AssetList/AssetList';
+import { CancelApproval } from './CancelApproval/CancelApproval';
 
 export type CommonPopupComponentName =
   | 'Approval'
@@ -14,7 +15,8 @@ export type CommonPopupComponentName =
   | 'SwitchAddress'
   | 'SwitchChain'
   | 'AssetList'
-  | 'Ledger';
+  | 'Ledger'
+  | 'CancelApproval';
 
 const ComponentConfig = {
   AssetList: {
@@ -30,6 +32,10 @@ const ComponentConfig = {
   Approval: {
     closeable: false,
     maskClosable: false,
+  },
+  CancelApproval: {
+    padding: '8px 20px 22px',
+    closeable: true,
   },
 };
 
@@ -76,6 +82,7 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'SwitchChain' && <SwitchChain />}
       {componentName === 'Ledger' && <Ledger />}
       {componentName === 'AssetList' && <AssetList visible={visible} />}
+      {componentName === 'CancelApproval' && <CancelApproval />}
     </Popup>
   );
 };
