@@ -27,11 +27,11 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
   const [
     displayBlockedRequestApproval,
     setDisplayBlockedRequestApproval,
-  ] = React.useState<boolean>(false);
+  ] = React.useState(false);
   const [
     displayCancelAllApproval,
     setDisplayCancelAllApproval,
-  ] = React.useState<boolean>(false);
+  ] = React.useState(false);
   const { activePopup, setData } = useCommonPopupView();
 
   React.useEffect(() => {

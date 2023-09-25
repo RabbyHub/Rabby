@@ -184,6 +184,7 @@ class NotificationService extends Events {
 
     const approval = this.currentApproval;
 
+    this.clearLastRejectDapp();
     this.deleteApproval(approval);
 
     if (this.approvals.length > 0) {
@@ -193,7 +194,6 @@ class NotificationService extends Events {
     }
 
     this.emit('resolve', data);
-    this.clearLastRejectInfo();
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
@@ -224,8 +224,9 @@ class NotificationService extends Events {
   };
 
   requestApproval = async (data, winProps?): Promise<any> => {
-    if (data.origin) {
-      const dapp = this.dappManager.get(data.origin);
+    const origin = this.getOrigin(data);
+    if (origin) {
+      const dapp = this.dappManager.get(origin);
       // is blocked and less 10 min
       if (
         dapp?.isBlocked &&
@@ -426,7 +427,7 @@ class NotificationService extends Events {
   private addLastRejectDapp() {
     // not Rabby dapp
     if (this.currentApproval?.data?.params?.$ctx) return;
-    const origin = this.currentApproval?.data?.origin;
+    const origin = this.getOrigin();
     if (!origin) {
       return;
     }
@@ -445,8 +446,8 @@ class NotificationService extends Events {
     }
   }
 
-  private clearLastRejectInfo() {
-    const origin = this.currentApproval?.data?.origin;
+  private clearLastRejectDapp() {
+    const origin = this.getOrigin();
     if (!origin) {
       return;
     }
@@ -454,7 +455,7 @@ class NotificationService extends Events {
   }
 
   checkNeedDisplayBlockedRequestApproval = () => {
-    const origin = this.currentApproval?.data?.origin;
+    const origin = this.getOrigin();
     if (!origin) {
       return false;
     }
@@ -474,7 +475,7 @@ class NotificationService extends Events {
   };
 
   blockedDapp = () => {
-    const origin = this.currentApproval?.data?.origin;
+    const origin = this.getOrigin();
     if (!origin) {
       return;
     }
@@ -484,6 +485,10 @@ class NotificationService extends Events {
     dapp.isBlocked = true;
     dapp.blockedTimestamp = Date.now();
   };
+
+  private getOrigin(data = this.currentApproval?.data) {
+    return data?.params.origin || data?.origin;
+  }
 }
 
 export default new NotificationService();
