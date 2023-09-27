@@ -4,7 +4,7 @@ import { CancelItem } from './CancelItem';
 import { useTranslation } from 'react-i18next';
 
 export const CancelApproval = () => {
-  const { data, setTitle, setHeight } = useCommonPopupView();
+  const { data, setTitle, setHeight, closePopup } = useCommonPopupView();
   const {
     onCancel,
     displayBlockedRequestApproval,
@@ -32,13 +32,18 @@ export const CancelApproval = () => {
     wallet.blockedDapp();
   };
 
+  const handleCancel = () => {
+    onCancel();
+    closePopup();
+  };
+
   return (
     <div>
       <div className="text-r-neutral-body text-13 font-normal text-center leading-[16px]">
         {t('page.signFooterBar.detectedMultipleRequestsFromThisDapp')}
       </div>
       <div className="space-y-10 mt-20">
-        <CancelItem onClick={onCancel}>
+        <CancelItem onClick={handleCancel}>
           {t('page.signFooterBar.cancelCurrentTransaction')}
         </CancelItem>
         {displayCancelAllApproval && (
