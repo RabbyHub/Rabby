@@ -22,7 +22,10 @@ const QRCodeReader = ({
 }: QRCodeReaderProps) => {
   const [canplay, setCanplay] = useState(false);
   const codeReader = useMemo(() => {
-    return new BrowserQRCodeReader();
+    return new BrowserQRCodeReader(undefined, {
+      delayBetweenScanSuccess: 100,
+      delayBetweenScanAttempts: 50,
+    });
   }, []);
   const videoEl = useRef<HTMLVideoElement>(null);
   const checkCameraPermission = async () => {

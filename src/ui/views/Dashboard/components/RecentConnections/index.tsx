@@ -1,4 +1,4 @@
-import { Empty, Modal, Popup } from '@/ui/component';
+import { Empty, Modal, PageHeader, Popup } from '@/ui/component';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,6 +8,7 @@ import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
+import clsx from 'clsx';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -132,16 +133,32 @@ const RecentConnections = ({
   useEffect(() => {
     dispatch.permission.getWebsites();
   }, []);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose?.();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
 
   return (
-    <Popup
-      visible={visible}
-      height={580}
-      onClose={onClose}
-      title={t('page.dashboard.recentConnection.title')}
-      closable
+    <div
+      className={clsx('recent-connections-popup', {
+        show: isVisible,
+        hidden: !visible,
+      })}
     >
-      <div className="recent-connections-popup">
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('page.dashboard.recentConnection.title')}
+      </PageHeader>
+      <div className="auto-lock-option-list mx-[-20px] px-[20px]">
         {visible && (
           <ConnectionList
             onRemove={handleRemove}
@@ -188,7 +205,7 @@ const RecentConnections = ({
           }
         ></ConnectionList>
       </div>
-    </Popup>
+    </div>
   );
 };
 export default RecentConnections;

@@ -59,25 +59,33 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.protocolTitle')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.protocolTitle')}
+          </Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.interacted')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.interacted')}
+          </Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.deployTimeTitle')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.deployTimeTitle')}
+          </Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.popularity')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.popularity')}
+          </Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
@@ -88,13 +96,15 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.addressNote')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.addressNote')}
+          </Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.myMark')}</Row>
+          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract

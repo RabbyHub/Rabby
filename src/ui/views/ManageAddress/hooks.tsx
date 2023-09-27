@@ -100,7 +100,9 @@ const sortScore = [
   }
 );
 
-const getWalletScore = (s: TypeKeyringGroup[]) => {
+export const getWalletScore = (
+  s: TypeKeyringGroup[] | IDisplayedAccountWithBalance[]
+) => {
   return sortScore[s?.[0]?.brandName || s?.[0]?.type] || DEFAULT_SCORE;
 };
 

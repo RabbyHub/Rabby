@@ -130,6 +130,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.TREZOR,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -641,7 +642,7 @@ export const KEYRING_PURPLE_LOGOS = {
 };
 
 export const KEYRINGS_LOGOS = {
-  [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
@@ -836,10 +837,8 @@ export const L2_ENUMS = [
 // opstack L2 chains
 export const OP_STACK_ENUMS = [
   CHAINS_ENUM.OP,
-  CHAINS_ENUM.TDEBANK,
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
-  CHAINS_ENUM.MANTLE,
 ];
 
 export const SecurityEngineLevelOrder = [
@@ -1058,3 +1057,5 @@ export const SIGN_PERMISSION_OPTIONS = [
     value: SIGN_PERMISSION_TYPES.TESTNET,
   },
 ];
+
+export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

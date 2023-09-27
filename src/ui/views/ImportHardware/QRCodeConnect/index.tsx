@@ -11,6 +11,7 @@ import * as Sentry from '@sentry/browser';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
+import Progress from '@/ui/component/Progress';
 
 type Valueof<T> = T[keyof T];
 
@@ -36,6 +37,8 @@ export const QRCodeConnect = () => {
   const brandInfo: Valueof<typeof WALLET_BRAND_CONTENT> =
     WALLET_BRAND_CONTENT[brand] || WALLET_BRAND_CONTENT.Keystone;
 
+  const [progress, setProgress] = useState(0);
+
   const showErrorChecker = useMemo(() => {
     return errorMessage !== '';
   }, [errorMessage]);
@@ -43,6 +46,7 @@ export const QRCodeConnect = () => {
   const handleScanQRCodeSuccess = async (data) => {
     try {
       decoder.current.receivePart(data);
+      setProgress(Math.floor(decoder.current.estimatedPercentComplete() * 100));
       if (decoder.current.isComplete()) {
         const result = decoder.current.resultUR();
         if (result.type === 'crypto-hdkey') {
@@ -134,6 +138,8 @@ export const QRCodeConnect = () => {
   const handleScan = () => {
     setErrorMessage('');
     setScan(true);
+    setProgress(0);
+    decoder.current = new URDecoder();
   };
   return (
     <div className="bg-gray-bg2 h-full flex">
@@ -170,6 +176,12 @@ export const QRCodeConnect = () => {
               />
             )}
           </div>
+
+          {progress > 0 && (
+            <div className="mt-[24px] m-auto w-[130px]">
+              <Progress percent={progress} />
+            </div>
+          )}
 
           {showErrorChecker && (
             <QRCodeCheckerDetail

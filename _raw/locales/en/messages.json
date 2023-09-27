@@ -200,7 +200,24 @@
       "trustValue": "Trust value",
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
+      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "SafeNonceSelector": {
+        "explain": {
+          "contractCall": "Contract Call",
+          "send": "Send Token",
+          "unknown": "Unknown Transaction"
+        },
+        "optionGroup": {
+          "recommendTitle": "Recommended nonce",
+          "replaceTitle": "Replace the transaction in Queue "
+        },
+        "option": {
+          "new": "New Transaction"
+        },
+        "error": {
+          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -690,7 +707,11 @@
       "backup-seed-phrase": "Backup Seed Phrase",
       "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
       "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
-      "seed-phrase-delete-title": "Delete seed phrase?"
+      "seed-phrase-delete-title": "Delete seed phrase?",
+      "sort-by-balance": "Sort by balance",
+      "sort-by-address-type": "Sort by address type",
+      "sort-by-address-note": "Sort by address note",
+      "sort-address": "Sort Address"
     },
     "dashboard": {
       "home": {
@@ -937,6 +958,9 @@
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
         "howToSwitch": "How to switch"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe address does not support {{chain}}"
       }
     },
     "nft": {
@@ -1246,7 +1270,13 @@
     "switchChain": {
       "title": "Switching to {{chain}}",
       "chainNotSupport": "The requested chain is not supported by Rabby yet",
-      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets",
+      "chainNotSupportYet": "The requested chain is not supported by Rabby yet",
+      "chainId": "Chain ID:",
+      "unknownChain": "Unknown chain",
+      "requestsReceived": "1 request received",
+      "requestsReceivedPlural": "{{count}} requests received",
+      "requestRabbyToSupport": "Request Rabby to Support"
     },
     "signText": {
       "title": "Sign Text",
@@ -1382,9 +1412,19 @@
       "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
       "unlimited": "unlimited",
       "action": {
-        "send": "Send"
+        "send": "Send",
+        "cancel": "Cancel Pending Transaction"
       },
-      "viewBtn": "View"
+      "viewBtn": "View",
+      "replaceBtn": "Replace",
+      "ReplacePopup": {
+        "options": {
+          "send": "Send Token",
+          "reject": "Reject Transaction"
+        },
+        "title": "Select how to replace this transaction",
+        "desc": " A signed transaction cannot be removed but it can be replaced with a           new transaction with the same nonce."
+      }
     },
     "importSuccess": {
       "title": "Imported Successfully",
@@ -1600,7 +1640,8 @@
     "Loading": "Loading",
     "nonce": "nonce",
     "Balance": "Balance",
-    "Done": "Done"
+    "Done": "Done",
+    "Nonce": "Nonce"
   },
   "background": {
     "error": {

@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import OneKeyConnect from '@onekeyfe/connect';
 import * as ethUtil from 'ethereumjs-util';
+import * as sigUtil from 'eth-sig-util';
 import {
   TransactionFactory,
   TypedTransaction,
@@ -11,16 +11,22 @@ import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
+import HardwareSDK from '@onekeyfe/hd-web-sdk';
+import {
+  UI_RESPONSE,
+  UI_EVENT,
+  UI_REQUEST,
+  EVMTransaction,
+  EVMTransactionEIP1559,
+} from '@onekeyfe/hd-core';
+
+const { HardwareWebSdk } = HardwareSDK;
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
 const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
-const ONEKEY_CONNECT_MANIFEST = {
-  email: 'support@debank.com/',
-  appUrl: 'https://debank.com/',
-};
 
 interface Account {
   address: string;
@@ -29,6 +35,23 @@ interface Account {
 
 interface AccountDetail {
   hdPathBasePublicKey?: string;
+}
+
+/**
+ * Check if the given transaction is made with ethereumjs-tx or @ethereumjs/tx
+ *
+ * Transactions built with older versions of ethereumjs-tx have a
+ * getChainId method that newer versions do not.
+ * Older versions are mutable
+ * while newer versions default to being immutable.
+ * Expected shape and type
+ * of data for v, r and s differ (Buffer (old) vs BN (new)).
+ *
+ * @param {TypedTransaction | OldEthJsTransaction} tx
+ * @returns {tx is OldEthJsTransaction} Returns `true` if tx is an old-style ethereumjs-tx transaction.
+ */
+function isOldStyleEthereumjsTx(tx) {
+  return typeof tx.getChainId === 'function';
 }
 
 class OneKeyKeyring extends EventEmitter {
@@ -41,6 +64,9 @@ class OneKeyKeyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
+  deviceId: string | null = null;
+  connectId: string | null = null;
+  passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
 
   signHelper = new SignHelper({
@@ -51,7 +77,34 @@ class OneKeyKeyring extends EventEmitter {
     super();
     this.accountDetails = {};
     this.deserialize(opts);
-    OneKeyConnect.manifest(ONEKEY_CONNECT_MANIFEST);
+    HardwareWebSdk.init({
+      debug: false,
+      // The official iframe page deployed by OneKey
+      // of course you can also deploy it yourself
+      connectSrc: 'https://jssdk.onekey.so/0.3.27/',
+    });
+    HardwareWebSdk.on(UI_EVENT, (e) => {
+      switch (e.type) {
+        case UI_REQUEST.REQUEST_PIN:
+          HardwareWebSdk.uiResponse({
+            type: UI_RESPONSE.RECEIVE_PIN,
+            payload: '@@ONEKEY_INPUT_PIN_IN_DEVICE',
+          });
+          break;
+        case UI_REQUEST.REQUEST_PASSPHRASE:
+          HardwareWebSdk.uiResponse({
+            type: UI_RESPONSE.RECEIVE_PASSPHRASE,
+            payload: {
+              value: '',
+              passphraseOnDevice: true,
+              save: true,
+            },
+          });
+          break;
+        default:
+        // NOTHING
+      }
+    });
   }
 
   serialize(): Promise<any> {
@@ -93,25 +146,62 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   unlock(): Promise<string> {
-    if (this.isUnlocked()) {
-      return Promise.resolve('already unlocked');
-    }
+    // if (this.isUnlocked()) {
+    //   return Promise.resolve('already unlocked');
+    // }
     return new Promise((resolve, reject) => {
-      OneKeyConnect.getPublicKey({
-        path: this.hdPath,
-        coin: 'ETH',
-      })
-        .then((response) => {
-          if (response.success) {
-            this.hdk.publicKey = Buffer.from(response.payload.publicKey, 'hex');
-            this.hdk.chainCode = Buffer.from(response.payload.chainCode, 'hex');
-            resolve('just unlocked');
+      HardwareWebSdk.searchDevices()
+        .then(async (result) => {
+          if (!result.success) {
+            reject('searchDevices failed');
+            return;
           } else {
-            reject(
-              new Error(
-                (response.payload && response.payload.error) || 'Unknown error'
-              )
+            if (result.payload.length <= 0) {
+              reject('No OneKey Device found');
+            }
+            const device = result.payload[0];
+            const { deviceId, connectId } = device;
+            if (!deviceId || !connectId) {
+              reject('no deviceId or connectId');
+              return;
+            }
+            if (
+              this.deviceId &&
+              this.connectId &&
+              this.isUnlocked() &&
+              this.deviceId === deviceId &&
+              this.connectId === connectId
+            ) {
+              resolve('already unlocked');
+              return;
+            }
+            this.deviceId = deviceId;
+            this.connectId = connectId;
+            const passphraseState = await HardwareWebSdk.getPassphraseState(
+              connectId
             );
+            if (!passphraseState.success) {
+              reject('getPassphraseState failed');
+              return;
+            }
+            this.passphraseState = passphraseState.payload;
+            HardwareWebSdk.evmGetPublicKey(connectId, deviceId, {
+              showOnOneKey: false,
+              chainId: 1,
+              path: hdPathString,
+              passphraseState: passphraseState.payload,
+            }).then((res) => {
+              if (res.success) {
+                this.hdk.publicKey = Buffer.from(res.payload.publicKey, 'hex');
+                this.hdk.chainCode = Buffer.from(
+                  res.payload.node.chain_code,
+                  'hex'
+                );
+                resolve('just unlocked');
+              } else {
+                reject('getPublicKey failed');
+              }
+            });
           }
         })
         .catch((e) => {
@@ -234,64 +324,55 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address: string, tx: TypedTransaction): Promise<any> {
+  signTransaction(address: string, tx): Promise<any> {
     return this.signHelper.invoke(async () => {
       return new Promise((resolve, reject) => {
         this.unlock()
           .then((status) => {
             setTimeout(
               (_) => {
-                OneKeyConnect.ethereumSignTransaction({
-                  path: this._pathFromAddress(address),
-                  transaction: {
-                    to: tx.to!.toString(),
-                    value: `0x${tx.value.toString('hex')}`,
-                    data: this._normalize(tx.data),
-                    chainId: tx.common.chainIdBN().toNumber(),
-                    nonce: `0x${tx.nonce.toString('hex')}`,
-                    gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-                    gasPrice: `0x${
-                      (tx as Transaction).gasPrice
-                        ? (tx as Transaction).gasPrice.toString('hex')
-                        : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
-                            'hex'
-                          )
-                    }`,
-                  },
-                })
-                  .then((response) => {
-                    if (response.success) {
-                      const txData = tx.toJSON();
-                      txData.v = response.payload.v;
-                      txData.r = response.payload.r;
-                      txData.s = response.payload.s;
-
-                      const signedTx = TransactionFactory.fromTxData(txData);
-
-                      const addressSignedWith = ethUtil.toChecksumAddress(
-                        address
-                      );
-                      const correctAddress = ethUtil.toChecksumAddress(address);
-                      if (addressSignedWith !== correctAddress) {
-                        reject(
-                          new Error('signature doesnt match the right address')
-                        );
-                      }
-
-                      resolve(signedTx);
-                    } else {
-                      reject(
-                        new Error(
-                          (response.payload && response.payload.error) ||
-                            'Unknown error'
-                        )
-                      );
+                if (isOldStyleEthereumjsTx(tx)) {
+                  // In this version of ethereumjs-tx we must add the chainId in hex format
+                  // to the initial v value. The chainId must be included in the serialized
+                  // transaction which is only communicated to ethereumjs-tx in this
+                  // value. In newer versions the chainId is communicated via the 'Common'
+                  // object.
+                  this._signTransaction(
+                    address,
+                    tx.getChainId(),
+                    tx,
+                    (payload) => {
+                      tx.v = Buffer.from(payload.v, 'hex');
+                      tx.r = Buffer.from(payload.r, 'hex');
+                      tx.s = Buffer.from(payload.s, 'hex');
+                      return tx;
                     }
-                  })
-                  .catch((e) => {
-                    reject(new Error((e && e.toString()) || 'Unknown error'));
-                  });
-
+                  ).then(resolve);
+                } else {
+                  this._signTransaction(
+                    address,
+                    Number(tx.common.chainId()),
+                    tx,
+                    (payload) => {
+                      // Because tx will be immutable, first get a plain javascript object that
+                      // represents the transaction. Using txData here as it aligns with the
+                      // nomenclature of ethereumjs/tx.
+                      const txData = tx.toJSON();
+                      // The fromTxData utility expects a type to support transactions with a type other than 0
+                      txData.type = tx.type;
+                      // The fromTxData utility expects v,r and s to be hex prefixed
+                      txData.v = ethUtil.addHexPrefix(payload.v);
+                      txData.r = ethUtil.addHexPrefix(payload.r);
+                      txData.s = ethUtil.addHexPrefix(payload.s);
+                      // Adopt the 'common' option from the original transaction and set the
+                      // returned object to be frozen if the original is frozen.
+                      return TransactionFactory.fromTxData(txData, {
+                        common: tx.common,
+                        freeze: Object.isFrozen(tx),
+                      });
+                    }
+                  ).then(resolve);
+                }
                 // This is necessary to avoid popup collision
                 // between the unlock & sign trezor popups
               },
@@ -302,6 +383,53 @@ class OneKeyKeyring extends EventEmitter {
             reject(new Error((e && e.toString()) || 'Unknown error'));
           });
       });
+    });
+  }
+
+  async _signTransaction(address, chainId, tx, handleSigning) {
+    let transaction: EVMTransaction | EVMTransactionEIP1559;
+    if (isOldStyleEthereumjsTx(tx)) {
+      // legacy transaction from ethereumjs-tx package has no .toJSON() function,
+      // so we need to convert to hex-strings manually manually
+      transaction = {
+        to: this._normalize(tx.to),
+        value: this._normalize(tx.value),
+        data: this._normalize(tx.data),
+        chainId,
+        nonce: this._normalize(tx.nonce),
+        gasLimit: this._normalize(tx.gasLimit),
+        gasPrice: this._normalize(tx.gasPrice),
+      };
+    } else {
+      // new-style transaction from @ethereumjs/tx package
+      // we can just copy tx.toJSON() for everything except chainId, which must be a number
+      transaction = {
+        ...tx.toJSON(),
+        chainId,
+        to: this._normalize(tx.to),
+      };
+    }
+    return HardwareWebSdk.evmSignTransaction(this.connectId!, this.deviceId!, {
+      path: this._pathFromAddress(address),
+      passphraseState: this.passphraseState,
+      transaction,
+    }).then((res) => {
+      if (res.success) {
+        const newOrMutatedTx = handleSigning(res.payload);
+        const addressSignedWith = ethUtil.toChecksumAddress(
+          ethUtil.addHexPrefix(
+            newOrMutatedTx.getSenderAddress().toString('hex')
+          )
+        );
+        const correctAddress = ethUtil.toChecksumAddress(address);
+        if (addressSignedWith !== correctAddress) {
+          throw new Error('signature doesnt match the right address');
+        }
+
+        return newOrMutatedTx;
+      } else {
+        throw new Error((res.payload && res.payload.error) || 'Unknown error');
+      }
     });
   }
 
@@ -317,12 +445,12 @@ class OneKeyKeyring extends EventEmitter {
           .then((status) => {
             setTimeout(
               (_) => {
-                OneKeyConnect.ethereumSignMessage({
+                HardwareWebSdk.evmSignMessage(this.connectId!, this.deviceId!, {
                   path: this._pathFromAddress(withAccount),
-                  message: ethUtil.stripHexPrefix(message),
-                  hex: true,
+                  messageHex: ethUtil.stripHexPrefix(message),
+                  passphraseState: this.passphraseState,
                 })
-                  .then((response: any) => {
+                  .then((response) => {
                     if (response.success) {
                       if (
                         response.payload.address !==
@@ -389,17 +517,45 @@ class OneKeyKeyring extends EventEmitter {
   ) {
     return this.signHelper.invoke(async () => {
       return new Promise((resolve, reject) => {
-        const { version = 'V4' } = opts;
+        const isV4 = opts.version === 'V4';
+        const {
+          domain,
+          types,
+          primaryType,
+          message,
+        } = sigUtil.TypedDataUtils.sanitizeData(typedData);
+        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+          'EIP712Domain',
+          domain,
+          types,
+          isV4
+        ).toString('hex');
+        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+          primaryType as string,
+          message,
+          types,
+          isV4
+        ).toString('hex');
         this.unlock()
           .then((status) => {
             setTimeout(
               (_) => {
                 try {
-                  OneKeyConnect.ethereumSignMessageEIP712({
-                    path: this._pathFromAddress(address),
-                    version,
-                    data: typedData,
-                  })
+                  HardwareWebSdk.evmSignTypedData(
+                    this.connectId!,
+                    this.deviceId!,
+                    {
+                      path: this._pathFromAddress(address),
+                      data: typedData,
+                      passphraseState: this.passphraseState,
+                      metamaskV4Compat: isV4,
+                      domainHash: domainSeparatorHex,
+                      messageHash: hashStructMessageHex,
+                      chainId: domain.chainId
+                        ? Number(domain.chainId)
+                        : undefined,
+                    }
+                  )
                     .then((response) => {
                       if (response.success) {
                         if (

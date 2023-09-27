@@ -1,7 +1,11 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { TokenItem } from 'background/service/openapi';
-import { GasCache, addedToken } from 'background/service/preference';
+import {
+  AddressSortStore,
+  GasCache,
+  addedToken,
+} from 'background/service/preference';
 import { CHAINS_ENUM } from 'consts';
 import i18n from '@/i18n';
 
@@ -22,6 +26,7 @@ interface PreferenceState {
   autoLockTime: number;
   hiddenBalance: boolean;
   isShowTestnet: boolean;
+  addressSortStore: AddressSortStore;
 }
 
 export const preference = createModel<RootModel>()({
@@ -44,6 +49,7 @@ export const preference = createModel<RootModel>()({
     autoLockTime: 0,
     hiddenBalance: false,
     isShowTestnet: false,
+    addressSortStore: {} as AddressSortStore,
   } as PreferenceState,
 
   reducers: {
@@ -177,6 +183,19 @@ export const preference = createModel<RootModel>()({
       i18n.changeLanguage(locale);
       await store.app.wallet.setLocale(locale);
       dispatch.preference.getPreference('locale');
+    },
+
+    async getAddressSortStoreValue(key: keyof AddressSortStore, store?) {
+      const value = await store.app.wallet.getAddressSortStoreValue(key);
+      return value;
+    },
+
+    async setAddressSortStoreValue<K extends keyof AddressSortStore>(
+      { key, value }: { key: K; value: AddressSortStore[K] },
+      store?
+    ) {
+      await store.app.wallet.setAddressSortStoreValue(key, value);
+      dispatch.preference.getPreference('addressSortStore');
     },
 
     // async setOpenapiHost(value: string, store?) {

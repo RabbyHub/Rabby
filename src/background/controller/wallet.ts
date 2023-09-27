@@ -1110,6 +1110,9 @@ export class WalletController extends BaseController {
   getLastSelectedGasTopUpChain = preferenceService.getLastSelectedGasTopUpChain;
   setLastSelectedGasTopUpChain = preferenceService.setLastSelectedGasTopUpChain;
 
+  getAddressSortStoreValue = preferenceService.getAddressSortStoreValue;
+  setAddressSortStoreValue = preferenceService.setAddressSortStoreValue;
+
   getLastSelectedSwapChain = swapService.getSelectedChain;
   setLastSelectedSwapChain = swapService.setSelectedChain;
   getSwap = swapService.getSwap;
@@ -1516,6 +1519,18 @@ export class WalletController extends BaseController {
       total,
       results,
     };
+  };
+
+  getGnosisPendingTxs = async (address: string, networkId: string) => {
+    if (!networkId) {
+      return [];
+    }
+    const safe = await createSafeService({
+      networkId: networkId,
+      address,
+    });
+    const { results } = await safe.getPendingTransactions();
+    return results;
   };
 
   getGnosisOwners = async (
@@ -3293,6 +3308,8 @@ export class WalletController extends BaseController {
       isModuleEnabled,
     };
   };
+
+  updateNotificationWinProps = notificationService.updateNotificationWinProps;
 }
 
 const wallet = new WalletController();

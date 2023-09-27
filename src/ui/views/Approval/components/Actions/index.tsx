@@ -42,6 +42,7 @@ import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -170,24 +171,24 @@ const Actions = ({
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
+      {data.contractCall && (
+        <NoActionAlert
+          data={{
+            chainId: chain.serverId,
+            contractAddress:
+              requireData && 'id' in requireData
+                ? requireData.id
+                : txDetail.type_call?.contract,
+            selector: raw.data.toString(),
+          }}
+        />
+      )}
       <ActionWrapper>
-        <div className="action-header">
-          <div className="left">{actionName}</div>
-          <div className="right">
-            {data.contractCall && (
-              <span className="flex items-center relative">
-                {t('page.signTx.unknownActionType')}{' '}
-                <TooltipWithMagnetArrow
-                  overlayClassName="rectangle w-[max-content]"
-                  title={t('page.signTx.sigCantDecode')}
-                  placement="top"
-                >
-                  <IconQuestionMark className="icon icon-tip" />
-                </TooltipWithMagnetArrow>
-              </span>
-            )}
+        {!data.contractCall && (
+          <div className="action-header">
+            <div className="left">{actionName}</div>
           </div>
-        </div>
+        )}
         <div className="container">
           {data.swap && (
             <Swap

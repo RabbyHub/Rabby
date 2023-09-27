@@ -30,6 +30,7 @@ import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-m
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 import clsx from 'clsx';
+import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -105,24 +106,6 @@ export const ActionWrapper = styled.div`
   }
 `;
 
-const NoActionAlert = styled.div`
-  display: flex;
-  align-items: flex-start;
-  background: #e8eaf3;
-  border-radius: 6px;
-  padding: 15px;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 18px;
-  color: #333333;
-  margin-bottom: 15px;
-  .icon-alert {
-    margin-right: 8px;
-    width: 15px;
-    margin-top: 1px;
-  }
-`;
-
 const MessageWrapper = styled.div`
   .title {
     position: relative;
@@ -181,6 +164,7 @@ const Actions = ({
   engineResults,
   raw,
   message,
+  origin,
 }: {
   data: TypedDataActionData | null;
   requireData: TypedDataRequireData;
@@ -188,6 +172,7 @@ const Actions = ({
   engineResults: Result[];
   raw: Record<string, any>;
   message: string;
+  origin: string;
 }) => {
   const { t } = useTranslation();
 
@@ -327,11 +312,12 @@ const Actions = ({
         </ActionWrapper>
       )}
       {(!data || !data.actionType) && (
-        <NoActionAlert>
-          <img src={IconAlert} className="icon icon-alert" />
-          This signature can't be decoded by Rabby, but it doesn't imply any
-          risk
-        </NoActionAlert>
+        <NoActionAlert
+          data={{
+            origin,
+            text: message,
+          }}
+        />
       )}
       <MessageWrapper
         className={clsx({

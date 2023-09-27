@@ -19,7 +19,7 @@ import {
   Spender,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Chain } from '@debank/common';
-import { openInTab } from '@/ui/utils';
+import { getUiType, openInTab } from '@/ui/utils';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
@@ -229,12 +229,26 @@ export function getFinalRiskInfo(contract: ContractApprovalItem) {
 }
 
 export function openScanLinkFromChainItem(
-  spanLink: Chain['scanLink'] | null | undefined,
-  address: string
+  scanLink: Chain['scanLink'] | null | undefined,
+  address: string,
+  needClose = false
 ) {
-  if (!spanLink) return;
+  if (!scanLink) return;
 
-  openInTab(spanLink.replace(/tx\/_s_/, `address/${address}`), false);
+  openInTab(scanLink.replace(/tx\/_s_/, `address/${address}`), needClose);
+}
+
+const isTab = getUiType().isTab;
+export function openNFTLinkFromChainItem(
+  chainOrScanLink: Chain | Chain['scanLink'] | null | undefined,
+  address: string,
+  needClose = !isTab
+) {
+  const scanLink =
+    typeof chainOrScanLink === 'string'
+      ? chainOrScanLink
+      : chainOrScanLink?.scanLink;
+  return openScanLinkFromChainItem(scanLink, address, needClose);
 }
 
 export function maybeNFTLikeItem(
