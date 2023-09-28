@@ -3310,6 +3310,17 @@ export class WalletController extends BaseController {
   };
 
   updateNotificationWinProps = notificationService.updateNotificationWinProps;
+
+  checkNeedDisplayBlockedRequestApproval =
+    notificationService.checkNeedDisplayBlockedRequestApproval;
+
+  checkNeedDisplayCancelAllApproval =
+    notificationService.checkNeedDisplayCancelAllApproval;
+
+  blockedDapp = () => {
+    notificationService.blockedDapp();
+    this.rejectAllApprovals();
+  };
 }
 
 const wallet = new WalletController();
