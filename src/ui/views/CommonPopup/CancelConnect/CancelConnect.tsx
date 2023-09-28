@@ -12,7 +12,7 @@ export const CancelConnect = () => {
   React.useEffect(() => {
     setTitle(t('page.signFooterBar.cancelConnection'));
 
-    setHeight(226);
+    setHeight(244);
   }, [displayBlockedRequestApproval]);
 
   const handleBlockedRequestApproval = () => {

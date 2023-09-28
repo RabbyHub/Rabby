@@ -19,7 +19,7 @@ export const CancelApproval = () => {
     if (displayBlockedRequestApproval && displayCancelAllApproval) {
       setHeight(288);
     } else {
-      setHeight(226);
+      setHeight(244);
     }
     wallet.getPendingApprovalCount().then(setPendingApprovalCount);
   }, [displayBlockedRequestApproval, displayCancelAllApproval]);
