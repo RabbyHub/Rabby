@@ -1315,10 +1315,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.34":
-  version "0.3.34"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.34.tgz#6b00a636610f75ddd35f32f837237df3e92b49bc"
-  integrity sha512-TqLiO94ByQ/cnQRwQ/LALm6ENh2k0i/2hVv6Djfdrwo71AsEtrCqBUbf5I7bnQKqDE84++KivsA5EcVXFwFEug==
+"@debank/common@^0.3.35":
+  version "0.3.35"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.35.tgz#77de7394b127bee702b0f09c11c4890ac2a73471"
+  integrity sha512-TO7nxaTpsXAUJ1ozey9ic7lYN2yekL1CNBXX7oTSZRGTsUW++NbBQzdIyVNnfZTvI/nXoCljONI8bDTlGXyz9w==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3525,10 +3525,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.20":
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.20.tgz#6f2455273be15bf2f3c03b9cd9a947214f3d25ed"
-  integrity sha512-4j2eggrmXQ3OQ9/N36f2hI/qsQYM3UrUEKS5t0x/jRJuG2flj3x5OB8NBsJ/e5QSpDWhOJm0TXk+GCODVuZLQQ==
+"@rabby-wallet/page-provider@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.21.tgz#e0fc081d4fa0b9c9d7f5de8f178733f63fc92703"
+  integrity sha512-enelvetTygLMW/FJtttFY31oR8/GUU0bQ+Q+51gZqEiNJFzJa5+mVi5hCExHc7urnLkDxK3sAC6TZcMdbctvsw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3539,7 +3539,7 @@
     events "^3.3.0"
     lodash "^4.17.21"
     sinon-chrome "^3.0.1"
-    webextension-polyfill-ts "^0.26.0"
+    webextension-polyfill "^0.10.0"
 
 "@rabby-wallet/rabby-api@^0.6.22":
   version "0.6.22"
@@ -4701,6 +4701,11 @@
   version "0.0.80"
   resolved "https://registry.yarnpkg.com/@types/web/-/web-0.0.80.tgz#bbf499be42b0e4ec1c417b89fde51e5afe062044"
   integrity sha512-HLbRwqCL5VVkmpAAzqRGXDkUO4teKhOOY2FJDHQl3k5OTuDTPzkI74AJSoGaS6oHOVVYhI/X5Ahw/ltC8KZQuw==
+
+"@types/webextension-polyfill@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@types/webextension-polyfill/-/webextension-polyfill-0.10.2.tgz#14175d96d76339fce4d2b9b7837846148296cb5a"
+  integrity sha512-L+T72DVTi/1azY6gw7PRmL49kvobLKQQWfOmHDBRSCkAvaCV4wk222J3ZODYA9Gf/UqUvtItu8FPJgWX5ktO9g==
 
 "@types/ws@^7.2.0":
   version "7.4.7"
@@ -14871,29 +14876,10 @@ web3-utils@^1.6.0:
     randombytes "^2.1.0"
     utf8 "3.0.0"
 
-webextension-polyfill-ts@^0.25.0:
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/webextension-polyfill-ts/-/webextension-polyfill-ts-0.25.0.tgz#fff041626365dbd0e29c40b197e989a55ec221ca"
-  integrity sha512-ikQhwwHYkpBu00pFaUzIKY26I6L87DeRI+Q6jBT1daZUNuu8dSrg5U9l/ZbqdaQ1M/TTSPKeAa3kolP5liuedw==
-  dependencies:
-    webextension-polyfill "^0.7.0"
-
-webextension-polyfill-ts@^0.26.0:
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/webextension-polyfill-ts/-/webextension-polyfill-ts-0.26.0.tgz#80b7063ddaf99abaa1ca73aad0cec09f306612d3"
-  integrity sha512-XEFL+aYVEsm/d4RajVwP75g56c/w2aSHnPwgtUv8/nCzbLNSzRQIix6aj1xqFkA5yr7OIDkk3OD/QTnPp8ThYA==
-  dependencies:
-    webextension-polyfill "^0.8.0"
-
-webextension-polyfill@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.7.0.tgz#0df1120ff0266056319ce1a622b09ad8d4a56505"
-  integrity sha512-su48BkMLxqzTTvPSE1eWxKToPS2Tv5DLGxKexLEVpwFd6Po6N8hhSLIvG6acPAg7qERoEaDL+Y5HQJeJeml5Aw==
-
-webextension-polyfill@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.8.0.tgz#f80e9f4b7f81820c420abd6ffbebfa838c60e041"
-  integrity sha512-a19+DzlT6Kp9/UI+mF9XQopeZ+n2ussjhxHJ4/pmIGge9ijCDz7Gn93mNnjpZAk95T4Tae8iHZ6sSf869txqiQ==
+webextension-polyfill@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.10.0.tgz#ccb28101c910ba8cf955f7e6a263e662d744dbb8"
+  integrity sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
