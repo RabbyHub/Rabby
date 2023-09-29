@@ -487,7 +487,7 @@ class NotificationService extends Events {
   };
 
   private getOrigin(data = this.currentApproval?.data) {
-    return data?.params.origin || data?.origin;
+    return data?.params?.origin || data?.origin;
   }
 }
 
