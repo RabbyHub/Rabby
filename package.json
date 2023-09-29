@@ -41,7 +41,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "^1.7.21",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.3.5",
-    "@rabby-wallet/page-provider": "^0.1.21",
+    "@rabby-wallet/page-provider": "^0.1.22",
     "@rabby-wallet/rabby-api": "^0.6.22",
     "@rabby-wallet/rabby-security-engine": "^1.1.16",
     "@rabby-wallet/rabby-swap": "^0.0.29",
@@ -119,7 +119,7 @@
     "uuid": "^9.0.0",
     "web3-eth-abi": "^1.7.0",
     "web3-utils": "^1.7.0",
-    "webextension-polyfill": "^0.10.0"
+    "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
     "@sentry/webpack-plugin": "^1.18.9",
