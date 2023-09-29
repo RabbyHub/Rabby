@@ -119,7 +119,7 @@
     "uuid": "^9.0.0",
     "web3-eth-abi": "^1.7.0",
     "web3-utils": "^1.7.0",
-    "webextension-polyfill": "^0.10.0"
+    "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
     "@sentry/webpack-plugin": "^1.18.9",
