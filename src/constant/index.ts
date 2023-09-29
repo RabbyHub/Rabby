@@ -576,19 +576,6 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
-  /**
-   * @deprecated
-   * for backward compatibility
-   */
-  Bitkeep: {
-    id: 22,
-    name: 'Bitget Wallet',
-    brand: WALLET_BRAND_TYPES.Bitkeep,
-    icon: LogoBitkeep,
-    image: LogoBitkeep,
-    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
-    category: WALLET_BRAND_CATEGORY.MOBILE,
-  },
   [WALLET_BRAND_TYPES.Bitkeep]: {
     id: 22,
     name: 'Bitget Wallet',

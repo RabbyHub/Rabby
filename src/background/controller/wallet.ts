@@ -1679,11 +1679,11 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  resendWalletConnect = () => {
+  resendWalletConnect = (account: Account) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      return keyring.resend();
+      return keyring.resend(account);
     }
     return null;
   };
@@ -1825,12 +1825,9 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      const topic = keyring.cached.findTopic({ address, brandName });
-      if (topic) {
-        await keyring.closeConnector({ topic }, silent);
-        // reset onAfterConnect
-        if (resetConnect) keyring.onAfterSessionCreated = undefined;
-      }
+      await keyring.closeConnector({ address, brandName }, silent);
+      // reset onAfterConnect
+      if (resetConnect) keyring.resetConnect();
     }
   };
 
@@ -1862,7 +1859,7 @@ export class WalletController extends BaseController {
         const WalletConnectKeyring = keyringService.getKeyringClassForType(
           keyringType
         );
-        keyring = new WalletConnectKeyring();
+        keyring = new WalletConnectKeyring(GET_WALLETCONNECT_CONFIG());
       }
       isNewKey = true;
     }

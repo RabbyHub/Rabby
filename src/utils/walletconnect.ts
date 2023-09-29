@@ -11,5 +11,13 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       name: 'Rabby',
     },
     projectId: 'ed21a1293590bdc995404dff7e033f04',
+    v2Whitelist: [
+      'AMBER',
+      'Zerion',
+      'Bitget',
+      'TP',
+      'WALLETCONNECT',
+      'WalletConnect',
+    ],
   };
 };
