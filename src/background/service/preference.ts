@@ -9,7 +9,7 @@ import {
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM, LANGS } from 'consts';
-import { browser } from 'webextension-polyfill-ts';
+import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 
 const version = process.env.release || '0';

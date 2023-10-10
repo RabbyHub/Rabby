@@ -1,4 +1,4 @@
-import { Windows, browser } from 'webextension-polyfill-ts';
+import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -66,6 +66,15 @@ type StatsData = {
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
+  dappManager = new Map<
+    string,
+    {
+      lastRejectTimestamp: number;
+      lastRejectCount: number;
+      blockedTimestamp: number;
+      isBlocked: boolean;
+    }
+  >();
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
   isLocked = false;
@@ -175,6 +184,7 @@ class NotificationService extends Events {
 
     const approval = this.currentApproval;
 
+    this.clearLastRejectDapp();
     this.deleteApproval(approval);
 
     if (this.approvals.length > 0) {
@@ -187,8 +197,8 @@ class NotificationService extends Events {
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+    this.addLastRejectDapp();
     const approval = this.currentApproval;
-
     if (this.approvals.length <= 1) {
       await this.clear(stay); // TODO: FIXME
     }
@@ -214,6 +224,19 @@ class NotificationService extends Events {
   };
 
   requestApproval = async (data, winProps?): Promise<any> => {
+    const origin = this.getOrigin(data);
+    if (origin) {
+      const dapp = this.dappManager.get(origin);
+      // is blocked and less 10 min
+      if (
+        dapp?.isBlocked &&
+        Date.now() - dapp.blockedTimestamp < 60 * 1000 * 10
+      ) {
+        throw ethErrors.provider.userRejectedRequest(
+          'User rejected the request.'
+        );
+      }
+    }
     const currentAccount = preferenceService.getCurrentAccount();
     const reportExplain = (signingTxId?: string) => {
       const signingTx = signingTxId
@@ -344,6 +367,7 @@ class NotificationService extends Events {
   };
 
   rejectAllApprovals = () => {
+    this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
       approval.reject &&
         approval.reject(
@@ -399,6 +423,72 @@ class NotificationService extends Events {
   getStatsData = () => {
     return this.statsData;
   };
+
+  private addLastRejectDapp() {
+    // not Rabby dapp
+    if (this.currentApproval?.data?.params?.$ctx) return;
+    const origin = this.getOrigin();
+    if (!origin) {
+      return;
+    }
+    const dapp = this.dappManager.get(origin);
+    // same origin and less 1 min
+    if (dapp && Date.now() - dapp.lastRejectTimestamp < 60 * 1000) {
+      dapp.lastRejectCount = dapp.lastRejectCount + 1;
+      dapp.lastRejectTimestamp = Date.now();
+    } else {
+      this.dappManager.set(origin, {
+        lastRejectTimestamp: Date.now(),
+        lastRejectCount: 1,
+        blockedTimestamp: 0,
+        isBlocked: false,
+      });
+    }
+  }
+
+  private clearLastRejectDapp() {
+    const origin = this.getOrigin();
+    if (!origin) {
+      return;
+    }
+    this.dappManager.delete(origin);
+  }
+
+  checkNeedDisplayBlockedRequestApproval = () => {
+    const origin = this.getOrigin();
+    if (!origin) {
+      return false;
+    }
+    const dapp = this.dappManager.get(origin);
+    if (!dapp) return false;
+    // less 1 min and reject count more than 2 times
+    if (
+      Date.now() - dapp.lastRejectTimestamp < 60 * 1000 &&
+      dapp.lastRejectCount >= 2
+    ) {
+      return true;
+    }
+    return false;
+  };
+  checkNeedDisplayCancelAllApproval = () => {
+    return this.approvals.length > 1;
+  };
+
+  blockedDapp = () => {
+    const origin = this.getOrigin();
+    if (!origin) {
+      return;
+    }
+    const dapp = this.dappManager.get(origin);
+    if (!dapp) return;
+
+    dapp.isBlocked = true;
+    dapp.blockedTimestamp = Date.now();
+  };
+
+  private getOrigin(data = this.currentApproval?.data) {
+    return data?.params?.origin || data?.origin;
+  }
 }
 
 export default new NotificationService();

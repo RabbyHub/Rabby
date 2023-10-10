@@ -595,15 +595,6 @@ class ProviderController extends BaseController {
             'eth_sendRawTransaction',
             [rawTx]
           );
-          try {
-            openapiService.traceTx(
-              hash,
-              traceId || '',
-              chainItem?.serverId || ''
-            );
-          } catch (e) {
-            // DO nothing
-          }
         } else {
           hash = await openapiService.pushTx(
             {

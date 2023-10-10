@@ -43,6 +43,9 @@ const themeColors = {
     'neutral-card-1': '#ffffff',
     /* neutral/card2 #f2f4f7 */
     'neutral-card-2': 'rgba(242, 244, 247, 1)',
+    /* neutral/card3 #f7fafc */
+    'neutral-card-3': 'rgba(247, 250, 252, 1)',
+
     /* neutral/title2 #ffffff */
     'neutral-title-2': '#ffffff',
     /* neutral/black #000000 */

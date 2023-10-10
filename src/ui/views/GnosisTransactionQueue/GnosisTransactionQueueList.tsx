@@ -403,7 +403,7 @@ const GnosisTransactionItem = ({
         from: toChecksumAddress(data.safe),
         to: toChecksumAddress(data.safe),
         data: '0x',
-        value: `0x`,
+        value: '0x',
         nonce: intToHex(data.nonce),
         safeTxGas: 0,
         gasPrice: '0',

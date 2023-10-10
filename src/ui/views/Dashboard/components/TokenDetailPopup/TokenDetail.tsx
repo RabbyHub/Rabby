@@ -238,15 +238,20 @@ const TokenDetail = ({
                 {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
               </div>
             </TooltipWithMagnetArrow>
-            <div
-              className="balance-value-usd truncate"
-              title={(tokenWithAmount.amount * token.price || 0).toString()}
+            <TooltipWithMagnetArrow
+              title={`≈ $${(
+                tokenWithAmount.amount * token.price || 0
+              ).toString()}`}
+              className="rectangle w-[max-content]"
+              placement="bottom"
             >
-              ≈ $
-              {splitNumberByStep(
-                (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-              )}
-            </div>
+              <div className="balance-value-usd truncate">
+                ≈ $
+                {splitNumberByStep(
+                  (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                )}
+              </div>
+            </TooltipWithMagnetArrow>
           </div>
         </div>
 
