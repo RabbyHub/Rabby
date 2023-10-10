@@ -975,12 +975,12 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
-  [DEX_ENUM.UNISWAP]: {
-    id: DEX_ENUM.UNISWAP,
-    logo: LogoUniswap,
-    name: 'Uniswap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
-  },
+  // [DEX_ENUM.UNISWAP]: {
+  //   id: DEX_ENUM.UNISWAP,
+  //   logo: LogoUniswap,
+  //   name: 'Uniswap',
+  //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
+  // },
   [DEX_ENUM.ONEINCH]: {
     id: DEX_ENUM.ONEINCH,
     logo: Logo1inch,
@@ -1063,3 +1063,4 @@ export enum CANCEL_TX_TYPE {
   QUICK_CANCEL = 'QUICK_CANCEL',
   ON_CHAIN_CANCEL = 'ON_CHAIN_CANCEL',
 }
+export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

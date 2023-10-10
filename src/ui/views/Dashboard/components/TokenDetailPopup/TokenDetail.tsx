@@ -27,6 +27,7 @@ import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { CustomizedButton } from './CustomizedButton';
 import { BlockedButton } from './BlockedButton';
 import { useRabbySelector } from '@/ui/store';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -228,21 +229,29 @@ const TokenDetail = ({
             {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
           </div>
           <div className="balance-content overflow-hidden">
-            <div
-              className="balance-value truncate"
+            <TooltipWithMagnetArrow
+              className="rectangle w-[max-content]"
               title={(tokenWithAmount.amount || 0).toString()}
+              placement="bottom"
             >
-              {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
-            </div>
-            <div
-              className="balance-value-usd truncate"
-              title={(tokenWithAmount.amount * token.price || 0).toString()}
+              <div className="balance-value truncate">
+                {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
+              </div>
+            </TooltipWithMagnetArrow>
+            <TooltipWithMagnetArrow
+              title={`≈ $${(
+                tokenWithAmount.amount * token.price || 0
+              ).toString()}`}
+              className="rectangle w-[max-content]"
+              placement="bottom"
             >
-              ≈ $
-              {splitNumberByStep(
-                (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-              )}
-            </div>
+              <div className="balance-value-usd truncate">
+                ≈ $
+                {splitNumberByStep(
+                  (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                )}
+              </div>
+            </TooltipWithMagnetArrow>
           </div>
         </div>
 

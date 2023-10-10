@@ -1389,3 +1389,30 @@ export const getActionTypeText = (data: ParsedActionData) => {
   }
   return t('page.signTx.unknownAction');
 };
+
+export const getActionTypeTextByType = (type: string) => {
+  const t = i18n.t;
+
+  const dict = {
+    swap_token: t('page.signTx.swap.title'),
+    cross_token: t('page.signTx.crossChain.title'),
+    cross_swap_token: t('page.signTx.swapAndCross.title'),
+    send_token: t('page.signTx.send.title'),
+    approve_token: t('page.signTx.tokenApprove.title'),
+    revoke_token: t('page.signTx.revokeTokenApprove.title'),
+    permit2_revoke_token: t('page.signTx.revokePermit2.title'),
+    wrap_token: t('page.signTx.wrapToken'),
+    unwrap_token: t('page.signTx.unwrap'),
+    send_nft: t('page.signTx.sendNFT.title'),
+    approve_nft: t('page.signTx.nftApprove.title'),
+    revoke_nft: t('page.signTx.revokeNFTApprove.title'),
+    approve_collection: t('page.signTx.nftCollectionApprove.title'),
+    revoke_collection: t('page.signTx.revokeNFTCollectionApprove.title'),
+    deploy_contract: t('page.signTx.deployContract.title'),
+    cancel_tx: t('page.signTx.cancelTx.title'),
+    push_multisig: t('page.signTx.submitMultisig.title'),
+    contract_call: t('page.signTx.contractCall.title'),
+  };
+
+  return dict[type] || t('page.signTx.unknownAction');
+};

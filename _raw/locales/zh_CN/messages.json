@@ -30,7 +30,8 @@
     "Loading": "加载中",
     "Balance": "余额",
     "Done": "完成",
-    "nonce": "nonce"
+    "nonce": "nonce",
+    "Nonce": "Nonce"
   },
   "page": {
     "transactions": {
@@ -297,6 +298,9 @@
           "reconnect": "如果无法连接，请尝试<1>从头开始重新连接</1>"
         },
         "howToSwitch": "如何切换"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe 地址不支持 {{chain}}"
       }
     },
     "chainList": {
@@ -1271,6 +1275,15 @@
         "lowGasDeadline": {
           "label": "最长等待时间"
         }
+      },
+      "SafeNonceSelector": {
+        "optionGroup": {
+          "recommendTitle": "推荐的Nonce",
+          "replaceTitle": "替换Queue中的交易"
+        },
+        "error": {
+          "pendingList": "Pending列表获取失败, <1/><2>重试</2>"
+        }
       }
     },
     "signTypedData": {
@@ -1473,7 +1486,16 @@
       "action": {
         "send": "发送"
       },
-      "viewBtn": "查看"
+      "viewBtn": "查看",
+      "replaceBtn": "替换",
+      "ReplacePopup": {
+        "title": "请选择替换交易的方式",
+        "desc": "已经签名的交易无法被清除，但是可以通过发起一笔相同 Nonce的交易来替换。",
+        "options": {
+          "send": "发送代币",
+          "reject": "拒绝交易"
+        }
+      }
     },
     "importSuccess": {
       "title": "成功导入",

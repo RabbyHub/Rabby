@@ -49,7 +49,7 @@ export const AccountInfo: React.FC<Props> = ({
   return (
     <div
       className={clsx(
-        'bg-[#F6F8FF] rounded-[8px]',
+        'bg-r-neutral-card-3 rounded-[8px]',
         'py-[12px] px-[12px] mb-[12px]',
         'space-y-10'
       )}

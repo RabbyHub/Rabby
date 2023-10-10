@@ -271,6 +271,12 @@
 
     padding-top: 84px;
   }
+  .address-group-list.management > .address-scroll-container {
+    &::-webkit-scrollbar {
+      display: initial;
+    }
+    .chromelike-scrollbar();
+  }
 }
 
 .custom-private-popup {
@@ -295,6 +301,13 @@
   height: 32px;
   transition: width 0.3s;
   padding-right: 4px;
+
+  &.searching {
+    width: 220px;
+    .search-input .ant-input-suffix {
+      opacity: 1;
+    }
+  }
 
   &:has(> .search-input:hover),
   &:has(> .search-input.ant-input-affix-wrapper-focused) {

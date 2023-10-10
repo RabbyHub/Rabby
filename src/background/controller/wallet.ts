@@ -1524,6 +1524,18 @@ export class WalletController extends BaseController {
     };
   };
 
+  getGnosisPendingTxs = async (address: string, networkId: string) => {
+    if (!networkId) {
+      return [];
+    }
+    const safe = await createSafeService({
+      networkId: networkId,
+      address,
+    });
+    const { results } = await safe.getPendingTransactions();
+    return results;
+  };
+
   getGnosisOwners = async (
     account: Account,
     safeAddress: string,
@@ -3306,6 +3318,19 @@ export class WalletController extends BaseController {
       address: detail.address,
       isModuleEnabled,
     };
+  };
+
+  updateNotificationWinProps = notificationService.updateNotificationWinProps;
+
+  checkNeedDisplayBlockedRequestApproval =
+    notificationService.checkNeedDisplayBlockedRequestApproval;
+
+  checkNeedDisplayCancelAllApproval =
+    notificationService.checkNeedDisplayCancelAllApproval;
+
+  blockedDapp = () => {
+    notificationService.blockedDapp();
+    this.rejectAllApprovals();
   };
 }
 

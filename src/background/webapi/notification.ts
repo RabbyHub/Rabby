@@ -1,4 +1,4 @@
-import { browser } from 'webextension-polyfill-ts';
+import browser from 'webextension-polyfill';
 import { createTab } from './tab';
 
 browser.notifications.onClicked.addListener((url) => {
@@ -17,7 +17,7 @@ const create = (
   browser.notifications.create(url && `${url}_randomId_=${randomId}`, {
     type: 'basic',
     title,
-    iconUrl: browser.extension.getURL('./images/icon-64.png'),
+    iconUrl: browser.runtime.getURL('./images/icon-64.png'),
     message,
     priority,
   });

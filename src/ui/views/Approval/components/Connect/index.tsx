@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
+import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import {
   CHAINS_ENUM,
   CHAINS,
@@ -27,6 +27,7 @@ import UserListDrawer from './UserListDrawer';
 import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
 import { SignTestnetPermission } from './SignTestnetPermission';
+import { ReactComponent as ArrowDownSVG } from '@/ui/assets/approval/arrow-down-blue.svg';
 
 interface ConnectProps {
   params: any;
@@ -586,6 +587,26 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     setRuleDrawerVisible(true);
   };
 
+  const [
+    displayBlockedRequestApproval,
+    setDisplayBlockedRequestApproval,
+  ] = React.useState<boolean>(false);
+  const { activePopup, setData } = useCommonPopupView();
+
+  React.useEffect(() => {
+    wallet
+      .checkNeedDisplayBlockedRequestApproval()
+      .then(setDisplayBlockedRequestApproval);
+  }, []);
+
+  const activeCancelPopup = () => {
+    setData({
+      onCancel: handleCancel,
+      displayBlockedRequestApproval,
+    });
+    activePopup('CancelConnect');
+  };
+
   return (
     <Spin spinning={isLoading}>
       <ConnectWrapper>
@@ -709,11 +730,21 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               <Button
                 type="primary"
                 ghost
-                className="rabby-btn-ghost"
+                className={clsx(
+                  'rabby-btn-ghost',
+                  'flex items-center justify-center gap-2'
+                )}
                 size="large"
-                onClick={handleCancel}
+                onClick={
+                  displayBlockedRequestApproval
+                    ? activeCancelPopup
+                    : handleCancel
+                }
               >
                 {connectBtnStatus.cancelBtnText}
+                {displayBlockedRequestApproval && (
+                  <ArrowDownSVG className="w-16" />
+                )}
               </Button>
             </div>
           </Footer>

@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { browser } from 'webextension-polyfill-ts';
+import browser from 'webextension-polyfill';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
 const genExtensionId = customAlphabet('1234567890abcdef', 16);

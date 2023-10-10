@@ -227,6 +227,23 @@
           "4h": "4h",
           "24h": "24h"
         }
+      },
+      "SafeNonceSelector": {
+        "explain": {
+          "contractCall": "Contract Call",
+          "send": "Send Token",
+          "unknown": "Unknown Transaction"
+        },
+        "optionGroup": {
+          "recommendTitle": "Recommended nonce",
+          "replaceTitle": "Replace the transaction in Queue "
+        },
+        "option": {
+          "new": "New Transaction"
+        },
+        "error": {
+          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
+        }
       }
     },
     "signFooterBar": {
@@ -301,7 +318,14 @@
       "resend": "Retry",
       "submitTx": "Submit Transaction",
       "testnet": "Testnet",
-      "mainnet": "Mainnet"
+      "mainnet": "Mainnet",
+      "cancelTransaction": "Cancel Transaction",
+      "detectedMultipleRequestsFromThisDapp": "Detected multiple requests from this Dapp",
+      "cancelCurrentTransaction": "Cancel current transaction",
+      "cancelAll": "Cancel all {{count}} requests from Dapp",
+      "blockDappFromSendingRequests": "Block Dapp from sending requests for 10 min",
+      "cancelConnection": "Cancel connection",
+      "cancelCurrentConnection": "Cancel current connection"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -1004,6 +1028,9 @@
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
         "howToSwitch": "How to switch"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe address does not support {{chain}}"
       }
     },
     "nft": {
@@ -1313,7 +1340,13 @@
     "switchChain": {
       "title": "Switching to {{chain}}",
       "chainNotSupport": "The requested chain is not supported by Rabby yet",
-      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets",
+      "chainNotSupportYet": "The requested chain is not supported by Rabby yet",
+      "chainId": "Chain ID:",
+      "unknownChain": "Unknown chain",
+      "requestsReceived": "1 request received",
+      "requestsReceivedPlural": "{{count}} requests received",
+      "requestRabbyToSupport": "Request Rabby to Support"
     },
     "signText": {
       "title": "Sign Text",
@@ -1449,9 +1482,19 @@
       "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
       "unlimited": "unlimited",
       "action": {
-        "send": "Send"
+        "send": "Send",
+        "cancel": "Cancel Pending Transaction"
       },
-      "viewBtn": "View"
+      "viewBtn": "View",
+      "replaceBtn": "Replace",
+      "ReplacePopup": {
+        "options": {
+          "send": "Send Token",
+          "reject": "Reject Transaction"
+        },
+        "title": "Select how to replace this transaction",
+        "desc": " A signed transaction cannot be removed but it can be replaced with a           new transaction with the same nonce."
+      }
     },
     "importSuccess": {
       "title": "Imported Successfully",
@@ -1667,7 +1710,8 @@
     "Loading": "Loading",
     "nonce": "nonce",
     "Balance": "Balance",
-    "Done": "Done"
+    "Done": "Done",
+    "Nonce": "Nonce"
   },
   "background": {
     "error": {

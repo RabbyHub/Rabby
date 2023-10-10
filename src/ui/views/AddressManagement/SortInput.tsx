@@ -10,6 +10,7 @@ import { ReactComponent as IconSortByUsd } from '@/ui/assets/address/sort-by-usd
 import { ReactComponent as IconSortByType } from '@/ui/assets/address/sort-by-type.svg';
 import { ReactComponent as IconSortByAlphabet } from '@/ui/assets/address/sort-by-alphabet.svg';
 import { AddressSortStore } from '@/background/service/preference';
+import clsx from 'clsx';
 
 export const AddressSortIconMapping: Record<
   AddressSortStore['sortType'],
@@ -40,7 +41,7 @@ export const SortInput = ({
 
   return (
     <>
-      <div className="sort-input">
+      <div className={clsx('sort-input', value && 'searching')}>
         <div className="sort" onClick={turnOn}>
           {/* <img className="w-16 h-16" src={AddressSortIconMapping[sortType]} /> */}
           {SortIcon}

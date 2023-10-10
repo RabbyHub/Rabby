@@ -73,6 +73,7 @@ import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
+import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -830,6 +831,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSwap,
     isViewGnosisSafe,
     reqId,
+    safeTxGas,
   } = normalizeTxParams(params.data[0]);
 
   let updateNonce = true;
@@ -1133,6 +1135,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         to: tx.to,
         data: tx.data,
         value: tx.value,
+        safeTxGas: safeTxGas,
       };
       params.nonce = realNonce;
       await wallet.buildGnosisTransaction(
@@ -1148,6 +1151,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       data: [account.address, JSON.stringify(typedData)],
       session: params.session,
       isGnosis: true,
+      isSend,
       account: account,
       method: 'ethSignTypedDataV4',
       uiRequestComponent: 'SignTypedData',
@@ -1748,7 +1752,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
 
     if (block && res > Number(block.gasLimit)) {
-      res = Number(block.gasLimit);
+      res = Math.floor(Number(block.gasLimit) * 0.95); // use 95% of block gasLimit when gasLimit greater than block gasLimit
     }
     if (!new BigNumber(res).eq(calcGasLimit)) {
       setGasLimit(`0x${new BigNumber(res).toNumber().toString(16)}`);
@@ -1856,45 +1860,58 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 engineResults={engineResults}
               />
             )}
-            <GasSelector
-              disabled={isGnosisAccount || isCoboArugsAccount}
-              isReady={isReady}
-              gasLimit={gasLimit}
-              noUpdate={isCancel || isSpeedUp}
-              gasList={gasList}
-              selectedGas={selectedGas}
-              version={txDetail.pre_exec_version}
-              gas={{
-                error: txDetail.gas.error,
-                success: txDetail.gas.success,
-                gasCostUsd: gasExplainResponse.gasCostUsd,
-                gasCostAmount: gasExplainResponse.gasCostAmount,
-              }}
-              gasCalcMethod={(price) => {
-                return explainGas({
-                  gasUsed,
-                  gasPrice: price,
-                  chainId,
-                  nativeTokenPrice: txDetail?.native_token.price || 0,
-                  tx,
-                  wallet,
-                  gasLimit,
-                });
-              }}
-              recommendGasLimit={recommendGasLimit}
-              recommendNonce={recommendNonce}
-              chainId={chainId}
-              onChange={handleGasChange}
-              nonce={realNonce || tx.nonce}
-              disableNonce={isSpeedUp || isCancel}
-              is1559={support1559}
-              isHardware={isHardware}
-              manuallyChangeGasLimit={manuallyChangeGasLimit}
-              errors={checkErrors}
-              engineResults={engineResults}
-              nativeTokenBalance={nativeTokenBalance}
-              gasPriceMedian={gasPriceMedian}
-            />
+            {isGnosisAccount ? (
+              <SafeNonceSelector
+                isReady={isReady}
+                chainId={chainId}
+                value={realNonce}
+                safeInfo={safeInfo}
+                onChange={(v) => {
+                  setRealNonce(v);
+                  setNonceChanged(true);
+                }}
+              />
+            ) : (
+              <GasSelector
+                disabled={isGnosisAccount || isCoboArugsAccount}
+                isReady={isReady}
+                gasLimit={gasLimit}
+                noUpdate={isCancel || isSpeedUp}
+                gasList={gasList}
+                selectedGas={selectedGas}
+                version={txDetail.pre_exec_version}
+                gas={{
+                  error: txDetail.gas.error,
+                  success: txDetail.gas.success,
+                  gasCostUsd: gasExplainResponse.gasCostUsd,
+                  gasCostAmount: gasExplainResponse.gasCostAmount,
+                }}
+                gasCalcMethod={(price) => {
+                  return explainGas({
+                    gasUsed,
+                    gasPrice: price,
+                    chainId,
+                    nativeTokenPrice: txDetail?.native_token.price || 0,
+                    tx,
+                    wallet,
+                    gasLimit,
+                  });
+                }}
+                recommendGasLimit={recommendGasLimit}
+                recommendNonce={recommendNonce}
+                chainId={chainId}
+                onChange={handleGasChange}
+                nonce={realNonce || tx.nonce}
+                disableNonce={isSpeedUp || isCancel}
+                is1559={support1559}
+                isHardware={isHardware}
+                manuallyChangeGasLimit={manuallyChangeGasLimit}
+                errors={checkErrors}
+                engineResults={engineResults}
+                nativeTokenBalance={nativeTokenBalance}
+                gasPriceMedian={gasPriceMedian}
+              />
+            )}
           </>
         )}
         <BroadcastMode
@@ -1981,7 +1998,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
-              hasUnProcessSecurityResult
+              hasUnProcessSecurityResult ||
+              (isGnosisAccount &&
+                new BigNumber(realNonce || 0).isLessThan(safeInfo?.nonce || 0))
             }
           />
         </>
