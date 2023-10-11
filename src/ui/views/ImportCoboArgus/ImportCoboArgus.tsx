@@ -29,6 +29,7 @@ export const ImportCoboArgus = () => {
   const wallet = useWallet();
   const history = useHistory();
   const [hasImportError, setHasImportError] = React.useState<boolean>(false);
+  const isByImportAddressEvent = !!state;
 
   const handleNext = React.useCallback(async () => {
     if (selectedChain && step === 'select-chain') {
@@ -98,7 +99,7 @@ export const ImportCoboArgus = () => {
 
   return (
     <section className="bg-gray-bg relative">
-      <Header>
+      <Header hasBack={!isByImportAddressEvent}>
         {step === 'select-chain' &&
           t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}
         {(step === 'add-address' || step === 'select-address') &&

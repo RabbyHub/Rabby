@@ -22,19 +22,33 @@ export const AddressInput: React.FC<Props> = ({
 
   return (
     <div>
-      <Input
-        prefix={
-          <img className="w-20 h-20 mr-8" src={chain.logo} alt={chain.name} />
-        }
-        autoFocus
-        onChange={(v) => onChange(v.target.value)}
-        value={value}
-        placeholder={t('page.newAddress.coboSafe.inputSafeModuleAddress')}
-        className={clsx('rounded-[6px] py-16 px-12', {
-          'border-gray-divider': !error,
-          'border-red': error,
-        })}
-      />
+      <div
+        className={clsx(
+          'flex items-start',
+          'rounded-[6px] py-16 px-12',
+          'border bg-white',
+          {
+            'border-gray-divider': !error,
+            'border-red': error,
+          }
+        )}
+      >
+        <img className="w-20 h-20 mr-8" src={chain.logo} alt={chain.name} />
+
+        <Input.TextArea
+          spellCheck={false}
+          bordered={false}
+          autoFocus
+          onChange={(v) => onChange(v.target.value)}
+          value={value}
+          placeholder={t('page.newAddress.coboSafe.inputSafeModuleAddress')}
+          className="p-0 min-h-[22px]"
+          autoSize={{
+            minRows: 1,
+            maxRows: 3,
+          }}
+        />
+      </div>
       <div className="mt-12 text-13 text-red">{error}</div>
     </div>
   );
