@@ -1257,6 +1257,34 @@ class ProviderController extends BaseController {
       data: { method: 'eth_getTransactionByHash', params: [hash] },
     });
   };
+
+  @Reflect.metadata('APPROVAL', [
+    'ImportAddress',
+    ({ data, session }) => {
+      if (!data.params[0]) {
+        throw ethErrors.rpc.invalidParams('params is required but got []');
+      }
+      if (!data.params[0]?.chainId) {
+        throw ethErrors.rpc.invalidParams('chainId is required');
+      }
+      const connected = permissionService.getConnectedSite(session.origin);
+      if (connected) {
+        const { chainId } = data.params[0];
+        if (Number(chainId) === CHAINS[connected.chain].id) {
+          return true;
+        }
+      }
+    },
+    { height: 650 },
+  ])
+  walletImportAddress = async ({
+    data: {
+      params: [addressParams],
+    },
+    session: { origin },
+  }) => {
+    return null;
+  };
 }
 
 export default new ProviderController();

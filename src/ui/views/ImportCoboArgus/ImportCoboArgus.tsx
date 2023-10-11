@@ -5,15 +5,20 @@ import { AddressInput } from './AddressInput';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { Header } from './Header';
-import { useWallet } from '@/ui/utils';
+import { useApproval, useWallet } from '@/ui/utils';
 import { isAddress } from 'web3-utils';
 import { SelectAddressPopup } from './SelectAddressPopup';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { findChainByID } from '@/utils/chain';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
 export const ImportCoboArgus = () => {
+  const { state } = useLocation<{
+    address: string;
+    chainId: number;
+  }>();
   const { t } = useTranslation();
   const [selectedChain, setSelectedChain] = React.useState<CHAINS_ENUM>();
   const [inputAddress, setInputAddress] = React.useState<string>('');
@@ -23,6 +28,7 @@ export const ImportCoboArgus = () => {
   const [safeAddress, setSafeAddress] = React.useState<string>('');
   const wallet = useWallet();
   const history = useHistory();
+  const [hasImportError, setHasImportError] = React.useState<boolean>(false);
 
   const handleNext = React.useCallback(async () => {
     if (selectedChain && step === 'select-chain') {
@@ -68,9 +74,27 @@ export const ImportCoboArgus = () => {
         },
       });
     } catch (e) {
+      setHasImportError(true);
       message.error(e.message);
     }
   }, [selectedChain, safeAddress, inputAddress]);
+
+  const [, , rejectApproval] = useApproval();
+  const handleClose = React.useCallback(() => {
+    rejectApproval();
+  }, [rejectApproval]);
+
+  React.useEffect(() => {
+    if (!state) return;
+    const { chainId, address } = state;
+    const chain = findChainByID(chainId);
+
+    if (chain) {
+      setStep('add-address');
+      setSelectedChain(chain.enum);
+      setInputAddress(address);
+    }
+  }, []);
 
   return (
     <section className="bg-gray-bg relative">
@@ -121,10 +145,10 @@ export const ImportCoboArgus = () => {
           }
           className="w-[200px] h-[44px] m-auto"
           type="primary"
-          onClick={handleNext}
+          onClick={hasImportError ? handleClose : handleNext}
           loading={isLoading}
         >
-          {t('global.next')}
+          {hasImportError ? t('global.ok') : t('global.next')}
         </Button>
       </footer>
     </section>
