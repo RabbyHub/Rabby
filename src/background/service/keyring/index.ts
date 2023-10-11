@@ -2,9 +2,10 @@
 
 import { EventEmitter } from 'events';
 import log from 'loglevel';
-import encryptor from 'browser-passworder';
+import * as encryptor from '@metamask/browser-passworder';
 import * as ethUtil from 'ethereumjs-util';
-import * as bip39 from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 import { ObservableStore } from '@metamask/obs-store';
 import {
   normalizeAddress,
@@ -188,7 +189,7 @@ export class KeyringService extends EventEmitter {
   }
 
   generateMnemonic(): string {
-    return bip39.generateMnemonic();
+    return bip39.generateMnemonic(wordlist);
   }
 
   async generatePreMnemonic(): Promise<string> {
@@ -238,7 +239,7 @@ export class KeyringService extends EventEmitter {
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
   createKeyringWithMnemonics(seed: string): Promise<any> {
-    if (!bip39.validateMnemonic(seed)) {
+    if (!bip39.validateMnemonic(seed, wordlist)) {
       return Promise.reject(
         new Error(i18n.t('background.error.invalidMnemonic'))
       );
@@ -826,7 +827,9 @@ export class KeyringService extends EventEmitter {
     await this.clearKeyrings();
     const vault = await this.encryptor.decrypt(password, encryptedVault);
     // TODO: FIXME
-    await Promise.all(Array.from(vault).map(this._restoreKeyring.bind(this)));
+    await Promise.all(
+      Array.from(vault as any).map(this._restoreKeyring.bind(this))
+    );
     await this._updateMemStoreKeyrings();
     return this.keyrings;
   }
