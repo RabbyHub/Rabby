@@ -22,12 +22,14 @@ export const Header: React.FC<{
   };
   return (
     <div className="create-new-header create-password-header h-[180px] py-[20px]">
-      {hasBack && (
+      {hasBack ? (
         <img
           src={IconBack}
           className="icon-back mb-0 relative z-10"
           onClick={handleClickBack}
         />
+      ) : (
+        <div className="h-24" />
       )}
       <div className="relative w-[60px] h-[60px] mb-16 mx-auto mt-[-4px]">
         <img className="unlock-logo w-full h-full" src={IconCoboArgus} />
