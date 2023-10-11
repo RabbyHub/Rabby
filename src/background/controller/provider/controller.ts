@@ -1275,7 +1275,7 @@ class ProviderController extends BaseController {
         }
       }
     },
-    { height: 600 },
+    { height: 628 },
   ])
   walletImportAddress = async ({
     data: {
