@@ -227,10 +227,10 @@ class NotificationService extends Events {
     const origin = this.getOrigin(data);
     if (origin) {
       const dapp = this.dappManager.get(origin);
-      // is blocked and less 10 min
+      // is blocked and less 1 min
       if (
         dapp?.isBlocked &&
-        Date.now() - dapp.blockedTimestamp < 60 * 1000 * 10
+        Date.now() - dapp.blockedTimestamp < 60 * 1000 * 1
       ) {
         throw ethErrors.provider.userRejectedRequest(
           'User rejected the request.'
