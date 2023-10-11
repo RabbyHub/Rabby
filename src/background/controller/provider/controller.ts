@@ -1260,29 +1260,17 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('APPROVAL', [
     'ImportAddress',
-    ({ data, session }) => {
+    ({ data }) => {
       if (!data.params[0]) {
         throw ethErrors.rpc.invalidParams('params is required but got []');
       }
       if (!data.params[0]?.chainId) {
         throw ethErrors.rpc.invalidParams('chainId is required');
       }
-      const connected = permissionService.getConnectedSite(session.origin);
-      if (connected) {
-        const { chainId } = data.params[0];
-        if (Number(chainId) === CHAINS[connected.chain].id) {
-          return true;
-        }
-      }
     },
     { height: 628 },
   ])
-  walletImportAddress = async ({
-    data: {
-      params: [addressParams],
-    },
-    session: { origin },
-  }) => {
+  walletImportAddress = async () => {
     return null;
   };
 }
