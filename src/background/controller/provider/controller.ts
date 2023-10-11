@@ -27,11 +27,9 @@ import {
   pageStateCacheService,
   signTextHistoryService,
   RPCService,
-  i18n,
   swapService,
   notificationService,
 } from 'background/service';
-import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';

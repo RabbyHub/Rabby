@@ -1,7 +1,8 @@
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
-import * as bip39 from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
 import { groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
@@ -2164,7 +2165,7 @@ export class WalletController extends BaseController {
   };
 
   generateKeyringWithMnemonic = async (mnemonic: string) => {
-    if (!bip39.validateMnemonic(mnemonic)) {
+    if (!bip39.validateMnemonic(mnemonic, wordlist)) {
       throw new Error(t('background.error.invalidMnemonic'));
     }
     // If import twice use same kerying
