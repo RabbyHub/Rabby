@@ -266,7 +266,7 @@ const flowContext = flow
         approvalType,
         isUnshift: true,
       });
-      if (res.uiRequestComponent) {
+      if (res?.uiRequestComponent) {
         return await requestApprovalLoop(res);
       } else {
         return res;
