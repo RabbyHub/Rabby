@@ -1750,7 +1750,7 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    keyring.initConnector(brandName, !chainId ? 1 : chainId);
+    keyring.initConnector(brandName, 1);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
