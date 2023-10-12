@@ -12,7 +12,7 @@ import { useWallet } from 'ui/utils';
 const Wrapper = styled.div`
   min-width: 168px;
   max-width: 240px;
-  max-height: 210px;
+  max-height: 200px;
   overflow: auto;
   padding: 16px;
 
@@ -40,8 +40,23 @@ const Wrapper = styled.div`
     margin-top: 16px;
   }
 
+  .mempool-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 0 0 8px 8px;
+
+    .btn {
+      margin-top: 0;
+    }
+  }
+
   .mempool-list {
     margin-top: 14px;
+    margin-bottom: 40px;
   }
 
   .mempool-item {
@@ -132,13 +147,15 @@ export const MempoolList = ({
             })}
           </div>
           {tx.reqId ? (
-            <div
-              className="btn"
-              onClick={() => {
-                onReBroadcast?.();
-              }}
-            >
-              {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
+            <div className="mempool-footer">
+              <div
+                className="btn"
+                onClick={() => {
+                  onReBroadcast?.();
+                }}
+              >
+                {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
+              </div>
             </div>
           ) : null}
         </>

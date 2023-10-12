@@ -1,22 +1,26 @@
-import { RPCService } from '@/background/service';
 import { KEYRING_CATEGORY } from '@/constant';
 import { Popup } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
-import { Drawer, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { ReactComponent as SvgIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconChecked from 'ui/assets/box-checked.svg';
 import IconUnChecked from 'ui/assets/box-unchecked.svg';
-import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
-import { type } from 'os';
 
+const GlobalStyle = createGlobalStyle`
+  .broadcast-mode-popup {
+    .ant-drawer-close {
+      padding-top: 24px
+    }
+  }
+`;
 const Wrapper = styled.div`
   border-radius: 6px;
   background: var(--r-neutral-card-1, #fff);
@@ -294,6 +298,7 @@ export const BroadcastMode = ({
 
   return (
     <>
+      <GlobalStyle />
       <Wrapper className={className} style={style}>
         <div className="broadcast-mode-header">
           <div className="broadcast-mode-title">
@@ -349,6 +354,7 @@ export const BroadcastMode = ({
         maskClosable
         closable
         title={t('page.signTx.BroadcastMode.title')}
+        className="broadcast-mode-popup"
       >
         <OptionList>
           {options.map((option) => (
