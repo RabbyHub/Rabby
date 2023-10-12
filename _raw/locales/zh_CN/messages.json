@@ -637,7 +637,7 @@
           "pendingDetail": "只会有一笔交易成功完成，而且一般是 Gas Price 最高的一笔交易将成功",
           "pendingBroadcastRetry": "广播失败，上次广播时间：{{pushAt}}",
           "pendingBroadcastRetryBtn": "重新广播",
-          "pendingBroadcast": "已设置为省Gas广播模式，正在等链上Gas较低的时广播。最晚将在创建后{{deadline}}后广播。",
+          "pendingBroadcast": "已设置为省Gas广播模式，正在等链上Gas较低的时广播。最晚将在创建后{{deadline}}小时后广播。",
           "pendingBroadcastBtn": "立即广播"
         },
         "txType": {
