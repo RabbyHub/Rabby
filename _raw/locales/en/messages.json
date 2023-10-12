@@ -296,7 +296,7 @@
       "detectedMultipleRequestsFromThisDapp": "Detected multiple requests from this Dapp",
       "cancelCurrentTransaction": "Cancel current transaction",
       "cancelAll": "Cancel all {{count}} requests from Dapp",
-      "blockDappFromSendingRequests": "Block Dapp from sending requests for 10 min",
+      "blockDappFromSendingRequests": "Block Dapp from sending requests for 1 min",
       "cancelConnection": "Cancel connection",
       "cancelCurrentConnection": "Cancel current connection"
     },
