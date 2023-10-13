@@ -23,7 +23,7 @@ const Wrapper = styled.div`
   }
   .btn {
     display: inline-flex;
-    padding: 4px 16px;
+    padding: 3px 15px;
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -34,6 +34,15 @@ const Wrapper = styled.div`
     color: var(--r-blue-default, #7084ff);
     font-size: 13px;
     font-weight: 500;
+    border: 1px solid transparent;
+    border: 0.5px solid transparent;
+
+    &:hover,
+    &:active {
+      border: 1px solid var(--r-blue-default, #7084ff);
+      border: 0.5px solid var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-2, #dee3fc);
+    }
 
     cursor: pointer;
 

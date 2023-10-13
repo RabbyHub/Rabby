@@ -878,9 +878,13 @@ class TxHistory {
     return Object.entries(dict).reduce((res, [key, list]) => {
       const maxNonce = max(list.map((item) => item.nonce)) || 0;
       res[key] = sortBy(
-        list.filter((item) => item.nonce > maxNonce && item.isPending),
+        list.filter(
+          (item) =>
+            item.nonce < maxNonce && findMaxGasTx(item.txs)?.isWithdrawed
+        ),
         (item) => -item.nonce
       );
+
       return res;
     }, {} as Record<string, TransactionGroup[]>);
   }

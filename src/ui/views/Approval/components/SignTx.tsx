@@ -1914,16 +1914,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
           </>
         )}
-        <BroadcastMode
-          className="mt-[12px]"
-          chain={chain.enum}
-          value={pushInfo}
-          isCancel={isCancel}
-          isSpeedUp={isSpeedUp}
-          onChange={(value) => {
-            setPushInfo(value);
-          }}
-        />
+        {!isGnosisAccount && !isCoboArugsAccount ? (
+          <BroadcastMode
+            className="mt-[12px]"
+            chain={chain.enum}
+            value={pushInfo}
+            isCancel={isCancel}
+            isSpeedUp={isSpeedUp}
+            onChange={(value) => {
+              setPushInfo(value);
+            }}
+          />
+        ) : null}
 
         {isGnosisAccount && safeInfo && (
           <Drawer

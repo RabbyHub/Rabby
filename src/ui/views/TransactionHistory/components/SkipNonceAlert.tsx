@@ -5,8 +5,7 @@ import { findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
-import { ConnectedSite } from 'background/service/permission';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { CHAINS } from 'consts';
 import { flatten, maxBy } from 'lodash';
 import React from 'react';
 import { Trans } from 'react-i18next';
@@ -53,6 +52,8 @@ const AlertDetail = ({
   onSubmitTx?: (item: TransactionGroup) => void;
 }) => {
   const chain = findChainByID(data.chainId);
+  const nonce = data.nonce;
+  const chainName = chain?.name || 'Unknown';
 
   return (
     <div className="alert-detail">
@@ -64,9 +65,11 @@ const AlertDetail = ({
             nonce: data.nonce,
             chainName: chain?.name || 'Unknown',
           }}
+          nonce={nonce}
+          chainName={chainName}
         >
-          Nonce #{data.nonce} skipped on {chain?.name || 'Unknown'} chain. This
-          may cause pending transactions ahead.{' '}
+          Nonce #{{ nonce }} skipped on {{ chainName }} chain. This may cause
+          pending transactions ahead.{' '}
           <span
             className="link"
             onClick={() => {

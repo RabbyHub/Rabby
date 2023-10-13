@@ -32,8 +32,7 @@ const Wrapper = styled.div`
       padding: 16px 0 12px 0;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--r-neutral-line, #d3d8e0);
-      border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
     &-title {
       color: var(--r-neutral-title-1, #192945);

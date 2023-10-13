@@ -669,7 +669,7 @@
           }
         },
         "SkipNonceAlert": {
-          "alert": "当前{{chainName}}链因快捷取消导致Nonce#{{nonce}}被跳过, 导致后续Pending交易无法完成, 可<1/><2>发起一笔链上交易</2><3/>来填充"
+          "alert": "当前 {{chainName}} 链因快捷取消导致 Nonce#{{nonce}} 被跳过, 导致后续 Pending 交易无法完成, 可 <5></5><6>发起一笔链上交易</6><7></7>来填充"
         }
       },
       "title": "签名记录"
