@@ -106,8 +106,19 @@ export const TransactionItem = ({
       message.error('Can not re-broadcast');
       return;
     }
-    // fake toast for re-broadcast, not wait for tx push
-    message.success(t('page.activities.signedTx.message.broadcastSuccess'));
+
+    const isReBroadcast = !!tx.hash;
+    if (isReBroadcast) {
+      // fake toast for re-broadcast, not wait for tx push
+      message.success(t('page.activities.signedTx.message.reBroadcastSuccess'));
+      wallet.retryPushTx({
+        reqId: tx.reqId,
+        chainId: tx.rawTx.chainId,
+        nonce: +tx.rawTx.nonce,
+        address: tx.rawTx.from,
+      });
+      return;
+    }
     try {
       await wallet.retryPushTx({
         reqId: tx.reqId,
@@ -115,8 +126,10 @@ export const TransactionItem = ({
         nonce: +tx.rawTx.nonce,
         address: tx.rawTx.from,
       });
+      message.success(t('page.activities.signedTx.message.broadcastSuccess'));
     } catch (e) {
       console.error(e);
+      message.error(e.message);
     }
   };
   const handleOnChainCancel = async () => {

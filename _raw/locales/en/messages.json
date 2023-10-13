@@ -435,7 +435,8 @@
           "title": "Found in the below memopools"
         },
         "message": {
-          "broadcastSuccess": "Re-broadcasted",
+          "reBroadcastSuccess": "Re-broadcasted",
+          "broadcastSuccess": "Broadcasted",
           "cancelSuccess": "Canceled"
         },
         "gas": {

@@ -651,8 +651,9 @@
           "title": "已在以下节点的memopool发现这笔交易"
         },
         "message": {
-          "broadcastSuccess": "已重新广播",
-          "cancelSuccess": "已取消"
+          "broadcastSuccess": "已广播",
+          "cancelSuccess": "已取消",
+          "reBroadcastSuccess": "已重新广播"
         },
         "CancelTxPopup": {
           "title": "取消交易",
