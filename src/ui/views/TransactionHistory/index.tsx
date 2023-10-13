@@ -66,7 +66,6 @@ const TransactionHistory = () => {
         return isSameAddress(item || '', account?.address || '');
       })
     ) {
-      console.log('reload');
       init();
       reloadTxRequests();
     }

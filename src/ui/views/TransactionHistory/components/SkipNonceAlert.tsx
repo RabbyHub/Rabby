@@ -93,13 +93,18 @@ export const SkipNonceAlert = ({
   const [account] = useAccount();
   const wallet = useWallet();
 
-  const { data } = useRequest(async () => {
-    if (!account?.address) {
-      return;
+  const { data } = useRequest(
+    async () => {
+      if (!account?.address || !pendings.length) {
+        return;
+      }
+      const res = await wallet.getSkipedTxs(account?.address);
+      return flatten(Object.values(res));
+    },
+    {
+      refreshDeps: [account?.address, pendings],
     }
-    const res = await wallet.getSkipedTxs(account?.address);
-    return flatten(Object.values(res));
-  });
+  );
 
   const handleOnChainCancel = async (item: TransactionGroup) => {
     // todo can cancel ?

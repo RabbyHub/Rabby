@@ -876,7 +876,15 @@ class TxHistory {
     );
 
     return Object.entries(dict).reduce((res, [key, list]) => {
-      const maxNonce = max(list.map((item) => item.nonce)) || 0;
+      const maxNonce =
+        maxBy(
+          list.filter((item) => {
+            const maxGasTx = findMaxGasTx(item.txs);
+            return !item.isSubmitFailed && !maxGasTx?.isWithdrawed;
+          }),
+          (item) => item.nonce
+        )?.nonce || 0;
+
       res[key] = sortBy(
         list.filter(
           (item) =>
