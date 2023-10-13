@@ -22,6 +22,7 @@ import {
   swapService,
   RPCService,
   securityEngineService,
+  transactionBroadcastWatchService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -88,6 +89,7 @@ async function restoreAppState() {
   await permissionService.init();
   await preferenceService.init();
   await transactionWatchService.init();
+  await transactionBroadcastWatchService.init();
   await pageStateCacheService.init();
   await transactionHistoryService.init();
   await contactBookService.init();
@@ -102,6 +104,7 @@ async function restoreAppState() {
   appStoreLoaded = true;
 
   transactionWatchService.roll();
+  transactionBroadcastWatchService.roll();
   initAppMeta();
   startEnableUser();
 }

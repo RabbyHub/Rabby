@@ -24,6 +24,7 @@ import {
   unTriggerTxCounter,
   contextMenuService,
   securityEngineService,
+  transactionBroadcastWatchService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1145,6 +1146,8 @@ export class WalletController extends BaseController {
     return chainId === Number(rpcChainId);
   };
 
+  hasCustomRPC = RPCService.hasCustomRPC;
+
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
@@ -1921,6 +1924,7 @@ export class WalletController extends BaseController {
   clearAddressPendingTransactions = (address: string) => {
     transactionHistoryService.clearPendingTransactions(address);
     transactionWatcher.clearPendingTx(address);
+    transactionBroadcastWatchService.clearPendingTx(address);
     return;
   };
 
@@ -2680,6 +2684,13 @@ export class WalletController extends BaseController {
     transactionHistoryService.getNonceByChain(address, chainId);
   getPendingTxsByNonce = (address: string, chainId: number, nonce: number) =>
     transactionHistoryService.getPendingTxsByNonce(address, chainId, nonce);
+
+  getSkipedTxs = (address: string) =>
+    transactionHistoryService.getSkipedTxs(address);
+
+  quickCancelTx = transactionHistoryService.quickCancelTx;
+
+  retryPushTx = transactionHistoryService.retryPushTx;
 
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);

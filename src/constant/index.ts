@@ -335,6 +335,7 @@ export const EVENTS = {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
   LOCK_WALLET: 'LOCK_WALLET',
+  RELOAD_TX: 'RELOAD_TX',
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -1060,4 +1061,8 @@ export const SIGN_PERMISSION_OPTIONS = [
   },
 ];
 
+export enum CANCEL_TX_TYPE {
+  QUICK_CANCEL = 'QUICK_CANCEL',
+  ON_CHAIN_CANCEL = 'ON_CHAIN_CANCEL',
+}
 export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

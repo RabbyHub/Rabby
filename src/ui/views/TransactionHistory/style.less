@@ -3,6 +3,7 @@
 .tx-history {
   display: flex;
   flex-direction: column;
+
   &__item {
     position: relative;
     background: #ffffff;
@@ -54,19 +55,26 @@
       position: absolute;
       top: 0;
       left: 12px;
-      background-color: rgba(242, 156, 27, 0.2);
       border-radius: 0px 0px 4px 4px;
-      padding: 5px 10px;
+      background: var(--r-orange-light, rgba(255, 176, 32, 0.15));
+      padding: 4px 6px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 12px;
-      color: #f29c1b;
+      color: var(--r-orange-default, #ffb020);
+      font-weight: 400;
+      line-height: 14px;
+      gap: 4px;
+
       .icon-pending-spin {
         width: 12px;
         height: 12px;
         animation: spining 1.5s infinite linear;
-        margin-right: 6px;
+
+        path {
+          fill: var(--r-orange-default, #ffb020);
+        }
       }
     }
     .tx-id {
@@ -106,6 +114,7 @@
     }
     .ahead {
       font-size: 12px;
+      line-height: 14px;
       color: #7f8a9a;
     }
     &--children {
@@ -131,7 +140,7 @@
         display: flex;
         margin-bottom: 10px;
         .tx-type {
-          width: 65px;
+          width: 95px;
         }
         .ahead {
           flex: 1;
@@ -150,7 +159,7 @@
       }
     }
   }
-  
+
   &__pending {
     .tx-history__item {
       .tx-footer {
@@ -229,4 +238,14 @@
   justify-content: center;
   position: static;
   margin-top: 36px;
+}
+
+.mempool-list-popover {
+  padding-top: 3px;
+  .ant-popover-arrow {
+    display: none;
+  }
+  .ant-popover-inner-content {
+    padding: 0;
+  }
 }
