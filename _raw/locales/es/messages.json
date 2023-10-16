@@ -343,6 +343,13 @@
           "cancelSingleNFTApproval": "Cancelar Aprobación Individual de NFT para {{protocol}}",
           "singleNFTApproval": "Aprobación Individual de NFT para {{protocol}}",
           "nftCollectionApproval": "Aprobación de Colección de NFT para {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "quickCancel": {
+              "tips": "Only supported for transactions that haven't broadcast"
+            }
+          }
         }
       },
       "signedText": {

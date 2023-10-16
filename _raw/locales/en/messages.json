@@ -201,6 +201,33 @@
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
       "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "BroadcastMode": {
+        "instant": {
+          "title": "Instant",
+          "desc": "Transactions will be immediately broadcast to the network"
+        },
+        "lowGas": {
+          "title": "Gas-saving",
+          "desc": "Transactions will be broadcast when network gas is low"
+        },
+        "mev": {
+          "title": "MEV Guarded",
+          "desc": "Transactions will be broadcast to the designated MEV node"
+        },
+        "title": "Broadcast Mode",
+        "tips": {
+          "walletConnect": "Not supported by WalletConnect",
+          "notSupportChain": "Not supported on this chain",
+          "customRPC": "Not supported when using custom RPC",
+          "notSupported": "Not supported"
+        },
+        "lowGasDeadline": {
+          "label": "Timeout",
+          "1h": "1h",
+          "4h": "4h",
+          "24h": "24h"
+        }
+      },
       "SafeNonceSelector": {
         "explain": {
           "contractCall": "Contract Call",
@@ -229,7 +256,7 @@
       "connecting": "Connecting...",
       "ledgerNotConnected": "Ledger is not connected",
       "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Submit",
+      "signAndSubmitButton": "Sign and Create",
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
         "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
@@ -263,9 +290,9 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to submit",
+        "txFailed": "Fail to created",
         "sigReceived": "Signature received",
-        "sigCompleted": "Transaction submitted",
+        "sigCompleted": "Transaction created",
         "getSig": "Get signature",
         "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
@@ -282,7 +309,7 @@
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Submitting transaction",
+        "submitting": "Signed. Creating transaction",
         "resubmited": "Resubmited"
       },
       "common": {
@@ -296,7 +323,7 @@
       "detectedMultipleRequestsFromThisDapp": "Detected multiple requests from this Dapp",
       "cancelCurrentTransaction": "Cancel current transaction",
       "cancelAll": "Cancel all {{count}} requests from Dapp",
-      "blockDappFromSendingRequests": "Block Dapp from sending requests for 10 min",
+      "blockDappFromSendingRequests": "Block Dapp from sending requests for 1 min",
       "cancelConnection": "Cancel connection",
       "cancelCurrentConnection": "Cancel current connection"
     },
@@ -358,13 +385,20 @@
         },
         "tips": {
           "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
-          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
+          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
+          "pendingBroadcast": "Gas-saving mode: waiting for lower network fees. Max {{deadline}}h  wait.",
+          "pendingBroadcastBtn": "Broadcast now",
+          "pendingBroadcastRetry": "Broadcast failed. Last attempt: {{pushAt}}",
+          "pendingBroadcastRetryBtn": "Re-broadcast"
         },
         "status": {
           "canceled": "Canceled",
           "failed": "Failed",
           "submitFailed": "Failed to submit",
-          "pending": "Pending"
+          "pending": "Pending",
+          "withdrawed": "Quick cancel",
+          "pendingBroadcasted": "Pending: broadcasted",
+          "pendingBroadcast": "Pending: broadcast"
         },
         "txType": {
           "initial": "Initial tx",
@@ -380,6 +414,36 @@
           "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
           "singleNFTApproval": "Single NFT Approval for {{protocol}}",
           "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "title": "Cancel transaction",
+          "options": {
+            "quickCancel": {
+              "title": "Quick Cancel",
+              "desc": "Cancel before broadcasting, no gas fee",
+              "tips": "Only supported for transactions that haven't broadcast"
+            },
+            "onChainCancel": {
+              "title": "On-chain Cancel",
+              "desc": "New transaction to cancel, requires gas"
+            }
+          }
+        },
+        "MempoolList": {
+          "empty": "Not found in any node",
+          "reBroadcastBtn": "Re-broadcast",
+          "title": "Found in the below memopools"
+        },
+        "message": {
+          "reBroadcastSuccess": "Re-broadcasted",
+          "broadcastSuccess": "Broadcasted",
+          "cancelSuccess": "Canceled"
+        },
+        "gas": {
+          "noCost": "No Gas cost"
+        },
+        "SkipNonceAlert": {
+          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
         }
       },
       "signedText": {

@@ -318,6 +318,7 @@ export const EVENTS = {
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
     TRANSPORT_ERROR: 'TRANSPORT_ERROR',
+    SCAN_ACCOUNT: 'SCAN_ACCOUNT',
   },
   GNOSIS: {
     TX_BUILT: 'TransactionBuilt',
@@ -334,6 +335,7 @@ export const EVENTS = {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
   LOCK_WALLET: 'LOCK_WALLET',
+  RELOAD_TX: 'RELOAD_TX',
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -358,7 +360,7 @@ export enum WALLET_BRAND_TYPES {
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
   Rainbow = 'Rainbow',
-  Bitkeep = 'Bitkeep',
+  Bitkeep = 'Bitget',
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
@@ -382,7 +384,7 @@ export type IWalletBrandContent = {
 };
 
 export const WALLET_BRAND_CONTENT: {
-  [K in WALLET_BRAND_TYPES]: IWalletBrandContent;
+  [K in string]: IWalletBrandContent;
 } = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
@@ -577,7 +579,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.Bitkeep]: {
     id: 22,
-    name: 'Bitkeep',
+    name: 'Bitget Wallet',
     brand: WALLET_BRAND_TYPES.Bitkeep,
     icon: LogoBitkeep,
     image: LogoBitkeep,
@@ -934,6 +936,7 @@ export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AVAX,
   CHAINS_ENUM.BASE,
+  CHAINS_ENUM.MANTLE,
 ]);
 
 export const WALLET_SORT_SCORE = [
@@ -1058,4 +1061,8 @@ export const SIGN_PERMISSION_OPTIONS = [
   },
 ];
 
+export enum CANCEL_TX_TYPE {
+  QUICK_CANCEL = 'QUICK_CANCEL',
+  ON_CHAIN_CANCEL = 'ON_CHAIN_CANCEL',
+}
 export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

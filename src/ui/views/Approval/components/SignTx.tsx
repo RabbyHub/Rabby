@@ -71,6 +71,8 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
+import { BroadcastMode } from './BroadcastMode';
+import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 
 interface BasicCoboArgusInfo {
@@ -733,6 +735,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
+  const [pushInfo, setPushInfo] = useState<{
+    type: TxPushType;
+    lowGasDeadline?: number;
+  }>({
+    type: 'default',
+  });
 
   useSignPermissionCheck({
     origin,
@@ -822,6 +830,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSend,
     isSwap,
     isViewGnosisSafe,
+    reqId,
     safeTxGas,
   } = normalizeTxParams(params.data[0]);
 
@@ -1209,6 +1218,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isSend,
       traceId: txDetail?.trace_id,
       signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
     });
     wallet.clearPageStateCache();
   };
@@ -1299,6 +1311,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         },
         $ctx: params.$ctx,
         signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
       });
 
       return;
@@ -1331,6 +1346,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isSend,
       traceId: txDetail?.trace_id,
       signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
     });
   };
 
@@ -1896,6 +1914,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
           </>
         )}
+        {!isGnosisAccount && !isCoboArugsAccount ? (
+          <BroadcastMode
+            className="mt-[12px]"
+            chain={chain.enum}
+            value={pushInfo}
+            isCancel={isCancel}
+            isSpeedUp={isSpeedUp}
+            onChange={(value) => {
+              setPushInfo(value);
+            }}
+          />
+        ) : null}
+
         {isGnosisAccount && safeInfo && (
           <Drawer
             placement="bottom"

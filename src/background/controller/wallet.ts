@@ -1,9 +1,10 @@
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
-import * as bip39 from 'bip39';
+import * as bip39 from '@scure/bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
-import { groupBy, uniq } from 'lodash';
+import { chain, groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -23,6 +24,7 @@ import {
   unTriggerTxCounter,
   contextMenuService,
   securityEngineService,
+  transactionBroadcastWatchService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -60,7 +62,7 @@ import {
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
-import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import { WalletConnectKeyring } from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
 import {
   setPageStateCacheWhenPopupClose,
@@ -98,6 +100,7 @@ import { t } from 'i18next';
 import { getWeb3Provider } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
+import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1143,6 +1146,8 @@ export class WalletController extends BaseController {
     return chainId === Number(rpcChainId);
   };
 
+  hasCustomRPC = RPCService.hasCustomRPC;
+
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
@@ -1677,11 +1682,11 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  resendWalletConnect = () => {
+  resendWalletConnect = (account: Account) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      return keyring.resend();
+      return keyring.resend(account);
     }
     return null;
   };
@@ -1724,7 +1729,16 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  initWalletConnect = async (brandName: string, curStashId?: number | null) => {
+  _currentWalletConnectStashId?: undefined | null | number;
+
+  initWalletConnect = async (
+    brandName: string,
+    curStashId?: number | null,
+    chainId = 1
+  ) => {
+    if (!curStashId && this._currentWalletConnectStashId) {
+      curStashId = this._currentWalletConnectStashId;
+    }
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -1736,28 +1750,21 @@ export class WalletController extends BaseController {
       }
     } catch {
       const WalletConnect = keyringService.getKeyringClassForType(keyringType);
-      keyring = new WalletConnect({
-        accounts: [],
-        brandName: brandName,
-        // 1h
-        maxDuration: 3600000,
-        clientMeta: {
-          description: t('global.appDescription'),
-          url: 'https://rabby.io',
-          icons: ['https://rabby.io/assets/images/logo.png'],
-          name: 'Rabby',
-        },
-      });
+      keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(brandName);
+    keyring.initConnector(brandName, 1);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName);
+        ({ address, brandName, chainId }) => {
+          (keyring as WalletConnectKeyring).init(
+            address,
+            brandName,
+            !chainId ? 1 : chainId
+          );
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
@@ -1806,44 +1813,10 @@ export class WalletController extends BaseController {
         Sentry.captureException(error);
       });
     }
+    this._currentWalletConnectStashId = stashId;
     return {
-      uri,
       stashId,
     };
-  };
-
-  getWalletConnectBridge = (address: string, brandName: string) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
-    if (keyring) {
-      const target = keyring.accounts.find(
-        (account) =>
-          account.address.toLowerCase() === address.toLowerCase() &&
-          brandName === account.brandName
-      );
-
-      if (target) return target.bridge;
-
-      return null;
-    }
-    return null;
-  };
-
-  getWalletConnectConnectors = () => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
-    if (keyring) {
-      const result: { address: string; brandName: string }[] = [];
-      for (const key in keyring.connectors) {
-        const target = keyring.connectors[key];
-        result.push({
-          address: key.split('-')[1],
-          brandName: target.brandName,
-        });
-      }
-      return result;
-    }
-    return [];
   };
 
   killWalletConnectConnector = async (
@@ -1855,18 +1828,9 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      const connector =
-        keyring.connectors[`${brandName}-${address.toLowerCase()}`];
-      if (connector) {
-        await keyring.closeConnector(
-          connector.connector,
-          address,
-          brandName,
-          silent
-        );
-        // reset onAfterConnect
-        if (resetConnect) keyring.onAfterConnect = null;
-      }
+      await keyring.closeConnector({ address, brandName }, silent);
+      // reset onAfterConnect
+      if (resetConnect) keyring.resetConnect();
     }
   };
 
@@ -1889,25 +1853,23 @@ export class WalletController extends BaseController {
   ) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    if (stashId !== null && stashId !== undefined) {
-      keyring = stashKeyrings[stashId];
-      isNewKey = true;
-    } else {
-      try {
-        keyring = this._getKeyringByType(keyringType);
-      } catch {
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      if (stashId !== null && stashId !== undefined) {
+        keyring = stashKeyrings[stashId];
+      } else {
         const WalletConnectKeyring = keyringService.getKeyringClassForType(
           keyringType
         );
-        keyring = new WalletConnectKeyring();
-        isNewKey = true;
+        keyring = new WalletConnectKeyring(GET_WALLETCONNECT_CONFIG());
       }
+      isNewKey = true;
     }
 
     keyring.setAccountToAdd({
       address,
       brandName,
-      bridge,
       realBrandName,
       realBrandUrl,
     });
@@ -1962,6 +1924,7 @@ export class WalletController extends BaseController {
   clearAddressPendingTransactions = (address: string) => {
     transactionHistoryService.clearPendingTransactions(address);
     transactionWatcher.clearPendingTx(address);
+    transactionBroadcastWatchService.clearPendingTx(address);
     return;
   };
 
@@ -2164,7 +2127,7 @@ export class WalletController extends BaseController {
   };
 
   generateKeyringWithMnemonic = async (mnemonic: string) => {
-    if (!bip39.validateMnemonic(mnemonic)) {
+    if (!bip39.validateMnemonic(mnemonic, wordlist)) {
       throw new Error(t('background.error.invalidMnemonic'));
     }
     // If import twice use same kerying
@@ -2721,6 +2684,13 @@ export class WalletController extends BaseController {
     transactionHistoryService.getNonceByChain(address, chainId);
   getPendingTxsByNonce = (address: string, chainId: number, nonce: number) =>
     transactionHistoryService.getPendingTxsByNonce(address, chainId, nonce);
+
+  getSkipedTxs = (address: string) =>
+    transactionHistoryService.getSkipedTxs(address);
+
+  quickCancelTx = transactionHistoryService.quickCancelTx;
+
+  retryPushTx = transactionHistoryService.retryPushTx;
 
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);
@@ -3320,6 +3290,31 @@ export class WalletController extends BaseController {
   blockedDapp = () => {
     notificationService.blockedDapp();
     this.rejectAllApprovals();
+  };
+
+  walletConnectScanAccount = async () => {
+    let keyring: WalletConnectKeyring, isNewKey;
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const WalletConnect = keyringService.getKeyringClassForType(keyringType);
+      keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
+      isNewKey = true;
+    }
+
+    if (isNewKey) {
+      this.addKeyringToStash(keyring);
+    }
+
+    keyring.on('scanAccount', (payload) => {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
+        params: payload,
+      });
+    });
+
+    return await keyring.scanAccount();
   };
 }
 
