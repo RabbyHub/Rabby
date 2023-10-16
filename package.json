@@ -29,7 +29,7 @@
     "@ledgerhq/hw-app-eth": "^6.25.0",
     "@ledgerhq/hw-transport-webhid": "^6.24.1",
     "@metamask/browser-passworder": "^4.1.0",
-    "@metamask/eth-sig-util": "^7.0.0",
+    "@metamask/eth-sig-util": "5.1.0",
     "@metamask/obs-store": "^6.0.2",
     "@ngraveio/bc-ur": "^1.1.6",
     "@onekeyfe/hd-core": "^0.3.27",
