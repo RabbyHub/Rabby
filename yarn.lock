@@ -3214,14 +3214,6 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.1.tgz#5bd16082261d7364eabb511c788f00937dac588d"
   integrity sha512-z+ILK8Q3y+nfUl43ctCPuR4Y2bIxk/ooCQFwZxhtci1EhAtMDzMAx2W25qx8G1PPL9UUOdnUax19+F0OjXoj4w==
 
-"@metamask/abi-utils@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@metamask/abi-utils/-/abi-utils-2.0.2.tgz#ad394e9cb8a95ac177cad942daadd88a246c0de8"
-  integrity sha512-B/A1dY/w4F/t6cDHUscklO6ovb/ztFsrsTXFd8QlqSByk/vyy+QbPE3VVpmmyI/7RX+PA1AJcvBdzCIz+r9dVQ==
-  dependencies:
-    "@metamask/utils" "^8.0.0"
-    superstruct "^1.0.3"
-
 "@metamask/browser-passworder@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@metamask/browser-passworder/-/browser-passworder-4.1.0.tgz#d515db2ffd69ecab813a688e2b7553f2766c5e79"
@@ -3262,19 +3254,6 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@metamask/eth-sig-util@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-7.0.0.tgz#b035a2b826018578a5d463668bb64828271376d8"
-  integrity sha512-8KeXZB4SKx3EfNS5ahbjUMegyGvDQYk6Nk3hmM658sXpfAQR5ZlIXBgj+9RF+ZROqsU6EuNVgKt7Fr10re60PQ==
-  dependencies:
-    "@ethereumjs/util" "^8.1.0"
-    "@metamask/abi-utils" "^2.0.2"
-    "@metamask/utils" "^8.1.0"
-    ethereum-cryptography "^2.1.2"
-    ethjs-util "^0.1.6"
-    tweetnacl "^1.0.3"
-    tweetnacl-util "^0.15.1"
-
 "@metamask/obs-store@^6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@metamask/obs-store/-/obs-store-6.0.2.tgz#1fbc458cc617557a4557f9ab58e6676c474df2b1"
@@ -3297,7 +3276,7 @@
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
   integrity sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==
 
-"@metamask/utils@^8.0.0", "@metamask/utils@^8.1.0":
+"@metamask/utils@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@metamask/utils/-/utils-8.1.0.tgz#b8e73f5b4696b1b668cf5c1421daad140a3f98ac"
   integrity sha512-sFNpzBKRicDgM2ZuU6vrPROlqNGm8/jDsjc5WrU1RzCkAMc4Xr3vUUf8p59uQ6B09etUWNb8d2GTCbISdmH/Ug==
@@ -3529,14 +3508,14 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.0.0.tgz#5e258c3716af2dfe7633099eb91372cb6edb5905"
-  integrity sha512-atzUHcnyWyYo1YrVyN6l6pXZ7z1WfB0sV1MvfIKIg4UciANI1Dr4zmcO9eT1/vc7KGTMWA3/lEOgTzzk+IDnmw==
+"@rabby-wallet/eth-hd-keyring@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.0.1.tgz#4a642b53db849ccd199a5eb28fd506ff65aa9577"
+  integrity sha512-ORL/T0HG3GzEnQ+bcpDCsoMsa1OawaDcLF5yiJYbGoCd/y+u4WOh4YWmRHfGveuaRZTbBP39SW1/AmRY4ANpiQ==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "^4.0.0"
-    "@rabby-wallet/eth-simple-keyring" "5.0.0-alpha"
+    "@rabby-wallet/eth-simple-keyring" "^5.0.1"
     "@scure/bip39" "^1.2.1"
     eth-sig-util "^3.0.1"
     ethereum-cryptography "^2.1.2"
@@ -3554,29 +3533,13 @@
     rlp "^3.0.0"
     secp256k1 "4.0.2"
 
-"@rabby-wallet/eth-simple-keyring@5.0.0-alpha":
-  version "5.0.0-alpha"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.0.0-alpha.tgz#255acc4d60b3cd43a99d3578d11bba67c2692d2b"
-  integrity sha512-Kl5UkV2uebaNSz7gdzVMHyDlk3EPZwZZfuYHBGlMqiuDshxEGu95FJCgEw7wx69bT/+YrSOy18A4vsV1J2GwSw==
+"@rabby-wallet/eth-simple-keyring@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.0.1.tgz#aecdc8f82703741570d6759f8599909b5ccb6850"
+  integrity sha512-5KYpR5gI5Hlo4E6uXKY3Iv+rleij0kelsESX07kgPEqInBHkvYiYmxFauY1Uz7gUotnejI9mgv5ijmsOC+q70w==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
-    "@metamask/eth-sig-util" "^7.0.0"
-    "@metamask/utils" "^8.1.0"
-    chai "^4.3.4"
-    eth-sig-util "^3.0.1"
-    ethereum-cryptography "^2.1.2"
-    ethereumjs-tx "^2.1.2"
-    ethereumjs-util "^7.0.9"
-    ethereumjs-wallet "^1.0.2"
-    randombytes "^2.1.0"
-
-"@rabby-wallet/eth-simple-keyring@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.0.0.tgz#1e3703f576bfd7554864418f4f394eac59c3db7b"
-  integrity sha512-HXy1SZ+0Z11ecAe9dQ4Kk5SyBywocBZ1gQ2cu0kIp+BTbj/etCsha5/bRDOR2izDoAx5jrwJvrOPMVrbYndzhg==
-  dependencies:
-    "@ethereumjs/util" "^9.0.0"
-    "@metamask/eth-sig-util" "^7.0.0"
+    "@metamask/eth-sig-util" "5.1.0"
     "@metamask/utils" "^8.1.0"
     chai "^4.3.4"
     eth-sig-util "^3.0.1"
