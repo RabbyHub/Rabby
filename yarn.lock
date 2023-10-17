@@ -3647,10 +3647,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.23-alpha.1":
-  version "0.1.23-alpha.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.23-alpha.1.tgz#9dfce6729bc7fdbc0b4033c5fc29904c8fe08b73"
-  integrity sha512-Wvy11NeWFmnmbGGScIv7IsBhXXhavgmE7SVwHrJVSltfG+awQdJq/iVNDs/hcOPpFrXY6TxnMt+RUqVf5QkrxQ==
+"@rabby-wallet/page-provider@^0.1.23-alpha.2":
+  version "0.1.23-alpha.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.23-alpha.2.tgz#1757a18de9555fe60b2b552f58bc8ec1165fbe00"
+  integrity sha512-FVXmFxGzjFB4XFQM8Ol/TCaYMivQiuccVjjAOiR5Ukj7gr0ROcUQNSbDKWQ5tQ+1UvkTslxuaKXHFNX23tDjJA==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3661,7 +3661,7 @@
     events "^3.3.0"
     lodash "^4.17.21"
     sinon-chrome "^3.0.1"
-    webextension-polyfill "^0.10.0"
+    webextension-polyfill "0.7.0"
 
 "@rabby-wallet/rabby-api@^0.6.23":
   version "0.6.23"
@@ -15496,11 +15496,6 @@ webextension-polyfill@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.7.0.tgz#0df1120ff0266056319ce1a622b09ad8d4a56505"
   integrity sha512-su48BkMLxqzTTvPSE1eWxKToPS2Tv5DLGxKexLEVpwFd6Po6N8hhSLIvG6acPAg7qERoEaDL+Y5HQJeJeml5Aw==
-
-webextension-polyfill@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.10.0.tgz#ccb28101c910ba8cf955f7e6a263e662d744dbb8"
-  integrity sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

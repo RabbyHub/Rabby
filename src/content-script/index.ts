@@ -1,6 +1,8 @@
 import { Message } from '@/utils';
 import { nanoid } from 'nanoid';
 
+import { v4 as uuid } from 'uuid';
+
 const channelName = nanoid();
 
 const injectProviderScript = (isDefaultWallet: boolean) => {
@@ -13,6 +15,7 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   // use AssetReplacePlugin to replace pageprovider content
   let content = `var __rabby__channelName = '${channelName}';`;
   content += `var __rabby__isDefaultWallet = ${isDefaultWallet};`;
+  content += `var __rabby__uuid = '${uuid()}';`;
   content += '#PAGEPROVIDER#';
   ele.textContent = content;
   container.insertBefore(ele, container.children[0]);
