@@ -160,7 +160,6 @@ const OptionList = styled.div`
 
     &-desc {
       color: var(--r-neutral-body, #3e495e);
-      font-family: SF Pro;
       font-size: 13px;
       font-weight: 400;
       line-height: 16px;
