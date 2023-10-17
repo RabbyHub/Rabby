@@ -108,6 +108,7 @@
     "react-redux": "^8.0.1",
     "react-router-dom": "^5.2.0",
     "react-use": "^17.2.4",
+    "react-virtuoso": "^4.6.1",
     "react-window": "^1.8.6",
     "recharts": "^2.7.1",
     "redux": "^4.2.0",
