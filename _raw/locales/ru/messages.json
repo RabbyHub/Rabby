@@ -116,7 +116,7 @@
         "contractTrustValueTip": "Доверенная стоимость относится к общему количеству токенов, подтвержденных и относящихся к этому контракту. Низкая доверенная стоимость указывает на риск или бездействие в течение 180 дней."
       },
       "revokeTokenApprove": {
-        "title": "Отмена подтверждения токена",
+        "title": "Отмена аппрува токена",
         "revokeFrom": "Отозвать от",
         "revokeToken": "Отозвать токен"
       },
@@ -166,7 +166,7 @@
         "title": "Отменить подтверждение токена Permit2"
       },
       "unknownAction": "Неизвестно",
-      "interactContract": "Взаимодействие с контрактом",
+      "interactContract": "Вызов контракта",
       "markAsTrust": "Отмечено как доверенное",
       "markAsBlock": "Отмечено как заблокированное",
       "interacted": "Взаимодействовал ранее",
@@ -200,7 +200,51 @@
       "trustValue": "Доверительное значение",
       "importedDelegatedAddress": "Импортированный делегированный адрес",
       "noDelegatedAddress": "Нет импортированного делегированного адреса",
-      "coboSafeNotPermission": "У этого делегированного адреса нет разрешения на инициацию этой транзакции"
+      "coboSafeNotPermission": "У этого делегированного адреса нет разрешения на инициацию этой транзакции",
+      "BroadcastMode": {
+        "instant": {
+          "title": "Мгновенный",
+          "desc": "Транзакции будут немедленно транслироваться в сеть"
+        },
+        "lowGas": {
+          "title": "Экономия газа",
+          "desc": "Транзакции будут транслироваться, когда количество газа в сети будет низким"
+        },
+        "mev": {
+          "title": "Защищенный MEV",
+          "desc": "Транзакции будут транслироваться на назначенный узел MEV"
+        },
+        "title": "Режим трансляции",
+        "tips": {
+          "walletConnect": "Не поддерживается WalletConnect",
+          "notSupportChain": "Не поддерживается в этой сети",
+          "customRPC": "Не поддерживается при использовании пользовательского RPC",
+          "notSupported": "Не поддерживается"
+        },
+        "lowGasDeadline": {
+          "label": "Время ожидания",
+          "1h": "1 ч",
+          "4h": "4 ч",
+          "24h": "24 ч"
+        }
+      },
+      "SafeNonceSelector": {
+        "explain": {
+          "contractCall": "Вызов контракта",
+          "send": "Отправить токен",
+          "unknown": "Неизвестная транзакция"
+        },
+        "optionGroup": {
+          "recommendTitle": "Рекомендуемый nonce",
+          "replaceTitle": "Заменить транзакцию в Очереди "
+        },
+        "option": {
+          "new": "Новая транзакция"
+        },
+        "error": {
+          "pendingList": "Не удалось загрузить ожидающие транзакции, <1/><2>Повторить</2>"
+        }
+      }
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -274,7 +318,14 @@
       "resend": "Повторить",
       "submitTx": "Отправить транзакцию",
       "testnet": "Тестовая сеть",
-      "mainnet": "Основная сеть"
+      "mainnet": "Основная сеть",
+      "cancelTransaction": "Отменить транзакцию",
+      "detectedMultipleRequestsFromThisDapp": "Обнаружено несколько запросов от этого Dapp",
+      "cancelCurrentTransaction": "Отменить текущую транзакцию",
+      "cancelAll": "Отменить все {{count}} запроса от Dapp",
+      "blockDappFromSendingRequests": "Заблокировать отправку запросов от Dapp на 1 мин",
+      "cancelConnection": "Отменить подключение",
+      "cancelCurrentConnection": "Отменить текущее подключение"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Подписать Типизированные данные {{chain}}",
@@ -334,13 +385,20 @@
         },
         "tips": {
           "pendingDetail": "Выполнится только одна транзакция, и почти всегда это та, у которой самая высокая цена газа",
-          "canNotCancel": "Невозможно ускорить или отменить: не первая ожидающая транзакция"
+          "canNotCancel": "Невозможно ускорить или отменить: не первая ожидающая транзакция",
+          "pendingBroadcast": "Режим экономии газа: ожидание более низких комиссий сети. Макс. ожидание {{deadline}} ч.",
+          "pendingBroadcastBtn": "Передать сейчас",
+          "pendingBroadcastRetry": "Ошибка передачи. Последняя попытка: {{pushAt}}",
+          "pendingBroadcastRetryBtn": "Повторная передача"
         },
         "status": {
           "canceled": "Отменено",
           "failed": "Не выполнено",
           "submitFailed": "Ошибка отправки",
-          "pending": "В ожидании"
+          "pending": "В ожидании",
+          "withdrawed": "Быстрая отмена",
+          "pendingBroadcasted": "В ожидании: передано",
+          "pendingBroadcast": "В ожидании: передача"
         },
         "txType": {
           "initial": "Исходная транзакция",
@@ -356,6 +414,36 @@
           "cancelSingleNFTApproval": "Отменено подтверждение отдельного NFT для {{protocol}}",
           "singleNFTApproval": "Подтверждение отдельного NFT для {{protocol}}",
           "nftCollectionApproval": "Подтверждение коллекции NFT для {{protocol}}"
+        },
+        "CancelTxPopup": {
+          "title": "Отменить транзакцию",
+          "options": {
+            "quickCancel": {
+              "title": "Быстрая отмена",
+              "desc": "Отменить до отправки, без комиссии за газ",
+              "tips": "Только для транзакций, которые еще не отправлены"
+            },
+            "onChainCancel": {
+              "title": "Отмена ончейн",
+              "desc": "Новая транзакция для отмены, требует газа"
+            }
+          }
+        },
+        "MempoolList": {
+          "empty": "Не найдено ни в одном узле",
+          "reBroadcastBtn": "Повторная передача",
+          "title": "Найдено в следующих мемпулах"
+        },
+        "message": {
+          "reBroadcastSuccess": "Повторно передано",
+          "broadcastSuccess": "Передано",
+          "cancelSuccess": "Отменено"
+        },
+        "gas": {
+          "noCost": "Без стоимости газа"
+        },
+        "SkipNonceAlert": {
+          "alert": "Nonce #{{nonce}} пропущен в цепочке {{chainName}}. Это может вызвать ожидание транзакций впереди. <5></5> <6>Отправить транзакцию</6> <7></7> в сеть, чтобы решить проблему"
         }
       },
       "signedText": {
@@ -459,7 +547,7 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "Зарезервировано <1>0</1> {{ tokenName }} для оплаты газа"
+      "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа"
     },
     "sendNFT": {
       "header": {
@@ -495,7 +583,7 @@
     },
     "approvals": {
       "header": {
-        "title": "Подтверждения на {{ address }}"
+        "title": "Аппрувы токенов {{ address }}"
       },
       "tab-switch": {
         "contract": "По контрактам",
@@ -509,8 +597,8 @@
           }
         },
         "ApprovalContractItem": {
-          "ApprovalCount_one": "Подтверждение",
-          "ApprovalCount_other": "Подтверждения"
+          "ApprovalCount_one": "Аппрув",
+          "ApprovalCount_other": "Аппрувы"
         },
         "RevokeButton": {
           "btnText_zero": "Отозвать",
@@ -531,7 +619,7 @@
             "contractTrustValue": "Доверие к контракту",
             "revokeTrends": "Тренды отзыва за 24 ч",
             "myApprovedAssets": "Мои одобренные активы",
-            "myApprovalTime": "Время моего подтверждения"
+            "myApprovalTime": "Дата аппрува"
           },
           "columnTip": {
             "contractTrustValue": "Доверие относится к общей стоимости активов, подтвержденных и предоставленных этому контракту. Низкое значение указывает либо на риск, либо на отсутствие активности в течение 180 дней.",
@@ -560,11 +648,11 @@
         "subTitleContract": "Подтверждено для следующих Контрактов",
         "selectAll": "Выбрать все",  
         "confirm": "Подтвердить {{ selectedCount }}",
-        "title": "Подтверждения"
+        "title": "Аппрувы"
       }
     },
     "gasTopUp": {
-      "title": "Пополнение газа",
+      "title": "Пополнить газ",
       "description": "Пополните газ, отправив нам доступные токены из другой сети. Мгновенный перевод сразу после подтверждения вашего платежа, без ожидания его необратимости.",
       "topUpChain": "Сеть пополнения",
       "Amount": "Сумма",
@@ -686,7 +774,7 @@
       "confirm-delete": "Подтвердить удаление",
       "private-key": "Приватный ключ",
       "seed-phrase": "Фраза восстановления",
-      "watch-address": "Адрес просмотра",
+      "watch-address": "Адрес для просмотра",
       "backup-seed-phrase": "Резервная копия фразы восстановления",
       "delete-all-addresses-but-keep-the-seed-phrase": "Удалить все адреса, но сохранить фразу восстановления", 
       "delete-all-addresses-and-the-seed-phrase": "Удалить все адреса и фразу восстановления",
@@ -706,7 +794,7 @@
         "gasTopUp": "Пополнение газа",
         "queue": "Очередь",
         "transactions": "Транзакции",
-        "approvals": "Одобрения",
+        "approvals": "Аппрувы",
         "feedback": "Обратная связь",
         "more": "Больше",
         "manageAddress": "Управление адресами",
@@ -896,8 +984,8 @@
           "assetAmount": "Актив / Количество",
           "price": "Цена",  
           "useValue": "Стоимость в USD",
-          "healthRate": "Коэффициент надежности",
-          "debtRatio": "Коэффициент задолженности",
+          "healthRate": "Коэф. обеспеченности",
+          "debtRatio": "Коэф. задолженности",
           "unlockAt": "Разблокировать в",
           "lentAgainst": "ВЫДАНО В ЗАЛОГ",
           "type": "Тип",
@@ -936,18 +1024,21 @@
         "userRejectedTheRequest": "Пользователь отклонил запрос.",  
         "ledger": {
           "doc1": "Подключите один Ledger",
-          "doc2": "Введите пин-код для разблокировки",
-          "doc3": "Откройте приложение Ethereum",
-          "reconnect": "Если это не работает, пожалуйста, попробуйте <1>подключиться сначала</1>."
+          "doc2": "Введите pin",
+          "doc3": "Откройте Ethereum App",
+          "reconnect": "Если не работает, <1>начните подключение с начала.</1>"
         },
         "howToSwitch": "Как переключить"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "Safe адрес не поддерживается в сети {{chain}}"
       }
     },
     "nft": {
       "floorPrice": "/ Floor Price:",
       "title": "NFT",
       "all": "Все",
-      "starred": "Отмеченных ({{count}})",
+      "starred": "Отмечено ({{count}})",
       "empty": {
         "title": "Нет отмеченных NFT",
         "description": "Вы можете выбрать NFT из \"Все\" и добавить в \"Отмеченные\""
@@ -1250,7 +1341,13 @@
   "switchChain": {
       "title": "Переключение на {{chain}}",
       "chainNotSupport": "Запрошенная сеть еще не поддерживается Rabby",
-      "testnetTip": "Пожалуйста, включите \"Включить тестовые сети\" в разделе \"Еще\" перед подключением к тестовым сетям"
+      "testnetTip": "Пожалуйста, включите \"Включить тестовые сети\" в разделе \"Еще\" перед подключением к тестовым сетям",
+      "chainNotSupportYet": "Запрошенная сеть пока не поддерживается Rabby",
+      "chainId": "Chain ID:",
+      "unknownChain": "Unknown chain",
+      "requestsReceived": "1 запрос получен",
+      "requestsReceivedPlural": "{{count}} запросов получено",
+      "requestRabbyToSupport": "Запросить поддержку в Rabby"
   },
   "signText": {
       "title": "Подписать текст",
@@ -1386,9 +1483,19 @@
       "approvalExplain": "Подтвердить {{count}} {{token}} для {{protocol}}",
       "unlimited": "неограниченный",
       "action": {
-          "send": "Отправить"
+          "send": "Отправить",
+          "cancel": "Отмена ожидающей транзакции"
       },
-      "viewBtn": "Просмотр"
+      "viewBtn": "Посмотреть",
+      "replaceBtn": "Заменить",
+      "ReplacePopup": {
+        "options": {
+          "send": "Послать токен",
+          "reject": "Отмена транзы"
+        },
+        "viewBtn": "Просмотр",
+        "desc": " Подписанная транзакция не может быть отменена, но может быть заменена           новой с тем же значением nonce."
+      }
     },
     "importSuccess": {
       "title": "Успешно импортировано",
@@ -1597,14 +1704,15 @@
     "cancelButton": "Отменить",
     "backButton": "Назад",
     "proceedButton": "Продолжить",
-    "editButton": "Редактировать",
+    "editButton": "Изменить",
     "addButton": "Добавить",
     "closeButton": "Закрыть",
     "Deleted": "Удалено",
     "Loading": "Загрузка",
     "nonce": "nonce",
     "Balance": "Баланс",
-    "Done": "Готово"
+    "Done": "Готово",
+    "Nonce": "Nonce"
   },
   "background": {
     "error": {
