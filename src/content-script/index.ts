@@ -42,13 +42,10 @@ const getIsDefaultWallet = () => {
   return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
 };
 
-const start = performance.now();
 getIsDefaultWallet()
   .then((isDefaultWallet) => {
     injectProviderScript(!!isDefaultWallet);
-    console.log('end', performance.now() - start);
   })
   .catch((err) => {
-    console.log('getIsDefaultWallet', err);
     injectProviderScript(true);
   });
