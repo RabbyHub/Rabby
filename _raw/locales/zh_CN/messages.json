@@ -51,6 +51,11 @@
       "txHistory": {
         "tipInputData": "这笔交易有留言",
         "parseInputDataError": "解析留言失败"
+      },
+      "filterScam": {
+        "title": "隐藏欺诈交易",
+        "loading": "数据加载需要一定时间，且可能会有数据延迟",
+        "btn": "隐藏欺诈交易"
       }
     },
     "dashboard": {

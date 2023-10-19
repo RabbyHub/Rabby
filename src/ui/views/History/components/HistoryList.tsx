@@ -5,12 +5,11 @@ import { Link } from 'react-router-dom';
 
 import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
-import { TxHistoryResult } from 'background/service/openapi';
-import { Empty, Modal, PageHeader } from 'ui/component';
+import { Virtuoso } from 'react-virtuoso';
+import { Empty, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
 import { Loading } from './Loading';
-import { Virtuoso } from 'react-virtuoso';
 
 const PAGE_COUNT = 10;
 
@@ -55,7 +54,7 @@ export const HistoryList = ({
 
     const res = await getHistory({
       id: address,
-      start_time: startTime,
+      start_time: !isFilterScam ? startTime : undefined,
     });
 
     const { project_dict, cate_dict, history_list: list } = res;
