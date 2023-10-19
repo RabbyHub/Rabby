@@ -12,12 +12,6 @@ export function generateAliasName({
   keyringCount?: number;
   addressCount?: number;
 }) {
-  console.log(
-    'alias --',
-    keyringType,
-    brandName,
-    t('background.alias.HdKeyring')
-  );
   if (keyringType === KEYRING_CLASS.MNEMONIC) {
     return `${t('background.alias.HdKeyring')} ${keyringCount + 1} #${
       addressCount + 1

@@ -2,6 +2,8 @@ import { message } from 'antd';
 import { t } from 'i18next';
 import React from 'react';
 import IconSuccess from 'ui/assets/success.svg';
+import { toChecksumAddress } from 'web3-utils';
+
 function fallbackCopyTextToClipboard(text: string) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
@@ -37,7 +39,8 @@ export async function copyTextToClipboard(text: string) {
 }
 
 export async function copyAddress(address: string) {
-  await copyTextToClipboard(address);
+  const checksumAddress = toChecksumAddress(address);
+  await copyTextToClipboard(checksumAddress);
   message.success({
     duration: 3,
     icon: <i />,
@@ -47,7 +50,7 @@ export async function copyAddress(address: string) {
           <img src={IconSuccess} alt="" />
           {t('global.copied')}
         </div>
-        <div className="text-white">{address}</div>
+        <div className="text-white">{checksumAddress}</div>
       </div>
     ),
   });
