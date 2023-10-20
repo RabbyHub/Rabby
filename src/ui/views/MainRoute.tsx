@@ -34,7 +34,7 @@ import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
-import History from './History';
+import { HistoryPage } from './History';
 import GnosisTransactionQueue from './GnosisTransactionQueue';
 import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
@@ -181,7 +181,10 @@ const Main = () => {
           <ImportSuccess />
         </PrivateRoute>
         <PrivateRoute exact path="/history">
-          <History />
+          <HistoryPage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/history/filter-scam">
+          <HistoryPage isFitlerScam={true} />
         </PrivateRoute>
         <PrivateRoute exact path="/activities">
           <Activities />
