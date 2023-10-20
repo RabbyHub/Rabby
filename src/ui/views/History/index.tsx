@@ -31,7 +31,7 @@ const History = () => {
         />
       )}
       <div
-        className="filter-scam-nav"
+        className="filter-scam-nav hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10"
         onClick={() => {
           history.push(`/history/filter-scam?net=${selectedTab}`);
         }}
