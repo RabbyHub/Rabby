@@ -17,7 +17,7 @@ type Type = 'select-chain' | 'add-address' | 'select-address';
 export const ImportCoboArgus = () => {
   const { state } = useLocation<{
     address: string;
-    chainId: number;
+    chainId: number | string;
   }>();
   const { t } = useTranslation();
   const [selectedChain, setSelectedChain] = React.useState<CHAINS_ENUM>();
@@ -88,7 +88,9 @@ export const ImportCoboArgus = () => {
   React.useEffect(() => {
     if (!state) return;
     const { chainId, address } = state;
-    const chain = findChainByID(chainId);
+    const chain = findChainByID(
+      typeof chainId === 'number' ? chainId : parseInt(chainId, 10)
+    );
 
     if (chain) {
       setStep('add-address');
