@@ -105,8 +105,7 @@ export const ImportCoboArgus = () => {
         {(step === 'add-address' || step === 'select-address') &&
           t('page.newAddress.coboSafe.addCoboArgusAddress')}
       </Header>
-
-      <div className="p-20 h-[420px] overflow-y-scroll pb-[100px]">
+      <div className="p-20 h-[calc(100vh-180px)] overflow-y-scroll pb-[100px]">
         {step === 'select-chain' && (
           <ChainList checked={selectedChain} onChecked={setSelectedChain} />
         )}
