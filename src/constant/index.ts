@@ -611,7 +611,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.MPCVault]: {
     id: 26,
-    name: 'MPC Vault',
+    name: 'MPCVault',
     brand: WALLET_BRAND_TYPES.MPCVault,
     icon: LogoMPCVault,
     image: LogoMPCVault,
