@@ -29,7 +29,9 @@ export const TokenChange = ({
   return (
     <div className="ui token-change">
       {info.sends?.map((v) => {
-        const token = tokens[v.token_id];
+        const tokenId = v.token_id;
+        const tokenUUID = `${info.chain}_token:${tokenId}`;
+        const token = tokens[tokenId] || tokens[tokenUUID];
         const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft
@@ -81,7 +83,10 @@ export const TokenChange = ({
         );
       })}
       {info.receives?.map((v) => {
-        const token = tokens[v.token_id];
+        const tokenId = v.token_id;
+        const tokenUUID = `${info.chain}_token:${tokenId}`;
+
+        const token = tokens[tokenId] || tokens[tokenUUID];
         const isNft = v.token_id?.length === 32;
         const symbol = getTokenSymbol(token);
         const name = isNft

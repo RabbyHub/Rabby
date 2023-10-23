@@ -17,6 +17,11 @@
       },
       "modalViewMessage": {
         "title": "View Message"
+      },
+      "filterScam": {
+        "title": "Hide scam transactions",
+        "loading": "Loading may take a moment, and data delays are possible",
+        "btn": "Hide scam transactions"
       }
     },
     "chainList": {

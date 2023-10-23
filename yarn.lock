@@ -1291,10 +1291,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.37":
-  version "0.3.37"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.37.tgz#e7f67594173ef6a2645ecacec8100ee883c397e7"
-  integrity sha512-pbjM1ByLW+RXIqMPnLq9ZUt26UPcYdJm8ZRlMzT5453YV4yCy+Gk6tcS38C5lZS4tPtCpLWOJtEXTYANja7WJA==
+"@debank/common@^0.3.39":
+  version "0.3.39"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.39.tgz#a3a56e151353cb3cfe7ac1e733f2c613019b0577"
+  integrity sha512-umMy9iiqV3PSDu9QDVuvXVoLSIKarvHGCycyTGpdkCIE9CUToI51DEFrMQkwUBf9yv1xyEoqxhFgEZPrd9tryg==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3612,10 +3612,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.23-alpha.2":
-  version "0.1.23-alpha.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.23-alpha.2.tgz#1757a18de9555fe60b2b552f58bc8ec1165fbe00"
-  integrity sha512-FVXmFxGzjFB4XFQM8Ol/TCaYMivQiuccVjjAOiR5Ukj7gr0ROcUQNSbDKWQ5tQ+1UvkTslxuaKXHFNX23tDjJA==
+"@rabby-wallet/page-provider@^0.1.23":
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.23.tgz#55f261bbef4bda012bc2c6974aca442681392242"
+  integrity sha512-K6UeLzsK7kFYiH+YsIkMgjg0IbXTUu6uY2MY3ng0vi2HsVyOGKQTICeynu0/eBt+Mq+WoBIfK7xXDh8J2gyD2g==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -3628,10 +3628,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@^0.6.23":
-  version "0.6.23"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.23.tgz#ce4f816a1d5bef4de360ff63692354f33ee925a3"
-  integrity sha512-UhsWYnrzV0t5cjqK8zpbaMS/bhkpTB7TR3VFLeHnudv5jnXlUqH4p4YceTjMT0OtMgG96JC3zsmSBCXk9DXDMw==
+"@rabby-wallet/rabby-api@^0.6.24":
+  version "0.6.24"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.24.tgz#561743a3a3e9ac204b5c619a43bd2f6150c6247f"
+  integrity sha512-bkHWF8dMtgOdEU4kHU781Fz4Ob+0I+wq3fALkQX+M1cdV3JSkmv6TUNAxQPsSN8WKC8fn877TI7FyWjrrv41EA==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -13126,6 +13126,11 @@ react-use@^17.2.4:
     throttle-debounce "^3.0.1"
     ts-easing "^0.2.0"
     tslib "^2.1.0"
+
+react-virtuoso@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-4.6.1.tgz#b08465be4222d9820a22fbe2fefec29e91d0b048"
+  integrity sha512-dQq0yOdRjdWIYaiTvUbudqmTodGSdWGt5lVYz3mM07TTEV91yv7eL5Fn3FPEJOA36whScxPWg0GiYBIOZYEIEA==
 
 react-window@^1.8.6:
   version "1.8.6"
