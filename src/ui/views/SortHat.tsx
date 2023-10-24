@@ -37,7 +37,7 @@ const SortHat = () => {
       !approval
     ) {
       const cache = (await wallet.getPageStateCache())!;
-      if (cache.path) {
+      if (cache.path && cache.path !== '/') {
         // prevent path is empty then extension will stuck
         setTo(cache.path + (cache.search || ''));
         return;
