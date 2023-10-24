@@ -1,8 +1,8 @@
-import React, { lazy, Suspense, useCallback, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import {
   HashRouter as Router,
   Route,
-  useHistory,
+  useNavigate,
   useLocation,
 } from 'react-router-dom';
 import { useWallet, WalletProvider } from 'ui/utils';
@@ -19,7 +19,7 @@ import { useMemoizedFn } from 'ahooks';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
 const useAutoLock = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const wallet = useWallet();
   const autoLockTime = useRabbySelector(
@@ -47,7 +47,7 @@ const useAutoLock = () => {
 
   const listener = useMemoizedFn(() => {
     if (location.pathname !== '/unlock') {
-      history.push('/unlock');
+      navigate('/unlock');
     }
   });
 
@@ -63,17 +63,18 @@ const Main = () => {
   useAutoLock();
   return (
     <>
-      <Route exact path="/">
+      <Route path="/">
         <SortHat />
       </Route>
 
-      <Route exact path="/unlock">
+      <Route path="/unlock">
         <Unlock />
       </Route>
 
-      <PrivateRoute exact path="/dashboard">
+      <PrivateRoute path="/dashboard">
         <Dashboard />
       </PrivateRoute>
+
       <Suspense fallback={null}>
         <AsyncMainRoute />
       </Suspense>

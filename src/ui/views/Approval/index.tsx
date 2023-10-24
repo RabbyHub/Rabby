@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
@@ -12,7 +12,7 @@ import clsx from 'clsx';
 const Approval: React.FC<{
   className?: string;
 }> = ({ className }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [getApproval, , rejectApproval] = useApproval();
@@ -25,7 +25,7 @@ const Approval: React.FC<{
   const init = async () => {
     const approval = await getApproval();
     if (!approval) {
-      history.replace('/');
+      navigate('/', { replace: true });
       return null;
     }
     setApproval(approval);

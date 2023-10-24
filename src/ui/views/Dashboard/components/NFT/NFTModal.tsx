@@ -1,10 +1,10 @@
 import { NFTItem } from '@/background/service/openapi';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getChain } from '@/utils';
 import NFTAvatar from './NFTAvatar';
-import { openInTab, splitNumberByStep, useCommonPopupView } from '@/ui/utils';
+import { splitNumberByStep, useCommonPopupView } from '@/ui/utils';
 import { IGAEventSource } from '@/ui/utils/ga-event';
 import { ReactComponent as LinkSVG } from '@/ui/assets/nft-view/link.svg';
 import clsx from 'clsx';
@@ -29,14 +29,13 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   const { t } = useTranslation();
   const chain = getChain(data?.chain);
   const price = calc(data);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setVisible } = useCommonPopupView();
 
   const handleClickSend = () => {
     setVisible(false);
     onClose?.();
-    history.push({
-      pathname: '/send-nft',
+    navigate(`/send-nft?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`, {
       state: {
         nftItem: {
           ...data,
@@ -46,7 +45,6 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
           },
         },
       },
-      search: `?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`,
     });
   };
 

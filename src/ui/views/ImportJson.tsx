@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Form } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Navbar, StrayPageWithButton, Uploader } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useMedia } from 'react-use';
 
 const ImportJson = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const wallet = useWallet();
   const [isUpload, setUpload] = useState(false);
@@ -17,8 +17,8 @@ const ImportJson = () => {
 
   const [run, loading] = useWalletRequest(wallet.importJson, {
     onSuccess(accounts) {
-      history.replace({
-        pathname: '/popup/import/success',
+      navigate('/popup/import/success', {
+        replace: true,
         state: {
           accounts,
           title: t('page.newAddress.importedSuccessfully'),
@@ -52,10 +52,10 @@ const ImportJson = () => {
     >
       <Navbar
         onBack={() => {
-          if (history.length > 1) {
-            history.goBack();
+          if (navigate.length > 1) {
+            navigate(-1);
           } else {
-            history.replace('/');
+            navigate('/', { reaplce: true });
           }
         }}
         desc={t('page.newAddress.keystore.description')}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Navigate, RouteProps } from 'react-router-dom';
 import { useWallet } from 'ui/utils';
 
 const Wrap = ({ children }) => {
@@ -20,11 +20,11 @@ const Wrap = ({ children }) => {
   }, []);
 
   if (!isReady) return <></>;
-  return !to ? children : <Redirect to={to} />;
+  return !to ? children : <Navigate to={to} />;
 };
 
-const PrivateRoute = ({ children, ...rest }) => {
-  return <Route {...rest} render={() => <Wrap>{children}</Wrap>} />;
+const PrivateRoute = ({ children, ...rest }: RouteProps) => {
+  return <Route {...rest} element={() => <Wrap>{children}</Wrap>} />;
 };
 
 export default PrivateRoute;

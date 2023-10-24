@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PageHeader } from 'ui/component';
-import { useWallet } from 'ui/utils';
 import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import QRCode from 'qrcode.react';
 import { Button } from 'antd';
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
@@ -13,18 +10,14 @@ import { message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import clsx from 'clsx';
 import WordsMatrix from '@/ui/component/WordsMatrix';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
 
 const AddressBackup = () => {
-  const wallet = useWallet();
   const { t } = useTranslation();
 
-  const history = useHistory();
-  const { state } = useLocation<{
-    data: string;
-    goBack?: boolean;
-  }>();
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
   const data = state?.data;
   const [masked, setMasked] = useState(true);
@@ -41,9 +34,9 @@ const AddressBackup = () => {
 
   useEffect(() => {
     if (!data) {
-      history.goBack();
+      navigate(-1);
     }
-  }, [data, history]);
+  }, [data, navigate]);
 
   if (!data) {
     return null;
@@ -56,7 +49,7 @@ const AddressBackup = () => {
           <img
             src={IconBack}
             className={clsx('absolute icon icon-back filter invert')}
-            onClick={() => history.goBack()}
+            onClick={() => navigate(-1)}
           />
         )}
         {t('page.backupSeedPhrase.title')}
@@ -101,7 +94,7 @@ const AddressBackup = () => {
           type="primary"
           size="large"
           className="w-[200px]"
-          onClick={() => history.goBack()}
+          onClick={() => navigate(-1)}
         >
           {t('global.Done')}
         </Button>

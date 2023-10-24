@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { CHAINS } from 'consts';
@@ -123,11 +123,11 @@ export const ChainManagementList = () => {
 };
 
 export const StartChainManagement = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleNextClick = () => {
-    history.replace('/no-address');
+    navigate('/no-address', { replace: true });
   };
 
   return (
@@ -152,16 +152,11 @@ export const StartChainManagement = () => {
 
 const ChainManagement = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const { state } = useLocation<{
-    connection?: boolean;
-    backurl?: string;
-    trigger?: string;
-  }>();
+  const navigate = useNavigate();
+  const { state } = useLocation();
   const { connection = false, backurl = '', trigger } = state ?? {};
   const goBack = () => {
-    history.replace({
-      pathname: backurl,
+    navigate(backurl, {
       state: {
         showChainsModal: true,
         trigger,

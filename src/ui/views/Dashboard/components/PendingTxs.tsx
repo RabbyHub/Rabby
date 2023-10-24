@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import IconPendingTx from 'ui/assets/dashboard/pending-tx.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -37,10 +37,10 @@ interface Props {
 }
 
 const PendingTxs = ({ pendingTxCount }: Props) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleClickPendingTxs = () => {
-    history.push('/activities');
+    navigate('/activities');
   };
   const { t } = useTranslation();
   const countStr = pendingTxCount > 99 ? '99+' : pendingTxCount.toString();

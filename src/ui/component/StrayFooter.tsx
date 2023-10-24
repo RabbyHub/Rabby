@@ -1,5 +1,5 @@
 import React, { memo, ReactNode } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import cx from 'clsx';
 import { Button } from 'antd';
 
@@ -61,7 +61,7 @@ const StrayFooterNav = memo(
     className,
     footerFixed,
   }: StrayFooterNavProps) => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const handleBack = async () => {
       if (onBackClick) {
@@ -69,7 +69,7 @@ const StrayFooterNav = memo(
         return;
       }
 
-      history.goBack();
+      navigate(-1);
     };
 
     return (

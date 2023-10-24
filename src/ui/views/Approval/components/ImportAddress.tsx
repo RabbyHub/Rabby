@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface ConnectProps {
   params: {
@@ -19,12 +19,11 @@ interface ConnectProps {
 }
 
 export const ImportAddress = ({ params }: ConnectProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const addressParams = params.data[0];
 
   React.useEffect(() => {
-    history.replace({
-      pathname: '/add-address',
+    navigate('/add-address', {
       state: addressParams,
     });
   }, []);

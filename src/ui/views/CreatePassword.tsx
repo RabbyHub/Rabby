@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Form, Spin, Button, Drawer } from 'antd';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -14,8 +14,8 @@ import remarkGfm from 'remark-gfm';
 const MINIMUM_PASSWORD_LENGTH = 8;
 
 const CreatePassword = () => {
-  const history = useHistory();
-  const location = useLocation<{ handle: (h: typeof history) => void }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const wallet = useWallet();
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -37,13 +37,13 @@ const CreatePassword = () => {
 
   const init = async () => {
     if ((await wallet.isBooted()) && !(await wallet.isUnlocked())) {
-      history.replace('/unlock');
+      navigate('/unlock', { replace: true });
       return;
     }
 
     const currentAccount = await wallet.getCurrentAccount();
     if ((await wallet.isBooted()) && !currentAccount) {
-      history.replace('/no-address');
+      navigate('/no-address', { replace: true });
       return;
     }
   };

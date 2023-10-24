@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { query2obj } from './url';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -48,10 +48,9 @@ export function filterRbiSource(
  * or react-router-dom's location state
  */
 export function useRbiSource() {
-  const history = useHistory();
-  const { state } = useLocation<any>();
+  const { state, search } = useLocation();
   const rbisource = useMemo(() => {
-    return query2obj(history.location.search).rbisource;
+    return query2obj(search).rbisource;
   }, [history]);
 
   return state?.rbisource || rbisource;

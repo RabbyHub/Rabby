@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
 
 import Welcome from './Welcome';
@@ -98,199 +98,202 @@ const Main = () => {
 
   return (
     <>
-      <Route path="/" component={LogPageView} />
-      <Switch>
-        <Route exact path="/welcome">
+      <Route path="/" element={LogPageView} />
+      <Routes>
+        <Route path="/welcome">
           <Welcome />
         </Route>
-        <Route exact path="/password">
+        <Route path="/password">
           <CreatePassword />
         </Route>
 
-        <Route exact path="/no-address">
+        <Route path="/no-address">
           <NoAddress />
         </Route>
-        <PrivateRoute exact path="/start-chain-management">
+        <PrivateRoute path="/start-chain-management">
           <StartChainManagement />
         </PrivateRoute>
-        <PrivateRoute exact path="/mnemonics/risk-check">
+        <PrivateRoute path="/mnemonics/risk-check">
           <CreateMnemonics />
         </PrivateRoute>
-        <Redirect exact path="/create-mnemonics" to="/mnemonics/create" />
-        <PrivateRoute exact path="/mnemonics/create">
+        <PrivateRoute
+          path="/create-mnemonics"
+          element={<Navigate to="/mnemonics/create" />}
+        />
+        <PrivateRoute path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/import">
+        <PrivateRoute path="/import">
           <ImportMode />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/entry-import-address">
+        <PrivateRoute path="/import/entry-import-address">
           <EntryImportAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/key">
+        <PrivateRoute path="/import/key">
           <ImportPrivateKey />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/json">
+        <PrivateRoute path="/import/json">
           <ImportJson />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics">
+        <PrivateRoute path="/import/mnemonics">
           <InputMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/mnemonics-confirm">
+        <PrivateRoute path="/popup/import/mnemonics-confirm">
           <ConfirmMnemonics isPopup />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics-confirm">
+        <PrivateRoute path="/import/mnemonics-confirm">
           <ConfirmMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/mnemonics-import-more-address">
+        <PrivateRoute path="/popup/import/mnemonics-import-more-address">
           <ImportMoreAddress isPopup />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics-import-more-address">
+        <PrivateRoute path="/import/mnemonics-import-more-address">
           <ImportMoreAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/select-address">
+        <PrivateRoute path="/popup/import/select-address">
           <SelectAddress isPopup />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/select-address">
+        <PrivateRoute path="/import/select-address">
           <SelectAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware">
+        <PrivateRoute path="/import/hardware">
           <ImportHardware />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/ledger-connect">
+        <PrivateRoute path="/import/hardware/ledger-connect">
           <ConnectLedger />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/ledger">
+        <PrivateRoute path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/qrcode">
+        <PrivateRoute path="/import/hardware/qrcode">
           <QRCodeConnect />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/watch-address">
+        <PrivateRoute path="/import/watch-address">
           <ImportWatchAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/qrcode">
+        <PrivateRoute path="/import/qrcode">
           <ImportQRCodeBase />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/wallet-connect">
+        <PrivateRoute path="/import/wallet-connect">
           <WalletConnectTemplate />
         </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/success">
+        <PrivateRoute path="/popup/import/success">
           <ImportSuccess isPopup />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/success">
+        <PrivateRoute path="/import/success">
           <ImportSuccess />
         </PrivateRoute>
-        <PrivateRoute exact path="/history">
+        <PrivateRoute path="/history">
           <HistoryPage />
         </PrivateRoute>
-        <PrivateRoute exact path="/history/filter-scam">
+        <PrivateRoute path="/history/filter-scam">
           <HistoryPage isFitlerScam={true} />
         </PrivateRoute>
-        <PrivateRoute exact path="/activities">
+        <PrivateRoute path="/activities">
           <Activities />
         </PrivateRoute>
-        <PrivateRoute exact path="/gnosis-queue">
+        <PrivateRoute path="/gnosis-queue">
           <GnosisTransactionQueue />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/gnosis">
+        <PrivateRoute path="/import/gnosis">
           <ImportGnosis />
         </PrivateRoute>
-        <PrivateRoute exact path="/import/cobo-argus">
+        <PrivateRoute path="/import/cobo-argus">
           <ImportCoboArgus />
         </PrivateRoute>
-        <PrivateRoute exact path="/add-address">
+        <PrivateRoute path="/add-address">
           <AddAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/approval">
+        <PrivateRoute path="/approval">
           <Approval />
         </PrivateRoute>
-        <PrivateRoute exact path="/token-approval">
+        <PrivateRoute path="/token-approval">
           <TokenApproval />
         </PrivateRoute>
-        <PrivateRoute exact path="/nft-approval">
+        <PrivateRoute path="/nft-approval">
           <NFTApproval />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings">
+        <PrivateRoute path="/settings">
           <Settings />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/address">
+        <PrivateRoute path="/settings/address">
           <ManageAddress />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/address-detail">
+        <PrivateRoute path="/settings/address-detail">
           <AddressDetail />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/address-backup/private-key">
+        <PrivateRoute path="/settings/address-backup/private-key">
           <AddressBackupPrivateKey />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/address-backup/mneonics">
+        <PrivateRoute path="/settings/address-backup/mneonics">
           <AddressBackupMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/sites">
+        <PrivateRoute path="/settings/sites">
           <ConnectedSites />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/chain">
+        <PrivateRoute path="/settings/chain">
           <ChainManagement />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/chain-list">
+        <PrivateRoute path="/settings/chain-list">
           <ChainList />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/switch-lang">
+        <PrivateRoute path="/settings/switch-lang">
           <SwitchLang />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/advanced">
+        <PrivateRoute path="/settings/advanced">
           <AdvancedSettings />
         </PrivateRoute>
-        <PrivateRoute exact path="/qrcode-reader">
+        <PrivateRoute path="/qrcode-reader">
           <QRCodeReader />
         </PrivateRoute>
-        <PrivateRoute exact path="/request-permission">
+        <PrivateRoute path="/request-permission">
           <RequestPermission />
         </PrivateRoute>
-        <PrivateRoute exact path="/send-token">
+        <PrivateRoute path="/send-token">
           <SendToken />
         </PrivateRoute>
-        <PrivateRoute exact path="/send-nft">
+        <PrivateRoute path="/send-nft">
           <SendNFT />
         </PrivateRoute>
-        <PrivateRoute exact path="/receive">
+        <PrivateRoute path="/receive">
           <Receive />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/gas-top-up">
+        <PrivateRoute path="/gas-top-up">
           <GasTopUp />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/popup/approval-manage">
+        <PrivateRoute path="/popup/approval-manage">
           <ApprovalManage />
         </PrivateRoute>
-        <PrivateRoute exact path="/approval-manage">
+        <PrivateRoute path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/import/metamask">
+        <PrivateRoute path="/import/metamask">
           <ImportMyMetaMaskAccount />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/switch-address">
+        <PrivateRoute path="/switch-address">
           <AddressManagement />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/dex-swap">
+        <PrivateRoute path="/dex-swap">
           <Swap />
         </PrivateRoute>
-        <PrivateRoute exact path="/custom-rpc">
+        <PrivateRoute path="/custom-rpc">
           <CustomRPC />
         </PrivateRoute>
-        <PrivateRoute exact path="/prefer-metamask-dapps">
+        <PrivateRoute path="/prefer-metamask-dapps">
           <PreferMetamaskDapps />
         </PrivateRoute>
-        <PrivateRoute exact path="/nft">
+        <PrivateRoute path="/nft">
           <NFTView />
         </PrivateRoute>
-        <PrivateRoute exact path="/request-debank-testnet-gas-token">
+        <PrivateRoute path="/request-debank-testnet-gas-token">
           <RequestDeBankTestnetGasToken />
         </PrivateRoute>
-      </Switch>
+      </Routes>
 
       <CommonPopup />
     </>

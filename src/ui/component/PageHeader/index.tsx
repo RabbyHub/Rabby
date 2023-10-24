@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
 import IconClose from 'ui/assets/component/close.svg';
 import './style.less';
@@ -30,15 +30,15 @@ const PageHeader = ({
   closeable?: boolean;
   closeCn?: string;
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const Content = (
     <div className={clsx('page-header', !fixed && className)}>
-      {(forceShowBack || (canBack && history.length > 1)) && (
+      {(forceShowBack || (canBack && navigate.length > 1)) && (
         <img
           src={IconBack}
           className={clsx('icon icon-back', invertBack && 'filter invert')}
-          onClick={onBack || (() => history.goBack())}
+          onClick={onBack || (() => navigate(-1))}
         />
       )}
       <div className="header-content">{children}</div>
@@ -47,7 +47,7 @@ const PageHeader = ({
         <img
           src={IconClose}
           className={clsx('icon-close', invertBack && 'filter invert', closeCn)}
-          onClick={onClose || (() => history.goBack())}
+          onClick={onClose || (() => navigate(-1))}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
 import { StrayPageWithButton, TiledSelect } from 'ui/component';
@@ -12,12 +12,9 @@ import {
   useRabbyGetter,
   useRabbySelector,
 } from 'ui/store';
-import { generateAliasName } from '@/utils/account';
-import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
-import { Account } from '@/background/service/preference';
 
 const VerifyMnemonics = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const wallet = useWallet();
   const { t } = useTranslation();
   const [errMsg, setErrMsg] = useState('');
@@ -49,31 +46,8 @@ const VerifyMnemonics = () => {
         return;
       }
       wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
-        const keyring = await wallet.getKeyringByMnemonic(mnemonics);
-
-        // const newAccounts = await Promise.all(
-        //   accounts.map(async (account) => {
-        //     const alianName = generateAliasName({
-        //       keyringType: KEYRING_TYPE.HdKeyring,
-        //       brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-        //       keyringCount: Math.max(keyring!.index, 0),
-        //       addressCount: 0,
-        //     });
-
-        //     await wallet.updateAlianName(
-        //       account?.address?.toLowerCase(),
-        //       alianName
-        //     );
-
-        //     return {
-        //       ...account,
-        //       alianName,
-        //     };
-        //   })
-        // );
-
-        history.replace({
-          pathname: '/popup/import/success',
+        navigate('/popup/import/success', {
+          replace: true,
           state: {
             // accounts: newAccounts,
             title: t('page.newAddress.seedPhrase.createdSuccessfully'),

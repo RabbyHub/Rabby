@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { getUiType, useApproval, useWallet } from 'ui/utils';
 import { Spin } from 'ui/component';
 import { Approval } from 'background/service/notification';
@@ -67,9 +67,9 @@ const SortHat = () => {
   return (
     <div className="h-full flex items-center justify-center">
       {UIType.isPop ? (
-        <>{to && <Redirect to={to} />}</>
+        <>{to && <Navigate to={to} />}</>
       ) : (
-        <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>
+        <Spin spinning={!to}>{to && <Navigate to={to} />}</Spin>
       )}
     </div>
   );

@@ -4,7 +4,6 @@ import { Tabs } from 'antd';
 import clsx from 'clsx';
 import { CHAINS } from 'consts';
 import React, { useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
 import './style.less';
 import { useTranslation } from 'react-i18next';
@@ -38,11 +37,6 @@ const List = ({ list }: { list: Chain[] }) => {
 };
 
 const ChainList = () => {
-  const history = useHistory();
-  const goBack = () => {
-    history.goBack();
-  };
-
   const { t } = useTranslation();
   const [selectedTab, onTabChange] = useState<'mainnet' | 'testnet'>('mainnet');
 

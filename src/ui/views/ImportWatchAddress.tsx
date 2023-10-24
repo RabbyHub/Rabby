@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Input, Form } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
@@ -22,7 +22,8 @@ import eventBus from '@/eventBus';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const wallet = useWallet();
   const [form] = Form.useForm();
   const [disableKeydown, setDisableKeydown] = useState(false);
@@ -46,8 +47,8 @@ const ImportWatchAddress = () => {
       const successShowAccounts = accounts.map((item, index) => {
         return { ...item, index: index + 1 };
       });
-      history.replace({
-        pathname: '/popup/import/success',
+      navigate('/popup/import/success', {
+        replace: true,
         state: {
           accounts: successShowAccounts,
           title: t('page.newAddress.importedSuccessfully'),
@@ -136,7 +137,7 @@ const ImportWatchAddress = () => {
   };
   const handleScanQRCodeError = async () => {
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: location.pathname,
       params: {},
       states: form.getFieldsValue(),
     });
@@ -144,7 +145,7 @@ const ImportWatchAddress = () => {
   };
   const handleLoadCache = async () => {
     const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
+    if (cache && cache.path === location.pathname) {
       form.setFieldsValue(cache.states);
     }
   };
@@ -175,9 +176,9 @@ const ImportWatchAddress = () => {
   };
   const handleClickBack = () => {
     if (history.length > 1) {
-      history.goBack();
+      navigate(-1);
     } else {
-      history.replace('/');
+      navigate('/', { replace: true });
     }
   };
   const allAccounts = async () => {

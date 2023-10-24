@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList } from 'react-window';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
@@ -26,7 +26,6 @@ import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import LessPalette from '@/ui/style/var-defs';
-// import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
@@ -71,7 +70,7 @@ function NoSearchedAddressUI() {
 
 const AddressManagement = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const enableSwitch = location.pathname === '/switch-address';
 
@@ -287,16 +286,16 @@ const AddressManagement = () => {
   }, [accountList, currentAccount, enableSwitch]);
 
   const gotoAddAddress = () => {
-    history.push('/add-address');
+    navigate('/add-address');
   };
 
   const gotoManageAddress = () => {
-    history.push('/settings/address?back=true');
+    navigate('/settings/address?back=true');
   };
 
   const switchAccount = async (account: typeof accountsList[number]) => {
     await dispatch.account.changeAccountAsync(account);
-    history.push('/dashboard');
+    navigate('/dashboard');
   };
 
   useEffect(() => {
@@ -364,7 +363,7 @@ const AddressManagement = () => {
               </div>
             }
             onClick={() => {
-              history.push(
+              navigate(
                 `/settings/address-detail?${obj2query({
                   address: account.address,
                   type: account.type,
@@ -524,7 +523,7 @@ const AddressManagement = () => {
               isCurrentAccount
               isUpdatingBalance={isUpdateAllBalanceLoading}
               onClick={() => {
-                history.push(
+                navigate(
                   `/settings/address-detail?${obj2query({
                     address: accountList[currentAccountIndex].address,
                     type: accountList[currentAccountIndex].type,

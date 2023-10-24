@@ -16,7 +16,7 @@ import {
 } from 'consts';
 import QRCode from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
@@ -56,7 +56,7 @@ import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 
 const Dashboard = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { alianName, currentAccount, accountsList } = useRabbySelector((s) => ({
@@ -96,7 +96,9 @@ const Dashboard = () => {
   const getCurrentAccount = async () => {
     const account = await dispatch.account.getCurrentAccountAsync();
     if (!account) {
-      history.replace('/no-address');
+      navigate('/no-address', {
+        replace: true,
+      });
       return;
     }
   };
@@ -292,7 +294,7 @@ const Dashboard = () => {
       action: 'Click',
       label: 'Add Address',
     });
-    history.push('/add-address');
+    navigate('/add-address');
   };
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
@@ -322,7 +324,7 @@ const Dashboard = () => {
       action: 'Click',
       label: 'Change Address',
     });
-    history.push('/switch-address');
+    navigate('/switch-address');
   };
 
   const brandIcon = useWalletConnectIcon(currentAccount);

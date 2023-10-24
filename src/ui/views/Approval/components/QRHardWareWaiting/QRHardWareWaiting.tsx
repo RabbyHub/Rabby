@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import stats from '@/stats';
 import Player from './Player';
 import Reader from './Reader';
@@ -11,7 +11,6 @@ import {
 } from 'consts';
 import eventBus from '@/eventBus';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
@@ -35,7 +34,6 @@ const QRHardWareWaiting = ({ params }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
-  const history = useHistory();
   const wallet = useWallet();
   const [walletBrandContent, setWalletBrandContent] = useState(
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
@@ -180,18 +178,10 @@ const QRHardWareWaiting = ({ params }) => {
     }
   };
 
-  const showErrorChecker = useMemo(() => {
-    return errorMessage !== '' && status == QRHARDWARE_STATUS.SIGN;
-  }, [errorMessage]);
-
   const [scanMessage, setScanMessage] = React.useState();
   const handleScan = (scanMessage) => {
     setScanMessage(scanMessage);
     setStatus(QRHARDWARE_STATUS.RECEIVED);
-  };
-
-  const handleDone = () => {
-    history.push('/');
   };
 
   const handleSubmit = () => {

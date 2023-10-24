@@ -2,7 +2,7 @@ import { Badge, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
@@ -55,7 +55,7 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
@@ -68,10 +68,7 @@ export default ({
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
-  const { state } = useLocation<{
-    trigger?: string;
-    showChainsModal?: boolean;
-  }>();
+  const { state } = useLocation();
   const { showChainsModal = false, trigger } = state ?? {};
   const [isShowReceiveModal, setIsShowReceiveModal] = useState(
     trigger === 'receive' && showChainsModal
@@ -168,14 +165,14 @@ export default ({
       eventKey: 'Swap',
       content: t('page.dashboard.home.panel.swap'),
       onClick: () => {
-        history.push('/dex-swap?rbisource=dashboard');
+        navigate('/dex-swap?rbisource=dashboard');
       },
     } as IPanelItem,
     send: {
       icon: IconSendToken,
       eventKey: 'Send',
       content: t('page.dashboard.home.panel.send'),
-      onClick: () => history.push('/send-token?rbisource=dashboard'),
+      onClick: () => navigate('/send-token?rbisource=dashboard'),
     } as IPanelItem,
     receive: {
       icon: IconReceive,
@@ -190,7 +187,7 @@ export default ({
       eventKey: 'Gas Top Up',
       content: t('page.dashboard.home.panel.gasTopUp'),
       onClick: () => {
-        history.push('/gas-top-up');
+        navigate('/gas-top-up');
       },
     } as IPanelItem,
     queue: {
@@ -199,7 +196,7 @@ export default ({
       content: t('page.dashboard.home.panel.queue'),
       badge: gnosisPendingCount,
       onClick: () => {
-        history.push('/gnosis-queue');
+        navigate('/gnosis-queue');
       },
     } as IPanelItem,
     transactions: {
@@ -207,7 +204,7 @@ export default ({
       eventKey: 'Transactions',
       content: t('page.dashboard.home.panel.transactions'),
       onClick: () => {
-        history.push('/history');
+        navigate('/history');
       },
     } as IPanelItem,
     security: {
@@ -215,9 +212,9 @@ export default ({
       eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
-        // history.push('/popup/approval-manage');
+        // navigate('/popup/approval-manage');
         if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
-          history.push('/popup/approval-manage');
+          navigate('/popup/approval-manage');
           return;
         }
 
@@ -243,7 +240,7 @@ export default ({
       eventKey: 'Manage Address',
       content: t('page.dashboard.home.panel.manageAddress'),
       onClick: () => {
-        history.push('/settings/address');
+        navigate('/settings/address');
       },
     } as IPanelItem,
     nft: {
@@ -251,7 +248,7 @@ export default ({
       eventKey: 'NFT',
       content: t('page.dashboard.home.panel.nft'),
       onClick: () => {
-        history.push('/nft');
+        navigate('/nft');
       },
     } as IPanelItem,
   };
@@ -376,7 +373,7 @@ export default ({
         value={CHAINS_ENUM.ETH}
         visible={isShowReceiveModal}
         onChange={(chain) => {
-          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
+          navigate(`/receive?rbisource=dashboard&chain=${chain}`);
           setIsShowReceiveModal(false);
         }}
         onCancel={() => {

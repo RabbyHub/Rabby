@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
@@ -27,10 +27,10 @@ interface QueueProps {
 }
 
 const Queue = ({ count, className }: QueueProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleClickPendingTxs = () => {
-    history.push('/gnosis-queue');
+    navigate('/gnosis-queue');
   };
   const { t } = useTranslation();
 

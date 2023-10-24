@@ -1,11 +1,7 @@
 import clsx from 'clsx';
-import React, {
-  ComponentPropsWithoutRef,
-  CSSProperties,
-  PropsWithChildren,
-} from 'react';
+import React, { ComponentPropsWithoutRef, PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import IconArrowRight from 'ui/assets/address/right-arrow.svg';
 import ArrowLeftWhiteBack from 'ui/assets/import/arrow-left-white.svg';
@@ -180,13 +176,13 @@ export const BlueHeader = ({
   children,
   ...rest
 }: BlueHeaderProps) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const goBack = React.useCallback(() => {
     if (onBack) {
       onBack();
     } else {
-      history.goBack();
+      navigate(-1);
     }
   }, [onBack]);
 

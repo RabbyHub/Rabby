@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
@@ -8,7 +8,7 @@ import { KEYRING_CLASS } from 'consts';
 import ImportIcon from 'ui/assets/import-icon.svg';
 
 const ImportMode = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [currentMode, setCurrentMode] = useState('');
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -59,7 +59,7 @@ const ImportMode = () => {
       return;
     }
 
-    history.push(route);
+    navigate(route);
   };
 
   return (

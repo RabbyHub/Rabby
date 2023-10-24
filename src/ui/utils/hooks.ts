@@ -1,6 +1,6 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 export const useApproval = () => {
   const wallet = useWallet();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
@@ -35,7 +35,9 @@ export const useApproval = () => {
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
-      history.replace('/');
+      navigate('/', {
+        replace: true,
+      });
     }, 0);
   };
 
@@ -49,7 +51,7 @@ export const useApproval = () => {
       await wallet.rejectApproval(err, stay, isInternal);
     }
     if (!stay) {
-      history.push('/');
+      navigate('/');
     }
   };
 

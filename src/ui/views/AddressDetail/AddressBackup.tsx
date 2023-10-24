@@ -4,7 +4,7 @@ import { useWallet } from 'ui/utils';
 import './style.less';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 import { useForm } from 'antd/lib/form/Form';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { KEYRING_TYPE } from '@/constant';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,7 @@ type Props = {
 export const AddressBackup = ({ address, type }: Props) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [form] = useForm();
 
@@ -45,8 +45,7 @@ export const AddressBackup = ({ address, type }: Props) => {
         }
       },
       onFinished() {
-        history.push({
-          pathname: `/settings/address-backup/${path}`,
+        navigate(`/settings/address-backup/${path}`, {
           state: {
             data: data,
           },

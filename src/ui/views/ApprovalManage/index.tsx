@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAsync, useThrottleFn } from 'react-use';
 import IconSearch from 'ui/assets/search.svg';
 import { Empty, PageHeader } from 'ui/component';
@@ -43,7 +43,7 @@ const FILTER_TYPES = {
 const ApprovalManage = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
   const chain = useRabbySelector(
@@ -329,7 +329,9 @@ const ApprovalManage = () => {
 
   const handleClickBack = useCallback(() => {
     queueRef.current.clear();
-    history.replace('/');
+    navigate('/', {
+      replace: true,
+    });
   }, []);
 
   const listRef = useRef<VariableSizeList>(null);

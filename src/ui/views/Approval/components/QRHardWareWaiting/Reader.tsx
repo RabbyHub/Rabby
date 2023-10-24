@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { URDecoder } from '@ngraveio/bc-ur';
 import { openInternalPageInTab, useWallet } from 'ui/utils';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Form } from 'antd';
 import Progress from '@/ui/component/Progress';
 
@@ -13,7 +13,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
   const { t } = useTranslation();
   const decoder = useRef(new URDecoder());
   const wallet = useWallet();
-  const history = useHistory();
+  const location = useLocation();
   const [form] = Form.useForm();
   const [progress, setProgress] = useState(0);
 
@@ -44,7 +44,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
 
   const handleError = async () => {
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: location.pathname,
       params: {},
       states: form.getFieldsValue(),
     });

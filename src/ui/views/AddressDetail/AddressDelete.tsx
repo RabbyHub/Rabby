@@ -13,7 +13,7 @@ import {
   KEYRING_CLASS,
 } from '@/constant';
 import IconSuccess from 'ui/assets/success.svg';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -30,7 +30,7 @@ export const AddressDelete = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleDeleteAddress = async () => {
     await wallet.removeAddress(
@@ -50,7 +50,7 @@ export const AddressDelete = ({
     });
     setVisible(false);
     setTimeout(() => {
-      history.goBack();
+      navigate(-1);
     }, 500);
   };
 

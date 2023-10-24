@@ -22,7 +22,7 @@ import Lottie from 'lottie-react';
 import { CurrentAccount } from '@/ui/component/CurrentAccout';
 import { openInTab, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAsync, useAsyncFn } from 'react-use';
 import * as animationData from './success.json';
 
@@ -241,10 +241,10 @@ const ClaimRabbyBadge = ({ onClaimed }: { onClaimed?: () => void }) => {
     lockErrorRef.current = true;
   }, []);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const gotoSwap = useCallback(() => {
-    history.push('/dex-swap');
+    navigate('/dex-swap');
   }, []);
 
   if (!lockErrorRef.current && !mintLoading && mintError?.message) {

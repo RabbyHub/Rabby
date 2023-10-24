@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, NavigateFunction } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
@@ -34,19 +34,18 @@ import { Modal } from 'antd';
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
 const AddAddressOptions = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const location = useLocation();
   const wallet = useWallet();
 
   const [selectedWalletType, setSelectedWalletType] = useState('');
-  const handleRouter = async (action: (h: typeof history) => void) =>
+  const handleRouter = async (action: (h: typeof navigate) => void) =>
     (await wallet.isBooted())
-      ? action(history)
-      : history.push({
-          pathname: '/password',
+      ? action(navigate)
+      : navigate('/password', {
           state: {
-            handle: (h: typeof history) => action(h),
+            handle: (h: typeof navigate) => action(h),
           },
         });
 
@@ -102,7 +101,7 @@ const AddAddressOptions = () => {
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
     (
-      history,
+      navigate: NavigateFunction,
       item: Valueof<typeof WALLET_BRAND_CONTENT>,
       params?: {
         address: string;
@@ -124,9 +123,7 @@ const AddAddressOptions = () => {
       } else if (item.connectType === 'OneKeyConnect') {
         openInternalPageInTab('import/hardware?connectType=ONEKEY');
       } else if (item.connectType === 'GnosisConnect') {
-        history.push({
-          pathname: '/import/gnosis',
-        });
+        navigate('/import/gnosis');
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
         checkQRBasedWallet(item).then((success) => {
           if (!success) return;
@@ -135,13 +132,11 @@ const AddAddressOptions = () => {
       } else if (
         item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
       ) {
-        history.push({
-          pathname: '/import/cobo-argus',
+        navigate('/import/cobo-argus', {
           state: params,
         });
       } else {
-        history.push({
-          pathname: '/import/wallet-connect',
+        navigate('/import/wallet-connect', {
           state: {
             brand: item,
           },
@@ -238,14 +233,13 @@ const AddAddressOptions = () => {
         leftIcon: IconPrivatekey,
         brand: 'importPrivatekey',
         content: t('page.newAddress.importPrivateKey'),
-        onClick: () => handleRouter((history) => history.push('/import/key')),
+        onClick: () => handleRouter((navigate) => navigate('/import/key')),
       },
       {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
         content: t('page.newAddress.importMyMetamaskAccount'),
-        onClick: () =>
-          handleRouter((history) => history.push('/import/metamask')),
+        onClick: () => handleRouter((navigate) => navigate('/import/metamask')),
       },
     ],
     []
@@ -259,7 +253,7 @@ const AddAddressOptions = () => {
         content: t('page.newAddress.addContacts.content'),
         subText: t('page.newAddress.addContacts.description'),
         onClick: () =>
-          handleRouter((history) => history.push('/import/watch-address')),
+          handleRouter((navigate) => navigate('/import/watch-address')),
       },
     ],
     [t]
