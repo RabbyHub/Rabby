@@ -295,7 +295,7 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Failed to created",
+        "txFailed": "Failed to create",
         "sigReceived": "Signature received",
         "sigCompleted": "Transaction created",
         "getSig": "Get signature",
@@ -1164,7 +1164,7 @@
           "accountError": "Address not match.",
           "accountErrorDesc": "Please switch address in your mobile wallet",
           "connected": "Connected",
-          "duplicate": "The address you're are trying to import is duplicate",
+          "duplicate": "The address you're are trying to import already exists",
           "default": "Scan with your {{brand}}"
         },
         "title": "Connect with {{brandName}}",
@@ -1736,8 +1736,8 @@
       "invalidMnemonic": "The seed phrase is invalid, please check!",
       "notFoundKeyringByAddress": "Can't find keyring by address",
       "txPushFailed": "Transaction push failed",
-      "unlock": "you need to unlock wallet first",
-      "duplicateAccount": "The account you're are trying to import is duplicate",
+      "unlock": "you need to unlock your wallet first",
+      "duplicateAccount": "The account you're are trying to import already exists",
       "canNotUnlock": "Cannot unlock without a previous vault"
     },
     "transactionWatcher": {
