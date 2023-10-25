@@ -4,7 +4,7 @@
       "title": "Transações",
       "empty": {
         "title": "Sem transações",
-        "desc": " Sem transações encontradas na <1>rede suportada</1>"
+        "desc": "Sem transações encontradas na <1>rede suportada</1>"
       },
       "explain": {
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",

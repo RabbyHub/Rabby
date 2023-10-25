@@ -1374,7 +1374,7 @@
         "clickToShowQr": "Özel anahtar QR Kodunu göstermek için tıklayın"
       },
       "ethSign": {
-        "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için             Rabby bu yöntemi desteklememektedir."
+        "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için Rabby bu yöntemi desteklememektedir."
       },
       "createPassword": {
         "title": "Şifre Oluştur",

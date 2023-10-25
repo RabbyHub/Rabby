@@ -4,7 +4,7 @@
       "title": "Transactions",
       "empty": {
         "title": "No transactions",
-        "desc": " No transactions found on <1>supported chains</1>"
+        "desc": "No transactions found on <1>supported chains</1>"
       },
       "explain": {
         "approve": "Approve {{amount}} {{symbol}} for {{project}}",
@@ -391,7 +391,7 @@
         "tips": {
           "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
           "canNotCancel": "Cannot speed up or cancel: Not the first pending txn",
-          "pendingBroadcast": "Gas-saving mode: waiting for lower network fees. Max {{deadline}}h  wait.",
+          "pendingBroadcast": "Gas-saving mode: waiting for lower network fees. Max {{deadline}}h wait.",
           "pendingBroadcastBtn": "Broadcast now",
           "pendingBroadcastRetry": "Broadcast failed. Last attempt: {{pushAt}}",
           "pendingBroadcastRetryBtn": "Re-broadcast"
@@ -448,7 +448,7 @@
           "noCost": "No Gas cost"
         },
         "SkipNonceAlert": {
-          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
+          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
         }
       },
       "signedText": {
@@ -1109,7 +1109,7 @@
         "clearAll": "Clear All"
       },
       "metamask": {
-        "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
+        "step1": "Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
         "step2": "Import the seed phrase or private key in Rabby",
         "step3": "Import is completed and all your assets will <br /> appear automatically",
         "how": "How to import my MetaMask Account?",
@@ -1443,7 +1443,7 @@
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Preferred Dapps",
-      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
+      "desc": "The following dapps will remain connected through MetaMask, regardless of the wallet you've flipped to",
       "howToAdd": "How to Add",
       "howToAddDesc": "Right click on the website and find this option",
       "empty": "No dapps"
@@ -1453,7 +1453,7 @@
       "closed": "Closed",
       "empty": "No custom RPC",
       "title": "Custom RPC",
-      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
+      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue using Rabby, please disable or remove the custom RPC node.",
       "add": "Add RPC",
       "EditRPCModal": {
         "invalidRPCUrl": "Invalid RPC URL",
@@ -1499,7 +1499,7 @@
           "reject": "Reject Transaction"
         },
         "title": "Select how to replace this transaction",
-        "desc": " A signed transaction cannot be removed but it can be replaced with a           new transaction with the same nonce."
+        "desc": "A signed transaction cannot be removed but it can be replaced with a new transaction with the same nonce."
       }
     },
     "importSuccess": {
@@ -1509,18 +1509,18 @@
     },
     "backupSeedPhrase": {
       "title": "Backup Seed Phrase",
-      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
       "clickToShow": "Click to show Seed Phrase",
       "copySeedPhrase": "Copy seed phrase"
     },
     "backupPrivateKey": {
       "title": "Backup Private Key",
-      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
       "clickToShow": "Click to show private key",
       "clickToShowQr": "Click to show private key QR Code"
     },
     "ethSign": {
-      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety, Rabby does not support this method."
     },
     "createPassword": {
       "title": "Set Password",

@@ -4,7 +4,7 @@
       "title": "Transacciones",
       "empty": {
         "title": "No hay transacciones",
-        "desc": " No se encontraron transacciones en <1>cadenas soportadas</1>"
+        "desc": "No se encontraron transacciones en <1>cadenas soportadas</1>"
       },
       "explain": {
         "approve": "Aprobar {{amount}} {{symbol}} para {{project}}",
