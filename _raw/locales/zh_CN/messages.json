@@ -1711,7 +1711,9 @@
       "submitted": "交易已提交",
       "more": "点击查看更多信息",
       "failed": "交易失败",
-      "completed": "交易已完成"
+      "completed": "交易已完成",
+      "txCompleteMoreContent": "{{chain}} #{{nonce}} 交易已完成，点击查看更多",
+      "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失败，点击查看更多"
     },
     "alias": {
       "HdKeyring": "助记词",
