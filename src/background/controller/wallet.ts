@@ -1729,6 +1729,20 @@ export class WalletController extends BaseController {
     return null;
   };
 
+  walletConnectSwitchChain = (brandName: string, chainId: number) => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      if (keyring) {
+        return keyring.switchEthereumChain(brandName, chainId);
+      }
+    } catch (e) {
+      // ignore
+      console.log('walletconnect error', e);
+    }
+    return null;
+  };
+
   _currentWalletConnectStashId?: undefined | null | number;
 
   initWalletConnect = async (
