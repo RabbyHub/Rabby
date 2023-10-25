@@ -41,7 +41,7 @@
       "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
       "gasSelectorTitle": "Gas",
-      "failToFetchGasCost": "Fail to fetch gas cost",
+      "failToFetchGasCost": "Failed to fetch gas cost",
       "gasMoreButton": "More",
       "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
       "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
@@ -64,7 +64,7 @@
         "noBalanceChange": "No balance change",
         "tokenOut": "Token out",
         "tokenIn": "Token in",
-        "errorTitle": "Fail to fetch balance change",
+        "errorTitle": "Failed to fetch balance change",
         "notSupport": "Transaction Simulation Not Supported",
         "nftOut": "NFT out"
       },
@@ -75,12 +75,12 @@
         "title": "Swap Token",
         "payToken": "Pay",
         "receiveToken": "Receive",
-        "failLoadReceiveToken": "Fail to load",
+        "failLoadReceiveToken": "Failed to load",
         "valueDiff": "Value diff",
         "simulationFailed": "Transaction simulation failed",
         "simulationNotSupport": "Transaction simulation not supported on this chain",
         "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Slippage tolerance fail to load",
+        "slippageFailToLoad": "Slippage tolerance Failed to load",
         "slippageTolerance": "Slippage tolerance",
         "receiver": "Receiver",
         "notPaymentAddress": "Not the payment address"
@@ -247,7 +247,7 @@
           "new": "New Transaction"
         },
         "error": {
-          "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
+          "pendingList": "Failed to load pending transactions, <1/><2>Retry</2>"
         }
       }
     },
@@ -295,7 +295,7 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to created",
+        "txFailed": "Failed to created",
         "sigReceived": "Signature received",
         "sigCompleted": "Transaction created",
         "getSig": "Get signature",
@@ -546,7 +546,7 @@
       "sectionMsgDataForContract": {
         "placeholder": "Optional",
         "title": "Contract call",
-        "parseError": "Fail to decode contract call",
+        "parseError": "Failed to decode contract call",
         "simulation": "Contract call simulation:",
         "notHexData": "Only supported hex data"
       }
@@ -710,7 +710,7 @@
       "approve-tips": "1.Approve → 2.Swap",
       "best": "Best",
       "unable-to-fetch-the-price": "Unable to fetch the price",
-      "fail-to-simulate-transaction": "Fail to simulate transaction",
+      "fail-to-simulate-transaction": "Failed to simulate transaction",
       "security-verification-failed": "Security verification failed",
       "need-to-approve-token-before-swap": "Need to approve token before swap",
       "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
