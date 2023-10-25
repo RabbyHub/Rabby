@@ -444,7 +444,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
-    name: 'FireBlocks',
+    name: 'Fireblocks',
     brand: WALLET_BRAND_TYPES.FIREBLOCKS,
     icon: IconFireblocks,
     image: IconFireblocksWithBorder,
