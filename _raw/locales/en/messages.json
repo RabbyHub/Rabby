@@ -315,7 +315,7 @@
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
         "submitting": "Signed. Creating transaction",
-        "resubmited": "Resubmited"
+        "resubmitted": "Resubmitted"
       },
       "common": {
         "notSupport": "{{0}} is not supported"

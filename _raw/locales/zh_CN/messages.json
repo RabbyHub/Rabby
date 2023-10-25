@@ -1051,7 +1051,7 @@
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
         "notConnected": "你的钱包未连接，请重新连接",
         "resent": "重试",
-        "siging": "签名请求发送中",
+        "signing": "签名请求发送中",
         "signError": "Ledger 签名错误:",
         "txRejected": "交易已拒绝",
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
@@ -1153,7 +1153,7 @@
       "multiSigChainNotMatch": "多签地址不在本链上，无法发起交易",
       "myMark": "我的标记",
       "myNativeTokenBalance": "我的 {{symbol}} 余额：{{amount}} {{symbol}}",
-      "nativeTokenNotEngouthForGas": "你的钱包里没有足够的 Gas",
+      "nativeTokenNotEnoughForGas": "你的钱包里没有足够的 Gas",
       "neverInteracted": "之前没有交互过",
       "neverTransacted": "之前没有交易过",
       "nftApprove": {
