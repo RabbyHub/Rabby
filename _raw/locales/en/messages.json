@@ -1743,6 +1743,8 @@
     "transactionWatcher": {
       "submitted": "Transaction submitted",
       "more": "click to view more information",
+      "txCompleteMoreContent": "{{chain}} #{{nonce}} completed. Click to view more.",
+      "txFailedMoreContent": "{{chain}} #{{nonce}} failed. Click to view more.",
       "completed": "Transaction completed",
       "failed": "Transaction failed"
     },
