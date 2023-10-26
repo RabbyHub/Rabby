@@ -72,7 +72,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   const wallet = useWallet();
   React.useEffect(() => {
     if (chain && sessionChainId && chain.id !== sessionChainId) {
-      wallet.walletConnectSwitchChain(account.brandName, chain.id);
+      wallet.walletConnectSwitchChain(account, chain.id);
     }
   }, [sessionChainId, chain]);
 
