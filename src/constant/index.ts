@@ -25,7 +25,6 @@ import LogoMath from 'ui/assets/walletlogo/math.svg';
 import IconMetaMask from 'ui/assets/walletlogo/metamask.svg';
 import IconMnemonicInk from 'ui/assets/walletlogo/mnemonic-ink.svg';
 import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
-import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import IconOnekey from 'ui/assets/walletlogo/onekey.svg';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey.svg';
 import LogoOnekey from 'ui/assets/walletlogo/onekey.svg';
@@ -56,13 +55,10 @@ import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
+import LogoMPCVault from 'ui/assets/walletlogo/mpcvault.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 import LogoCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
-import {
-  CHAINS_BY_NET,
-  ensureChainHashValid,
-  ensureChainListValid,
-} from '@/utils/chain';
+import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
@@ -74,7 +70,6 @@ import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
-import LogoUniswap from 'ui/assets/swap/uniswap.svg';
 import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
 
 export { default as LANGS } from '../../_raw/locales/index.json';
@@ -364,6 +359,7 @@ export enum WALLET_BRAND_TYPES {
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
+  MPCVault = 'MPCVault',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -611,6 +607,15 @@ export const WALLET_BRAND_CONTENT: {
     icon: LogoCoboArgus,
     image: LogoCoboArgus,
     connectType: BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.MPCVault]: {
+    id: 26,
+    name: 'MPCVault',
+    brand: WALLET_BRAND_TYPES.MPCVault,
+    icon: LogoMPCVault,
+    image: LogoMPCVault,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
 };
@@ -965,8 +970,8 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.CoboArgus,
   WALLET_BRAND_TYPES.AMBER,
   WALLET_BRAND_TYPES.FIREBLOCKS,
-  // WALLET_BRAND_TYPES.COBO,
   WALLET_BRAND_TYPES.JADE,
+  WALLET_BRAND_TYPES.MPCVault,
 ].reduce((pre, now, i) => {
   pre[now] = i + 1;
   return pre;
