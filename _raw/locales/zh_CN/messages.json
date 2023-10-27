@@ -635,7 +635,8 @@
           "submitFailed": "提交失败",
           "pendingBroadcast": "Pending: 等待广播",
           "pendingBroadcasted": "Pending: 已广播",
-          "withdrawed": "已快捷取消"
+          "withdrawed": "已快捷取消",
+          "pendingBroadcastFailed": "Pending: 广播失败"
         },
         "tips": {
           "canNotCancel": "无法加速或取消：不是第一个待完成的交易",
