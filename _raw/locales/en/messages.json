@@ -83,7 +83,8 @@
         "slippageFailToLoad": "Slippage tolerance fail to load",
         "slippageTolerance": "Slippage tolerance",
         "receiver": "Receiver",
-        "notPaymentAddress": "Not the payment address"
+        "notPaymentAddress": "Not the payment address",
+        "unknownAddress": "Unknown address"
       },
       "crossChain": {
         "title": "Cross Chain"
@@ -178,6 +179,7 @@
       "neverInteracted": "Never interacted before",
       "transacted": "Transacted before",
       "neverTransacted": "Never transacted before",
+      "importedAddress": "Imported address",
       "fakeTokenAlert": "This is a scam token marked by Rabby",
       "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
       "trusted": "Trusted",

@@ -407,6 +407,7 @@ export interface SwapRequireData {
   hasInteraction: boolean;
   rank: number | null;
   sender: string;
+  receiverInWallet: boolean;
 }
 
 export interface SendRequireData {
@@ -483,6 +484,7 @@ export interface WrapTokenRequireData {
   hasInteraction: boolean;
   rank: number | null;
   sender: string;
+  receiverInWallet: boolean;
 }
 
 export interface ContractCallRequireData {
@@ -702,6 +704,10 @@ export const fetchActionRequiredData = async ({
   const apiProvider = isTestnetTx ? wallet.testnetOpenapi : wallet.openapi;
   const queue = new PQueue();
   if (actionData.swap || actionData.crossToken || actionData.crossSwapToken) {
+    const data = (actionData.swap ||
+      actionData.crossToken ||
+      actionData.crossSwapToken)!;
+    const receiverInWallet = await wallet.hasAddress(data.receiver);
     const id = tx.to;
     const result: SwapRequireData = {
       id,
@@ -710,6 +716,7 @@ export const fetchActionRequiredData = async ({
       hasInteraction: false,
       rank: null,
       sender: address,
+      receiverInWallet,
     };
     queue.add(async () => {
       const credit = await apiProvider.getContractCredit(id, chainId);
@@ -737,6 +744,8 @@ export const fetchActionRequiredData = async ({
   }
   if (actionData.wrapToken || actionData.unWrapToken) {
     const id = tx.to;
+    const data = (actionData.wrapToken || actionData.unWrapToken)!;
+    const receiverInWallet = await wallet.hasAddress(data.receiver);
     const result: WrapTokenRequireData = {
       id,
       protocol: null,
@@ -744,6 +753,7 @@ export const fetchActionRequiredData = async ({
       hasInteraction: false,
       rank: null,
       sender: address,
+      receiverInWallet,
     };
     queue.add(async () => {
       const credit = await apiProvider.getContractCredit(id, chainId);
@@ -1095,6 +1105,7 @@ export const formatSecurityEngineCtx = ({
         contractAddress: id,
         slippageTolerance,
         usdValuePercentage,
+        receiverInWallet: data.receiverInWallet,
       },
     };
   }
@@ -1121,6 +1132,7 @@ export const formatSecurityEngineCtx = ({
         chainId,
         usdValuePercentage,
         usdValueChange: Number(usdValueDiff),
+        receiverInWallet: data.receiverInWallet,
       },
     };
   }
@@ -1147,6 +1159,7 @@ export const formatSecurityEngineCtx = ({
         chainId,
         usdValuePercentage,
         usdValueChange: Number(usdValueDiff),
+        receiverInWallet: data.receiverInWallet,
       },
     };
   }
@@ -1268,6 +1281,7 @@ export const formatSecurityEngineCtx = ({
         from: data.sender,
         chainId,
         id: data.id,
+        receiverInWallet: data.receiverInWallet,
       },
       contractCall: {
         id: data.id,
@@ -1285,6 +1299,7 @@ export const formatSecurityEngineCtx = ({
         from: data.sender,
         chainId,
         id: data.id,
+        receiverInWallet: data.receiverInWallet,
       },
       contractCall: {
         id: data.id,
