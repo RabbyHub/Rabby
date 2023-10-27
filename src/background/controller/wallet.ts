@@ -45,6 +45,7 @@ import {
   KEYRING_TYPE,
   GNOSIS_SUPPORT_CHAINS,
   INTERNAL_REQUEST_SESSION,
+  DARK_MODE_TYPE,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -1087,6 +1088,10 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getThemeMode = () => preferenceService.getThemeMode();
+  setThemeMode = (themeMode: DARK_MODE_TYPE) =>
+    preferenceService.setThemeMode(themeMode);
 
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);

@@ -53,7 +53,7 @@
   --rabby-dark-neutral-black: rgba(0, 0, 0, 1);
 }
 
-html, body {
+:root {
   /* -------------------- light mode -------------------- */
   --r-blue-default: var(--rabby-light-blue-default);
   --r-blue-light-1: var(--rabby-light-blue-light-1);
