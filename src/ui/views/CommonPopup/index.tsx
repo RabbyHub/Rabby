@@ -37,6 +37,7 @@ const ComponentConfig = {
     closeable: false,
     titleSize: '16px',
     maskClosable: false,
+    padding: '20px',
   },
   CancelApproval: {
     padding: '8px 20px 22px',
