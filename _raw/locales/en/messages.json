@@ -403,7 +403,8 @@
           "pending": "Pending",
           "withdrawed": "Quick cancel",
           "pendingBroadcasted": "Pending: broadcasted",
-          "pendingBroadcast": "Pending: broadcast"
+          "pendingBroadcast": "Pending: to be broadcasted",
+          "pendingBroadcastFailed": "Pending: Broadcast failed"
         },
         "txType": {
           "initial": "Initial tx",

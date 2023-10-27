@@ -105,7 +105,9 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
               <div
                 className={clsx('option-item', item.disabled && 'is-disabled')}
                 onClick={() => {
-                  console.log(tx);
+                  if (item?.disabled) {
+                    return;
+                  }
                   onCancelTx?.(item.value);
                 }}
               >
