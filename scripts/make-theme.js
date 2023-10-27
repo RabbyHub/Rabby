@@ -25,7 +25,7 @@ ${['light', 'dark'].map(theme => {
 }).join('\n\n')}
 }
 
-html, body {
+:root {
   /* -------------------- light mode -------------------- */
 ${Object.entries(themeColors.light).map(([cssvarKey]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');

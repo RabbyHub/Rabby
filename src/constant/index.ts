@@ -1071,3 +1071,24 @@ export enum CANCEL_TX_TYPE {
   ON_CHAIN_CANCEL = 'ON_CHAIN_CANCEL',
 }
 export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];
+
+export enum DARK_MODE_TYPE {
+  'system' = 0,
+  'light' = 1,
+  'dark' = 2,
+}
+
+export const ThemeModes = [
+  {
+    code: DARK_MODE_TYPE.system,
+    name: 'System',
+  },
+  {
+    code: DARK_MODE_TYPE.light,
+    name: 'Light',
+  },
+  {
+    code: DARK_MODE_TYPE.dark,
+    name: 'Dark',
+  },
+];

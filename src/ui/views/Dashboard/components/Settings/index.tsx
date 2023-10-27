@@ -3,9 +3,11 @@ import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import {
   CHAINS,
+  DARK_MODE_TYPE,
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
   LANGS,
+  ThemeModes,
 } from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +25,7 @@ import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import IconAutoLock from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import IconLockWallet from 'ui/assets/dashboard/settings/lock.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
+import IconThemeMode from 'ui/assets/settings/theme-mode.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import IconDiscord from 'ui/assets/discord.svg';
 import IconClear from 'ui/assets/icon-clear.svg';
@@ -49,6 +52,7 @@ import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
+import SwitchThemeModal from './components/SwitchThemeModal';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -484,6 +488,7 @@ const SettingsInner = ({
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [isShowLangModal, setIsShowLangModal] = useState(false);
+  const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
@@ -496,6 +501,7 @@ const SettingsInner = ({
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
+  const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
   const openapiStore = useRabbySelector((state) => state.openapi);
 
@@ -674,6 +680,28 @@ const SettingsInner = ({
     settings: {
       label: t('page.dashboard.settings.settings.label'),
       items: [
+        {
+          leftIcon: IconThemeMode,
+          content: t('page.dashboard.settings.settings.toggleThemeMode'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Theme Mode',
+            });
+            reportSettings('Theme Mode');
+            setIsShowThemeModeModal(true);
+          },
+          rightIcon: (
+            <>
+              <span className="text-14 mr-[8px] text-[#13141a]" role="button">
+                {ThemeModes.find((item) => item.code === themeMode)?.name ||
+                  '-'}
+              </span>
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </>
+          ),
+        },
         {
           leftIcon: IconWhitelist,
           content: t(
@@ -1063,6 +1091,11 @@ const SettingsInner = ({
         visible={isShowLangModal}
         onFinish={() => setIsShowLangModal(false)}
         onCancel={() => setIsShowLangModal(false)}
+      />
+      <SwitchThemeModal
+        visible={isShowThemeModeModal}
+        onFinish={() => setIsShowThemeModeModal(false)}
+        onCancel={() => setIsShowThemeModeModal(false)}
       />
       <RecentConnections
         visible={connectedDappsVisible}

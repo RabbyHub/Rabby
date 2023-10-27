@@ -8,7 +8,13 @@ import {
   permissionService,
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM, LANGS } from 'consts';
+import {
+  HARDWARE_KEYRING_TYPES,
+  EVENTS,
+  CHAINS_ENUM,
+  LANGS,
+  DARK_MODE_TYPE,
+} from 'consts';
 import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 
@@ -91,6 +97,7 @@ export interface PreferenceStore {
   autoLockTime?: number;
   hiddenBalance?: boolean;
   isShowTestnet?: boolean;
+  themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
 }
 
@@ -145,6 +152,7 @@ class PreferenceService {
         collectionStarred: [],
         hiddenBalance: false,
         isShowTestnet: false,
+        themeMode: DARK_MODE_TYPE.system,
         addressSortStore: {
           ...defaultAddressSortStore,
         },
@@ -470,6 +478,14 @@ class PreferenceService {
   setLocale = (locale: string) => {
     this.store.locale = locale;
     i18n.changeLanguage(locale);
+  };
+
+  getThemeMode = () => {
+    return this.store.themeMode;
+  };
+
+  setThemeMode = (themeMode: DARK_MODE_TYPE) => {
+    this.store.themeMode = themeMode;
   };
 
   updateUseLedgerLive = async (value: boolean) => {
