@@ -306,7 +306,7 @@ class GnosisKeyring extends EventEmitter {
         (acct) => acct.toLowerCase() === prefixedAddress.toLowerCase()
       )
     ) {
-      throw new Error("The address you're are trying to import already exists");
+      throw new Error("The address you're are trying to import is duplicate");
     }
 
     this.accounts.push(prefixedAddress.toLowerCase());

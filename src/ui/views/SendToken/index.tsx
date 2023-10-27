@@ -229,7 +229,7 @@ const SendTokenMessageForContract = React.forwardRef<
                     <span className="flex items-center text-r-red-default">
                       <img src={IconAlertInfo} className="w-14 h-14 mr-[3px]" />
                       <span>
-                        {/* Failed to decode contract call */}
+                        {/* Fail to decode contract call */}
                         {t(
                           'page.sendToken.sectionMsgDataForContract.parseError'
                         )}
