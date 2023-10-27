@@ -1051,7 +1051,7 @@
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
         "notConnected": "你的钱包未连接，请重新连接",
         "resent": "重试",
-        "siging": "签名请求发送中",
+        "signing": "签名请求发送中",
         "signError": "Ledger 签名错误:",
         "txRejected": "交易已拒绝",
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
@@ -1153,7 +1153,7 @@
       "multiSigChainNotMatch": "多签地址不在本链上，无法发起交易",
       "myMark": "我的标记",
       "myNativeTokenBalance": "我的 {{symbol}} 余额：{{amount}} {{symbol}}",
-      "nativeTokenNotEngouthForGas": "你的钱包里没有足够的 Gas",
+      "nativeTokenNotEnoughForGas": "你的钱包里没有足够的 Gas",
       "neverInteracted": "之前没有交互过",
       "neverTransacted": "之前没有交易过",
       "nftApprove": {
@@ -1458,7 +1458,7 @@
       "opened": "已打开",
       "closed": "已关闭",
       "EditRPCModal": {
-        "invalidRPCUrl": " RPC URL 无效",
+        "invalidRPCUrl": "RPC URL 无效",
         "invalidChainId": "Chain ID 无效",
         "rpcAuthFailed": "RPC 验证失败",
         "title": "编辑 RPC",
@@ -1509,19 +1509,19 @@
       "gnosisChainDesc": "该地址部署于  {{count}} 条链上"
     },
     "backupPrivateKey": {
-      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
       "clickToShowQr": "点击展示私钥二维码",
       "clickToShow": "点击展示私钥",
       "title": "备份私钥"
     },
     "backupSeedPhrase": {
-      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
       "clickToShow": "点击展示助记词",
       "copySeedPhrase": "复制助记词",
       "title": "备份助记词"
     },
     "ethSign": {
-      "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
+      "alert": "'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
     },
     "createPassword": {
       "agree": "我已阅读并同意 <1/> <2>Terms of Use</2>",

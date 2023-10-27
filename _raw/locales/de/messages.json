@@ -29,7 +29,7 @@
       "gasLimitNotEnough": "Das Gas-Limit ist kleiner als 21000. Transaktion kann nicht gesendet werden",
       "gasLimitLessThanExpect": "Das Gas-Limit ist niedrig. Es besteht eine 1%ige Chance, dass die Transaktion fehlschlägt.",
       "gasLimitLessThanGasUsed": "Das Gas-Limit ist zu niedrig. Es besteht eine 95%ige Chance, dass die Transaktion fehlschlägt.",
-      "nativeTokenNotEngouthForGas": "Sie haben nicht genügend Gas in Ihrer Wallet",
+      "nativeTokenNotEnoughForGas": "Sie haben nicht genügend Gas in Ihrer Wallet",
       "nonceLowerThanExpect": "Nonce ist zu niedrig, das Minimum sollte {{0}} sein",
       "canOnlyUseImportedAddress": "Sie können nur importierte Adressen zum Signieren verwenden",
       "multiSigChainNotMatch": "Multi-Signatur Adressen sind nicht auf dieser Chain verfügbar und können keine Transaktionen initiieren",
@@ -276,14 +276,14 @@
         "resent": "Erneut gesendet",
         "signError": "Ledger Signierungsfehler:",
         "notConnected": "Ihre Wallet ist nicht verbunden. Bitte erneut verbinden.",
-        "siging": "Signaturanfrage wird gesendet",
+        "signing": "Signaturanfrage wird gesendet",
         "txRejected": "Transaktion abgelehnt",
         "unlockAlert": "Bitte schließen Sie Ihren Ledger an und entsperren sie ihn, öffnen Sie auf dem Ledger die Ethereum-App",
         "updateFirmwareAlert": "Bitte aktualisieren Sie die Firmware und die Ethereum App auf Ihrem Ledger",
         "txRejectedByLedger": "Transaktion wurde auf Ihrem Ledger abgelehnt",
         "blindSigTutorial": "Anleitung für Blindsignatur von Ledger",
         "submitting": "Signiert. Transaktion wird eingereicht",
-        "resubmited": "Erneut eingereicht"
+        "resubmitted": "Erneut eingereicht"
       },
       "common": {
         "notSupport": "{{0}} wird nicht unterstützt"

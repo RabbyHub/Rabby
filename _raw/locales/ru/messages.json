@@ -1,22 +1,22 @@
 {
   "page": {
     "transactions": {
-      "title": "Транзакции",      
+      "title": "Транзакции",
       "empty": {
         "title": "Нет транзакций",
-        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"         
-      },      
+        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"
+      },
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
-        "unknown": "Взаимодействие с контраком",       
+        "unknown": "Взаимодействие с контраком",
         "cancel": "Отменена ожидающая транзакция"
-      },      
+      },
       "txHistory": {
         "tipInputData": "Транзакция включает сообщение",
         "parseInputDataError": "Ошибка при разборе сообщения"
-      },     
+      },
       "modalViewMessage": {
-        "title": "Просмотр сообщения"       
+        "title": "Просмотр сообщения"
       }
     },
     "chainList": {
@@ -29,7 +29,7 @@
       "gasLimitNotEnough": "Лимит газа меньше 21000. Транзакция не может быть отправлена",
       "gasLimitLessThanExpect": "Лимит газа низкий. Есть 1% шанс, что транзакция может не выполниться.",
       "gasLimitLessThanGasUsed": "Лимит газа слишком низкий. Есть 95% шанс, что транзакция может не выполниться.",
-      "nativeTokenNotEngouthForGas": "У вас недостаточно газа на кошельке",
+      "nativeTokenNotEnoughForGas": "У вас недостаточно газа на кошельке",
       "nonceLowerThanExpect": "Nonce слишком низкий, минимальное значение должно быть {{0}}",
       "canOnlyUseImportedAddress": "Вы можете использовать только импортированные адреса для подписи",
       "multiSigChainNotMatch": "Мультиподписные адреса не принадлежат этой цепочке и не могут инициировать транзакции",
@@ -303,14 +303,14 @@
         "resent": "Повторно отправлено",
         "signError": "Ошибка подписи Ledger:",
         "notConnected": "Ваш кошелек не подключен. Пожалуйста, подключите его повторно.",
-        "siging": "Отправка запроса на подпись",
+        "signing": "Отправка запроса на подпись",
         "txRejected": "Транзакция отклонена",
         "unlockAlert": "Пожалуйста, подключите и разблокируйте ваш Ledger, откройте приложение Ethereum на нем",
         "updateFirmwareAlert": "Пожалуйста, обновите прошивку и приложение Ethereum на вашем Ledger",
         "txRejectedByLedger": "Транзакция отклонена на вашем Ledger",
         "blindSigTutorial": "Инструкция по слепой подписи от Ledger",
         "submitting": "Подписано. Отправка транзакции",
-        "resubmited": "Повторно отправлено"
+        "resubmitted": "Повторно отправлено"
       },
       "common": {
         "notSupport": "{{0}} не поддерживается"
@@ -646,7 +646,7 @@
       "RevokeApprovalModal": {
         "subTitleTokenAndNFT": "Подтвержденные токены и NFT",
         "subTitleContract": "Подтверждено для следующих Контрактов",
-        "selectAll": "Выбрать все",  
+        "selectAll": "Выбрать все",
         "confirm": "Подтвердить {{ selectedCount }}",
         "title": "Аппрувы"
       }
@@ -746,7 +746,7 @@
     },
     "manageAddress": {
       "no-address": "Нет адресов",
-      "no-match": "Нет совпадений",  
+      "no-match": "Нет совпадений",
       "current-address": "Текущий адрес",
       "address-management": "Управление адресами",
       "update-balance-data": "Обновить данные о балансе",
@@ -756,13 +756,13 @@
       "whitelisted-address": "Адрес в белом списке",
       "addressTypeTip": "Импортирован через {{type}}",
       "delete-desc": "Перед удалением учтите следующие моменты, чтобы понимать как защитить ваши активы.",
-      "delete-checklist-1": "Я понимаю, что если я удалю этот адрес, соответствующие приватный ключ и фраза восстановления для этого адреса будут удалены, и Rabby НЕ сможет их восстановить.",  
+      "delete-checklist-1": "Я понимаю, что если я удалю этот адрес, соответствующие приватный ключ и фраза восстановления для этого адреса будут удалены, и Rabby НЕ сможет их восстановить.",
       "delete-checklist-2": "Я подтверждаю, что у меня есть резервная копия приватного ключа или фразы восстановления, и я готов удалить его сейчас.",
       "confirm": "Подтвердить",
       "cancel": "Отменить",
       "delete-private-key-modal-title_one": "Удалить {{count}} адрес приватного ключа",
       "delete-private-key-modal-title_other": "Удалить {{count}} адресов приватных ключей",
-      "delete-seed-phrase-title_one": "Удалить фразу восстановления и ее {{count}} адрес", 
+      "delete-seed-phrase-title_one": "Удалить фразу восстановления и ее {{count}} адрес",
       "delete-seed-phrase-title_other": "Удалить фразу восстановления и её {{count}} адресов",
       "delete-title_one": "Удалить {{count}} адрес {{brand}}",
       "delete-title_other": "Удалить {{count}} адресов {{brand}}",
@@ -776,11 +776,11 @@
       "seed-phrase": "Фраза восстановления",
       "watch-address": "Адрес для просмотра",
       "backup-seed-phrase": "Резервная копия фразы восстановления",
-      "delete-all-addresses-but-keep-the-seed-phrase": "Удалить все адреса, но сохранить фразу восстановления", 
+      "delete-all-addresses-but-keep-the-seed-phrase": "Удалить все адреса, но сохранить фразу восстановления",
       "delete-all-addresses-and-the-seed-phrase": "Удалить все адреса и фразу восстановления",
       "seed-phrase-delete-title": "Удалить фразу восстановления?",
       "sort-by-balance": "Сортировать по балансу",
-      "sort-by-address-type": "Сортировать по типу адреса",  
+      "sort-by-address-type": "Сортировать по типу адреса",
       "sort-by-address-note": "Сортировать по примечанию к адресу",
       "sort-address": "Сортировать адреса"
     },
@@ -930,34 +930,34 @@
           "okText": "Смотреть руководство",
             "successTip": "У вас последняя версия"
         },
-        "features": {      
-          "label": "Возможности",        
-          "lockWallet": "Заблокировать кошелек",        
-          "signatureRecord": "Запись подписей",        
-          "manageAddress": "Управление адресами",        
-          "connectedDapp": "Подключенные dApp"        
-        },      
-        "settings": {      
-          "label": "Настройки",        
-          "enableWhitelistForSendingAssets": "Включить белый список для отправки активов",        
-          "customRpc": "Пользовательский RPC",        
-          "metamaskPreferredDapps": "Предпочитаемые dApp для MetaMask",        
-          "currentLanguage": "Текущий язык",        
-          "enableTestnets": "Включить тестовые сети"        
-        },      
-        "aboutUs": "О нас",      
-        "currentVersion": "Текущая версия",      
-        "updateAvailable": "Доступно обновление",      
-        "supportedChains": "Поддерживаемые сети",      
-        "followUs": "Подписаться",      
-        "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",      
-        "clearWatchMode": "Очистить Режим Просмотра",      
-        "requestDeBankTestnetGasToken": "Запросить тестовые токены газа DeBank"      
+        "features": {
+          "label": "Возможности",
+          "lockWallet": "Заблокировать кошелек",
+          "signatureRecord": "Запись подписей",
+          "manageAddress": "Управление адресами",
+          "connectedDapp": "Подключенные dApp"
+        },
+        "settings": {
+          "label": "Настройки",
+          "enableWhitelistForSendingAssets": "Включить белый список для отправки активов",
+          "customRpc": "Пользовательский RPC",
+          "metamaskPreferredDapps": "Предпочитаемые dApp для MetaMask",
+          "currentLanguage": "Текущий язык",
+          "enableTestnets": "Включить тестовые сети"
+        },
+        "aboutUs": "О нас",
+        "currentVersion": "Текущая версия",
+        "updateAvailable": "Доступно обновление",
+        "supportedChains": "Поддерживаемые сети",
+        "followUs": "Подписаться",
+        "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",
+        "clearWatchMode": "Очистить Режим Просмотра",
+        "requestDeBankTestnetGasToken": "Запросить тестовые токены газа DeBank"
       },
       "tokenDetail": {
         "blockedTip": "Заблокированный токен не будет отображаться в списке токенов",
         "blocked": "Заблокирован",
-        "selectedCustom": "Токен не указан в списке Rabby. Вы добавили его в список токенов вручную.", 
+        "selectedCustom": "Токен не указан в списке Rabby. Вы добавили его в список токенов вручную.",
         "notSelectedCustom": "Токен не указан в списке Rabby. Он будет добавлен в список токенов, если вы включите переключатель.",
         "customized": "Настроено",
         "scamTx": "Scam tx",
@@ -982,7 +982,7 @@
         },
         "table": {
           "assetAmount": "Актив / Количество",
-          "price": "Цена",  
+          "price": "Цена",
           "useValue": "Стоимость в USD",
           "healthRate": "Коэф. обеспеченности",
           "debtRatio": "Коэф. задолженности",
@@ -991,9 +991,9 @@
           "type": "Тип",
           "strikePrice": "Цена исполнения",
           "exerciseEnd": "Окончание исполнения",
-          "tradePair": "Торговая пара",  
+          "tradePair": "Торговая пара",
           "side": "Сторона",
-          "leverage": "Кредитное плечо", 
+          "leverage": "Кредитное плечо",
           "PL": "P&L",
           "unsupportedPoolType": "Неподдерживаемый тип пула",
           "claimable": "Доступно к выводу",
@@ -1006,13 +1006,13 @@
           "summaryTips": "Стоимость активов, разделенная на общую чистую стоимость",
           "summaryDescription": "Все активы в протоколах (например, токены LP) преобразуются в базовые активы для статистических расчетов",
           "noMatch": "Нет совпадений",
-          "lowValueDescription": "Активы с низкой стоимостью будут показаны здесь", 
+          "lowValueDescription": "Активы с низкой стоимостью будут показаны здесь",
           "lowValueAssets": "{{count}} активов с низкой стоимостью"
         },
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
         "blockDescription": "Заблокированные вами токены будут показаны здесь",
-        "unfoldChain": "Развернуть 1 сеть",  
+        "unfoldChain": "Развернуть 1 сеть",
         "unfoldChainPlural": "Развернуть {{moreLen}} сетей",
         "customLinkText": "Искать адрес, чтобы добавить пользовательский токен",
         "customDescription": "Добавленные вами пользовательские токены будут показаны здесь",
@@ -1021,7 +1021,7 @@
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
-        "userRejectedTheRequest": "Пользователь отклонил запрос.",  
+        "userRejectedTheRequest": "Пользователь отклонил запрос.",
         "ledger": {
           "doc1": "Подключите один Ledger",
           "doc2": "Введите pin",
@@ -1232,7 +1232,7 @@
           "hdPathTypeNoChain": {
             "bip44": "BIP44: HD путь, определенный протоколом BIP44."
           }
-        },  
+        },
         "mnemonic": {
           "hdPathType": {
             "default": "По умолчанию: используется HD путь по умолчанию для импорта фразы восстановления."
@@ -1494,7 +1494,7 @@
           "reject": "Отмена транзы"
         },
         "viewBtn": "Просмотр",
-        "desc": " Подписанная транзакция не может быть отменена, но может быть заменена           новой с тем же значением nonce."
+        "desc": "Подписанная транзакция не может быть отменена, но может быть заменена новой с тем же значением nonce."
       }
     },
     "importSuccess": {
