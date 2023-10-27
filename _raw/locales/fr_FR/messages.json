@@ -1425,7 +1425,7 @@
         "nftNotSupport": "NFT non pris en charge",
         "title": "Envoyer un NFT"
       },
-      "sigCantDecode": "Cette signature ne peut pas être décodée par Rabby, mais elle n'implique aucun risque",
+      "sigCantDecode": "Cette signature ne peut pas être décodée par Rabby",
       "signTransactionOnChain": "Signer la transaction sur {{chain}}",
       "speedUpTooltip": "Cette transaction est à la fois accélérée et initiale, une seule sera finalisée",
       "submitMultisig": {

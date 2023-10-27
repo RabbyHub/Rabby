@@ -176,7 +176,7 @@
         "signTransactionOnChain": "{{chain}} İşlemi İmzala",
         "viewRaw": "Hamı Görüntüle",
         "unknownActionType": "Bilinmeyen işlem türü",
-        "sigCantDecode": "Bu imza Rabby tarafından çözülemez, ancak bu herhangi bir risk ima etmez",
+        "sigCantDecode": "Bu imza Rabby tarafından çözülemez",
         "nftCollection": "NFT Koleksiyonu",
         "floorPrice": "Taban fiyat",
         "contractAddress": "Kontrat adresi",

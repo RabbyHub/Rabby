@@ -1212,7 +1212,7 @@
         "nftNotSupport": "不支持 NFT",
         "title": "发送 NFT"
       },
-      "sigCantDecode": "该签名无法被 Rabby 解码，但这并不意味着有任何风险",
+      "sigCantDecode": "该签名无法被 Rabby 解码",
       "signTransactionOnChain": "签署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最终只会完成其中一项",
       "submitMultisig": {
