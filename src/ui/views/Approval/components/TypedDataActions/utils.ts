@@ -555,13 +555,15 @@ export const getActionTypeText = (data: TypedDataActionData) => {
   return '';
 };
 
-export const formatSecurityEngineCtx = ({
+export const formatSecurityEngineCtx = async ({
   actionData,
   requireData,
+  wallet,
 }: {
   actionData: TypedDataActionData;
   requireData: TypedDataRequireData;
-}): ContextActionData => {
+  wallet: WalletControllerType;
+}): Promise<ContextActionData> => {
   let chain: Chain | undefined;
   if (actionData?.chainId) {
     chain = Object.values(CHAINS).find(
@@ -667,6 +669,9 @@ export const formatSecurityEngineCtx = ({
     };
   }
   if (actionData?.swapTokenOrder) {
+    const receiverInWallet = await wallet.hasAddress(
+      actionData.swapTokenOrder.receiver
+    );
     const receiveTokenIsFake =
       actionData.swapTokenOrder.receiveToken.is_verified === false;
     const receiveTokenIsScam = receiveTokenIsFake
@@ -681,6 +686,7 @@ export const formatSecurityEngineCtx = ({
         usdValuePercentage: actionData.swapTokenOrder.usdValuePercentage,
         chainId: chain?.serverId,
         id: actionData.contractId,
+        receiverInWallet,
       },
     };
   }

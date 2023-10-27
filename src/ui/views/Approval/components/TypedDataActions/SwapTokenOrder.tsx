@@ -71,6 +71,10 @@ const Permit = ({
     );
   }, [contractWhitelist, requireData]);
 
+  const hasReceiver = useMemo(() => {
+    return !isSameAddress(receiver, requireData.sender);
+  }, [requireData, receiver]);
+
   const dispatch = useRabbyDispatch();
 
   const engineResultMap = useMemo(() => {
@@ -209,7 +213,7 @@ const Permit = ({
             </Row>
           </Col>
         )}
-        {engineResultMap['1094'] && (
+        {hasReceiver && (
           <Col>
             <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
@@ -218,8 +222,18 @@ const Permit = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1094']}
                   id="1094"
-                  dangerText={t('page.signTx.swap.notPaymentAddress')}
+                  warningText={t('page.signTx.swap.unknownAddress')}
                 />
+                {!engineResultMap['1094'] && (
+                  <>
+                    <li>
+                      <Values.AccountAlias address={receiver} />
+                    </li>
+                    <li>
+                      <Values.KnownAddress address={receiver} />
+                    </li>
+                  </>
+                )}
               </ul>
             </Row>
           </Col>

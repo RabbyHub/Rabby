@@ -2006,6 +2006,18 @@ export class WalletController extends BaseController {
     );
   };
 
+  getAccountByAddress = async (address: string) => {
+    const addressList = await keyringService.getAllAdresses();
+    const account = addressList.find((item) => {
+      return isSameAddress(item.address, address);
+    });
+    return account;
+  };
+
+  hasAddress = (address: string) => {
+    return keyringService.hasAddress(address);
+  };
+
   removeAddress = async (
     address: string,
     type: string,
