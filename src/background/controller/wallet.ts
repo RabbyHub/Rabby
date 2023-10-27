@@ -2024,7 +2024,7 @@ export class WalletController extends BaseController {
       removeEmptyKeyrings
     );
     if (!(await keyringService.hasAddress(address))) {
-      // contactBookService.removeAlias(address);
+      contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
       transactionHistoryService.removeList(address);
       signTextHistoryService.removeList(address);
