@@ -17,6 +17,8 @@ import {
 } from 'consts';
 import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
+import { syncStateToUI } from '../utils/broadcastToUI';
+import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 
 const version = process.env.release || '0';
 
@@ -403,10 +405,7 @@ class PreferenceService {
       sessionService.broadcastEvent('accountsChanged', [
         account.address.toLowerCase(),
       ]);
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: 'accountsChanged',
-        params: account,
-      });
+      syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
     }
   };
 
