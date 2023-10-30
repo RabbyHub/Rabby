@@ -1271,13 +1271,14 @@ const SendToken = () => {
                 />
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
-                <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
+                <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
                   <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
                     Not on address list.{' '}
                     <span
                       onClick={handleClickAddContact}
-                      className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                      className={clsx(
+                        'ml-[2px] underline cursor-pointer text-r-blue-default'
+                      )}
                     >
                       Add to contacts
                     </span>

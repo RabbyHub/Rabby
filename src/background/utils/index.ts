@@ -1,6 +1,6 @@
 import * as ethUtil from 'ethereumjs-util';
 import pageStateCache from '../service/pageStateCache';
-export { default as createPersistStore } from './persisitStore';
+export { default as createPersistStore } from './persistStore';
 
 // {a:{b: string}} => {1: 'a.b'}
 // later same [source] value will override [result] key generated before
