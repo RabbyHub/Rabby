@@ -45,8 +45,6 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
-import TokenInfoArrowLight from 'ui/assets/send-token/token-info-arrow-light.svg';
-import TokenInfoArrowDark from 'ui/assets/send-token/token-info-arrow-dark.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -1149,8 +1147,6 @@ const SendToken = () => {
     }
   }, [currentAccount]);
 
-  const { isDarkTheme } = useThemeMode();
-
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -1350,11 +1346,6 @@ const SendToken = () => {
               )}
             </Form.Item>
             <div className="token-info">
-              {!isDarkTheme ? (
-                <img className="token-info__header" src={TokenInfoArrowLight} />
-              ) : (
-                <img className="token-info__header" src={TokenInfoArrowDark} />
-              )}
               {!isNativeToken ? (
                 <div className="section-field">
                   <span>

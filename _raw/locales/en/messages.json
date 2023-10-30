@@ -949,7 +949,8 @@
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets",
-          "toggleThemeMode": "Theme Mode"
+          "toggleThemeMode": "Theme Mode",
+          "themeMode": "Theme Mode"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",

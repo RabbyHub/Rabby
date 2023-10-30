@@ -203,14 +203,6 @@
       }
     }
   }
-  .token-info__header {
-    position: absolute;
-    left: 16px;
-    top: -15px;
-    height: 27px;
-    width: 18px;
-    z-index: 0;
-  }
   .token-info {
     margin-top: 15px;
     background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
@@ -223,12 +215,12 @@
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: rgba(112, 120, 128, 0.6);
+      color: var(--r-neutral-foot, #6A7587);
       margin-bottom: 8px;
       .address-viewer-text.normal {
         font-size: 12px;
         line-height: 14px;
-        color: rgba(112, 120, 128, 0.6);
+        color: var(--r-neutral-foot, #6A7587);
         font-weight: normal;
         margin-right: 0;
       }
@@ -241,6 +233,17 @@
       &:nth-last-child(1) {
         margin-bottom: 0;
       }
+    }
+
+    &::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 16px;
+      top: -16px;
+      border: 6px solid transparent;
+      border-bottom: 10px solid var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));;
+      z-index: 0;
     }
   }
   .whitelist-alert {
@@ -343,8 +346,8 @@
     margin-right: -20px;
     width: 100vw;
 
-    background-color: white;
-    border-top: 1px solid #e5e9ef;
+    background-color: var(--r-neutral-card-1, #FFF);
+    border-top: 1px solid var(--r-neutral-line, #D3D8E0);
   }
 
   .footer .whitelist-alert {

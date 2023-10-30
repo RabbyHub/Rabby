@@ -54,6 +54,15 @@
     border-color: var(--r-blue-default, #7084ff);
     box-shadow: 0px 8px 16px rgba(134, 151, 255, 0.3);
   }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled]:active {
+    color: var(--r-neutral-title-2, #FFF);
+    background-color: var(--r-blue-disable, rgba(112, 132, 255, 0.50));
+    border-color: var(--r-blue-disable, rgba(112, 132, 255, 0.50));
+  }
 }
 /*---------------------
         message
