@@ -58,6 +58,7 @@ import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
+import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import ApprovalManagePage from './ApprovalManagePage';
 import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
@@ -161,6 +162,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/keystone">
+          <KeystoneConnect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/qrcode">
           <QRCodeConnect />

@@ -36,7 +36,11 @@ const HDPathTypeGroup = {
     HDPathType.BIP44,
     HDPathType.Legacy,
   ],
-  [KEYRING_CLASS.HARDWARE.KEYSTONE]: [HDPathType.BIP44],
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: [
+    HDPathType.LedgerLive,
+    HDPathType.BIP44,
+    HDPathType.Legacy,
+  ],
   [KEYRING_CLASS.HARDWARE.BITBOX02]: [HDPathType.BIP44],
 };
 

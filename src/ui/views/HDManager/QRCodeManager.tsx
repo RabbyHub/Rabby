@@ -43,23 +43,56 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
     setVisibleAdvanced(true);
   }, [loading]);
 
-  const fetchCurrentAccounts = React.useCallback(async () => {
-    setLoading(true);
-    await getCurrentAccounts();
-    setSetting({
-      ...setting,
-      type: HDPathType.BIP44,
-    });
-    setLoading(false);
-  }, []);
+  const fetchInitCurrentPathType = React.useCallback(
+    async (nextSetting: SettingData = setting) => {
+      let currentType = HDPathType.BIP44;
+      try {
+        currentType = await wallet.requestKeyring(
+          KEYSTONE_TYPE,
+          'getCurrentUsedHDPathType',
+          keyringId
+        );
+      } catch (err) {
+        currentType = HDPathType.BIP44;
+      }
+
+      setSetting({
+        ...nextSetting,
+        type: currentType,
+      });
+    },
+    []
+  );
+
+  const fetchCurrentAccounts = React.useCallback(
+    async (nextSetting?: SettingData) => {
+      setLoading(true);
+      await getCurrentAccounts();
+      await fetchInitCurrentPathType(nextSetting);
+      setLoading(false);
+    },
+    []
+  );
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
-    await fetchCurrentAccounts();
-    setSetting({
-      ...data,
-      type: HDPathType.BIP44,
+
+    const { type = HDPathType.BIP44, ...rest } = data;
+    if (brand === 'Keystone') {
+      setLoading(true);
+      await wallet.requestKeyring(
+        KEYSTONE_TYPE,
+        'getAddressesViaUSB',
+        keyringId,
+        type
+      );
+      await getCurrentAccounts();
+      setLoading(false);
+    }
+    await fetchCurrentAccounts({
+      type,
+      ...rest,
     });
   }, []);
 

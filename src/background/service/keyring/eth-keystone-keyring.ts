@@ -1,12 +1,28 @@
 import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
+import Eth, { HDPathType as KeystoneHDPathType } from '@keystonehq/hw-app-eth';
+import { URDecoder } from '@ngraveio/bc-ur';
+import HDPathType = LedgerHDPathType;
+import { LedgerHDPathType } from '@/utils/ledger';
 
 const pathBase = 'm';
 
 export const AcquireMemeStoreData = 'AcquireMemeStoreData';
 export const MemStoreDataReady = 'MemStoreDataReady';
 export const DEFAULT_BRAND = 'Keystone';
+
+const HD_PATH_BASE = {
+  [HDPathType.BIP44]: "m/44'/60'/0'/0/*",
+  [HDPathType.Legacy]: "m/44'/60'/0'/*",
+  [HDPathType.LedgerLive]: "m/44'/60'/*'/0/0",
+};
+
+const HD_PATH_TYPE = {
+  [HD_PATH_BASE['Legacy']]: HDPathType.Legacy,
+  [HD_PATH_BASE['BIP44']]: HDPathType.BIP44,
+  [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
+};
 
 export type RequestSignPayload = {
   requestId: string;
@@ -28,6 +44,8 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   brandsMap: Record<string, string> = {};
   currentBrand: string = DEFAULT_BRAND;
 
+  private eth: Eth | null = null;
+
   constructor() {
     super();
 
@@ -39,6 +57,53 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
         }
       });
     });
+  }
+
+  /**
+   * Asynchronously gets the Keystone device.
+   *
+   * This function attempts to create an instance of `KeystoneEth` with the help of `TransportWebUSB`.
+   * If the current environment does not support `WebUSB` or if it cannot find a Keystone device that supports USB signing,
+   * an error is thrown.
+   *
+   * @async
+   * @function getKeystoneDevice
+   * @returns {Promise<Eth|null>} A promise that resolves to an instance of `KeystoneEth` or `null` if unable to create an instance.
+   * @throws Will throw an error if the current environment does not support `WebUSB` or a Keystone device supporting USB signing could not be found.
+   */
+  getKeystoneDevice = async () => {
+    if (!this.eth) {
+      this.eth = await Eth.createWithUSBTransport({
+        timeout: 60000,
+      });
+    }
+    return this.eth;
+  };
+
+  async getAddressesViaUSB(type: HDPathType = HDPathType.BIP44) {
+    const pathMap = {
+      [HDPathType.BIP44]: KeystoneHDPathType.Bip44Standard,
+      [HDPathType.LedgerLive]: KeystoneHDPathType.LedgerLive,
+      [HDPathType.Legacy]: KeystoneHDPathType.LedgerLegacy,
+    };
+
+    const keystoneEth = await this.getKeystoneDevice();
+    const hdkey = await keystoneEth.exportPubKeyFromUr({
+      type: pathMap[type],
+    });
+    this.syncKeyring(hdkey as any);
+    return Promise.resolve();
+  }
+
+  async signTransactionViaUSB(address: string, tx: any) {
+    const keystoneEth = await this.getKeystoneDevice();
+    return await keystoneEth.signTransaction(this, address, tx);
+  }
+
+  async getCurrentUsedHDPathType() {
+    return (
+      HD_PATH_TYPE[`${this.hdPath}/${this.childrenPath}`] ?? HDPathType.BIP44
+    );
   }
 
   async serialize(): Promise<IStoredKeyring> {
