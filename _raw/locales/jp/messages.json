@@ -986,7 +986,7 @@
           "answer": "資産を制御するために使用される12、18、または24の単語フレーズです。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Rabbyでインポートするのは安全ですか？",
+          "question": "Rabbyでインポートするのは安全ですか?",
           "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
         "importError": "[CreateMnemonics] 予期しないステップ {{0}}",
