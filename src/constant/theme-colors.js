@@ -52,9 +52,9 @@ const themeColors = {
     'neutral-black': '#000000',
   },
   dark: {
-    'brand-default': 'rgba(112, 132, 255, 1)',
     'blue-default': 'rgba(112, 132, 255, 1)',
-    'blue-light': 'rgba(112, 132, 255, 0.1)',
+    'blue-light-1': 'rgba(112, 132, 255, 0.1)',
+    'blue-light-2': 'rgba(112, 132, 255, 0.1)',
     'blue-disable': 'rgba(112, 132, 255, 0.3)',
     'green-default': 'rgba(42, 187, 127, 1)',
     'green-light': 'rgba(42, 187, 127, 0.2)',

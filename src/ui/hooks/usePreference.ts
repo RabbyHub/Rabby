@@ -57,3 +57,13 @@ export function useThemeModeOnMain() {
     }
   }, [themeMode, isDarkOnSystem]);
 }
+
+export function useThemeMode() {
+  const themeMode = useRabbySelector((state) => state.preference.themeMode);
+
+  const isDarkOnSystem = useIsDarkMode();
+
+  return {
+    isDarkTheme: themeMode === DARK_MODE_TYPE.dark || isDarkOnSystem,
+  };
+}

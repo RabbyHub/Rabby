@@ -8,13 +8,15 @@ import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { ChainSelectorPurpose } from '@/ui/hooks/useChain';
 import styled from 'styled-components';
 import ChainIcon from '@/ui/component/ChainIcon';
-import ImgArrowDown from '@/ui/assets/swap/arrow-down.svg';
+import ImgArrowDown, {
+  ReactComponent as RcImgArrowDown,
+} from '@/ui/assets/swap/arrow-down.svg';
 import { useWallet } from '@/ui/utils';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 
 const ChainWrapper = styled.div`
   height: 40px;
-  background: #f5f6fa;
+  background: var(--r-neutral-card-2, #f2f4f7);
   border-radius: 6px;
   padding: 12px 10px;
   width: 100%;
@@ -33,7 +35,7 @@ const ChainWrapper = styled.div`
       height: 20px;
     }
     .name {
-      color: #13141a;
+      color: var(--r-neutral-title-1, #192945);
     }
   }
 `;
@@ -75,7 +77,8 @@ export const ChainRender = ({
         showCustomRPCToolTip
       />
       <span className="name">{CHAINS[chain].name}</span>
-      {!readonly && <img className="down" src={ImgArrowDown} alt="" />}
+      {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
+      {!readonly && <RcImgArrowDown className="down" />}
     </ChainWrapper>
   );
 };
