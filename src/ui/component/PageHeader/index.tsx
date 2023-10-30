@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
-import IconBack from 'ui/assets/back.svg';
+// import IconBack from 'ui/assets/back.svg';
+import { ReactComponent as RcIconBack } from 'ui/assets/back.svg';
 import IconClose from 'ui/assets/component/close.svg';
 import './style.less';
 
@@ -35,8 +36,12 @@ const PageHeader = ({
   const Content = (
     <div className={clsx('page-header', !fixed && className)}>
       {(forceShowBack || (canBack && history.length > 1)) && (
-        <img
-          src={IconBack}
+        // <img
+        //   src={IconBack}
+        //   className={clsx('icon icon-back', invertBack && 'filter invert')}
+        //   onClick={onBack || (() => history.goBack())}
+        // />
+        <RcIconBack
           className={clsx('icon icon-back', invertBack && 'filter invert')}
           onClick={onBack || (() => history.goBack())}
         />

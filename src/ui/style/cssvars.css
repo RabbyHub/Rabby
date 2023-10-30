@@ -27,9 +27,9 @@
   --rabby-light-neutral-title-2: #ffffff;
   --rabby-light-neutral-black: #000000;
 
-  --rabby-dark-brand-default: rgba(112, 132, 255, 1);
   --rabby-dark-blue-default: rgba(112, 132, 255, 1);
-  --rabby-dark-blue-light: rgba(112, 132, 255, 0.1);
+  --rabby-dark-blue-light-1: rgba(112, 132, 255, 0.1);
+  --rabby-dark-blue-light-2: rgba(112, 132, 255, 0.1);
   --rabby-dark-blue-disable: rgba(112, 132, 255, 0.3);
   --rabby-dark-green-default: rgba(42, 187, 127, 1);
   --rabby-dark-green-light: rgba(42, 187, 127, 0.2);
@@ -83,9 +83,9 @@
 
 html.in-dark-mode, body.in-dark-mode {
   /* -------------------- dark mode -------------------- */
-  --r-brand-default: var(--rabby-dark-brand-default);
   --r-blue-default: var(--rabby-dark-blue-default);
-  --r-blue-light: var(--rabby-dark-blue-light);
+  --r-blue-light-1: var(--rabby-dark-blue-light-1);
+  --r-blue-light-2: var(--rabby-dark-blue-light-2);
   --r-blue-disable: var(--rabby-dark-blue-disable);
   --r-green-default: var(--rabby-dark-green-default);
   --r-green-light: var(--rabby-dark-green-light);

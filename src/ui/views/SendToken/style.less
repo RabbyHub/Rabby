@@ -14,14 +14,14 @@
   }
   .section {
     padding: 12px;
-    background-color: #fff;
+    background-color: var(--r-neutral-card-1, #fff);
     border-radius: 6px;
     margin-bottom: 16px;
     .section-title {
       display: flex;
       font-size: 12px;
       line-height: 14px;
-      color: #707880;
+      color: var(--r-neutral-body, #3e495e);
       margin-bottom: 8px;
       .token-balance {
         display: flex;
@@ -40,7 +40,7 @@
         border-left: none;
       }
       .left:hover {
-        background: rgba(134, 151, 255, 0.3);
+        background: var(--r-neutral-card-2, #f2f4f7);
       }
     }
     .token-price {
@@ -49,7 +49,7 @@
       font-size: 12px;
       line-height: 14px;
       text-align: right;
-      color: #707280;
+      color: var(--r-neutral-title-1, #192945);
     }
   }
   .account-card {
@@ -72,6 +72,7 @@
       height: 36px;
       width: 100%;
       padding: 10px 12px;
+      background-color: var(--r-blue-light-1, #eef1ff);
       .send-text {
         color: var(--r-blue-default, #7084ff) !important;
       }
@@ -85,14 +86,14 @@
     }
   }
   .ant-input {
-    border: 1px solid transparent;
-    background: @color-bg;
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-card-2, #f5f6fa);
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    color: #161819;
+    color: var(--r-neutral-foot, #6a7587);
   }
   .ant-form-item {
     margin: 0;
@@ -212,7 +213,7 @@
   }
   .token-info {
     margin-top: 15px;
-    background: #f5f6fa;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 4px;
     padding: 12px;
     position: relative;
