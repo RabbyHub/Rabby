@@ -1,1650 +1,1650 @@
 {
   "page": {
     "transactions": {
-      "title": "Transactions",
+      "title": "取引",
       "empty": {
-        "title": "No transactions",
-        "desc": " No transactions found on <1>supported chains</1>"
+        "title": "取引なし",
+        "desc": "<1>対応しているチェーン</1>で取引が見つかりません"
       },
       "explain": {
-        "approve": "Approve {{amount}} {{symbol}} for {{project}}",
-        "unknown": "Contract Interaction",
-        "cancel": "Canceled a pending transaction"
+        "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
+        "unknown": "契約の対話",
+        "cancel": "保留中の取引をキャンセル"
       },
       "txHistory": {
-        "tipInputData": "The transaction includes a message",
-        "parseInputDataError": "Parse message failed"
+        "tipInputData": "取引にはメッセージが含まれています",
+        "parseInputDataError": "メッセージの解析に失敗"
       },
       "modalViewMessage": {
-        "title": "View Message"
+        "title": "メッセージを表示"
       }
     },
     "chainList": {
-      "title": "{{count}} chains supported",
-      "mainnet": "Mainnets",
-      "testnet": "Testnets"
+      "title": "{{count}}つのチェーンが対応",
+      "mainnet": "メインネット",
+      "testnet": "テストネット"
     },
     "signTx": {
-      "nftIn": "NFT in",
-      "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
-      "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
-      "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
-      "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
-      "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
-      "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
-      "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
-      "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
-      "noGasRequired": "No gas required",
-      "gasSelectorTitle": "Gas",
-      "failToFetchGasCost": "Fail to fetch gas cost",
-      "gasMoreButton": "More",
-      "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
-      "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
-      "gasPriceTitle": "Gas Price (Gwei)",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
-      "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
-      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
-      "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
-      "gasLimitTitle": "Gas limit",
-      "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, recommend ",
+      "nftIn": "NFT入力",
+      "gasLimitNotEnough": "ガスリミットが21000未満です。取引を提出できません",
+      "gasLimitLessThanExpect": "ガスリミットが低い。取引が失敗する可能性が1%です",
+      "gasLimitLessThanGasUsed": "ガスリミットが非常に低い。取引が失敗する可能性が95%です",
+      "nativeTokenNotEngouthForGas": "ウォレットに十分なガスがありません",
+      "nonceLowerThanExpect": "Nonceが低すぎます、最低は{{0}}です",
+      "canOnlyUseImportedAddress": "署名にはインポートされたアドレスのみ使用できます",
+      "multiSigChainNotMatch": "マルチシグアドレスはこのチェーンになく、取引を開始できません",
+      "safeAddressNotSupportChain": "現在のセーフアドレスは{{0}}チェーンで対応していません",
+      "noGasRequired": "ガスは必要ありません",
+      "gasSelectorTitle": "ガス",
+      "failToFetchGasCost": "ガスコストの取得に失敗",
+      "gasMoreButton": "詳細",
+      "manuallySetGasLimitAlert": "ガスリミットを手動で設定しました",
+      "gasNotRequireForSafeTransaction": "セーフトランザクションにはガス料が必要ありません",
+      "gasPriceTitle": "ガス価格（Gwei）",
+      "maxPriorityFee": "最大優先手数料（Gwei）",
+      "eip1559Desc1": "EIP-1559をサポートするチェーンでは、優先手数料は取引を処理するためのマイナーへのチップです。優先手数料を下げることで、最終的なガスコストを節約できますが、取引が処理されるまでに時間がかかる場合があります。",
+      "eip1559Desc2": "Rabbyでは、優先手数料（チップ）= 最大料金 - 基本料金です。最大優先手数料を設定すると、基本料金がそれから差し引かれ、残りがマイナーにチップとして渡されます。",
+      "hardwareSupport1559Alert": "ハードウェアウォレットのファームウェアがEIP 1559をサポートするバージョンにアップグレードされていることを確認してください",
+      "gasLimitTitle": "ガスリミット",
+      "recommendGasLimitTip": "推定{{est}}。現在{{current}}倍、お勧めは",
       "nonceTitle": "Nonce",
-      "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
-      "gasPriceMedian": "Median of last 100 on-chain transactions: ",
-      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
-      "gasLimitEmptyAlert": "Please input gas limit",
-      "gasLimitMinValueAlert": "Gas limit should be more than 21000",
+      "gasLimitModifyOnlyNecessaryAlert": "必要な場合にのみ修正してください",
+      "gasPriceMedian": "過去100回のオンチェーン取引の中央値：",
+      "myNativeTokenBalance": "私の{{symbol}}残高：{{amount}} {{symbol}}",
+      "gasLimitEmptyAlert": "ガスリミットを入力してください",
+      "gasLimitMinValueAlert": "ガスリミットは21000以上である必要があります",
       "balanceChange": {
-        "successTitle": "Transaction Simulation Results",
-        "failedTitle": "Transaction Simulation Failed",
-        "noBalanceChange": "No balance change",
-        "tokenOut": "Token out",
-        "tokenIn": "Token in",
-        "errorTitle": "Fail to fetch balance change",
-        "notSupport": "Transaction Simulation Not Supported",
-        "nftOut": "NFT out"
+        "successTitle": "取引シミュレーションの結果",
+        "failedTitle": "取引シミュレーションに失敗",
+        "noBalanceChange": "残高変更なし",
+        "tokenOut": "トークン出力",
+        "tokenIn": "トークン入力",
+        "errorTitle": "残高変更の取得に失敗",
+        "notSupport": "取引シミュレーションはサポートされていません",
+        "nftOut": "NFT出力"
       },
-      "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{{0}} more confirmation needed",
-      "safeAdminSigned": "Signed",
+      "enoughSafeSigCollected": "十分な署名が集まりました",
+      "moreSafeSigNeeded": "{{0}} 件の確認がさらに必要",
+      "safeAdminSigned": "署名済み",
       "swap": {
-        "title": "Swap Token",
-        "payToken": "Pay",
-        "receiveToken": "Receive",
-        "failLoadReceiveToken": "Fail to load",
-        "valueDiff": "Value diff",
-        "simulationFailed": "Transaction simulation failed",
-        "simulationNotSupport": "Transaction simulation not supported on this chain",
-        "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Slippage tolerance fail to load",
-        "slippageTolerance": "Slippage tolerance",
-        "receiver": "Receiver",
-        "notPaymentAddress": "Not the payment address"
+        "title": "トークンを交換",
+        "payToken": "支払う",
+        "receiveToken": "受け取る",
+        "failLoadReceiveToken": "読み込みに失敗",
+        "valueDiff": "価値の差",
+        "simulationFailed": "トランザクションのシミュレーションに失敗",
+        "simulationNotSupport": "このチェーンではトランザクションのシミュレーションはサポートされていません",
+        "minReceive": "最小受け取り額",
+        "slippageFailToLoad": "スリッページ許容値の読み込みに失敗",
+        "slippageTolerance": "スリッページ許容値",
+        "receiver": "受取人",
+        "notPaymentAddress": "支払いアドレスではありません"
       },
       "crossChain": {
-        "title": "Cross Chain"
+        "title": "クロスチェーン"
       },
       "swapAndCross": {
-        "title": "Swap Token and Cross Chain"
+        "title": "トークンを交換してクロスチェーン"
       },
-      "wrapToken": "Wrap Token",
-      "unwrap": "Unwrap Token",
+      "wrapToken": "トークンをラップ",
+      "unwrap": "トークンのラップを解除",
       "send": {
-        "title": "Send Token",
-        "sendToken": "Send token",
-        "sendTo": "Send to",
-        "receiverIsTokenAddress": "Token address",
-        "contractNotOnThisChain": "Contract address not on this chain",
-        "notTopupAddress": "Not top up address",
-        "tokenNotSupport": "{{0}} not supported",
-        "onMyWhitelist": "On my whitelist",
-        "notOnThisChain": "Not on this chain",
-        "cexAddress": "CEX address",
-        "addressBalanceTitle": "Address balance",
-        "whitelistTitle": "Whitelist",
-        "notOnWhitelist": "Not on my whitelist"
+        "title": "トークンを送信",
+        "sendToken": "トークンを送る",
+        "sendTo": "送る先",
+        "receiverIsTokenAddress": "トークンアドレス",
+        "contractNotOnThisChain": "このチェーンには契約アドレスがありません",
+        "notTopupAddress": "トップアップアドレスではありません",
+        "tokenNotSupport": "{{0}} はサポートされていません",
+        "onMyWhitelist": "私のホワイトリスト内",
+        "notOnThisChain": "このチェーンにはありません",
+        "cexAddress": "CEXアドレス",
+        "addressBalanceTitle": "アドレスの残高",
+        "whitelistTitle": "ホワイトリスト",
+        "notOnWhitelist": "私のホワイトリストにはありません"
       },
       "tokenApprove": {
-        "title": "Token Approval",
-        "approveToken": "Approve token",
-        "myBalance": "My balance",
-        "approveTo": "Approve to",
-        "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
-        "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "title": "トークンの承認",
+        "approveToken": "トークンを承認",
+        "myBalance": "私の残高",
+        "approveTo": "承認先",
+        "eoaAddress": "EOAアドレス",
+        "trustValueLessThan": "信頼値 ≤ {{value}}",
+        "deployTimeLessThan": "展開時間 < {{value}} 日",
+        "amountPopupTitle": "金額",
+        "flagByRabby": "Rabbyによってフラグが付けられた",
+        "contractTrustValueTip": "信頼値は、この契約に対して承認され、露出しているトータルトークンを指します。低い信頼値は、180日の非活動またはリスクを示しています。"
       },
       "revokeTokenApprove": {
-        "title": "Revoke Token Approval",
-        "revokeFrom": "Revoke from",
-        "revokeToken": "Revoke token"
+        "title": "トークン承認を取り消し",
+        "revokeFrom": "取り消し元",
+        "revokeToken": "トークンを取り消す"
       },
       "sendNFT": {
-        "title": "Send NFT",
-        "nftNotSupport": "NFT not supported"
+        "title": "NFTを送信",
+        "nftNotSupport": "NFTはサポートされていません"
       },
       "nftApprove": {
-        "title": "NFT Approval",
-        "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "title": "NFTの承認",
+        "approveNFT": "NFTを承認",
+        "nftContractTrustValueTip": "信頼値は、この契約に対して承認され、露出しているトップNFTを指します。低い信頼値は、180日の非活動またはリスクを示しています。"
       },
       "revokeNFTApprove": {
-        "title": "Revoke NFT Approval",
-        "revokeNFT": "Revoke NFT"
+        "title": "NFT承認を取り消し",
+        "revokeNFT": "NFTを取り消す"
       },
       "nftCollectionApprove": {
-        "title": "NFT Collection Approval",
-        "approveCollection": "Approve collection"
+        "title": "NFTコレクションの承認",
+        "approveCollection": "コレクションを承認"
       },
       "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection Approval",
-        "revokeCollection": "Revoke collection"
+        "title": "NFTコレクション承認を取り消し",
+        "revokeCollection": "コレクションを取り消す"
       },
       "deployContract": {
-        "title": "Deploy a Contract",
-        "descriptionTitle": "Description",
-        "description": "You are deploying a smart contract"
+        "title": "契約を展開",
+        "descriptionTitle": "説明",
+        "description": "スマートコントラクトを展開しています"
       },
       "cancelTx": {
-        "title": "Cancel Pending Transaction",
-        "txToBeCanceled": "Transaction to be canceled",
-        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
+        "title": "保留中のトランザクションをキャンセル",
+        "txToBeCanceled": "キャンセルされるトランザクション",
+        "gasPriceAlert": "保留中のトランザクションをキャンセルするためには、現在のガス価格を{{value}} Gwei以上に設定してください"
       },
       "submitMultisig": {
-        "title": "Submit Multisig Transaction",
-        "multisigAddress": "Multisig address"
+        "title": "マルチシグトランザクションを送信",
+        "multisigAddress": "マルチシグアドレス"
       },
       "contractCall": {
-        "title": "Contract Call",
-        "operation": "Operation",
-        "operationABIDesc": "Operation is decoded from ABI",
-        "operationCantDecode": "Operation is not decoded",
-        "payNativeToken": "Pay {{symbol}}"
+        "title": "契約を呼び出す",
+        "operation": "操作",
+        "operationABIDesc": "操作はABIからデコードされます",
+        "operationCantDecode": "操作はデコードされません",
+        "payNativeToken": "{{symbol}} を支払う"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
+        "title": "Permit2トークン承認を取り消す"
       },
-      "unknownAction": "Unknown",
-      "interactContract": "Interact contract",
-      "markAsTrust": "Marked as trusted",
-      "markAsBlock": "Marked as blocked",
-      "interacted": "Interacted before",
-      "neverInteracted": "Never interacted before",
-      "transacted": "Transacted before",
-      "neverTransacted": "Never transacted before",
-      "fakeTokenAlert": "This is a scam token marked by Rabby",
-      "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
-      "trusted": "Trusted",
-      "blocked": "Blocked",
-      "noMark": "No mark",
-      "markRemoved": "Mark removed",
-      "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
-      "signTransactionOnChain": "Sign {{chain}} Transaction",
-      "viewRaw": "View Raw",
-      "unknownActionType": "Unknown action type",
-      "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
-      "nftCollection": "NFT Collection",
-      "floorPrice": "Floor price",
-      "contractAddress": "Contract address",
-      "protocolTitle": "Protocol",
-      "deployTimeTitle": "Deployed time",
-      "popularity": "Popularity",
-      "contractPopularity": "No.{{0}} on {{1}}",
-      "addressNote": "Address note",
-      "myMarkWithContract": "My mark on {{chainName}} contract",
-      "myMark": "My mark",
-      "collectionTitle": "Collection",
-      "addressTypeTitle": "Address type",
-      "firstOnChain": "First on-chain",
-      "trustValue": "Trust value",
-      "importedDelegatedAddress": "Imported delegated address",
-      "noDelegatedAddress": "No imported delegated address",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
+      "unknownAction": "不明",
+      "interactContract": "コントラクトに関与",
+      "markAsTrust": "信頼されたとしてマーク",
+      "markAsBlock": "ブロックされたとしてマーク",
+      "interacted": "以前に関与",
+      "neverInteracted": "関与したことがない",
+      "transacted": "以前に取引",
+      "neverTransacted": "取引したことがない",
+      "fakeTokenAlert": "これはRabbyによってスキャムトークンとしてマークされたものです",
+      "scamTokenAlert": "これはRabbyの検出に基づき、低品質およびスキャムトークンである可能性があります",
+      "trusted": "信頼済み",
+      "blocked": "ブロック済み",
+      "noMark": "マークなし",
+      "markRemoved": "マークを削除",
+      "speedUpTooltip": "この加速された取引と元の取引のうち、最終的には一つだけが完了します",
+      "signTransactionOnChain": "{{chain}} トランザクションに署名",
+      "viewRaw": "生データを見る",
+      "unknownActionType": "不明なアクションタイプ",
+      "sigCantDecode": "この署名はRabbyによってデコードできませんが、それはリスクを意味するわけではありません",
+      "nftCollection": "NFTコレクション",
+      "floorPrice": "底値",
+      "contractAddress": "コントラクトアドレス",
+      "protocolTitle": "プロトコル",
+      "deployTimeTitle": "デプロイされた時間",
+      "popularity": "人気",
+      "contractPopularity": "{{1}}でNo.{{0}}",
+      "addressNote": "アドレスメモ",
+      "myMarkWithContract": "{{chainName}} コントラクトに対する私のマーク",
+      "myMark": "私のマーク",
+      "collectionTitle": "コレクション",
+      "addressTypeTitle": "アドレスの種類",
+      "firstOnChain": "初めてのオンチェーン",
+      "trustValue": "信頼値",
+      "importedDelegatedAddress": "インポートされた委任アドレス",
+      "noDelegatedAddress": "インポートされた委任アドレスがありません",
+      "coboSafeNotPermission": "この委任アドレスは、このトランザクションを開始する権限がありません"
     },
     "signFooterBar": {
-      "requestFrom": "Request from",
-      "processRiskAlert": "Please process the alert before signing",
-      "ignoreAll": "Ignore all",
-      "gridPlusConnected": "GridPlus is connected",
-      "gridPlusNotConnected": "GridPlus is not connected",
-      "connectButton": "Connect",
-      "connecting": "Connecting...",
-      "ledgerNotConnected": "Ledger is not connected",
-      "ledgerConnected": "Ledger is connected",
-      "signAndSubmitButton": "Sign and Submit",
+      "requestFrom": "リクエスト元",
+      "processRiskAlert": "署名する前に警告を処理してください",
+      "ignoreAll": "すべて無視",
+      "gridPlusConnected": "GridPlusが接続されています",
+      "gridPlusNotConnected": "GridPlusは接続されていません",
+      "connectButton": "接続",
+      "connecting": "接続中...",
+      "ledgerNotConnected": "Ledgerは接続されていません",
+      "ledgerConnected": "Ledgerが接続されています",
+      "signAndSubmitButton": "署名して送信",
       "walletConnect": {
-        "connectedButCantSign": "Connected but unable to sign.",
-        "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",
-        "switchChainAlert": "Please switch to {{chain}} in mobile wallet",
-        "notConnectToMobile": "Not connected to {{brand}}",
-        "connected": "Connected and ready to sign",
-        "howToSwitch": "How to switch",
-        "wrongAddressAlert": "You've switched to a different address on mobile wallet. Please switch to the correct address in mobile wallet",
-        "connectBeforeSign": "{{0}} is not connected to Rabby, please connect before signing",
-        "chainSwitched": "You've switched to a different chain on mobile wallet. Please switch to {{0}} in mobile wallet",
-        "latency": "Latency",
-        "requestSuccessToast": "Request successfully sent",
-        "sendingRequest": "Sending signing request",
-        "signOnYourMobileWallet": "Please sign on your mobile wallet.",
-        "requestFailedToSend": "Signing request failed to send"
+        "connectedButCantSign": "接続されていますが、署名できません",
+        "switchToCorrectAddress": "モバイルウォレットで正しいアドレスに切り替えてください",
+        "switchChainAlert": "モバイルウォレットで{{chain}}に切り替えてください",
+        "notConnectToMobile": "{{brand}}に接続されていません",
+        "connected": "接続されており、署名する準備ができています",
+        "howToSwitch": "切り替え方",
+        "wrongAddressAlert": "モバイルウォレットで異なるアドレスに切り替えました。モバイルウォレットで正しいアドレスに切り替えてください",
+        "connectBeforeSign": "{{0}}はRabbyに接続されていません、署名する前に接続してください",
+        "chainSwitched": "モバイルウォレットで異なるチェーンに切り替えました。{{0}}にモバイルウォレットで切り替えてください",
+        "latency": "レイテンシ",
+        "requestSuccessToast": "リクエストは正常に送信されました",
+        "sendingRequest": "署名リクエストを送信中",
+        "signOnYourMobileWallet": "モバイルウォレットで署名してください",
+        "requestFailedToSend": "署名リクエストの送信に失敗しました"
       },
-      "beginSigning": "Begin signing process",
+      "beginSigning": "署名プロセスを開始",
       "addressTip": {
-        "onekey": "OneKey address",
-        "trezor": "Trezor address",
-        "bitbox": "BitBox02 address",
-        "keystone": "Keystone address",
-        "airgap": "AirGap address",
-        "coolwallet": "CoolWallet address",
-        "privateKey": "Private Key address",
-        "seedPhrase": "Seed Phrase address",
-        "watchAddress": "Unable to sign with watch-only address",
-        "safe": "Safe address",
-        "coboSafe": "Cobo Argus Address"
+        "onekey": "OneKeyアドレス",
+        "trezor": "Trezorアドレス",
+        "bitbox": "BitBox02アドレス",
+        "keystone": "Keystoneアドレス",
+        "airgap": "AirGapアドレス",
+        "coolwallet": "CoolWalletアドレス",
+        "privateKey": "プライベートキーアドレス",
+        "seedPhrase": "シードフレーズアドレス",
+        "watchAddress": "ウォッチオンリーアドレスで署名できません",
+        "safe": "セーフアドレス",
+        "coboSafe": "Cobo Argusアドレス"
       },
       "qrcode": {
-        "signWith": "Sign with {{brand}}",
-        "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to submit",
-        "sigReceived": "Signature received",
-        "sigCompleted": "Transaction submitted",
-        "getSig": "Get signature",
-        "qrcodeDesc": "Scan with your {{brand}} to sign<br></br>After signing, click the button below to receive the signature",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
-        "unknownQRCode": "Error: We couldn't identify that QR code",
-        "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
+        "signWith": "{{brand}}で署名",
+        "failedToGetExplain": "説明の取得に失敗しました",
+        "txFailed": "送信に失敗しました",
+        "sigReceived": "署名が受け取られました",
+        "sigCompleted": "トランザクションが送信されました",
+        "getSig": "署名を取得",
+        "qrcodeDesc": "署名するためにあなたの{{brand}}でスキャンしてください<br></br>署名した後、下のボタンをクリックして署名を受け取ってください",
+        "misMatchSignId": "不一致のトランザクションデータです。トランザクションの詳細を確認してください",
+        "unknownQRCode": "エラー：そのQRコードは識別できませんでした",
+        "afterSignDesc": "署名後、{{brand}}のQRコードをPCカメラの前に置いてください"
       },
       "ledger": {
-        "resent": "Resent",
-        "signError": "Ledger sign error:",
-        "notConnected": "Your wallet is not connected. Please re-connect.",
-        "siging": "Sending signing request",
-        "txRejected": "Transaction rejected",
-        "unlockAlert": "Please plug in and unlock your Ledger, open Ethereum on it",
-        "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
-        "txRejectedByLedger": "Transaction is rejected on your Ledger",
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
-        "submitting": "Signed. Submitting transaction",
-        "resubmited": "Resubmited"
+        "resent": "再送",
+        "signError": "Ledger署名エラー：",
+        "notConnected": "あなたのウォレットは接続されていません。再接続してください",
+        "siging": "署名リクエストを送信中",
+        "txRejected": "トランザクションが拒否されました",
+        "unlockAlert": "Ledgerを接続してロックを解除し、Ethereumを開いてください",
+        "updateFirmwareAlert": "LedgerのファームウェアとEthereumアプリを更新してください",
+        "txRejectedByLedger": "Ledger上でトランザクションが拒否されました",
+        "blindSigTutorial": "Ledgerからのブラインド署名チュートリアル",
+        "submitting": "署名完了。トランザクションを送信中",
+        "resubmited": "再送信されました"
       },
       "common": {
-        "notSupport": "{{0}} is not supported"
+        "notSupport": "{{0}}はサポートされていません"
       },
-      "resend": "Retry",
-      "submitTx": "Submit Transaction",
-      "testnet": "Testnet",
-      "mainnet": "Mainnet"
+      "resend": "再試行",
+      "submitTx": "トランザクションを送信",
+      "testnet": "テストネット",
+      "mainnet": "メインネット"
     },
     "signTypedData": {
-      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
-      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
+      "signTypeDataOnChain": "{{chain}}の型付きデータに署名",
+      "safeCantSignText": "これはセーフアドレスであり、テキストに署名することはできません。",
       "permit": {
-        "title": "Permit Token Approval"
+        "title": "許可トークン承認"
       },
       "permit2": {
-        "title": "Permit2 Token Approval",
-        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
-        "sigExpireTime": "Signature expire time",
-        "approvalExpiretime": "Approval expire time"
+        "title": "許可2トークン承認",
+        "sigExpireTimeTip": "この署名がオンチェーンで有効である期間",
+        "sigExpireTime": "署名の有効期限",
+        "approvalExpiretime": "承認の有効期限"
       },
       "swapTokenOrder": {
-        "title": "Token Order"
+        "title": "トークンオーダー"
       },
       "sellNFT": {
-        "title": "NFT Order",
-        "receiveToken": "Receive token",
-        "listNFT": "List NFT",
-        "specificBuyer": "Specific buyer"
+        "title": "NFTオーダー",
+        "receiveToken": "トークンを受け取る",
+        "listNFT": "NFTをリストする",
+        "specificBuyer": "特定の購入者"
       },
       "signMultiSig": {
-        "title": "Confirm Transaction"
+        "title": "トランザクションを確認"
       },
       "createKey": {
-        "title": "Create Key"
+        "title": "キーを作成"
       },
       "verifyAddress": {
-        "title": "Verify Address"
+        "title": "アドレスを検証"
       },
       "buyNFT": {
-        "payToken": "Pay token",
-        "receiveNFT": "Receive NFT",
-        "expireTime": "Expire time",
-        "listOn": "List on"
+        "payToken": "トークンを支払う",
+        "receiveNFT": "NFTを受け取る",
+        "expireTime": "有効期限",
+        "listOn": "リストオン"
       },
       "contractCall": {
-        "operationDecoded": "Operation is decoded from message"
+        "operationDecoded": "操作はメッセージからデコードされました"
       }
     },
     "activities": {
-      "title": "Signature Record",
+      "title": "署名レコード",
       "signedTx": {
-        "label": "Transactions",
+        "label": "トランザクション",
         "empty": {
-          "title": "No signed transactions yet",
-          "desc": "All transactions signed via Rabby will be listed here."
+          "title": "まだ署名されたトランザクションはありません",
+          "desc": "Rabby経由で署名されたすべてのトランザクションがここにリストされます。"
         },
         "common": {
-          "unlimited": "unlimited",
-          "unknownProtocol": "Unknown protocol",
-          "unknown": "Unknown",
-          "speedUp": "Speed up",
-          "cancel": "Cancel",
-          "pendingDetail": "Pending detail"
+          "unlimited": "無制限",
+          "unknownProtocol": "未知のプロトコル",
+          "unknown": "未知",
+          "speedUp": "加速",
+          "cancel": "キャンセル",
+          "pendingDetail": "保留中の詳細"
         },
         "tips": {
-          "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
-          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
+          "pendingDetail": "最も高いガス価格を持つものがほとんどの場合、完了する唯一のトランザクションです",
+          "canNotCancel": "スピードアップまたはキャンセルできません: 最初の保留中のtxnではありません"
         },
         "status": {
-          "canceled": "Canceled",
-          "failed": "Failed",
-          "submitFailed": "Failed to submit",
-          "pending": "Pending"
+          "canceled": "キャンセル済み",
+          "failed": "失敗",
+          "submitFailed": "送信に失敗",
+          "pending": "保留中"
         },
         "txType": {
-          "initial": "Initial tx",
-          "cancel": "Cancel tx",
-          "speedUp": "Speed up tx"
+          "initial": "初期tx",
+          "cancel": "キャンセルtx",
+          "speedUp": "加速tx"
         },
         "explain": {
-          "unknown": "Unknown Transaction",
-          "send": "Send {{amount}} {{symbol}}",
-          "cancel": "Cancel {{token}} Approve for {{protocol}}",
-          "approve": "Approve {{count}} {{token}} for {{protocol}}",
-          "cancelNFTCollectionApproval": "Cancel NFT Collection Approval for {{protocol}}",
-          "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
-          "singleNFTApproval": "Single NFT Approval for {{protocol}}",
-          "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+          "unknown": "未知のトランザクション",
+          "send": "{{amount}} {{symbol}}を送る",
+          "cancel": "{{protocol}}の{{token}}承認をキャンセル",
+          "approve": "{{protocol}}の{{count}} {{token}}を承認",
+          "cancelNFTCollectionApproval": "{{protocol}}のNFTコレクション承認をキャンセル",
+          "cancelSingleNFTApproval": "{{protocol}}の単一のNFT承認をキャンセル",
+          "singleNFTApproval": "{{protocol}}の単一のNFT承認",
+          "nftCollectionApproval": "{{protocol}}のNFTコレクション承認"
         }
       },
       "signedText": {
-        "label": "Text",
+        "label": "テキスト",
         "empty": {
-          "title": "No signed texts yet",
-          "desc": "All texts signed via Rabby will be listed here."
+          "title": "まだ署名されたテキストはありません",
+          "desc": "Rabby経由で署名されたすべてのテキストがここにリストされます。"
         }
       }
     },
     "receive": {
-      "title": "Receive {{token}} on {{chain}}",
-      "watchModeAlert1": "This is a Watch Mode address.",
-      "watchModeAlert2": "Are you sure to use it to receive assets?"
+      "title": "{{chain}}上で{{token}}を受け取る",
+      "watchModeAlert1": "これはウォッチモードのアドレスです。",
+      "watchModeAlert2": "資産を受け取るためにこれを使用してもよろしいですか？"
     },
     "sendToken": {
-      "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
+      "addressNotInContract": "アドレスリストにありません。<1></1><2>連絡先に追加</2>",
       "AddToContactsModal": {
-        "addedAsContacts": "Added as contacts",
+        "addedAsContacts": "連絡先として追加",
         "editAddr": {
-          "placeholder": "Enter Address Note",
-          "validator__empty": "Please enter address note"
+          "placeholder": "アドレスメモを入力",
+          "validator__empty": "アドレスメモを入力してください"
         },
-        "editAddressNote": "Edit address note",
-        "error": "Failed to add to contacts"
+        "editAddressNote": "アドレスメモを編集",
+        "error": "連絡先に追加に失敗"
       },
       "allowTransferModal": {
-        "error": "incorrect password",
-        "placeholder": "Enter the Password to Confirm",
-        "validator__empty": "Please input password",
-        "addWhitelist": "Add to whitelist"
+        "error": "パスワードが正しくありません",
+        "placeholder": "確認のためにパスワードを入力",
+        "validator__empty": "パスワードを入力してください",
+        "addWhitelist": "ホワイトリストに追加"
       },
       "GasSelector": {
-        "confirm": "Confirm",
+        "confirm": "確認",
         "level": {
-          "$unknown": "Unknown",
-          "custom": "Custom",
-          "fast": "Instant",
-          "normal": "Fast",
-          "slow": "Standard"
+          "$unknown": "未知",
+          "custom": "カスタム",
+          "fast": "即時",
+          "normal": "速い",
+          "slow": "標準"
         },
-        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
-        "popupTitle": "Set Gas Price (Gwei)"
+        "popupDesc": "設定したガス価格に基づいて転送額からガス費用が予約されます",
+        "popupTitle": "ガス価格（Gwei）を設定"
       },
       "header": {
-        "title": "Send"
+        "title": "送る"
       },
       "modalConfirmAddToContacts": {
-        "confirmText": "Confirm",
-        "title": "Add to contacts"
+        "confirmText": "確認",
+        "title": "連絡先に追加"
       },
       "modalConfirmAllowTransferTo": {
-        "cancelText": "Cancel",
-        "confirmText": "Confirm",
-        "title": "Enter the Password to Confirm"
+        "cancelText": "キャンセル",
+        "confirmText": "確認",
+        "title": "確認のためにパスワードを入力"
       },
       "sectionBalance": {
-        "title": "Balance"
+        "title": "残高"
       },
       "sectionChain": {
-        "title": "Chain"
+        "title": "チェーン"
       },
       "sectionFrom": {
-        "title": "From"
+        "title": "送り主"
       },
       "sectionTo": {
-        "addrValidator__empty": "Please input address",
-        "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search",
-        "title": "To"
+        "addrValidator__empty": "アドレスを入力してください",
+        "addrValidator__invalid": "このアドレスは無効です",
+        "searchInputPlaceholder": "アドレスを入力または検索",
+        "title": "送り先"
       },
-      "sendButton": "Send",
+      "sendButton": "送信",
       "tokenInfoFieldLabel": {
-        "chain": "Chain",
-        "contract": "Contract Address"
+        "chain": "チェーン",
+        "contract": "コントラクトアドレス"
       },
-      "tokenInfoPrice": "Price",
-      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
-      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
-      "whitelistAlert__temporaryGranted": "Temporary permission granted",
-      "whitelistAlert__whitelisted": "The address is whitelisted",
+      "tokenInfoPrice": "価格",
+      "whitelistAlert__disabled": "ホワイトリストが無効です。どのアドレスにも送金できます。",
+      "whitelistAlert__notWhitelisted": "このアドレスはホワイトリストに含まれていません。<1 /> 一時的な送金許可を付与することに同意します。",
+      "whitelistAlert__temporaryGranted": "一時的な許可が付与されました",
+      "whitelistAlert__whitelisted": "このアドレスはホワイトリストに含まれています",
       "balanceWarn": {
-        "gasFeeReservation": "Gas fee reservation required"
+        "gasFeeReservation": "ガス料金予約が必要です"
       },
       "balanceError": {
-        "insufficientBalance": "Insufficient balance"
+        "insufficientBalance": "残高不足"
       },
-      "max": "MAX",
+      "max": "最大",
       "sectionMsgDataForEOA": {
-        "placeholder": "Optional",
-        "title": "Message",
-        "currentIsOriginal": "The current input is Original Data. UTF-8 is:",
-        "currentIsUTF8": "The current input is UTF-8. Original Data is:"
+        "placeholder": "オプション",
+        "title": "メッセージ",
+        "currentIsOriginal": "現在の入力は元のデータです。UTF-8は次のとおりです：",
+        "currentIsUTF8": "現在の入力はUTF-8です。元のデータは次のとおりです："
       },
       "sectionMsgDataForContract": {
-        "placeholder": "Optional",
-        "title": "Contract call",
-        "parseError": "Fail to decode contract call",
-        "simulation": "Contract call simulation:",
-        "notHexData": "Only supported hex data"
+        "placeholder": "オプション",
+        "title": "コントラクト呼び出し",
+        "parseError": "コントラクト呼び出しのデコードに失敗しました",
+        "simulation": "コントラクト呼び出しシミュレーション：",
+        "notHexData": "サポートされているのは16進数データのみです"
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
+      "GasReserved": "ガスコストのために <1>0</1> {{ tokenName }} を予約しました"
     },
     "sendNFT": {
       "header": {
-        "title": "Send"
+        "title": "送信"
       },
       "sectionChain": {
-        "title": "Chain"
+        "title": "チェーン"
       },
       "sectionFrom": {
-        "title": "From"
+        "title": "送信元"
       },
       "sectionTo": {
-        "title": "To",
-        "addrValidator__empty": "Please input address",
-        "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search"
+        "title": "送信先",
+        "addrValidator__empty": "アドレスを入力してください",
+        "addrValidator__invalid": "このアドレスは無効です",
+        "searchInputPlaceholder": "アドレスを入力または検索"
       },
       "nftInfoFieldLabel": {
-        "Collection": "Collection",
-        "Contract": "Contract",
-        "sendAmount": "Send Amount"
+        "Collection": "コレクション",
+        "Contract": "コントラクト",
+        "sendAmount": "送信量"
       },
-      "sendButton": "Send",
-      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
-      "whitelistAlert__whitelisted": "The address is whitelisted",
-      "whitelistAlert__temporaryGranted": "Temporary permission granted",
-      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
-      "tipNotOnAddressList": "Not on address list.",
-      "tipAddToContacts": "Add to contacts",
+      "sendButton": "送信",
+      "whitelistAlert__disabled": "ホワイトリストが無効です。どのアドレスにも送金できます。",
+      "whitelistAlert__whitelisted": "このアドレスはホワイトリストに含まれています",
+      "whitelistAlert__temporaryGranted": "一時的な許可が付与されました",
+      "whitelistAlert__notWhitelisted": "このアドレスはホワイトリストに含まれていません。<1 /> 一時的な送金許可を付与することに同意します。",
+      "tipNotOnAddressList": "アドレスリストにはありません。",
+      "tipAddToContacts": "連絡先に追加",
       "confirmModal": {
-        "title": "Enter the Password to Confirm"
+        "title": "確認するためのパスワードを入力"
       }
     },
     "approvals": {
       "header": {
-        "title": "Approvals on {{ address }}"
+        "title": "{{ address }} の承認"
       },
       "tab-switch": {
-        "contract": "By Contracts",
-        "assets": "By Assets"
+        "contract": "契約別",
+        "assets": "資産別"
       },
       "component": {
         "table": {
           "bodyEmpty": {
-            "loadingText": "Loading...",
-            "noMatchText": "No Match"
+            "loadingText": "読み込み中...",
+            "noMatchText": "該当なし"
           }
         },
         "ApprovalContractItem": {
-          "ApprovalCount_one": "Approval",
-          "ApprovalCount_other": "Approvals"
+          "ApprovalCount_one": "承認",
+          "ApprovalCount_other": "承認"
         },
         "RevokeButton": {
-          "btnText_zero": "Revoke",
-          "btnText_one": "Revoke ({{count}})",
-          "btnText_other": "Revoke ({{count}})"
+          "btnText_zero": "取り消し",
+          "btnText_one": "取り消し ({{count}})",
+          "btnText_other": "取り消し ({{count}})"
         },
         "ViewMore": {
-          "text": "View more"
+          "text": "詳細を表示"
         }
       },
       "search": {
-        "placeholder": "Search {{ type }} by name/address"
+        "placeholder": "{{ type }} を名前/アドレスで検索"
       },
       "tableConfig": {
         "byContracts": {
           "columnTitle": {
-            "contract": "Contract",
-            "contractTrustValue": "Contract Trust value",
-            "revokeTrends": "24h Revoke Trends",
-            "myApprovedAssets": "My Approved Assets",
-            "myApprovalTime": "My Approval Time"
+            "contract": "契約",
+            "contractTrustValue": "契約信頼値",
+            "revokeTrends": "24時間の取り消しトレンド",
+            "myApprovedAssets": "承認された私の資産",
+            "myApprovalTime": "私の承認時刻"
           },
           "columnTip": {
-            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
-            "contractTrustValueWarning": "The contract trust value < $100,000",
-            "contractTrustValueDanger": "The contract trust value < $10,000"
+            "contractTrustValue": "信頼値は、この契約に承認された総資産価値を指します。低い信頼値は、リスクまたは180日間の非活動を示します。",
+            "contractTrustValueWarning": "契約信頼値 < $100,000",
+            "contractTrustValueDanger": "契約信頼値 < $10,000"
           }
         },
         "byAssets": {
           "columnTitle": {
-            "asset": "Asset",
-            "type": "Type",
-            "approvedAmount": "Approved Amount",
-            "approvedSpender": "Approved Spender",
-            "myApprovalTime": "My Approval Time"
+            "asset": "資産",
+            "type": "タイプ",
+            "approvedAmount": "承認数量",
+            "approvedSpender": "承認者",
+            "myApprovalTime": "私の承認時刻"
           },
           "columnCell": {
             "approvedAmount": {
-              "tipApprovedAmount": "Approved Amount",
-              "tipMyBalance": "My Balance"
+              "tipApprovedAmount": "承認数量",
+              "tipMyBalance": "私の残高"
             }
           }
         }
       },
       "RevokeApprovalModal": {
-        "subTitleTokenAndNFT": "Approved Token and NFT",
-        "subTitleContract": "Approved to the following Contracts",
-        "selectAll": "Select All",
-        "confirm": "Confirm {{ selectedCount }}",
-        "title": "Approvals"
+        "subTitleTokenAndNFT": "承認されたトークンおよびNFT",
+        "subTitleContract": "以下の契約への承認",
+        "selectAll": "すべて選択",
+        "confirm": "{{ selectedCount }} を確認",
+        "title": "承認"
       }
     },
     "gasTopUp": {
-      "title": "Instant Gas Top Up",
-      "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
-      "topUpChain": "Top Up Chain",
-      "Amount": "Amount",
-      "Continue": "Continue",
-      "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
-      "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
-      "No_Tokens": "No Tokens",
-      "InsufficientBalanceTips": "Insufficient balance",
-      "payment": "Gas Top Up Payment",
-      "Loading_Tokens": "Loading Tokens...",
-      "Including-service-fee": "Including {{fee}} service fee",
-      "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
-      "Confirm": "Confirm",
-      "Select-from-supported-tokens": "Select from supported tokens",
-      "Value": "Value",
-      "Payment-Token": "Payment Token",
-      "Select-payment-token": "Select payment token",
-      "Token": "Token",
-      "Balance": "Balance"
+      "title": "インスタントガストップアップ",
+      "description": "別のチェーンで利用可能なトークンを送信してガスをチャージします。支払いが確認されると即座に転送され、確定を待つ必要はありません。",
+      "topUpChain": "トップアップチェーン",
+      "Amount": "数量",
+      "Continue": "続行",
+      "InsufficientBalance": "現在のチェーンのRabbyの契約アドレスには十分な残高がありません。後で再試行してください。",
+      "hightGasFees": "このトップアップ金額は小さすぎます。対象ネットワークは高いガス手数料を必要とします。",
+      "No_Tokens": "トークンがありません",
+      "InsufficientBalanceTips": "残高不足",
+      "payment": "ガストップアップ支払い",
+      "Loading_Tokens": "トークンを読み込み中...",
+      "Including-service-fee": "{{fee}} サービス料金を含む",
+      "service-fee-tip": "ガストップアップのサービスを提供するため、Rabbyはトークンの変動とトップアップのガス手数料を負担しなければなりません。そのため、サービス料金として20％が請求されます。",
+      "Confirm": "確認",
+      "Select-from-supported-tokens": "サポートされているトークンから選択",
+      "Value": "値",
+      "Payment-Token": "支払いトークン",
+      "Select-payment-token": "支払いトークンを選択",
+      "Token": "トークン",
+      "Balance": "残高"
     },
     "swap": {
-      "title": "Swap",
-      "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
-      "Pending": "Pending",
-      "completedTip": "Transaction on chain, decoding data to generate record",
-      "Completed": "Completed",
-      "slippage_tolerance": "Slippage tolerance:",
-      "actual-slippage": "Actual Slippage:",
-      "gas-x-price": "Gas price: {{price}} Gwei.",
-      "no-transaction-records": "No transaction records",
-      "swap-history": "Swap history",
-      "InSufficientTip": "Insufficient balance to do transaction simulation and gas estimation. Original aggregator quotes are displayed",
-      "testnet-is-not-supported": "Testnet is not supported",
-      "not-supported": "Not supported",
-      "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
-      "price-expired-refresh-quote": "Price expired. Refresh quote.",
-      "approve-x-symbol": "Approve {{symbol}}",
-      "swap-via-x": "Swap via {{name}}",
-      "get-quotes": "Get quotes",
-      "chain": "Chain",
-      "swap-from": "Swap from",
-      "to": "To",
-      "search-by-name-address": "Search by Name / Address",
-      "amount-in": "Amount in {{symbol}}",
-      "unlimited-allowance": "Unlimited allowance",
-      "insufficient-balance": "Insufficient balance",
-      "rabby-fee": "Rabby fee",
-      "minimum-received": "Minimum received",
-      "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
-      "approve-tips": "1.Approve → 2.Swap",
-      "best": "Best",
-      "unable-to-fetch-the-price": "Unable to fetch the price",
-      "fail-to-simulate-transaction": "Fail to simulate transaction",
-      "security-verification-failed": "Security verification failed",
-      "need-to-approve-token-before-swap": "Need to approve token before swap",
-      "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
-      "enable-it": "Enable it",
-      "this-token-pair-is-not-supported": "Token pair is not supported",
-      "QuoteLessWarning": "The receiving amount is estimated from Rabby transaction simulation. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
-      "by-transaction-simulation-the-quote-is-valid": "By transaction simulation, the quote is valid",
-      "wrap-contract": "Wrap Contract",
-      "directlySwap": "Wrapping {{symbol}} tokens directly with the smart contract",
-      "rates-from-cex": "Rates from CEX",
-      "edit": "Edit",
-      "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
-      "the-following-swap-rates-are-found": "The following swap rates are found",
-      "est-payment": "Est. Payment:",
-      "est-receiving": "Est. Receiving:",
-      "est-difference": "Est. Difference:",
-      "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Selected offer differs greatly from current rate, may cause big losses",
-      "rate": "Rate",
-      "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Low slippage may cause failed transactions due to high volatility",
-      "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaction might be frontrun because of high slippage tolerance",
-      "recommend-slippage": "To prevent front-running, we recommend a slippage of <2>{{ slippage }}</2>%",
-      "slippage-tolerance": "Slippage tolerance",
-      "select-token": "Select Token",
-      "enable-exchanges": "Enable Exchanges",
-      "exchanges": "Exchanges",
-      "view-quotes": "View quotes",
-      "trade": "Trade",
-      "dex": "Dex",
-      "cex": "Cex",
-      "enable-trading": "Enable Trading",
-      "i-understand-and-accept-it": "I understand and accept it",
-      "confirm": "Confirm",
-      "tradingSettingTip1": "1. Once enabled, you will interact with the contract from the exchange directly",
-      "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
-      "gas-fee": "GasFee: {{gasUsed}}",
-      "estimate": "Estimate:",
-      "actual": "Actual:"
+      "title": "スワップ",
+      "pendingTip": "トランザクションが送信されました。トランザクションが長時間保留されている場合、設定で保留をクリアしようと試すことができます。",
+      "Pending": "保留中",
+      "completedTip": "チェーン上のトランザクション、データのデコードを行ってレコードを生成中",
+      "Completed": "完了",
+      "slippage_tolerance": "スリッページ許容値：",
+      "actual-slippage": "実際のスリッページ：",
+      "gas-x-price": "ガス価格：{{price}} Gwei。",
+      "no-transaction-records": "トランザクション履歴はありません",
+      "swap-history": "スワップ履歴",
+      "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの引用が表示されます",
+      "testnet-is-not-supported": "テストネットはサポートされていません",
+      "not-supported": "サポートされていません",
+      "slippage-adjusted-refresh-quote": "スリッページが調整されました。引用を更新してください。",
+      "price-expired-refresh-quote": "価格の有効期限が切れました。引用を更新してください。",
+      "approve-x-symbol": "{{symbol}} を承認",
+      "swap-via-x": "{{name}} 経由でスワップ",
+      "get-quotes": "引用を取得",
+      "chain": "チェーン",
+      "swap-from": "スワップ元",
+      "to": "宛先",
+      "search-by-name-address": "名前/アドレスで検索",
+      "amount-in": "{{symbol}} での金額",
+      "unlimited-allowance": "無制限の許可",
+      "insufficient-balance": "残高が不足しています",
+      "rabby-fee": "Rabby 手数料",
+      "minimum-received": "最低受取額",
+      "there-is-no-fee-and-slippage-for-this-trade": "この取引には手数料とスリッページはありません",
+      "approve-tips": "1. 承認 → 2. スワップ",
+      "best": "ベスト",
+      "unable-to-fetch-the-price": "価格を取得できません",
+      "fail-to-simulate-transaction": "トランザクションのシミュレーションに失敗しました",
+      "security-verification-failed": "セキュリティの検証に失敗しました",
+      "need-to-approve-token-before-swap": "スワップ前にトークンを承認する必要があります",
+      "this-exchange-is-not-enabled-to-trade-by-you": "この取引所はあなたによる取引が有効にされていません。",
+      "enable-it": "有効にする",
+      "this-token-pair-is-not-supported": "トークンペアはサポートされていません",
+      "QuoteLessWarning": "受け取り額は Rabby トランザクションのシミュレーションからの見積もりです。DEXが提供するオファーは {{receive}} です。期待されるオファーより {{diff}} 少なく受け取ります。",
+      "by-transaction-simulation-the-quote-is-valid": "トランザクションのシミュレーションによると、見積もりは有効です",
+      "wrap-contract": "ラップ契約",
+      "directlySwap": "{{symbol}} トークンをスマートコントラクトで直接ラップする",
+      "rates-from-cex": "CEX からのレート",
+      "edit": "編集",
+      "tradingSettingTips": "{{viewCount}} つの取引所が引用を提供し、{{tradeCount}} つが取引を有効にしています",
+      "the-following-swap-rates-are-found": "以下のスワップレートが見つかりました",
+      "est-payment": "推定支払い:",
+      "est-receiving": "推定受け取り:",
+      "est-difference": "推定差額:",
+      "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "選択したオファーは現在のレートと大きく異なるため、大きな損失の原因になる可能性があります",
+      "rate": "レート",
+      "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "低いスリッページは高いボラティリティのため、トランザクションの失敗を引き起こす可能性があります",
+      "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "高いスリッページ許容度のため、トランザクションがフロントランされる可能性があります",
+      "recommend-slippage": "フロントランを防ぐため、スリッページを<2>{{ slippage }}</2>% 以下に設定することをお勧めします",
+      "slippage-tolerance": "スリッページ許容度",
+      "select-token": "トークンを選択",
+      "enable-exchanges": "取引所を有効にする",
+      "exchanges": "取引所",
+      "view-quotes": "引用を表示",
+      "trade": "取引",
+      "dex": "DEX",
+      "cex": "CEX",
+      "enable-trading": "取引を有効にする",
+      "i-understand-and-accept-it": "理解し、受け入れます",
+      "confirm": "確認",
+      "tradingSettingTip1": "1. 一度有効にすると、取引所の契約と直接対話します",
+      "tradingSettingTip2": "2. Rabby は取引所の契約から発生するリスクについて責任を負いません",
+      "gas-fee": "ガス料金: {{gasUsed}}",
+      "estimate": "見積もり:",
+      "actual": "実際:"
     },
     "manageAddress": {
-      "no-address": "No address",
-      "no-match": "No match",
-      "current-address": "Current Address",
-      "address-management": "Address Management",
-      "update-balance-data": "Update balance data",
-      "search": "Search",
-      "manage-address": "Manage Address",
-      "deleted": "Deleted",
-      "whitelisted-address": "Whitelisted address",
-      "addressTypeTip": "Imported by {{type}}",
-      "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
-      "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
-      "delete-checklist-2": "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
-      "confirm": "Confirm",
-      "cancel": "Cancel",
-      "delete-private-key-modal-title_one": "Delete {{count}} private key address",
-      "delete-private-key-modal-title_other": "Delete {{count}} private key addresses",
-      "delete-seed-phrase-title_one": "Delete seed phrase and its {{count}} address",
-      "delete-seed-phrase-title_other": "Delete seed phrase and its {{count}} addresses",
-      "delete-title_one": "Delete {{count}} {{brand}} address",
-      "delete-title_other": "Delete {{count}} {{brand}} addresses",
-      "delete-empty-seed-phrase": "Delete seed phrase and its 0 address",
-      "hd-path": "HD path:",
-      "no-address-under-seed-phrase": "You haven't imported any addresses under this seed phrase.",
-      "add-address": "Add address",
-      "delete-seed-phrase": "Delete seed phrase",
-      "confirm-delete": "Confirm Delete",
-      "private-key": "Private Key",
-      "seed-phrase": "Seed Phrase",
-      "watch-address": "Watch Address",
-      "backup-seed-phrase": "Backup Seed Phrase",
-      "delete-all-addresses-but-keep-the-seed-phrase": "Delete all addresses, but keep the seed phrase",
-      "delete-all-addresses-and-the-seed-phrase": "Delete all addresses and the seed phrase",
-      "seed-phrase-delete-title": "Delete seed phrase?"
+      "no-address": "アドレスがありません",
+      "no-match": "一致するものがありません",
+      "current-address": "現在のアドレス",
+      "address-management": "アドレス管理",
+      "update-balance-data": "残高データを更新",
+      "search": "検索",
+      "manage-address": "アドレスを管理",
+      "deleted": "削除済み",
+      "whitelisted-address": "ホワイトリストされたアドレス",
+      "addressTypeTip": "{{type}} によってインポート",
+      "delete-desc": "削除する前に、資産を保護する方法を理解するために以下のポイントを考慮してください。",
+      "delete-checklist-1": "このアドレスを削除すると、このアドレスの対応するプライベートキーとシードフレーズが削除され、Rabby はそれを回復できなくなります。",
+      "delete-checklist-2": "プライベートキーまたはシードフレーズをバックアップし、削除の準備ができていることを確認します。",
+      "confirm": "確認",
+      "cancel": "キャンセル",
+      "delete-private-key-modal-title_one": "{{count}} つのプライベートキーアドレスを削除",
+      "delete-private-key-modal-title_other": "{{count}} つのプライベートキーアドレスを削除",
+      "delete-seed-phrase-title_one": "シードフレーズとその{{count}}つのアドレスを削除",
+      "delete-seed-phrase-title_other": "シードフレーズとその{{count}}つのアドレスを削除",
+      "delete-title_one": "{{count}} つの{{brand}} アドレスを削除",
+      "delete-title_other": "{{count}} つの{{brand}} アドレスを削除",
+      "delete-empty-seed-phrase": "シードフレーズとそのアドレスは 0 つ削除",
+      "hd-path": "HD パス:",
+      "no-address-under-seed-phrase": "このシードフレーズの下にはまだアドレスをインポートしていません。",
+      "add-address": "アドレスを追加",
+      "delete-seed-phrase": "シードフレーズを削除",
+      "confirm-delete": "削除を確認",
+      "private-key": "プライベートキー",
+      "seed-phrase": "シードフレーズ",
+      "watch-address": "ウォッチアドレス",
+      "backup-seed-phrase": "シードフレーズのバックアップ",
+      "delete-all-addresses-but-keep-the-seed-phrase": "すべてのアドレスを削除してシードフレーズを保持",
+      "delete-all-addresses-and-the-seed-phrase": "すべてのアドレスとシードフレーズを削除",
+      "seed-phrase-delete-title": "シードフレーズを削除しますか？"
     },
     "dashboard": {
       "home": {
-        "offline": "The network is disconnected and no data is obtained",
+        "offline": "ネットワークが切断され、データが取得できません",
         "panel": {
-          "swap": "Swap",
-          "send": "Send",
-          "receive": "Receive",
-          "gasTopUp": "Gas Top Up",
-          "queue": "Queue",
-          "transactions": "Transactions",
-          "approvals": "Approvals",
-          "feedback": "Feedback",
-          "more": "More",
-          "manageAddress": "Manage Address",
+          "swap": "スワップ",
+          "send": "送信",
+          "receive": "受信",
+          "gasTopUp": "ガストップアップ",
+          "queue": "キュー",
+          "transactions": "トランザクション",
+          "approvals": "承認",
+          "feedback": "フィードバック",
+          "more": "詳細",
+          "manageAddress": "アドレス管理",
           "nft": "NFT"
         },
-        "comingSoon": "Coming soon",
-        "soon": "Soon",
-        "refreshTheWebPageToTakeEffect": "Refresh the web page to take effect",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabby is in use and Metamask is banned",
-        "flip": "Flip",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMask is in use and Rabby is banned",
-        "transactionNeedsToSign": "transaction needs to sign",
-        "transactionsNeedToSign": "transactions need to sign",
-        "view": "View",
-        "viewFirstOne": "View first one",
-        "rejectAll": "Reject All",
-        "pendingCount": "1 Pending",
-        "pendingCountPlural": "{{countStr}} Pendings",
+        "comingSoon": "近日公開",
+        "soon": "まもなく",
+        "refreshTheWebPageToTakeEffect": "効果を発揮するにはウェブページを更新してください",
+        "rabbyIsInUseAndMetamaskIsBanned": "Rabbyが使用中でMetaMaskは禁止されています",
+        "flip": "反転",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMaskが使用中でRabbyは禁止されています",
+        "transactionNeedsToSign": "トランザクションをサインする必要があります",
+        "transactionsNeedToSign": "トランザクションをサインする必要があります",
+        "view": "表示",
+        "viewFirstOne": "最初の1つを表示",
+        "rejectAll": "すべてを拒否",
+        "pendingCount": "保留中1件",
+        "pendingCountPlural": "{{countStr}} 件保留中",
         "queue": {
-          "title": "Queue",
-          "count": "{{count}} in"
+          "title": "キュー",
+          "count": "{{count}} 件 in"
         },
-        "whatsNew": "What's new",
-        "importType": "Imported by {{type}}"
+        "whatsNew": "新着情報",
+        "importType": "{{type}} によってインポート"
       },
       "recentConnection": {
-        "disconnected": "Disconnected",
-        "rpcUnavailable": "The custom RPC is unavailable",
-        "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
-        "connected": "Connected",
-        "notConnected": "Not connected",
-        "connectedDapp": "Rabby is not connected to the current Dapp.To connect, find and click the connect button on the Dapp’s webpage.",
-        "noDappFound": "No Dapp found",
-        "disconnectAll": "Disconnect All",
+        "disconnected": "切断済み",
+        "rpcUnavailable": "カスタムRPCは利用できません",
+        "metamaskTooltip": "このDappではMetaMaskを使用することを希望しています。設定 > MetaMask優先Dappsでいつでも設定を更新できます",
+        "connected": "接続済み",
+        "notConnected": "未接続",
+        "connectedDapp": "Rabbyは現在のDappに接続されていません。接続するには、Dappのウェブページで接続ボタンを見つけてクリックしてください。",
+        "noDappFound": "Dappが見つかりません",
+        "disconnectAll": "すべて切断",
         "disconnectRecentlyUsed": {
-          "title": "Disconnect recently used <strong>{{count}}</strong> DApps",
-          "description": "Pinned DApps will remain connected"
+          "title": "最近使用した<strong>{{count}}</strong>つのDAppを切断",
+          "description": "固定されたDAppsは接続されたままです"
         },
-        "title": "Connected Dapp",
-        "pinned": "Pinned",
-        "noPinnedDapps": "No pinned dapps",
-        "dragToSort": "Drag to sort",
-        "recentlyConnected": "Recently connected",
-        "noRecentlyConnectedDapps": "No recently connected Dapps"
+        "title": "接続されたDapp",
+        "pinned": "固定済み",
+        "noPinnedDapps": "固定されたDappはありません",
+        "dragToSort": "並べ替えるにはドラッグ",
+        "recentlyConnected": "最近接続した",
+        "noRecentlyConnectedDapps": "最近接続したDappはありません"
       },
       "feedback": {
         "directMessage": {
-          "content": "Direct Message",
-          "description": "Chat with Rabby Wallet Official on DeBank"
+          "content": "ダイレクトメッセージ",
+          "description": "DeBankのRabby Wallet公式とチャット"
         },
         "proposal": {
-          "content": "Proposal",
-          "description": "Submit a proposal for Rabby Wallet on DeBank"
+          "content": "提案",
+          "description": "Rabby Walletに関する提案をDeBankに提出"
         },
-        "title": "Feedback"
+        "title": "フィードバック"
       },
       "nft": {
-        "empty": "No NFTs found in supported Collections",
+        "empty": "サポートされているコレクションにNFTが見つかりません",
         "collectionList": {
           "collections": {
-            "label": "Collections"
+            "label": "コレクション"
           },
           "all_nfts": {
-            "label": "All NFTs"
+            "label": "すべてのNFT"
           }
         },
-        "listEmpty": "You haven't gotten any NFT yet",
+        "listEmpty": "まだNFTを取得していません",
         "modal": {
-          "collection": "Collection",
-          "chain": "Chain",
-          "lastPrice": "Last Price",
-          "purchaseDate": "Purchase Date",
-          "sendTooltip": "Only ERC 721 and ERC 1155 NFTs are supported for now",
-          "send": "Send"
+          "collection": "コレクション",
+          "chain": "チェーン",
+          "lastPrice": "最終価格",
+          "purchaseDate": "購入日",
+          "sendTooltip": "現在はERC 721およびERC 1155 NFTのみサポートされています",
+          "send": "送信"
         }
       },
       "rabbyBadge": {
-        "imageLabel": "rabby badge",
-        "title": "Claim Rabby Badge for",
-        "enterClaimCode": "Enter claim code",
-        "swapTip": "You need to complete a swap with notable dex within Rabby Wallet first.",
-        "goToSwap": "Go to Swap",
-        "claim": "Claim",
-        "viewYourClaimCode": "View your claim code",
-        "noCode": "You haven’t activated claim code for this address",
-        "learnMoreOnDebank": "Learn more on DeBank",
-        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
-        "claimSuccess": "Claim Success",
-        "viewOnDebank": "View on DeBank"
+        "imageLabel": "Rabby バッジ",
+        "title": "Rabby バッジをクレームする",
+        "enterClaimCode": "クレームコードを入力",
+        "swapTip": "Rabby Wallet内で注目のDEXでスワップを完了する必要があります。",
+        "goToSwap": "スワップに進む",
+        "claim": "クレーム",
+        "viewYourClaimCode": "クレームコードを表示",
+        "noCode": "このアドレスでクレームコードを有効にしていません",
+        "learnMoreOnDebank": "DeBankで詳細を確認",
+        "rabbyValuedUserNo": "Rabby 評価ユーザー番号{{num}}",
+        "claimSuccess": "クレーム成功",
+        "viewOnDebank": "DeBankで表示"
       },
       "contacts": {
-        "noDataLabel": "no data",
-        "noData": "No data",
-        "oldContactList": "Old Contact List",
-        "oldContactListDescription": "Because of the merging of contacts and watch model addresses, the old contacts will be backed up for you here and after some time we will delete the list.Please add in time if you continue to use."
+        "noDataLabel": "データなし",
+        "noData": "データがありません",
+        "oldContactList": "古い連絡先リスト",
+        "oldContactListDescription": "連絡先とウォッチモードのアドレスの統合のため、古い連絡先はここにバックアップされ、しばらくしたらリストは削除されます。続けて使用する場合はタイムリーに追加してください。"
       },
       "security": {
-        "tokenApproval": "Token Approval",
-        "nftApproval": "NFT Approval",
-        "comingSoon": "More features coming soon",
-        "title": "Security"
+        "tokenApproval": "トークン承認",
+        "nftApproval": "NFT承認",
+        "comingSoon": "近日公開の機能",
+        "title": "セキュリティ"
       },
       "settings": {
         "lock": {
-          "never": "Never"
+          "never": "無効"
         },
-        "7Days": "7 days",
-        "1Day": "1 day",
-        "4Hours": "4 hours",
-        "1Hour": "1 hour",
-        "10Minutes": "10 minutes",
-        "backendServiceUrl": "Backend Service URL",
-        "inputOpenapiHost": "Please input openapi host",
-        "pleaseCheckYourHost": "Please check your host",
-        "host": "Host",
-        "reset": "Restore initial setting",
-        "save": "Save",
-        "pendingTransactionCleared": "Pending transaction cleared",
-        "clearPending": "Clear Pending",
-        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
-        "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
-        "autoLockTime": "Auto lock time",
-        "claimRabbyBadge": "Claim Rabby Badge!",
-        "cancel": "Cancel",
-        "enableWhitelist": "Enable Whitelist",
-        "disableWhitelist": "Disable Whitelist",
-        "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Rabby.",
-        "disableWhitelistTip": "You can send assets to any address once disabled",
-        "warning": "Warning",
-        "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
+        "7Days": "7日",
+        "1Day": "1日",
+        "4Hours": "4時間",
+        "1Hour": "1時間",
+        "10Minutes": "10分",
+        "backendServiceUrl": "バックエンドサービスのURL",
+        "inputOpenapiHost": "オープンAPIホストを入力してください",
+        "pleaseCheckYourHost": "ホストを確認してください",
+        "host": "ホスト",
+        "reset": "初期設定に戻す",
+        "save": "保存",
+        "pendingTransactionCleared": "保留中のトランザクションがクリアされました",
+        "clearPending": "保留中のクリア",
+        "clearPendingTip1": "これにより、すべての保留中のトランザクションがクリアされます。これにより、Rabbyのトランザクションの状態がブロックチェーン上の状態と一致しない場合の問題を解決できます。",
+        "clearPendingTip2": "これにより、アカウントの残高は変更されず、シードフレーズを再入力する必要はありません。すべての資産とアカウント情報は安全に保たれます。",
+        "autoLockTime": "自動ロック時間",
+        "claimRabbyBadge": "Rabby バッジをクレーム！",
+        "cancel": "キャンセル",
+        "enableWhitelist": "ホワイトリストを有効にする",
+        "disableWhitelist": "ホワイトリストを無効にする",
+        "enableWhitelistTip": "有効にすると、Rabbyを使用してホワイトリスト内のアドレスにのみ資産を送信できます。",
+        "disableWhitelistTip": "無効にすると、どのアドレスにでも資産を送信できます",
+        "warning": "警告",
+        "clearWatchAddressContent": "すべてのウォッチモードアドレスを削除してもよろしいですか？",
         "updateVersion": {
-          "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
-          "okText": "See Tutorial",
-          "successTip": "You are using the latest version"
+          "content": "新しいRabby Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
+          "okText": "チュートリアルを見る",
+          "successTip": "最新バージョンを使用中です"
         },
         "features": {
-          "label": "Features",
-          "lockWallet": "Lock Wallet",
-          "signatureRecord": "Signature Record",
-          "manageAddress": "Manage Address",
-          "connectedDapp": "Connected Dapp"
+          "label": "機能",
+          "lockWallet": "ウォレットをロック",
+          "signatureRecord": "署名レコード",
+          "manageAddress": "アドレスを管理",
+          "connectedDapp": "接続されたDapp"
         },
         "settings": {
-          "label": "Settings",
-          "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
-          "customRpc": "Custom RPC",
-          "metamaskPreferredDapps": "MetaMask Preferred Dapps",
-          "currentLanguage": "Current Language",
-          "enableTestnets": "Enable Testnets"
+          "label": "設定",
+          "enableWhitelistForSendingAssets": "資産の送信にホワイトリストを有効にする",
+          "customRpc": "カスタムRPC",
+          "metamaskPreferredDapps": "MetaMask 優先Dapps",
+          "currentLanguage": "現在の言語",
+          "enableTestnets": "テストネットを有効にする"
         },
-        "aboutUs": "About us",
-        "currentVersion": "Current Version",
-        "updateAvailable": "Update Available",
-        "supportedChains": "Supported Chains",
-        "followUs": "Follow Us",
-        "testnetBackendServiceUrl": "Testnet Backend Service URL",
-        "clearWatchMode": "Clear Watch Mode",
-        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
+        "aboutUs": "私たちについて",
+        "currentVersion": "現在のバージョン",
+        "updateAvailable": "アップデートが利用可能",
+        "supportedChains": "サポートされているチェーン",
+        "followUs": "フォローする",
+        "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
+        "clearWatchMode": "ウォッチモードをクリア",
+        "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト"
       },
       "tokenDetail": {
-        "blockedTip": "Blocked token will not be shown in token list",
-        "blocked": "Blocked",
-        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
-        "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
-        "customized": "Customized",
-        "scamTx": "Scam tx",
-        "txFailed": "Failed",
-        "notSupported": "The token on this chain is not supported",
-        "swap": "Swap",
-        "send": "Send",
-        "receive": "Receive",
-        "noTransactions": "No Transactions",
-        "customizedButton": "customized",
-        "blockedButton": "blocked"
+        "blockedTip": "ブロックされたトークンはトークンリストに表示されません",
+        "blocked": "ブロック済み",
+        "selectedCustom": "このトークンはRabbyにリストされていません。カスタムでトークンリストに追加しました。",
+        "notSelectedCustom": "このトークンはRabbyにリストされていません。オンにするとトークンリストに追加されます。",
+        "customized": "カスタマイズ済み",
+        "scamTx": "詐欺トランザクション",
+        "txFailed": "失敗",
+        "notSupported": "このチェーン上のトークンはサポートされていません",
+        "swap": "スワップ",
+        "send": "送金",
+        "receive": "受取",
+        "noTransactions": "トランザクションなし",
+        "customizedButton": "カスタマイズ",
+        "blockedButton": "ブロック"
       },
       "assets": {
-        "usdValue": "USD VALUE",
-        "amount": "AMOUNT",
+        "usdValue": "USD 価値",
+        "amount": "数量",
         "portfolio": {
-          "nftTips": "Calculated based on the floor price recognized by this protocol.",
-          "fractionTips": "Calculate based on the price of the linked ERC20 token."
+          "nftTips": "このプロトコルが認識するフロア価格に基づいて計算されます。",
+          "fractionTips": "リンクされたERC20トークンの価格に基づいて計算されます。"
         },
         "tokenButton": {
-          "subTitle": "The token in this list will not be added to total balance"
+          "subTitle": "このリストのトークンは総残高に追加されません"
         },
         "table": {
-          "assetAmount": "Asset / Amount",
-          "price": "Price",
-          "useValue": "USD Value",
-          "healthRate": "Health rate",
-          "debtRatio": "Debt Ratio",
-          "unlockAt": "Unlock at",
+          "assetAmount": "アセット / 量",
+          "price": "価格",
+          "useValue": "USD 価値",
+          "healthRate": "健康率",
+          "debtRatio": "負債比率",
+          "unlockAt": "アンロックまで",
           "lentAgainst": "LENT AGAINST",
-          "type": "Type",
-          "strikePrice": "Strike price",
-          "exerciseEnd": "Exercise end",
-          "tradePair": "Trade pair",
-          "side": "Side",
-          "leverage": "Leverage",
+          "type": "タイプ",
+          "strikePrice": "ストライク価格",
+          "exerciseEnd": "行使終了",
+          "tradePair": "トレードペア",
+          "side": "サイド",
+          "leverage": "レバレッジ",
           "PL": "P&L",
-          "unsupportedPoolType": "Unsupported pool type",
-          "claimable": "Claimable",
-          "endAt": "End at",
-          "dailyUnlock": "Daily unlock",
-          "pool": "POOL",
-          "token": "Token",
-          "balanceValue": "Balance / Value",
-          "percent": "Percent",
-          "summaryTips": "Asset value divided by total net worth",
-          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
-          "noMatch": "No Match",
-          "lowValueDescription": "Low value assets will be shown here",
-          "lowValueAssets": "{{count}} low value assets"
+          "unsupportedPoolType": "サポートされていないプールタイプ",
+          "claimable": "請求可能",
+          "endAt": "終了日",
+          "dailyUnlock": "デイリーアンロック",
+          "pool": "プール",
+          "token": "トークン",
+          "balanceValue": "残高 / 価値",
+          "percent": "パーセント",
+          "summaryTips": "アセット価値を総資産価値で割ったもの",
+          "summaryDescription": "すべてのプロトコル内のアセット（LPトークンなど）は統計計算のために基礎アセットに解決されます",
+          "noMatch": "一致なし",
+          "lowValueDescription": "低価値アセットがここに表示されます",
+          "lowValueAssets": "{{count}}の低価値アセット"
         },
-        "noAssets": "No assets",
-        "blockLinkText": "Search address to block token",
-        "blockDescription": "Token blocked by you will be shown here",
-        "unfoldChain": "Unfold 1 chain",
-        "unfoldChainPlural": "Unfold {{moreLen}} chains",
-        "customLinkText": "Search address to add custom token",
-        "customDescription": "Custom token added by you will be shown here",
-        "comingSoon": "Coming Soon...",
-        "searchPlaceholder": "Tokens"
+        "noAssets": "アセットなし",
+        "blockLinkText": "トークンをブロックするためのアドレスを検索",
+        "blockDescription": "ユーザーによってブロックされたトークンがここに表示されます",
+        "unfoldChain": "1つのチェーンを展開",
+        "unfoldChainPlural": "{{moreLen}}のチェーンを展開",
+        "customLinkText": "カスタムトークンを追加するためのアドレスを検索",
+        "customDescription": "ユーザーによって追加されたカスタムトークンがここに表示されます",
+        "comingSoon": "近日公開...",
+        "searchPlaceholder": "トークン"
       },
       "hd": {
-        "howToConnectLedger": "How to Connect Ledger",
-        "userRejectedTheRequest": "User rejected the request.",
+        "howToConnectLedger": "Ledgerとの接続方法",
+        "userRejectedTheRequest": "ユーザーがリクエストを拒否しました。",
         "ledger": {
-          "doc1": "Plug in a single Ledger",
-          "doc2": "Enter pin to unlock",
-          "doc3": "Open Ethereum App",
-          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+          "doc1": "シングルLedgerを接続します",
+          "doc2": "PINを入力してロックを解除します",
+          "doc3": "Ethereumアプリを開きます",
+          "reconnect": "うまくいかない場合は、<1>最初から再接続を試してみてください。</1>"
         },
-        "howToSwitch": "How to switch"
+        "howToSwitch": "切り替え方法"
       }
     },
     "nft": {
-      "floorPrice": "/ Floor Price:",
+      "floorPrice": "/ フロア価格:",
       "title": "NFT",
-      "all": "All",
-      "starred": "Starred ({{count}})",
+      "all": "全て",
+      "starred": "スター付き ({{count}})",
       "empty": {
-        "title": "No Starred NFT",
-        "description": "You can select NFT from \"All\" and add to \"Starred\""
+        "title": "スター付きNFTなし",
+        "description": "「全て」からNFTを選択し、「スター付き」に追加できます"
       },
-      "noNft": "No NFT"
+      "noNft": "NFTがありません"
     },
     "newAddress": {
-      "title": "Add an Address",
-      "importSeedPhrase": "Import Seed Phrase",
-      "importPrivateKey": "Import Private Key",
-      "importMyMetamaskAccount": "Import My MetaMask Account",
+      "title": "アドレスを追加",
+      "importSeedPhrase": "シードフレーズをインポート",
+      "importPrivateKey": "プライベートキーをインポート",
+      "importMyMetamaskAccount": "私のMetaMaskアカウントをインポート",
       "addContacts": {
-        "content": "Add Contacts",
-        "description": "You can also use it as a watch-only address",
-        "required": "Please input address",
-        "notAValidAddress": "Not a valid address",
-        "scanViaMobileWallet": "Scan via mobile wallet",
-        "scanViaPcCamera": "Scan via PC camera",
-        "scanQRCode": "Scan QR codes with WalletConnect-compatible wallets",
-        "walletConnect": "Wallet connect",
-        "walletConnectVPN": "WalletConnect will be unstable if you use VPN.",
-        "cameraTitle": "Please scan the QR code with your camera",
-        "addressEns": "Address / ENS"
+        "content": "連絡先を追加",
+        "description": "ウォッチオンリーアドレスとしても使用できます",
+        "required": "アドレスを入力してください",
+        "notAValidAddress": "有効なアドレスではありません",
+        "scanViaMobileWallet": "モバイルウォレットを使用してスキャン",
+        "scanViaPcCamera": "PCカメラを使用してスキャン",
+        "scanQRCode": "WalletConnect対応のウォレットでQRコードをスキャン",
+        "walletConnect": "ウォレット接続",
+        "walletConnectVPN": "VPNを使用するとWalletConnectが不安定になる場合があります。",
+        "cameraTitle": "カメラでQRコードをスキャンしてください",
+        "addressEns": "アドレス / ENS"
       },
       "unableToImport": {
-        "title": "Unable to import",
-        "description": "Importing multiple QR-based hardware wallets is not supported. Please delete all addresses from {{0}} before importing another device."
+        "title": "インポートできません",
+        "description": "QRコードベースの複数のハードウェアウォレットをインポートすることはサポートされていません。別のデバイスをインポートする前に、{{0}}からすべてのアドレスを削除してください。"
       },
-      "connectHardwareWallets": "Connect Hardware Wallets",
-      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
-      "connectInstitutionalWallets": "Connect Institutional Wallets",
-      "createNewSeedPhrase": "Create New Seed Phrase",
-      "importKeystore": "Import KeyStore",
-      "selectImportMethod": "Select Import Method",
-      "theSeedPhraseIsInvalidPleaseCheck": "The seed phrase is invalid, please check!",
+      "connectHardwareWallets": "ハードウェアウォレットを接続",
+      "connectMobileWalletApps": "モバイルウォレットアプリを接続",
+      "connectInstitutionalWallets": "機関ウォレットを接続",
+      "createNewSeedPhrase": "新しいシードフレーズを作成",
+      "importKeystore": "Keystoreをインポート",
+      "selectImportMethod": "インポート方法を選択",
+      "theSeedPhraseIsInvalidPleaseCheck": "シードフレーズが無効です。確認してください！",
       "seedPhrase": {
-        "importTips": "You can paste your entire secret recovery phrase in 1st field",
+        "importTips": "1番目のフィールドにシークレットリカバリフレーズ全体を貼り付けることができます",
         "whatIsASeedPhrase": {
-          "question": "What is a Seed Phrase?",
-          "answer": "A 12, 18, or 24-word phrase used to control your assets."
+          "question": "シードフレーズとは何ですか？",
+          "answer": "資産を制御するために使用される12、18、または24の単語フレーズです。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Is it safe to import it in Rabby?",
-          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+          "question": "Rabbyでインポートするのは安全ですか？",
+          "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
-        "importError": "[CreateMnemonics] unexpected step {{0}}",
-        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
-        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
-        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
-        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
-        "riskTips": "Before you start, please read and keep the following security tips in mind.",
-        "showSeedPhrase": "Show Seed Phrase",
-        "backup": "Backup Seed Phrase",
-        "backupTips": "Make sure no one else is watching your screen when you back up the seed phrase",
-        "copy": "Copy seed phrase",
-        "saved": "I've Saved the Phrase",
-        "pleaseSelectWords": "Please select words",
-        "verificationFailed": "Verification failed",
-        "createdSuccessfully": "Created Successfully",
-        "verifySeedPhrase": "Verify Seed Phrase",
-        "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
-        "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
-        "clearAll": "Clear All"
+        "importError": "[CreateMnemonics] 予期しないステップ {{0}}",
+        "importQuestion1": "シードフレーズを失うと、資産も失われます。",
+        "importQuestion2": "シードフレーズを他の人と共有すると、資産が盗まれる可能性があります。",
+        "importQuestion3": "シードフレーズは私のコンピューターにのみ保存され、Rabbyはアクセスできません。",
+        "importQuestion4": "シードフレーズのバックアップを取らずにRabbyをアンインストールすると、Rabbyはそれを取り戻すことができません。",
+        "riskTips": "始める前に、以下のセキュリティのヒントを読んで心に留めておいてください。",
+        "showSeedPhrase": "シードフレーズを表示",
+        "backup": "シードフレーズのバックアップ",
+        "backupTips": "シードフレーズをバックアップするときは、他の誰も画面を見ていないことを確認してください",
+        "copy": "シードフレーズをコピー",
+        "saved": "フレーズを保存しました",
+        "pleaseSelectWords": "単語を選択してください",
+        "verificationFailed": "検証に失敗しました",
+        "createdSuccessfully": "作成が成功しました",
+        "verifySeedPhrase": "シードフレーズを検証",
+        "fillInTheBackupSeedPhraseInOrder": "バックアップシードフレーズを順番に入力してください",
+        "wordPhrase": "私は<1>{{count}}</1>単語フレーズを持っています",
+        "clearAll": "すべてクリア"
       },
       "metamask": {
-        "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
-        "step2": "Import the seed phrase or private key in Rabby",
-        "step3": "Import is completed and all your assets will <br /> appear automatically",
-        "how": "How to import my MetaMask Account?",
-        "step": "Step",
-        "importSeedPhrase": "Import the seed phrase or private key",
-        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information.",
-        "tips": "Tips:",
-        "tipsDesc": "Your seed phrase/private key does not belong to MetaMask or any specific wallet; it only belongs to you."
+        "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
+        "step2": "Rabbyでシードフレーズまたはプライベートキーをインポートします",
+        "step3": "インポートが完了し、すべてのアセットが自動的に表示されます <br />",
+        "how": "MetaMaskアカウントをインポートする方法",
+        "step": "ステップ",
+        "importSeedPhrase": "シードフレーズまたはプライベートキーをインポート",
+        "importSeedPhraseTips": "これはブラウザー上でローカルにのみ保存されます。Rabbyはあなたのプライベート情報にアクセスしません。",
+        "tips": "ヒント:",
+        "tipsDesc": "シードフレーズ/プライベートキーはMetaMaskまたは特定のウォレットに属しているわけではありません。それはあなたにしか属していません。"
       },
       "privateKey": {
-        "required": "Please input Private key",
-        "placeholder": "Enter your Private key",
+        "required": "プライベートキーを入力してください",
+        "placeholder": "プライベートキーを入力してください",
         "whatIsAPrivateKey": {
-          "question": "What is a private key?",
-          "answer": "A string of letters and numbers used to control your assets."
+          "question": "プライベートキーとは何ですか？",
+          "answer": "資産を制御するために使用される文字列の組み合わせです。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Is it safe to import it in Rabby?",
-          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+          "question": "Rabbyでそれをインポートするのは安全ですか？",
+          "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
         "isItPossibleToImportKeystore": {
-          "question": "Is it possible to import KeyStore?",
-          "answer": "Yes, you can <1> import KeyStore </1> here."
+          "question": "KeyStoreをインポートすることは可能ですか？",
+          "answer": "はい、ここでKeyStoreをインポートできます。"
         },
-        "notAValidPrivateKey": "Not a valid private key"
+        "notAValidPrivateKey": "有効なプライベートキーではありません"
       },
-      "importedSuccessfully": "Imported Successfully",
+      "importedSuccessfully": "インポートが成功しました",
       "ledger": {
-        "title": "Connect Ledger",
-        "cameraPermissionTitle": "Allow Rabby to access the camera",
-        "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
-        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
-        "ledgerPermission1": "Connect to an HID device",
-        "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
-        "permissionsAuthorized": "Permissions Authorized",
-        "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
-        "allow": "Allow"
+        "title": "Ledgerを接続",
+        "cameraPermissionTitle": "Rabbyがカメラにアクセスする許可",
+        "cameraPermission1": "ブラウザーポップアップでRabbyがカメラにアクセスできるように許可します",
+        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可:",
+        "ledgerPermission1": "HIDデバイスに接続",
+        "ledgerPermissionTip": "以下のポップアップウィンドウでLedgerへのアクセスを許可するために、\\\"許可\\\"をクリックしてください。",
+        "permissionsAuthorized": "権限が許可されました",
+        "nowYouCanReInitiateYourTransaction": "これでトランザクションを再開できます。",
+        "allow": "許可"
       },
       "walletConnect": {
-        "connectYour": "Connect your",
-        "viaWalletConnect": "via Wallet Connect",
-        "connectedSuccessfully": "Connected successfully",
-        "qrCodeError": "Please check your network or refresh the QR code",
-        "qrCode": "QR code",
+        "connectYour": "接続する",
+        "viaWalletConnect": "を介してWallet Connect",
+        "connectedSuccessfully": "接続が成功しました",
+        "qrCodeError": "ネットワークを確認するか、QRコードを更新してください",
+        "qrCode": "QRコード",
         "url": "URL",
-        "changeBridgeServer": "Change bridge server",
+        "changeBridgeServer": "ブリッジサーバーを変更",
         "status": {
-          "received": "Scan successful. Waiting to be confirmed",
-          "rejected": "Connection canceled. Please scan the QR code to retry.",
-          "brandError": "Wrong wallet app.",
-          "brandErrorDesc": "Please use {{brandName}} to connect",
-          "accountError": "Address not match.",
-          "accountErrorDesc": "Please switch address in your mobile wallet",
-          "connected": "Connected",
-          "duplicate": "The address you're are trying to import is duplicate",
-          "default": "Scan with your {{brand}}"
+          "received": "スキャンが成功し、確認待ちです",
+          "rejected": "接続がキャンセルされました。QRコードを再スキャンして再試行してください。",
+          "brandError": "間違ったウォレットアプリです。",
+          "brandErrorDesc": "接続には{{brandName}}を使用してください",
+          "accountError": "アドレスが一致しません。",
+          "accountErrorDesc": "モバイルウォレットでアドレスを切り替えてください",
+          "connected": "接続済み",
+          "duplicate": "インポートしようとしているアドレスは重複しています",
+          "default": "{{brand}}でスキャン"
         },
-        "title": "Connect with {{brandName}}",
-        "disconnected": "Disconnected",
+        "title": "{{brandName}}と接続",
+        "disconnected": "切断済み",
         "accountError": {},
         "tip": {
           "accountError": {
-            "tip1": "Connected but unable to sign.",
-            "tip2": "Please switch to the correct address in mobile wallet"
+            "tip1": "接続済みですが、サインできません。",
+            "tip2": "モバイルウォレットで正しいアドレスに切り替えてください"
           },
           "disconnected": {
-            "tip": "Not connected to {{brandName}}"
+            "tip": "{{brandName}}に接続していません"
           },
           "connected": {
-            "tip": "Connected to {{brandName}}"
+            "tip": "{{brandName}}に接続しました"
           }
         },
         "button": {
-          "disconnect": "Disconnect",
-          "connect": "Connect",
-          "howToSwitch": "How to switch"
+          "disconnect": "切断",
+          "connect": "接続",
+          "howToSwitch": "切り替え方法"
         }
       },
       "hd": {
         "tooltip": {
-          "removed": "The address is removed from Rabby",
-          "added": "The address is added to Rabby",
-          "connectError": "Connect has stopped. Please refresh the page to connect again.",
-          "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
+          "removed": "アドレスがRabbyから削除されました",
+          "added": "アドレスがRabbyに追加されました",
+          "connectError": "接続が停止しました。ページを更新して再接続してください。",
+          "disconnected": "ハードウェアウォレットに接続できません。再接続を試してみてください。"
         },
-        "waiting": "Waiting",
-        "clickToGetInfo": "Click to get the information on-chain",
-        "addToRabby": "Add to Rabby",
-        "basicInformation": "Basic information",
-        "addresses": "Addresses",
-        "loadingAddress": "Loading {{0}}/{{1}} addresses",
-        "notes": "Notes",
-        "getOnChainInformation": "Get on-chain information",
-        "hideOnChainInformation": "Hide on-chain information",
-        "usedChains": "Used chains",
-        "firstTransactionTime": "First transaction time",
-        "balance": "Balance",
+        "waiting": "待機中",
+        "clickToGetInfo": "チェーン上の情報を取得するにはクリック",
+        "addToRabby": "Rabbyに追加",
+        "basicInformation": "基本情報",
+        "addresses": "アドレス",
+        "loadingAddress": "{{0}}/{{1}} アドレスを読み込んでいます",
+        "notes": "ノート",
+        "getOnChainInformation": "チェーン上の情報を取得",
+        "hideOnChainInformation": "チェーン上の情報を非表示",
+        "usedChains": "使用されたチェーン",
+        "firstTransactionTime": "最初のトランザクション時刻",
+        "balance": "残高",
         "ledger": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
-            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
-            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+            "ledgerLive": "Ledger Live: Ledger公式のHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。",
+            "bip44": "BIP44標準: BIP44プロトコルで定義されたHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。",
+            "legacy": "Legacy: MEW / Mycryptoで使用されるHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。"
           },
           "hdPathTypeNoChain": {
-            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
-            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
-            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+            "ledgerLive": "Ledger Live: Ledger公式のHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。",
+            "bip44": "BIP44標準: BIP44プロトコルで定義されたHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。",
+            "legacy": "Legacy: MEW / Mycryptoで使用されるHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。"
           }
         },
         "trezor": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
           "message": {
-            "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
+            "disconnected": "{{0}}接続が停止しました。ページを更新して接続し直してください。"
           }
         },
         "onekey": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           }
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "Default: The Default HD path for importing a seed phrase is used."
+            "default": "デフォルト: シードフレーズをインポートするためのデフォルトHDパスが使用されます。"
           },
           "hdPathTypeNoChain": {
-            "default": "Default: The Default HD path for importing a seed phrase is used."
+            "default": "デフォルト: シードフレーズをインポートするためのデフォルトHDパスが使用されます。"
           }
         },
         "gridplus": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
-            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
-            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+            "ledgerLive": "Ledger Live: Ledger公式のHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。",
+            "bip44": "BIP44標準: BIP44プロトコルで定義されたHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。",
+            "legacy": "Legacy: MEW / Mycryptoで使用されるHDパス。最初の3つのアドレスにはチェーン上で使用されるアドレスが含まれています。"
           },
           "hdPathTypeNochain": {
-            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
-            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
-            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+            "ledgerLive": "Ledger Live: Ledger公式のHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。",
+            "bip44": "BIP44標準: BIP44プロトコルで定義されたHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。",
+            "legacy": "Legacy: MEW / Mycryptoで使用されるHDパス。最初の3つのアドレスにはチェーン上で使用されないアドレスが含まれています。"
           },
           "switch": {
-            "title": "Switch to a new GridPlus device",
-            "content": "It's not supported to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
+            "title": "新しいGridPlusデバイスに切り替え",
+            "content": "複数のGridPlusデバイスをインポートすることはサポートされていません。新しいGridPlusデバイスに切り替えると、現在のデバイスのアドレスリストは削除され、インポートプロセスが開始されます。"
           },
-          "switchToAnotherGridplus": "Switch to another GridPlus"
+          "switchToAnotherGridplus": "別のGridPlusに切り替える"
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           }
         },
         "bitbox02": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: BIP44プロトコルで定義されたHDパス。"
           },
-          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {{0}}"
+          "disconnected": "BitBox02に接続できません。ページを更新して接続し直してください。理由: {{0}}"
         },
-        "selectHdPath": "Select HD path:",
-        "selectIndexTip": "Select the serial number of addresses to start from:",
-        "manageAddressFrom": "Manage address from {{0}} to {{1}}",
-        "advancedSettings": "Advanced Settings",
-        "customAddressHdPath": "Custom Address HD path",
-        "connectedToLedger": "Connected to Ledger",
-        "connectedToTrezor": "Connected to Trezor",
-        "connectedToOnekey": "Connected to OneKey",
-        "manageSeedPhrase": "Manage Seed Phrase",
-        "manageGridplus": "Manage GridPlus",
-        "manageKeystone": "Manage Keystone",
-        "manageAirgap": "Manage AirGap",
-        "manageCoolwallet": "Manage CoolWallet",
-        "manageBitbox02": "Manage BitBox02",
-        "done": "Done",
-        "addressesIn": "Addresses in {{0}}",
-        "addressesInRabby": "Addresses in Rabby{{0}}",
+        "selectHdPath": "HDパスを選択:",
+        "selectIndexTip": "開始するアドレスのシリアル番号を選択:",
+        "manageAddressFrom": "{{0}}から{{1}}のアドレスを管理",
+        "advancedSettings": "高度な設定",
+        "customAddressHdPath": "カスタムアドレスHDパス",
+        "connectedToLedger": "Ledgerに接続",
+        "connectedToTrezor": "Trezorに接続",
+        "connectedToOnekey": "OneKeyに接続",
+        "manageSeedPhrase": "シードフレーズを管理",
+        "manageGridplus": "GridPlusを管理",
+        "manageKeystone": "Keystoneを管理",
+        "manageAirgap": "AirGapを管理",
+        "manageCoolwallet": "CoolWalletを管理",
+        "manageBitbox02": "BitBox02を管理",
+        "done": "完了",
+        "addressesIn": "{{0}}のアドレス",
+        "addressesInRabby": "Rabbyのアドレス{{0}}",
         "qrCode": {
           "switch": {
-            "title": "Switch to a new {{0}} device",
-            "content": "It's not supported to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
+            "title": "新しい{{0}}デバイスに切り替え",
+            "content": "{{0}}デバイスを複数インポートすることはサポートされていません。新しい{{0}}デバイスに切り替えると、現在のデバイスのアドレスリストは削除され、インポートプロセスが開始されます。"
           },
-          "switchAnother": "Switch to another {{0}}"
+          "switchAnother": "{{0}}に切り替える"
         }
       },
-      "importYourKeystore": "Import Your KeyStore",
-      "incorrectPassword": "incorrect password",
+      "importYourKeystore": "KeyStoreをインポート",
+      "incorrectPassword": "パスワードが正しくありません",
       "keystore": {
-        "description": "Select the keystore file you want to import and enter the corresponding password",
+        "description": "インポートしたいKeyStoreファイルを選択し、対応するパスワードを入力してください",
         "password": {
-          "required": "Please input Password",
-          "placeholder": "Password"
+          "required": "パスワードを入力してください",
+          "placeholder": "パスワード"
         }
       },
       "coboSafe": {
-        "inputSafeModuleAddress": "Input Safe Module address",
-        "invalidAddress": "Invalid address",
-        "whichChainIsYourCoboAddressOn": "Which chain is your cobo address on",
-        "addCoboArgusAddress": "Add Cobo Argus address",
-        "findTheAssociatedSafeAddress": "Find the associated safe address",
-        "import": "Import"
+        "inputSafeModuleAddress": "セーフモジュールのアドレスを入力",
+        "invalidAddress": "無効なアドレス",
+        "whichChainIsYourCoboAddressOn": "Coboアドレスが存在するチェーンを選択",
+        "addCoboArgusAddress": "Cobo Argusアドレスを追加",
+        "findTheAssociatedSafeAddress": "関連するセーフアドレスを検索",
+        "import": "インポート"
       }
     },
     "unlock": {
       "btn": {
-        "unlock": "Unlock"
+        "unlock": "アンロック"
       },
       "password": {
-        "required": "Enter the Password to Unlock",
-        "placeholder": "Enter the Password to Unlock",
-        "error": "incorrect password"
+        "required": "アンロックするにはパスワードを入力してください",
+        "placeholder": "アンロックするにはパスワードを入力してください",
+        "error": "パスワードが正しくありません"
       }
     },
     "addToken": {
-      "noTokenFound": "No token found",
-      "tokenSupported": "Token has been supported on Rabby",
-      "tokenCustomized": "Current token has already been added to customized",
-      "tokenNotFound": "Token not found from this contract address",
-      "title": "Add custom token to Rabby",
-      "balance": "Balance",
-      "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
-      "noTokenFoundOnThisChain": "No token found on this chain"
+      "noTokenFound": "トークンが見つかりません",
+      "tokenSupported": "トークンはRabbyでサポートされています",
+      "tokenCustomized": "現在のトークンはカスタマイズされたものに既に追加されています",
+      "tokenNotFound": "この契約アドレスからトークンが見つかりません",
+      "title": "Rabbyにカスタムトークンを追加",
+      "balance": "残高",
+      "tokenOnMultiChains": "複数のチェーン上のトークンアドレスです。お好きなものを選んでください",
+      "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません"
     },
     "switchChain": {
-      "title": "Switching to {{chain}}",
-      "chainNotSupport": "The requested chain is not supported by Rabby yet",
-      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+      "title": "{{chain}} に切り替え中",
+      "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
+      "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください"
     },
     "signText": {
-      "title": "Sign Text",
-      "message": "Message",
+      "title": "テキストを署名",
+      "message": "メッセージ",
       "createKey": {
-        "interactDapp": "Interact Dapp",
-        "description": "Description"
+        "interactDapp": "Dappとのインタラクション",
+        "description": "説明"
       }
     },
     "securityEngine": {
-      "yes": "Yes",
-      "no": "No",
-      "whenTheValueIs": "when the value is {{value}}",
-      "currentValueIs": "Current value is {{value}}",
-      "viewRules": "View security rules",
-      "undo": "Undo",
-      "riskProcessed": "Risk Processed",
-      "ignoreAlert": "Ignore the alert",
-      "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
-      "unknownResult": "Unknown result because security rule is unavailable",
-      "alertTriggerReason": "Alert triggered reason:",
-      "understandRisk": "I understand and accept responsibility for any loss",
-      "forbiddenCantIgnore": "Found forbidden risk that can't be ignored.",
-      "ruleDetailTitle": "Rule Detail",
-      "enableRule": "Enable the rule",
-      "viewRiskLevel": "View risk level"
+      "yes": "はい",
+      "no": "いいえ",
+      "whenTheValueIs": "値が {{value}} の場合",
+      "currentValueIs": "現在の値は {{value}} です",
+      "viewRules": "セキュリティルールを表示",
+      "undo": "元に戻す",
+      "riskProcessed": "リスク処理済み",
+      "ignoreAlert": "アラートを無視",
+      "ruleDisabled": "セキュリティルールは無効になっています。安全性のためにいつでもオンにできます。",
+      "unknownResult": "セキュリティルールが利用できないため、結果は不明です",
+      "alertTriggerReason": "アラートがトリガーされた理由：",
+      "understandRisk": "リスクを理解し、責任を受け入れます",
+      "forbiddenCantIgnore": "無視できない禁止リスクが見つかりました。",
+      "ruleDetailTitle": "ルールの詳細",
+      "enableRule": "ルールを有効にする",
+      "viewRiskLevel": "リスクレベルを表示"
     },
     "connect": {
-      "listedBy": "Listed by",
-      "sitePopularity": "Site popularity",
-      "myMark": "My Mark",
-      "flagByRabby": "Flagged by Rabby",
-      "flagByMM": "Flagged by MetaMask",
-      "flagByScamSniffer": "Flagged by ScamSniffer",
-      "verifiedByRabby": "Verified by Rabby",
-      "foundForbiddenRisk": "Found forbidden risks. Connection is blocked.",
-      "markAsTrustToast": "Mark as \"Trusted\"",
-      "markAsBlockToast": "Mark as \"Blocked\"",
-      "markRemovedToast": "Mark removed",
-      "title": "Connect to Dapp",
-      "selectChainToConnect": "Select a chain to connect for",
-      "markRuleText": "My mark",
-      "connectBtn": "Connect",
-      "noWebsite": "None",
-      "popularLevelHigh": "High",
-      "popularLevelMedium": "Medium",
-      "popularLevelLow": "Low",
-      "popularLevelVeryLow": "Very Low",
-      "noMark": "No mark",
-      "blocked": "Blocked",
-      "trusted": "Trusted",
-      "addedToWhitelist": "Added to your whitelist",
-      "addedToBlacklist": "Added to your blacklist",
-      "removedFromAll": "Removed from all lists",
-      "notOnAnyList": "Not on any list",
-      "onYourBlacklist": "On your blacklist",
-      "onYourWhitelist": "On your whitelist",
-      "manageWhiteBlackList": "Manage whitelist/blacklist",
+      "listedBy": "リストされた提供元",
+      "sitePopularity": "サイトの人気",
+      "myMark": "私のマーク",
+      "flagByRabby": "Rabbyによってフラグ付け",
+      "flagByMM": "MetaMaskによってフラグ付け",
+      "flagByScamSniffer": "ScamSnifferによってフラグ付け",
+      "verifiedByRabby": "Rabbyによって確認",
+      "foundForbiddenRisk": "禁止されたリスクが見つかりました。接続はブロックされました。",
+      "markAsTrustToast": "\"信頼されている\" としてマーク",
+      "markAsBlockToast": "\"ブロックされている\" としてマーク",
+      "markRemovedToast": "マークが削除されました",
+      "title": "Dappに接続",
+      "selectChainToConnect": "接続するチェーンを選択",
+      "markRuleText": "私のマーク",
+      "connectBtn": "接続",
+      "noWebsite": "なし",
+      "popularLevelHigh": "高",
+      "popularLevelMedium": "中",
+      "popularLevelLow": "低",
+      "popularLevelVeryLow": "非常に低い",
+      "noMark": "マークなし",
+      "blocked": "ブロックされています",
+      "trusted": "信頼されています",
+      "addedToWhitelist": "ホワイトリストに追加されました",
+      "addedToBlacklist": "ブラックリストに追加されました",
+      "removedFromAll": "すべてのリストから削除されました",
+      "notOnAnyList": "どのリストにも含まれていません",
+      "onYourBlacklist": "あなたのブラックリストにあります",
+      "onYourWhitelist": "あなたのホワイトリストにあります",
+      "manageWhiteBlackList": "ホワイトリスト/ブラックリストの管理",
       "SignTestnetPermission": {
-        "title": "Signing permission"
+        "title": "署名許可"
       },
-      "ignoreAll": "Ignore all"
+      "ignoreAll": "すべて無視"
     },
     "addressDetail": {
-      "add-to-whitelist": "Add to Whitelist",
-      "remove-from-whitelist": "Remove from Whitelist",
-      "address-detail": "Address Detail",
-      "backup-private-key": "Backup Private Key",
-      "backup-seed-phrase": "Backup Seed Phrase",
-      "delete-address": "Delete address",
-      "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
-      "direct-delete-desc": "This address is a {{renderBrand}} address, Rabby does not store the private key or seed phrase for this address, you can just delete it",
-      "admins": "Admins",
-      "tx-requires": "Any transaction requires <2>{{num}}</2> confirmations",
-      "edit-memo-title": "Edit address note",
-      "please-input-address-note": "Please input address note",
-      "address": "Address",
-      "address-note": "Address Note",
-      "assets": "Assets",
-      "qr-code": "QR Code",
-      "source": "Source",
-      "hd-path": "HD Path",
-      "manage-seed-phrase": "Manage Seed Phrase",
-      "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase",
-      "safeModuleAddress": "Safe Module Address",
-      "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
-      "importedDelegatedAddress": "Imported Delegated address"
+      "add-to-whitelist": "ホワイトリストに追加",
+      "remove-from-whitelist": "ホワイトリストから削除",
+      "address-detail": "アドレスの詳細",
+      "backup-private-key": "プライベートキーをバックアップ",
+      "backup-seed-phrase": "シードフレーズをバックアップ",
+      "delete-address": "アドレスを削除",
+      "delete-desc": "削除する前に、以下のポイントを考慮して、資産を保護する方法を理解してください。",
+      "direct-delete-desc": "このアドレスは {{renderBrand}} アドレスであり、Rabbyはこのアドレスのプライベートキーやシードフレーズを保存していません。削除するだけです。",
+      "admins": "管理者",
+      "tx-requires": "トランザクションには <2>{{num}}</2> 回の確認が必要です",
+      "edit-memo-title": "アドレスのメモを編集",
+      "please-input-address-note": "アドレスのメモを入力してください",
+      "address": "アドレス",
+      "address-note": "アドレスのメモ",
+      "assets": "資産",
+      "qr-code": "QRコード",
+      "source": "ソース",
+      "hd-path": "HDパス",
+      "manage-seed-phrase": "シードフレーズの管理",
+      "manage-addresses-under-this-seed-phrase": "このシードフレーズの下のアドレスを管理",
+      "safeModuleAddress": "セーフモジュールのアドレス",
+      "coboSafeErrorModule": "アドレスが期限切れです。アドレスを削除して再インポートしてください。",
+      "importedDelegatedAddress": "インポートされた委任アドレス"
     },
     "preferMetamaskDapps": {
-      "title": "MetaMask Preferred Dapps",
-      "desc": "The following dapps will remain connected through MetaMask, regardless           of the wallet you've flipped to",
-      "howToAdd": "How to Add",
-      "howToAddDesc": "Right click on the website and find this option",
-      "empty": "No dapps"
+      "title": "MetaMask優先Dapps",
+      "desc": "以下のDappsは、切り替えたウォレットに関係なく、MetaMask経由で接続されたままです。",
+      "howToAdd": "追加方法",
+      "howToAddDesc": "ウェブサイトを右クリックし、このオプションを見つけます",
+      "empty": "Dappsがありません"
     },
     "customRpc": {
-      "opened": "Opened",
-      "closed": "Closed",
-      "empty": "No custom RPC",
-      "title": "Custom RPC",
-      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
-      "add": "Add RPC",
+      "opened": "オープン",
+      "closed": "クローズ",
+      "empty": "カスタムRPCがありません",
+      "title": "カスタムRPC",
+      "desc": "カスタムRPCを有効にすると、Rabbyがデフォルトのノードとして置き換えられます。Rabbyを引き続き使用するには、カスタムRPCノードを無効にするか削除してください。",
+      "add": "RPCを追加",
       "EditRPCModal": {
-        "invalidRPCUrl": "Invalid RPC URL",
-        "invalidChainId": "Invalid Chain ID",
-        "rpcAuthFailed": "RPC authentication failed",
-        "title": "Edit RPC",
+        "invalidRPCUrl": "無効なRPC URL",
+        "invalidChainId": "無効なチェーンID",
+        "rpcAuthFailed": "RPC認証に失敗しました",
+        "title": "RPCを編集",
         "rpcUrl": "RPC URL",
-        "rpcUrlPlaceholder": "Enter the RPC URL"
+        "rpcUrlPlaceholder": "RPC URLを入力してください"
       }
     },
     "requestDebankTestnetGasToken": {
-      "title": "Request DeBank Testnet Gas Token",
-      "mintedTip": "Rabby Badge holders can request once a day",
-      "notMintedTip": "Request available for Rabby Badge holders only",
-      "claimBadgeBtn": "Claim Rabby Badge",
-      "time": "Per day",
-      "requested": "You have requested today",
-      "requestBtn": "Request"
+      "title": "DeBankテストネットガストークンのリクエスト",
+      "mintedTip": "Rabbyバッジの所有者は1日に1回リクエストできます",
+      "notMintedTip": "リクエストはRabbyバッジの所有者のみ利用可能です",
+      "claimBadgeBtn": "Rabbyバッジを請求",
+      "time": "1日あたり",
+      "requested": "本日リクエストしました",
+      "requestBtn": "リクエスト"
     },
     "safeQueue": {
-      "title": "Queue",
-      "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
-      "loading": "Loading pending transactions",
-      "noData": "No pending transactions",
-      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes",
-      "accountSelectTitle": "You can submit this transaction using any address",
-      "LowerNonceError": "Transaction with nonce {{nonce}} needs to be executed first",
-      "submitBtn": "Submit transaction",
-      "unknownTx": "Unknown Transaction",
-      "cancelExplain": "Cancel {{token}} Approve for {{protocol}}",
-      "unknownProtocol": "Unknown protocol",
-      "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
-      "unlimited": "unlimited",
+      "title": "キュー",
+      "sameNonceWarning": "これらのトランザクションは同じノンスを使用しているため競合します。1つを実行すると他のトランザクションが自動的に置き換えられます。",
+      "loading": "保留中のトランザクションを読み込み中",
+      "noData": "保留中のトランザクションはありません",
+      "loadingFaild": "Safeサーバーの不安定性のため、データが利用できません。5分後に再度確認してください",
+      "accountSelectTitle": "このトランザクションは任意のアドレスを使用して送信できます",
+      "LowerNonceError": "ノンス {{nonce}} のトランザクションは先に実行する必要があります",
+      "submitBtn": "トランザクションを送信",
+      "unknownTx": "不明なトランザクション",
+      "cancelExplain": "{{protocol}} の {{token}} 承認をキャンセル",
+      "unknownProtocol": "不明なプロトコル",
+      "approvalExplain": "{{protocol}} の {{token}} を承認する",
+      "unlimited": "無制限",
       "action": {
-        "send": "Send"
+        "send": "送信"
       },
-      "viewBtn": "View"
+      "viewBtn": "表示"
     },
     "importSuccess": {
-      "title": "Imported Successfully",
-      "addressCount": "{{count}} addresses",
-      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+      "title": "インポート成功",
+      "addressCount": "{{count}} 件のアドレス",
+      "gnosisChainDesc": "このアドレスは {{count}} のチェーンでデプロイされました"
     },
     "backupSeedPhrase": {
-      "title": "Backup Seed Phrase",
-      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
-      "clickToShow": "Click to show Seed Phrase",
-      "copySeedPhrase": "Copy seed phrase"
+      "title": "シードフレーズのバックアップ",
+      "alert": "このシードフレーズはあなたの資産の認証情報です。絶対に失くしたり他人に見せたりしないでください。さもないと、資産を永遠に失う可能性があります。安全な環境で表示し、注意して保管してください。",
+      "clickToShow": "シードフレーズを表示するにはクリック",
+      "copySeedPhrase": "シードフレーズをコピー"
     },
     "backupPrivateKey": {
-      "title": "Backup Private Key",
-      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
-      "clickToShow": "Click to show private key",
-      "clickToShowQr": "Click to show private key QR Code"
+      "title": "プライベートキーのバックアップ",
+      "alert": "このプライベートキーはあなたの資産の認証情報です。絶対に失くしたり他人に見せたりしないでください。さもないと、資産を永遠に失う可能性があります。安全な環境で表示し、注意して保管してください。",
+      "clickToShow": "プライベートキーを表示するにはクリック",
+      "clickToShowQr": "プライベートキーQRコードを表示するにはクリック"
     },
     "ethSign": {
-      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+      "alert": "'eth_sign' で署名することは資産の損失につながる可能性があります。安全のため、Rabbyはこの方法をサポートしていません。"
     },
     "createPassword": {
-      "title": "Set Password",
-      "passwordRequired": "Please input Password",
-      "passwordMin": "Password must be at least 8 characters long",
-      "passwordPlaceholder": "Password must be at least 8 characters long",
-      "confirmRequired": "Please Confirm Password",
-      "confirmError": "Passwords do not match",
-      "confirmPlaceholder": "Confirm password",
-      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+      "title": "パスワードを設定",
+      "passwordRequired": "パスワードを入力してください",
+      "passwordMin": "パスワードは少なくとも8文字必要です",
+      "passwordPlaceholder": "パスワードは少なくとも8文字必要です",
+      "confirmRequired": "パスワードを確認してください",
+      "confirmError": "パスワードが一致しません",
+      "confirmPlaceholder": "パスワードを確認してください",
+      "agree": "私は<1/> <2>利用規約</2>を読んで同意します"
     },
     "welcome": {
       "step1": {
-        "title": "Access All Dapps",
-        "desc": "Rabby connects to all Dapps that MetaMask supports"
+        "title": "すべてのDappsにアクセス",
+        "desc": "RabbyはMetaMaskがサポートするすべてのDappsに接続します"
       },
       "step2": {
-        "title": "Self-custodial",
-        "desc": "Private keys are stored locally with sole access to you",
-        "btnText": "Get Started"
+        "title": "セルフカストディアル",
+        "desc": "プライベートキーはローカルに保存され、あなただけがアクセスできます",
+        "btnText": "開始"
       }
     },
     "importSafe": {
-      "title": "Add Safe address",
-      "placeholder": "Please input address",
+      "title": "セーフアドレスを追加",
+      "placeholder": "アドレスを入力してください",
       "error": {
-        "invalid": "Not a valid address",
-        "required": "Please input address"
+        "invalid": "有効なアドレスではありません",
+        "required": "アドレスを入力してください"
       },
-      "loading": "Searching the deployed chain of this address",
-      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+      "loading": "このアドレスのデプロイされたチェーンを検索中",
+      "gnosisChainDesc": "このアドレスは {{count}} のチェーンでデプロイされました"
     },
     "importQrBase": {
-      "desc": "Scan the QR code on the {{brandName}} hardware wallet",
-      "btnText": "Try Again"
+      "desc": "{{brandName}}ハードウェアウォレットのQRコードをスキャンします",
+      "btnText": "再試行"
     }
   },
   "component": {
     "AccountSearchInput": {
-      "noMatchAddress": "No match address",
+      "noMatchAddress": "一致するアドレスがありません",
       "AddressItem": {
-        "whitelistedAddressTip": "Whitelisted address"
+        "whitelistedAddressTip": "ホワイトリストに登録されたアドレス"
       }
     },
     "AccountSelectDrawer": {
       "btn": {
-        "cancel": "Cancel",
-        "proceed": "Proceed"
+        "cancel": "キャンセル",
+        "proceed": "続行"
       }
     },
     "AddressList": {
       "AddressItem": {
-        "addressTypeTip": "Imported by {{type}}"
+        "addressTypeTip": "{{type}}によってインポートされました"
       }
     },
     "AuthenticationModal": {
-      "passwordError": "incorrect password",
-      "passwordRequired": "Please input password",
-      "passwordPlaceholder": "Enter the Password to Confirm"
+      "passwordError": "パスワードが正しくありません",
+      "passwordRequired": "パスワードを入力してください",
+      "passwordPlaceholder": "確認のためのパスワードを入力"
     },
     "ConnectStatus": {
-      "connecting": "Connecting...",
-      "connect": "Connect",
-      "gridPlusConnected": "GridPlus is connected",
-      "gridPlusNotConnected": "GridPlus is not connected",
-      "ledgerNotConnected": "Ledger is not connected",
-      "ledgerConnected": "Ledger is connected"
+      "connecting": "接続中...",
+      "connect": "接続",
+      "gridPlusConnected": "GridPlusが接続されています",
+      "gridPlusNotConnected": "GridPlusは接続されていません",
+      "ledgerNotConnected": "Ledgerは接続されていません",
+      "ledgerConnected": "Ledgerが接続されています"
     },
     "Contact": {
       "AddressItem": {
-        "notWhitelisted": "This address is not whitelisted",
-        "whitelistedTip": "Whitelisted address"
+        "notWhitelisted": "このアドレスはホワイトリストに登録されていません",
+        "whitelistedTip": "ホワイトリストに登録されたアドレス"
       },
       "EditModal": {
-        "title": "Edit address note"
+        "title": "アドレスのノートを編集"
       },
       "EditWhitelist": {
-        "backModalTitle": "Discard Changes",
-        "backModalContent": "Changes you made will not be saved",
-        "title": "Edit Whitelist",
-        "tip": "Select the address you want to whitelist and save.",
-        "save": "Save to Whitelist ({{count}})"
+        "backModalTitle": "変更を破棄",
+        "backModalContent": "行った変更は保存されません",
+        "title": "ホワイトリストを編集",
+        "tip": "ホワイトリストに登録したいアドレスを選択して保存してください。",
+        "save": "ホワイトリストに保存 ({{count}})"
       },
       "ListModal": {
-        "title": "Select Address",
-        "whitelistEnabled": "Whitelist is enabled. You can only send assets to a whitelisted address or you can disable it in \"Settings\"",
-        "whitelistDisabled": "Whitelist is disabled. You can send assets to any address",
-        "editWhitelist": "Edit Whitelist",
-        "whitelistUpdated": "Whitelist Updated",
+        "title": "アドレスを選択",
+        "whitelistEnabled": "ホワイトリストが有効です。ホワイトリストに登録されたアドレスにのみ資産を送信できるか、\"設定\"で無効にできます",
+        "whitelistDisabled": "ホワイトリストが無効です。どのアドレスにも資産を送信できます",
+        "editWhitelist": "ホワイトリストを編集",
+        "whitelistUpdated": "ホワイトリストが更新されました",
         "authModal": {
-          "title": "Save to Whitelist"
+          "title": "ホワイトリストに保存"
         }
       }
     },
     "LoadingOverlay": {
-      "loadingData": "Loading data..."
+      "loadingData": "データを読み込み中..."
     },
     "MultiSelectAddressList": {
-      "imported": "Imported"
+      "imported": "インポート済み"
     },
     "NFTNumberInput": {
-      "erc1155Tips": "Your balance is {{amount}}",
-      "erc721Tips": "Only one NFT of ERC 721 can be sent at a time"
+      "erc1155Tips": "残高は {{amount}} です",
+      "erc721Tips": "ERC 721のNFTは1つしか一度に送信できません"
     },
     "TiledSelect": {
-      "errMsg": "The seed phrase order is wrong, please check"
+      "errMsg": "シードフレーズの順序が間違っています。確認してください"
     },
     "Uploader": {
-      "placeholder": "Select a JSON file"
+      "placeholder": "JSONファイルを選択"
     },
     "WalletConnectBridgeModal": {
-      "title": "Bridge server URL",
-      "requiredMsg": "Please input bridge server host",
-      "invalidMsg": "Please check your host",
-      "restore": "Restore initial setting"
+      "title": "ブリッジサーバーのURL",
+      "requiredMsg": "ブリッジサーバーホストを入力してください",
+      "invalidMsg": "ホストを確認してください",
+      "restore": "初期設定に戻す"
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Mainnets",
-        "testnet": "Testnets"
+        "mainnet": "メインネット",
+        "testnet": "テストネット"
       }
     },
     "ChainSelectorModal": {
-      "searchPlaceholder": "Search chain",
-      "noChains": "No chains"
+      "searchPlaceholder": "チェーンを検索",
+      "noChains": "チェーンがありません"
     },
     "TokenSelector": {
       "listTableHead": {
         "assetAmount": {
-          "title": "ASSET / AMOUNT"
+          "title": "資産 / 量"
         },
         "price": {
-          "title": "PRICE"
+          "title": "価格"
         },
         "usdValue": {
-          "title": "USD VALUE"
+          "title": "USD価値"
         }
       },
       "searchInput": {
-        "placeholder": "Search by Name / Address"
+        "placeholder": "名前またはアドレスで検索"
       },
       "header": {
-        "title": "Select a token"
+        "title": "トークンを選択"
       },
-      "noTokens": "No Tokens",
-      "noMatch": "No Match",
-      "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
+      "noTokens": "トークンがありません",
+      "noMatch": "一致するものがありません",
+      "noMatchSuggestion": "{{ chainName }}の契約アドレスを検索してみてください"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
-        "Collection": "Collection",
-        "Chain": "Chain",
-        "PurschaseDate": "Purchase Date",
-        "LastPrice": "Last Price"
+        "Collection": "コレクション",
+        "Chain": "チェーン",
+        "PurschaseDate": "購入日",
+        "LastPrice": "最終価格"
       }
     },
     "signPermissionCheckModal": {
-      "title": "You only allow this Dapp to sign on testnets",
-      "reconnect": "Reconnect Dapp"
+      "title": "このDappに対してテストネットでのサインを許可しています",
+      "reconnect": "Dappを再接続"
     },
     "testnetCheckModal": {
-      "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
+      "title": "\"詳細\"の下で\"テストネットを有効にする\"をオンにしてください"
     }
   },
   "global": {
-    "appName": "Rabby Wallet",
-    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
-    "copied": "Copied",
-    "confirm": "Confirm",
-    "next": "Next",
-    "back": "Back",
+    "appName": "Rabbyウォレット",
+    "appDescription": "EthereumおよびすべてのEVMチェーン向けの画期的なウォレット",
+    "copied": "コピー済み",
+    "confirm": "確認",
+    "next": "次へ",
+    "back": "戻る",
     "ok": "OK",
-    "refresh": "Refresh",
-    "failed": "Failed",
-    "scamTx": "Scam tx",
-    "gas": "Gas",
-    "unknownNFT": "Unknown NFT",
-    "copyAddress": "Copy address",
-    "watchModeAddress": "Watch Mode address",
-    "assets": "assets",
-    "Confirm": "Confirm",
-    "Cancel": "Cancel",
-    "Clear": "Clear",
-    "Save": "Save",
-    "confirmButton": "Confirm",
-    "cancelButton": "Cancel",
-    "backButton": "Back",
-    "proceedButton": "Proceed",
-    "editButton": "Edit",
-    "addButton": "Add",
-    "closeButton": "Close",
-    "Deleted": "Deleted",
-    "Loading": "Loading",
-    "nonce": "nonce",
-    "Balance": "Balance",
-    "Done": "Done"
+    "refresh": "リフレッシュ",
+    "failed": "失敗",
+    "scamTx": "詐欺トランザクション",
+    "gas": "ガス",
+    "unknownNFT": "不明なNFT",
+    "copyAddress": "アドレスのコピー",
+    "watchModeAddress": "ウォッチモードアドレス",
+    "assets": "資産",
+    "Confirm": "確認",
+    "Cancel": "キャンセル",
+    "Clear": "クリア",
+    "Save": "保存",
+    "confirmButton": "確認",
+    "cancelButton": "キャンセル",
+    "backButton": "戻る",
+    "proceedButton": "進む",
+    "editButton": "編集",
+    "addButton": "追加",
+    "closeButton": "閉じる",
+    "Deleted": "削除済み",
+    "Loading": "読み込み中",
+    "nonce": "Nonce",
+    "Balance": "残高",
+    "Done": "完了"
   },
   "background": {
     "error": {
-      "noCurrentAccount": "No current account",
-      "invalidChainId": "Invalid chain id",
-      "notFindChain": "Can not find chain {{chain}}",
-      "unknownAbi": "unknown contract abi",
-      "invalidAddress": "Not a valid address",
-      "notFoundGnosisKeyring": "No Gnosis keyring found",
-      "notFoundTxGnosisKeyring": "No transaction in Gnosis keyring found",
-      "addKeyring404": "failed to addKeyring, keyring is undefined",
-      "emptyAccount": "the current account is empty",
-      "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",
-      "invalidPrivateKey": "the private key is invalid",
-      "invalidJson": "the input file is invalid",
-      "invalidMnemonic": "The seed phrase is invalid, please check!",
-      "notFoundKeyringByAddress": "Can't find keyring by address",
-      "txPushFailed": "Transaction push failed",
-      "unlock": "you need to unlock wallet first",
-      "duplicateAccount": "The account you're are trying to import is duplicate",
-      "canNotUnlock": "Cannot unlock without a previous vault"
+      "noCurrentAccount": "現在のアカウントがありません",
+      "invalidChainId": "無効なチェーンID",
+      "notFindChain": "チェーン {{chain}} が見つかりません",
+      "unknownAbi": "不明な契約ABI",
+      "invalidAddress": "有効なアドレスではありません",
+      "notFoundGnosisKeyring": "Gnosisキーリングが見つかりません",
+      "notFoundTxGnosisKeyring": "Gnosisキーリング内でトランザクションが見つかりません",
+      "addKeyring404": "addKeyringの実行に失敗しました、キーリングが未定義です",
+      "emptyAccount": "現在のアカウントは空です",
+      "generateCacheAliasNames": "[GenerateCacheAliasNames]: 少なくとも1つのアドレスが必要です",
+      "invalidPrivateKey": "プライベートキーが無効です",
+      "invalidJson": "入力ファイルが無効です",
+      "invalidMnemonic": "シードフレーズが無効です、確認してください！",
+      "notFoundKeyringByAddress": "アドレスでキーリングを見つけることができません",
+      "txPushFailed": "トランザクションプッシュに失敗しました",
+      "unlock": "ウォレットをアンロックする必要があります",
+      "duplicateAccount": "インポートしようとしているアカウントは重複しています",
+      "canNotUnlock": "前のボールトなしにはアンロックできません"
     },
     "transactionWatcher": {
-      "submitted": "Transaction submitted",
-      "more": "click to view more information",
-      "completed": "Transaction completed",
-      "failed": "Transaction failed"
+      "submitted": "トランザクションが提出されました",
+      "more": "詳細情報を表示するにはクリック",
+      "completed": "トランザクションが完了しました",
+      "failed": "トランザクションが失敗しました"
     },
     "alias": {
-      "HdKeyring": "Seed Phrase",
-      "simpleKeyring": "Private Key",
-      "watchAddressKeyring": "Contact"
+      "HdKeyring": "シードフレーズによって作成",
+      "simpleKeyring": "プライベートキーによってインポート",
+      "watchAddressKeyring": "コンタクト"
     }
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "HdKeyring": "Created by Seed Phrase",
-      "SimpleKeyring": "Imported by Private Key",
-      "WatchAddressKeyring": "Contact"
+      "HdKeyring": "シードフレーズで作成",
+      "SimpleKeyring": "プライベートキーでインポート",
+      "WatchAddressKeyring": "コンタクト"
     },
-    "IMPORTED_HD_KEYRING": "Imported by Seed Phrase",
+    "IMPORTED_HD_KEYRING": "シードフレーズでインポート",
     "SIGN_PERMISSION_OPTIONS": {
-      "MAINNET_AND_TESTNET": "Mainnet & Testnet",
-      "TESTNET": "Only Testnets"
+      "MAINNET_AND_TESTNET": "メインネットおよびテストネット",
+      "TESTNET": "テストネットのみ"
     }
   }
 }
