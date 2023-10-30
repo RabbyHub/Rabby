@@ -422,9 +422,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         wallet
       );
       setActionRequireData(requireData);
-      const ctx = formatSecurityEngineCtx({
+      const ctx = await formatSecurityEngineCtx({
         actionData: data,
         requireData,
+        wallet,
       });
       const result = await executeEngine(ctx);
       setEngineResults(result);
@@ -433,9 +434,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineCtx({
       actionData: parsedActionData!,
       requireData: actionRequireData,
+      wallet,
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);

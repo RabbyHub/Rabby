@@ -58,7 +58,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const handleRetry = async () => {
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
-      message.success(t('page.signFooterBar.ledger.resubmitted'));
+      message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);

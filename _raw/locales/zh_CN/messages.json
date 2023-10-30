@@ -637,7 +637,8 @@
           "submitFailed": "提交失败",
           "pendingBroadcast": "Pending: 等待广播",
           "pendingBroadcasted": "Pending: 已广播",
-          "withdrawed": "已快捷取消"
+          "withdrawed": "已快捷取消",
+          "pendingBroadcastFailed": "Pending: 广播失败"
         },
         "tips": {
           "canNotCancel": "无法加速或取消：不是第一个待完成的交易",
@@ -1053,7 +1054,7 @@
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
         "notConnected": "你的钱包未连接，请重新连接",
         "resent": "重试",
-        "signing": "签名请求发送中",
+        "siging": "签名请求发送中",
         "signError": "Ledger 签名错误:",
         "txRejected": "交易已拒绝",
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
@@ -1128,6 +1129,7 @@
       "eip1559Desc2": "在 Rabby 中，Priority Fee（小费）= Max Fee - Base Fee。\n设置 Max Priority Fee 后，将从中扣除 Base Fee，剩下的部分将作为小费给予矿工",
       "enoughSafeSigCollected": "已收集到足够的签名",
       "failToFetchGasCost": "获取矿工费失败",
+      "importedAddress": "已导入地址",
       "fakeTokenAlert": "这是由 Rabby 标记的诈骗代币",
       "firstOnChain": "首次链上交易",
       "floorPrice": "地板价",
@@ -1155,7 +1157,7 @@
       "multiSigChainNotMatch": "多签地址不在本链上，无法发起交易",
       "myMark": "我的标记",
       "myNativeTokenBalance": "我的 {{symbol}} 余额：{{amount}} {{symbol}}",
-      "nativeTokenNotEnoughForGas": "你的钱包里没有足够的 Gas",
+      "nativeTokenNotEngouthForGas": "你的钱包里没有足够的 Gas",
       "neverInteracted": "之前没有交互过",
       "neverTransacted": "之前没有交易过",
       "nftApprove": {
@@ -1214,7 +1216,7 @@
         "nftNotSupport": "不支持 NFT",
         "title": "发送 NFT"
       },
-      "sigCantDecode": "该签名无法被 Rabby 解码，但这并不意味着有任何风险",
+      "sigCantDecode": "该签名无法被 Rabby 解码",
       "signTransactionOnChain": "签署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最终只会完成其中一项",
       "submitMultisig": {
@@ -1225,6 +1227,7 @@
         "failLoadReceiveToken": "加载失败",
         "minReceive": "最少收到",
         "notPaymentAddress": "非当前付款地址",
+        "unknownAddress": "未知地址",
         "payToken": "卖出",
         "receiveToken": "买入",
         "receiver": "接收地址",
@@ -1460,7 +1463,7 @@
       "opened": "已打开",
       "closed": "已关闭",
       "EditRPCModal": {
-        "invalidRPCUrl": "RPC URL 无效",
+        "invalidRPCUrl": " RPC URL 无效",
         "invalidChainId": "Chain ID 无效",
         "rpcAuthFailed": "RPC 验证失败",
         "title": "编辑 RPC",
@@ -1511,19 +1514,19 @@
       "gnosisChainDesc": "该地址部署于  {{count}} 条链上"
     },
     "backupPrivateKey": {
-      "alert": "This Private Key is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
       "clickToShowQr": "点击展示私钥二维码",
       "clickToShow": "点击展示私钥",
       "title": "备份私钥"
     },
     "backupSeedPhrase": {
-      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or reveal it to others, otherwise you might lose your assets forever. Please view it in a secure environment and keep it carefully.",
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
       "clickToShow": "点击展示助记词",
       "copySeedPhrase": "复制助记词",
       "title": "备份助记词"
     },
     "ethSign": {
-      "alert": "'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
+      "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
     },
     "createPassword": {
       "agree": "我已阅读并同意 <1/> <2>Terms of Use</2>",

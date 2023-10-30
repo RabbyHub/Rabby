@@ -357,7 +357,7 @@ const OptionList = ({
         <img src={IconFind} alt="" />
         <div className="alert-error-message">
           <Trans i18nKey="page.signTx.SafeNonceSelector.error.pendingList">
-            Failed to load pending transactions,{' '}
+            Fail to load pending transactions,{' '}
             <span
               onClick={() => {
                 refreshAsync();

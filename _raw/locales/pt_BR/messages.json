@@ -4,7 +4,7 @@
       "title": "Transações",
       "empty": {
         "title": "Sem transações",
-        "desc": "Sem transações encontradas na <1>rede suportada</1>"
+        "desc": " Sem transações encontradas na <1>rede suportada</1>"
       },
       "explain": {
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",
@@ -22,7 +22,7 @@
       "gasLimitNotEnough": "Limite de Gas é menor que 21000. A Transação não será efetuada",
       "gasLimitLessThanExpect": "Limite de Gas é baixo. Existe 1% de chance da sua transação falhar.",
       "gasLimitLessThanGasUsed": "Limite de Gas é baixo. Existe 95% de chance da sua transação falhar.",
-      "nativeTokenNotEnoughForGas": "Você não tem Gas suficiente em sua carteira ",
+      "nativeTokenNotEngouthForGas": "Você não tem Gas suficiente em sua carteira ",
       "nonceLowerThanExpect": "O Nonce é baixo, o nonce minimo precisa ser {{0}}",
       "canOnlyUseImportedAddress": "Você só pode usar Endereços importados para transacionar",
       "multiSigChainNotMatch": "Endereços Multi-assinatura não estão nessa rede, não é possivel iniciar transação",
@@ -176,7 +176,7 @@
       "signTransactionOnChain": "Assinar Transação {{chain}}",
       "viewRaw": "Ver Raw",
       "unknownActionType": "Tipo de ação desconhecido",
-      "sigCantDecode": "Esta assinatura não pode ser decodificada pela Rabby, mas isso não implica em nenhum risco",
+      "sigCantDecode": "Esta assinatura não pode ser decodificada pela Rabby",
       "nftCollection": "Coleção de NFT",
       "floorPrice": "Preço mínimo",
       "contractAddress": "Endereço do Contrato",
@@ -252,7 +252,7 @@
         "resent": "Reenviar",
         "signError": "Erro de assinatura Ledger:",
         "notConnected": "Sua carteira não está conectada. Por favor, reconecte.",
-        "signing": "Enviando solicitação de assinatura...",
+        "siging": "Enviando solicitação de assinatura...",
         "txRejected": "Transação rejeitada",
         "unlockAlert": "Por favor, conecte e desbloqueie o seu Ledger, abra o Ethereum nele",
         "updateFirmwareAlert": "Por favor, atualize o firmware e o aplicativo Ethereum no seu Ledger",

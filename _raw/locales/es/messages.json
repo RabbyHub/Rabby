@@ -4,7 +4,7 @@
       "title": "Transacciones",
       "empty": {
         "title": "No hay transacciones",
-        "desc": "No se encontraron transacciones en <1>cadenas soportadas</1>"
+        "desc": " No se encontraron transacciones en <1>cadenas soportadas</1>"
       },
       "explain": {
         "approve": "Aprobar {{amount}} {{symbol}} para {{project}}",
@@ -22,7 +22,7 @@
       "gasLimitNotEnough": "El límite de gas es inferior a 21000. No se puede enviar la transacción",
       "gasLimitLessThanExpect": "El límite de gas es bajo. Hay un 1% de probabilidad de que la transacción falle.",
       "gasLimitLessThanGasUsed": "El límite de gas es demasiado bajo. Hay un 95% de probabilidad de que la transacción falle.",
-      "nativeTokenNotEnoughForGas": "No tienes suficiente gas en tu billetera",
+      "nativeTokenNotEngouthForGas": "No tienes suficiente gas en tu billetera",
       "nonceLowerThanExpect": "El nonce es demasiado bajo, el mínimo debería ser {{0}}",
       "canOnlyUseImportedAddress": "Solo puedes usar direcciones importadas para firmar",
       "multiSigChainNotMatch": "Las direcciones multi-firma no están en esta cadena y no pueden iniciar transacciones",
@@ -176,7 +176,7 @@
       "signTransactionOnChain": "Firmar Transacción en {{chain}}",
       "viewRaw": "Ver en crudo",
       "unknownActionType": "Tipo de acción desconocido",
-      "sigCantDecode": "Esta firma no puede ser decodificada por Rabby, pero esto no implica ningún riesgo",
+      "sigCantDecode": "Esta firma no puede ser decodificada por Rabby",
       "nftCollection": "Colección de NFT",
       "floorPrice": "Precio mínimo",
       "contractAddress": "Dirección del contrato",
@@ -248,7 +248,7 @@
         "resent": "Reenviar",
         "signError": "Error de firma en Ledger:",
         "notConnected": "Tu billetera no está conectada. Por favor, vuelve a conectar.",
-        "signing": "Enviando solicitud de firma...",
+        "siging": "Enviando solicitud de firma...",
         "txRejected": "Transacción rechazada",
         "unlockAlert": "Por favor, conecta y desbloquea tu Ledger, abre Ethereum en él",
         "updateFirmwareAlert": "Por favor, actualiza el firmware y la aplicación Ethereum en tu Ledger",

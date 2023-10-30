@@ -72,6 +72,10 @@ const Swap = ({
     );
   }, [contractWhitelist, requireData]);
 
+  const hasReceiver = useMemo(() => {
+    return !isSameAddress(receiver, requireData.sender);
+  }, [requireData, receiver]);
+
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
     engineResults.forEach((item) => {
@@ -206,7 +210,7 @@ const Swap = ({
             </ul>
           </Row>
         </Col>
-        {engineResultMap['1103'] && (
+        {hasReceiver && (
           <Col>
             <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
@@ -215,8 +219,18 @@ const Swap = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1103']}
                   id="1103"
-                  dangerText={t('page.signTx.swap.notPaymentAddress')}
+                  warningText={t('page.signTx.swap.unknownAddress')}
                 />
+                {!engineResultMap['1103'] && (
+                  <>
+                    <li>
+                      <Values.AccountAlias address={receiver} />
+                    </li>
+                    <li>
+                      <Values.KnownAddress address={receiver} />
+                    </li>
+                  </>
+                )}
               </ul>
             </Row>
           </Col>

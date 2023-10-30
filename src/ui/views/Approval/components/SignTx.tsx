@@ -420,7 +420,7 @@ const checkGasAndNonce = ({
   ) {
     errors.push({
       code: 3001,
-      msg: i18n.t('page.signTx.nativeTokenNotEnoughForGas'),
+      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
       level: 'forbidden',
     });
   }

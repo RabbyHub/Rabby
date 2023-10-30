@@ -1734,6 +1734,21 @@ export class WalletController extends BaseController {
     return null;
   };
 
+  walletConnectSwitchChain = async (account: Account, chainId: number) => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      if (keyring) {
+        await keyring.switchEthereumChain(account.brandName, chainId);
+      }
+    } catch (e) {
+      // ignore
+      console.log('walletconnect error', e);
+      this.killWalletConnectConnector(account.address, account.brandName, true);
+    }
+    return null;
+  };
+
   _currentWalletConnectStashId?: undefined | null | number;
 
   initWalletConnect = async (
@@ -2009,6 +2024,18 @@ export class WalletController extends BaseController {
         this.removeAddress(address, KEYRING_CLASS.WATCH)
       )
     );
+  };
+
+  getAccountByAddress = async (address: string) => {
+    const addressList = await keyringService.getAllAdresses();
+    const account = addressList.find((item) => {
+      return isSameAddress(item.address, address);
+    });
+    return account;
+  };
+
+  hasAddress = (address: string) => {
+    return keyringService.hasAddress(address);
   };
 
   removeAddress = async (

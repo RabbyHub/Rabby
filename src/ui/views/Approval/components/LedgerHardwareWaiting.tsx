@@ -74,7 +74,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const handleRetry = async (showToast = true) => {
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
-      message.success(t('page.signFooterBar.ledger.resubmitted'));
+      message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
     if (sessionStatus === 'DISCONNECTED') return;
@@ -252,7 +252,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     switch (connectStatus) {
       case WALLETCONNECT_STATUS_MAP.WAITING:
         setStatusProp('SENDING');
-        setContent(t('page.signFooterBar.ledger.signing'));
+        setContent(t('page.signFooterBar.ledger.siging'));
         setDescription('');
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTING:

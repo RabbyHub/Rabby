@@ -22,7 +22,7 @@
         "gasLimitNotEnough": "Gas limiti 21000'den az. İşlem gönderilemez",
         "gasLimitLessThanExpect": "Gas limiti düşük. İşlemin başarısız olma olasılığı %1.",
         "gasLimitLessThanGasUsed": "Gas limiti çok düşük. İşlemin başarısız olma olasılığı %95.",
-        "nativeTokenNotEnoughForGas": "Cüzdanınızda yeterli gas yok",
+        "nativeTokenNotEngouthForGas": "Cüzdanınızda yeterli gas yok",
         "nonceLowerThanExpect": "Nonce çok düşük, minimum olması gereken {{0}}",
         "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
         "multiSigChainNotMatch": "Çoklu imza adresleri bu zincirde değil ve işlem başlatılamaz",
@@ -176,7 +176,7 @@
         "signTransactionOnChain": "{{chain}} İşlemi İmzala",
         "viewRaw": "Hamı Görüntüle",
         "unknownActionType": "Bilinmeyen işlem türü",
-        "sigCantDecode": "Bu imza Rabby tarafından çözülemez, ancak bu herhangi bir risk ima etmez",
+        "sigCantDecode": "Bu imza Rabby tarafından çözülemez",
         "nftCollection": "NFT Koleksiyonu",
         "floorPrice": "Taban fiyat",
         "contractAddress": "Kontrat adresi",
@@ -252,8 +252,8 @@
           "resent": "Yeniden gönderildi",
           "signError": "Ledger imza hatası:",
           "notConnected": "Cüzdanınız bağlı değil. Lütfen yeniden bağlayın.",
-          "signing": "İmzalama talebi gönderiliyor...",
-          "txRejected": "İşlem reddedildi",
+          "siging": "İmzalama talebi gönderiliyor...",
+          "txRejected": "İşlem reddedildi",        
           "unlockAlert": "Lütfen Ledger'ınızı takın ve kilidini açın, üzerinde Ethereum'u açın",
           "updateFirmwareAlert": "Lütfen Ledger'ınızdaki firmware ve Ethereum Uygulamasını güncelleyin",
           "txRejectedByLedger": "İşlem Ledger'ınızda reddedildi",
@@ -1374,7 +1374,7 @@
         "clickToShowQr": "Özel anahtar QR Kodunu göstermek için tıklayın"
       },
       "ethSign": {
-        "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için Rabby bu yöntemi desteklememektedir."
+        "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için             Rabby bu yöntemi desteklememektedir."
       },
       "createPassword": {
         "title": "Şifre Oluştur",
@@ -1618,4 +1618,4 @@
       }
     }
   }
-
+  
