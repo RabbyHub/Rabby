@@ -22,6 +22,7 @@ import {
   SIGNATURE_METHOD,
   useCanSwitchSignature,
   useSwitchSignatureByKeystone,
+  KeystoneSignMethodProvider,
 } from './KeystoneWaiting';
 
 enum QRHARDWARE_STATUS {
@@ -254,7 +255,11 @@ const QRHardWareWaiting = ({ params }) => {
 
   const calcSignComponent = useCallback(() => {
     if (USBSignComponent) {
-      return <USBSignComponent />;
+      return (
+        <KeystoneSignMethodProvider value={{}}>
+          <USBSignComponent />
+        </KeystoneSignMethodProvider>
+      );
     }
 
     return (
