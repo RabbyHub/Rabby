@@ -17,6 +17,12 @@ import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-ke
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChainByEnum } from '@/utils/chain';
+import {
+  SwitchButton,
+  SIGNATURE_METHOD,
+  useCanSwitchSignature,
+  useSwitchSignatureByKeystone,
+} from './KeystoneWaiting';
 
 enum QRHARDWARE_STATUS {
   SYNC,
@@ -30,6 +36,12 @@ const QRHardWareWaiting = ({ params }) => {
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
+  const [brand, setBrand] = useState<string>('');
+  const [signMethod, setSignMethod] = useState<SIGNATURE_METHOD>(
+    SIGNATURE_METHOD.QRCODE
+  );
+  const canSwitchSignature = useCanSwitchSignature(brand);
+  const USBSignComponent = useSwitchSignatureByKeystone(status, signMethod);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,6 +67,7 @@ const QRHardWareWaiting = ({ params }) => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
+    setBrand(account.brandName);
     setTitle(
       <div className="flex justify-center items-center">
         <img src={walletBrandContent.icon} className="w-20 mr-8" />
@@ -239,9 +252,13 @@ const QRHardWareWaiting = ({ params }) => {
     );
   }
 
-  return (
-    <section>
-      <div className="flex justify-center qrcode-scanner">
+  const calcSignComponent = useCallback(() => {
+    if (USBSignComponent) {
+      return <USBSignComponent />;
+    }
+
+    return (
+      <>
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
             type={signPayload.payload.type}
@@ -257,6 +274,27 @@ const QRHardWareWaiting = ({ params }) => {
             brandName={walletBrandContent.brand}
             onScan={handleScan}
           />
+        )}
+      </>
+    );
+  }, [status, signPayload, walletBrandContent, USBSignComponent]);
+
+  return (
+    <section>
+      <div className="flex justify-center qrcode-scanner flex-col">
+        {calcSignComponent()}
+        {status === QRHARDWARE_STATUS.SYNC && canSwitchSignature && (
+          <SwitchButton
+            onClick={() => {
+              if (signMethod === SIGNATURE_METHOD.USB) {
+                setSignMethod(SIGNATURE_METHOD.QRCODE);
+              } else {
+                setSignMethod(SIGNATURE_METHOD.USB);
+              }
+            }}
+          >
+            切换签名方式
+          </SwitchButton>
         )}
       </div>
     </section>
