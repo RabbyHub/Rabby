@@ -87,7 +87,7 @@ export const AccountList: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (!hiddenInfo) {
-      createTask(() => fetchAccountsInfo(wallet, data ?? []).then(setList));
+      fetchAccountsInfo(wallet, data ?? []).then(setList);
     } else {
       setList(data ?? []);
     }
@@ -362,7 +362,7 @@ export const AccountList: React.FC<Props> = ({
           render={(balance, record) =>
             hiddenInfo ? (
               <AccountListSkeleton width={100} />
-            ) : record.chains?.length ? (
+            ) : record.chains?.length && balance ? (
               `$${splitNumberByStep(balance.toFixed(2))}`
             ) : null
           }

@@ -25,7 +25,6 @@ import LogoMath from 'ui/assets/walletlogo/math.svg';
 import IconMetaMask from 'ui/assets/walletlogo/metamask.svg';
 import IconMnemonicInk from 'ui/assets/walletlogo/mnemonic-ink.svg';
 import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
-import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import IconOnekey from 'ui/assets/walletlogo/onekey.svg';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey.svg';
 import LogoOnekey from 'ui/assets/walletlogo/onekey.svg';
@@ -56,13 +55,10 @@ import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
 import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
+import LogoMPCVault from 'ui/assets/walletlogo/mpcvault.svg';
 import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 import LogoCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
-import {
-  CHAINS_BY_NET,
-  ensureChainHashValid,
-  ensureChainListValid,
-} from '@/utils/chain';
+import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
@@ -74,7 +70,6 @@ import LogoBinance from 'ui/assets/swap/binance.png';
 import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
-import LogoUniswap from 'ui/assets/swap/uniswap.svg';
 import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
 
 export { default as LANGS } from '../../_raw/locales/index.json';
@@ -130,6 +125,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.TREZOR,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -317,6 +313,7 @@ export const EVENTS = {
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
     TRANSPORT_ERROR: 'TRANSPORT_ERROR',
+    SCAN_ACCOUNT: 'SCAN_ACCOUNT',
   },
   GNOSIS: {
     TX_BUILT: 'TransactionBuilt',
@@ -333,6 +330,7 @@ export const EVENTS = {
     REJECTED: 'COMMON_HARDWARE_REJECTED',
   },
   LOCK_WALLET: 'LOCK_WALLET',
+  RELOAD_TX: 'RELOAD_TX',
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -357,10 +355,11 @@ export enum WALLET_BRAND_TYPES {
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
   Rainbow = 'Rainbow',
-  Bitkeep = 'Bitkeep',
+  Bitkeep = 'Bitget',
   // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
+  MPCVault = 'MPCVault',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -381,7 +380,7 @@ export type IWalletBrandContent = {
 };
 
 export const WALLET_BRAND_CONTENT: {
-  [K in WALLET_BRAND_TYPES]: IWalletBrandContent;
+  [K in string]: IWalletBrandContent;
 } = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
@@ -441,7 +440,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
-    name: 'FireBlocks',
+    name: 'Fireblocks',
     brand: WALLET_BRAND_TYPES.FIREBLOCKS,
     icon: IconFireblocks,
     image: IconFireblocksWithBorder,
@@ -576,7 +575,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.Bitkeep]: {
     id: 22,
-    name: 'Bitkeep',
+    name: 'Bitget Wallet',
     brand: WALLET_BRAND_TYPES.Bitkeep,
     icon: LogoBitkeep,
     image: LogoBitkeep,
@@ -610,6 +609,15 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
+  [WALLET_BRAND_TYPES.MPCVault]: {
+    id: 26,
+    name: 'MPCVault',
+    brand: WALLET_BRAND_TYPES.MPCVault,
+    icon: LogoMPCVault,
+    image: LogoMPCVault,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
 };
 
 export const KEYRING_ICONS = {
@@ -641,7 +649,7 @@ export const KEYRING_PURPLE_LOGOS = {
 };
 
 export const KEYRINGS_LOGOS = {
-  [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
@@ -836,10 +844,8 @@ export const L2_ENUMS = [
 // opstack L2 chains
 export const OP_STACK_ENUMS = [
   CHAINS_ENUM.OP,
-  CHAINS_ENUM.TDEBANK,
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
-  CHAINS_ENUM.MANTLE,
 ];
 
 export const SecurityEngineLevelOrder = [
@@ -935,6 +941,7 @@ export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AVAX,
   CHAINS_ENUM.BASE,
+  CHAINS_ENUM.MANTLE,
 ]);
 
 export const WALLET_SORT_SCORE = [
@@ -963,8 +970,8 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.CoboArgus,
   WALLET_BRAND_TYPES.AMBER,
   WALLET_BRAND_TYPES.FIREBLOCKS,
-  // WALLET_BRAND_TYPES.COBO,
   WALLET_BRAND_TYPES.JADE,
+  WALLET_BRAND_TYPES.MPCVault,
 ].reduce((pre, now, i) => {
   pre[now] = i + 1;
   return pre;
@@ -975,12 +982,12 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
-  [DEX_ENUM.UNISWAP]: {
-    id: DEX_ENUM.UNISWAP,
-    logo: LogoUniswap,
-    name: 'Uniswap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
-  },
+  // [DEX_ENUM.UNISWAP]: {
+  //   id: DEX_ENUM.UNISWAP,
+  //   logo: LogoUniswap,
+  //   name: 'Uniswap',
+  //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
+  // },
   [DEX_ENUM.ONEINCH]: {
     id: DEX_ENUM.ONEINCH,
     logo: Logo1inch,
@@ -1058,3 +1065,9 @@ export const SIGN_PERMISSION_OPTIONS = [
     value: SIGN_PERMISSION_TYPES.TESTNET,
   },
 ];
+
+export enum CANCEL_TX_TYPE {
+  QUICK_CANCEL = 'QUICK_CANCEL',
+  ON_CHAIN_CANCEL = 'ON_CHAIN_CANCEL',
+}
+export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];

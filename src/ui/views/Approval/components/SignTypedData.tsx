@@ -16,6 +16,7 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   CHAINS,
+  REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
@@ -50,6 +51,7 @@ interface SignTypedDataProps {
     name: string;
   };
   isGnosis?: boolean;
+  isSend?: boolean;
   account?: Account;
 }
 
@@ -144,7 +146,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   }, [engineResults, currentTx]);
 
-  const { data, session, method, isGnosis, account } = params;
+  const { data, session, method, isGnosis, isSend, account } = params;
   let parsedMessage = '';
   let _message = '';
   try {
@@ -315,6 +317,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             version: 'V4',
           }
         );
+        if (isSend) {
+          wallet.clearPageStateCache();
+        }
         resolveApproval({
           uiRequestComponent: WaitingSignMessageComponent[params.account.type],
           type: params.account.type,
@@ -343,6 +348,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           } else {
             await wallet.gnosisAddSignature(params.account.address, result);
             await wallet.postGnosisTransaction();
+          }
+          if (isSend) {
+            wallet.clearPageStateCache();
           }
           resolveApproval(result, false, true);
         } catch (e) {
@@ -387,6 +395,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
+    if (
+      currentAccount?.type &&
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+    ) {
+      rejectApproval('This address can not sign text message', false, true);
+    }
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
@@ -408,9 +422,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         wallet
       );
       setActionRequireData(requireData);
-      const ctx = formatSecurityEngineCtx({
+      const ctx = await formatSecurityEngineCtx({
         actionData: data,
         requireData,
+        wallet,
       });
       const result = await executeEngine(ctx);
       setEngineResults(result);
@@ -419,9 +434,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineCtx({
       actionData: parsedActionData!,
       requireData: actionRequireData,
+      wallet,
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -513,6 +529,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : signTypedData || data[1]}
             message={parsedMessage}
+            origin={params.session.origin}
           />
         )}
       </div>

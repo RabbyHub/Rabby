@@ -11,9 +11,12 @@ import ConnectWiredSVG from 'ui/assets/approval/connect-wired.svg';
 import ConnectWirelessSVG from 'ui/assets/approval/connect-wireless.svg';
 import ConnectQRCodeSVG from 'ui/assets/approval/connect-qrcode.svg';
 import ConnectWalletConnectSVG from 'ui/assets/approval/connect-walletconnect.svg';
-import { noop } from '@/ui/utils';
+import { noop, useCommonPopupView } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
 import { Dots } from './Dots';
+
+const PRIVATE_KEY_ERROR_HEIGHT = 217;
+const OTHER_ERROR_HEIGHT = 392;
 
 export interface Props {
   hdType: 'wired' | 'wireless' | 'qrcode' | 'privatekey' | 'walletconnect';
@@ -52,6 +55,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   const [iconColor, setIconColor] = React.useState('');
   const [contentColor, setContentColor] = React.useState('');
   const { t } = useTranslation();
+  const { setHeight, height } = useCommonPopupView();
 
   const sendUrl = React.useMemo(() => {
     switch (hdType) {
@@ -98,6 +102,30 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
     }
   }, [status]);
 
+  const lastNormalHeight = React.useRef(0);
+
+  React.useEffect(() => {
+    if (
+      height !== lastNormalHeight.current &&
+      height !== OTHER_ERROR_HEIGHT &&
+      height !== PRIVATE_KEY_ERROR_HEIGHT
+    ) {
+      lastNormalHeight.current = height;
+    }
+  }, [height]);
+
+  React.useEffect(() => {
+    if (status === 'FAILED' || status === 'REJECTED') {
+      if (hdType === 'privatekey') {
+        setHeight(PRIVATE_KEY_ERROR_HEIGHT);
+      } else {
+        setHeight(OTHER_ERROR_HEIGHT);
+      }
+    } else {
+      setHeight(lastNormalHeight.current);
+    }
+  }, [setHeight, hdType, status]);
+
   return (
     <div className={clsx('flex flex-col items-center', 'relative flex-1')}>
       {sendUrl ? (
@@ -133,9 +161,13 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       <div className="absolute bottom-0">
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}
         {status === 'WAITING' && <FooterResend onResend={onRetry} />}
-        {status === 'FAILED' && <FooterResend onResend={onRetry} />}
+        {status === 'FAILED' && (
+          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+        )}
         {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
-        {status === 'REJECTED' && <FooterResend onResend={onRetry} />}
+        {status === 'REJECTED' && (
+          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+        )}
         {status === 'SUBMITTING' && (
           <FooterButton
             text={t('page.signFooterBar.submitTx')}

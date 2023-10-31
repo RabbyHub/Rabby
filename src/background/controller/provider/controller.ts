@@ -27,12 +27,12 @@ import {
   pageStateCacheService,
   signTextHistoryService,
   RPCService,
-  i18n,
   swapService,
+  transactionBroadcastWatchService,
+  notificationService,
 } from 'background/service';
-import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
-import { Tx } from 'background/service/openapi';
+import { Tx, TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
 import {
@@ -49,7 +49,7 @@ import { Account } from 'background/service/preference';
 import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
-import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
+import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
 import eventBus from '@/eventBus';
@@ -91,6 +91,9 @@ interface ApprovalRes extends Tx {
   traceId?: string;
   $ctx?: any;
   signingTxId?: string;
+  pushType?: TxPushType;
+  lowGasDeadline?: number;
+  reqId?: string;
 }
 
 interface Web3WalletPermission {
@@ -335,6 +338,9 @@ class ProviderController extends BaseController {
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
     const isCoboSafe = !!txParams.isCoboSafe;
+    const pushType = approvalRes.pushType || 'default';
+    const lowGasDeadline = approvalRes.lowGasDeadline;
+    const preReqId = approvalRes.reqId;
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -347,6 +353,9 @@ class ProviderController extends BaseController {
     delete approvalRes.extra;
     delete approvalRes.$ctx;
     delete approvalRes.signingTxId;
+    delete approvalRes.pushType;
+    delete approvalRes.lowGasDeadline;
+    delete approvalRes.reqId;
     delete txParams.isCoboSafe;
 
     let is1559 = is1559Tx(approvalRes);
@@ -413,6 +422,22 @@ class ProviderController extends BaseController {
     ) {
       await new Promise((r) => setTimeout(r, 200));
     }
+    const statsData = {
+      signed: false,
+      signedSuccess: false,
+      submit: false,
+      submitSuccess: false,
+      type: currentAccount.brandName,
+      chainId: chainItem?.serverId || '',
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      preExecSuccess: cacheExplain
+        ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        : true,
+      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: options?.data?.$ctx?.ga?.source || '',
+      trigger: options?.data?.$ctx?.ga?.trigger || '',
+    };
+
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,
@@ -425,21 +450,29 @@ class ProviderController extends BaseController {
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
       ) {
         signedTransactionSuccess = true;
-        stats.report('signedTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: true,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('signedTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: true,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.signed = true;
+        statsData.signedSuccess = true;
         return;
       }
-      const onTransactionSubmitted = (hash: string) => {
+
+      const onTransactionCreated = (info: {
+        hash?: string;
+        reqId?: string;
+        pushType?: TxPushType;
+      }) => {
+        const { hash, reqId, pushType = 'default' } = info;
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -452,25 +485,30 @@ class ProviderController extends BaseController {
         }
 
         const { r, s, v, ...other } = approvalRes;
-        swapService.postSwap(chain, hash, other);
 
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: true,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        if (hash) {
+          swapService.postSwap(chain, hash, other);
+        }
+
+        // stats.report('submitTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: true,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.submit = true;
+        statsData.submitSuccess = true;
         if (isSend) {
           pageStateCacheService.clear();
         }
-        transactionHistoryService.addTx(
-          {
+        transactionHistoryService.addTx({
+          tx: {
             rawTx: {
               ...rawTx,
               ...approvalRes,
@@ -482,114 +520,40 @@ class ProviderController extends BaseController {
             isCompleted: false,
             hash,
             failed: false,
+            reqId,
+            pushType,
           },
-          cacheExplain,
-          action,
+          explain: cacheExplain,
+          actionData: action,
           origin,
-          options?.data?.$ctx
-        );
+          $ctx: options?.data?.$ctx,
+          isDropFailed: true,
+        });
         transactionHistoryService.removeSigningTx(signingTxId!);
-        transactionWatchService.addTx(
-          `${txParams.from}_${approvalRes.nonce}_${chain}`,
-          {
+        if (hash) {
+          transactionWatchService.addTx(
+            `${txParams.from}_${approvalRes.nonce}_${chain}`,
+            {
+              nonce: approvalRes.nonce,
+              hash,
+              chain,
+            }
+          );
+        }
+        if (reqId && !hash) {
+          transactionBroadcastWatchService.addTx(reqId, {
+            reqId,
+            address: txParams.from,
+            chainId: CHAINS[chain].id,
             nonce: approvalRes.nonce,
-            hash,
-            chain,
-          }
-        );
+          });
+        }
 
         if (isCoboSafe) {
           preferenceService.resetCurrentCoboSafeAddress();
         }
       };
-      if (typeof signedTx === 'string') {
-        onTransactionSubmitted(signedTx);
-        return signedTx;
-      }
-
-      const buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-        type: is1559 ? '0x2' : '0x0',
-      });
-
-      // Report address type(not sensitive information) to sentry when tx signature is invalid
-      if (!buildTx.verifySignature()) {
-        if (!buildTx.v) {
-          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-        } else if (!buildTx.s) {
-          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-        } else if (!buildTx.r) {
-          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-        } else {
-          Sentry.captureException(
-            new Error(`invalid signature, ${keyring.type}`)
-          );
-        }
-      }
-      signedTransactionSuccess = true;
-      stats.report('signedTransaction', {
-        type: currentAccount.brandName,
-        chainId: chainItem?.serverId || '',
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        success: true,
-        preExecSuccess: cacheExplain
-          ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-          : true,
-        createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: options?.data?.$ctx?.ga?.source || '',
-        trigger: options?.data?.$ctx?.ga?.trigger || '',
-      });
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.TX_SUBMITTING,
-      });
-      try {
-        validateGasPriceRange(approvalRes);
-        let hash = '';
-        if (RPCService.hasCustomRPC(chain)) {
-          const txData: any = {
-            ...approvalRes,
-            gasLimit: approvalRes.gas,
-            r: addHexPrefix(signedTx.r),
-            s: addHexPrefix(signedTx.s),
-            v: addHexPrefix(signedTx.v),
-          };
-          if (is1559) {
-            txData.type = '0x2';
-          }
-          const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
-          hash = await RPCService.requestCustomRPC(
-            chain,
-            'eth_sendRawTransaction',
-            [rawTx]
-          );
-          try {
-            openapiService.traceTx(
-              hash,
-              traceId || '',
-              chainItem?.serverId || ''
-            );
-          } catch (e) {
-            // DO nothing
-          }
-        } else {
-          hash = await openapiService.pushTx(
-            {
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-              value: approvalRes.value || '0x0',
-            },
-            traceId
-          );
-        }
-        onTransactionSubmitted(hash);
-        return hash;
-      } catch (e: any) {
+      const onTransactionSubmitFailed = (e: any) => {
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -639,24 +603,145 @@ class ProviderController extends BaseController {
         //   errMsg
         // );
         // transactionHistoryService.removeSigningTx(signingTxId!);
+        notificationService.setStatsData(statsData);
         throw new Error(errMsg);
+      };
+
+      if (typeof signedTx === 'string') {
+        onTransactionCreated({
+          hash: signedTx,
+          pushType: 'default',
+        });
+        if (currentAccount.type === KEYRING_TYPE.WalletConnectKeyring) {
+          statsData.signed = true;
+          statsData.signedSuccess = true;
+        }
+        notificationService.setStatsData(statsData);
+        return signedTx;
+      }
+
+      const buildTx = TransactionFactory.fromTxData({
+        ...approvalRes,
+        r: addHexPrefix(signedTx.r),
+        s: addHexPrefix(signedTx.s),
+        v: addHexPrefix(signedTx.v),
+        type: is1559 ? '0x2' : '0x0',
+      });
+
+      // Report address type(not sensitive information) to sentry when tx signature is invalid
+      if (!buildTx.verifySignature()) {
+        if (!buildTx.v) {
+          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
+        } else if (!buildTx.s) {
+          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
+        } else if (!buildTx.r) {
+          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
+        } else {
+          Sentry.captureException(
+            new Error(`invalid signature, ${keyring.type}`)
+          );
+        }
+      }
+      signedTransactionSuccess = true;
+      // stats.report('signedTransaction', {
+      //   type: currentAccount.brandName,
+      //   chainId: chainItem?.serverId || '',
+      //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      //   success: true,
+      //   preExecSuccess: cacheExplain
+      //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+      //     : true,
+      //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      //   source: options?.data?.$ctx?.ga?.source || '',
+      //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+      // });
+      statsData.signed = true;
+      statsData.signedSuccess = true;
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.TX_SUBMITTING,
+      });
+      try {
+        validateGasPriceRange(approvalRes);
+        let hash: string | undefined = undefined;
+        let reqId: string | undefined = undefined;
+        if (RPCService.hasCustomRPC(chain)) {
+          const txData: any = {
+            ...approvalRes,
+            gasLimit: approvalRes.gas,
+            r: addHexPrefix(signedTx.r),
+            s: addHexPrefix(signedTx.s),
+            v: addHexPrefix(signedTx.v),
+          };
+          if (is1559) {
+            txData.type = '0x2';
+          }
+          const tx = TransactionFactory.fromTxData(txData);
+          const rawTx = bufferToHex(tx.serialize());
+          hash = await RPCService.requestCustomRPC(
+            chain,
+            'eth_sendRawTransaction',
+            [rawTx]
+          );
+
+          onTransactionCreated({ hash, reqId, pushType });
+        } else {
+          // hash = await openapiService.pushTx(
+          //   {
+          //     ...approvalRes,
+          //     r: bufferToHex(signedTx.r),
+          //     s: bufferToHex(signedTx.s),
+          //     v: bufferToHex(signedTx.v),
+          //     value: approvalRes.value || '0x0',
+          //   },
+          //   traceId
+          // );
+          const res = await openapiService.submitTx({
+            tx: {
+              ...approvalRes,
+              r: bufferToHex(signedTx.r),
+              s: bufferToHex(signedTx.s),
+              v: bufferToHex(signedTx.v),
+              value: approvalRes.value || '0x0',
+            },
+            push_type: pushType,
+            low_gas_deadline: lowGasDeadline,
+            req_id: preReqId || '',
+            origin,
+          });
+          hash = res.req.tx_id || undefined;
+          reqId = res.req.id || undefined;
+          if (res.req.push_status === 'failed') {
+            onTransactionSubmitFailed(new Error('Submit tx failed'));
+          } else {
+            onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
+          }
+        }
+
+        return hash;
+      } catch (e: any) {
+        console.log('submit tx failed', e);
+        onTransactionSubmitFailed(e);
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
-        stats.report('signedTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: false,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-        });
+        // stats.report('signedTransaction', {
+        //   type: currentAccount.brandName,
+        //   chainId: chainItem?.serverId || '',
+        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        //   success: false,
+        //   preExecSuccess: cacheExplain
+        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+        //     : true,
+        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        //   source: options?.data?.$ctx?.ga?.source || '',
+        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
+        // });
+        statsData.signed = true;
+        statsData.signedSuccess = false;
       }
       // transactionHistoryService.removeSigningTx(signingTxId!);
+      notificationService.setStatsData(statsData);
       throw new Error(e);
     }
   };
@@ -1171,6 +1256,22 @@ class ProviderController extends BaseController {
       ...req,
       data: { method: 'eth_getTransactionByHash', params: [hash] },
     });
+  };
+
+  @Reflect.metadata('APPROVAL', [
+    'ImportAddress',
+    ({ data }) => {
+      if (!data.params[0]) {
+        throw ethErrors.rpc.invalidParams('params is required but got []');
+      }
+      if (!data.params[0]?.chainId) {
+        throw ethErrors.rpc.invalidParams('chainId is required');
+      }
+    },
+    { height: 628 },
+  ])
+  walletImportAddress = async () => {
+    return null;
   };
 }
 

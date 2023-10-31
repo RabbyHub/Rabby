@@ -12,7 +12,7 @@ import { TokenChange, TxId, TxInterAddressExplain } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 
-import IconInputData from './icons/input-data.svg';
+import IconInputData from '../icons/input-data.svg';
 import { useRabbySelector } from '@/ui/store';
 import { Skeleton, Tooltip } from 'antd';
 import { AddressType } from '@/ui/utils/address';
@@ -178,10 +178,20 @@ function useClientParseTx({
       data.cate_id &&
       ['send', 'receive'].includes(data.cate_id) &&
       ((!data.receives.length && !data.receives.length) ||
-        data.receives?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
-          .length === 1 ||
-        data.sends?.filter((v) => isTokenItemNative(tokenDict[v.token_id]))
-          .length === 1)
+        data.receives?.filter((v) => {
+          const tokenId = v.token_id;
+          const tokenUUID = `${data.chain}_token:${tokenId}`;
+          return isTokenItemNative(
+            tokenDict[v.token_id] || tokenDict[tokenUUID]
+          );
+        }).length === 1 ||
+        data.sends?.filter((v) => {
+          const tokenId = v.token_id;
+          const tokenUUID = `${data.chain}_token:${tokenId}`;
+          return isTokenItemNative(
+            tokenDict[v.token_id] || tokenDict[tokenUUID]
+          );
+        }).length === 1)
     );
   }, [data, chainItem?.nativeTokenSymbol, tokenDict]);
 

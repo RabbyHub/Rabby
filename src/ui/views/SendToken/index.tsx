@@ -48,6 +48,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import {
   findChainByEnum,
+  findChainByID,
   findChainByServerID,
   makeTokenFromChain,
 } from '@/utils/chain';
@@ -303,10 +304,19 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+
+  const [safeInfo, setSafeInfo] = useState<{
+    chainId: number;
+    nonce: number;
+  } | null>(null);
   const persistPageStateCache = useCallback(
     async (nextStateCache?: {
       values?: FormSendToken;
       currentToken?: TokenItem | null;
+      safeInfo?: {
+        chainId: number;
+        nonce: number;
+      };
     }) => {
       await wallet.setPageStateCache({
         path: history.location.pathname,
@@ -315,11 +325,12 @@ const SendToken = () => {
         states: {
           values: form.getFieldsValue(),
           currentToken,
+          safeInfo,
           ...nextStateCache,
         },
       });
     },
-    [wallet, history, form, currentToken]
+    [wallet, history, form, currentToken, safeInfo]
   );
   const [inited, setInited] = useState(false);
   const [gasList, setGasList] = useState<GasLevel[]>([]);
@@ -533,6 +544,9 @@ const SendToken = () => {
       data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
       isSend: true,
     };
+    if (safeInfo?.nonce != null) {
+      params.nonce = safeInfo.nonce;
+    }
     if (isNativeToken) {
       params.to = to;
       delete params.data;
@@ -908,7 +922,12 @@ const SendToken = () => {
   };
 
   const handleClickBack = () => {
-    history.replace('/');
+    const from = (history.location.state as any)?.from;
+    if (from) {
+      history.replace(from);
+    } else {
+      history.replace('/');
+    }
   };
 
   const loadCurrentToken = async (
@@ -938,6 +957,27 @@ const SendToken = () => {
       }
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
+    } else if ((history.location.state as any)?.safeInfo) {
+      const safeInfo: {
+        nonce: number;
+        chainId: number;
+      } = (history.location.state as any)?.safeInfo;
+
+      const chain = findChainByID(safeInfo.chainId);
+      let nativeToken: TokenItem | null = null;
+      if (chain) {
+        setChain(chain.enum);
+        nativeToken = await loadCurrentToken(
+          chain.nativeTokenAddress,
+          chain.serverId,
+          account.address
+        );
+      }
+      setSafeInfo(safeInfo);
+      persistPageStateCache({
+        safeInfo,
+        currentToken: nativeToken || currentToken,
+      });
     } else {
       let tokenFromOrder: TokenItem | null = null;
 
@@ -967,6 +1007,9 @@ const SendToken = () => {
           if (cache.states.currentToken) {
             setCurrentToken(cache.states.currentToken);
             needLoadToken = cache.states.currentToken;
+          }
+          if (cache.states.safeInfo) {
+            setSafeInfo(cache.states.safeInfo);
           }
         }
       }
@@ -1124,6 +1167,7 @@ const SendToken = () => {
               onChange={handleChainChanged}
               disabledTips={'Not supported'}
               supportChains={undefined}
+              readonly={!!safeInfo}
             />
             <div className={clsx('section-title mt-[10px]')}>
               {t('page.sendToken.sectionFrom.title')}

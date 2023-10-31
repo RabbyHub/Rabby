@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
@@ -36,7 +36,7 @@ const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 const AddAddressOptions = () => {
   const history = useHistory();
   const { t } = useTranslation();
-
+  const location = useLocation();
   const wallet = useWallet();
 
   const [selectedWalletType, setSelectedWalletType] = useState('');
@@ -101,7 +101,14 @@ const AddAddressOptions = () => {
 
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
-    (history, item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
+    (
+      history,
+      item: Valueof<typeof WALLET_BRAND_CONTENT>,
+      params?: {
+        address: string;
+        chainId: number;
+      }
+    ) => {
       if (item.connectType === 'BitBox02Connect') {
         openInternalPageInTab('import/hardware?connectType=BITBOX02');
       } else if (item.connectType === 'GridPlusConnect') {
@@ -130,6 +137,7 @@ const AddAddressOptions = () => {
       ) {
         history.push({
           pathname: '/import/cobo-argus',
+          state: params,
         });
       } else {
         history.push({
@@ -142,8 +150,13 @@ const AddAddressOptions = () => {
     },
     []
   );
-  const connectRouter = (item: Valueof<typeof WALLET_BRAND_CONTENT>) =>
-    handleRouter((h) => connectRouter1(h, item));
+  const connectRouter = (
+    item: Valueof<typeof WALLET_BRAND_CONTENT>,
+    params?: {
+      address: string;
+      chainId: number;
+    }
+  ) => handleRouter((h) => connectRouter1(h, item, params));
   const brandWallet = React.useMemo(
     () =>
       (Object.values(WALLET_BRAND_CONTENT)
@@ -252,6 +265,30 @@ const AddAddressOptions = () => {
     [t]
   );
 
+  const [preventMount, setPreventMount] = React.useState(true);
+  React.useEffect(() => {
+    if (location.state) {
+      const { type, address, chainId } = location.state as any;
+      const brandContentKey = Object.keys(WALLET_BRAND_CONTENT).find((key) => {
+        const item = WALLET_BRAND_CONTENT[key] as IWalletBrandContent;
+        return item.name === type;
+      });
+
+      if (brandContentKey) {
+        connectRouter(WALLET_BRAND_CONTENT[brandContentKey], {
+          address,
+          chainId,
+        });
+      } else {
+        setPreventMount(false);
+      }
+    } else {
+      setPreventMount(false);
+    }
+  }, [location.state, connectRouter]);
+
+  if (preventMount) return null;
+
   return (
     <div className="rabby-container pb-[12px]" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
@@ -259,7 +296,7 @@ const AddAddressOptions = () => {
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
-                <div className="pl-[12px] text-13 leading-[15px] text-gray-title font-medium">
+                <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
               </Item>
@@ -355,10 +392,10 @@ const AddAddressOptions = () => {
           return (
             <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
               <div className="flex flex-col pl-[12px]">
-                <div className=" text-13 leading-[15px] text-gray-title font-medium">
+                <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
-                <div className="text-12 text-gray-subTitle">{e.subText}</div>
+                <div className="text-12 text-r-neutral-body">{e.subText}</div>
               </div>
             </Item>
           );

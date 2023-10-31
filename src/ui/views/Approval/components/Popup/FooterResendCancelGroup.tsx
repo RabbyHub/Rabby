@@ -16,11 +16,23 @@ export const FooterResendCancelGroup: React.FC<Props> = ({
 
   return (
     <div className={clsx('flex gap-[16px]')}>
-      <Button className="w-[148px] h-[40px]" type="primary" onClick={onResend}>
+      <Button
+        className={clsx(
+          'w-[148px] h-[40px] text-blue-light border-blue-light',
+          'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+          'before:content-none'
+        )}
+        type="ghost"
+        onClick={onResend}
+      >
         {t('page.signFooterBar.resend')}
       </Button>
       <Button
-        className="w-[148px] h-[40px] text-blue-light border-blue-light"
+        className={clsx(
+          'w-[148px] h-[40px] text-blue-light border-blue-light',
+          'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+          'before:content-none'
+        )}
         type="ghost"
         onClick={onCancel}
       >

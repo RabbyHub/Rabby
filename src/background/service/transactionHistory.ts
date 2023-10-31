@@ -2,8 +2,14 @@ import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
-import openapiService, { Tx, ExplainTxResponse } from './openapi';
-import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
+import openapiService, {
+  Tx,
+  ExplainTxResponse,
+  TxPushType,
+  testnetOpenapiService,
+  TxRequest,
+} from './openapi';
+import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
@@ -13,17 +19,23 @@ import {
   ActionRequireData,
   ParsedActionData,
 } from '@/ui/views/Approval/components/Actions/utils';
-import { sortBy } from 'lodash';
+import { sortBy, max, groupBy } from 'lodash';
+import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
+import eventBus from '@/eventBus';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
   createdAt: number;
   isCompleted: boolean;
-  hash: string;
+  hash?: string;
   failed: boolean;
   gasUsed?: number;
   isSubmitFailed?: boolean;
   site?: ConnectedSite;
+
+  pushType?: TxPushType;
+  reqId?: string;
+  isWithdrawed?: boolean;
 }
 
 export interface TransactionSigningItem {
@@ -194,7 +206,9 @@ class TxHistory {
   getPendingCount(address: string) {
     const normalizedAddress = address.toLowerCase();
     return Object.values(this._availableTxs[normalizedAddress] || {}).filter(
-      (item) => item.isPending && !item.isSubmitFailed
+      (item) => {
+        return checkIsPendingTxGroup(item);
+      }
     ).length;
   }
 
@@ -202,7 +216,9 @@ class TxHistory {
     const normalizedAddress = address.toLowerCase();
     const pendingTxs = Object.values(
       this.store.transactions[normalizedAddress] || {}
-    ).filter((item) => item.isPending && !item.isSubmitFailed);
+    ).filter((item) => {
+      return checkIsPendingTxGroup(item);
+    });
     return pendingTxs.filter(
       (item) => item.nonce === nonce && item.chainId === chainId
     );
@@ -267,13 +283,21 @@ class TxHistory {
     }
   }
 
-  addTx(
-    tx: TransactionHistoryItem,
-    explain: TransactionGroup['explain'],
-    actionData: TransactionGroup['action'],
-    origin: string,
-    $ctx?: any
-  ) {
+  addTx({
+    tx,
+    explain,
+    actionData,
+    origin,
+    $ctx,
+    isDropFailed = true,
+  }: {
+    tx: TransactionHistoryItem;
+    explain: TransactionGroup['explain'];
+    actionData: TransactionGroup['action'];
+    origin: string;
+    $ctx?: any;
+    isDropFailed?: boolean;
+  }) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
@@ -297,20 +321,8 @@ class TxHistory {
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
     }
-    if (this.store.transactions[from][key]) {
-      const group = this.store.transactions[from][key];
-      group.txs.push(tx);
-      if (group.isSubmitFailed) {
-        group.isSubmitFailed = false;
-      }
-      this._setStoreTransaction({
-        ...this.store.transactions,
-        [from]: {
-          ...this.store.transactions[from],
-          [key]: group,
-        },
-      });
-    } else {
+
+    const addNewTxGroup = () => {
       this._setStoreTransaction({
         ...this.store.transactions,
         [from]: {
@@ -328,6 +340,31 @@ class TxHistory {
           },
         },
       });
+    };
+
+    if (this.store.transactions[from][key]) {
+      const group = this.store.transactions[from][key];
+      const maxGasTx = findMaxGasTx(group.txs);
+      const isFailed = group.isSubmitFailed || maxGasTx?.isWithdrawed;
+
+      if (isDropFailed && isFailed) {
+        addNewTxGroup();
+      } else {
+        group.txs.push(tx);
+        if (group.isSubmitFailed) {
+          group.isSubmitFailed = false;
+        }
+
+        this._setStoreTransaction({
+          ...this.store.transactions,
+          [from]: {
+            ...this.store.transactions[from],
+            [key]: group,
+          },
+        });
+      }
+    } else {
+      addNewTxGroup();
     }
 
     this.clearAllExpiredTxs();
@@ -342,7 +379,14 @@ class TxHistory {
     const from = tx.rawTx.from.toLowerCase();
     const target = this.store.transactions[from][key];
     if (!this.store.transactions[from] || !target) return;
-    const index = target.txs.findIndex((t) => t.hash === tx.hash);
+    const index = target.txs.findIndex(
+      (t) => (t.hash && t.hash === tx.hash) || (t.reqId && t.reqId === tx.reqId)
+    );
+
+    if (index === -1) {
+      return;
+    }
+
     target.txs[index] = tx;
     this._setStoreTransaction({
       ...this.store.transactions,
@@ -352,6 +396,97 @@ class TxHistory {
       },
     });
   }
+
+  updateTxByTxRequest = (txRequest: TxRequest) => {
+    const { chainId, from } = txRequest.signed_tx;
+    const nonce = txRequest.nonce;
+
+    const key = `${chainId}-${nonce}`;
+    const address = from.toLowerCase();
+
+    console.log('TxRequest', txRequest);
+    const group = this.store.transactions[address][key];
+    console.log('group', group);
+    if (!this.store.transactions[address] || !group) {
+      return;
+    }
+
+    const tx = group.txs.find(
+      (item) => item.reqId && item.reqId === txRequest.id
+    );
+    console.log(tx);
+    if (!tx) {
+      return;
+    }
+
+    const isSubmitFailed =
+      txRequest.push_status === 'failed' && txRequest.is_finished;
+
+    this.updateSingleTx({
+      ...tx,
+      hash: txRequest.tx_id || undefined,
+      isWithdrawed:
+        txRequest.is_withdraw ||
+        (txRequest.is_finished && !txRequest.tx_id && !txRequest.push_status),
+      isSubmitFailed: isSubmitFailed,
+    });
+    const target = this.store.transactions[from][key];
+    const maxGasTx = findMaxGasTx(target.txs);
+    if (maxGasTx.isSubmitFailed) {
+      target.isSubmitFailed = isSubmitFailed;
+      this._setStoreTransaction({
+        ...this.store.transactions,
+        [from]: {
+          ...this.store.transactions[from],
+          [key]: target,
+        },
+      });
+    }
+  };
+
+  reloadTxRequest = async ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    const key = `${chainId}-${nonce}`;
+    const from = address.toLowerCase();
+    const target = this.store.transactions[from][key];
+    const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
+    console.log('reloadTxRequest', target);
+    if (!target) {
+      return;
+    }
+    const { txs } = target;
+    const unbroadcastedTxs = txs.filter(
+      (tx) =>
+        tx && tx.reqId && !tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
+    ) as (TransactionHistoryItem & { reqId: string })[];
+
+    console.log('reloadTxRequest', unbroadcastedTxs);
+    if (unbroadcastedTxs.length) {
+      const openapi = chain?.isTestnet ? testnetOpenapiService : openapiService;
+      await openapi
+        .getTxRequests(unbroadcastedTxs.map((tx) => tx.reqId))
+        .then((res) => {
+          res.forEach((item, index) => {
+            this.updateTxByTxRequest(item);
+
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.RELOAD_TX,
+              params: {
+                addressList: [address],
+              },
+            });
+          });
+        })
+        .catch((e) => console.error(e));
+    }
+  };
 
   async reloadTx(
     {
@@ -371,18 +506,20 @@ class TxHistory {
     const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
     if (!target) return;
     const { txs } = target;
+
+    const broadcastedTxs = txs.filter(
+      (tx) => tx && tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
+    ) as (TransactionHistoryItem & { hash: string })[];
+
     try {
       const results = await Promise.all(
-        txs
-          .filter((tx) => !!tx)
-          .filter((tx) => !tx.isSubmitFailed)
-          .map((tx) =>
-            openapiService.getTx(
-              chain.serverId,
-              tx.hash,
-              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-            )
+        broadcastedTxs.map((tx) =>
+          openapiService.getTx(
+            chain.serverId,
+            tx.hash!,
+            Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
           )
+        )
       );
       const completed = results.find(
         (result) => result.code === 0 && result.status !== 0
@@ -401,12 +538,20 @@ class TxHistory {
         ...completedTx,
         gasUsed: completed.gas_used,
       });
+      // TOFIX
       this.completeTx({
         address,
         chainId,
         nonce,
         hash: completedTx.hash,
         success: completed.status === 1,
+        reqId: completedTx.reqId,
+      });
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.RELOAD_TX,
+        params: {
+          addressList: [address],
+        },
       });
     } catch (e) {
       if (duration !== false && duration < 1000 * 15) {
@@ -418,6 +563,11 @@ class TxHistory {
     }
   }
 
+  /**
+   * @deprecated
+   * @param address
+   * @returns
+   */
   async loadPendingListQueue(address) {
     const { pendings: pendingList } = await this.getList(address);
 
@@ -463,11 +613,16 @@ class TxHistory {
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
     for (let i = 0; i < list.length; i++) {
-      if (list[i].isPending && !list[i].isSubmitFailed) {
+      if (checkIsPendingTxGroup(list[i])) {
         pendings.push(list[i]);
       } else {
         completeds.push(list[i]);
       }
+      // if (list[i].isPending && !list[i].isSubmitFailed) {
+      //   pendings.push(list[i]);
+      // } else {
+      //   completeds.push(list[i]);
+      // }
     }
 
     return {
@@ -499,11 +654,13 @@ class TxHistory {
     hash,
     success = true,
     gasUsed,
+    reqId,
   }: {
     address: string;
     chainId: number;
     nonce: number;
-    hash: string;
+    hash?: string;
+    reqId?: string;
     success?: boolean;
     gasUsed?: number;
   }) {
@@ -515,7 +672,9 @@ class TxHistory {
     }
     target.isPending = false;
     target.isFailed = !success;
-    const index = target.txs.findIndex((tx) => tx.hash === hash);
+    const index = target.txs.findIndex(
+      (tx) => (tx.hash && tx.hash === hash) || (tx.reqId && tx.reqId === reqId)
+    );
     if (index !== -1) {
       target.txs[index].isCompleted = true;
       target.txs[index].failed = !success;
@@ -579,7 +738,7 @@ class TxHistory {
 
     Object.entries(this.store.transactions).map(([address, record]) => {
       Object.entries(record).map(([key, value]) => {
-        const isPending = value.isPending && !value.isSubmitFailed;
+        const isPending = checkIsPendingTxGroup(value);
         if (isPending) {
           return;
         }
@@ -676,13 +835,20 @@ class TxHistory {
       this.store.transactions[address.toLowerCase()] || {}
     );
     const maxNonceTx = maxBy(
-      list.filter((item) => item.chainId === chainId && !item.isSubmitFailed),
+      list.filter((item) => {
+        const maxGasTx = findMaxGasTx(item.txs);
+        return (
+          item.chainId === chainId &&
+          !item.isSubmitFailed &&
+          !maxGasTx?.isWithdrawed
+        );
+      }),
       (item) => item.nonce
     );
 
-    const firstSigningTx = this._signingTxList.find(
-      (item) => item.rawTx.chainId === chainId && !item.isSubmitted
-    );
+    const firstSigningTx = this._signingTxList.find((item) => {
+      return item.rawTx.chainId === chainId && !item.isSubmitted;
+    });
     const processingTx = this._signingTxList.find(
       (item) => item.rawTx.chainId === chainId && item.isSubmitted
     );
@@ -702,6 +868,97 @@ class TxHistory {
 
     return maxLocalOrProcessingNonce + 1;
   }
+
+  getSkipedTxs(address: string) {
+    const dict = groupBy(
+      Object.values(this.store.transactions[address.toLowerCase()] || {}),
+      (item) => item.chainId
+    );
+
+    return Object.entries(dict).reduce((res, [key, list]) => {
+      const maxNonce =
+        maxBy(
+          list.filter((item) => {
+            const maxGasTx = findMaxGasTx(item.txs);
+            return !item.isSubmitFailed && !maxGasTx?.isWithdrawed;
+          }),
+          (item) => item.nonce
+        )?.nonce || 0;
+
+      res[key] = sortBy(
+        list.filter(
+          (item) =>
+            item.nonce < maxNonce && findMaxGasTx(item.txs)?.isWithdrawed
+        ),
+        (item) => -item.nonce
+      );
+
+      return res;
+    }, {} as Record<string, TransactionGroup[]>);
+  }
+
+  quickCancelTx = async ({
+    address,
+    chainId,
+    nonce,
+    reqId,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    reqId: string;
+  }) => {
+    const chain = findChainByID(chainId);
+    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
+    let error: any = null;
+    try {
+      await service.withdrawTx(reqId);
+    } catch (e) {
+      error = e;
+    }
+    this.reloadTxRequest({ address, chainId, nonce });
+    if (error) {
+      throw error;
+    }
+  };
+
+  retryPushTx = async ({
+    address,
+    chainId,
+    nonce,
+    reqId,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    reqId: string;
+  }) => {
+    const chain = findChainByID(chainId);
+    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
+    try {
+      await service.retryPushTx(reqId);
+      this.reloadTxRequest({ address, chainId, nonce });
+    } catch (e) {
+      this.reloadTxRequest({ address, chainId, nonce });
+      throw e;
+    }
+  };
+
+  getTxGroup = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) => {
+    const key = `${chainId}-${nonce}`;
+    const normalizedAddress = address.toLowerCase();
+    const target = this.store.transactions[normalizedAddress][key];
+    if (!target) return null;
+    return target;
+  };
 }
 
 export default new TxHistory();

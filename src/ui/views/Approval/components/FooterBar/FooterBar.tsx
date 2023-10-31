@@ -115,6 +115,7 @@ const Shadow = styled.div`
     rgba(175, 175, 175, 0.168147) 41.66%,
     rgba(130, 130, 130, 0.35) 83.44%
   );
+  z-index: 10;
 `;
 
 const ChainLogo = styled.img`

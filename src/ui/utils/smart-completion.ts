@@ -1,6 +1,6 @@
-import { wordlists } from 'bip39';
+import { wordlist } from '@scure/bip39/wordlists/english';
 
-const EN = wordlists.EN;
+const EN = wordlist;
 
 const SEARCH_KEYS = new Set<string>();
 const SEARCH_CACHE = [] as { prefix: string; words: string[] | false }[];

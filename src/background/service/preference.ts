@@ -9,7 +9,7 @@ import {
 } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM, LANGS } from 'consts';
-import { browser } from 'webextension-polyfill-ts';
+import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 
 const version = process.env.release || '0';
@@ -91,7 +91,19 @@ export interface PreferenceStore {
   autoLockTime?: number;
   hiddenBalance?: boolean;
   isShowTestnet?: boolean;
+  addressSortStore: AddressSortStore;
 }
+
+export interface AddressSortStore {
+  search: string;
+  sortType: 'usd' | 'addressType' | 'alphabet';
+  lastCurrent?: string;
+}
+
+const defaultAddressSortStore: AddressSortStore = {
+  search: '',
+  sortType: 'usd',
+};
 
 class PreferenceService {
   store!: PreferenceStore;
@@ -133,8 +145,14 @@ class PreferenceService {
         collectionStarred: [],
         hiddenBalance: false,
         isShowTestnet: false,
+        addressSortStore: {
+          ...defaultAddressSortStore,
+        },
       },
     });
+    //lifetime in background
+    this.store.addressSortStore = { ...defaultAddressSortStore };
+
     if (
       !this.store.locale ||
       !LANGS.find((item) => item.code === this.store.locale)
@@ -690,6 +708,19 @@ class PreferenceService {
   };
   resetCurrentCoboSafeAddress = async () => {
     this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
+  };
+
+  getAddressSortStoreValue = (key: keyof AddressSortStore) =>
+    this.store.addressSortStore[key];
+
+  setAddressSortStoreValue = <K extends keyof AddressSortStore>(
+    key: K,
+    value: AddressSortStore[K]
+  ) => {
+    this.store.addressSortStore = {
+      ...this.store.addressSortStore,
+      [key]: value,
+    };
   };
 }
 

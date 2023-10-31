@@ -85,6 +85,10 @@ const UnWrapToken = ({
     });
   };
 
+  const hasReceiver = useMemo(() => {
+    return !isSameAddress(receiver, requireData.sender);
+  }, [requireData, receiver]);
+
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -133,7 +137,7 @@ const UnWrapToken = ({
             )}
           </Row>
         </Col>
-        {engineResultMap['1093'] && (
+        {hasReceiver && (
           <Col>
             <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
             <Row>
@@ -142,8 +146,18 @@ const UnWrapToken = ({
                 <SecurityListItem
                   engineResult={engineResultMap['1093']}
                   id="1093"
-                  dangerText={t('page.signTx.swap.notPaymentAddress')}
+                  warningText={t('page.signTx.swap.unknownAddress')}
                 />
+                {!engineResultMap['1093'] && (
+                  <>
+                    <li>
+                      <Values.AccountAlias address={receiver} />
+                    </li>
+                    <li>
+                      <Values.KnownAddress address={receiver} />
+                    </li>
+                  </>
+                )}
               </ul>
             </Row>
           </Col>

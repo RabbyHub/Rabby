@@ -62,7 +62,7 @@ const EntryImportAddress = () => {
       <div className="rabby-container pt-32">
         <ActionEntries className="import-action-entries mx-20">
           <Field
-            className="w-[100%]  action-item"
+            className="w-[100%] action-item"
             leftIcon={<img src={IconMnemonics} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />

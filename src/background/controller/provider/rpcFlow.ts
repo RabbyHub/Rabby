@@ -11,6 +11,7 @@ import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
+import stats from '@/stats';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -265,7 +266,7 @@ const flowContext = flow
         approvalType,
         isUnshift: true,
       });
-      if (res.uiRequestComponent) {
+      if (res?.uiRequestComponent) {
         return await requestApprovalLoop(res);
       } else {
         return res;
@@ -282,7 +283,35 @@ const flowContext = flow
 
 export default (request: ProviderRequest) => {
   const ctx: any = { request: { ...request, requestedApproval: false } };
+  notificationService.setStatsData();
   return flowContext(ctx).finally(() => {
+    const statsData = notificationService.getStatsData();
+
+    if (statsData?.signed) {
+      stats.report('signedTransaction', {
+        type: statsData?.type,
+        chainId: statsData?.chainId,
+        category: statsData?.category,
+        success: statsData?.signedSuccess,
+        preExecSuccess: statsData?.preExecSuccess,
+        createBy: statsData?.createBy,
+        source: statsData?.source,
+        trigger: statsData?.trigger,
+      });
+    }
+    if (statsData?.submit) {
+      stats.report('submitTransaction', {
+        type: statsData?.type,
+        chainId: statsData?.chainId,
+        category: statsData?.category,
+        success: statsData?.submitSuccess,
+        preExecSuccess: statsData?.preExecSuccess,
+        createBy: statsData?.createBy,
+        source: statsData?.source,
+        trigger: statsData?.trigger,
+      });
+    }
+
     if (ctx.request.requestedApproval) {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow

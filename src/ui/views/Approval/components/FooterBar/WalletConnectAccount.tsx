@@ -5,7 +5,7 @@ import { useDisplayBrandName } from '@/ui/component/WalletConnect/useDisplayBran
 import { useSessionChainId } from '@/ui/component/WalletConnect/useSessionChainId';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import { useCommonPopupView } from '@/ui/utils';
+import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import { Button } from 'antd';
 import clsx from 'clsx';
@@ -68,6 +68,14 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         return 'CONNECTED';
     }
   }, [status, sessionChainId, chain]);
+
+  const wallet = useWallet();
+  React.useEffect(() => {
+    if (chain && sessionChainId && chain.id !== sessionChainId) {
+      wallet.walletConnectSwitchChain(account, chain.id);
+    }
+  }, [sessionChainId, chain]);
+
   const TipContent = () => {
     switch (tipStatus) {
       case 'ACCOUNT_ERROR':
@@ -117,6 +125,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       address,
       brandName,
       realBrandName,
+      chainId: chain?.id,
     });
     if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');
