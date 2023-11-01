@@ -64,6 +64,8 @@ export function useThemeMode() {
   const isDarkOnSystem = useIsDarkMode();
 
   return {
-    isDarkTheme: themeMode === DARK_MODE_TYPE.dark || isDarkOnSystem,
+    isDarkTheme: !process.env.DEBUG
+      ? false
+      : themeMode === DARK_MODE_TYPE.dark || isDarkOnSystem,
   };
 }
