@@ -16,7 +16,7 @@
   }
 
   .setting-block .setting-title {
-    color: @color-comment;
+    color: var(--r-neutral-foot, #BABEC5);
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
@@ -28,7 +28,7 @@
   }
 
   .setting-items {
-    background: @color-bg;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: @radius-value;
   }
 
@@ -77,12 +77,12 @@
     }
   }
   .field {
-    background: @color-bg;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: @radius-value;
     margin-bottom: 8px;
     font-size: 14px;
     line-height: 16px;
-    color: @color-title;
+    color: var(--r-neutral-title-1, #F7FAFC);
     padding: 0 16px;
     border: 1px solid transparent;
     min-height: 52px;
@@ -144,13 +144,14 @@
   .resolve-conflict-modal,
   .openapi-modal,
   .reset-account-modal,
-  .auto-lock-modal {
+  .auto-lock-modal,
+  .switch-theme-modal {
     position: absolute;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
-    background-color: #fff;
+    background-color: var(--r-neutral-bg-1, #575b70);
     transform: translateX(100%);
     transition: transform 0.3s;
     padding: 20px;
@@ -175,7 +176,8 @@
       width: 100%;
       text-align: center;
     }
-    .auto-lock-option-list {
+    .auto-lock-option-list,
+    .switch-theme-option-list {
       overflow: auto;
       max-height: calc(100% - 48px);
       &-item {
@@ -183,10 +185,10 @@
         height: 52px;
         padding: 17px 15px;
         border-radius: 6px;
-        background: #f5f6fa;
+        background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
         align-items: center;
 
-        color: #13141a;
+        color: var(--r-neutral-title-1, #F7FAFC);
         font-size: 14px;
         line-height: 16px;
         border: 1px solid transparent;
@@ -264,7 +266,7 @@
         font-weight: 500;
         font-size: 16px;
         line-height: 19px;
-        color: @color-title;
+        color: var(--r-neutral-title-1, #F7FAFC);
         display: flex;
         align-items: center;
         margin-bottom: 5px;
@@ -278,4 +280,8 @@
       }
     }
   }
+}
+
+.settings-popup-wrapper .ant-drawer-content {
+  background: var(--r-neutral-bg-1, #575b70);
 }

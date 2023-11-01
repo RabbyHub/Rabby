@@ -48,7 +48,7 @@ export default function SwitchThemeModal({
 
   return (
     <div
-      className={clsx('auto-lock-modal', {
+      className={clsx('switch-theme-modal', {
         show: isVisible,
         hidden: !visible,
       })}
@@ -56,11 +56,11 @@ export default function SwitchThemeModal({
       <PageHeader forceShowBack onBack={handleCancel}>
         {t('page.dashboard.settings.settings.themeMode')}
       </PageHeader>
-      <div className="auto-lock-option-list">
+      <div className="switch-theme-option-list">
         {ThemeModes.map((item) => {
           return (
             <div
-              className="auto-lock-option-list-item"
+              className="switch-theme-option-list-item"
               key={item.code}
               onClick={() => {
                 handleSelect(item.code);
@@ -71,7 +71,7 @@ export default function SwitchThemeModal({
                 <img
                   src={IconCheck}
                   alt=""
-                  className="auto-lock-option-list-item-icon"
+                  className="switch-theme-option-list-item-icon"
                 />
               )}
             </div>

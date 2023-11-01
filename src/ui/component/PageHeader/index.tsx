@@ -3,8 +3,9 @@ import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 // import IconBack from 'ui/assets/back.svg';
 import { ReactComponent as RcIconBack } from 'ui/assets/back.svg';
-import IconClose from 'ui/assets/component/close.svg';
+import { ReactComponent as RcIconClose } from 'ui/assets/component/close.svg';
 import './style.less';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 const PageHeader = ({
   children,
@@ -13,6 +14,7 @@ const PageHeader = ({
   onBack,
   forceShowBack,
   fixed = false,
+  wrapperClassName = '',
   invertBack = false,
   className = '',
   closeable = false,
@@ -26,6 +28,7 @@ const PageHeader = ({
   onClose?(): void;
   forceShowBack?: boolean;
   fixed?: boolean;
+  wrapperClassName?: string;
   invertBack?: boolean;
   className?: string;
   closeable?: boolean;
@@ -49,8 +52,8 @@ const PageHeader = ({
       <div className="header-content">{children}</div>
       {rightSlot && rightSlot}
       {closeable && (
-        <img
-          src={IconClose}
+        <ThemeIcon
+          src={RcIconClose}
           className={clsx('icon-close', invertBack && 'filter invert', closeCn)}
           onClick={onClose || (() => history.goBack())}
         />
@@ -59,7 +62,9 @@ const PageHeader = ({
   );
   return fixed ? (
     <div className={clsx('page-header-container', className)}>
-      <div className="page-header-wrap">{Content}</div>
+      <div className={clsx('page-header-wrap', wrapperClassName)}>
+        {Content}
+      </div>
     </div>
   ) : (
     Content
