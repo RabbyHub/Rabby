@@ -718,11 +718,32 @@ class LedgerBridgeKeyring extends EventEmitter {
         if (this.isWebHID) {
           try {
             await this.makeApp(true);
-            const res = await this.app!.signEIP712HashedMessage(
-              hdPath,
-              domainSeparatorHex,
-              hashStructMessageHex
-            );
+
+            let res:
+              | {
+                  v: number;
+                  s: string;
+                  r: string;
+                }
+              | undefined;
+            // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
+            try {
+              res = await this.app!.signEIP712Message(hdPath, data);
+            } catch (e) {
+              if (
+                e instanceof Error &&
+                'statusText' in e &&
+                (e as any).statusText === 'INS_NOT_SUPPORTED'
+              ) {
+                res = await this.app!.signEIP712HashedMessage(
+                  hdPath,
+                  domainSeparatorHex,
+                  hashStructMessageHex
+                );
+              }
+              throw e;
+            }
+
             let v = res.v.toString(16);
             if (v.length < 2) {
               v = `0${v}`;
