@@ -18,12 +18,12 @@ import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChainByEnum } from '@/utils/chain';
 import {
-  SwitchButton,
+  UnderlineButton as SwitchButton,
   SIGNATURE_METHOD,
   useCanSwitchSignature,
-  useSwitchSignatureByKeystone,
-  KeystoneSignMethodProvider,
+  KeystoneWiredWaiting,
 } from './KeystoneWaiting';
+import clsx from 'clsx';
 
 enum QRHARDWARE_STATUS {
   SYNC,
@@ -41,8 +41,9 @@ const QRHardWareWaiting = ({ params }) => {
   const [signMethod, setSignMethod] = useState<SIGNATURE_METHOD>(
     SIGNATURE_METHOD.QRCODE
   );
+  const [hiddenSwitchButton, setHiddenSwitchButton] = useState(false);
+  const [isUSBSignDone, setIsUSBSignDone] = useState(false);
   const canSwitchSignature = useCanSwitchSignature(brand);
-  const USBSignComponent = useSwitchSignatureByKeystone(status, signMethod);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
@@ -109,6 +110,7 @@ const QRHardWareWaiting = ({ params }) => {
           return;
         }
         setStatus(QRHARDWARE_STATUS.DONE);
+        setIsUSBSignDone(true);
         setSignFinishedData({
           data: sig,
           stay: !isSignText,
@@ -236,29 +238,29 @@ const QRHardWareWaiting = ({ params }) => {
     }
   }, [status, errorMessage]);
 
-  if (popupStatus) {
-    return (
-      <ApprovalPopupContainer
-        showAnimation
-        hdType="qrcode"
-        status={popupStatus}
-        content={content}
-        description={errorMessage}
-        onCancel={handleCancel}
-        onRetry={handleRequestSignature}
-        onDone={() => setIsClickDone(true)}
-        onSubmit={handleSubmit}
-        hasMoreDescription={!!errorMessage}
-      />
-    );
-  }
-
   const calcSignComponent = useCallback(() => {
-    if (USBSignComponent) {
+    if (signMethod === SIGNATURE_METHOD.USB) {
       return (
-        <KeystoneSignMethodProvider value={{}}>
-          <USBSignComponent />
-        </KeystoneSignMethodProvider>
+        <KeystoneWiredWaiting
+          isDone={isUSBSignDone}
+          onDone={() => setIsClickDone(true)}
+          payload={signPayload?.payload}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+          requestId={signPayload?.requestId}
+          switchButtonVisibleController={(visible: boolean) =>
+            setHiddenSwitchButton(!visible)
+          }
+          handleCancel={handleCancel}
+          handleSuccess={(message) => {
+            setScanMessage(message);
+            wallet.submitQRHardwareSignature(
+              signPayload!.requestId,
+              message,
+              params?.account?.address
+            );
+          }}
+        />
       );
     }
 
@@ -282,14 +284,47 @@ const QRHardWareWaiting = ({ params }) => {
         )}
       </>
     );
-  }, [status, signPayload, walletBrandContent, USBSignComponent]);
+  }, [
+    status,
+    signPayload,
+    walletBrandContent,
+    signMethod,
+    errorMessage,
+    isUSBSignDone,
+  ]);
+
+  const shouldShowSignatureSwitchButton = useMemo(() => {
+    return (
+      status === QRHARDWARE_STATUS.SYNC &&
+      canSwitchSignature &&
+      !hiddenSwitchButton
+    );
+  }, [status, canSwitchSignature, hiddenSwitchButton]);
+
+  if (popupStatus && signMethod === SIGNATURE_METHOD.QRCODE) {
+    return (
+      <ApprovalPopupContainer
+        showAnimation
+        hdType="qrcode"
+        status={popupStatus}
+        content={content}
+        description={errorMessage}
+        onCancel={handleCancel}
+        onRetry={handleRequestSignature}
+        onDone={() => setIsClickDone(true)}
+        onSubmit={handleSubmit}
+        hasMoreDescription={!!errorMessage}
+      />
+    );
+  }
 
   return (
-    <section>
-      <div className="flex justify-center qrcode-scanner flex-col">
+    <section className="h-full">
+      <div className="flex justify-center qrcode-scanner flex-col h-full">
         {calcSignComponent()}
-        {status === QRHARDWARE_STATUS.SYNC && canSwitchSignature && (
+        {shouldShowSignatureSwitchButton && (
           <SwitchButton
+            className={clsx(signMethod === SIGNATURE_METHOD.USB ? 'mt-20' : '')}
             onClick={() => {
               if (signMethod === SIGNATURE_METHOD.USB) {
                 setSignMethod(SIGNATURE_METHOD.QRCODE);

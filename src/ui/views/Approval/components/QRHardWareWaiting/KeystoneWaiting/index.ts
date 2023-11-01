@@ -1,7 +1,8 @@
 export { useCanSwitchSignature } from './hooks/useCanSwitchSignature';
-export {
-  useSwitchSignatureByKeystone,
-  SIGNATURE_METHOD,
-} from './hooks/useSwitchSignatureByKeystone';
-export { SwitchButton } from './SwitchButton';
-export { KeystoneSignMethodProvider, useKeystoneSignMethod } from './Provider';
+export { UnderlineButton } from './Styled';
+export { KeystoneWiredWaiting } from './KeystoneWiredWaiting';
+
+export enum SIGNATURE_METHOD {
+  QRCODE,
+  USB,
+}

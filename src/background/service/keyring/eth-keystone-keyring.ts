@@ -100,6 +100,11 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return await keystoneEth.signTransaction(this, address, tx);
   }
 
+  async signTransactionUrViaUSB(ur: string) {
+    const keystoneEth = await this.getKeystoneDevice();
+    return await keystoneEth.signTransactionFromUr(ur);
+  }
+
   async getCurrentUsedHDPathType() {
     return (
       HD_PATH_TYPE[`${this.hdPath}/${this.childrenPath}`] ?? HDPathType.BIP44
