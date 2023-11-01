@@ -13,7 +13,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
-import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
+import IconArrowRight, {
+  ReactComponent as RcIconArrowRight,
+} from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import IconArrowBlueRight from 'ui/assets/dashboard/settings/icon-right-arrow-blue.svg';
 import IconArrowOrangeRight from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
 import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
@@ -25,7 +27,9 @@ import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import IconAutoLock from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import IconLockWallet from 'ui/assets/dashboard/settings/lock.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
-import IconThemeMode from 'ui/assets/settings/theme-mode.svg';
+import IconThemeMode, {
+  ReactComponent as RcIconThemeMode,
+} from 'ui/assets/settings/theme-mode.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import IconDiscord from 'ui/assets/discord.svg';
 import IconClear from 'ui/assets/icon-clear.svg';
@@ -53,6 +57,7 @@ import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -681,28 +686,6 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.settings.label'),
       items: [
         {
-          leftIcon: IconThemeMode,
-          content: t('page.dashboard.settings.settings.toggleThemeMode'),
-          onClick: () => {
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Theme Mode',
-            });
-            reportSettings('Theme Mode');
-            setIsShowThemeModeModal(true);
-          },
-          rightIcon: (
-            <>
-              <span className="text-14 mr-[8px] text-[#13141a]" role="button">
-                {ThemeModes.find((item) => item.code === themeMode)?.name ||
-                  '-'}
-              </span>
-              <img src={IconArrowRight} className="icon icon-arrow-right" />
-            </>
-          ),
-        },
-        {
           leftIcon: IconWhitelist,
           content: t(
             'page.dashboard.settings.settings.enableWhitelistForSendingAssets'
@@ -935,6 +918,31 @@ const SettingsInner = ({
   };
 
   if (process.env.DEBUG) {
+    renderData.settings.items.unshift({
+      leftIcon: IconThemeMode,
+      content: t('page.dashboard.settings.settings.toggleThemeMode'),
+      onClick: () => {
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Theme Mode',
+        });
+        reportSettings('Theme Mode');
+        setIsShowThemeModeModal(true);
+      },
+      rightIcon: (
+        <>
+          <span
+            className="text-14 mr-[8px] text-r-neutral-title1"
+            role="button"
+          >
+            {ThemeModes.find((item) => item.code === themeMode)?.name || '-'}
+          </span>
+          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
+        </>
+      ),
+    });
+
     renderData.features.items.splice(
       -1,
       0,
