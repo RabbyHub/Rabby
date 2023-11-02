@@ -216,17 +216,20 @@ export const KeystoneConnect = () => {
                 onCancel={handleClickBack}
                 data={errorMessage}
                 onOk={handleScan}
-                okText={t('Try Again')}
-                cancelText={t('Cancel')}
+                okText={t('global.tryAgain')}
+                cancelText={t('global.Cancel')}
               />
             )}
           </div>
         ) : (
-          <div className="connect-keystone">
-            <ul className="list-decimal w-[180px] pl-[20px] m-auto text-gray-title text-14 leading-[20px] mb-[35px] mt-[35px]">
-              <li>{t('page.dashboard.hd.ledger.doc1')}</li>
-              <li>{t('page.dashboard.hd.ledger.doc2')}</li>
-              <li>{t('page.dashboard.hd.ledger.doc3')}</li>
+          <div className="connect-keystone mt-[6px]">
+            <p className="text-gray-title text-14 leading-[20px] mb-[20px]">
+              {t('page.dashboard.hd.keystone.title')}
+            </p>
+            <ul className="list-decimal w-[240px] pl-[20px] m-auto text-gray-title text-14 leading-[20px] mb-[35px]">
+              <li>{t('page.dashboard.hd.keystone.doc1')}</li>
+              <li>{t('page.dashboard.hd.keystone.doc2')}</li>
+              <li>{t('page.dashboard.hd.keystone.doc3')}</li>
             </ul>
             <img src="/images/keystone-plug.png" className="keystone-plug" />
             <Button

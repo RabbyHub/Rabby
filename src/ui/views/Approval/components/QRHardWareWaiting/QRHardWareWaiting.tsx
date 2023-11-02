@@ -324,7 +324,9 @@ const QRHardWareWaiting = ({ params }) => {
         {calcSignComponent()}
         {shouldShowSignatureSwitchButton && (
           <SwitchButton
-            className={clsx(signMethod === SIGNATURE_METHOD.USB ? 'mt-20' : '')}
+            className={clsx(
+              signMethod === SIGNATURE_METHOD.USB ? 'mt-20' : 'mt-5'
+            )}
             onClick={() => {
               if (signMethod === SIGNATURE_METHOD.USB) {
                 setSignMethod(SIGNATURE_METHOD.QRCODE);
@@ -333,7 +335,10 @@ const QRHardWareWaiting = ({ params }) => {
               }
             }}
           >
-            切换签名方式
+            {t('page.signFooterBar.keystone.signWith', {
+              method:
+                signMethod === SIGNATURE_METHOD.QRCODE ? 'USB' : 'QR Code',
+            })}
           </SwitchButton>
         )}
       </div>

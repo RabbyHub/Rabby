@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
@@ -36,9 +36,9 @@ const RequestPermission = () => {
       tip: t('page.newAddress.ledger.ledgerPermissionTip'),
     },
     keystone: {
-      title: t('page.newAddress.ledger.allowRabbyPermissionsTitle'),
-      desc: [t('page.newAddress.ledger.ledgerPermission1')],
-      tip: t('page.newAddress.ledger.ledgerPermissionTip'),
+      title: t('page.newAddress.keystone.allowRabbyPermissionsTitle'),
+      desc: [t('page.newAddress.keystone.keystonePermission1')],
+      tip: t('page.newAddress.keystone.keystonePermissionTip'),
     },
   };
 
@@ -127,6 +127,13 @@ const RequestPermission = () => {
         });
       } catch (error) {
         console.error(error);
+        if (error.message.includes('No device selected')) {
+          message.error(t('page.newAddress.keystone.noDeviceFoundError'));
+        } else if (error.message.includes('device is locked')) {
+          message.error(t('page.newAddress.keystone.deviceIsLockedError'));
+        } else {
+          message.error(t('page.newAddress.keystone.unknowError'));
+        }
       }
     }
   };

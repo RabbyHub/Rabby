@@ -7,8 +7,9 @@ export const useCanSwitchSignature = (brand) => {
   const { setHeight } = useCommonPopupView();
 
   const calcCanSwitchSignature = async () => {
-    const isSupport = await isSupported().catch(() => false);
-    setCanSwitchSignature(brand === 'Keystone' && isSupport);
+    setCanSwitchSignature(brand === 'Keystone');
+    // const isSupport = await isSupported().catch(() => false);
+    // setCanSwitchSignature(brand === 'Keystone' && isSupport);
   };
   useEffect(() => {
     calcCanSwitchSignature();

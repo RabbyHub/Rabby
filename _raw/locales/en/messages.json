@@ -306,6 +306,13 @@
         "unknownQRCode": "Error: We couldn't identify that QR code",
         "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
       },
+      "keystone": {
+        "signWith": "Switch to {{method}} for signing",
+        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "unsupportedType": "Error: The transaction type is unsupported or unknown.",
+        "siging": "Sending signing request",
+        "txRejected": "Transaction rejected"
+      },
       "ledger": {
         "resent": "Resent",
         "signError": "Ledger sign error:",
@@ -1036,6 +1043,13 @@
           "doc3": "Open Ethereum App",
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
+        "keystone": {
+          "title": "*USB connect only for Keystone 3(Pro)",
+          "doc1": "Plug in a single Keystone",
+          "doc2": "Enter password to unlock",
+          "doc3": "Approve connection to computer",
+          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+        },
         "howToSwitch": "How to switch"
       },
       "GnosisWrongChainAlertBar": {
@@ -1150,6 +1164,15 @@
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
         "allow": "Allow"
+      },
+      "keystone": {
+        "title": "Connect Keystone",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "keystonePermission1": "Connect to an USB device",
+        "keystonePermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Keystone in the following pop-up window.",
+        "noDeviceFoundError": "Plug in a single Keystone",
+        "deviceIsLockedError": "Enter password to unlock",
+        "unknowError": "Unknown error, please try again"
       },
       "walletConnect": {
         "connectYour": "Connect your",
@@ -1720,7 +1743,8 @@
     "nonce": "nonce",
     "Balance": "Balance",
     "Done": "Done",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "tryAgain": "Try Again"
   },
   "background": {
     "error": {

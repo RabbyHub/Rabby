@@ -84,25 +84,27 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       return errorMessage;
     }
     if (error) {
+      const errorKeywords = ['disconnected', 'cannot be found'];
+      if (errorKeywords.some((keyword) => error.message.includes(keyword))) {
+        handleCancel();
+        openInternalPageInTab('request-permission?type=keystone&from=approval');
+        return '';
+      }
       return error.message;
     }
     return '';
   }, [error, errorMessage, statusProp]);
 
   const content = useMemo(() => {
-    if (isDone) {
-      setStatusProp('RESOLVED');
-      return 'Transaction sent';
-    }
     if (loading) {
       setStatusProp('WAITING');
-      return 'Signed. Creating transaction';
+      return t('page.signFooterBar.keystone.siging');
     }
     if (error || errorMessage) {
       setStatusProp('REJECTED');
-      return 'Transaction rejected';
+      return t('page.signFooterBar.keystone.txRejected');
     }
-    if (value?.payload) {
+    if (value?.payload && isDone) {
       decoder.current.receivePart(value?.payload);
       if (decoder.current.isComplete()) {
         const ur = decoder.current.resultUR();
@@ -115,16 +117,16 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
             console.error("ur.cbor.toString('hex')", ur.cbor.toString('hex'));
             handleSuccess(ur.cbor.toString('hex'));
           }
-          // setErrorMessage(t('page.signFooterBar.qrcode.misMatchSignId'));
+          setErrorMessage(t('page.signFooterBar.keystone.misMatchSignId'));
         } else {
-          // setErrorMessage(t('page.signFooterBar.qrcode.unknownQRCode'));
+          setErrorMessage(t('page.signFooterBar.keystone.unsupportedType'));
         }
       }
       setStatusProp('RESOLVED');
-      return 'Transaction sent';
+      return t('page.signFooterBar.qrcode.sigCompleted');
     }
     setStatusProp('SENDING');
-    return 'Sending signing request';
+    return t('page.signFooterBar.keystone.siging');
   }, [value, error, loading, errorMessage, isDone]);
 
   return (
@@ -133,7 +135,6 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       hdType="wired"
       status={statusProp}
       onRetry={() => {
-        // openInternalPageInTab('request-permission?type=keystone&from=approval');
         setErrorMessage('');
         retry();
       }}
