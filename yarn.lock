@@ -1491,7 +1491,7 @@
     "@ethereumjs/common" "^2.5.0"
     ethereumjs-util "^7.1.2"
 
-"@ethereumjs/tx@^4.0.2", "@ethereumjs/tx@^4.1.2":
+"@ethereumjs/tx@^4.1.2":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@ethereumjs/tx/-/tx-4.2.0.tgz#5988ae15daf5a3b3c815493bc6b495e76009e853"
   integrity sha512-1nc6VO4jtFd172BbSnTnDQVr9IYBFl1y4xPzZdtkrkKIncBCkdbgfdRV+MiTkJYAtTxvV12GRZLqBFT1PNK6Yw==
@@ -3067,16 +3067,6 @@
     hdkey "^2.0.1"
     uuid "^8.3.2"
 
-"@keystonehq/bc-ur-registry-eth@^0.19.1":
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-eth/-/bc-ur-registry-eth-0.19.1.tgz#eac508b9d15d17c0abd00b107691585f9c789ffc"
-  integrity sha512-5+skb1zsmMEIGZCbk+4KssZTpLMTriaFlt+Lc6pZLmxexXrX8a/9aHoho3asOqf7GeXXqkB9YKs8i8TN/hbaHA==
-  dependencies:
-    "@ethereumjs/util" "^8.0.0"
-    "@keystonehq/bc-ur-registry" "^0.6.0"
-    hdkey "^2.0.1"
-    uuid "^8.3.2"
-
 "@keystonehq/bc-ur-registry-eth@^0.8.1-alpha.0":
   version "0.8.1-alpha.0"
   resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-eth/-/bc-ur-registry-eth-0.8.1-alpha.0.tgz#652761176869f4f650daf0420ac3dda70a68f777"
@@ -3096,34 +3086,24 @@
     bs58check "^2.1.2"
     tslib "^2.3.0"
 
-"@keystonehq/bc-ur-registry@^0.6.0":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry/-/bc-ur-registry-0.6.4.tgz#9c57ff9687cafdc0d2bbd04dc36676d3a38c1485"
-  integrity sha512-j8Uy44DuAkvYkbf0jMxRY3UizJfn8wsEQr7GS3miRF44vcq7k0/yemVkftbn3jQ+0JYaUXf5wY7lVpLhAeW5nQ==
+"@keystonehq/hw-app-eth@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-app-eth/-/hw-app-eth-0.2.2.tgz#455db084c8dfea370feeb126633e804f47ff3a4b"
+  integrity sha512-Qgdra/KE5t346y8rqRwK2FIl9EiL2zHIpaD1rWPplHPcQ7pWREpfg2H3rE+Xv406YtN/nGnn5EOm9HI5CwlF/g==
   dependencies:
-    "@ngraveio/bc-ur" "^1.1.5"
-    bs58check "^2.1.2"
-    tslib "^2.3.0"
-
-"@keystonehq/hw-app-eth@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@keystonehq/hw-app-eth/-/hw-app-eth-0.2.0.tgz#1ff3eeacfd2c715f857f2d94c88cf9ccdd0648f2"
-  integrity sha512-s6E+H1YaZOUXCq672q3KXu9+RNzEvOMEc+Ejoi+HZ6HhblgjvZqjozum/vH8UmWjgrQVJSEX6WkR1k8RBISCMw==
-  dependencies:
-    "@ethereumjs/tx" "^4.0.2"
-    "@ethereumjs/util" "^8.0.0"
-    "@keystonehq/bc-ur-registry-eth" "^0.19.1"
-    "@keystonehq/hw-transport-webusb" "0.2.0"
+    "@ethereumjs/tx" "^3.3.2"
+    "@keystonehq/bc-ur-registry-eth" "^0.8.1-alpha.0"
+    "@keystonehq/hw-transport-webusb" "0.2.2"
     "@ngraveio/bc-ur" "^1.1.6"
     buffer "^6.0.3"
     hdkey "^2.0.1"
     rlp "^2.2.6"
     uuid "^8.3.2"
 
-"@keystonehq/hw-transport-webusb@0.2.0", "@keystonehq/hw-transport-webusb@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.2.0.tgz#da2cf2cdd06f7b147849dd63f72cace318570a45"
-  integrity sha512-q8RWHxNyKZi++Qe+2nYexFFxv+Q8lz+7Yo+kNvZKSV88OOYa3TVJLIK+3F/3k/GpPCPuFQytFWKsgaZtz5+b/w==
+"@keystonehq/hw-transport-webusb@0.2.2", "@keystonehq/hw-transport-webusb@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.2.2.tgz#377ee3e45769a6b0826777f3078a2339a6324194"
+  integrity sha512-hLCFBBw2kal057bSdj7zvQ7fXlbc7sh5M6N+AS3EV1Qs4i7TVSiyqFTH77Pft8igrMDPqq168/2Q8/AfyktR4w==
   dependencies:
     buffer "^6.0.3"
 

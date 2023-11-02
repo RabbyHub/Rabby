@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
-import { useWallet } from 'ui/utils';
+import { useWallet, openInternalPageInTab } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import * as uuid from 'uuid';
 import { UR, UREncoder } from '@ngraveio/bc-ur';
@@ -133,6 +133,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       hdType="wired"
       status={statusProp}
       onRetry={() => {
+        // openInternalPageInTab('request-permission?type=keystone&from=approval');
         setErrorMessage('');
         retry();
       }}

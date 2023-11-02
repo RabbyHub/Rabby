@@ -75,6 +75,9 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     if (!this.eth) {
       this.eth = await Eth.createWithUSBTransport({
         timeout: 60000,
+        disconnectListener: (device) => {
+          this.eth = null;
+        },
       });
     }
     return this.eth;
