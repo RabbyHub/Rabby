@@ -26,6 +26,7 @@ import { CancelTxPopup } from './CancelTxPopup';
 import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { useGetTx, useLoadTxData } from '../hooks';
+import { PredictTime } from './PredictTime';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -396,6 +397,7 @@ export const TransactionItem = ({
           </div>
         </ChildrenWrapper>
       )}
+      <PredictTime item={item} txRequests={txRequests} />
       <CancelTxPopup
         visible={isShowCancelPopup}
         onClose={() => {

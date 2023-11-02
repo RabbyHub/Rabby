@@ -2,9 +2,10 @@
   background: var(--r-neutral-bg-2, #f2f4f7);
   height: 100vh;
   overflow: auto;
+  padding-bottom: 100px;
 
   .layout-container {
-    width: 1120px;
+    width: 1040px;
     margin: 0 auto;
   }
 
@@ -12,13 +13,96 @@
     border-radius: 8px;
     background: var(--r-neutral-card-1, #fff);
 
-    padding: 24px 32px 16px 32px;
+    padding: 24px 24px 8px 24px;
+    box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.07);
+
+    & + .card {
+      margin-top: 20px;
+    }
 
     &-title {
       color: var(--r-neutral-title-1, #192945);
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 21px;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 24px;
+    }
+  }
+
+  .simple-table {
+    .ant-table-thead > tr > th {
+      background-color: transparent;
+      border-bottom: 1px solid var(--r-neutral-card-2, #f2f4f7);
+
+      color: var(--r-neutral-body, #3e495e);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 16px;
+
+      padding: 16px 0;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: 12px 0;
+      height: 48px;
+
+      color: var(--r-neutral-body, #3e495e);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 16px;
+    }
+    .ant-table-tbody {
+      .ant-table-row:last-child td {
+        border-bottom: none;
+      }
+    }
+    .ant-table-pagination {
+      margin: 32px 0;
+      align-items: center;
+
+      .ant-pagination-prev,
+      .ant-pagination-next {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .ant-pagination-item-link {
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &:hover {
+          background: var(--r-neutral-card-2, #f2f4f7);
+        }
+      }
+    }
+
+    .is-current-tx {
+      position: absolute;
+      top: 0;
+      left: -24px;
+      bottom: 0;
+      right: -896px;
+      border-radius: 6px;
+      border: 1px solid var(--r-blue-default, #7084ff);
+      z-index: 100;
+
+      &-tag {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 0px 0px 6px 0px;
+        background: var(--r-blue-default, #7084ff);
+        display: flex;
+        padding: 2px 6px;
+        color: var(--r-neutral-title-2, #fff);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 14px;
+      }
     }
   }
 }

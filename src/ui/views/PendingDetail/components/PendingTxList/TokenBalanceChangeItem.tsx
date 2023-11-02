@@ -1,0 +1,32 @@
+import { numberWithCommasIsLtOne } from '@/ui/utils';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { PendingTxItem, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import React, { ReactNode } from 'react';
+import IconUnknown from 'ui/assets/icon-unknown.svg';
+
+export const TokenBalanceChangeItem = ({
+  item,
+  prefix,
+  tokenDict,
+}: {
+  item: NonNullable<
+    PendingTxItem['pre_exec_result']
+  >['balance_change']['send_token_list'][0];
+  tokenDict?: Record<string, TokenItem>;
+  prefix: ReactNode;
+}) => {
+  const token = tokenDict?.[item.token_id];
+  return (
+    <div className="flex items-center gap-[8px]">
+      <img
+        className="w-[16px] h-[16px]"
+        src={token?.logo_url || IconUnknown}
+        alt=""
+      />
+      <div className="text-r-neutral-title-1 font-medium">
+        {prefix} {numberWithCommasIsLtOne(item.amount, 2)}{' '}
+        {getTokenSymbol(token)}
+      </div>
+    </div>
+  );
+};

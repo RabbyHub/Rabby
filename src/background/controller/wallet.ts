@@ -2692,6 +2692,8 @@ export class WalletController extends BaseController {
 
   retryPushTx = transactionHistoryService.retryPushTx;
 
+  getTxGroup = transactionHistoryService.getTxGroup;
+
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);
   };
