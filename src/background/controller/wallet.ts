@@ -1015,7 +1015,7 @@ export class WalletController extends BaseController {
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
 
   getIndexByAddress = (address: string, type: string) => {
-    const hasIndex = KEYRING_WITH_INDEX.includes(type);
+    const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
     if (!hasIndex) return null;
     const keyring = keyringService.getKeyringByType(type);
     if (!keyring) return null;

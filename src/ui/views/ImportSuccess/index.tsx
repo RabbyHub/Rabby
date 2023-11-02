@@ -9,7 +9,12 @@ import { getUiType, useApproval } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import stats from '@/stats';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
+import {
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+  KEYRING_CLASS,
+  HardwareKeyrings,
+} from 'consts';
 import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
@@ -80,7 +85,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   useEffect(() => {
-    if (Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type)) {
+    if (
+      Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type as any)
+    ) {
       stats.report('importHardware', {
         type: accounts[0].type,
       });
@@ -175,7 +182,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           >
             {sortBy(accounts, (item) => item?.index).map((account, index) => (
               <AddressItem
-                className="mb-12 rounded bg-white py-12 pl-16 h-[92px] flex"
+                className="mb-12 rounded bg-r-neutral-card-1 py-12 pl-16 h-[92px] flex"
                 key={account.address}
                 account={account}
                 showAssets

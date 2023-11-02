@@ -22,6 +22,9 @@ import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBa
 import { SeedPhraseBar } from './SeedPhraseBar';
 import { GnonisSafeInfo } from './GnosisSafeInfo';
 import { CoboArgusInfo } from './CoboArugsInfo';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { pickKeyringThemeIcon } from '@/utils/account';
 
 type Props = {
   address: string;
@@ -107,6 +110,8 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
     });
   };
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
     <div className="rabby-list">
       <div className="rabby-list-item">
@@ -187,9 +192,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             {t('page.addressDetail.source')}
           </div>
           <div className="rabby-list-item-extra flex gap-[4px]">
-            <img
+            <ThemeIcon
               className="w-[16px] h-[16px]"
               src={
+                pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
                 KEYRING_ICONS[type] ||
                 WALLET_BRAND_CONTENT[brandName as string]?.image
               }

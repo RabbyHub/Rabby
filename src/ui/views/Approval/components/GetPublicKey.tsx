@@ -49,7 +49,7 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
     setCanProcess(
       !!account &&
         [KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
-          account.type
+          account.type as any
         )
     );
   };

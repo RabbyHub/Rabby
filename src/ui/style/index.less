@@ -109,9 +109,8 @@ button:focus {
 
 .stray-page {
   .stray-footer-nav {
-    background-color: #fff;
-    border-top: 1px solid #e5e9ef !important;
-    border-top: 0.5px solid #e5e9ef !important;
+    background-color: var(--r-neutral-card-1, #fff);
+    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
 
     .ant-btn {
       height: 42px !important;
@@ -123,6 +122,12 @@ button:focus {
       width: auto !important;
       min-width: 155px;
     }
+  }
+
+  .ant-input {
+    border-color: transparent;
+    background: var(--r-neutral-card-1, #fff);
+    color: var(--r-neutral-title-1, #192945);
   }
 }
 
@@ -158,8 +163,8 @@ button:focus {
     padding: 11px 0;
     font-size: 12px;
     line-height: 14px;
-    color: @color-title;
-    background-color: #fff;
+    color: var(--r-neutral-title-1, #192945);
+    background: var(--r-neutral-card-1, #fff);
     border-radius: 6px;
     cursor: pointer;
     user-select: none;

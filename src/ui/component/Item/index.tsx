@@ -7,16 +7,19 @@ import React, {
 import { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import IconArrowRight from 'ui/assets/address/right-arrow.svg';
+import IconArrowRight, {
+  ReactComponent as RcIconArrowRight,
+} from 'ui/assets/address/right-arrow.svg';
 import ArrowLeftWhiteBack from 'ui/assets/import/arrow-left-white.svg';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 const ItemWrapper = styled.div<{
   hoverBorder: boolean;
   px: number | string;
   py: number | string;
-  //default white;
+  // default var(--r-neutral-card-1, #fff);
   bgColor: string;
-  //default var(--r-blue-light-1, #eef1ff);
+  // default var(--r-blue-light-1, #eef1ff);
   hoverBgColor: string;
 }>`
   width: 100%;
@@ -54,6 +57,12 @@ const RightIconImg = styled(IconImg)`
   height: 16px;
 `;
 
+const RightIconSvg = styled(RcIconArrowRight)`
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+`;
+
 interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   hoverBorder?: boolean;
   px?: number | string;
@@ -81,7 +90,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     hoverBorder = true,
     px = 16,
     py = 16,
-    bgColor = '#fff',
+    bgColor = 'var(--r-neutral-card-1, #fff)',
     hoverBgColor = 'var(--r-blue-light-1, #eef1ff)',
     className = '',
     leftIconClassName = '',
@@ -109,7 +118,8 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
       {right ? (
         right
       ) : rightIcon ? (
-        <RightIconImg src={rightIcon} className={rightIconClassName} alt="" />
+        // <RightIconImg src={rightIcon} className={rightIconClassName} alt="" />
+        <ThemeIcon src={RightIconSvg} className={rightIconClassName} />
       ) : null}
     </ItemWrapper>
   );

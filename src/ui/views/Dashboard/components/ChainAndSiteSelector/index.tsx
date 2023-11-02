@@ -48,14 +48,14 @@ import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { Settings } from '../index';
 import './style.less';
-import { CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM, ThemeIconType } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import FeedbackPopup from '../Feedback';
 import { GasPriceBar } from '../GasPriceBar';
 import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
 import { useTranslation } from 'react-i18next';
-import ThemeIcon, { ThemeIconType } from '@/ui/component/ThemeMode/ThemeIcon';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export default ({
   gnosisPendingCount,

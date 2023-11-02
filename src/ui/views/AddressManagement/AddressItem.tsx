@@ -6,6 +6,7 @@ import {
   KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
+  KeyringWithIcon,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import React, {
@@ -35,6 +36,8 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
 import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import { pickKeyringThemeIcon } from '@/utils/account';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export interface AddressItemProps {
   balance: number;
@@ -110,7 +113,7 @@ const AddressItem = memo(
           ? true
           : isCurrentAccount
           ? false
-          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type),
+          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type as any),
       [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
@@ -154,16 +157,23 @@ const AddressItem = memo(
       type,
     });
 
+    const { isDarkTheme } = useThemeMode();
+
     const addressTypeIcon = useMemo(
       () =>
         isCurrentAccount
           ? brandIcon ||
+            pickKeyringThemeIcon(type as any, {
+              needLightVersion: isDarkTheme,
+            }) ||
             WALLET_BRAND_CONTENT?.[brandName]?.image ||
             KEYRINGS_LOGOS[type]
           : brandIcon ||
-            KEYRING_ICONS[type] ||
+            pickKeyringThemeIcon(brandName as any, {
+              needLightVersion: isDarkTheme,
+            }) ||
             WALLET_BRAND_CONTENT?.[brandName]?.image,
-      [type, brandName, brandIcon]
+      [type, brandName, brandIcon, isDarkTheme]
     );
 
     return (

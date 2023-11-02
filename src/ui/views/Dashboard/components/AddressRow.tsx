@@ -14,6 +14,7 @@ import { message } from 'antd';
 import {
   KEYRING_ICONS,
   KEYRING_WITH_INDEX,
+  KeyringWithIcon,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
@@ -80,7 +81,7 @@ function AddressRow({
   const isMountedRef = useIsMountedRef();
   const [hdPathIndex, setHDPathIndex] = React.useState(null);
   React.useEffect(() => {
-    if (KEYRING_WITH_INDEX.includes(account.type)) {
+    if (KEYRING_WITH_INDEX.includes(account.type as any)) {
       wallet.getIndexByAddress(account.address, account.type).then((index) => {
         if (!isMountedRef.current) return;
         if (index !== null) {

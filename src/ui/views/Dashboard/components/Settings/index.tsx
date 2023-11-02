@@ -7,6 +7,7 @@ import {
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
   LANGS,
+  ThemeIconType,
   ThemeModes,
 } from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -53,7 +54,7 @@ import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
-import ThemeIcon, { ThemeIconType } from '@/ui/component/ThemeMode/ThemeIcon';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();

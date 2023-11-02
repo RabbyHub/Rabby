@@ -1,17 +1,18 @@
 import React from 'react';
 import clsx from 'clsx';
+import { ThemeIconType } from '@/constant';
 
-export type ThemeIconType = string | React.FC<React.SVGProps<SVGSVGElement>>;
-
-export default function ThemeIcon({
+export default function ThemeIcon<T extends ThemeIconType>({
   src: ImgSrcOrSvg,
   // darkModeIcon,
   className,
   imgClassName,
   svgClassName,
   ...props
-}: React.HTMLAttributes<HTMLImageElement | SVGSVGElement> & {
-  src: ThemeIconType;
+}: (T extends string
+  ? React.HTMLAttributes<HTMLImageElement>
+  : React.SVGProps<SVGSVGElement>) & {
+  src: T;
   // darkModeIcon?: React.ReactNode,
   className?: string;
   imgClassName?: string;
@@ -20,7 +21,7 @@ export default function ThemeIcon({
   if (typeof ImgSrcOrSvg === 'string') {
     return (
       <img
-        {...props}
+        {...(props as React.HTMLAttributes<HTMLImageElement>)}
         src={ImgSrcOrSvg}
         className={clsx(className, imgClassName)}
       />
@@ -36,5 +37,7 @@ export default function ThemeIcon({
     return null;
   }
 
-  return <ImgSrcOrSvg {...props} className={clsx(className, svgClassName)} />;
+  const SvgComponet = ImgSrcOrSvg as React.FC<React.SVGProps<SVGSVGElement>>;
+
+  return <SvgComponet className={clsx(className, svgClassName)} />;
 }
