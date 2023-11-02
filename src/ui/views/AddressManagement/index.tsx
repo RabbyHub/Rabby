@@ -12,10 +12,10 @@ import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
-import { ReactComponent as IconAddAddress } from '@/ui/assets/address/new-address.svg';
-import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
-import { ReactComponent as IconLoading } from '@/ui/assets/address/loading.svg';
-import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-address.svg';
+import { ReactComponent as RcIconRefresh } from '@/ui/assets/address/refresh.svg';
+import { ReactComponent as RcIconLoading } from '@/ui/assets/address/loading.svg';
+import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 
 import { Dictionary, groupBy, omit } from 'lodash';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -31,6 +31,7 @@ import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
 import { nanoid } from 'nanoid';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -476,9 +477,11 @@ const AddressManagement = () => {
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
         <div className="absolute top-24 right-[42px]">
-          <IconAddAddress
+          <RcIconAddAddress
             viewBox="0 0 20 20"
-            className={clsx('text-gray-title w-[20px] h-[20px] cursor-pointer')}
+            className={clsx(
+              'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
+            )}
             onClick={gotoAddAddress}
           />
         </div>
@@ -490,15 +493,15 @@ const AddressManagement = () => {
           <div className="absolute right-0 top-[24px]">
             {isUpdateAllBalanceLoading ? (
               <div className="w-[20px] h-[20px] flex items-center justify-center">
-                <IconLoading
+                <RcIconLoading
                   viewBox="0 0 20 20"
-                  className="text-gray-title w-[16px] h-[16px] cursor-pointer"
+                  className="text-r-neutral-title-1 w-[16px] h-[16px] cursor-pointer"
                 />
               </div>
             ) : (
-              <IconRefresh
+              <RcIconRefresh
                 className={clsx(
-                  'text-gray-title w-[20px] h-[20px] cursor-pointer'
+                  'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
                 )}
                 onClick={() => {
                   if (isUpdateAllBalanceLoading) {
@@ -553,7 +556,7 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
+      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
         <SortInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
@@ -563,7 +566,7 @@ const AddressManagement = () => {
           onClick={gotoManageAddress}
         >
           <span>{t('page.manageAddress.manage-address')}</span>
-          <IconRight />
+          <RcIconRight />
         </div>
       </div>
       {noAnyAccount ? (

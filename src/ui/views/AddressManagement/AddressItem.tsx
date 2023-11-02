@@ -19,7 +19,7 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
-import { ReactComponent as IconDeleteAddress } from 'ui/assets/address/delete.svg';
+import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 
 import { AddressViewer } from 'ui/component';
 import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
@@ -170,7 +170,7 @@ const AddressItem = memo(
       <div className={clsx(className, 'rabby-address-item-container relative')}>
         {canFastDeleteAccount && (
           <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
-            <IconDeleteAddress
+            <RcIconDeleteAddress
               className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
               onClick={deleteAccount}
             />
@@ -195,7 +195,7 @@ const AddressItem = memo(
           >
             {/* {canFastDeleteAccount && (
               <div className="absolute hidden group-hover:flex w-[20px] left-[-20px] h-full top-0  justify-center items-center">
-                <IconDeleteAddress
+                <RcIconDeleteAddress
                   className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
                   onClick={deleteAccount}
                 />
@@ -273,7 +273,9 @@ const AddressItem = memo(
                     showArrow={false}
                     className={clsx(
                       'subtitle',
-                      isCurrentAccount ? 'text-white' : 'text-gray-subTitle'
+                      isCurrentAccount
+                        ? 'text-r-neutral-title-2'
+                        : 'text-r-neutral-body'
                     )}
                   />
 
@@ -281,10 +283,13 @@ const AddressItem = memo(
                     addr={address}
                     className={clsx('w-[14px] h-[14px] ml-4 text-14 textgre')}
                     copyClassName={clsx(
-                      isCurrentAccount && 'text-white brightness-[100]'
+                      isCurrentAccount &&
+                        'text-r-neutral-title-2 brightness-[100]'
                     )}
                     checkedClassName={clsx(
-                      isCurrentAccount ? 'text-white' : 'text-[#00C087]'
+                      isCurrentAccount
+                        ? 'text-r-neutral-title-2'
+                        : 'text-[#00C087]'
                     )}
                   />
                   {!isCurrentAccount && (

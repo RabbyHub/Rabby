@@ -1,5 +1,5 @@
-import { ReactComponent as IconSwapSettings } from '@/ui/assets/swap/settings.svg';
-import { ReactComponent as IconSwapHistory } from '@/ui/assets/swap/history.svg';
+import { ReactComponent as RcIconSwapSettings } from '@/ui/assets/swap/settings.svg';
+import { ReactComponent as RcIconSwapHistory } from '@/ui/assets/swap/history.svg';
 
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useState } from 'react';
@@ -22,13 +22,13 @@ export const Header = () => {
         forceShowBack
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            <IconSwapHistory
+            <RcIconSwapHistory
               className="cursor-pointer"
               onClick={useCallback(() => {
                 setHistoryVisible(true);
               }, [])}
             />
-            <IconSwapSettings
+            <RcIconSwapSettings
               className="cursor-pointer"
               onClick={useCallback(() => {
                 setVisible(true);
