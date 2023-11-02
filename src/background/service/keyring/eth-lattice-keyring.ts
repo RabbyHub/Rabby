@@ -2,12 +2,11 @@
 import OldLatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
-
-const keyringType = 'GridPlus Hardware';
-
-import HDPathType = LedgerHDPathType;
 import { LedgerHDPathType } from '@/utils/ledger';
 import { isSameAddress } from '@/background/utils';
+
+const keyringType = 'GridPlus Hardware';
+import HDPathType = LedgerHDPathType;
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",

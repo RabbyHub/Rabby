@@ -3,35 +3,50 @@ import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { createPersistStore } from 'background/utils';
 export * from '@rabby-wallet/rabby-api/dist/types';
 
-const store = await createPersistStore({
-  name: 'openapi',
-  template: {
-    host: INITIAL_OPENAPI_URL,
-    testnetHost: INITIAL_TESTNET_OPENAPI_URL,
-  },
-});
-
 const testnetStore = new (class TestnetStore {
+  store!: { host: string; testnetHost: string };
+
+  constructor() {
+    createPersistStore({
+      name: 'openapi',
+      template: {
+        host: INITIAL_OPENAPI_URL,
+        testnetHost: INITIAL_TESTNET_OPENAPI_URL,
+      },
+    }).then((res) => {
+      this.store = res;
+    });
+  }
   get host() {
-    return store.testnetHost;
+    return this.store.testnetHost;
   }
   set host(value) {
-    store.testnetHost = value;
+    this.store.testnetHost = value;
   }
 })();
 
-if (!process.env.DEBUG) {
-  store.host = INITIAL_OPENAPI_URL;
-  store.testnetHost = INITIAL_TESTNET_OPENAPI_URL;
-  testnetStore.host = INITIAL_TESTNET_OPENAPI_URL;
-}
-
 const service = new OpenApiService({
-  store,
+  store: !process.env.DEBUG
+    ? {
+        host: INITIAL_OPENAPI_URL,
+        testnetHost: INITIAL_TESTNET_OPENAPI_URL,
+      }
+    : createPersistStore({
+        name: 'openapi',
+        template: {
+          host: INITIAL_OPENAPI_URL,
+          testnetHost: INITIAL_TESTNET_OPENAPI_URL,
+        },
+      }),
 });
 
 export const testnetOpenapiService = new OpenApiService({
-  store: testnetStore,
+  store: !process.env.DEBUG
+    ? {
+        host: INITIAL_TESTNET_OPENAPI_URL,
+        testnetHost: INITIAL_TESTNET_OPENAPI_URL,
+      }
+    : testnetStore,
 });
 
 export default service;
