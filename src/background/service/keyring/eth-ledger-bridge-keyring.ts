@@ -719,13 +719,12 @@ class LedgerBridgeKeyring extends EventEmitter {
           try {
             await this.makeApp(true);
 
-            let res:
-              | {
-                  v: number;
-                  s: string;
-                  r: string;
-                }
-              | undefined;
+            let res: {
+              v: number;
+              s: string;
+              r: string;
+            };
+
             // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
             try {
               res = await this.app!.signEIP712Message(hdPath, data);
@@ -740,8 +739,9 @@ class LedgerBridgeKeyring extends EventEmitter {
                   domainSeparatorHex,
                   hashStructMessageHex
                 );
+              } else {
+                throw e;
               }
-              throw e;
             }
 
             let v = res.v.toString(16);
