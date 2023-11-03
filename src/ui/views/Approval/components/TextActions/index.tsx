@@ -48,7 +48,7 @@ export const ActionWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     background: var(--r-blue-default, #7084ff);
-    padding: 14px;
+    padding: 13px;
     align-items: center;
     color: #fff;
     border-top-left-radius: 8px;
@@ -79,6 +79,7 @@ export const ActionWrapper = styled.div`
           font-size: 13px;
           font-weight: 500;
           color: var(--r-neutral-body, #3e495e);
+          border-radius: 6px;
         }
       }
     }
