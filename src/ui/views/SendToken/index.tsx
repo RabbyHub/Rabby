@@ -34,20 +34,14 @@ import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import GasReserved from './components/GasReserved';
 import GasSelector from './components/GasSelector';
-import IconWhitelist, {
-  ReactComponent as RcIconWhitelist,
-} from 'ui/assets/dashboard/whitelist.svg';
-import IconContact, {
-  ReactComponent as RcIconContact,
-} from 'ui/assets/send-token/contact.svg';
+import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
+import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
-import TokenInfoArrowLight from 'ui/assets/send-token/token-info-arrow-light.svg';
-import TokenInfoArrowDark from 'ui/assets/send-token/token-info-arrow-dark.svg';
-
+import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -71,7 +65,6 @@ import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -1149,8 +1142,6 @@ const SendToken = () => {
     }
   }, [currentAccount]);
 
-  const { isDarkTheme } = useThemeMode();
-
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -1215,22 +1206,11 @@ const SendToken = () => {
                     )}
                   </div>
                 )}
-                {/* <img
+                <img
                   className="icon icon-contact"
                   src={whitelistEnabled ? IconWhitelist : IconContact}
                   onClick={handleListContact}
-                /> */}
-                {whitelistEnabled ? (
-                  <RcIconWhitelist
-                    className="icon icon-contact"
-                    onClick={handleListContact}
-                  />
-                ) : (
-                  <RcIconContact
-                    className="icon icon-contact"
-                    onClick={handleListContact}
-                  />
-                )}
+                />
               </div>
             </div>
             <div className="to-address">
@@ -1275,14 +1255,13 @@ const SendToken = () => {
                 />
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
-                <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
+                <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
                   <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
                     Not on address list.{' '}
                     <span
                       onClick={handleClickAddContact}
-                      className={clsx(
-                        'ml-[2px] underline cursor-pointer text-r-blue-default'
-                      )}
+                      className={clsx('ml-[2px] underline cursor-pointer')}
+                      style={{ color: 'var(--r-blue-default, #7084ff)' }}
                     >
                       Add to contacts
                     </span>
@@ -1351,11 +1330,7 @@ const SendToken = () => {
               )}
             </Form.Item>
             <div className="token-info">
-              {!isDarkTheme ? (
-                <img className="token-info__header" src={TokenInfoArrowLight} />
-              ) : (
-                <img className="token-info__header" src={TokenInfoArrowDark} />
-              )}
+              <img className="token-info__header" src={TokenInfoArrow} />
               {!isNativeToken ? (
                 <div className="section-field">
                   <span>

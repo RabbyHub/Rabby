@@ -147,7 +147,7 @@ const TokenAmountInput = ({
         />
         {inlinePrize && (
           <div
-            className="text-r-neutral-foot text-12 text-right max-w-full truncate"
+            className="text-gray-content text-12 text-right max-w-full truncate"
             title={splitNumberByStep(
               ((Number(value) || 0) * token.price || 0).toFixed(2)
             )}

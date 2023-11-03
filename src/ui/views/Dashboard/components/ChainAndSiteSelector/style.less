@@ -1,5 +1,5 @@
 .recent-connections {
-  background-color: var(--r-neutral-bg-1, #FFF);
+  background-color: #ffffff;
   position: relative;
   flex: 1;
   padding: 14px 20px;
@@ -30,7 +30,7 @@
     padding: 10px 8px;
     padding-right: 7px;
     flex-direction: column;
-    background: var(--r-neutral-card-2, #f5f6fa);
+    background: @color-bg;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     position: relative;
@@ -49,7 +49,6 @@
         align-items: center;
         font-weight: 500;
         font-size: 14px;
-        color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
         .images {
           width: 28px;
           height: 28px;
@@ -199,7 +198,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--r-neutral-card-2, #f5f6fa);
+    background: @color-bg;
     border-radius: 6px;
     padding: 12px 16px;
     &.higher {
