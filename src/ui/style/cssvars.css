@@ -79,6 +79,31 @@
   --r-neutral-card-3: var(--rabby-light-neutral-card-3);
   --r-neutral-title-2: var(--rabby-light-neutral-title-2);
   --r-neutral-black: var(--rabby-light-neutral-black);
+
+  --rabby-blue-default: var(--rabby-light-blue-default);
+  --rabby-blue-light-1: var(--rabby-light-blue-light-1);
+  --rabby-blue-light-2: var(--rabby-light-blue-light-2);
+  --rabby-blue-disable: var(--rabby-light-blue-disable);
+  --rabby-green-default: var(--rabby-light-green-default);
+  --rabby-green-light: var(--rabby-light-green-light);
+  --rabby-orange-default: var(--rabby-light-orange-default);
+  --rabby-orange-light: var(--rabby-light-orange-light);
+  --rabby-red-default: var(--rabby-light-red-default);
+  --rabby-red-light: var(--rabby-light-red-light);
+  --rabby-red-dark: var(--rabby-light-red-dark);
+  --rabby-red-light-2: var(--rabby-light-red-light-2);
+  --rabby-neutral-title-1: var(--rabby-light-neutral-title-1);
+  --rabby-neutral-body: var(--rabby-light-neutral-body);
+  --rabby-neutral-foot: var(--rabby-light-neutral-foot);
+  --rabby-neutral-line: var(--rabby-light-neutral-line);
+  --rabby-neutral-bg-1: var(--rabby-light-neutral-bg-1);
+  --rabby-neutral-bg-2: var(--rabby-light-neutral-bg-2);
+  --rabby-neutral-bg-3: var(--rabby-light-neutral-bg-3);
+  --rabby-neutral-card-1: var(--rabby-light-neutral-card-1);
+  --rabby-neutral-card-2: var(--rabby-light-neutral-card-2);
+  --rabby-neutral-card-3: var(--rabby-light-neutral-card-3);
+  --rabby-neutral-title-2: var(--rabby-light-neutral-title-2);
+  --rabby-neutral-black: var(--rabby-light-neutral-black);
 }
 
 html.in-dark-mode, body.in-dark-mode {
@@ -107,4 +132,29 @@ html.in-dark-mode, body.in-dark-mode {
   --r-neutral-card-3: var(--rabby-dark-neutral-card-3);
   --r-neutral-title-2: var(--rabby-dark-neutral-title-2);
   --r-neutral-black: var(--rabby-dark-neutral-black);
+
+  --rabby-blue-default: var(--rabby-dark-blue-default);
+  --rabby-blue-light-1: var(--rabby-dark-blue-light-1);
+  --rabby-blue-light-2: var(--rabby-dark-blue-light-2);
+  --rabby-blue-disable: var(--rabby-dark-blue-disable);
+  --rabby-green-default: var(--rabby-dark-green-default);
+  --rabby-green-light: var(--rabby-dark-green-light);
+  --rabby-orange-default: var(--rabby-dark-orange-default);
+  --rabby-orange-light: var(--rabby-dark-orange-light);
+  --rabby-red-default: var(--rabby-dark-red-default);
+  --rabby-red-light: var(--rabby-dark-red-light);
+  --rabby-red-dark: var(--rabby-dark-red-dark);
+  --rabby-red-light-2: var(--rabby-dark-red-light-2);
+  --rabby-neutral-title-1: var(--rabby-dark-neutral-title-1);
+  --rabby-neutral-body: var(--rabby-dark-neutral-body);
+  --rabby-neutral-foot: var(--rabby-dark-neutral-foot);
+  --rabby-neutral-line: var(--rabby-dark-neutral-line);
+  --rabby-neutral-bg-1: var(--rabby-dark-neutral-bg-1);
+  --rabby-neutral-bg-2: var(--rabby-dark-neutral-bg-2);
+  --rabby-neutral-bg-3: var(--rabby-dark-neutral-bg-3);
+  --rabby-neutral-card-1: var(--rabby-dark-neutral-card-1);
+  --rabby-neutral-card-2: var(--rabby-dark-neutral-card-2);
+  --rabby-neutral-card-3: var(--rabby-dark-neutral-card-3);
+  --rabby-neutral-title-2: var(--rabby-dark-neutral-title-2);
+  --rabby-neutral-black: var(--rabby-dark-neutral-black);
 }

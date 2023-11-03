@@ -31,6 +31,11 @@ ${Object.entries(themeColors.light).map(([cssvarKey]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
   return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-light-${varcore});`;
 }).join('\n')}
+
+${Object.entries(themeColors.light).map(([cssvarKey]) => {
+  const varcore = cssvarKey.replace(/^\-\-/, '');
+  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-light-${varcore});`;
+}).join('\n')}
 }
 
 html.in-dark-mode, body.in-dark-mode {
@@ -38,6 +43,11 @@ html.in-dark-mode, body.in-dark-mode {
 ${Object.entries(themeColors.dark).map(([cssvarKey]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
   return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-dark-${varcore});`;
+}).join('\n')}
+
+${Object.entries(themeColors.dark).map(([cssvarKey]) => {
+  const varcore = cssvarKey.replace(/^\-\-/, '');
+  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-dark-${varcore});`;
 }).join('\n')}
 }
 `;
