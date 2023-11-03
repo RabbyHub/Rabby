@@ -8,7 +8,6 @@ import { NoActionBody } from './NoActionBody';
 
 const NoActionAlertStyled = styled.div`
   display: flex;
-  align-items: center;
   flex-direction: column;
   background: var(--r-neutral-card-1);
   border-radius: 6px;
@@ -17,7 +16,7 @@ const NoActionAlertStyled = styled.div`
   font-size: 13px;
   line-height: 18px;
   color: var(--r-neutral-body);
-  margin-bottom: 15px;
+  width: 358px;
   .icon-alert {
     margin-right: 4px;
     width: 14px;

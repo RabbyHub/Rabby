@@ -40,9 +40,12 @@ import {
 } from './utils';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
+import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
+import IconCheck from 'ui/assets/icon-check.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import clsx from 'clsx';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -75,7 +78,7 @@ export const ActionWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     background: var(--r-blue-default, #7084ff);
-    padding: 14px;
+    padding: 13px;
     align-items: center;
     color: #fff;
     border-top-left-radius: 8px;
@@ -88,13 +91,30 @@ export const ActionWrapper = styled.div`
     .right {
       font-size: 14px;
       line-height: 16px;
-      .icon-tip {
-        margin-top: 1px;
-        margin-left: 4px;
-        path {
-          stroke: #fff;
+      position: relative;
+      .decode-tooltip {
+        max-width: 358px;
+        &:not(.ant-tooltip-hidden) {
+          left: -321px !important;
+          .ant-tooltip-arrow {
+            left: 333px;
+          }
+        }
+        .ant-tooltip-arrow-content {
+          background-color: #fff;
+        }
+        .ant-tooltip-inner {
+          background-color: #fff;
+          padding: 0;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--r-neutral-body, #3e495e);
+          border-radius: 6px;
         }
       }
+    }
+    &.is-unknown {
+      background: var(--r-neutral-foot, #6a7587);
     }
   }
   .container {
@@ -171,24 +191,48 @@ const Actions = ({
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
-      {data.contractCall && (
-        <NoActionAlert
-          data={{
-            chainId: chain.serverId,
-            contractAddress:
-              requireData && 'id' in requireData
-                ? requireData.id
-                : txDetail.type_call?.contract,
-            selector: raw.data.toString(),
-          }}
-        />
-      )}
       <ActionWrapper>
-        {!data.contractCall && (
-          <div className="action-header">
-            <div className="left">{actionName}</div>
+        <div
+          className={clsx('action-header', {
+            'is-unknown': data.contractCall,
+          })}
+        >
+          <div className="left">{actionName}</div>
+          <div className="right">
+            <TooltipWithMagnetArrow
+              placement="bottom"
+              overlayClassName="rectangle w-[max-content] decode-tooltip"
+              title={
+                data.contractCall ? (
+                  <NoActionAlert
+                    data={{
+                      chainId: chain.serverId,
+                      contractAddress:
+                        requireData && 'id' in requireData
+                          ? requireData.id
+                          : txDetail.type_call?.contract,
+                      selector: raw.data.toString(),
+                    }}
+                  />
+                ) : (
+                  <span className="flex w-[358px] p-12">
+                    <img src={IconCheck} className="mr-4 w-12" />
+                    {t('page.signTx.decodedTooltip')}
+                  </span>
+                )
+              }
+            >
+              {data.contractCall ? (
+                <img src={IconQuestionMark} className="w-24" />
+              ) : (
+                <img
+                  src={IconRabbyDecoded}
+                  className="icon icon-rabby-decoded"
+                />
+              )}
+            </TooltipWithMagnetArrow>
           </div>
-        )}
+        </div>
         <div className="container">
           {data.swap && (
             <Swap
