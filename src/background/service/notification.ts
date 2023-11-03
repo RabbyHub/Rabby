@@ -327,17 +327,7 @@ class NotificationService extends Events {
           new BigNumber(chain.hex).isEqualTo(chainId)
         );
 
-        const connectSite = permissionService.getConnectedSite(data.origin);
-        const currentChain = connectSite
-          ? CHAINS[connectSite?.chain]
-          : undefined;
-
-        const isSwitchMainOrTest =
-          chain &&
-          currentChain &&
-          !!chain.isTestnet !== !!currentChain.isTestnet;
-
-        if (!isSwitchMainOrTest && chain) {
+        if (chain) {
           this.resolveApproval(null);
           return;
         }

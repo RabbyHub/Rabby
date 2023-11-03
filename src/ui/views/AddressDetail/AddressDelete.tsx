@@ -102,7 +102,9 @@ export const AddressDelete = ({
           </div>
         </div>
       </div>
-      {![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type) && (
+      {![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
+        type as any
+      ) && (
         <AddressDeleteModal
           type={type}
           brandName={brandName}

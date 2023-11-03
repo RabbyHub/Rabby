@@ -1600,7 +1600,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
       const is1559 =
-        support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
+        support1559 &&
+        SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
       setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
       setUseLedgerLive(await wallet.isUseLedgerLive());
       setIsHardware(
