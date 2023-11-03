@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { message } from 'antd';
 import { useAsyncRetry } from 'react-use';
 import { useWallet, openInternalPageInTab } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import * as uuid from 'uuid';
 import { UR, UREncoder } from '@ngraveio/bc-ur';
 import { URDecoder } from '@ngraveio/bc-ur';
+import { Trans } from 'react-i18next';
 import { ETHSignature } from '@keystonehq/bc-ur-registry-eth';
 import {
   ApprovalPopupContainer,
@@ -107,9 +109,22 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
           error.message.includes(keyword)
         )
       ) {
-        handleCancel();
-        openInternalPageInTab('request-permission?type=keystone&from=approval');
-        return '';
+        return (
+          <Trans t={t} i18nKey="page.dashboard.hd.ledger.reconnect">
+            If it doesn't work, please try
+            <span
+              className="underline cursor-pointer"
+              onClick={() => {
+                handleCancel();
+                openInternalPageInTab(
+                  'request-permission?type=keystone&from=approval'
+                );
+              }}
+            >
+              reconnecting from the beginning.
+            </span>
+          </Trans>
+        );
       }
       if (
         AUTO_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
