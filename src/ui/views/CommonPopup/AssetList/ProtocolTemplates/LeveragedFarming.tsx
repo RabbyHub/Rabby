@@ -25,6 +25,7 @@ export default React.memo(
           tokens={portfolio.detail.supply_token_list}
           name="SUPPLIED"
         />
+        <TokenList tokens={portfolio.detail.reward_token_list} name="REWARDS" />
         <TokenList
           tokens={portfolio.detail.borrow_token_list}
           name="BORROWED"
