@@ -104,10 +104,10 @@
     display: flex;
     padding: 8px 12px;
     position: relative;
-    background: rgba(245, 246, 250, 0.8);
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
-    border-top: 0.5px solid var(--line, #e5e9ef);
+    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-card-2, #f2f4f7);
 
     .eth-price,
     .gas-container {
@@ -121,7 +121,7 @@
         line-height: 15px;
         font-weight: 500;
         margin-left: 6px;
-        color: #13141a;
+        color: var(--r-neutral-title-1, #192945);
       }
 
       .positive {
@@ -168,8 +168,8 @@
         left: -12px;
         top: 50%;
         transform: translateY(-50%);
-        background: #e5e9ef;
-        border-left: 0.5px solid #e5e9ef;
+        background: var(--r-neutral-line, #d3d8e0);
+        border-left: 0.5px solid var(--r-neutral-line, #d3d8e0);
       }
 
       .gasprice {
@@ -178,7 +178,7 @@
       }
 
       .gwei {
-        color: #707280;
+        color: var(--r-neutral-foot, #6a7587);
         line-height: 16px;
         font-size: 12px;
       }

@@ -1,9 +1,13 @@
+@import '../../style/mixin.less';
+
 .import-gnosis {
   overflow: auto;
-  background-color: #f5f6fa;
+  background: var(--r-neutral-bg-2, #f2f4f7);
   .header {
     background: var(--r-blue-default, #7084ff);
   }
+
+  .ant-input-darkmode();
 
   .unlock-logo {
     border: 1px solid #fff;
@@ -65,8 +69,8 @@
     }
   }
   .footer {
-    background-color: #fff;
-    border-top: 0.5px solid #e5e9ef;
+    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-card-1, #fff);
     text-align: center;
 
     .ant-btn {
