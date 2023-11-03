@@ -17,17 +17,37 @@ makeCssVar: {
 /* this file is genetared automatically, never modify it manually! */
 :root {
   /* -------------------- base define -------------------- */
-${Object.entries(themeColors.light).map(([cssvarKey, cssvarValue]) => {
-  const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--rabby-light-${varcore}: ${cssvarValue};`;
-}).join('\n')}
+${['light', 'dark'].map(theme => {
+  return Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
+    const varcore = cssvarKey.replace(/^\-\-/, '');
+    return `${SPACES}--rabby-${theme}-${varcore}: ${cssvarValue};`;
+  }).join('\n')
+}).join('\n\n')}
 }
 
-html, body {
-  /* -------------------- default light mode -------------------- */
+:root {
+  /* -------------------- light mode -------------------- */
 ${Object.entries(themeColors.light).map(([cssvarKey]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
   return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-light-${varcore});`;
+}).join('\n')}
+
+${Object.entries(themeColors.light).map(([cssvarKey]) => {
+  const varcore = cssvarKey.replace(/^\-\-/, '');
+  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-light-${varcore});`;
+}).join('\n')}
+}
+
+html.in-dark-mode, body.in-dark-mode {
+  /* -------------------- dark mode -------------------- */
+${Object.entries(themeColors.dark).map(([cssvarKey]) => {
+  const varcore = cssvarKey.replace(/^\-\-/, '');
+  return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-dark-${varcore});`;
+}).join('\n')}
+
+${Object.entries(themeColors.dark).map(([cssvarKey]) => {
+  const varcore = cssvarKey.replace(/^\-\-/, '');
+  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-dark-${varcore});`;
 }).join('\n')}
 }
 `;

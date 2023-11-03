@@ -290,7 +290,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type &&
-      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }
