@@ -85,7 +85,13 @@ function ModalConfirmAllowTransfer({
   }, []);
 
   return (
-    <Popup visible={visible} title={title} onCancel={handleCancel} height={260}>
+    <Popup
+      visible={visible}
+      title={title}
+      onCancel={handleCancel}
+      height={260}
+      isSupportDarkMode
+    >
       <Form onFinish={handleSubmit} form={form}>
         <FormInputItem
           name="password"

@@ -6,10 +6,17 @@ import clsx from 'clsx';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import ChainIcon from '../../ChainIcon';
 import IconCheck from 'ui/assets/check-2.svg';
-import IconPinned from 'ui/assets/icon-pinned.svg';
-import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
-import IconChainBalance from 'ui/assets/chain-select/chain-balance.svg';
+import IconPinned, {
+  ReactComponent as RcIconPinned,
+} from 'ui/assets/icon-pinned.svg';
+import IconPinnedFill, {
+  ReactComponent as RcIconPinnedFill,
+} from 'ui/assets/icon-pinned-fill.svg';
+import IconChainBalance, {
+  ReactComponent as RcIconChainBalance,
+} from 'ui/assets/chain-select/chain-balance.svg';
 import { formatUsdValue } from '@/ui/utils';
+import ThemeIcon from '../../ThemeMode/ThemeIcon';
 
 export type SelectChainItemProps = {
   stared?: boolean;
@@ -100,10 +107,10 @@ export const SelectChainItem = forwardRef(
               <div className="select-chain-item-name">{data.name}</div>
               {!!chainBalanceItem?.usd_value && (
                 <div className="select-chain-item-balance">
-                  <img
+                  <ThemeIcon
                     className="w-[14px] h-[14px] mt-2"
-                    src={IconChainBalance}
-                    alt={formatUsdValue(chainBalanceItem?.usd_value || 0)}
+                    src={RcIconChainBalance}
+                    // alt={formatUsdValue(chainBalanceItem?.usd_value || 0)}
                   />
                   <div className="ml-[6px] relative top-[2px]">
                     {formatUsdValue(chainBalanceItem?.usd_value || 0)}
@@ -112,7 +119,7 @@ export const SelectChainItem = forwardRef(
               )}
             </div>
           </div>
-          <img
+          <ThemeIcon
             className={clsx(
               'select-chain-item-star',
               stared ? 'is-active' : ''

@@ -26,9 +26,13 @@ import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
-import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'ui/assets/icon-check.svg';
+import IconTemporaryGrantCheckbox, {
+  ReactComponent as RcIconTemporaryGrantCheckbox,
+} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -39,6 +43,7 @@ import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -581,11 +586,11 @@ const SendNFT = () => {
               >
                 <p className="whitelist-alert__content text-center">
                   {whitelistEnabled && (
-                    <img
+                    <ThemeIcon
                       src={
                         whitelistAlertContent.success
-                          ? IconCheck
-                          : IconTemporaryGrantCheckbox
+                          ? RcIconCheck
+                          : RcIconTemporaryGrantCheckbox
                       }
                       className="icon icon-check inline-block relative -top-1"
                     />

@@ -11,7 +11,7 @@
     text-align: center;
     color: @color-title;
   }
-  .ant-drawer-mask {
+  &:not(.is-support-darkmode) .ant-drawer-mask {
     background-color: rgba(45, 48, 51, 0.2);
   }
   .ant-drawer-header {
@@ -30,10 +30,9 @@
       background: #F5F6FA;
     }
   }
-  .popup-input {
+  &:not(.is-support-darkmode) .popup-input {
     background-color: @color-bg !important;
     border-color: @color-border;
-    border-radius: 6px;
     .ant-input {
       background-color: @color-bg !important;
     }
@@ -44,10 +43,35 @@
       border-color: var(--r-blue-default, #7084ff);
     }
   }
+  .popup-input {
+    border-radius: 6px;
+  }
   .popup-footer {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 24px;
   }
+}
+
+// temporary solution, after all custom-popup supporeted darkmode, integrate css below back to the above
+.custom-popup.is-support-darkmode,
+.custom-popup.chain-selector__modal {
+  .ant-drawer-title {
+    color: var(--r-neutral-title-1, #F7FAFC);
+  }
+  .ant-drawer-header {
+    background: transparent;
+  }
+  .ant-drawer-content {
+    background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  &.isConnectView {
+    .ant-drawer-content {
+      background: #F5F6FA;
+    }
+  }
+
+  .ant-input-darkmode();
 }

@@ -43,8 +43,12 @@ import IconContact, {
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
-import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'ui/assets/icon-check.svg';
+import IconTemporaryGrantCheckbox, {
+  ReactComponent as RcIconTemporaryGrantCheckbox,
+} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -70,6 +74,7 @@ import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -1410,11 +1415,11 @@ const SendToken = () => {
             >
               <p className="whitelist-alert__content text-center">
                 {whitelistEnabled && (
-                  <img
+                  <ThemeIcon
                     src={
                       whitelistAlertContent.success
-                        ? IconCheck
-                        : IconTemporaryGrantCheckbox
+                        ? RcIconCheck
+                        : RcIconTemporaryGrantCheckbox
                     }
                     className="icon icon-check inline-block relative -top-1"
                   />
