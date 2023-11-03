@@ -1197,12 +1197,17 @@ export class WalletController extends BaseController {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
     permissionService.setSite(data);
     if (data.isConnected) {
       // rabby:chainChanged event must be sent before chainChanged event
       sessionService.broadcastEvent(
         'rabby:chainChanged',
-        chainItem,
+        {
+          ...chainItem,
+          prev,
+        },
         data.origin
       );
       sessionService.broadcastEvent(
@@ -1245,9 +1250,18 @@ export class WalletController extends BaseController {
       );
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent('rabby:chainChanged', chainItem, data.origin);
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      {
+        ...chainItem,
+        prev,
+      },
+      data.origin
+    );
     sessionService.broadcastEvent(
       'chainChanged',
       {
