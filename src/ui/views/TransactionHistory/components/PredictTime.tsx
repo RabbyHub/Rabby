@@ -1,13 +1,12 @@
-import React, { useMemo } from 'react';
-import styled from 'styled-components';
-import IconArrowRight from '@/ui/assets/signature-record/icon-arrow-right.svg';
-import { openInTab, openInternalPageInTab } from '@/ui/utils';
 import { TransactionGroup } from '@/background/service/transactionHistory';
-import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
+import IconArrowRight from '@/ui/assets/signature-record/icon-arrow-right.svg';
+import { useAccount } from '@/ui/store-hooks';
+import { formatTimeReadable, openInternalPageInTab } from '@/ui/utils';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
-import { check } from 'ts-toolbelt/out/Test';
-import { useAccount } from '@/ui/store-hooks';
+import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
@@ -61,7 +60,7 @@ export const PredictTime = ({
       }}
     >
       {leftTime
-        ? `Predicted to be packed in ${leftTime}s`
+        ? `Predicted to be packed in ${formatTimeReadable(leftTime / 1000)}`
         : 'Packing time is being predicted'}
       <img src={IconArrowRight} alt="" />
     </Wrapper>
