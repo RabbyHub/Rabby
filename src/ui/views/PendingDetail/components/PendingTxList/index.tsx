@@ -15,6 +15,8 @@ import IconHelp from 'ui/assets/pending/icon-help.svg';
 import { FilterItem, Filters, createFilter } from './Filters';
 import { PendingTxTable } from './PendingTxTable';
 import { Loading } from './Loading';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { Tooltip } from 'antd';
 
 const filterBaseFee = ({
   list,
@@ -134,7 +136,7 @@ export const PendingTxList = ({
           {rank ? (
             <>GasPrice Ranks #{rank} in Same as Current Tx</>
           ) : (
-            'No Rank found in All Pending Txs'
+            'No Rank in All Pending Txs'
           )}
         </div>
       </div>
@@ -175,7 +177,12 @@ export const PendingTxList = ({
                 <img src={IconUncheck} alt="" />
               )}
               Only meets Base fee requirement
-              <img src={IconHelp} alt="" />
+              <Tooltip
+                overlayClassName="rectangle w-[max-content]"
+                title="Show only transactions whose Gas Price meets the block's Base fee requirements"
+              >
+                <img src={IconHelp} alt="" />
+              </Tooltip>
             </div>
           </div>
         </div>

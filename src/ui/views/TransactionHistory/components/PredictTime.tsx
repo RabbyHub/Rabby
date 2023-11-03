@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import IconArrowRight from '@/ui/assets/signature-record/icon-arrow-right.svg';
 import { openInTab, openInternalPageInTab } from '@/ui/utils';
@@ -36,6 +36,14 @@ export const PredictTime = ({
   const maxGasTx = findMaxGasTx(item.txs);
   const txRequest = txRequests[maxGasTx.reqId || ''];
   const [account] = useAccount();
+
+  const leftTime = useMemo(() => {
+    const leftTime = txRequest?.predict_packed_at
+      ? Date.now() - txRequest?.predict_packed_at * 1000
+      : 0;
+    return leftTime > 0 ? leftTime : undefined;
+  }, [txRequest?.predict_packed_at]);
+
   if (
     !isPending ||
     !maxGasTx.reqId ||
@@ -52,8 +60,8 @@ export const PredictTime = ({
         );
       }}
     >
-      {txRequest?.predict_packed_at
-        ? `Predicted to be packed in ${txRequest?.predict_packed_at}s`
+      {leftTime
+        ? `Predicted to be packed in ${leftTime}s`
         : 'Packing time is being predicted'}
       <img src={IconArrowRight} alt="" />
     </Wrapper>

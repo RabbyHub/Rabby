@@ -18,7 +18,7 @@ export const Loading = () => {
 
     {
       title: 'Node name',
-      width: 220,
+      width: 294,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 110, height: 16 }} />;
       },
@@ -26,7 +26,7 @@ export const Loading = () => {
 
     {
       title: 'Node operator',
-      width: 220,
+      width: 348,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 148, height: 16 }} />;
       },

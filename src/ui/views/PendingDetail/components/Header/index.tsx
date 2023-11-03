@@ -53,9 +53,14 @@ export const Header = ({
   children?: ReactNode;
   onReBroadcast?(): void;
 }) => {
-  const predict = usePredict(
-    data?.predict_packed_at ? data?.predict_packed_at * 1000 : undefined
-  );
+  const leftTime = useMemo(() => {
+    const leftTime = data?.predict_packed_at
+      ? Date.now() - data?.predict_packed_at * 1000
+      : 0;
+    return leftTime > 0 ? leftTime : undefined;
+  }, [data?.predict_packed_at]);
+
+  const predict = usePredict(leftTime);
 
   return (
     <Wrapper>

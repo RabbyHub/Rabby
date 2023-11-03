@@ -188,7 +188,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
       width: 280,
     },
     {
-      title: 'Pre-pack Results',
+      title: 'Pre-pack results',
       render(value, record, index) {
         return (
           <TokenChange
@@ -241,7 +241,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
     >
       <div className="flex items-center">
         <div className="text-r-neutral-title-1 text-[20px] leading-[24px] font-medium">
-          Pre-pack check
+          Pre-pack Check
         </div>
         <div className="ml-auto flex items-center gap-[16px]">
           {preExecError ? (

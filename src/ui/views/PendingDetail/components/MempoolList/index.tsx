@@ -31,7 +31,7 @@ export const MempoolList = ({
 
     {
       title: 'Node name',
-      width: 220,
+      width: 294,
       render(value, record, index) {
         return <div className="font-medium">{record.name}</div>;
       },
@@ -39,32 +39,32 @@ export const MempoolList = ({
 
     {
       title: 'Node operator',
-      width: 220,
+      width: 348,
       render(value, record, index) {
         return <div className="font-medium">{record.operator}</div>;
       },
     },
-    {
-      title: 'Node 24h packed percentage ',
-      width: 220,
-      render(value, record, index) {
-        return (
-          <div className="flex items-center gap-[16px]">
-            <div className="w-[80px] bg-r-neutral-line h-[3px] rounded-[2px]">
-              <div
-                style={{
-                  width: (record.packed_rate || 0) * 100 + '%',
-                }}
-                className="bg-r-blue-default h-[3px] rounded-[2px] opacity-50"
-              ></div>
-            </div>
-            <div className="font-medium text-r-neutral-foot">
-              {((record.packed_rate || 0) * 100).toFixed(2)}%
-            </div>
-          </div>
-        );
-      },
-    },
+    // {
+    //   title: 'Node 24h packed percentage ',
+    //   width: 220,
+    //   render(value, record, index) {
+    //     return (
+    //       <div className="flex items-center gap-[16px]">
+    //         <div className="w-[80px] bg-r-neutral-line h-[3px] rounded-[2px]">
+    //           <div
+    //             style={{
+    //               width: (record.packed_rate || 0) * 100 + '%',
+    //             }}
+    //             className="bg-r-blue-default h-[3px] rounded-[2px] opacity-50"
+    //           ></div>
+    //         </div>
+    //         <div className="font-medium text-r-neutral-foot">
+    //           {((record.packed_rate || 0) * 100).toFixed(2)}%
+    //         </div>
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       title: 'Transaction status',
@@ -80,7 +80,7 @@ export const MempoolList = ({
             {record.check_success === false ? (
               <div className="flex items-center gap-[6px] text-r-neutral-body">
                 <img src={IconClock} alt="" />
-                Once appeared
+                Appeared once
               </div>
             ) : null}
             {record.check_success == null ? (
@@ -105,7 +105,7 @@ export const MempoolList = ({
   return (
     <div className="card">
       <div className="flex items-center mb-[8px]">
-        <div className="card-title">Appeared in {appearedCount} pack nodes</div>
+        <div className="card-title">Found in {appearedCount} pack nodes</div>
       </div>
       {loading ? (
         <Loading />

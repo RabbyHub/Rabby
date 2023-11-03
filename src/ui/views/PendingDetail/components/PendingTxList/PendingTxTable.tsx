@@ -8,7 +8,8 @@ import { Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { Empty } from '../Empty';
-import { BalanceChange, TransactionAction } from './TransactionAction';
+import { TransactionAction } from './TransactionAction';
+import { BalanceChange } from './BalanceChange';
 
 export const PendingTxTable = ({
   list,

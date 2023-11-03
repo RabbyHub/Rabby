@@ -40,7 +40,7 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
         <Timeline
           pending={
             <div className="text-r-neutral-foot text-[15px] leading-[18px] font-medium">
-              查询中
+              Checking status...
             </div>
           }
           pendingDot={
@@ -49,14 +49,16 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
         >
           <Timeline.Item dot={Dot}>
             <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-              {dayjs.unix(txRequest.create_at).format('HH:mm')}: 创建交易
+              {dayjs.unix(txRequest.create_at).format('HH:mm')}: Transaction
+              created
             </div>
           </Timeline.Item>
 
           {txRequest.push_at ? (
             <Timeline.Item dot={Dot}>
               <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-                {dayjs.unix(txRequest.push_at).format('HH:mm')}: 最新一次广播
+                {dayjs.unix(txRequest.push_at).format('HH:mm')}: Recently
+                broadcasted
               </div>
             </Timeline.Item>
           ) : null}

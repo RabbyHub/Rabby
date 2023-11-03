@@ -52,20 +52,20 @@ const useSetup = ({
     [txGroup]
   );
 
-  const txId = useMemo(() => {
+  const reqId = useMemo(() => {
     return findMaxGasTx(txGroup?.txs || [])?.reqId;
   }, [txGroup]);
 
   const { data: txRequest, cancel: cancelGetTxRequest } = useRequest(
     async () => {
-      if (txId && isPending) {
+      if (reqId && isPending) {
         console.log({ isPending });
         setLoading({ txRequest: !txRequest });
-        return wallet.openapi.getTxRequest(txId);
+        return wallet.openapi.getTxRequest(reqId);
       }
     },
     {
-      refreshDeps: [txId, isPending],
+      refreshDeps: [reqId, isPending],
       onFinally: () => {
         setLoading({ txRequest: false });
       },
@@ -86,6 +86,7 @@ const useSetup = ({
     },
     {
       refreshDeps: [txRequest?.tx_id, txRequest?.chain_id, isPending],
+      pollingInterval: 1000 * 6,
       onFinally: () => {
         setLoading({ mempoolList: false });
       },
@@ -93,13 +94,13 @@ const useSetup = ({
   );
   const { data: latestExplain } = useRequest(
     async () => {
-      if (txId) {
+      if (reqId && isPending) {
         setLoading({ latestExplain: !latestExplain });
-        return wallet.openapi.getLatestPreExec({ id: txId });
+        return wallet.openapi.getLatestPreExec({ id: reqId });
       }
     },
     {
-      refreshDeps: [txId],
+      refreshDeps: [reqId, isPending],
       onFinally: () => {
         setLoading({ latestExplain: false });
       },
@@ -127,7 +128,7 @@ const useSetup = ({
 
   const { data: baseFee } = useRequest(
     async () => {
-      if (txRequest?.chain_id) {
+      if (txRequest?.chain_id && isPending) {
         return wallet.requestETHRpc(
           {
             method: 'eth_baseFee',
@@ -138,7 +139,7 @@ const useSetup = ({
       }
     },
     {
-      refreshDeps: [txRequest?.chain_id],
+      refreshDeps: [txRequest?.chain_id, isPending],
       pollingInterval: 1000 * 6,
     }
   );
