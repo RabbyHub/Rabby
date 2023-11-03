@@ -20,7 +20,9 @@ export const AddressBackup = ({ address, type }: Props) => {
 
   const [form] = useForm();
 
-  if (![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type)) {
+  if (
+    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
+  ) {
     return null;
   }
 
