@@ -31,7 +31,8 @@
     "Balance": "余额",
     "Done": "完成",
     "nonce": "nonce",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "tryAgain": "再试一次"
   },
   "page": {
     "transactions": {
@@ -302,6 +303,13 @@
           "doc3": "打开 Ethereum 应用程序",
           "reconnect": "如果无法连接，请尝试<1>从头开始重新连接</1>"
         },
+        "keystone": {
+          "title": "*仅Keystone 3(Pro)支持USB连接",
+          "doc1": "插入一个Keystone",
+          "doc2": "输入密码以解锁",
+          "doc3": "批准与电脑的连接",
+          "reconnect": "如果无法使用，请尝试<1>从头开始重新连接。</1>"
+        },
         "howToSwitch": "如何切换"
       },
       "GnosisWrongChainAlertBar": {
@@ -420,6 +428,15 @@
         "permissionsAuthorized": "权限已授权",
         "nowYouCanReInitiateYourTransaction": "现在你可以重新发起你的交易",
         "allow": "允许"
+      },
+      "keystone": {
+        "title": "连接Keystone",
+        "allowRabbyPermissionsTitle": "允许Rabby访问以下权限：",
+        "keystonePermission1": "连接至USB设备",
+        "keystonePermissionTip": "请点击下方的“允许”，并在弹出窗口中授权访问您的 Keystone",
+        "noDeviceFoundError": "请插入一个Keystone",
+        "deviceIsLockedError": "输入密码以解锁",
+        "unknowError": "未知错误，请再试一次"
       },
       "walletConnect": {
         "connectYour": "连接你的",
@@ -1071,6 +1088,14 @@
         "signWith": "使用 {{brand}} 签名",
         "txFailed": "交易失败",
         "unknownQRCode": "错误：无法识别二维码"
+      },
+      "keystone": {
+        "signWith": "切换到{{method}}进行签名",
+        "misMatchSignId": "交易数据不一致。请检查交易详情。",
+        "unsupportedType": "错误：交易类型不支持或未知。",
+        "siging": "正在发送签名请求",
+        "txRejected": "交易被拒绝",
+        "shouldRetry": "发生了某些错误。请重试。"
       },
       "resend": "重试",
       "submitTx": "提交",
