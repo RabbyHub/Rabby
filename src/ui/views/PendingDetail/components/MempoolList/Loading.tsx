@@ -3,10 +3,12 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const list = _.range(6);
 
 export const Loading = () => {
+  const { t } = useTranslation();
   const columns: ColumnsType<any> = [
     {
       title: '#',
@@ -17,7 +19,7 @@ export const Loading = () => {
     },
 
     {
-      title: 'Node name',
+      title: t('page.pendingDetail.MempoolList.col.nodeName'),
       width: 294,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 110, height: 16 }} />;
@@ -25,22 +27,22 @@ export const Loading = () => {
     },
 
     {
-      title: 'Node operator',
+      title: t('page.pendingDetail.MempoolList.col.nodeOperator'),
       width: 348,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 148, height: 16 }} />;
       },
     },
-    {
-      title: 'Node 24h packed percentage ',
-      width: 220,
-      render(value, record, index) {
-        return <SkeletonInput active style={{ width: 68, height: 16 }} />;
-      },
-    },
+    // {
+    //   title: 'Node 24h packed percentage ',
+    //   width: 220,
+    //   render(value, record, index) {
+    //     return <SkeletonInput active style={{ width: 68, height: 16 }} />;
+    //   },
+    // },
 
     {
-      title: 'Transaction status',
+      title: t('page.pendingDetail.MempoolList.col.txStatus'),
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 68, height: 16 }} />;
       },

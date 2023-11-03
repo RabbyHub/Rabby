@@ -4,10 +4,12 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const list = _.range(10);
 
 export const Loading = () => {
+  const { t } = useTranslation();
   const columns: ColumnsType<any> = [
     {
       title: '#',
@@ -17,14 +19,14 @@ export const Loading = () => {
       width: 120,
     },
     {
-      title: 'Gas Price',
+      title: t('page.pendingDetail.PendingTxList.col.gasPrice'),
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 68, height: 16 }} />;
       },
       width: 240,
     },
     {
-      title: 'Transaction Action',
+      title: t('page.pendingDetail.PendingTxList.col.action'),
       render(value, record, index) {
         return (
           <div className="flex items-center gap-[12px]">
@@ -39,7 +41,7 @@ export const Loading = () => {
       width: 304,
     },
     {
-      title: 'Balance change',
+      title: t('page.pendingDetail.PendingTxList.col.balanceChange'),
       render(value, record, index) {
         return (
           <div className="flex flex-col gap-[8px]">

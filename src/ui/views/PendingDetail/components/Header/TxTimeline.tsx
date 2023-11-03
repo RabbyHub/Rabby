@@ -5,6 +5,7 @@ import iconSpin from '@/ui/assets/pending/icon-spin-1.svg';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { Timeline } from 'antd';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   min-width: 376px;
@@ -31,6 +32,8 @@ const Wrapper = styled.div`
 `;
 
 export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
+  const { t } = useTranslation();
+
   const Dot = (
     <div className="bg-r-neutral-title-1 rounded-full w-[8px] h-[8px]"></div>
   );
@@ -40,7 +43,7 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
         <Timeline
           pending={
             <div className="text-r-neutral-foot text-[15px] leading-[18px] font-medium">
-              Checking status...
+              {t('page.pendingDetail.TxTimeline.pending')}
             </div>
           }
           pendingDot={
@@ -49,16 +52,16 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
         >
           <Timeline.Item dot={Dot}>
             <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-              {dayjs.unix(txRequest.create_at).format('HH:mm')}: Transaction
-              created
+              {dayjs.unix(txRequest.create_at).format('HH:mm')}:{' '}
+              {t('page.pendingDetail.TxTimeline.created')}
             </div>
           </Timeline.Item>
 
           {txRequest.push_at ? (
             <Timeline.Item dot={Dot}>
               <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-                {dayjs.unix(txRequest.push_at).format('HH:mm')}: Recently
-                broadcasted
+                {dayjs.unix(txRequest.push_at).format('HH:mm')}:{' '}
+                {t('page.pendingDetail.TxTimeline.broadcasted')}
               </div>
             </Timeline.Item>
           ) : null}

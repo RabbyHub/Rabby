@@ -10,6 +10,7 @@ import React from 'react';
 import { Empty } from '../Empty';
 import { TransactionAction } from './TransactionAction';
 import { BalanceChange } from './BalanceChange';
+import { useTranslation } from 'react-i18next';
 
 export const PendingTxTable = ({
   list,
@@ -20,7 +21,8 @@ export const PendingTxTable = ({
   tokenDict: Record<string, TokenItem | NFTItem>;
   hash?: string | null;
 }) => {
-  const wallet = useWallet();
+  const { t } = useTranslation();
+
   const columns: ColumnsType<PendingTxItem> = [
     {
       title: '#',
@@ -41,21 +43,21 @@ export const PendingTxTable = ({
       width: 120,
     },
     {
-      title: 'Gas Price',
+      title: t('page.pendingDetail.PendingTxList.col.gasPrice'),
       render(value, record, index) {
         return <div>{Number(record.gas_price || 0)} gwei</div>;
       },
       width: 240,
     },
     {
-      title: 'Transaction Action',
+      title: t('page.pendingDetail.PendingTxList.col.action'),
       render(value, record, index) {
         return <TransactionAction data={record} />;
       },
       width: 304,
     },
     {
-      title: 'Balance change',
+      title: t('page.pendingDetail.PendingTxList.col.balanceChange'),
       render(value, record, index) {
         return (
           <BalanceChange

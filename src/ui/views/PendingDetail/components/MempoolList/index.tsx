@@ -10,6 +10,7 @@ import { ColumnsType } from 'antd/lib/table';
 import React, { useMemo } from 'react';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
+import { useTranslation } from 'react-i18next';
 
 export const MempoolList = ({
   list,
@@ -20,6 +21,8 @@ export const MempoolList = ({
   txRequest?: TxRequest;
   loading?: boolean;
 }) => {
+  const { t } = useTranslation();
+
   const columns: ColumnsType<MempoolCheckDetail> = [
     {
       title: '#',
@@ -30,7 +33,7 @@ export const MempoolList = ({
     },
 
     {
-      title: 'Node name',
+      title: t('page.pendingDetail.MempoolList.col.nodeName'),
       width: 294,
       render(value, record, index) {
         return <div className="font-medium">{record.name}</div>;
@@ -38,7 +41,7 @@ export const MempoolList = ({
     },
 
     {
-      title: 'Node operator',
+      title: t('page.pendingDetail.MempoolList.col.nodeOperator'),
       width: 348,
       render(value, record, index) {
         return <div className="font-medium">{record.operator}</div>;
@@ -67,26 +70,26 @@ export const MempoolList = ({
     // },
 
     {
-      title: 'Transaction status',
+      title: t('page.pendingDetail.MempoolList.col.txStatus'),
       render(value, record, index) {
         return (
           <div>
             {record.check_success ? (
               <div className="flex items-center gap-[6px] font-medium text-r-blue-default">
                 <img src={IconCheck} alt="" />
-                Appeared
+                {t('page.pendingDetail.MempoolList.txStatus.appeared')}
               </div>
             ) : null}
             {record.check_success === false ? (
               <div className="flex items-center gap-[6px] text-r-neutral-body">
                 <img src={IconClock} alt="" />
-                Appeared once
+                {t('page.pendingDetail.MempoolList.txStatus.appearedOnce')}
               </div>
             ) : null}
             {record.check_success == null ? (
               <div className="flex items-center gap-[6px] text-r-neutral-foot">
                 <img src={iconSpin} alt="" className="animate-spin" />
-                Not found
+                {t('page.pendingDetail.MempoolList.txStatus.notFound')}
               </div>
             ) : null}
           </div>
@@ -105,7 +108,11 @@ export const MempoolList = ({
   return (
     <div className="card">
       <div className="flex items-center mb-[8px]">
-        <div className="card-title">Found in {appearedCount} pack nodes</div>
+        <div className="card-title">
+          {t('page.pendingDetail.MempoolList.title', {
+            count: appearedCount,
+          })}
+        </div>
       </div>
       {loading ? (
         <Loading />

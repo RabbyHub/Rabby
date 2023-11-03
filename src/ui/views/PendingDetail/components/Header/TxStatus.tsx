@@ -8,6 +8,7 @@ import { Button, Popover } from 'antd';
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { TxTimeline } from './TxTimeline';
+import { useTranslation } from 'react-i18next';
 
 const GlobalStyle = createGlobalStyle`
   .pending-detail-popover {
@@ -37,6 +38,7 @@ export const TxStatus = ({
   const isBroadcasted = !!maxGasTx?.hash;
 
   const isSuccess = !isPending && !isSubmitFailed && !isWithdrawed;
+  const { t } = useTranslation();
 
   if (isSubmitFailed || isWithdrawed) {
     return null;
@@ -45,7 +47,7 @@ export const TxStatus = ({
   if (isSuccess) {
     return (
       <div className="p-[8px] h-[36px] border-r-neutral-bg-1 text-r-neutral-bg-1 hover:border-r-neutral-bg-1 rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]">
-        Completed
+        {t('page.pendingDetail.TxStatus.completed')}
       </div>
     );
   }
@@ -63,11 +65,11 @@ export const TxStatus = ({
           <img src={IconSpin} className="animate-spin" />
           {isBroadcasted ? (
             <>
-              Pending: Broadcasted{' '}
+              {t('page.pendingDetail.TxStatus.pendingBroadcasted')}{' '}
               {txRequest?.push_at ? sinceTime(txRequest?.push_at) : null}
             </>
           ) : (
-            <>Pending: To be broadcast</>
+            <>{t('page.pendingDetail.TxStatus.pendingBroadcast')}</>
           )}
           <img src={IconArrowDown} alt="" />
         </div>
@@ -77,7 +79,7 @@ export const TxStatus = ({
         ghost
         onClick={onReBroadcast}
       >
-        Re-broadcast
+        {t('page.pendingDetail.TxStatus.reBroadcastBtn')}
       </Button>
     </div>
   );

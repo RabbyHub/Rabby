@@ -6,6 +6,7 @@ import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -35,6 +36,7 @@ export const PredictTime = ({
   const maxGasTx = findMaxGasTx(item.txs);
   const txRequest = txRequests[maxGasTx.reqId || ''];
   const [account] = useAccount();
+  const { t } = useTranslation();
 
   const leftTime = useMemo(() => {
     const leftTime = txRequest?.predict_packed_at
@@ -60,8 +62,10 @@ export const PredictTime = ({
       }}
     >
       {leftTime
-        ? `Predicted to be packed in ${formatTimeReadable(leftTime / 1000)}`
-        : 'Packing time is being predicted'}
+        ? t('page.activities.signedTx.PredictTime.time', {
+            time: formatTimeReadable(leftTime / 1000),
+          })
+        : t('page.activities.signedTx.PredictTime.noTime')}
       <img src={IconArrowRight} alt="" />
     </Wrapper>
   );

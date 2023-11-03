@@ -3,13 +3,15 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const list = _.range(2);
 
 export const Loading = () => {
+  const { t } = useTranslation();
   const columns: ColumnsType<any> = [
     {
-      title: 'Pre-pack content',
+      title: t('page.pendingDetail.PrePackInfo.col.prePackContent'),
       width: 220,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 80, height: 16 }} />;
@@ -17,7 +19,7 @@ export const Loading = () => {
     },
 
     {
-      title: 'Expectations',
+      title: t('page.pendingDetail.PrePackInfo.col.expectations'),
       width: 280,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 110, height: 16 }} />;
@@ -25,14 +27,14 @@ export const Loading = () => {
     },
 
     {
-      title: 'Pre-pack Results',
+      title: t('page.pendingDetail.PrePackInfo.col.prePackResults'),
       width: 280,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 148, height: 16 }} />;
       },
     },
     {
-      title: 'Conclusions',
+      title: t('page.pendingDetail.PrePackInfo.col.difference'),
       width: 220,
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 68, height: 16 }} />;

@@ -17,6 +17,7 @@ import { PendingTxTable } from './PendingTxTable';
 import { Loading } from './Loading';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const filterBaseFee = ({
   list,
@@ -129,15 +130,15 @@ export const PendingTxList = ({
     return res;
   }, [tx, list, value]);
 
+  const { t } = useTranslation();
+
   return (
     <div className="card">
       <div className="flex items-center mb-[18px]">
         <div className="card-title">
-          {rank ? (
-            <>GasPrice Ranks #{rank} in Same as Current Tx</>
-          ) : (
-            'No Rank in All Pending Txs'
-          )}
+          {rank
+            ? t('page.pendingDetail.PendingTxList.title', { rank: rank })
+            : t('page.pendingDetail.PendingTxList.titleNotFound')}
         </div>
       </div>
 
@@ -176,10 +177,12 @@ export const PendingTxList = ({
               ) : (
                 <img src={IconUncheck} alt="" />
               )}
-              Only meets Base fee requirement
+              {t('page.pendingDetail.PendingTxList.filterBaseFee.label')}
               <Tooltip
                 overlayClassName="rectangle w-[max-content]"
-                title="Show only transactions whose Gas Price meets the block's Base fee requirements"
+                title={t(
+                  'page.pendingDetail.PendingTxList.filterBaseFee.tooltip'
+                )}
               >
                 <img src={IconHelp} alt="" />
               </Tooltip>

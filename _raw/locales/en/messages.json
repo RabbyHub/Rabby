@@ -449,6 +449,10 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
+        },
+        "PredictTime": {
+          "time": "Predicted to be packed in {{time}}",
+          "noTime": "Packing time is being predicted"
         }
       },
       "signedText": {
@@ -1556,6 +1560,72 @@
     "importQrBase": {
       "desc": "Scan the QR code on the {{brandName}} hardware wallet",
       "btnText": "Try Again"
+    },
+    "pendingDetail": {
+      "Header": {
+        "predictTime": "Predicted to be packed in"
+      },
+      "TxStatus": {
+        "completed": "Completed",
+        "pendingBroadcasted": "Pending: Broadcasted",
+        "pendingBroadcast": "Pending: To be broadcast",
+        "reBroadcastBtn": "Re-broadcast"
+      },
+      "TxHash": {
+        "hash": "Tx Hash"
+      },
+      "TxTimeline": {
+        "pending": "Checking status...",
+        "created": "Transaction created",
+        "broadcasted": "Recently broadcasted"
+      },
+      "MempoolList": {
+        "col": {
+          "nodeName": "Node name",
+          "nodeOperator": "Node operator",
+          "txStatus": "Transaction status"
+        },
+        "txStatus": {
+          "appeared": "Appeared",
+          "appearedOnce": "Appeared once",
+          "notFound": "Not found"
+        },
+        "title": "Found in {{count}} pack nodes"
+      },
+      "PendingTxList": {
+        "title": "GasPrice Ranks #{{rank}} in Same as Current Tx",
+        "titleNotFound": "No Rank in All Pending Txs",
+        "filterBaseFee": {
+          "label": "Only meets Base fee requirement",
+          "tooltip": "Show only transactions whose Gas Price meets the block's Base fee requirements"
+        },
+        "col": {
+          "gasPrice": "Gas Price",
+          "action": "Transaction Action",
+          "balanceChange": "Balance change"
+        }
+      },
+      "Empty": {
+        "noData": "No data found"
+      },
+      "PrePackInfo": {
+        "col": {
+          "prePackContent": "Pre-pack content",
+          "expectations": "Expectations",
+          "prePackResults": "Pre-pack results",
+          "difference": "Conclusions"
+        },
+        "type": {
+          "pay": "Pay",
+          "receive": "Receive"
+        },
+        "noLoss": "No loss found",
+        "noError": "No error found",
+        "title": "Pre-pack Check",
+        "error": "{{count}} error found",
+        "loss": "{{lossCount}} loss found",
+        "desc": "Simulation executed in the latest block, updated {{time}}"
+      }
     }
   },
   "component": {

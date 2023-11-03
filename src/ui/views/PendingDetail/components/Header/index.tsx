@@ -8,6 +8,7 @@ import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { useCountDown } from 'ahooks';
 import { TxHash } from './TxHash';
 import { TxStatus } from './TxStatus';
+import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   position: relative;
@@ -62,6 +63,8 @@ export const Header = ({
 
   const predict = usePredict(leftTime);
 
+  const { t } = useTranslation();
+
   return (
     <Wrapper>
       <div className="layout-container relative z-10">
@@ -79,7 +82,7 @@ export const Header = ({
         </div>
         <div className="mb-[34px]">
           <div className="text-r-neutral-title-2 text-center text-[24px] leading-[29px] mt-[40px] mb-[24px]">
-            Predicted to be packed in
+            {t('page.pendingDetail.Header.predictTime')}
           </div>
           <div className="flex items-center justify-center gap-[16px]">
             <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">

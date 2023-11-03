@@ -9,10 +9,12 @@ import { openInTab } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
+import { useTranslation } from 'react-i18next';
 
 export const TxHash = ({ tx }: { tx: TransactionGroup }) => {
   const chain = findChainByID(tx.chainId);
   const maxGasTx = findMaxGasTx(tx.txs);
+  const { t } = useTranslation();
 
   const handleOpenExternal = () => {
     if (!chain || !maxGasTx?.hash) {
@@ -27,7 +29,8 @@ export const TxHash = ({ tx }: { tx: TransactionGroup }) => {
         <div className="flex items-center gap-[6px] opacity-70">
           <img src={chain?.logo || IconUnknown} className="w-[16px] h-[16px]" />
           <div className="text-r-neutral-title-2 text-[13px] leading-[16px]">
-            Tx Hash: {maxGasTx?.hash ? ellipsisAddress(maxGasTx?.hash) : ''}
+            {t('page.pendingDetail.TxHash.hash')}:{' '}
+            {maxGasTx?.hash ? ellipsisAddress(maxGasTx?.hash) : ''}
           </div>
 
           <>

@@ -164,18 +164,24 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
 
   const columns: ColumnsType<typeof res[number]> = [
     {
-      title: 'Pre-pack content',
+      title: t('page.pendingDetail.PrePackInfo.col.prePackContent'),
       render(value, record, index) {
         const prev = res[index - 1];
         if (prev?.isNegative !== record.isNegative) {
-          return <div>{record.isNegative ? 'Pay ' : 'Receive'}</div>;
+          return (
+            <div>
+              {record.isNegative
+                ? t('page.pendingDetail.PrePackInfo.type.pay')
+                : t('page.pendingDetail.PrePackInfo.type.receive')}
+            </div>
+          );
         }
         return null;
       },
       width: 220,
     },
     {
-      title: 'Expectations',
+      title: t('page.pendingDetail.PrePackInfo.col.expectations'),
       render(value, record, index) {
         return (
           <TokenChange
@@ -188,7 +194,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
       width: 280,
     },
     {
-      title: 'Pre-pack results',
+      title: t('page.pendingDetail.PrePackInfo.col.prePackResults'),
       render(value, record, index) {
         return (
           <TokenChange
@@ -201,13 +207,13 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
       width: 280,
     },
     {
-      title: 'Conclusions',
+      title: t('page.pendingDetail.PrePackInfo.col.difference'),
       render(value, record, index) {
         if (!record.diff) {
           return (
             <div className="flex items-center gap-[6px] text-r-blue-default font-medium">
               <img src={IconNoLoss} alt="" />
-              No loss found
+              {t('page.pendingDetail.PrePackInfo.noLoss')}
             </div>
           );
         }
@@ -241,28 +247,33 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
     >
       <div className="flex items-center">
         <div className="text-r-neutral-title-1 text-[20px] leading-[24px] font-medium">
-          Pre-pack Check
+          {t('page.pendingDetail.PrePackInfo.title')}
         </div>
         <div className="ml-auto flex items-center gap-[16px]">
           {preExecError ? (
             <div className="flex items-center gap-[6px] text-r-red-default  text-[15px] leading-[18px] font-medium">
-              <img src={IconError} alt="" />1 error found
+              <img src={IconError} alt="" />
+              {t('page.pendingDetail.PrePackInfo.error', {
+                count: 1,
+              })}
             </div>
           ) : (
             <>
               <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
                 <img src={IconCheck} alt="" />
-                No error found
+                {t('page.pendingDetail.PrePackInfo.noError')}
               </div>
               {lossCount > 0 ? (
                 <div className="flex items-center gap-[8px] text-r-orange-default  text-[15px] leading-[18px] font-medium">
                   <img src={IconWarning} alt="" />
-                  {lossCount} loss found
+                  {t('page.pendingDetail.PrePackInfo.loss', {
+                    count: lossCount,
+                  })}
                 </div>
               ) : (
                 <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
                   <img src={IconCheck} alt="" />
-                  No loss found
+                  {t('page.pendingDetail.PrePackInfo.noLoss')}
                 </div>
               )}
             </>
@@ -280,10 +291,11 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
       {isCollapse ? null : (
         <>
           <div className="text-r-neutral-foot text-[12px] mt-[8px] leading-[14px]">
-            Simulation executed in the latest block, updated{' '}
-            {latestExplain?.create_at
-              ? sinceTime(latestExplain?.create_at || 0)
-              : null}
+            {t('page.pendingDetail.PrePackInfo.desc', {
+              time: latestExplain?.create_at
+                ? sinceTime(latestExplain?.create_at || 0)
+                : null,
+            })}
           </div>
           <div className="bg-r-neutral-line h-[0.5px] mx-[-24px] mt-[16px]"></div>
           {preExecError ? (
