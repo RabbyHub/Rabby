@@ -216,7 +216,8 @@
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
           "enableTestnets": "启用测试网",
           "currentLanguage": "当前语言",
-          "toggleThemeMode": "主题模式"
+          "toggleThemeMode": "主题模式",
+          "themeMode": "主题模式"
         },
         "supportedChains": "支持的链",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
