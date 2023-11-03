@@ -17,6 +17,7 @@ import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-ke
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChainByEnum } from '@/utils/chain';
+import { debounce } from 'lodash';
 import {
   UnderlineButton as SwitchButton,
   SIGNATURE_METHOD,
@@ -41,8 +42,6 @@ const QRHardWareWaiting = ({ params }) => {
   const [signMethod, setSignMethod] = useState<SIGNATURE_METHOD>(
     SIGNATURE_METHOD.QRCODE
   );
-  const [hiddenSwitchButton, setHiddenSwitchButton] = useState(false);
-  const [isUSBSignDone, setIsUSBSignDone] = useState(false);
   const canSwitchSignature = useCanSwitchSignature(brand);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
@@ -84,11 +83,14 @@ const QRHardWareWaiting = ({ params }) => {
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
+
+    const debounceSetSignPayload = debounce(({ request }) => {
+      setSignPayload(request);
+    }, 100);
+
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      ({ request }) => {
-        setSignPayload(request);
-      }
+      debounceSetSignPayload
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
@@ -110,7 +112,6 @@ const QRHardWareWaiting = ({ params }) => {
           return;
         }
         setStatus(QRHARDWARE_STATUS.DONE);
-        setIsUSBSignDone(true);
         setSignFinishedData({
           data: sig,
           stay: !isSignText,
@@ -238,28 +239,45 @@ const QRHardWareWaiting = ({ params }) => {
     }
   }, [status, errorMessage]);
 
+  const [hiddenSwitchButton, setHiddenSwitchButton] = useState(false);
+  const shouldShowSignatureSwitchButton = useMemo(() => {
+    return (
+      status !== QRHARDWARE_STATUS.DONE &&
+      canSwitchSignature &&
+      !hiddenSwitchButton
+    );
+  }, [status, canSwitchSignature, hiddenSwitchButton]);
+
   const calcSignComponent = useCallback(() => {
     if (signMethod === SIGNATURE_METHOD.USB) {
+      const onKeystoneWaitingPageDone = () => setIsClickDone(true);
+      const onKeystoneWaitingPageSetErrorMessage = (error) =>
+        setErrorMessage(error);
+      const onKeystoneWaitingPageHandleSuccess = (message) => {
+        setScanMessage(message);
+        wallet.submitQRHardwareSignature(
+          signPayload!.requestId,
+          message,
+          params?.account?.address
+        );
+      };
+      const onKeystoneWaitingPageRetry = async () => {
+        await handleRequestSignature();
+        setStatus(QRHARDWARE_STATUS.SYNC);
+      };
+
       return (
         <KeystoneWiredWaiting
-          isDone={isUSBSignDone}
-          onDone={() => setIsClickDone(true)}
+          isDone={status === QRHARDWARE_STATUS.DONE}
+          onRetry={onKeystoneWaitingPageRetry}
+          onDone={onKeystoneWaitingPageDone}
           payload={signPayload?.payload}
           errorMessage={errorMessage}
-          setErrorMessage={setErrorMessage}
+          setHiddenSwitchButton={setHiddenSwitchButton}
+          setErrorMessage={onKeystoneWaitingPageSetErrorMessage}
           requestId={signPayload?.requestId}
-          switchButtonVisibleController={(visible: boolean) =>
-            setHiddenSwitchButton(!visible)
-          }
           handleCancel={handleCancel}
-          handleSuccess={(message) => {
-            setScanMessage(message);
-            wallet.submitQRHardwareSignature(
-              signPayload!.requestId,
-              message,
-              params?.account?.address
-            );
-          }}
+          handleSuccess={onKeystoneWaitingPageHandleSuccess}
         />
       );
     }
@@ -268,6 +286,7 @@ const QRHardWareWaiting = ({ params }) => {
       <>
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
+            playerSize={shouldShowSignatureSwitchButton ? 160 : 180}
             type={signPayload.payload.type}
             cbor={signPayload.payload.cbor}
             onSign={handleRequestSignature}
@@ -285,21 +304,15 @@ const QRHardWareWaiting = ({ params }) => {
       </>
     );
   }, [
+    wallet,
+    params,
     status,
+    scanMessage,
     signPayload,
     walletBrandContent,
     signMethod,
     errorMessage,
-    isUSBSignDone,
   ]);
-
-  const shouldShowSignatureSwitchButton = useMemo(() => {
-    return (
-      status === QRHARDWARE_STATUS.SYNC &&
-      canSwitchSignature &&
-      !hiddenSwitchButton
-    );
-  }, [status, canSwitchSignature, hiddenSwitchButton]);
 
   if (popupStatus && signMethod === SIGNATURE_METHOD.QRCODE) {
     return (
@@ -320,13 +333,16 @@ const QRHardWareWaiting = ({ params }) => {
 
   return (
     <section className="h-full">
-      <div className="flex justify-center qrcode-scanner flex-col h-full">
+      <div
+        className={clsx(
+          shouldShowSignatureSwitchButton ? '' : 'justify-center',
+          'flex qrcode-scanner flex-col h-full'
+        )}
+      >
         {calcSignComponent()}
         {shouldShowSignatureSwitchButton && (
           <SwitchButton
-            className={clsx(
-              signMethod === SIGNATURE_METHOD.USB ? 'mt-20' : 'mt-5'
-            )}
+            className="mt-20"
             onClick={() => {
               if (signMethod === SIGNATURE_METHOD.USB) {
                 setSignMethod(SIGNATURE_METHOD.QRCODE);

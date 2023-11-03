@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 import { useWallet, openInternalPageInTab } from 'ui/utils';
@@ -13,6 +13,20 @@ import {
 } from '../../Popup/ApprovalPopupContainer';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
+
+const SHOULD_RETRY_KEYWORDS = [
+  'A transfer error has occurred.',
+  'Previous request is not finished',
+];
+
+const AUTO_RETRY_KEYWORDS = [
+  'An operation that changes interface state is in progress.',
+];
+
+const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
+  'disconnected',
+  'cannot be found',
+];
 
 const buildKeystoneSignPayload = (payload: any) => {
   return new UREncoder(
@@ -39,8 +53,9 @@ interface IKeystoneWaitingProps {
   errorMessage?: string;
   setErrorMessage: (message: string) => void;
   handleSuccess: (scanMessage: any) => void;
+  onRetry: any;
   handleCancel: () => void;
-  switchButtonVisibleController: (visible: boolean) => void;
+  setHiddenSwitchButton: (hidden: boolean) => void;
   [key: string]: any;
 }
 
@@ -53,7 +68,8 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
   setErrorMessage,
   handleSuccess,
   handleCancel,
-  switchButtonVisibleController,
+  setHiddenSwitchButton,
+  onRetry,
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -70,11 +86,13 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       null,
       buildKeystoneSignPayload(payload)
     );
-  }, []);
+  }, [payload, requestId]);
 
-  useEffect(() => {
-    switchButtonVisibleController(['SENDING', 'WAITING'].includes(statusProp));
-  }, [statusProp]);
+  const handleRetry = useCallback(async () => {
+    setErrorMessage('');
+    await onRetry();
+    retry();
+  }, [setErrorMessage, onRetry, retry]);
 
   const description = useMemo(() => {
     if (statusProp !== 'REJECTED') {
@@ -84,16 +102,34 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       return errorMessage;
     }
     if (error) {
-      const errorKeywords = ['disconnected', 'cannot be found'];
-      if (errorKeywords.some((keyword) => error.message.includes(keyword))) {
+      if (
+        SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS.some((keyword) =>
+          error.message.includes(keyword)
+        )
+      ) {
         handleCancel();
         openInternalPageInTab('request-permission?type=keystone&from=approval');
         return '';
+      }
+      if (
+        AUTO_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
+      ) {
+        handleRetry();
+        return '';
+      }
+      if (
+        SHOULD_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
+      ) {
+        return t('page.signFooterBar.keystone.shouldRetry');
       }
       return error.message;
     }
     return '';
   }, [error, errorMessage, statusProp]);
+
+  useEffect(() => {
+    setHiddenSwitchButton(['FAILED', 'REJECTED'].includes(statusProp));
+  }, [statusProp]);
 
   const content = useMemo(() => {
     if (loading) {
@@ -104,7 +140,15 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       setStatusProp('REJECTED');
       return t('page.signFooterBar.keystone.txRejected');
     }
-    if (value?.payload && isDone) {
+    if (isDone) {
+      if (error || errorMessage) {
+        setStatusProp('REJECTED');
+        return t('page.signFooterBar.keystone.txRejected');
+      }
+      setStatusProp('RESOLVED');
+      return t('page.signFooterBar.qrcode.sigCompleted');
+    }
+    if (value?.payload) {
       decoder.current.receivePart(value?.payload);
       if (decoder.current.isComplete()) {
         const ur = decoder.current.resultUR();
@@ -114,30 +158,27 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
           const buffer = ethSignature.getRequestId();
           const signId = uuid.stringify(buffer as any);
           if (signId === requestId) {
-            console.error("ur.cbor.toString('hex')", ur.cbor.toString('hex'));
             handleSuccess(ur.cbor.toString('hex'));
+          } else {
+            setStatusProp('REJECTED');
+            setErrorMessage(t('page.signFooterBar.keystone.misMatchSignId'));
           }
-          setErrorMessage(t('page.signFooterBar.keystone.misMatchSignId'));
         } else {
+          setStatusProp('REJECTED');
           setErrorMessage(t('page.signFooterBar.keystone.unsupportedType'));
         }
       }
-      setStatusProp('RESOLVED');
-      return t('page.signFooterBar.qrcode.sigCompleted');
     }
     setStatusProp('SENDING');
     return t('page.signFooterBar.keystone.siging');
-  }, [value, error, loading, errorMessage, isDone]);
+  }, [value, error, errorMessage, loading, isDone, requestId, description]);
 
   return (
     <ApprovalPopupContainer
-      showAnimation={loading}
+      showAnimation={loading || ['SENDING', 'WAITING'].includes(statusProp)}
       hdType="wired"
       status={statusProp}
-      onRetry={() => {
-        setErrorMessage('');
-        retry();
-      }}
+      onRetry={handleRetry}
       onDone={onDone}
       onCancel={handleCancel}
       content={content}
