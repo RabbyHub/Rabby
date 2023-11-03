@@ -262,6 +262,8 @@
       "connectButton": "Connect",
       "connecting": "Connecting...",
       "ledgerNotConnected": "Ledger is not connected",
+      "keystoneNotConnected": "Keystone is not connected",
+      "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
       "signAndSubmitButton": "Sign and Create",
       "walletConnect": {
@@ -1037,6 +1039,7 @@
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
+        "howToConnectKeystone": "How to Connect Keystone",
         "userRejectedTheRequest": "User rejected the request.",
         "ledger": {
           "doc1": "Plug in a single Ledger",
@@ -1614,7 +1617,9 @@
       "gridPlusConnected": "GridPlus is connected",
       "gridPlusNotConnected": "GridPlus is not connected",
       "ledgerNotConnected": "Ledger is not connected",
-      "ledgerConnected": "Ledger is connected"
+      "ledgerConnected": "Ledger is connected",
+      "keystoneConnected": "Keystone is connected",
+      "keystoneNotConnected": "Keystone is not connected"
     },
     "Contact": {
       "AddressItem": {

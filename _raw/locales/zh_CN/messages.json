@@ -296,6 +296,7 @@
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
+        "howToConnectKeystone": "如何连接 Keystone",
         "userRejectedTheRequest": "用户拒绝了请求",
         "ledger": {
           "doc1": "插入 Ledger",
@@ -1043,6 +1044,8 @@
       "ignoreAll": "忽略所有",
       "ledgerConnected": "Ledger 已连接",
       "ledgerNotConnected": "Ledger 未连接",
+      "keystoneNotConnected": "Keystone 未连接",
+      "keystoneConnected": "Keystone 已连接",
       "processRiskAlert": "请先处理所有警报",
       "requestFrom": "请求来源",
       "signAndSubmitButton": "签名并提交",
@@ -1616,7 +1619,9 @@
       "gridPlusConnected": "GridPlus 已连接",
       "gridPlusNotConnected": "GridPlus 未连接",
       "ledgerNotConnected": "Ledger 未连接",
-      "ledgerConnected": "Ledger 已连接"
+      "ledgerConnected": "Ledger 已连接",
+      "keystoneConnected": "Keystone 已连接",
+      "keystoneNotConnected": "Keystone 未连接"
     },
     "Contact": {
       "AddressItem": {

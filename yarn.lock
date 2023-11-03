@@ -3129,24 +3129,24 @@
     base58check "^2.0.0"
     tslib "^2.3.0"
 
-"@keystonehq/hw-app-eth@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@keystonehq/hw-app-eth/-/hw-app-eth-0.2.2.tgz#455db084c8dfea370feeb126633e804f47ff3a4b"
-  integrity sha512-Qgdra/KE5t346y8rqRwK2FIl9EiL2zHIpaD1rWPplHPcQ7pWREpfg2H3rE+Xv406YtN/nGnn5EOm9HI5CwlF/g==
+"@keystonehq/hw-app-eth@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-app-eth/-/hw-app-eth-0.2.3.tgz#f86b44bb263285cbc4f5a2a5d3efb978e52d0ac2"
+  integrity sha512-VG9a41k5Iiv+MWSN3xrw9QO8Pea9Hlk/VV7m4wPisQtRlWHwQCnz1EaWL2S23h+G5Z4zu4bGZanHmbhwFh8Yjg==
   dependencies:
     "@ethereumjs/tx" "^3.3.2"
     "@keystonehq/bc-ur-registry-eth" "^0.8.1-alpha.0"
-    "@keystonehq/hw-transport-webusb" "0.2.2"
+    "@keystonehq/hw-transport-webusb" "0.2.3"
     "@ngraveio/bc-ur" "^1.1.6"
     buffer "^6.0.3"
     hdkey "^2.0.1"
     rlp "^2.2.6"
     uuid "^8.3.2"
 
-"@keystonehq/hw-transport-webusb@0.2.2", "@keystonehq/hw-transport-webusb@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.2.2.tgz#377ee3e45769a6b0826777f3078a2339a6324194"
-  integrity sha512-hLCFBBw2kal057bSdj7zvQ7fXlbc7sh5M6N+AS3EV1Qs4i7TVSiyqFTH77Pft8igrMDPqq168/2Q8/AfyktR4w==
+"@keystonehq/hw-transport-webusb@0.2.3", "@keystonehq/hw-transport-webusb@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.2.3.tgz#8783e7d82262f38ef5ee6dc0bfa95574fc799153"
+  integrity sha512-BOu55JF468jOvkcGEEVvDMQZ+kSJYZntBVPJVwoDzuHGbdXnjiZnLODJO8LpmBKlQ3fQkuhrOW32nXbFLKUe8g==
   dependencies:
     buffer "^6.0.3"
 

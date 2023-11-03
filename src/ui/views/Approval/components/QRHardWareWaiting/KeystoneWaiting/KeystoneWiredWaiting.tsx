@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { message } from 'antd';
 import { useAsyncRetry } from 'react-use';
 import { useWallet, openInternalPageInTab } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
