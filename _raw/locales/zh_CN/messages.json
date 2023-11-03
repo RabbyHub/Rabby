@@ -1257,7 +1257,7 @@
       "transacted": "之前交易过",
       "trustValue": "信任值",
       "trusted": "信任",
-      "unknownAction": "未知",
+      "unknownAction": "未知签名类型",
       "unknownActionType": "未知的动作类型",
       "unwrap": "Unwrap",
       "viewRaw": "查看原始数据",
