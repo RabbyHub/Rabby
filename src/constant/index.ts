@@ -1297,9 +1297,9 @@ export enum CANCEL_TX_TYPE {
 export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];
 
 export enum DARK_MODE_TYPE {
-  'system' = 0,
-  'light' = 1,
-  'dark' = 2,
+  'light' = 0,
+  'dark' = 1,
+  'system' = 2,
 }
 
 export const ThemeModes = [
