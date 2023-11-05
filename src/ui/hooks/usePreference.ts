@@ -46,9 +46,10 @@ export function useThemeModeOnMain() {
   }, [dispatch]);
 
   useLayoutEffect(() => {
-    const isDark =
-      themeMode === DARK_MODE_TYPE.dark ||
-      (themeMode === DARK_MODE_TYPE.system && isDarkOnSystem);
+    // const isDark =
+    //   themeMode === DARK_MODE_TYPE.dark ||
+    //   (themeMode === DARK_MODE_TYPE.system && isDarkOnSystem);
+    const isDark = themeMode === DARK_MODE_TYPE.dark;
 
     if (isDark) {
       document.body.classList.add(darkModeClassName);

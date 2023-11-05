@@ -1219,6 +1219,7 @@
       "sigCantDecode": "该签名无法被 Rabby 解码",
       "signTransactionOnChain": "签署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最终只会完成其中一项",
+      "decodedTooltip": "该签名已被 Rabby Wallet 解析",
       "submitMultisig": {
         "multisigAddress": "多签地址",
         "title": "提交多签交易"
@@ -1256,7 +1257,7 @@
       "transacted": "之前交易过",
       "trustValue": "信任值",
       "trusted": "信任",
-      "unknownAction": "未知",
+      "unknownAction": "未知签名类型",
       "unknownActionType": "未知的动作类型",
       "unwrap": "Unwrap",
       "viewRaw": "查看原始数据",

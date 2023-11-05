@@ -525,34 +525,34 @@ export const fetchRequireData = async (
   return null;
 };
 
-export const getActionTypeText = (data: TypedDataActionData) => {
+export const getActionTypeText = (data: TypedDataActionData | null) => {
   const { t } = i18n;
 
-  if (data.permit) {
+  if (data?.permit) {
     return t('page.signTypedData.permit.title');
   }
-  if (data.permit2 || data.batchPermit2) {
+  if (data?.permit2 || data?.batchPermit2) {
     return t('page.signTypedData.permit2.title');
   }
-  if (data.swapTokenOrder) {
+  if (data?.swapTokenOrder) {
     return t('page.signTypedData.swapTokenOrder.title');
   }
-  if (data.buyNFT || data.sellNFT || data.batchSellNFT) {
+  if (data?.buyNFT || data?.sellNFT || data?.batchSellNFT) {
     return t('page.signTypedData.sellNFT.title');
   }
-  if (data.signMultiSig) {
+  if (data?.signMultiSig) {
     return t('page.signTypedData.signMultiSig.title');
   }
-  if (data.createKey) {
+  if (data?.createKey) {
     return t('page.signTypedData.createKey.title');
   }
-  if (data.verifyAddress) {
+  if (data?.verifyAddress) {
     return t('page.signTypedData.verifyAddress.title');
   }
-  if (data.contractCall) {
-    return t('page.signTx.contractCall.title');
+  if (data?.contractCall) {
+    return t('page.signTx.unknownAction');
   }
-  return '';
+  return t('page.signTx.unknownAction');
 };
 
 export const formatSecurityEngineCtx = async ({

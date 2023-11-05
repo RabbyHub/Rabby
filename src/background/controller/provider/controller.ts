@@ -1043,6 +1043,9 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+
     permissionService.updateConnectSite(
       origin,
       {
@@ -1052,7 +1055,14 @@ class ProviderController extends BaseController {
     );
 
     // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      {
+        ...chain,
+        prev,
+      },
+      origin
+    );
     sessionService.broadcastEvent(
       'chainChanged',
       {
@@ -1103,6 +1113,9 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+
     permissionService.updateConnectSite(
       origin,
       {
@@ -1112,7 +1125,14 @@ class ProviderController extends BaseController {
     );
 
     // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      {
+        ...chain,
+        prev,
+      },
+      origin
+    );
     sessionService.broadcastEvent(
       'chainChanged',
       {

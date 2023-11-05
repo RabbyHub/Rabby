@@ -1397,7 +1397,7 @@ export const getActionTypeText = (data: ParsedActionData) => {
     return t('page.signTx.submitMultisig.title');
   }
   if (data.contractCall) {
-    return t('page.signTx.contractCall.title');
+    return t('page.signTx.unknownAction');
   }
   if (data.revokePermit2) {
     return t('page.signTx.revokePermit2.title');
