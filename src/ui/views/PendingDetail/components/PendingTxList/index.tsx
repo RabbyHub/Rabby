@@ -93,18 +93,18 @@ export const PendingTxList = ({
     enable: isFilterBaseFee,
   });
 
-  const finalFilterList = useFilterBaseFee({
-    list: filterList,
-    baseFee,
-    enable: isFilterBaseFee,
-  });
-
   const filters = useMemo(() => {
     if (!tx) {
       return [];
     }
     return createFilter(tx);
   }, [tx]);
+
+  const finalFilterList = useFilterBaseFee({
+    list: filters?.length ? filterList : [],
+    baseFee,
+    enable: isFilterBaseFee,
+  });
 
   useEffect(() => {
     if (tab === 'same') {
@@ -123,7 +123,10 @@ export const PendingTxList = ({
           res[filter.key] = (res[filter.key] || 0) + 1;
         }
       });
-      if (filters.every((filter) => filter.filter(item, tokenDict))) {
+      if (
+        filters.length &&
+        filters.every((filter) => filter.filter(item, tokenDict))
+      ) {
         res.sameAsCurrent = (res.sameAsCurrent || 0) + 1;
       }
     });

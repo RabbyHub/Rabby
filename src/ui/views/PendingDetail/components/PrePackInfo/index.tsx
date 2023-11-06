@@ -267,7 +267,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
                 <div className="flex items-center gap-[8px] text-r-orange-default  text-[15px] leading-[18px] font-medium">
                   <img src={IconWarning} alt="" />
                   {t('page.pendingDetail.PrePackInfo.loss', {
-                    count: lossCount,
+                    lossCount: lossCount,
                   })}
                 </div>
               ) : (

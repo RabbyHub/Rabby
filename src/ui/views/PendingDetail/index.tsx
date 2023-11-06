@@ -44,6 +44,7 @@ const useSetup = ({
     },
     {
       refreshDeps: [address, chainId, nonce],
+      pollingInterval: 1000 * 6,
     }
   );
 
