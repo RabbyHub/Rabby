@@ -48,3 +48,14 @@ export const useKeystoneDeviceConnected = () => {
 
   return connected;
 };
+
+export const useIsKeystoneUsbAvailable = (brand?: string) => {
+  const [isAvailable, setIsAvailable] = useState(false);
+  const connected = useKeystoneDeviceConnected();
+
+  useEffect(() => {
+    setIsAvailable(connected && brand === 'Keystone');
+  }, [connected, brand]);
+
+  return isAvailable;
+};

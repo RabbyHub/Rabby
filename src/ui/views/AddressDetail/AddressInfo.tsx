@@ -36,7 +36,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const [balance] = useBalance(address);
   const [form] = useForm();
   const inputRef = useRef<Input>(null);
-  const accountInfo = useAccountInfo(type, address);
+  const accountInfo = useAccountInfo(type, address, brandName);
   const { t } = useTranslation();
 
   const isGnosis = type === KEYRING_CLASS.GNOSIS;

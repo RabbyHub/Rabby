@@ -108,6 +108,19 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return await keystoneEth.signTransactionFromUr(ur);
   }
 
+  async getAccountInfo(address: string) {
+    const currentAccount = (await this.getCurrentAccounts()).find((account) => {
+      return account.address?.toUpperCase() === address?.toUpperCase();
+    });
+    return {
+      address,
+      index: currentAccount?.index,
+      balance: null,
+      hdPathType: await this.getCurrentUsedHDPathType(),
+      hdPathBasePublicKey: this.xpub,
+    };
+  }
+
   async getCurrentUsedHDPathType() {
     return (
       HD_PATH_TYPE[`${this.hdPath}/${this.childrenPath}`] ?? HDPathType.BIP44

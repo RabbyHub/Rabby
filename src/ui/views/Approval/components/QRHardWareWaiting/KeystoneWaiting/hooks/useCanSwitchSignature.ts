@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 import { isSupported } from '@keystonehq/hw-transport-webusb';
+import { useIsKeystoneUsbAvailable } from '@/utils/keystone';
 import { useCommonPopupView } from 'ui/utils';
 
 export const useCanSwitchSignature = (brand) => {
   const [canSwitchSignature, setCanSwitchSignature] = useState(false);
   const { setHeight } = useCommonPopupView();
+  const isKeystoneUsbAvailable = useIsKeystoneUsbAvailable(brand);
 
-  const calcCanSwitchSignature = async () => {
-    setCanSwitchSignature(brand === 'Keystone');
-    // const isSupport = await isSupported().catch(() => false);
-    // setCanSwitchSignature(brand === 'Keystone' && isSupport);
-  };
   useEffect(() => {
-    calcCanSwitchSignature();
-  }, [brand]);
+    const isKeystone = brand === 'Keystone';
+    setCanSwitchSignature(isKeystone && isKeystoneUsbAvailable);
+  }, [brand, isKeystoneUsbAvailable]);
 
   useEffect(() => {
     if (canSwitchSignature) {

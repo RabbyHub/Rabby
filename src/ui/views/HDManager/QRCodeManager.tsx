@@ -27,6 +27,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const { getCurrentAccounts, currentAccounts, keyringId } = React.useContext(
     HDManagerStateContext
   );
+  const isKeystone = brand === 'Keystone';
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
@@ -79,8 +80,16 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
     setVisibleAdvanced(false);
 
     const { type = HDPathType.BIP44, ...rest } = data;
-    if (brand === 'Keystone') {
+    if (isKeystone) {
       setLoading(true);
+
+      if (type !== setting.type) {
+        /**
+         * This code is written to be consistent with the behavior of importing wallets via QR Code.
+         */
+        await removeAddress();
+      }
+
       await wallet.requestKeyring(
         KEYSTONE_TYPE,
         'getAddressesViaUSB',
@@ -112,22 +121,21 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
   const { t } = useTranslation();
 
+  const removeAddress = React.useCallback(async () => {
+    await Promise.all(
+      currentAccountsRef.current?.map(async (account) =>
+        wallet.removeAddress(account.address, KEYSTONE_TYPE, undefined, true)
+      )
+    );
+  }, [currentAccountsRef, wallet, keyringId]);
+
   const openSwitchHD = React.useCallback(async () => {
     Modal.error({
       title: t('page.newAddress.hd.qrCode.switch.title', [brand]),
       content: t('page.newAddress.hd.qrCode.switch.content', [brand]),
       okText: t('global.confirm'),
       onOk: async () => {
-        await Promise.all(
-          currentAccountsRef.current?.map(async (account) =>
-            wallet.removeAddress(
-              account.address,
-              KEYSTONE_TYPE,
-              undefined,
-              true
-            )
-          )
-        );
+        await removeAddress();
         await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', keyringId);
         history.goBack();
       },
@@ -176,6 +184,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
         <AdvancedSettings
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
+          brand={brand}
         />
       </Modal>
     </>

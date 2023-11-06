@@ -25,7 +25,7 @@ const AUTO_RETRY_KEYWORDS = [
 ];
 
 const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
-  'disconnected',
+  'The device was disconnected',
   'cannot be found',
 ];
 
