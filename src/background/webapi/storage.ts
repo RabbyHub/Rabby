@@ -1,9 +1,12 @@
 import browser from 'webextension-polyfill';
 
-let cacheMap;
+let cacheMap: Map<string, any>;
 
-const get = async (prop?) => {
+const get = async <T = any>(
+  prop?: string
+): Promise<typeof prop extends void ? any : T> => {
   if (cacheMap) {
+    // @ts-expect-error we know if prop is void, it will return the whole cacheMap
     return cacheMap.get(prop);
   }
 
@@ -13,7 +16,7 @@ const get = async (prop?) => {
   return prop ? result?.[prop] : result;
 };
 
-const set = async (prop, value): Promise<void> => {
+const set = async (prop: string, value: any): Promise<void> => {
   await browser.storage.local.set({ [prop]: value });
   cacheMap.set(prop, value);
 };

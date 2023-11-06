@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.31",
+  "version": "0.92.33",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
@@ -14,7 +14,7 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@debank/common": "^0.3.40",
+    "@debank/common": "^0.3.41",
     "@debank/festats": "1.0.0",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
@@ -44,7 +44,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "^2.0.4",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.3.5",
-    "@rabby-wallet/page-provider": "^0.1.24-alpha.0",
+    "@rabby-wallet/page-provider": "^0.1.24-alpha.1",
     "@rabby-wallet/rabby-api": "^0.6.25-beta.0",
     "@rabby-wallet/rabby-security-engine": "^1.1.17",
     "@rabby-wallet/rabby-swap": "^0.0.29",

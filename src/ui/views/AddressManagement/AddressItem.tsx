@@ -110,7 +110,7 @@ const AddressItem = memo(
           ? true
           : isCurrentAccount
           ? false
-          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type),
+          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type as any),
       [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {

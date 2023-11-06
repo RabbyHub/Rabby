@@ -171,7 +171,7 @@
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
       },
-      "unknownAction": "Unknown",
+      "unknownAction": "Unknown Signature Type",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",
       "markAsBlock": "Marked as blocked",
@@ -187,10 +187,11 @@
       "noMark": "No mark",
       "markRemoved": "Mark removed",
       "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
+      "decodedTooltip": "This signature is decoded by Rabby Wallet",
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
       "unknownActionType": "Unknown action type",
-      "sigCantDecode": "This signature can't be decoded by Rabby",
+      "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
       "nftCollection": "NFT Collection",
       "floorPrice": "Floor price",
       "contractAddress": "Contract address",
@@ -961,7 +962,9 @@
           "customRpc": "Custom RPC",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
-          "enableTestnets": "Enable Testnets"
+          "enableTestnets": "Enable Testnets",
+          "toggleThemeMode": "Theme Mode",
+          "themeMode": "Theme Mode"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",

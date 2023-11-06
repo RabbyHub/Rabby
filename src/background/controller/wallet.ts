@@ -45,6 +45,7 @@ import {
   KEYRING_TYPE,
   GNOSIS_SUPPORT_CHAINS,
   INTERNAL_REQUEST_SESSION,
+  DARK_MODE_TYPE,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -1014,7 +1015,7 @@ export class WalletController extends BaseController {
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
 
   getIndexByAddress = (address: string, type: string) => {
-    const hasIndex = KEYRING_WITH_INDEX.includes(type);
+    const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
     if (!hasIndex) return null;
     const keyring = keyringService.getKeyringByType(type);
     if (!keyring) return null;
@@ -1087,6 +1088,10 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getThemeMode = () => preferenceService.getThemeMode();
+  setThemeMode = (themeMode: DARK_MODE_TYPE) =>
+    preferenceService.setThemeMode(themeMode);
 
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
@@ -1197,12 +1202,17 @@ export class WalletController extends BaseController {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
     permissionService.setSite(data);
     if (data.isConnected) {
       // rabby:chainChanged event must be sent before chainChanged event
       sessionService.broadcastEvent(
         'rabby:chainChanged',
-        chainItem,
+        {
+          ...chainItem,
+          prev,
+        },
         data.origin
       );
       sessionService.broadcastEvent(
@@ -1245,9 +1255,18 @@ export class WalletController extends BaseController {
       );
     }
 
+    const connectSite = permissionService.getConnectedSite(origin);
+    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
-    sessionService.broadcastEvent('rabby:chainChanged', chainItem, data.origin);
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      {
+        ...chainItem,
+        prev,
+      },
+      data.origin
+    );
     sessionService.broadcastEvent(
       'chainChanged',
       {
