@@ -73,7 +73,7 @@ export const TransactionPendingTag = ({
     return (
       <div className="pending">
         <SvgPendingSpin className="icon icon-pending-spin" />
-        {t('page.activities.signedTx.status.pendingBroadcast')}{' '}
+        {t('page.activities.signedTx.status.pendingBroadcastFailed')}{' '}
         <TooltipWithMagnetArrow
           overlayClassName="rectangle max-w-[330px] w-[max-content]"
           placement="top"

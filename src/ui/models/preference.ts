@@ -6,7 +6,7 @@ import {
   GasCache,
   addedToken,
 } from 'background/service/preference';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import i18n from '@/i18n';
 
 interface PreferenceState {
@@ -27,6 +27,7 @@ interface PreferenceState {
   hiddenBalance: boolean;
   isShowTestnet: boolean;
   addressSortStore: AddressSortStore;
+  themeMode: DARK_MODE_TYPE;
 }
 
 export const preference = createModel<RootModel>()({
@@ -49,6 +50,7 @@ export const preference = createModel<RootModel>()({
     autoLockTime: 0,
     hiddenBalance: false,
     isShowTestnet: false,
+    themeMode: DARK_MODE_TYPE.system,
     addressSortStore: {} as AddressSortStore,
   } as PreferenceState,
 
@@ -183,6 +185,14 @@ export const preference = createModel<RootModel>()({
       i18n.changeLanguage(locale);
       await store.app.wallet.setLocale(locale);
       dispatch.preference.getPreference('locale');
+    },
+
+    async switchThemeMode(themeMode: DARK_MODE_TYPE, store?) {
+      dispatch.preference.setField({
+        themeMode,
+      });
+      await store.app.wallet.setThemeMode(themeMode);
+      dispatch.preference.getPreference('themeMode');
     },
 
     async getAddressSortStoreValue(key: keyof AddressSortStore, store?) {

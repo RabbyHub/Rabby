@@ -80,7 +80,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   useEffect(() => {
-    if (Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type)) {
+    if (
+      Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type as any)
+    ) {
       stats.report('importHardware', {
         type: accounts[0].type,
       });

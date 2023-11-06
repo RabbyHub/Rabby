@@ -131,7 +131,7 @@ const TokenDetail = ({
     if (!chain) return;
     const prefix = chain.scanLink?.replace('/tx/_s_', '');
     const needClose = getUITypeName() !== 'notification';
-    openInTab(`${prefix}/token/${token.id}`, needClose);
+    openInTab(`${prefix}/address/${token.id}`, needClose);
   };
 
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;

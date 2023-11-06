@@ -16,6 +16,7 @@ import { useIdleTimer } from 'react-idle-timer';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useMount } from 'react-use';
 import { useMemoizedFn } from 'ahooks';
+import { useThemeModeOnMain } from '../hooks/usePreference';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
 const useAutoLock = () => {
@@ -61,6 +62,8 @@ const useAutoLock = () => {
 
 const Main = () => {
   useAutoLock();
+  useThemeModeOnMain();
+
   return (
     <>
       <Route exact path="/">

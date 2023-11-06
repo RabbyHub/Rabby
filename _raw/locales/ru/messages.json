@@ -183,7 +183,7 @@
       "signTransactionOnChain": "Подписать {{chain}} транзакцию",
       "viewRaw": "Посмотреть исходный код",
       "unknownActionType": "Неизвестный тип действия",
-      "sigCantDecode": "Эта подпись не может быть декодирована Rabby, но это не означает риска",
+      "sigCantDecode": "Эта подпись не может быть декодирована Rabby",
       "nftCollection": "Коллекция NFT",
       "floorPrice": "Начальная цена",
       "contractAddress": "Адрес контракта",

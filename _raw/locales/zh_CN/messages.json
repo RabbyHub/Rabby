@@ -215,7 +215,9 @@
           "label": "设置",
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
           "enableTestnets": "启用测试网",
-          "currentLanguage": "当前语言"
+          "currentLanguage": "当前语言",
+          "toggleThemeMode": "主题模式",
+          "themeMode": "主题模式"
         },
         "supportedChains": "支持的链",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
@@ -635,7 +637,8 @@
           "submitFailed": "提交失败",
           "pendingBroadcast": "Pending: 等待广播",
           "pendingBroadcasted": "Pending: 已广播",
-          "withdrawed": "已快捷取消"
+          "withdrawed": "已快捷取消",
+          "pendingBroadcastFailed": "Pending: 广播失败"
         },
         "tips": {
           "canNotCancel": "无法加速或取消：不是第一个待完成的交易",
@@ -1126,6 +1129,7 @@
       "eip1559Desc2": "在 Rabby 中，Priority Fee（小费）= Max Fee - Base Fee。\n设置 Max Priority Fee 后，将从中扣除 Base Fee，剩下的部分将作为小费给予矿工",
       "enoughSafeSigCollected": "已收集到足够的签名",
       "failToFetchGasCost": "获取矿工费失败",
+      "importedAddress": "已导入地址",
       "fakeTokenAlert": "这是由 Rabby 标记的诈骗代币",
       "firstOnChain": "首次链上交易",
       "floorPrice": "地板价",
@@ -1212,9 +1216,10 @@
         "nftNotSupport": "不支持 NFT",
         "title": "发送 NFT"
       },
-      "sigCantDecode": "该签名无法被 Rabby 解码，但这并不意味着有任何风险",
+      "sigCantDecode": "该签名无法被 Rabby 解码",
       "signTransactionOnChain": "签署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最终只会完成其中一项",
+      "decodedTooltip": "该签名已被 Rabby Wallet 解析",
       "submitMultisig": {
         "multisigAddress": "多签地址",
         "title": "提交多签交易"
@@ -1223,6 +1228,7 @@
         "failLoadReceiveToken": "加载失败",
         "minReceive": "最少收到",
         "notPaymentAddress": "非当前付款地址",
+        "unknownAddress": "未知地址",
         "payToken": "卖出",
         "receiveToken": "买入",
         "receiver": "接收地址",
@@ -1251,7 +1257,7 @@
       "transacted": "之前交易过",
       "trustValue": "信任值",
       "trusted": "信任",
-      "unknownAction": "未知",
+      "unknownAction": "未知签名类型",
       "unknownActionType": "未知的动作类型",
       "unwrap": "Unwrap",
       "viewRaw": "查看原始数据",

@@ -397,7 +397,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       : await wallet.getCurrentAccount();
     if (
       currentAccount?.type &&
-      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }
@@ -422,9 +422,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         wallet
       );
       setActionRequireData(requireData);
-      const ctx = formatSecurityEngineCtx({
+      const ctx = await formatSecurityEngineCtx({
         actionData: data,
         requireData,
+        wallet,
       });
       const result = await executeEngine(ctx);
       setEngineResults(result);
@@ -433,9 +434,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const executeSecurityEngine = async () => {
-    const ctx = formatSecurityEngineCtx({
+    const ctx = await formatSecurityEngineCtx({
       actionData: parsedActionData!,
       requireData: actionRequireData,
+      wallet,
     });
     const result = await executeEngine(ctx);
     setEngineResults(result);
