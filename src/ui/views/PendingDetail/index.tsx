@@ -221,19 +221,21 @@ export const PendingDetail = () => {
           loading={loading.txRequest || loading.latestExplain}
         />
       </Header>
-      <div className="layout-container mt-[24px]">
-        <MempoolList
-          list={mempoolList}
-          txRequest={txRequest}
-          loading={loading.txRequest || loading.mempoolList}
-        />
-        <PendingTxList
-          txRequest={txRequest}
-          tx={txGroup || undefined}
-          data={pendingTxList}
-          baseFee={baseFee}
-          loading={loading.txRequest || loading.pendingTxList}
-        />
+      <div className="layout-container mt-[24px] main-content">
+        <div className="relative z-1">
+          <MempoolList
+            list={mempoolList}
+            txRequest={txRequest}
+            loading={loading.txRequest || loading.mempoolList}
+          />
+          <PendingTxList
+            txRequest={txRequest}
+            tx={txGroup || undefined}
+            data={pendingTxList}
+            baseFee={baseFee}
+            loading={loading.txRequest || loading.pendingTxList}
+          />
+        </div>
       </div>
     </div>
   );

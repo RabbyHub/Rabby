@@ -1,5 +1,5 @@
 .page-pending-detail {
-  background: var(--r-neutral-bg-2, #f2f4f7);
+  background-color: var(--r-neutral-bg-2, #f2f4f7);
   height: 100vh;
   overflow: auto;
   padding-bottom: 100px;
@@ -7,6 +7,29 @@
   .layout-container {
     width: 1040px;
     margin: 0 auto;
+  }
+
+  .main-content {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 346px;
+      right: -60px;
+      width: 87px;
+      height: 71px;
+      background: url('../../assets/pending/bg-ball-2.svg') no-repeat center;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1100px;
+      left: -170px;
+      width: 87px;
+      height: 71px;
+      background: url('../../assets/pending/bg-ball-1.svg') no-repeat center /
+        contain;
+    }
   }
 
   .card {
