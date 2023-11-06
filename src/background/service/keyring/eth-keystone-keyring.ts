@@ -12,16 +12,16 @@ export const AcquireMemeStoreData = 'AcquireMemeStoreData';
 export const MemStoreDataReady = 'MemStoreDataReady';
 export const DEFAULT_BRAND = 'Keystone';
 
-const HD_PATH_BASE = {
-  [HDPathType.BIP44]: "m/44'/60'/0'/0/*",
-  [HDPathType.Legacy]: "m/44'/60'/0'/*",
-  [HDPathType.LedgerLive]: "m/44'/60'/*'/0/0",
-};
+enum KEYRING_ACCOUNT {
+  standard = 'account.standard',
+  ledger_live = 'account.ledger_live',
+  ledger_legacy = 'account.ledger_legacy',
+}
 
-const HD_PATH_TYPE = {
-  [HD_PATH_BASE['Legacy']]: HDPathType.Legacy,
-  [HD_PATH_BASE['BIP44']]: HDPathType.BIP44,
-  [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
+const AccountTypeMap = {
+  [KEYRING_ACCOUNT.standard]: HDPathType.BIP44,
+  [KEYRING_ACCOUNT.ledger_live]: HDPathType.LedgerLive,
+  [KEYRING_ACCOUNT.ledger_legacy]: HDPathType.Legacy,
 };
 
 export type RequestSignPayload = {
@@ -91,10 +91,10 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     };
 
     const keystoneEth = await this.getKeystoneDevice();
-    const hdkey = await keystoneEth.exportPubKeyFromUr({
+    const result = await keystoneEth.exportPubKeyFromUr({
       type: pathMap[type],
     });
-    this.syncKeyring(hdkey as any);
+    this.syncKeyring(result as any);
     return Promise.resolve();
   }
 
@@ -122,9 +122,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   }
 
   async getCurrentUsedHDPathType() {
-    return (
-      HD_PATH_TYPE[`${this.hdPath}/${this.childrenPath}`] ?? HDPathType.BIP44
-    );
+    return AccountTypeMap[this.keyringAccount] ?? HDPathType.BIP44;
   }
 
   async serialize(): Promise<IStoredKeyring> {

@@ -61,11 +61,27 @@ export const KeystoneConnect = () => {
       setProgress(Math.floor(decoder.current.estimatedPercentComplete() * 100));
       if (decoder.current.isComplete()) {
         const result = decoder.current.resultUR();
-
-        stashKeyringIdRef.current = await wallet.submitQRHardwareCryptoHDKey(
-          result.cbor.toString('hex'),
-          stashKeyringIdRef.current
-        );
+        if (result.type === 'crypto-hdkey') {
+          stashKeyringIdRef.current = await wallet.submitQRHardwareCryptoHDKey(
+            result.cbor.toString('hex'),
+            stashKeyringIdRef.current
+          );
+        } else if (result.type === 'crypto-account') {
+          stashKeyringIdRef.current = await wallet.submitQRHardwareCryptoAccount(
+            result.cbor.toString('hex'),
+            stashKeyringIdRef.current
+          );
+        } else {
+          Sentry.captureException(
+            new Error('QRCodeError ' + JSON.stringify(result))
+          );
+          setErrorMessage(
+            t(
+              'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
+            )
+          );
+          return;
+        }
 
         goToSelectAddress(stashKeyringIdRef.current);
       }
