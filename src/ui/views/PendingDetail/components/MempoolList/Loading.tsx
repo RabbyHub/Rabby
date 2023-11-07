@@ -11,7 +11,7 @@ export const Loading = () => {
   const { t } = useTranslation();
   const columns: ColumnsType<any> = [
     {
-      title: '#',
+      title: <div className="text-r-neutral-foot">#</div>,
       width: 112,
       render(value, record, index) {
         return <div className="text-r-neutral-foot">{index + 1}</div>;

@@ -25,7 +25,7 @@ export const PendingTxTable = ({
 
   const columns: ColumnsType<PendingTxItem> = [
     {
-      title: '#',
+      title: <div className="text-r-neutral-foot">#</div>,
       render(value, record, index) {
         const idx = list.indexOf(record) + 1;
 
@@ -54,7 +54,7 @@ export const PendingTxTable = ({
       render(value, record, index) {
         return <TransactionAction data={record} />;
       },
-      width: 324,
+      width: 344,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),

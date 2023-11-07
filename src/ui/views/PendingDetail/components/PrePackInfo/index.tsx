@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
+import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
 
 export interface Props {
   explain?: TransactionGroup['explain'];
@@ -114,6 +115,7 @@ const TokenChange = ({
           thumbnail
           content={nft?.content}
           type={nft?.content_type}
+          unknown={IconUnknownNFT}
         ></NFTAvatar>
         <div className="text-r-neutral-title-1  text-[13px] font-medium">
           {isNegative ? '-' : '+'} {name}

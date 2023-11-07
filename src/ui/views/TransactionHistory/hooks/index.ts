@@ -80,6 +80,9 @@ export const useLoadTxRequests = (
   const onSuccess = options?.onSuccess;
   const { data, runAsync } = useRequest(
     async () => {
+      if (!unbroadcastedTxs.length) {
+        return {};
+      }
       const res = await Promise.all([
         testnetTxs?.length
           ? wallet.testnetOpenapi
@@ -98,6 +101,7 @@ export const useLoadTxRequests = (
     {
       onSuccess,
       refreshDeps: [unbroadcastedTxs.map((tx) => tx.reqId).join(',')],
+      pollingInterval: 1000 * 60,
     }
   );
 

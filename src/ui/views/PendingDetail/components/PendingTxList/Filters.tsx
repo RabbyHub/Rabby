@@ -261,8 +261,8 @@ export const createFilter = (tx: TransactionGroup) => {
           );
 
           return !!list.find((t) => {
-            // const uuid = `${t.}:${t.token_id}`;
-            const n = tokenDict?.[t.token_id] as NFTItem;
+            const uuid = `${t.chain || 'eth'}:${t.token_id}`;
+            const n = tokenDict?.[uuid] as NFTItem;
             return n?.contract_id === nft.contract_id;
           });
         },

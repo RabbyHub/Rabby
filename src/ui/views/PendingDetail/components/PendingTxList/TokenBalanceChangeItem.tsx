@@ -15,7 +15,9 @@ export const TokenBalanceChangeItem = ({
   tokenDict?: Record<string, TokenItem>;
   prefix: ReactNode;
 }) => {
-  const token = tokenDict?.[item.token_id];
+  const uuid = `${item.chain || 'eth'}:${item.token_id}`;
+  const token = tokenDict?.[uuid];
+
   return (
     <div className="flex items-center gap-[8px]">
       <img
