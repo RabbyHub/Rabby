@@ -315,7 +315,9 @@
         "unsupportedType": "Error: The transaction type is unsupported or unknown.",
         "siging": "Sending signing request",
         "txRejected": "Transaction rejected",
-        "shouldRetry": "Some error occurred. Please retry."
+        "shouldRetry": "Some error occurred. Please retry.",
+        "hardwareRejectError": "Hardware rejects signature",
+        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
       },
       "ledger": {
         "resent": "Resent",

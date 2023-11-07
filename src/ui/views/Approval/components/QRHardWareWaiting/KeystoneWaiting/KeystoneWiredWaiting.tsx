@@ -27,6 +27,16 @@ const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
   'cannot be found',
 ];
 
+const transportErrorHandler = (error: any, t) => {
+  if (error.message.includes('Device is locked')) {
+    return t('page.signFooterBar.keystone.shouldOpenKeystoneHomePageError');
+  }
+  if (error.message.includes('UR parsing rejected')) {
+    return t('page.signFooterBar.keystone.hardwareRejectError');
+  }
+  return error?.message || 'Unknown error';
+};
+
 const buildKeystoneSignPayload = (payload: any) => {
   return new UREncoder(
     new UR(
@@ -139,7 +149,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       ) {
         return t('page.signFooterBar.keystone.shouldRetry');
       }
-      return error.message;
+      return transportErrorHandler(error, t);
     }
     return '';
   }, [error, errorMessage, statusProp]);

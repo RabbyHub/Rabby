@@ -1100,7 +1100,9 @@
         "unsupportedType": "错误：交易类型不支持或未知。",
         "siging": "正在发送签名请求",
         "txRejected": "交易被拒绝",
-        "shouldRetry": "发生了某些错误。请重试。"
+        "shouldRetry": "发生了某些错误。请重试。",
+        "hardwareRejectError": "硬件拒绝了签名请求",
+        "shouldOpenKeystoneHomePageError": "请打开 Keystone 主页"
       },
       "resend": "重试",
       "submitTx": "提交",
