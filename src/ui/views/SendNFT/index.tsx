@@ -29,7 +29,7 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconCheck, {
   ReactComponent as RcIconCheck,
-} from 'ui/assets/icon-check.svg';
+} from 'ui/assets/send-token/check.svg';
 import IconTemporaryGrantCheckbox, {
   ReactComponent as RcIconTemporaryGrantCheckbox,
 } from 'ui/assets/send-token/temporary-grant-checkbox.svg';

@@ -45,7 +45,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck, {
   ReactComponent as RcIconCheck,
-} from 'ui/assets/icon-check.svg';
+} from 'ui/assets/send-token/check.svg';
 import IconTemporaryGrantCheckbox, {
   ReactComponent as RcIconTemporaryGrantCheckbox,
 } from 'ui/assets/send-token/temporary-grant-checkbox.svg';

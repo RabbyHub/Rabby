@@ -44,7 +44,9 @@ import IconArrowRight, {
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'src/ui/assets/approval/icon-check.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import clsx from 'clsx';
@@ -218,8 +220,8 @@ const Actions = ({
                     }}
                   />
                 ) : (
-                  <span className="flex w-[358px] p-12">
-                    <img src={IconCheck} className="mr-4 w-12" />
+                  <span className="flex w-[358px] p-12 items-center">
+                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
                     {t('page.signTx.decodedTooltip')}
                   </span>
                 )
