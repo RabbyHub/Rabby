@@ -5,7 +5,23 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Button } from 'antd';
 import clsx from 'clsx';
 
-const Player = ({ type, cbor, onSign, brandName, playerSize }) => {
+interface IProps {
+  type: string;
+  cbor: string;
+  onSign: () => void;
+  brandName: string;
+  playerSize?: number;
+  layoutStyle?: 'compact' | 'normal';
+}
+
+const Player = ({
+  type,
+  cbor,
+  onSign,
+  brandName,
+  playerSize,
+  layoutStyle = 'compact',
+}: IProps) => {
   const urEncoder = useMemo(
     () => new UREncoder(new UR(Buffer.from(cbor, 'hex'), type), 400),
     [cbor, type]
@@ -26,7 +42,12 @@ const Player = ({ type, cbor, onSign, brandName, playerSize }) => {
       <div className="p-[5px] border border-gray-divider rounded-[8px] bg-white">
         <QRCode value={currentQRCode.toUpperCase()} size={playerSize ?? 180} />
       </div>
-      <p className="text-13 leading-[18px] mb-0 mt-6 text-gray-subTitle font-medium text-center whitespace-nowrap">
+      <p
+        className={clsx(
+          layoutStyle === 'normal' ? 'mt-20' : 'mt-6',
+          'text-13 leading-[18px] mb-0 text-gray-subTitle font-medium text-center whitespace-nowrap'
+        )}
+      >
         <Trans
           i18nKey="page.signFooterBar.qrcode.qrcodeDesc"
           values={{
@@ -38,8 +59,9 @@ const Player = ({ type, cbor, onSign, brandName, playerSize }) => {
       <Button
         onClick={onSign}
         className={clsx(
-          'w-[180px] h-[40px] mt-6',
-          'active:before:bg-[#00000033]'
+          'w-[180px] h-[40px]',
+          'active:before:bg-[#00000033]',
+          layoutStyle === 'normal' ? 'mt-20' : 'mt-6'
         )}
         type="primary"
       >

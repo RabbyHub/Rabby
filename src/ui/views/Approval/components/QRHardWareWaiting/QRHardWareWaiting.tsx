@@ -242,9 +242,9 @@ const QRHardWareWaiting = ({ params }) => {
   const [hiddenSwitchButton, setHiddenSwitchButton] = useState(false);
   const shouldShowSignatureSwitchButton = useMemo(() => {
     return (
-      status !== QRHARDWARE_STATUS.DONE &&
       canSwitchSignature &&
-      !hiddenSwitchButton
+      !hiddenSwitchButton &&
+      ![QRHARDWARE_STATUS.SIGN, QRHARDWARE_STATUS.DONE].includes(status)
     );
   }, [status, canSwitchSignature, hiddenSwitchButton]);
 
@@ -286,7 +286,8 @@ const QRHardWareWaiting = ({ params }) => {
       <>
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
-            playerSize={shouldShowSignatureSwitchButton ? 160 : 180}
+            layoutStyle={shouldShowSignatureSwitchButton ? 'normal' : 'compact'}
+            playerSize={shouldShowSignatureSwitchButton ? 144 : 180}
             type={signPayload.payload.type}
             cbor={signPayload.payload.cbor}
             onSign={handleRequestSignature}
@@ -312,6 +313,7 @@ const QRHardWareWaiting = ({ params }) => {
     walletBrandContent,
     signMethod,
     errorMessage,
+    shouldShowSignatureSwitchButton,
   ]);
 
   if (popupStatus && signMethod === SIGNATURE_METHOD.QRCODE) {
