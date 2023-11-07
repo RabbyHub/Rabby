@@ -2,7 +2,7 @@ import { numberWithCommasIsLtOne } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { PendingTxItem, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import React, { ReactNode } from 'react';
-import IconUnknown from 'ui/assets/icon-unknown.svg';
+import IconToken from 'ui/assets/pending/icon-token.svg';
 
 export const TokenBalanceChangeItem = ({
   item,
@@ -20,7 +20,7 @@ export const TokenBalanceChangeItem = ({
     <div className="flex items-center gap-[8px]">
       <img
         className="w-[16px] h-[16px]"
-        src={token?.logo_url || IconUnknown}
+        src={token?.logo_url || IconToken}
         alt=""
       />
       <div className="text-r-neutral-title-1 font-medium">

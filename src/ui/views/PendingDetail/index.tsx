@@ -5,9 +5,9 @@ import { PrePackInfo } from './components/PrePackInfo';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { useWallet } from '@/ui/utils';
-import { findChainByServerID } from '@/utils/chain';
+import { findChainByID, findChainByServerID } from '@/utils/chain';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
+import { useMemoizedFn, useRequest, useSetState, useTitle } from 'ahooks';
 import { message } from 'antd';
 import qs from 'qs';
 import { useLocation } from 'react-router-dom';
@@ -167,6 +167,7 @@ const useSetup = ({
     txGroup,
     pendingTxList,
     baseFee,
+    isPending,
   };
 };
 
@@ -194,11 +195,21 @@ export const PendingDetail = () => {
     txGroup,
     pendingTxList,
     baseFee,
+    isPending,
   } = useSetup({
     address,
     chainId,
     nonce,
   });
+
+  const title = useMemo(() => {
+    const chain = chainId ? findChainByID(chainId) : null;
+    return `${isPending ? 'Pending · ' : 'Completed · '} ${
+      chain?.name || ''
+    } #${nonce}`;
+  }, [isPending, chainId, nonce]);
+
+  useTitle(title);
 
   const handleReBroadcast = async () => {
     message.success('Broadcasted');

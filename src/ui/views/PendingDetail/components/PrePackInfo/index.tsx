@@ -1,26 +1,24 @@
-import { Table } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import React, { useMemo } from 'react';
-import IconBox from '@/ui/assets/pending/icon-box.svg';
-import IconClock from '@/ui/assets/pending/icon-clock.svg';
 import { TransactionGroup } from '@/background/service/transactionHistory';
+import IconToken from '@/ui/assets/pending/icon-token.svg';
+import IconArrow from '@/ui/assets/pending/icon-arrow-down.svg';
+import IconNoLoss from '@/ui/assets/pending/icon-check-1.svg';
+import IconCheck from '@/ui/assets/pending/icon-check-2.svg';
+import IconError from '@/ui/assets/pending/icon-error.svg';
+import IconWarning from '@/ui/assets/pending/icon-warning.svg';
+import { formatAmount, sinceTime } from '@/ui/utils';
+import { getTokenSymbol } from '@/ui/utils/token';
 import {
   LatestExplainTxResponse,
   TokenItem,
   TransferingNFTItem,
 } from '@rabby-wallet/rabby-api/dist/types';
-import _ from 'lodash';
-import { formatAmount, sinceTime } from '@/ui/utils';
-import { getTokenSymbol } from '@/ui/utils/token';
-import IconUnknown from '@/ui/assets/icon-unknown.svg';
+import { Table } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import clsx from 'clsx';
-import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
+import _ from 'lodash';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import IconWarning from '@/ui/assets/pending/icon-warning.svg';
-import IconNoLoss from '@/ui/assets/pending/icon-check-1.svg';
-import IconCheck from '@/ui/assets/pending/icon-check-2.svg';
-import IconError from '@/ui/assets/pending/icon-error.svg';
-import IconArrow from '@/ui/assets/pending/icon-arrow-down.svg';
+import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
 
@@ -96,7 +94,7 @@ const TokenChange = ({
     return (
       <div className="flex items-center gap-[8px]">
         <img
-          src={token.logo_url || IconUnknown}
+          src={token.logo_url || IconToken}
           alt=""
           className="w-[16px] h-[16px]"
         />
@@ -243,9 +241,14 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
 
   return (
     <div
-      className={clsx('card mb-[24px] pt-[20px]', isCollapse && 'pb-[20px]')}
+      className={clsx('card mb-[24px] pt-[16px]', isCollapse && 'pb-[16px]')}
     >
-      <div className="flex items-center">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => {
+          setIsCollapse(!isCollapse);
+        }}
+      >
         <div className="text-r-neutral-title-1 text-[20px] leading-[24px] font-medium">
           {t('page.pendingDetail.PrePackInfo.title')}
         </div>
@@ -278,14 +281,14 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
               )}
             </>
           )}
-          <img
-            src={IconArrow}
-            className={clsx('cursor-pointer', isCollapse ? '' : 'rotate-180')}
-            alt=""
-            onClick={() => {
-              setIsCollapse(!isCollapse);
-            }}
-          />
+          <div
+            className={clsx(
+              'cursor-pointer hover:bg-r-neutral-card-2 w-[32px] h-[32px] flex items-center justify-center rounded-[2px]',
+              isCollapse ? '' : 'rotate-180'
+            )}
+          >
+            <img src={IconArrow} alt="" />
+          </div>
         </div>
       </div>
       {isCollapse ? null : (

@@ -28,7 +28,7 @@ export const MempoolList = ({
       title: '#',
       width: 112,
       render(value, record, index) {
-        return <div>{index + 1}</div>;
+        return <div className="text-r-neutral-foot">{index + 1}</div>;
       },
     },
 

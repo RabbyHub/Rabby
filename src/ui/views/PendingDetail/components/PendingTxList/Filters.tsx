@@ -12,19 +12,40 @@ import _ from 'lodash';
 import React, { ReactNode } from 'react';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import {
+  ApproveNFTRequireData,
   ApproveTokenRequireData,
   SendRequireData,
   SwapRequireData,
 } from '../../../Approval/components/Actions/utils';
+import { findChainByServerID } from '@/utils/chain';
 
 export interface FilterItem {
-  label: ReactNode;
+  label: ReactNode | string;
   filter(
     item: PendingTxItem,
     tokenDict?: Record<string, TokenItem | NFTItem>
   ): boolean;
   key: string;
 }
+
+const createContractFilter = ({
+  protocol,
+  spender,
+}: {
+  protocol?: {
+    name: string;
+    logo_url?: string;
+  } | null;
+  spender: string;
+}) => {
+  return {
+    label: `Interact Contract: ${protocol?.name || ellipsisAddress(spender)}`,
+    filter: (item: PendingTxItem) => {
+      return item.to_addr === spender;
+    },
+    key: `contractFilter-${spender}`,
+  };
+};
 
 export const createFilter = (tx: TransactionGroup) => {
   const results: FilterItem[] = [];
@@ -47,7 +68,8 @@ export const createFilter = (tx: TransactionGroup) => {
         key: 'sendToCexFilter',
       });
     }
-  } else if (tx.action?.actionData?.swap) {
+  }
+  if (tx.action?.actionData?.swap) {
     const requiredData = tx.action?.requiredData as SwapRequireData;
     results.push({
       label: `Action: Swap Token`,
@@ -56,18 +78,58 @@ export const createFilter = (tx: TransactionGroup) => {
       },
       key: 'swapFilter',
     });
-    if (requiredData?.id) {
+  }
+  if (
+    tx.action?.actionData?.crossSwapToken ||
+    tx.action?.actionData?.crossToken
+  ) {
+    const parsedData =
+      tx.action?.actionData?.crossSwapToken ||
+      tx.action?.actionData?.crossToken;
+    const token = parsedData?.receiveToken;
+    const requiredData = tx.action?.requiredData;
+    if (token) {
+      const chain = findChainByServerID(parsedData?.receiveToken?.chain);
       results.push({
-        label: `Interact Contract:${
-          requiredData.protocol?.name || ellipsisAddress(requiredData.id)
-        }`,
+        label: (
+          <div className="inline-flex items-center gap-[6px]">
+            <img
+              src={token.logo_url || IconUnknown}
+              className="w-[16px] h-[16px]"
+              alt=""
+            />
+            {getTokenSymbol(token)} on {chain?.name}
+          </div>
+        ),
         filter: (item: PendingTxItem) => {
-          return item.to_addr === requiredData.id;
+          return !!(
+            item.action_data &&
+            'receive_token' in item.action_data &&
+            item.action_data.receive_token.id === token.id &&
+            item.action_data.receive_token.chain === token.chain
+          );
         },
-        key: `contractFilter-${requiredData.id}`,
+        key: `crossChainFilter-${token.id}-${token.chain}`,
       });
     }
-  } else if (tx.action?.actionData?.approveToken) {
+  }
+  if (
+    tx.action?.actionData?.swap ||
+    tx.action?.actionData?.crossSwapToken ||
+    tx.action?.actionData?.crossToken
+  ) {
+    const requiredData = tx.action?.requiredData as SwapRequireData;
+
+    if (requiredData?.id) {
+      results.push(
+        createContractFilter({
+          protocol: requiredData?.protocol,
+          spender: requiredData?.id,
+        })
+      );
+    }
+  }
+  if (tx.action?.actionData?.approveToken) {
     const requiredData = tx.action?.requiredData as ApproveTokenRequireData;
     results.push({
       label: `Approve To: ${
@@ -81,6 +143,72 @@ export const createFilter = (tx: TransactionGroup) => {
       },
       key: `approveTokenFilter-${requiredData?.token?.id}`,
     });
+  }
+  if (tx.action?.actionData?.approveNFT) {
+    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
+    const spender = tx?.action?.actionData?.approveNFT?.spender;
+    results.push({
+      label: `Approve To: ${
+        requiredData?.protocol?.name || ellipsisAddress(spender)
+      }`,
+      filter: (item: PendingTxItem) => {
+        return item.action_type === 'approve_nft' && item.to_addr === spender;
+      },
+      key: `approveNFTFilter-${spender}`,
+    });
+  }
+  if (tx.action?.actionData?.approveNFTCollection) {
+    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
+    const spender = tx?.action?.actionData?.approveNFTCollection?.spender;
+    results.push({
+      label: `Approve To: ${
+        requiredData?.protocol?.name || ellipsisAddress(spender)
+      }`,
+      filter: (item: PendingTxItem) => {
+        return (
+          item.action_type === 'approve_collection' && item.to_addr === spender
+        );
+      },
+      key: `approveCollectionFilter-${spender}`,
+    });
+  }
+
+  if (tx.action?.actionData?.revokeNFT) {
+    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
+    const spender = tx?.action?.actionData?.revokeNFT?.spender;
+    if (spender) {
+      results.push(
+        createContractFilter({
+          protocol: requiredData?.protocol,
+          spender: spender,
+        })
+      );
+    }
+  }
+
+  if (tx.action?.actionData?.revokeNFTCollection) {
+    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
+    const spender = tx?.action?.actionData?.revokeNFTCollection?.spender;
+    if (spender) {
+      results.push(
+        createContractFilter({
+          protocol: requiredData?.protocol,
+          spender: spender,
+        })
+      );
+    }
+  }
+  if (tx.action?.actionData?.revokeToken) {
+    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
+    const spender = tx?.action?.actionData?.revokeToken?.spender;
+    if (spender) {
+      results.push(
+        createContractFilter({
+          protocol: requiredData?.protocol,
+          spender: spender,
+        })
+      );
+    }
   }
 
   const tokenList = (tx.explain?.balance_change?.send_token_list || []).concat(
@@ -97,7 +225,6 @@ export const createFilter = (tx: TransactionGroup) => {
               alt=""
             />
             {getTokenSymbol(token)}
-            {/* todo cross chain */}
           </div>
         ),
         filter: (item: PendingTxItem) => {
@@ -134,6 +261,7 @@ export const createFilter = (tx: TransactionGroup) => {
           );
 
           return !!list.find((t) => {
+            // const uuid = `${t.}:${t.token_id}`;
             const n = tokenDict?.[t.token_id] as NFTItem;
             return n?.contract_id === nft.contract_id;
           });
@@ -168,14 +296,15 @@ export const Filters = ({
           <div
             key={item.key}
             className={clsx(
-              'flex items-center gap-[6px] px-[8px] py-[9px] rounded-[4px] cursor-pointer border',
-              value.includes(item)
+              'flex items-center gap-[6px] px-[8px] py-[9px] rounded-[4px] cursor-pointer border border-[0.5px]',
+              'hover:border-[#7084FF]',
+              value.find((i) => i.key === item.key)
                 ? 'border-[#7084FF] bg-r-blue-light-1 text-r-blue-default'
                 : 'border-[#D3D8E0] text-r-neutral-title-1'
             )}
             onClick={() => {
-              if (value.includes(item)) {
-                onChange(value.filter((v) => v !== item));
+              if (value.find((i) => i.key === item.key)) {
+                onChange(value.filter((v) => v.key !== item.key));
               } else {
                 onChange([...value, item]);
               }

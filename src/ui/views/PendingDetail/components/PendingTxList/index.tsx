@@ -106,12 +106,6 @@ export const PendingTxList = ({
     enable: isFilterBaseFee,
   });
 
-  useEffect(() => {
-    if (tab === 'same') {
-      setValue(filters);
-    }
-  }, [filters, tab]);
-
   const stat = useMemo(() => {
     const res: Record<string, number> = {
       total: 0,
@@ -163,22 +157,27 @@ export const PendingTxList = ({
                 },
               ] as const
             }
-            onTabChange={(key) => setTab(key as any)}
+            onTabChange={(key) => {
+              if (key === 'same') {
+                setValue(filters);
+              }
+              setTab(key as any);
+            }}
             itemClassname="text-[15px] leading-[18px] font-medium px-[18px] pt-[10px] pb-[8px] w-auto min-w-[200px]"
             itemClassnameInActive="text-r-neutral-body"
             className="p-[2px]"
           />
           <div className="ml-auto">
             <div
-              className="flex items-center gap-[4px] cursor-pointer text-r-neutral-body text-[15px] leading-[18px]"
+              className="flex items-center gap-[4px] cursor-pointer text-r-neutral-body text-[13px] leading-[16px]"
               onClick={() => {
                 setIsFilterBaseFee(!isFilterBaseFee);
               }}
             >
               {isFilterBaseFee ? (
-                <img src={IconChecked} alt="" />
+                <img src={IconChecked} className="w-[16px] h-[16px]" alt="" />
               ) : (
-                <img src={IconUncheck} alt="" />
+                <img src={IconUncheck} className="w-[16px] h-[16px]" alt="" />
               )}
               {t('page.pendingDetail.PendingTxList.filterBaseFee.label')}
               <Tooltip

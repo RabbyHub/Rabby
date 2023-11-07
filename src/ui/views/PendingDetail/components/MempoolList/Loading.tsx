@@ -14,7 +14,7 @@ export const Loading = () => {
       title: '#',
       width: 112,
       render(value, record, index) {
-        return index + 1;
+        return <div className="text-r-neutral-foot">{index + 1}</div>;
       },
     },
 

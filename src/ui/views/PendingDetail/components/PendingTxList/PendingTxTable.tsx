@@ -36,7 +36,7 @@ export const PendingTxTable = ({
                 <div className="is-current-tx-tag">Current</div>
               </div>
             ) : null}
-            {idx}
+            <div className="text-r-neutral-foot">{idx}</div>
           </>
         );
       },
@@ -54,7 +54,7 @@ export const PendingTxTable = ({
       render(value, record, index) {
         return <TransactionAction data={record} />;
       },
-      width: 304,
+      width: 324,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),

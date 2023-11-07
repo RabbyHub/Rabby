@@ -35,7 +35,7 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
   const { t } = useTranslation();
 
   const Dot = (
-    <div className="bg-r-neutral-title-1 rounded-full w-[8px] h-[8px]"></div>
+    <div className="bg-r-neutral-foot rounded-full w-[8px] h-[8px]"></div>
   );
   return (
     <Wrapper>
