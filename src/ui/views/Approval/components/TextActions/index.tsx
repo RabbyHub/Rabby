@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Tabs } from 'antd';
 import { TextActionData, getActionTypeText } from './utils';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import IconArrowRight, {
+  ReactComponent as RcIconArrowRight,
+} from 'ui/assets/approval/edit-arrow-right.svg';
 import CreateKey from './CreateKey';
 import VerifyAddress from './VerifyAddress';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -14,6 +16,7 @@ import IconCheck from 'ui/assets/icon-check.svg';
 import clsx from 'clsx';
 import { Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const { TabPane } = Tabs;
 
@@ -25,7 +28,7 @@ export const SignTitle = styled.div`
     display: flex;
     font-size: 18px;
     line-height: 21px;
-    color: #333333;
+    color: var(--r-neutral-title-1, #f7fafc);
     .icon-speedup {
       width: 10px;
       margin-right: 6px;
@@ -204,7 +207,7 @@ const Actions = ({
           onClick={handleViewRawClick}
         >
           {t('page.signTx.viewRaw')}
-          <img className="icon icon-arrow-right" src={IconArrowRight} />
+          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
       </SignTitle>
       <ActionWrapper>

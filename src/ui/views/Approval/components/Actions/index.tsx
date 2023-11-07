@@ -38,7 +38,9 @@ import {
   WrapTokenRequireData,
   getActionTypeText,
 } from './utils';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import IconArrowRight, {
+  ReactComponent as RcIconArrowRight,
+} from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
@@ -46,6 +48,7 @@ import IconCheck from 'ui/assets/icon-check.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import clsx from 'clsx';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -55,7 +58,7 @@ export const SignTitle = styled.div`
     display: flex;
     font-size: 18px;
     line-height: 21px;
-    color: #333333;
+    color: var(--r-neutral-title-1, #f7fafc);
     flex: 1;
     .icon-speedup {
       width: 10px;
@@ -188,7 +191,7 @@ const Actions = ({
           onClick={handleViewRawClick}
         >
           {t('page.signTx.viewRaw')}
-          <img className="icon icon-arrow-right" src={IconArrowRight} />
+          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
       </SignTitle>
       <ActionWrapper>

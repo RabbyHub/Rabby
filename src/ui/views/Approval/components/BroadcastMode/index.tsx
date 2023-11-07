@@ -353,6 +353,7 @@ export const BroadcastMode = ({
         closable
         title={t('page.signTx.BroadcastMode.title')}
         className="broadcast-mode-popup"
+        isSupportDarkMode
       >
         <OptionList>
           {options.map((option) => (
