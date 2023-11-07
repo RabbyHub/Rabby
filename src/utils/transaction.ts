@@ -56,9 +56,10 @@ export function getKRCategoryByType(type?: string) {
 export const calcMaxPriorityFee = (
   gasList: GasLevel[],
   target: GasLevel,
-  chainId: number
+  chainId: number,
+  useMaxFee: boolean
 ) => {
-  if (chainId !== 1) {
+  if (chainId !== 1 || useMaxFee) {
     return target.price;
   }
   // only enable auto-priorityFee for ETH currently
