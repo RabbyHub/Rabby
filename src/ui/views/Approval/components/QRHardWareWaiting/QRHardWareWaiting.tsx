@@ -17,7 +17,6 @@ import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-ke
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChainByEnum } from '@/utils/chain';
-import { debounce } from 'lodash';
 import {
   UnderlineButton as SwitchButton,
   SIGNATURE_METHOD,
@@ -84,13 +83,11 @@ const QRHardWareWaiting = ({ params }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
 
-    const debounceSetSignPayload = debounce(({ request }) => {
-      setSignPayload(request);
-    }, 100);
-
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      debounceSetSignPayload
+      ({ request }) => {
+        setSignPayload(request);
+      }
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {

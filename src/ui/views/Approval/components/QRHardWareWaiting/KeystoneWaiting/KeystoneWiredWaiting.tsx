@@ -20,9 +20,7 @@ const SHOULD_RETRY_KEYWORDS = [
   'Previous request is not finished',
 ];
 
-const AUTO_RETRY_KEYWORDS = [
-  'An operation that changes interface state is in progress.',
-];
+const AUTO_RETRY_KEYWORDS = ['state is in progress.'];
 
 const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
   'The device was disconnected',
