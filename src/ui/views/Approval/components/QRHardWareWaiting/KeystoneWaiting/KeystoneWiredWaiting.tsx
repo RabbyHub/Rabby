@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
-import { useWallet, openInternalPageInTab } from 'ui/utils';
+import { useWallet, openInternalPageInTab, useCommonPopupView } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import * as uuid from 'uuid';
 import { UR, UREncoder } from '@ngraveio/bc-ur';
@@ -75,7 +75,12 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
+  const { setHeight } = useCommonPopupView();
   const decoder = useRef(new URDecoder());
+
+  useEffect(() => {
+    setHeight(360);
+  }, []);
 
   const { value, error, retry, loading } = useAsyncRetry(async () => {
     if (!(payload?.cbor && payload?.type)) return null;

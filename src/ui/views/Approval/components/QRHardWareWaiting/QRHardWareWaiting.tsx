@@ -241,9 +241,10 @@ const QRHardWareWaiting = ({ params }) => {
     return (
       canSwitchSignature &&
       !hiddenSwitchButton &&
+      signMethod === SIGNATURE_METHOD.QRCODE &&
       ![QRHARDWARE_STATUS.SIGN, QRHARDWARE_STATUS.DONE].includes(status)
     );
-  }, [status, canSwitchSignature, hiddenSwitchButton]);
+  }, [status, canSwitchSignature, hiddenSwitchButton, signMethod]);
 
   const calcSignComponent = useCallback(() => {
     if (signMethod === SIGNATURE_METHOD.USB) {
