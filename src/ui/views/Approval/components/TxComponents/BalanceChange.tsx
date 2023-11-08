@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from 'consts';
@@ -141,13 +141,21 @@ const BalanceChange = ({
 
   const hasChange = hasNFTChange || hasTokenChange;
 
-  const { receiveTokenList, sendTokenList } = React.useMemo(() => {
+  const {
+    receiveTokenList,
+    sendTokenList,
+    showUsdValueDiff,
+  } = React.useMemo(() => {
     const receiveTokenList = data.receive_token_list;
     const sendTokenList = data.send_token_list;
-
+    const showUsdValueDiff =
+      data.receive_nft_list.length <= 0 &&
+      data.send_nft_list.length <= 0 &&
+      (data.send_token_list.length > 0 || data.receive_token_list.length > 0);
     return {
       receiveTokenList,
       sendTokenList,
+      showUsdValueDiff,
     };
   }, [data]);
 
@@ -202,10 +210,18 @@ const BalanceChange = ({
 
   return (
     <div className="token-balance-change">
-      <p className="text-16 text-gray-title font-medium mb-12">
-        {isSuccess
-          ? t('page.signTx.balanceChange.successTitle')
-          : t('page.signTx.balanceChange.failedTitle')}
+      <p className="text-16 text-gray-title font-medium mb-12 flex items-center">
+        <span>
+          {isSuccess
+            ? t('page.signTx.balanceChange.successTitle')
+            : t('page.signTx.balanceChange.failedTitle')}
+        </span>
+        {showUsdValueDiff && (
+          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-neutral-body text-right text-13 font-normal">
+            {data.usd_value_change >= 0 && '+'}
+            {formatUsdValue(data.usd_value_change)}
+          </span>
+        )}
       </p>
       <div className="token-balance-change-content">
         <Table>
