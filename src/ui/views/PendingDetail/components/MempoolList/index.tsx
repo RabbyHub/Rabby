@@ -36,7 +36,11 @@ export const MempoolList = ({
       title: t('page.pendingDetail.MempoolList.col.nodeName'),
       width: 294,
       render(value, record, index) {
-        return <div className="font-medium">{record.name}</div>;
+        return (
+          <div className="font-medium text-r-neutral-title-1">
+            {record.name}
+          </div>
+        );
       },
     },
 
@@ -44,7 +48,11 @@ export const MempoolList = ({
       title: t('page.pendingDetail.MempoolList.col.nodeOperator'),
       width: 348,
       render(value, record, index) {
-        return <div className="font-medium">{record.operator}</div>;
+        return (
+          <div className="font-medium text-r-neutral-title-1">
+            {record.operator}
+          </div>
+        );
       },
     },
     // {

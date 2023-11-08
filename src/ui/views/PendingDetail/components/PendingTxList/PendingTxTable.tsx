@@ -45,7 +45,11 @@ export const PendingTxTable = ({
     {
       title: t('page.pendingDetail.PendingTxList.col.gasPrice'),
       render(value, record, index) {
-        return <div>{Number(record.gas_price || 0)} gwei</div>;
+        return (
+          <div className="font-medium text-r-neutral-title-1">
+            {Number(record.gas_price || 0)} gwei
+          </div>
+        );
       },
       width: 240,
     },

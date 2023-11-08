@@ -32,7 +32,7 @@ export interface Props {
 const isNFTItem = (
   item: TokenItem | TransferingNFTItem
 ): item is TransferingNFTItem => {
-  return 'is_erc721' in item;
+  return item && 'is_erc721' in item;
 };
 
 const transformToken = ({
@@ -45,26 +45,35 @@ const transformToken = ({
   isNegative: boolean;
 }) => {
   const negative = isNegative ? -1 : 1;
+  const currentDict = _.keyBy(current, (item) => {
+    return `${item.chain}_${item.id}`;
+  });
   const nextDict = _.keyBy(next, (item) => {
     return `${item.chain}_${item.id}`;
   });
-  return current.map((item) => {
-    const key = `${item.chain}_${item.id}`;
+  const list = _.uniq(
+    [...current, ...next].map((item) => `${item.chain}_${item.id}`)
+  );
+  return list.map((key) => {
+    const item = currentDict[key];
     const latest = nextDict[key];
 
     const isNFT = isNFTItem(item);
 
+    const currentAmount = item?.amount || 0;
     const latestAmount = latest?.amount || 0;
-    if (item.amount * negative > latestAmount * negative) {
+    if (currentAmount * negative > latestAmount * negative) {
       return {
         token: isNFT ? null : item,
         nextToken: isNFT ? null : (latest as TokenItem),
         nft: isNFT ? item : null,
         nextNFT: isNFT ? (latest as TransferingNFTItem) : null,
-        diff: Math.abs(item.amount - latestAmount),
-        percent: Math.abs(
-          ((item.amount - latestAmount) / item.amount) * 100
-        ).toFixed(2),
+        diff: Math.abs(currentAmount - latestAmount),
+        percent: currentAmount
+          ? Math.abs(
+              ((currentAmount - latestAmount) / currentAmount) * 100
+            ).toFixed(2)
+          : null,
         isNegative,
       };
     }
@@ -118,7 +127,7 @@ const TokenChange = ({
           unknown={IconUnknownNFT}
         ></NFTAvatar>
         <div className="text-r-neutral-title-1  text-[13px] font-medium">
-          {isNegative ? '-' : '+'} {name}
+          {isNegative ? '-' : '+'} {formatAmount(nft.amount)} {name}
         </div>
       </div>
     );

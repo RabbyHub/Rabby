@@ -1596,7 +1596,7 @@
           "appearedOnce": "Appeared once",
           "notFound": "Not found"
         },
-        "title": "Found in {{count}} pack nodes"
+        "title": "Found in {{count}} RPC nodes"
       },
       "PendingTxList": {
         "title": "GasPrice Ranks #{{rank}} in Same as Current Tx",
@@ -1609,7 +1609,9 @@
           "gasPrice": "Gas Price",
           "action": "Transaction Action",
           "balanceChange": "Balance change"
-        }
+        },
+        "titleSame": "GasPrice Ranks #{{rank}} in Same as Current",
+        "titleSameNotFound": "No Rank in Same as Current"
       },
       "Empty": {
         "noData": "No data found"

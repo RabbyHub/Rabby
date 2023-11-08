@@ -79,40 +79,7 @@ export const createFilter = (tx: TransactionGroup) => {
       key: 'swapFilter',
     });
   }
-  if (
-    tx.action?.actionData?.crossSwapToken ||
-    tx.action?.actionData?.crossToken
-  ) {
-    const parsedData =
-      tx.action?.actionData?.crossSwapToken ||
-      tx.action?.actionData?.crossToken;
-    const token = parsedData?.receiveToken;
-    const requiredData = tx.action?.requiredData;
-    if (token) {
-      const chain = findChainByServerID(parsedData?.receiveToken?.chain);
-      results.push({
-        label: (
-          <div className="inline-flex items-center gap-[6px]">
-            <img
-              src={token.logo_url || IconUnknown}
-              className="w-[16px] h-[16px]"
-              alt=""
-            />
-            {getTokenSymbol(token)} on {chain?.name}
-          </div>
-        ),
-        filter: (item: PendingTxItem) => {
-          return !!(
-            item.action_data &&
-            'receive_token' in item.action_data &&
-            item.action_data.receive_token.id === token.id &&
-            item.action_data.receive_token.chain === token.chain
-          );
-        },
-        key: `crossChainFilter-${token.id}-${token.chain}`,
-      });
-    }
-  }
+
   if (
     tx.action?.actionData?.swap ||
     tx.action?.actionData?.crossSwapToken ||
@@ -211,6 +178,41 @@ export const createFilter = (tx: TransactionGroup) => {
     }
   }
 
+  if (
+    tx.action?.actionData?.crossSwapToken ||
+    tx.action?.actionData?.crossToken
+  ) {
+    const parsedData =
+      tx.action?.actionData?.crossSwapToken ||
+      tx.action?.actionData?.crossToken;
+    const token = parsedData?.receiveToken;
+    const requiredData = tx.action?.requiredData;
+    if (token) {
+      const chain = findChainByServerID(parsedData?.receiveToken?.chain);
+      results.push({
+        label: (
+          <div className="inline-flex items-center gap-[6px]">
+            <img
+              src={token.logo_url || IconUnknown}
+              className="w-[16px] h-[16px]"
+              alt=""
+            />
+            {getTokenSymbol(token)} on {chain?.name}
+          </div>
+        ),
+        filter: (item: PendingTxItem) => {
+          return !!(
+            item.action_data &&
+            'receive_token' in item.action_data &&
+            item.action_data.receive_token.id === token.id &&
+            item.action_data.receive_token.chain === token.chain
+          );
+        },
+        key: `crossChainFilter-${token.id}-${token.chain}`,
+      });
+    }
+  }
+
   const tokenList = (tx.explain?.balance_change?.send_token_list || []).concat(
     tx.explain?.balance_change?.receive_token_list || []
   );
@@ -287,8 +289,6 @@ export const Filters = ({
   options: FilterItem[];
   stat: Record<string, number>;
 }) => {
-  console.log(tx);
-
   return (
     <div className="flex flex-wrap gap-[12px]">
       {options.map((item) => {
@@ -312,7 +312,7 @@ export const Filters = ({
           >
             <RcIconCheck />
             <div className=" text-[13px] leading-[16px] font-medium flex items-center">
-              {item.label}{' '}
+              {item.label}&nbsp;
               <span className="font-normal">({stat[item.key] || 0})</span>
             </div>
           </div>

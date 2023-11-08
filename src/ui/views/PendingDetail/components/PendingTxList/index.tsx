@@ -71,10 +71,6 @@ export const PendingTxList = ({
   ]);
   const tokenDict = useMemo(() => data?.token_dict || {}, [data?.token_dict]);
 
-  const rank = useMemo(() => {
-    return list.findIndex((item) => item.id === txRequest?.tx_id) + 1;
-  }, [txRequest?.tx_id, list]);
-
   const [tab, setTab] = React.useState<'all' | 'same'>('all');
   const [isFilterBaseFee, setIsFilterBaseFee] = React.useState(false);
   const [value, setValue] = React.useState<FilterItem[]>([]);
@@ -106,6 +102,16 @@ export const PendingTxList = ({
     enable: isFilterBaseFee,
   });
 
+  const rank = useMemo(() => {
+    return finalList.findIndex((item) => item.id === txRequest?.tx_id) + 1;
+  }, [txRequest?.tx_id, finalList]);
+
+  const rankSame = useMemo(() => {
+    return (
+      finalFilterList.findIndex((item) => item.id === txRequest?.tx_id) + 1
+    );
+  }, [txRequest?.tx_id, finalFilterList]);
+
   const stat = useMemo(() => {
     const res: Record<string, number> = {
       total: 0,
@@ -129,14 +135,23 @@ export const PendingTxList = ({
 
   const { t } = useTranslation();
 
+  const cardTitle = useMemo(() => {
+    if (tab === 'all') {
+      return rank
+        ? t('page.pendingDetail.PendingTxList.title', { rank: rank })
+        : t('page.pendingDetail.PendingTxList.titleNotFound');
+    }
+    if (tab === 'same') {
+      return rankSame
+        ? t('page.pendingDetail.PendingTxList.titleSame', { rank: rankSame })
+        : t('page.pendingDetail.PendingTxList.titleSameNotFound');
+    }
+  }, [tab, rank, rankSame]);
+
   return (
     <div className="card">
       <div className="flex items-center mb-[18px]">
-        <div className="card-title">
-          {rank
-            ? t('page.pendingDetail.PendingTxList.title', { rank: rank })
-            : t('page.pendingDetail.PendingTxList.titleNotFound')}
-        </div>
+        <div className="card-title">{cardTitle}</div>
       </div>
 
       <div>
