@@ -36,13 +36,13 @@
 
   .card {
     border-radius: 8px;
-    background: var(--r-neutral-card-1, #fff);
+    background-color: var(--r-neutral-card-1, #fff);
 
     padding: 24px 24px 8px 24px;
     box-shadow: 0px 8px 40px 0px rgba(0, 0, 0, 0.07);
 
     & + .card {
-      margin-top: 20px;
+      margin-top: 24px;
     }
 
     &-title {
@@ -135,6 +135,14 @@
         font-weight: 500;
         line-height: 14px;
       }
+    }
+  }
+
+  .pills-switch {
+    background: var(--r-neutral-line, #d3d8e0);
+
+    .pills-switch__item.is-active {
+      background: var(--r-neutral-bg-1, #fff);
     }
   }
 }

@@ -252,7 +252,10 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
 
   return (
     <div
-      className={clsx('card mb-[24px] pt-[16px]', isCollapse && 'pb-[16px]')}
+      className={clsx(
+        'card mb-[24px] pt-[16px] bg-r-neutral-bg-1',
+        isCollapse && 'pb-[16px]'
+      )}
     >
       <div
         className="flex items-center cursor-pointer"
