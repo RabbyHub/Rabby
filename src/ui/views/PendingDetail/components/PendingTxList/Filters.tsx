@@ -61,7 +61,7 @@ export const createFilter = (tx: TransactionGroup) => {
     });
     if (requiredData.cex) {
       results.push({
-        label: `Send To Cex`,
+        label: 'Send To Cex',
         filter: (item: PendingTxItem) => {
           return !!item.to_addr_desc?.cex;
         },
@@ -72,7 +72,7 @@ export const createFilter = (tx: TransactionGroup) => {
   if (tx.action?.actionData?.swap) {
     const requiredData = tx.action?.requiredData as SwapRequireData;
     results.push({
-      label: `Action: Swap Token`,
+      label: 'Action: Swap Token',
       filter: (item: PendingTxItem) => {
         return item.action_type === 'swap_token';
       },
