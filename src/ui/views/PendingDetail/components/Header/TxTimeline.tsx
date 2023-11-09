@@ -52,7 +52,7 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
         >
           <Timeline.Item dot={Dot}>
             <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-              {dayjs.unix(txRequest.create_at).format('HH:mm')}:{' '}
+              {dayjs.unix(txRequest.create_at).format('HH:mm')}{' '}
               {t('page.pendingDetail.TxTimeline.created')}
             </div>
           </Timeline.Item>
@@ -60,7 +60,7 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
           {txRequest.push_at ? (
             <Timeline.Item dot={Dot}>
               <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-                {dayjs.unix(txRequest.push_at).format('HH:mm')}:{' '}
+                {dayjs.unix(txRequest.push_at).format('HH:mm')}{' '}
                 {t('page.pendingDetail.TxTimeline.broadcasted')}
               </div>
             </Timeline.Item>
