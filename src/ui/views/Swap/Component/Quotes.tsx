@@ -151,7 +151,7 @@ export const Quotes = ({
         : new BigNumber(bestQuote?.data?.receive_token.amount || '0').toString(
             10
           )) || '0',
-      bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || 0 : 0,
+      bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || '0' : '0',
     ];
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
@@ -306,22 +306,41 @@ export const QuoteList = (props: QuotesProps) => {
             width="14px"
             height="14px"
             type="square"
-            checkBoxClassName="rounded-[2px]"
+            background="transparent"
+            unCheckBackground="transparent"
             checkIcon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={14}
-                height={14}
-                fill="none"
-              >
-                <path
-                  stroke="#fff"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.05}
-                  d="m4.2 7.348 2.1 2.45 4.2-4.9"
-                />
-              </svg>
+              sortIncludeGasFee ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    fill={'var(--r-blue-default)'}
+                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
+                  />
+                  <path
+                    stroke="#fff"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.05}
+                    d="m4.2 7.348 2.1 2.45 4.2-4.9"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 14"
+                >
+                  <path
+                    stroke="var(--r-neutral-foot)"
+                    strokeLinejoin="round"
+                    strokeWidth={0.75}
+                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
+                  />
+                </svg>
+              )
             }
           >
             <span className="ml-[-4px]">{t('page.swap.sort-with-gas')}</span>
