@@ -15,6 +15,7 @@ export type SwapServiceStore = {
   unlimitedAllowance: boolean;
   viewList: Record<ViewKey, boolean>;
   tradeList: Record<ViewKey, boolean>;
+  sortIncludeGasFee?: boolean;
 };
 
 class SwapService {
@@ -25,6 +26,7 @@ class SwapService {
     unlimitedAllowance: false,
     viewList: {} as SwapServiceStore['viewList'],
     tradeList: {} as SwapServiceStore['tradeList'],
+    sortIncludeGasFee: false,
   };
 
   init = async () => {
@@ -141,6 +143,14 @@ class SwapService {
       ...this.store.tradeList,
       [dexId]: bool,
     };
+  };
+
+  getSwapSortIncludeGasFee = () => {
+    return this.store.sortIncludeGasFee || false;
+  };
+
+  setSwapSortIncludeGasFee = (bool: boolean) => {
+    this.store.sortIncludeGasFee = bool;
   };
 
   txQuotes: Record<

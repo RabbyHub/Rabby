@@ -25,6 +25,7 @@ import {
 import {
   useSetQuoteVisible,
   useSetSettingVisible,
+  useSwapSettings,
   useVerifySdk,
 } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
@@ -165,8 +166,9 @@ export interface QuoteItemProps {
   receiveToken: TokenItem;
   payAmount: string;
   chain: CHAINS_ENUM;
-  bestAmount: string;
   isBestQuote: boolean;
+  bestQuoteGasUsd: string | number;
+  bestQuoteAmount: string;
   active: boolean;
   userAddress: string;
   slippage: string;
@@ -189,7 +191,8 @@ export const DexQuoteItem = (
     quote,
     name: dexId,
     loading,
-    bestAmount,
+    bestQuoteAmount,
+    bestQuoteGasUsd,
     payToken,
     receiveToken,
     payAmount,
@@ -209,6 +212,8 @@ export const DexQuoteItem = (
 
   const openSwapSettings = useSetSettingVisible();
   const openSwapQuote = useSetQuoteVisible();
+
+  const { sortIncludeGasFee } = useSwapSettings();
 
   const tradeList = useRabbySelector((s) => s.swap.tradeList);
   const disabledTrade = useMemo(
@@ -260,11 +265,20 @@ export const DexQuoteItem = (
     if (actualReceiveAmount || dexId === 'WrapToken') {
       const receiveAmount =
         actualReceiveAmount || (dexId === 'WrapToken' ? payAmount : 0);
-      const bestQuoteAmount = new BigNumber(bestAmount);
+      const bestQuoteAmountBn = new BigNumber(bestQuoteAmount);
       const receivedTokeAmountBn = new BigNumber(receiveAmount);
-      const percent = new BigNumber(receiveAmount)
-        .minus(bestAmount || 0)
-        .div(bestAmount)
+
+      const receivedUsdBn = receivedTokeAmountBn
+        .times(receiveToken.price)
+        .minus(sortIncludeGasFee ? preExecResult?.gasUsdValue || 0 : 0);
+
+      const bestQuoteUsdBn = bestQuoteAmountBn
+        .times(receiveToken.price)
+        .minus(sortIncludeGasFee ? bestQuoteGasUsd : 0);
+
+      const percent = receivedUsdBn
+        .minus(bestQuoteUsdBn)
+        .div(bestQuoteUsdBn)
         .times(100);
 
       receivedUsd = formatUsdValue(
@@ -272,10 +286,7 @@ export const DexQuoteItem = (
       );
 
       diffUsd = formatUsdValue(
-        new BigNumber(receiveAmount)
-          .minus(bestQuoteAmount || 0)
-          .times(receiveToken.price || 0)
-          .toString(10)
+        receivedUsdBn.minus(bestQuoteUsdBn).toString(10)
       );
 
       const s = formatAmount(receivedTokeAmountBn.toString(10));
@@ -290,7 +301,7 @@ export const DexQuoteItem = (
       );
 
       right = (
-        <span className={clsx('percent', percent.lt(0) && 'red')}>
+        <span className={clsx('percent', { red: !isBestQuote })}>
           {isBestQuote
             ? t('page.swap.best')
             : `${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
@@ -339,8 +350,10 @@ export const DexQuoteItem = (
     receiveToken.symbol,
     preExecResult,
     isSdkDataPass,
-    bestAmount,
+    bestQuoteAmount,
+    bestQuoteGasUsd,
     isBestQuote,
+    sortIncludeGasFee,
   ]);
 
   const quoteWarning = useMemo(() => {
@@ -578,7 +591,8 @@ export const DexQuoteItem = (
 export const CexQuoteItem = (props: {
   name: string;
   data: CEXQuote | null;
-  bestAmount: string;
+  bestQuoteAmount: string;
+  bestQuoteGasUsd: string | number;
   isBestQuote: boolean;
   isLoading?: boolean;
   inSufficient: boolean;
@@ -586,14 +600,15 @@ export const CexQuoteItem = (props: {
   const {
     name,
     data,
-    bestAmount,
+    bestQuoteAmount,
+    bestQuoteGasUsd,
     isBestQuote,
     isLoading,
-    inSufficient,
+    // inSufficient,
   } = props;
   const { t } = useTranslation();
   const dexInfo = useMemo(() => CEX[name as keyof typeof CEX], [name]);
-
+  const { sortIncludeGasFee } = useSwapSettings();
   const [middleContent, rightContent] = useMemo(() => {
     let center: React.ReactNode = (
       <div className="text-15 text-gray-title font-medium">-</div>
@@ -611,12 +626,19 @@ export const CexQuoteItem = (props: {
     }
 
     if (data?.receive_token?.amount) {
-      const bestQuoteAmount = new BigNumber(bestAmount);
       const receiveToken = data.receive_token;
-      const percent = new BigNumber(receiveToken.amount)
-        .minus(bestQuoteAmount || 0)
-        .div(bestQuoteAmount)
+
+      const bestQuoteUsdBn = new BigNumber(bestQuoteAmount)
+        .times(receiveToken.price || 1)
+        .minus(sortIncludeGasFee ? bestQuoteGasUsd : 0);
+      const receiveUsdBn = new BigNumber(receiveToken.amount).times(
+        receiveToken.price || 1
+      );
+      const percent = receiveUsdBn
+        .minus(bestQuoteUsdBn)
+        .div(bestQuoteUsdBn)
         .times(100);
+
       const s = formatAmount(receiveToken.amount.toString(10));
       const receiveTokenSymbol = getTokenSymbol(receiveToken);
 
@@ -630,7 +652,7 @@ export const CexQuoteItem = (props: {
       );
 
       right = (
-        <span className={clsx('percent', percent.lt(0) && 'red')}>
+        <span className={clsx('percent', { red: !isBestQuote })}>
           {isBestQuote
             ? t('page.swap.best')
             : `${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
@@ -639,7 +661,13 @@ export const CexQuoteItem = (props: {
     }
 
     return [center, right, disable];
-  }, [data?.receive_token, bestAmount, isBestQuote]);
+  }, [
+    data?.receive_token,
+    bestQuoteAmount,
+    bestQuoteGasUsd,
+    isBestQuote,
+    sortIncludeGasFee,
+  ]);
 
   return (
     <ItemWrapper
