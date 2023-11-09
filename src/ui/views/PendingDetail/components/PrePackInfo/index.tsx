@@ -1,6 +1,6 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import IconToken from '@/ui/assets/pending/icon-token.svg';
-import IconArrow from '@/ui/assets/pending/icon-arrow-down.svg';
+import { ReactComponent as RcIconArrow } from '@/ui/assets/pending/icon-arrow-down.svg';
 import IconNoLoss from '@/ui/assets/pending/icon-check-1.svg';
 import IconCheck from '@/ui/assets/pending/icon-check-2.svg';
 import IconError from '@/ui/assets/pending/icon-error.svg';
@@ -22,6 +22,7 @@ import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
 import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export interface Props {
   explain?: TransactionGroup['explain'];
@@ -298,7 +299,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
               isCollapse ? '' : 'rotate-180'
             )}
           >
-            <img src={IconArrow} alt="" />
+            <ThemeIcon src={RcIconArrow} />
           </div>
         </div>
       </div>
