@@ -252,6 +252,30 @@
         "error": {
           "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
         }
+      },
+      "coboSafeCreate": {
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "description": "You'll create a new Cobo Safe",
+        "title": "Create Cobo Safe"
+      },
+      "coboSafeModificationRole": {
+        "title": "Submit Safe Role Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "description": "You are managing the Safe Role ({{str}})"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "title": "Submit Delegated Address Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "description": "You're managing Delegated Address ({{str}})"
+      },
+      "coboSafeModificationTokenApproval": {
+        "title": "Submit Token Approval Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "description": "You're managing the approval  of Token ({{str}})"
       }
     },
     "signFooterBar": {

@@ -13,6 +13,10 @@ import {
   VerifyAddressAction,
   BatchPermit2Action,
   BatchSellNFTOrderAction,
+  CreateCoboSafeAction,
+  SubmitSafeRoleModificationAction,
+  SubmitDelegatedAddressModificationAction,
+  SubmitTokenApprovalModificationAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
@@ -62,6 +66,10 @@ export interface TypedDataActionData {
   createKey?: CreateKeyAction;
   verifyAddress?: VerifyAddressAction;
   contractCall?: object;
+  coboSafeCreate?: CreateCoboSafeAction;
+  coboSafeModificationDelegatedAddress?: SubmitSafeRoleModificationAction;
+  coboSafeModificationRole?: SubmitDelegatedAddressModificationAction;
+  coboSafeModificationTokenApproval?: SubmitTokenApprovalModificationAction;
 }
 
 export const parseAction = (
@@ -162,6 +170,23 @@ export const parseAction = (
     case 'verify_address':
       result.verifyAddress = data.action.data as VerifyAddressAction;
       return result;
+
+    case 'create_cobo_safe':
+      result.coboSafeCreate = data.action.data as CreateCoboSafeAction;
+      return result;
+    case 'submit_safe_role_modification':
+      result.coboSafeModificationRole = data.action
+        .data as SubmitSafeRoleModificationAction;
+      return result;
+    case 'submit_delegated_address_modification':
+      result.coboSafeModificationDelegatedAddress = data.action
+        .data as SubmitDelegatedAddressModificationAction;
+      return result;
+    case 'submit_token_approval_modification':
+      result.coboSafeModificationTokenApproval = data.action
+        .data as SubmitTokenApprovalModificationAction;
+      return result;
+
     default:
       break;
   }
@@ -551,6 +576,18 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
   }
   if (data?.contractCall) {
     return t('page.signTx.unknownAction');
+  }
+  if (data?.coboSafeCreate) {
+    return t('page.signTx.coboSafeCreate.title');
+  }
+  if (data?.coboSafeModificationRole) {
+    return t('page.signTx.coboSafeModificationRole.title');
+  }
+  if (data?.coboSafeModificationDelegatedAddress) {
+    return t('page.signTx.coboSafeModificationDelegatedAddress.title');
+  }
+  if (data?.coboSafeModificationTokenApproval) {
+    return t('page.signTx.coboSafeModificationTokenApproval.title');
   }
   return t('page.signTx.unknownAction');
 };

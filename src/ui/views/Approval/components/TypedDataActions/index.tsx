@@ -32,6 +32,10 @@ import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
 import clsx from 'clsx';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import CoboSafeCreate from './CoboSafeCreate';
+import CoboSafeModificationRule from './CoboSafeModificationRole';
+import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
+import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -343,6 +347,22 @@ const Actions = ({
                 chain={chain}
                 engineResults={engineResults}
                 raw={raw}
+              />
+            )}
+            {data.coboSafeCreate && (
+              <CoboSafeCreate data={data.coboSafeCreate} />
+            )}
+            {data.coboSafeModificationRole && (
+              <CoboSafeModificationRule data={data.coboSafeModificationRole} />
+            )}
+            {data.coboSafeModificationDelegatedAddress && (
+              <CoboSafeModificationDelegatedAddress
+                data={data.coboSafeModificationDelegatedAddress}
+              />
+            )}
+            {data.coboSafeModificationTokenApproval && (
+              <CoboSafeModificationTokenApproval
+                data={data.coboSafeModificationTokenApproval}
               />
             )}
           </div>
