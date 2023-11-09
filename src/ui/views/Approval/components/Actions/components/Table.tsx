@@ -5,7 +5,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const TableWrapper = styled.div`
-  border: 1px solid #ededed;
+  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   border-radius: 8px;
 `;
 
