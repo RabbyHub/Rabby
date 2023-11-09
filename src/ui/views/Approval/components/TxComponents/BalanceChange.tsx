@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from 'consts';
@@ -170,7 +170,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.notSupport')}
                 </span>
               </Row>
@@ -188,7 +188,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {isSuccess
                     ? t('page.signTx.balanceChange.successTitle')
                     : t('page.signTx.balanceChange.failedTitle')}
@@ -197,7 +197,7 @@ const BalanceChange = ({
             </Col>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
                 </span>
               </Row>
@@ -210,7 +210,7 @@ const BalanceChange = ({
 
   return (
     <div className="token-balance-change">
-      <p className="text-16 text-gray-title font-medium mb-12 flex items-center">
+      <p className="text-16 text-r-neutral-title-1 font-medium mb-12 flex items-center">
         <span>
           {isSuccess
             ? t('page.signTx.balanceChange.successTitle')
@@ -228,7 +228,7 @@ const BalanceChange = ({
           {!hasChange && isSuccess && (
             <Col>
               <Row>
-                <span className="text-15 font-medium text-gray-title">
+                <span className="text-15 font-medium text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>

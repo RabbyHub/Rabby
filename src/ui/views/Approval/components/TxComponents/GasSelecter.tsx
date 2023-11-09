@@ -142,11 +142,11 @@ const CardBody = styled.div<{
       text-align: center;
       font-size: 12px;
       line-height: 14px;
-      color: ${LessPalette['@color-comment']};
+      color: var(--r-neutral-body, #3e495e);
       margin: 8px auto 0;
     }
     .cardTitle {
-      color: ${LessPalette['@color-title']} !important;
+      color: var(--r-neutral-title-1, #192945) !important;
       font-weight: 500;
       font-size: 13px !important;
       margin: 4px auto 0;
@@ -158,7 +158,7 @@ const CardBody = styled.div<{
       text-align: center !important;
       font-size: 13px !important;
       font-weight: 500;
-      color: ${LessPalette['@color-title']};
+      color: var(--r-neutral-title-1, #192945);
       padding-top: 0;
       &.active {
         color: var(--r-blue-default, #7084ff) !important;
@@ -930,7 +930,7 @@ const GasPriceDesc = styled.ul`
   margin-top: 12px;
   margin-bottom: 0;
   font-size: 13px;
-  color: #4b4d59;
+  color: var(--r-neutral-body, #3e495e);
   li {
     position: relative;
     margin-bottom: 8px;
@@ -944,7 +944,7 @@ const GasPriceDesc = styled.ul`
       width: 4px;
       height: 4px;
       border-radius: 100%;
-      background-color: #4b4d59;
+      background-color: var(--r-neutral-body, #3e495e);
       left: 0;
       top: 8px;
     }

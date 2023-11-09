@@ -65,19 +65,21 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.protocolTitle')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.protocolTitle')}
+          </Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {t('page.signTx.addressTypeTitle')}
           </Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {data.isEOA
               ? t('page.signTx.firstOnChain')
               : t('page.signTx.deployTimeTitle')}
@@ -88,7 +90,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         </Col>
         <Col>
           <Row
-            className="bg-[#F6F8FF]"
+            className="bg-r-neutral-card-3"
             tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
           >
             {t('page.signTx.trustValue')}
@@ -102,7 +104,9 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.popularity')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.popularity')}
+          </Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
@@ -113,20 +117,24 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.interacted')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.interacted')}
+          </Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.addressNote')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.addressNote')}
+          </Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         {data.isDanger && (
           <Col>
-            <Row className="bg-[#F6F8FF]">
+            <Row className="bg-r-neutral-card-3">
               {t('page.signTx.tokenApprove.flagByRabby')}
             </Row>
             <Row>
@@ -135,7 +143,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Col>
         )}
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.myMark')}</Row>
+          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract
