@@ -23,7 +23,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 const Wrapper = styled.div`
   border-radius: 6px;
-  background: var(--r-neutral-card-1, #fff);
+  background: var(--r-neutral-bg-1, #fff);
   padding: 0 12px;
 
   .broadcast-mode {
@@ -298,7 +298,7 @@ export const BroadcastMode = ({
     <>
       <GlobalStyle />
       <Wrapper className={className} style={style}>
-        <div className="broadcast-mode-header">
+        <div className="broadcast-mode-header text-r-neutral-title-1">
           <div className="broadcast-mode-title">
             {t('page.signTx.BroadcastMode.title')}
           </div>
@@ -312,7 +312,7 @@ export const BroadcastMode = ({
             <SvgIconArrowRight />
           </div>
         </div>
-        <div className="broadcast-mode-body">
+        <div className="broadcast-mode-body text-r-neutral-body">
           <ul>
             <li>{selectedOption?.desc}</li>
             {value.type === 'low_gas' ? (
