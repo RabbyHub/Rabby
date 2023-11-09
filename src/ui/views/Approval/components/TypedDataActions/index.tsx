@@ -230,7 +230,16 @@ const Actions = ({
             'is-unknown': !data?.actionType || data.contractCall,
           })}
         >
-          <div className="left">{actionName}</div>
+          <div className="left flex items-center">
+            {data?.brand ? (
+              <img
+                src={data?.brand?.logo_url}
+                title={data?.brand?.name}
+                className="mr-8 w-20 h-20 rounded-full object-cover"
+              />
+            ) : null}
+            <span>{actionName}</span>
+          </div>
           <div className="right">
             <TooltipWithMagnetArrow
               placement="bottom"

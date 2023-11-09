@@ -5,6 +5,7 @@ import { Col, Row, Table } from '../Actions/components/Table';
 import { TypedDataActionData } from './utils';
 import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
+import IconSafe from '@/ui/assets/walletlogo/safe.svg';
 
 const Wrapper = styled.div``;
 
@@ -34,8 +35,8 @@ const CoboSafeModificationDelegatedAddress = ({
                 <Values.AddressMemo address={actionData.multisig_id} />
               </li>
               <LogoWithText
-                logo={actionData.brand.logo_url}
-                text={actionData.brand.name}
+                logo={IconSafe}
+                text="Safe"
                 logoSize={14}
                 logoRadius="100%"
                 textStyle={{

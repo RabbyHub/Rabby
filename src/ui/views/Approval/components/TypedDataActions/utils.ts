@@ -45,6 +45,10 @@ interface BatchPermit2ActionData extends BatchPermit2Action {
 
 export interface TypedDataActionData {
   chainId?: string;
+  brand?: {
+    logo_url: string;
+    name: string;
+  };
   contractId?: string;
   sender: string;
   actionType: string | null;
@@ -80,6 +84,7 @@ export const parseAction = (
   const result: TypedDataActionData = {
     sender,
     actionType: null,
+    brand: (data.action?.data as any)?.brand as TypedDataActionData['brand'],
   };
   if (typedData?.domain) {
     if (typedData.domain.verifyingContract) {
