@@ -20,7 +20,10 @@ const SHOULD_RETRY_KEYWORDS = [
   'Previous request is not finished',
 ];
 
-const AUTO_RETRY_KEYWORDS = ['state is in progress.'];
+const AUTO_RETRY_KEYWORDS = [
+  'state is in progress.',
+  'Previous request is not finished',
+];
 
 const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
   'The device was disconnected',
@@ -108,8 +111,17 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
     retry();
   }, [setErrorMessage, onRetry, retry]);
 
+  const shouldAutoRetry = useMemo(() => {
+    if (error?.message) {
+      return AUTO_RETRY_KEYWORDS.some((keyword) =>
+        error.message.includes(keyword)
+      );
+    }
+    return false;
+  }, [error]);
+
   const description = useMemo(() => {
-    if (statusProp !== 'REJECTED') {
+    if (statusProp !== 'REJECTED' || shouldAutoRetry) {
       return '';
     }
     if (errorMessage) {
@@ -138,12 +150,12 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
           </Trans>
         );
       }
-      if (
-        AUTO_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
-      ) {
-        handleRetry();
-        return '';
-      }
+      // if (
+      //   AUTO_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
+      // ) {
+      //   handleRetry();
+      //   return '';
+      // }
       if (
         SHOULD_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
       ) {
@@ -152,7 +164,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       return transportErrorHandler(error, t);
     }
     return '';
-  }, [error, errorMessage, statusProp]);
+  }, [error, errorMessage, statusProp, shouldAutoRetry]);
 
   useEffect(() => {
     setHiddenSwitchButton(['FAILED', 'REJECTED'].includes(statusProp));
@@ -164,14 +176,15 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       return t('page.signFooterBar.keystone.siging');
     }
     if (error || errorMessage) {
+      if (shouldAutoRetry) {
+        handleRetry();
+        return t('page.signFooterBar.keystone.siging');
+      }
+
       setStatusProp('REJECTED');
       return t('page.signFooterBar.keystone.txRejected');
     }
     if (isDone) {
-      if (error || errorMessage) {
-        setStatusProp('REJECTED');
-        return t('page.signFooterBar.keystone.txRejected');
-      }
       setStatusProp('RESOLVED');
       return t('page.signFooterBar.qrcode.sigCompleted');
     }
@@ -198,7 +211,16 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
     }
     setStatusProp('SENDING');
     return t('page.signFooterBar.keystone.siging');
-  }, [value, error, errorMessage, loading, isDone, requestId, description]);
+  }, [
+    value,
+    error,
+    errorMessage,
+    loading,
+    isDone,
+    requestId,
+    description,
+    shouldAutoRetry,
+  ]);
 
   return (
     <ApprovalPopupContainer
