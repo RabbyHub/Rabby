@@ -56,7 +56,7 @@ export const Header = ({
 }) => {
   const leftTime = useMemo(() => {
     const leftTime = data?.predict_packed_at
-      ? Date.now() - data?.predict_packed_at * 1000
+      ? data?.predict_packed_at * 1000 - Date.now()
       : 0;
     return leftTime > 0 ? leftTime : undefined;
   }, [data?.predict_packed_at]);

@@ -63,12 +63,15 @@ export const useLoadTxRequests = (
     onSuccess?: (data: Record<string, TxRequest>) => void;
   }
 ) => {
-  const { unbroadcastedTxs } = getPendingGroupCategory(pendings);
+  const { unbroadcastedTxs, broadcastedTxs } = getPendingGroupCategory(
+    pendings
+  );
+  const list = [...unbroadcastedTxs, ...broadcastedTxs];
   const wallet = useWallet();
   const testnetTxs: TransactionHistoryItem[] = [];
   const mainnetTxs: TransactionHistoryItem[] = [];
 
-  unbroadcastedTxs.forEach((tx) => {
+  list.forEach((tx) => {
     const chain = findChainByID(tx.rawTx.chainId);
     if (chain?.isTestnet) {
       testnetTxs.push(tx);
@@ -80,7 +83,7 @@ export const useLoadTxRequests = (
   const onSuccess = options?.onSuccess;
   const { data, runAsync } = useRequest(
     async () => {
-      if (!unbroadcastedTxs.length) {
+      if (!list.length) {
         return {};
       }
       const res = await Promise.all([
@@ -100,8 +103,8 @@ export const useLoadTxRequests = (
     },
     {
       onSuccess,
-      refreshDeps: [unbroadcastedTxs.map((tx) => tx.reqId).join(',')],
-      pollingInterval: 1000 * 60,
+      refreshDeps: [list.map((tx) => tx.reqId).join(',')],
+      pollingInterval: 1000 * 6,
     }
   );
 

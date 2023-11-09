@@ -1,10 +1,11 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import IconArrowRight from '@/ui/assets/signature-record/icon-arrow-right.svg';
 import { useAccount } from '@/ui/store-hooks';
-import { formatTimeReadable, openInternalPageInTab } from '@/ui/utils';
+import { openInternalPageInTab } from '@/ui/utils';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
+import { useCountDown } from 'ahooks';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -40,10 +41,15 @@ export const PredictTime = ({
 
   const leftTime = useMemo(() => {
     const leftTime = txRequest?.predict_packed_at
-      ? Date.now() - txRequest?.predict_packed_at * 1000
+      ? txRequest?.predict_packed_at * 1000 - Date.now()
       : 0;
     return leftTime > 0 ? leftTime : undefined;
   }, [txRequest?.predict_packed_at]);
+
+  const [countDown, { minutes, seconds }] = useCountDown({
+    leftTime: leftTime || 0,
+    interval: 1000,
+  });
 
   if (
     !isPending ||
@@ -63,7 +69,9 @@ export const PredictTime = ({
     >
       {leftTime
         ? t('page.activities.signedTx.PredictTime.time', {
-            time: formatTimeReadable(leftTime / 1000),
+            time: `${
+              minutes > 0 ? `${minutes} ${minutes > 1 ? 'mins' : 'min'}` : ''
+            } ${seconds}s`,
           })
         : t('page.activities.signedTx.PredictTime.noTime')}
       <img src={IconArrowRight} alt="" />
