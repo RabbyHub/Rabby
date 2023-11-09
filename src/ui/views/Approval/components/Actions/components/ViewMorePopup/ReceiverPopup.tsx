@@ -83,13 +83,15 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.addressNote')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.addressNote')}
+          </Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {t('page.signTx.addressTypeTitle')}
           </Row>
           <Row>
@@ -114,7 +116,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         </Col>
         {data.cex && (
           <Col>
-            <Row className="bg-[#F6F8FF]">
+            <Row className="bg-r-neutral-card-3">
               {t('page.signTx.send.cexAddress')}
             </Row>
             <Row>
@@ -142,7 +144,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         )}
         {data.isTokenContract && (
           <Col>
-            <Row className="bg-[#F6F8FF]">
+            <Row className="bg-r-neutral-card-3">
               {t('page.signTx.send.receiverIsTokenAddress')}
             </Row>
             <Row>
@@ -151,7 +153,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Col>
         )}
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {data.contract
               ? t('page.signTx.deployTimeTitle')
               : t('page.signTx.firstOnChain')}
@@ -161,7 +163,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {t('page.signTx.send.addressBalanceTitle')}
           </Row>
           <Row>
@@ -169,13 +171,15 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.transacted')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.transacted')}
+          </Row>
           <Row>
             <Values.Boolean value={data.hasTransfer} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">
+          <Row className="bg-r-neutral-card-3">
             {t('page.signTx.send.whitelistTitle')}
           </Row>
           <Row>

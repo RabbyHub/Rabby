@@ -36,11 +36,15 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.collectionTitle')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.collectionTitle')}
+          </Row>
           <Row>{data.nft.collection ? data.nft.collection.name : '-'}</Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.floorPrice')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.floorPrice')}
+          </Row>
           <Row>
             {data.nft?.collection?.floor_price
               ? `${formatAmount(data?.nft?.collection?.floor_price)} ETH`
@@ -48,7 +52,9 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-[#F6F8FF]">{t('page.signTx.contractAddress')}</Row>
+          <Row className="bg-r-neutral-card-3">
+            {t('page.signTx.contractAddress')}
+          </Row>
           <Row>
             <Values.Address address={data.nft.contract_id} chain={data.chain} />
           </Row>
