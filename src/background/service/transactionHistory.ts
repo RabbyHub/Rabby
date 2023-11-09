@@ -502,7 +502,7 @@ class TxHistory {
   ) {
     const key = `${chainId}-${nonce}`;
     const from = address.toLowerCase();
-    const target = this.store.transactions[from][key];
+    const target = this.store.transactions[from]?.[key];
     const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
     if (!target) return;
     const { txs } = target;
