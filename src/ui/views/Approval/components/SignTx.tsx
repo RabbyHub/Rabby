@@ -1681,7 +1681,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
       }
-      const fee = calcMaxPriorityFee(gasList, gas, chainId);
+      const fee = calcMaxPriorityFee(
+        gasList,
+        gas,
+        chainId,
+        isCancel || isSpeedUp
+      );
       setMaxPriorityFee(fee);
 
       setSelectedGas(gas);
@@ -1904,6 +1909,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 onChange={handleGasChange}
                 nonce={realNonce || tx.nonce}
                 disableNonce={isSpeedUp || isCancel}
+                isSpeedUp={isSpeedUp}
+                isCancel={isCancel}
                 is1559={support1559}
                 isHardware={isHardware}
                 manuallyChangeGasLimit={manuallyChangeGasLimit}
