@@ -64,7 +64,6 @@ export const TxStatus = ({
       <Popover
         overlayClassName="pending-detail-popover"
         placement="bottomLeft"
-        visible
         destroyTooltipOnHide
         content={txRequest ? <TxTimeline txRequest={txRequest} /> : null}
       >
