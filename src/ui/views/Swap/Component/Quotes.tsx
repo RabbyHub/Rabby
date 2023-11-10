@@ -294,10 +294,10 @@ export const QuoteList = (props: QuotesProps) => {
       visible={visible}
       title={
         <div className="flex items-center justify-between mb-[-2px] pb-10">
-          <div className="flex items-center gap-8 text-left text-gray-title text-[16px] font-medium ">
+          <div className="flex items-center gap-6 text-left text-gray-title text-[16px] font-medium ">
             <div>{t('page.swap.the-following-swap-rates-are-found')}</div>
-            <div className="w-20 h-20 relative overflow-hidden">
-              <div className="w-[36px] h-[36px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+            <div className="w-14 h-14 relative overflow-hidden">
+              <div className="w-[26px] h-[26px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
                 <IconRefresh onClick={refreshQuote} />
               </div>
             </div>
