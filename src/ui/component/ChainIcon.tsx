@@ -85,7 +85,7 @@ const TooltipContent = styled.div`
 
 interface Props {
   chain: CHAINS_ENUM;
-  customRPC: string | undefined;
+  customRPC?: string | undefined;
   size?: 'normal' | 'small';
   showCustomRPCToolTip?: boolean;
   nonce?: number;

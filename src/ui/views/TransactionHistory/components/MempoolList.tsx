@@ -144,9 +144,9 @@ export const MempoolList = ({
             {t('page.activities.signedTx.MempoolList.title')}
           </div>
           <div className="mempool-list">
-            {data?.map((item) => {
+            {data?.map((item, index) => {
               return (
-                <div className="mempool-item" key={item.id}>
+                <div className="mempool-item" key={item.id + '-' + index}>
                   <img src={IconChecked} alt="" className="flex-shrink-0" />
                   <div className="min-w-0 truncate" title={item.rpc}>
                     {item.rpc}

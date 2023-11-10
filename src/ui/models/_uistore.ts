@@ -25,7 +25,6 @@ export default (store: typeof import('@/ui/store').default) => {
 
     switch (payload.changedKey) {
       case 'themeMode': {
-        console.log('[feat] payload', payload);
         dispatch.preference.setField({
           themeMode: payload.partials.themeMode,
         });
