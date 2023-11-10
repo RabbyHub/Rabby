@@ -57,6 +57,9 @@
     .nft-avatar {
       border: 0;
     }
+    .ant-table {
+      background: transparent;
+    }
     .ant-table-thead > tr > th {
       background-color: transparent;
       border-bottom: 1px solid var(--r-neutral-card-2, #f2f4f7);
@@ -78,6 +81,7 @@
       height: 48px;
 
       color: var(--r-neutral-body, #3e495e);
+      border-bottom: 1px solid var(--r-neutral-card-2, #f2f4f7);
       font-size: 13px;
       font-weight: 400;
       line-height: 16px;
@@ -86,6 +90,16 @@
       .ant-table-row:last-child td {
         border-bottom: none;
       }
+    }
+    .ant-pagination {
+      color: var(--r-neutral-title-1, #f7fafc);
+
+      .anticon > svg {
+        color: var(--r-neutral-title-1, #f7fafc);
+      }
+    }
+    .ant-pagination-simple .ant-pagination-simple-pager input {
+      background-color: transparent;
     }
     .ant-table-pagination {
       margin: 32px 0;
