@@ -116,7 +116,7 @@ export const PendingTxList = ({
     const res: Record<string, number> = {
       total: 0,
     };
-    list.forEach((item) => {
+    finalList.forEach((item) => {
       res.total++;
       filters.forEach((filter) => {
         if (filter.filter(item, tokenDict)) {
@@ -131,7 +131,7 @@ export const PendingTxList = ({
       }
     });
     return res;
-  }, [tx, list, value]);
+  }, [tx, finalList, value]);
 
   const { t } = useTranslation();
 
