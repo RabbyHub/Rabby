@@ -69,6 +69,13 @@ const MatrixWrapper = styled.div.withConfig<{
         }
       `;
     }}
+
+    &:hover {
+      .mnemonics-input,
+      ${styid(NumberFlag)} {
+        opacity: 1 !important;
+      }
+    }
   }
 
   ${styid(NumberFlag)} {
@@ -84,15 +91,11 @@ const MatrixWrapper = styled.div.withConfig<{
     display: inline-block;
     line-height: ${ITEM_H}px;
     border-color: #f5f6fa;
-    opacity: 0.5;
     &:focus,
     &.ant-input-focused {
       border-color: var(--r-blue-default, #7084ff);
       background-color: var(--r-neutral-bg-1, #fff);
-    }
-    &:hover,
-    &:focus {
-      opacity: 1;
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
     }
   }
   .matrix-word-item.invalid {
@@ -359,7 +362,7 @@ function MnemonicsInputs({
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
-          'rounded-[6px] bg-gray-bg text-center',
+          'rounded-[6px] text-center',
           'border border-[#E1E5F2] border-solid',
           className
         )}
@@ -375,12 +378,9 @@ function MnemonicsInputs({
           return (
             <div
               key={`word-item-${word}-${idx}`}
-              className={clsx(
-                'matrix-word-item is-mnemonics-input bg-gray-bg',
-                {
-                  invalid: invalidWords.includes(idx),
-                }
-              )}
+              className={clsx('matrix-word-item is-mnemonics-input', {
+                invalid: invalidWords.includes(idx),
+              })}
               onClick={() => {
                 setFocusing({ index: idx, visible: isCurrentVisible });
                 setMnemonics(word);
@@ -389,7 +389,7 @@ function MnemonicsInputs({
               onMouseLeave={() => handleMouseLeave(idx)}
             >
               <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
+                overlayClassName="rectangle w-[max-content] top-[-29px]"
                 title={word}
                 placement="top"
                 visible={
@@ -405,7 +405,11 @@ function MnemonicsInputs({
                   key={`word-input-${ver}-${word}-${idx}`}
                   className={clsx(
                     'mnemonics-input pl-[46px] pr-10',
-                    isCurrentFocusing && 'ant-input-focused'
+                    isCurrentFocusing && 'ant-input-focused',
+                    {
+                      'opacity-50':
+                        focusing.index !== -1 && focusing.index !== idx,
+                    }
                   )}
                   type={isCurrentVisible ? 'text' : 'password'}
                   value={word}
@@ -441,7 +445,13 @@ function MnemonicsInputs({
                   }}
                 />
               </TooltipWithMagnetArrow>
-              <NumberFlag>{number}.</NumberFlag>
+              <NumberFlag
+                className={clsx({
+                  'opacity-50': focusing.index !== -1 && focusing.index !== idx,
+                })}
+              >
+                {number}.
+              </NumberFlag>
             </div>
           );
         })}
@@ -449,11 +459,11 @@ function MnemonicsInputs({
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px] absolute'
+            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
           }
         >
           {invalidWords.length > 0 && (
-            <div role="alert" className="mb-4">
+            <div role="alert" className="mb-8">
               {t('page.newAddress.seedPhrase.inputInvalidCount', {
                 count: invalidWords.length.toString(),
               })}

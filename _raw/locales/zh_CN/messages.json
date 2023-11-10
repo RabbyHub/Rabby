@@ -382,7 +382,9 @@
         "verifySeedPhrase": "验证助记词",
         "fillInTheBackupSeedPhraseInOrder": "按顺序填写备份助记词",
         "clearAll": "全部清除",
-        "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词"
+        "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词",
+        "pastedAndClear": "已粘贴并清空剪切板",
+        "inputInvalidCount": "有{{count}}处输入内容不符合助记词规范，请检查"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",

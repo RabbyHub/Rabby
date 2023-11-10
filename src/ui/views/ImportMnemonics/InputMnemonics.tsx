@@ -23,7 +23,7 @@ const FormItemWrapper = styled.div`
 `;
 
 const TipTextList = styled.div`
-  margin-top: 40px;
+  margin-top: 10px;
   h3 {
     font-weight: 700;
     font-size: 13px;
