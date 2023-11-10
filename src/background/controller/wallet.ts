@@ -1134,6 +1134,8 @@ export class WalletController extends BaseController {
   setSwapTrade = swapService.setSwapTrade;
   getSwapViewList = swapService.getSwapViewList;
   getSwapTradeList = swapService.getSwapTradeList;
+  getSwapSortIncludeGasFee = swapService.getSwapSortIncludeGasFee;
+  setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
