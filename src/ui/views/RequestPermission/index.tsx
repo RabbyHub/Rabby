@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
@@ -13,6 +13,7 @@ import HDPathType = LedgerHDPathType;
 import { LedgerHDPathType } from '@/utils/ledger';
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
+import { useExportAddressViaUSBErrorCatcher } from '@/utils/keystone';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -23,6 +24,8 @@ const RequestPermission = () => {
   const history = useHistory();
   const wallet = useWallet();
   const needConfirm = ['ledger', 'keystone'].includes(type);
+  const [loading, setLoading] = useState(false);
+  const keystoneErrorCatcher = useExportAddressViaUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
 
   const PERMISSIONS = {
@@ -87,6 +90,7 @@ const RequestPermission = () => {
     }
     if (type === 'keystone') {
       try {
+        setLoading(true);
         await TransportWebUSB.requestPermission();
 
         if (isReconnect) {
@@ -126,14 +130,9 @@ const RequestPermission = () => {
           search,
         });
       } catch (error) {
-        console.error(error);
-        if (error.message.includes('No device selected')) {
-          message.error(t('page.newAddress.keystone.noDeviceFoundError'));
-        } else if (error.message.includes('device is locked')) {
-          message.error(t('page.newAddress.keystone.deviceIsLockedError'));
-        } else {
-          message.error(t('page.newAddress.keystone.unknowError'));
-        }
+        keystoneErrorCatcher(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -160,6 +159,7 @@ const RequestPermission = () => {
               center: true,
             }
       }
+      spinning={loading}
       headerClassName="mb-28"
       className="request-permission-wrapper"
     >

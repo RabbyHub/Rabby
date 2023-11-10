@@ -439,6 +439,9 @@
         "keystonePermissionTip": "请点击下方的“允许”，并在弹出窗口中授权访问您的 Keystone",
         "noDeviceFoundError": "请插入一个Keystone",
         "deviceIsLockedError": "输入密码以解锁",
+        "deviceRejectedExportAddress": "请批准与 Rabby 的连接",
+        "deviceIsBusy": "设备正在忙碌中",
+        "exportAddressJustAllowedOnHomePage": "仅在 Keystone 主页上允许导出地址",
         "unknowError": "未知错误，请再试一次"
       },
       "walletConnect": {

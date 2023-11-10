@@ -1,4 +1,4 @@
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import React from 'react';
 import {
   AdvancedSettings,
@@ -15,6 +15,7 @@ import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useExportAddressViaUSBErrorCatcher } from '@/utils/keystone';
 
 interface Props {
   brand?: string;
@@ -36,6 +37,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const wallet = useWallet();
   const history = useHistory();
   const currentAccountsRef = React.useRef(currentAccounts);
+  const keystoneErrorCatcher = useExportAddressViaUSBErrorCatcher();
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -90,23 +92,28 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
 
     const { type = HDPathType.BIP44, ...rest } = data;
     if (isKeystone) {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      if (type !== setting.type) {
-        /**
-         * This code is written to be consistent with the behavior of importing wallets via QR Code.
-         */
-        await removeAddressAndForgetDevice();
+        if (type !== setting.type) {
+          /**
+           * This code is written to be consistent with the behavior of importing wallets via QR Code.
+           */
+          await removeAddressAndForgetDevice();
+        }
+
+        await wallet.requestKeyring(
+          KEYSTONE_TYPE,
+          'getAddressesViaUSB',
+          keyringId,
+          type
+        );
+        await getCurrentAccounts();
+        setLoading(false);
+      } catch (error) {
+        history.goBack();
+        keystoneErrorCatcher(error);
       }
-
-      await wallet.requestKeyring(
-        KEYSTONE_TYPE,
-        'getAddressesViaUSB',
-        keyringId,
-        type
-      );
-      await getCurrentAccounts();
-      setLoading(false);
     }
     await fetchCurrentAccounts({
       type,

@@ -1181,6 +1181,9 @@
         "keystonePermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Keystone in the following pop-up window.",
         "noDeviceFoundError": "Plug in a single Keystone",
         "deviceIsLockedError": "Enter password to unlock",
+        "deviceRejectedExportAddress": "Approve connection to Rabby",
+        "deviceIsBusy": "Device is busy",
+        "exportAddressJustAllowedOnHomePage": "Export address just allowed on home page",
         "unknowError": "Unknown error, please try again"
       },
       "walletConnect": {
