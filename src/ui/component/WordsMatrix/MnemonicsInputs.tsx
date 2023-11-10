@@ -1,31 +1,33 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, message } from 'antd';
+import { wordlist } from '@scure/bip39/wordlists/english';
 
 import LessPalette from 'ui/style/var-defs';
 import { styid } from 'ui/utils/styled';
 
-import IconEyeHide from './icon-eye-close.svg';
-import IconEye from './icon-eye-open.svg';
 import IconCaretDown from './icon-caret-down.svg';
 import IconClearAll from './icon-clear-all.svg';
+import IconSuccess from 'ui/assets/success.svg';
 
 import clsx from 'clsx';
 import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
-import { isTryingToPaste } from '@/ui/utils/keyboard';
+import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 
 import './MnemonicsInputs.less';
 import { Trans, useTranslation } from 'react-i18next';
+import { clearClipboard } from '@/ui/utils/clipboard';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 
 const NumberFlag = styled.div`
-  color: ${LessPalette['@color-comment-2']};
-  font-weight: 400;
-  font-size: 12px;
-  height: 14px;
+  color: var(--r-neutral-title-1, #192945);
+  font-weight: 500;
+  font-size: 15px;
+  height: 18px;
+  line-height: 1;
 `;
 
 const MatrixWrapper = styled.div.withConfig<{
@@ -35,9 +37,9 @@ const MatrixWrapper = styled.div.withConfig<{
     return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
   },
 })`
+  background-color: var(--r-neutral-card-3, #f7fafc);
   display: flex;
   flex-wrap: wrap;
-  overflow: hidden;
 
   .matrix-word-item {
     box-sizing: border-box;
@@ -67,25 +69,42 @@ const MatrixWrapper = styled.div.withConfig<{
         }
       `;
     }}
+
+    &:hover {
+      .mnemonics-input,
+      ${styid(NumberFlag)} {
+        opacity: 1 !important;
+      }
+    }
   }
 
   ${styid(NumberFlag)} {
     position: absolute;
-    top: 8px;
+    top: 17px;
     left: 8px;
-    color: #707280;
   }
 
   /* for MnemonicsInputs :start */
   .mnemonics-input {
+    background-color: var(--r-neutral-card-3, #f7fafc);
     height: 100%;
     display: inline-block;
     line-height: ${ITEM_H}px;
     border-color: #f5f6fa;
-    &:hover,
     &:focus,
     &.ant-input-focused {
       border-color: var(--r-blue-default, #7084ff);
+      background-color: var(--r-neutral-bg-1, #fff);
+      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
+    }
+  }
+  .matrix-word-item.invalid {
+    .mnemonics-input {
+      opacity: 1;
+      border-color: var(--r-red-default, #e34935);
+    }
+    ${styid(NumberFlag)} {
+      color: var(--r-red-default, #e34935);
     }
   }
   .visible-switch-icon-wrapper {
@@ -131,47 +150,14 @@ const HeadToolbar = styled.div`
   align-items: center;
   justify-content: space-between;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 14px;
 
   color: ${LessPalette['@color-body']};
 `;
 
-const HINT_BAR_H = 48;
-const HintsAreaBar = styled.div`
-  height: ${HINT_BAR_H}px;
-  display: flex;
-  bottom: 0;
-  align-items: center;
-  justify-content: flex-start;
-  margin-left: -4px;
-  margin-right: -4px;
-
-  .work-item-box {
-    width: ${(1 / 4) * 100}%;
-    flex-shrink: 1;
-    padding-left: 4px;
-    padding-right: 4px;
-    cursor: pointer;
-  }
-
-  .work-item {
-    width: 100%;
-    height: 36px;
-    text-align: center;
-    line-height: 36px;
-
-    display: block;
-    background-color: white;
-    border-radius: 4px;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-`;
-
 const DFLT_FOCUSING = { index: -1, visible: false };
+const DFLT_HOVERING = { index: -1, isHovering: false };
 type IMnemonicsCount = 12 | 15 | 18 | 21 | 24;
 const MNEMONICS_COUNTS: IMnemonicsCount[] = [12, 15, 18, 21, 24];
 
@@ -200,6 +186,7 @@ function MnemonicsInputs({
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
     12
   );
+  const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
     return {
       wordPlaceHolders: Array(mnemonicsCount).fill(undefined) as undefined[],
@@ -211,6 +198,11 @@ function MnemonicsInputs({
     visible: boolean;
   }>({ ...DFLT_FOCUSING });
 
+  const [hovering, setHovering] = React.useState<{
+    index: number;
+    isHovering: boolean;
+  }>(DFLT_HOVERING);
+
   const [inputTexts, _setInputTexts] = React.useState<string[]>(
     fillMatrix(value.split(' '), mnemonicsCount)
   );
@@ -220,8 +212,11 @@ function MnemonicsInputs({
   const verRef = React.useRef(0);
   const ver = `ver-${verRef.current}-${mnemonicsCount}`;
   const setInputTexts = React.useCallback(
-    (vals: string[]) => {
-      const words = fillMatrix(vals.slice(0, mnemonicsCount), mnemonicsCount);
+    (vals: string[], noSlice = false) => {
+      const words = fillMatrix(
+        noSlice ? vals : vals.slice(0, mnemonicsCount),
+        mnemonicsCount
+      );
       _setInputTexts(words);
       onChange?.(words.join(' '));
       verRef.current++;
@@ -245,14 +240,23 @@ function MnemonicsInputs({
   const onWordUpdated = React.useCallback(
     (idx: number, word: string) => {
       const words = word.split(' ');
-
+      const totalCount = idx + words.length;
+      let nextCount: IMnemonicsCount | undefined = mnemonicsCount;
+      if (totalCount > mnemonicsCount) {
+        nextCount = MNEMONICS_COUNTS.find((c) => c >= totalCount);
+        if (nextCount) {
+          setMnemonicsCount(nextCount);
+        } else {
+          nextCount = MNEMONICS_COUNTS[MNEMONICS_COUNTS.length - 1];
+          setMnemonicsCount(MNEMONICS_COUNTS[MNEMONICS_COUNTS.length - 1]); // use max
+        }
+      }
       let newInputTexts = inputTexts.slice(0);
       for (let i = 0; i < words.length; i++) {
         newInputTexts[idx + i] = words[i];
       }
-
-      newInputTexts = newInputTexts.slice(0, mnemonicsCount);
-      setInputTexts(newInputTexts);
+      newInputTexts = newInputTexts.slice(0, nextCount);
+      setInputTexts(newInputTexts, true);
 
       if (focusing.index === idx) {
         setMnemonics(word);
@@ -261,12 +265,38 @@ function MnemonicsInputs({
     [focusing, inputTexts, mnemonicsCount]
   );
 
-  const {
-    currentHints,
-    setMnemonics,
-    isLastTypingWordFull,
-  } = useTypingMnemonics();
+  React.useEffect(() => {
+    const arr: number[] = [];
+    for (let i = 0; i < inputTexts.length; i++) {
+      if (inputTexts[i] && !wordlist.includes(inputTexts[i])) {
+        arr.push(i);
+      }
+    }
+    setInvalidWords(arr);
+  }, [inputTexts]);
+
+  const { setMnemonics } = useTypingMnemonics();
   const { t } = useTranslation();
+
+  const handleMouseEnter = (index: number) => {
+    setTimeout(() => {
+      setHovering({
+        index,
+        isHovering: true,
+      });
+    }, 0);
+  };
+
+  const handleMouseLeave = (index: number) => {
+    setTimeout(() => {
+      if (hovering.index === index) {
+        setHovering({
+          index,
+          isHovering: false,
+        });
+      }
+    }, 0);
+  };
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
@@ -332,7 +362,7 @@ function MnemonicsInputs({
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
-          'rounded-[6px] bg-gray-bg text-center',
+          'rounded-[6px] text-center',
           'border border-[#E1E5F2] border-solid',
           className
         )}
@@ -348,64 +378,98 @@ function MnemonicsInputs({
           return (
             <div
               key={`word-item-${word}-${idx}`}
-              className={clsx('matrix-word-item is-mnemonics-input bg-gray-bg')}
+              className={clsx('matrix-word-item is-mnemonics-input', {
+                invalid: invalidWords.includes(idx),
+              })}
               onClick={() => {
                 setFocusing({ index: idx, visible: isCurrentVisible });
                 setMnemonics(word);
               }}
+              onMouseEnter={() => handleMouseEnter(idx)}
+              onMouseLeave={() => handleMouseLeave(idx)}
             >
-              <DebouncedInput
-                debounce={150}
-                key={`word-input-${ver}-${word}-${idx}`}
-                className={clsx(
-                  'mnemonics-input px-[28px] bg-gray-bg',
-                  isCurrentFocusing && 'ant-input-focused'
-                )}
-                type={isCurrentVisible ? 'text' : 'password'}
-                value={word}
-                autoFocus={isCurrentFocusing}
-                onFocus={() => {
-                  setFocusing({ index: idx, visible: isCurrentVisible });
-                }}
-                onKeyDownCapture={(e) => {
-                  if (isTryingToPaste(e)) {
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle w-[max-content] top-[-20px]"
+                title={word}
+                placement="top"
+                visible={
+                  !!(
+                    word &&
+                    (focusing.index === idx ||
+                      (hovering.index === idx && hovering.isHovering))
+                  )
+                }
+              >
+                <DebouncedInput
+                  debounce={150}
+                  key={`word-input-${ver}-${word}-${idx}`}
+                  className={clsx(
+                    'mnemonics-input pl-[46px] pr-10',
+                    isCurrentFocusing && 'ant-input-focused',
+                    {
+                      'opacity-50':
+                        focusing.index !== -1 && focusing.index !== idx,
+                    }
+                  )}
+                  type={isCurrentVisible ? 'text' : 'password'}
+                  value={word}
+                  autoFocus={isCurrentFocusing}
+                  onFocus={() => {
+                    setFocusing({ index: idx, visible: isCurrentVisible });
+                  }}
+                  onBlur={() => {
+                    setFocusing(DFLT_FOCUSING);
+                  }}
+                  onPaste={(e) => {
+                    clearClipboard();
+                    message.success({
+                      icon: (
+                        <img src={IconSuccess} className="icon icon-success" />
+                      ),
+                      content: t('page.newAddress.seedPhrase.pastedAndClear'),
+                      duration: 2,
+                    });
                     const input = e.target as HTMLInputElement;
                     input.select();
-                  }
-                }}
-                onContextMenu={(e) => {
-                  const input = e.target as HTMLInputElement;
-                  input.select();
-                }}
-                onChange={(text: string) => {
-                  const newVal = text.trim();
+                  }}
+                  onContextMenu={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    input.select();
+                  }}
+                  onChange={(text: string) => {
+                    const newVal = text.trim();
 
-                  if (newVal === word) return;
+                    if (newVal === word) return;
 
-                  onWordUpdated(idx, newVal);
-                }}
-              />
-              <NumberFlag>{number}.</NumberFlag>
-              <div
-                className="visible-switch-icon-wrapper"
-                onClick={(evt) => {
-                  evt.stopPropagation();
-                  setFocusing({ index: idx, visible: !isCurrentVisible });
-                }}
+                    onWordUpdated(idx, newVal);
+                  }}
+                />
+              </TooltipWithMagnetArrow>
+              <NumberFlag
+                className={clsx({
+                  'opacity-50': focusing.index !== -1 && focusing.index !== idx,
+                })}
               >
-                <img src={isCurrentVisible ? IconEye : IconEyeHide} />
-              </div>
+                {number}.
+              </NumberFlag>
             </div>
           );
         })}
       </MatrixWrapper>
-      {errMsgs?.[0] ? (
+      {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px] absolute'
+            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
           }
         >
-          <div role="alert">{errMsgs[0]}</div>
+          {invalidWords.length > 0 && (
+            <div role="alert" className="mb-8">
+              {t('page.newAddress.seedPhrase.inputInvalidCount', {
+                count: invalidWords.length.toString(),
+              })}
+            </div>
+          )}
+          {errMsgs?.[0] && <div role="alert">{errMsgs[0]}</div>}
         </div>
       ) : null}
     </div>

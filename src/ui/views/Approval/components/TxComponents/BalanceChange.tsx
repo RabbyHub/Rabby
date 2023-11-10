@@ -12,7 +12,7 @@ import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
-import { formatUsdValue } from 'ui/utils/number';
+import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useRabbyDispatch } from 'ui/store';
 
@@ -141,13 +141,21 @@ const BalanceChange = ({
 
   const hasChange = hasNFTChange || hasTokenChange;
 
-  const { receiveTokenList, sendTokenList } = React.useMemo(() => {
+  const {
+    receiveTokenList,
+    sendTokenList,
+    showUsdValueDiff,
+  } = React.useMemo(() => {
     const receiveTokenList = data.receive_token_list;
     const sendTokenList = data.send_token_list;
-
+    const showUsdValueDiff =
+      data.receive_nft_list.length <= 0 &&
+      data.send_nft_list.length <= 0 &&
+      (data.send_token_list.length > 0 || data.receive_token_list.length > 0);
     return {
       receiveTokenList,
       sendTokenList,
+      showUsdValueDiff,
     };
   }, [data]);
 
@@ -162,7 +170,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.notSupport')}
                 </span>
               </Row>
@@ -180,7 +188,7 @@ const BalanceChange = ({
           <Table>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {isSuccess
                     ? t('page.signTx.balanceChange.successTitle')
                     : t('page.signTx.balanceChange.failedTitle')}
@@ -189,7 +197,7 @@ const BalanceChange = ({
             </Col>
             <Col>
               <Row>
-                <span className="text-15 text-gray-title font-medium">
+                <span className="text-15 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
                 </span>
               </Row>
@@ -202,17 +210,26 @@ const BalanceChange = ({
 
   return (
     <div className="token-balance-change">
-      <p className="text-16 text-gray-title font-medium mb-12">
-        {isSuccess
-          ? t('page.signTx.balanceChange.successTitle')
-          : t('page.signTx.balanceChange.failedTitle')}
+      <p className="text-16 text-r-neutral-title-1 font-medium mb-12 flex items-center">
+        <span>
+          {isSuccess
+            ? t('page.signTx.balanceChange.successTitle')
+            : t('page.signTx.balanceChange.failedTitle')}
+        </span>
+        {showUsdValueDiff && (
+          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-neutral-body text-right text-13 font-normal">
+            {`${data.usd_value_change >= 0 ? '+' : '-'} $${formatNumber(
+              Math.abs(data.usd_value_change)
+            )}`}
+          </span>
+        )}
       </p>
       <div className="token-balance-change-content">
         <Table>
           {!hasChange && isSuccess && (
             <Col>
               <Row>
-                <span className="text-15 font-medium text-gray-title">
+                <span className="text-15 font-medium text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>
