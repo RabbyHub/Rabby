@@ -1,9 +1,9 @@
-import { numberWithCommasIsLtOne } from '@/ui/utils';
+import { formatAmount } from '@/ui/utils';
 import { NFTItem, PendingTxItem } from '@rabby-wallet/rabby-api/dist/types';
 import React, { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
+import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 
 export const NFTBalanceChangeItem = ({
   item,
@@ -33,7 +33,7 @@ export const NFTBalanceChangeItem = ({
         type={token?.content_type}
       ></NFTAvatar>
       <div className="text-r-neutral-title-1 font-medium">
-        {prefix} {numberWithCommasIsLtOne(item.amount, 2)} {name}
+        {prefix} {formatAmount(item.amount, 0)} {name}
       </div>
     </div>
   );
