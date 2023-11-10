@@ -150,7 +150,7 @@ const HeadToolbar = styled.div`
   align-items: center;
   justify-content: space-between;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 14px;
 
   color: ${LessPalette['@color-body']};
