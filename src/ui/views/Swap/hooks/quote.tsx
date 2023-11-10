@@ -249,18 +249,19 @@ export const useQuoteMethods = () => {
 
       gasUsed += swapPreExecTx.gas.gas_used;
 
+      const gasUsdValue = new BigNumber(gasUsed)
+        .times(gasPrice)
+        .div(10 ** swapPreExecTx.native_token.decimals)
+        .times(swapPreExecTx.native_token.price)
+        .toString(10);
+
       return {
         shouldApproveToken: !tokenApproved,
         shouldTwoStepApprove,
         swapPreExecTx,
         gasPrice,
-        gasUsd: formatUsdValue(
-          new BigNumber(gasUsed)
-            .times(gasPrice)
-            .div(10 ** swapPreExecTx.native_token.decimals)
-            .times(swapPreExecTx.native_token.price)
-            .toString(10)
-        ),
+        gasUsdValue,
+        gasUsd: formatUsdValue(gasUsdValue),
       };
     },
     [
@@ -576,6 +577,7 @@ export type QuotePreExecResultInfo = {
   swapPreExecTx: ExplainTxResponse;
   gasPrice: number;
   gasUsd: string;
+  gasUsdValue: string;
 } | null;
 
 interface getDexQuoteParams {

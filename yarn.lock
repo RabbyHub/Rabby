@@ -1277,10 +1277,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.41":
-  version "0.3.41"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.41.tgz#75bd1e2f25bf1fc5197089dc5e710c2e35af2913"
-  integrity sha512-s+0iUZVVF0gMyqAiwTpBId73gamECrrFXov7qqL4n5pCf9dOFWMvleWt/H80G10nlNarsLedK4/yzP9g2I2rqQ==
+"@debank/common@^0.3.42":
+  version "0.3.42"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.42.tgz#9e4850e379484c59ab1b63006c80f0d665979468"
+  integrity sha512-fIlGAQJINwlQh3htiXvXkZoO+wj/FqI02Qj8JgubHCtR23wNwjagt/OQdWMvkoj3AThbn+vj6tKdD32lJEAF3g==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3655,10 +3655,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@^0.6.25-beta.0":
-  version "0.6.25-beta.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.25-beta.0.tgz#b8488a0899ea51dfab94fa6dbc71bb48c8246676"
-  integrity sha512-lg8uRM3BDuOBzH+hjvcBvCnS/oyUQmx56L8yXxQO5BmUPKQCyadd3Szd0ee4wBJmXiWWAWMemiCiXjcpGDauDw==
+"@rabby-wallet/rabby-api@^0.6.25":
+  version "0.6.25"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.25.tgz#9dcc82a9b10621517d3fd3798648f042eeabd970"
+  integrity sha512-8cLPGaOO6QMam6BodkaK28KSPJ5Z6W8Gtj5T10168vlw5IJB4v5YrTPu/1j0rKm4xeWh3r4JZqXvS8unm1iRcA==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"

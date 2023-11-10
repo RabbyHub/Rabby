@@ -4,7 +4,7 @@ import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -52,6 +52,8 @@ interface GasSelectorProps {
   selectedGas: GasLevel | null;
   is1559: boolean;
   isHardware: boolean;
+  isCancel: boolean;
+  isSpeedUp: boolean;
   gasCalcMethod: (
     price: number
   ) => Promise<{
@@ -223,6 +225,8 @@ const GasSelector = ({
   engineResults = [],
   nativeTokenBalance,
   gasPriceMedian,
+  isCancel,
+  isSpeedUp,
 }: GasSelectorProps) => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -428,7 +432,12 @@ const GasSelector = ({
         price: Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
+        maxPriorityFee: calcMaxPriorityFee(
+          gasList,
+          target,
+          chainId,
+          isCancel || isSpeedUp
+        ),
       });
     } else {
       onChange({
@@ -436,7 +445,12 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: gas?.level,
-        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
+        maxPriorityFee: calcMaxPriorityFee(
+          gasList,
+          target,
+          chainId,
+          isCancel || isSpeedUp
+        ),
       });
     }
   };
@@ -573,7 +587,12 @@ const GasSelector = ({
 
   useEffect(() => {
     if (isReady && selectedGas && chainId === 1) {
-      const priorityFee = calcMaxPriorityFee(gasList, selectedGas, chainId);
+      const priorityFee = calcMaxPriorityFee(
+        gasList,
+        selectedGas,
+        chainId,
+        isSpeedUp || isCancel
+      );
       setMaxPriorityFee(priorityFee / 1e9);
     } else if (selectedGas) {
       setMaxPriorityFee(selectedGas.price / 1e9);

@@ -252,6 +252,26 @@
         "error": {
           "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
         }
+      },
+      "coboSafeCreate": {
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "title": "Create Cobo Safe"
+      },
+      "coboSafeModificationRole": {
+        "title": "Submit Safe Role Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "title": "Submit Delegated Address Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
+      },
+      "coboSafeModificationTokenApproval": {
+        "title": "Submit Token Approval Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
       }
     },
     "signFooterBar": {
@@ -727,7 +747,8 @@
       "rates-from-cex": "Rates from CEX",
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
-      "the-following-swap-rates-are-found": "The following swap rates are found",
+      "the-following-swap-rates-are-found": "Found following swap rates",
+      "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
       "est-difference": "Est. Difference:",
@@ -1112,7 +1133,10 @@
         "verifySeedPhrase": "Verify Seed Phrase",
         "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
         "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
-        "clearAll": "Clear All"
+        "clearAll": "Clear All",
+        "pastedAndClear": "Pasted and clipboard cleared",
+        "invalidContent": "Invalid content",
+        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
