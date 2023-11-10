@@ -24,8 +24,14 @@ const ColWrapper = styled.div`
   border-bottom: 1px solid var(--r-neutral-line, #d3d8e0);
   align-items: stretch;
   width: 100%;
+  &:nth-child(1) {
+    border-top-left-radius: 8px;
+    overflow: hidden;
+  }
   &:nth-last-child(1) {
     border-bottom: none;
+    border-bottom-left-radius: 8px;
+    overflow: hidden;
   }
 `;
 

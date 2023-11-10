@@ -59,13 +59,13 @@
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
       "balanceChange": {
-        "successTitle": "Transaction Simulation Results",
-        "failedTitle": "Transaction Simulation Failed",
+        "successTitle": "Simulation Results",
+        "failedTitle": "Simulation Failed",
         "noBalanceChange": "No balance change",
         "tokenOut": "Token out",
         "tokenIn": "Token in",
         "errorTitle": "Fail to fetch balance change",
-        "notSupport": "Transaction Simulation Not Supported",
+        "notSupport": "Simulation Not Supported",
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",

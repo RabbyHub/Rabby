@@ -12,7 +12,7 @@ import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
-import { formatUsdValue } from 'ui/utils/number';
+import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useRabbyDispatch } from 'ui/store';
 
@@ -218,8 +218,9 @@ const BalanceChange = ({
         </span>
         {showUsdValueDiff && (
           <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-neutral-body text-right text-13 font-normal">
-            {data.usd_value_change >= 0 && '+'}
-            {formatUsdValue(data.usd_value_change)}
+            {`${data.usd_value_change >= 0 ? '+' : '-'} $${formatNumber(
+              Math.abs(data.usd_value_change)
+            )}`}
           </span>
         )}
       </p>
