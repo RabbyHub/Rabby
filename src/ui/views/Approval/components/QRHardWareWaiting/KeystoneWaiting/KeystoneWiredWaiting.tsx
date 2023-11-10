@@ -23,6 +23,7 @@ const SHOULD_RETRY_KEYWORDS = [
 const AUTO_RETRY_KEYWORDS = [
   'state is in progress.',
   'Previous request is not finished',
+  "Failed to execute 'releaseInterface' on 'USBDevice'",
 ];
 
 const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
