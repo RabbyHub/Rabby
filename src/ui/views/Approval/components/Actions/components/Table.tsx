@@ -40,6 +40,7 @@ const RowWrapper = styled.div`
   font-size: 15px;
   line-height: 18px;
   color: #333333;
+  word-break: break-all;
   &:not(.title) {
     flex: 1;
     width: 190px;
