@@ -94,10 +94,12 @@ export const Quotes = ({
         const getNumber = (quote: typeof a) => {
           if (quote.isDex) {
             if (inSufficient) {
-              return new BigNumber(quote.data?.toTokenAmount || 0).div(
-                10 **
-                  (quote.data?.toTokenDecimals || other.receiveToken.decimals)
-              );
+              return new BigNumber(quote.data?.toTokenAmount || 0)
+                .div(
+                  10 **
+                    (quote.data?.toTokenDecimals || other.receiveToken.decimals)
+                )
+                .times(other.receiveToken.price);
             }
             if (!quote.preExecResult) {
               return new BigNumber(0);
@@ -115,10 +117,12 @@ export const Quotes = ({
             return new BigNumber(
               quote?.preExecResult.swapPreExecTx.balance_change
                 .receive_token_list?.[0]?.amount || 0
-            );
+            ).times(other.receiveToken.price);
           }
 
-          return new BigNumber(quote?.data?.receive_token?.amount || 0);
+          return new BigNumber(quote?.data?.receive_token?.amount || 0).times(
+            other.receiveToken.price
+          );
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),
