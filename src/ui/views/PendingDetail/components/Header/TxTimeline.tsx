@@ -9,6 +9,9 @@ import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   min-width: 376px;
+  .ant-timeline-item-head {
+    background-color: transparent;
+  }
   .ant-timeline-item-content {
     top: -4px;
     min-height: 48px;

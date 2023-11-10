@@ -16,6 +16,12 @@ const GlobalStyle = createGlobalStyle`
     .ant-popover-arrow {
       display: none;
     }
+    .ant-popover-inner {
+      border-radius: 8px;
+      border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+      background: var(--r-neutral-bg-1, #3d4251);
+      box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.20);      
+    }
     .ant-popover-inner-content {
       padding: 0;
     }
@@ -58,6 +64,7 @@ export const TxStatus = ({
       <Popover
         overlayClassName="pending-detail-popover"
         placement="bottomLeft"
+        visible
         destroyTooltipOnHide
         content={txRequest ? <TxTimeline txRequest={txRequest} /> : null}
       >
