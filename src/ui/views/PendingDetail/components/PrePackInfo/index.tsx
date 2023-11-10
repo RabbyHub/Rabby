@@ -129,7 +129,7 @@ const TokenChange = ({
           unknown={IconUnknownNFT}
         ></NFTAvatar>
         <div className="text-r-neutral-title-1  text-[13px] font-medium">
-          {isNegative ? '-' : '+'} {formatAmount(nft.amount)} {name}
+          {isNegative ? '-' : '+'} {formatAmount(nft.amount, 0)} {name}
         </div>
       </div>
     );
