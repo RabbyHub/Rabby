@@ -1112,7 +1112,10 @@
         "verifySeedPhrase": "Verify Seed Phrase",
         "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
         "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
-        "clearAll": "Clear All"
+        "clearAll": "Clear All",
+        "pastedAndClear": "Pasted and clipboard cleared",
+        "invalidContent": "Invalid content",
+        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",

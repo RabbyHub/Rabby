@@ -5,26 +5,12 @@ import styled from 'styled-components';
 import clsx from 'clsx';
 import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import LessPalette from '@/ui/style/var-defs';
 import { connectStore, useRabbyDispatch } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import IconMnemonicInk from '@/ui/assets/walletlogo/mnemonic-ink.svg';
 import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
-
-const Toptip = styled.div`
-  background: var(--r-blue-light-1, #eef1ff);
-  border-radius: 4px;
-  padding: 9px 17px;
-
-  font-style: normal;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-
-  color: var(--r-blue-default, #7084ff);
-`;
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -37,7 +23,7 @@ const FormItemWrapper = styled.div`
 `;
 
 const TipTextList = styled.div`
-  margin-top: 40px;
+  margin-top: 10px;
   h3 {
     font-weight: 700;
     font-size: 13px;
@@ -168,9 +154,6 @@ const ImportMnemonics = () => {
             <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>
           <div>
-            <Toptip className="mb-[28px]">
-              {t('page.newAddress.seedPhrase.importTips')}
-            </Toptip>
             <FormItemWrapper className="relative">
               <Form.Item
                 name="mnemonics"
