@@ -19,6 +19,9 @@ export const NFTBalanceChangeItem = ({
   const { t } = useTranslation();
   const uuid = `${item.chain || 'eth'}:${item.token_id}`;
   const token = tokenDict?.[uuid];
+  if (!token) {
+    console.log('???', uuid, tokenDict);
+  }
   const symbol = '';
   const name =
     token?.name ||

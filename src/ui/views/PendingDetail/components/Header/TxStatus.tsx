@@ -1,7 +1,7 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import IconArrowDown from '@/ui/assets/pending/icon-arrow-down-white.svg';
 import IconSpin from '@/ui/assets/pending/icon-spin.svg';
-import { sinceTime } from '@/ui/utils';
+import { sinceTime, sinceTimeWithSecs } from '@/ui/utils';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Popover } from 'antd';
@@ -72,7 +72,9 @@ export const TxStatus = ({
           {isBroadcasted ? (
             <>
               {t('page.pendingDetail.TxStatus.pendingBroadcasted')}{' '}
-              {txRequest?.push_at ? sinceTime(txRequest?.push_at) : null}
+              {txRequest?.push_at
+                ? sinceTimeWithSecs(txRequest?.push_at)
+                : null}
             </>
           ) : (
             <>{t('page.pendingDetail.TxStatus.pendingBroadcast')}</>

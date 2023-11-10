@@ -194,7 +194,7 @@ export const createFilter = (tx: TransactionGroup) => {
           <div className="inline-flex items-center gap-[6px]">
             <img
               src={token.logo_url || IconUnknown}
-              className="w-[16px] h-[16px]"
+              className="w-[16px] h-[16px] rounded-full"
               alt=""
             />
             {getTokenSymbol(token)} on {chain?.name}
@@ -223,7 +223,7 @@ export const createFilter = (tx: TransactionGroup) => {
           <div className="inline-flex items-center gap-[6px]">
             <img
               src={token.logo_url || IconUnknown}
-              className="w-[16px] h-[16px]"
+              className="w-[16px] h-[16px] rounded-full"
               alt=""
             />
             {getTokenSymbol(token)}
@@ -265,10 +265,10 @@ export const createFilter = (tx: TransactionGroup) => {
           return !!list.find((t) => {
             const uuid = `${t.chain || 'eth'}:${t.token_id}`;
             const n = tokenDict?.[uuid] as NFTItem;
-            return n?.contract_id === nft.contract_id;
+            return nft?.collection?.id === n?.collection_id;
           });
         },
-        key: `nftFilter-${nft.contract_id}-${nft.chain}`,
+        key: `nftFilter-${nft?.collection?.id}-${nft.chain}`,
       });
     });
   }

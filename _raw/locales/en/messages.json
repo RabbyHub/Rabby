@@ -1599,7 +1599,7 @@
         "title": "Found in {{count}} RPC nodes"
       },
       "PendingTxList": {
-        "title": "GasPrice Ranks #{{rank}} in Same as Current Tx",
+        "title": "GasPrice Ranks #{{rank}} in All Pending Txs",
         "titleNotFound": "No Rank in All Pending Txs",
         "filterBaseFee": {
           "label": "Only meets Base fee requirement",
@@ -1621,7 +1621,7 @@
           "prePackContent": "Pre-pack content",
           "expectations": "Expectations",
           "prePackResults": "Pre-pack results",
-          "difference": "Conclusions"
+          "difference": "Check results"
         },
         "type": {
           "pay": "Pay",

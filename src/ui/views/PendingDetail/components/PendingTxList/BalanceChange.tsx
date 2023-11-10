@@ -41,6 +41,7 @@ export const BalanceChange = ({
             key={`${item.token_id}-${index}-send`}
             prefix="-"
             item={item}
+            tokenDict={tokenDict}
           />
         );
       })}
@@ -50,6 +51,7 @@ export const BalanceChange = ({
             key={`${item.token_id}-${index}-receive`}
             prefix="+"
             item={item}
+            tokenDict={tokenDict}
           />
         );
       })}

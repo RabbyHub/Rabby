@@ -78,7 +78,7 @@ export const PendingTxList = ({
   const filterList = useMemo(() => {
     return list.filter((item) => {
       return value.every((filter) => {
-        return filter.filter(item);
+        return filter.filter(item, tokenDict);
       });
     });
   }, [tx, list, value]);
@@ -119,7 +119,7 @@ export const PendingTxList = ({
     list.forEach((item) => {
       res.total++;
       filters.forEach((filter) => {
-        if (filter.filter(item)) {
+        if (filter.filter(item, tokenDict)) {
           res[filter.key] = (res[filter.key] || 0) + 1;
         }
       });
@@ -162,13 +162,15 @@ export const PendingTxList = ({
               [
                 {
                   key: 'all',
-                  label: `All Pending Txs (${
-                    data?.pending_tx_list?.length || 0
-                  })`,
+                  label: `All Pending Txs (${finalList?.length || 0})`,
                 },
                 {
                   key: 'same',
-                  label: `Same as Current (${stat.sameAsCurrent || 0})`,
+                  label: `Same as Current (${
+                    tab === 'same'
+                      ? finalFilterList?.length || 0
+                      : stat.sameAsCurrent || 0
+                  })`,
                 },
               ] as const
             }

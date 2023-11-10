@@ -60,7 +60,6 @@ const useSetup = ({
   const { data: txRequest, cancel: cancelGetTxRequest } = useRequest(
     async () => {
       if (reqId && isPending) {
-        console.log({ isPending });
         setLoading({ txRequest: !txRequest });
         return wallet.openapi.getTxRequest(reqId);
       }
@@ -225,11 +224,17 @@ export const PendingDetail = () => {
 
   return (
     <div className="page-pending-detail">
-      <Header data={txRequest} tx={txGroup} onReBroadcast={handleReBroadcast}>
+      <Header
+        data={txRequest}
+        tx={txGroup}
+        onReBroadcast={handleReBroadcast}
+        isPending={isPending}
+      >
         <PrePackInfo
           explain={txGroup?.explain}
           latestExplain={latestExplain}
           loading={loading.txRequest || loading.latestExplain}
+          isPending={isPending}
         />
       </Header>
       <div className="layout-container mt-[24px] main-content">

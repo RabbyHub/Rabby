@@ -48,11 +48,13 @@ export const Header = ({
   children,
   tx,
   onReBroadcast,
+  isPending,
 }: {
   data?: TxRequest;
   tx?: TransactionGroup | null;
   children?: ReactNode;
   onReBroadcast?(): void;
+  isPending?: boolean;
 }) => {
   const leftTime = useMemo(() => {
     const leftTime = data?.predict_packed_at
@@ -80,28 +82,34 @@ export const Header = ({
           </div>
           <div>{tx ? <TxHash tx={tx} /> : null}</div>
         </div>
-        <div className="mb-[34px]">
-          <div className="text-r-neutral-title-2 text-center text-[24px] leading-[29px] mt-[40px] mb-[24px]">
-            {t('page.pendingDetail.Header.predictTime')}
-          </div>
-          <div className="flex items-center justify-center gap-[16px]">
-            <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-              {predict[0]}
+        {isPending ? (
+          <div className="mb-[34px]">
+            <div className="text-r-neutral-title-2 text-center text-[24px] leading-[29px] mt-[40px] mb-[24px]">
+              {t('page.pendingDetail.Header.predictTime')}
             </div>
-            <div className="flex items-center gap-[24px]">
+            <div className="flex items-center justify-center gap-[16px]">
               <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                {predict[1]}
+                {predict[0]}
               </div>
-              <img src={IconDot} alt="" />
+              <div className="flex items-center gap-[24px]">
+                <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+                  {predict[1]}
+                </div>
+                <img src={IconDot} alt="" />
+                <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+                  {predict[2]}
+                </div>
+              </div>
               <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                {predict[2]}
+                {predict[3]}
               </div>
-            </div>
-            <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-              {predict[3]}
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-[48px] text-medium leading-[57px] text-[#fff] text-center mt-[93px] mb-[103px]">
+            Transaction Completed
+          </div>
+        )}
         {children}
       </div>
     </Wrapper>

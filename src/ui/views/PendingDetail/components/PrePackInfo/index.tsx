@@ -5,7 +5,7 @@ import IconNoLoss from '@/ui/assets/pending/icon-check-1.svg';
 import IconCheck from '@/ui/assets/pending/icon-check-2.svg';
 import IconError from '@/ui/assets/pending/icon-error.svg';
 import IconWarning from '@/ui/assets/pending/icon-warning.svg';
-import { formatAmount, sinceTime } from '@/ui/utils';
+import { formatAmount, sinceTime, sinceTimeWithSecs } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import {
   LatestExplainTxResponse,
@@ -28,6 +28,7 @@ export interface Props {
   explain?: TransactionGroup['explain'];
   latestExplain?: LatestExplainTxResponse;
   loading?: boolean;
+  isPending?: boolean;
 }
 
 const isNFTItem = (
@@ -107,7 +108,7 @@ const TokenChange = ({
         <img
           src={token.logo_url || IconToken}
           alt=""
-          className="w-[16px] h-[16px]"
+          className="w-[16px] h-[16px] rounded-full"
         />
         <div className="text-r-neutral-title-1 text-[13px] font-medium">
           {isNegative ? '-' : '+'} {formatAmount(token.amount)}{' '}
@@ -136,7 +137,12 @@ const TokenChange = ({
   return null;
 };
 
-export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
+export const PrePackInfo = ({
+  explain,
+  latestExplain,
+  loading,
+  isPending,
+}: Props) => {
   const currentChange = explain?.balance_change;
   const nextChange = latestExplain?.pre_exec_result?.balance_change;
   const { t } = useTranslation();
@@ -220,6 +226,9 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
       title: t('page.pendingDetail.PrePackInfo.col.difference'),
       render(value, record, index) {
         if (!record.diff) {
+          if (!record?.nextNFT && !record?.nextToken) {
+            return null;
+          }
           return (
             <div className="flex items-center gap-[6px] text-r-blue-default font-medium">
               <img src={IconNoLoss} alt="" />
@@ -249,7 +258,7 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
 
   const preExecError = latestExplain?.pre_exec_result?.pre_exec?.error;
 
-  const isEmpty = !res?.length;
+  const isEmpty = !res?.length || !isPending;
 
   return (
     <div
@@ -267,51 +276,58 @@ export const PrePackInfo = ({ explain, latestExplain, loading }: Props) => {
         <div className="text-r-neutral-title-1 text-[20px] leading-[24px] font-medium">
           {t('page.pendingDetail.PrePackInfo.title')}
         </div>
-        <div className="ml-auto flex items-center gap-[16px]">
-          {preExecError ? (
-            <div className="flex items-center gap-[6px] text-r-red-default  text-[15px] leading-[18px] font-medium">
-              <img src={IconError} alt="" />
-              {t('page.pendingDetail.PrePackInfo.error', {
-                count: 1,
-              })}
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
-                <img src={IconCheck} alt="" />
-                {t('page.pendingDetail.PrePackInfo.noError')}
-              </div>
-              {lossCount > 0 ? (
-                <div className="flex items-center gap-[8px] text-r-orange-default  text-[15px] leading-[18px] font-medium">
-                  <img src={IconWarning} alt="" />
-                  {t('page.pendingDetail.PrePackInfo.loss', {
-                    lossCount: lossCount,
-                  })}
-                </div>
-              ) : (
-                <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
-                  <img src={IconCheck} alt="" />
-                  {t('page.pendingDetail.PrePackInfo.noLoss')}
-                </div>
-              )}
-            </>
-          )}
-          <div
-            className={clsx(
-              'cursor-pointer hover:bg-r-neutral-card-2 w-[32px] h-[32px] flex items-center justify-center rounded-[2px]',
-              isCollapse ? '' : 'rotate-180'
+        {
+          <div className="ml-auto flex items-center gap-[16px]">
+            {loading || !isPending ? null : (
+              <>
+                {preExecError ? (
+                  <div className="flex items-center gap-[6px] text-r-red-default  text-[15px] leading-[18px] font-medium">
+                    <img src={IconError} alt="" />
+                    {t('page.pendingDetail.PrePackInfo.error', {
+                      count: 1,
+                    })}
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
+                      <img src={IconCheck} alt="" />
+                      {t('page.pendingDetail.PrePackInfo.noError')}
+                    </div>
+                    {lossCount > 0 ? (
+                      <div className="flex items-center gap-[8px] text-r-orange-default  text-[15px] leading-[18px] font-medium">
+                        <img src={IconWarning} alt="" />
+                        {t('page.pendingDetail.PrePackInfo.loss', {
+                          lossCount: lossCount,
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-[8px] text-r-blue-default  text-[15px] leading-[18px] font-medium">
+                        <img src={IconCheck} alt="" />
+                        {t('page.pendingDetail.PrePackInfo.noLoss')}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
             )}
-          >
-            <ThemeIcon src={RcIconArrow} />
+
+            <div
+              className={clsx(
+                'cursor-pointer hover:bg-r-neutral-card-2 w-[32px] h-[32px] flex items-center justify-center rounded-[2px]',
+                isCollapse ? '' : 'rotate-180'
+              )}
+            >
+              <ThemeIcon src={RcIconArrow} />
+            </div>
           </div>
-        </div>
+        }
       </div>
       {isCollapse ? null : (
         <>
           <div className="text-r-neutral-foot text-[12px] mt-[8px] leading-[14px]">
             {t('page.pendingDetail.PrePackInfo.desc', {
               time: latestExplain?.create_at
-                ? sinceTime(latestExplain?.create_at || 0)
+                ? sinceTimeWithSecs(latestExplain?.create_at || 0)
                 : null,
             })}
           </div>
