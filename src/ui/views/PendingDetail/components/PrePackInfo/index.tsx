@@ -1,11 +1,12 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
-import IconToken from '@/ui/assets/pending/icon-token.svg';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/pending/icon-arrow-down.svg';
 import IconNoLoss from '@/ui/assets/pending/icon-check-1.svg';
 import IconCheck from '@/ui/assets/pending/icon-check-2.svg';
 import IconError from '@/ui/assets/pending/icon-error.svg';
+import IconToken from '@/ui/assets/pending/icon-token.svg';
 import IconWarning from '@/ui/assets/pending/icon-warning.svg';
-import { formatAmount, sinceTime, sinceTimeWithSecs } from '@/ui/utils';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { formatAmount, sinceTime } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import {
   LatestExplainTxResponse,
@@ -18,11 +19,10 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
 import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
-import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export interface Props {
   explain?: TransactionGroup['explain'];
@@ -327,7 +327,7 @@ export const PrePackInfo = ({
           <div className="text-r-neutral-foot text-[12px] mt-[8px] leading-[14px]">
             {t('page.pendingDetail.PrePackInfo.desc', {
               time: latestExplain?.create_at
-                ? sinceTimeWithSecs(latestExplain?.create_at || 0)
+                ? sinceTime(latestExplain?.create_at || 0)
                 : null,
             })}
           </div>
