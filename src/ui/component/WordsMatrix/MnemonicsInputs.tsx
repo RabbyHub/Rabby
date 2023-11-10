@@ -389,7 +389,7 @@ function MnemonicsInputs({
               onMouseLeave={() => handleMouseLeave(idx)}
             >
               <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content] top-[-29px]"
+                overlayClassName="rectangle w-[max-content] top-[-20px]"
                 title={word}
                 placement="top"
                 visible={
