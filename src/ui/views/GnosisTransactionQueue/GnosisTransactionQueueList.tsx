@@ -631,6 +631,7 @@ export const GnosisTransactionQueueList = (props: {
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),
         baseGas: data.baseGas,
+        operation: data.operation,
       };
       await wallet.buildGnosisTransaction(
         currentAccount.address,
