@@ -391,7 +391,9 @@
         "verifySeedPhrase": "验证助记词",
         "fillInTheBackupSeedPhraseInOrder": "按顺序填写备份助记词",
         "clearAll": "全部清除",
-        "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词"
+        "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词",
+        "pastedAndClear": "已粘贴并清空剪切板",
+        "inputInvalidCount": "有{{count}}处输入内容不符合助记词规范，请检查"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -1423,7 +1425,8 @@
       "swap-history": "兑换历史",
       "swap-via-x": "通过 {{name}} 兑换",
       "testnet-is-not-supported": "不支持测试网",
-      "the-following-swap-rates-are-found": "发现以下报价",
+      "the-following-swap-rates-are-found": "发现以下兑换报价",
+      "sort-with-gas": "排序考虑gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何费用和滑点",
       "this-exchange-is-not-enabled-to-trade-by-you": "你未启用该交易所进行交易",
       "this-token-pair-is-not-supported": "不支持该代币对",

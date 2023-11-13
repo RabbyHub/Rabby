@@ -62,6 +62,7 @@ import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import ApprovalManagePage from './ApprovalManagePage';
 import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
+import { PendingDetail } from './PendingDetail';
 
 declare global {
   interface Window {
@@ -269,6 +270,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/pending-detail">
+          <PendingDetail />
         </PrivateRoute>
 
         <PrivateRoute exact path="/import/metamask">

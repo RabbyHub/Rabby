@@ -15,6 +15,7 @@ export const swap = createModel<RootModel>()({
     unlimitedAllowance: false,
     viewList: {},
     tradeList: {},
+    sortIncludeGasFee: false,
 
     $$initialSelectedChain: null,
   } as Partial<SwapServiceStore> & {
@@ -134,6 +135,17 @@ export const swap = createModel<RootModel>()({
         unlimitedAllowance[1]
       );
       this.getSwapTradeList();
+    },
+    async getSwapSortIncludeGasFee(_?, store?) {
+      const sortIncludeGasFee = await store.app.wallet.getSwapSortIncludeGasFee();
+      this.setField({
+        sortIncludeGasFee,
+      });
+    },
+
+    async setSwapSortIncludeGasFee(bool: boolean, store) {
+      await store.app.wallet.setSwapSortIncludeGasFee(bool);
+      this.getSwapSortIncludeGasFee();
     },
   }),
 });

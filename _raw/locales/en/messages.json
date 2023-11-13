@@ -59,13 +59,13 @@
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
       "balanceChange": {
-        "successTitle": "Transaction Simulation Results",
-        "failedTitle": "Transaction Simulation Failed",
+        "successTitle": "Simulation Results",
+        "failedTitle": "Simulation Failed",
         "noBalanceChange": "No balance change",
         "tokenOut": "Token out",
         "tokenIn": "Token in",
         "errorTitle": "Fail to fetch balance change",
-        "notSupport": "Transaction Simulation Not Supported",
+        "notSupport": "Simulation Not Supported",
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",
@@ -252,6 +252,26 @@
         "error": {
           "pendingList": "Fail to load pending transactions, <1/><2>Retry</2>"
         }
+      },
+      "coboSafeCreate": {
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description",
+        "title": "Create Cobo Safe"
+      },
+      "coboSafeModificationRole": {
+        "title": "Submit Safe Role Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "title": "Submit Delegated Address Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
+      },
+      "coboSafeModificationTokenApproval": {
+        "title": "Submit Token Approval Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Description"
       }
     },
     "signFooterBar": {
@@ -465,6 +485,10 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
+        },
+        "PredictTime": {
+          "time": "Predicted to be packed in {{time}}",
+          "noTime": "Packing time is being predicted"
         }
       },
       "signedText": {
@@ -739,7 +763,8 @@
       "rates-from-cex": "Rates from CEX",
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
-      "the-following-swap-rates-are-found": "The following swap rates are found",
+      "the-following-swap-rates-are-found": "Found following swap rates",
+      "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
       "est-difference": "Est. Difference:",
@@ -1132,7 +1157,10 @@
         "verifySeedPhrase": "Verify Seed Phrase",
         "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
         "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
-        "clearAll": "Clear All"
+        "clearAll": "Clear All",
+        "pastedAndClear": "Pasted and clipboard cleared",
+        "invalidContent": "Invalid content",
+        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
@@ -1594,6 +1622,74 @@
     "importQrBase": {
       "desc": "Scan the QR code on the {{brandName}} hardware wallet",
       "btnText": "Try Again"
+    },
+    "pendingDetail": {
+      "Header": {
+        "predictTime": "Predicted to be packed in"
+      },
+      "TxStatus": {
+        "completed": "Completed",
+        "pendingBroadcasted": "Pending: Broadcasted",
+        "pendingBroadcast": "Pending: To be broadcast",
+        "reBroadcastBtn": "Re-broadcast"
+      },
+      "TxHash": {
+        "hash": "Tx Hash"
+      },
+      "TxTimeline": {
+        "pending": "Checking status...",
+        "created": "Transaction created",
+        "broadcasted": "Recently broadcasted"
+      },
+      "MempoolList": {
+        "col": {
+          "nodeName": "Node name",
+          "nodeOperator": "Node operator",
+          "txStatus": "Transaction status"
+        },
+        "txStatus": {
+          "appeared": "Appeared",
+          "appearedOnce": "Appeared once",
+          "notFound": "Not found"
+        },
+        "title": "Found in {{count}} RPC nodes"
+      },
+      "PendingTxList": {
+        "title": "GasPrice Ranks #{{rank}} in All Pending Txs",
+        "titleNotFound": "No Rank in All Pending Txs",
+        "filterBaseFee": {
+          "label": "Only meets Base fee requirement",
+          "tooltip": "Show only transactions whose Gas Price meets the block's Base fee requirements"
+        },
+        "col": {
+          "gasPrice": "Gas Price",
+          "action": "Transaction Action",
+          "balanceChange": "Balance change"
+        },
+        "titleSame": "GasPrice Ranks #{{rank}} in Same as Current",
+        "titleSameNotFound": "No Rank in Same as Current"
+      },
+      "Empty": {
+        "noData": "No data found"
+      },
+      "PrePackInfo": {
+        "col": {
+          "prePackContent": "Pre-pack content",
+          "expectations": "Expectations",
+          "prePackResults": "Pre-pack results",
+          "difference": "Check results"
+        },
+        "type": {
+          "pay": "Pay",
+          "receive": "Receive"
+        },
+        "noLoss": "No loss found",
+        "noError": "No error found",
+        "title": "Pre-pack Check",
+        "error": "{{count}} error found",
+        "loss": "{{lossCount}} loss found",
+        "desc": "Simulation executed in the latest block, updated {{time}}"
+      }
     }
   },
   "component": {

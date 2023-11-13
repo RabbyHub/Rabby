@@ -1,17 +1,15 @@
-import { findMaxGasTx } from './../../../../utils/tx';
 import {
   TransactionGroup,
   TransactionHistoryItem,
 } from '@/background/service/transactionHistory';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChainByID } from '@/utils/chain';
-import { checkIsPendingTxGroup, getPendingGroupCategory } from '@/utils/tx';
+import { getPendingGroupCategory } from '@/utils/tx';
 import { CHAINS } from '@debank/common';
 import { TokenItem, TxRequest } from '@rabby-wallet/rabby-api/dist/types';
-import { useInterval, useRequest } from 'ahooks';
-import { flatten, get, keyBy, maxBy, minBy } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useRequest } from 'ahooks';
+import { flatten, keyBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 export const useTxRequests = (
@@ -65,12 +63,15 @@ export const useLoadTxRequests = (
     onSuccess?: (data: Record<string, TxRequest>) => void;
   }
 ) => {
-  const { unbroadcastedTxs } = getPendingGroupCategory(pendings);
+  const { unbroadcastedTxs, broadcastedTxs } = getPendingGroupCategory(
+    pendings
+  );
+  const list = [...unbroadcastedTxs, ...broadcastedTxs];
   const wallet = useWallet();
   const testnetTxs: TransactionHistoryItem[] = [];
   const mainnetTxs: TransactionHistoryItem[] = [];
 
-  unbroadcastedTxs.forEach((tx) => {
+  list.forEach((tx) => {
     const chain = findChainByID(tx.rawTx.chainId);
     if (chain?.isTestnet) {
       testnetTxs.push(tx);
@@ -82,6 +83,9 @@ export const useLoadTxRequests = (
   const onSuccess = options?.onSuccess;
   const { data, runAsync } = useRequest(
     async () => {
+      if (!list.length) {
+        return {};
+      }
       const res = await Promise.all([
         testnetTxs?.length
           ? wallet.testnetOpenapi
@@ -99,7 +103,8 @@ export const useLoadTxRequests = (
     },
     {
       onSuccess,
-      refreshDeps: [unbroadcastedTxs.map((tx) => tx.reqId).join(',')],
+      refreshDeps: [list.map((tx) => tx.reqId).join(',')],
+      pollingInterval: 1000 * 6,
     }
   );
 
