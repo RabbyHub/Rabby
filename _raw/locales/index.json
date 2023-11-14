@@ -7,5 +7,6 @@
   { "code": "tr", "name": "Türkçe" },
   { "code": "pt_BR", "name": "Português Brasileiro"},
   { "code": "ru", "name": "Русский"},
-  { "code": "de", "name": "Deutsch" }
+  { "code": "de", "name": "Deutsch" },
+  { "code": "jp", "name": "日本語" }
 ]
