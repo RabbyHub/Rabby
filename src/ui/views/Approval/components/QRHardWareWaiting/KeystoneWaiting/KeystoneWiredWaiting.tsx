@@ -12,6 +12,7 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from '../../Popup/ApprovalPopupContainer';
+import { useKeystoneUSBErrorMessage } from '@/utils/keystone';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -22,7 +23,6 @@ const SHOULD_RETRY_KEYWORDS = [
 
 const AUTO_RETRY_KEYWORDS = [
   'state is in progress.',
-  'Previous request is not finished',
   "Failed to execute 'releaseInterface' on 'USBDevice'",
 ];
 
@@ -30,16 +30,6 @@ const SHOULD_OPEN_PERMISSION_PAGE_KEYWORDS = [
   'The device was disconnected',
   'cannot be found',
 ];
-
-const transportErrorHandler = (error: any, t) => {
-  if (error.message.includes('Device is locked')) {
-    return t('page.signFooterBar.keystone.shouldOpenKeystoneHomePageError');
-  }
-  if (error.message.includes('UR parsing rejected')) {
-    return t('page.signFooterBar.keystone.hardwareRejectError');
-  }
-  return error?.message || 'Unknown error';
-};
 
 const buildKeystoneSignPayload = (payload: any) => {
   return new UREncoder(
@@ -121,6 +111,8 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
     return false;
   }, [error]);
 
+  const keystoneErrorCatcher = useKeystoneUSBErrorMessage();
+
   const description = useMemo(() => {
     if (statusProp !== 'REJECTED' || shouldAutoRetry) {
       return '';
@@ -162,7 +154,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       ) {
         return t('page.signFooterBar.keystone.shouldRetry');
       }
-      return transportErrorHandler(error, t);
+      return keystoneErrorCatcher(error);
     }
     return '';
   }, [error, errorMessage, statusProp, shouldAutoRetry]);

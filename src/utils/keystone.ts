@@ -65,34 +65,60 @@ export const useIsKeystoneUsbAvailable = (brand?: string) => {
   return isAvailable;
 };
 
-export const useExportAddressViaUSBErrorCatcher = () => {
+export const useKeystoneUSBErrorMessage = () => {
   const { t } = useTranslation();
 
   return useCallback(
     (error: any) => {
+      let errorMessage = '';
+
       switch (error?.code) {
         case StatusCode.PRS_EXPORT_ADDRESS_DISALLOWED:
           if (error.message.includes('locked')) {
-            message.error(t('page.newAddress.keystone.deviceIsLockedError'));
+            errorMessage = t('page.newAddress.keystone.deviceIsLockedError');
           } else {
-            message.error(
-              t('page.newAddress.keystone.exportAddressJustAllowedOnHomePage')
+            errorMessage = t(
+              'page.newAddress.keystone.exportAddressJustAllowedOnHomePage'
             );
           }
           break;
         case StatusCode.PRS_EXPORT_ADDRESS_REJECTED:
-          message.error(
-            t('page.newAddress.keystone.deviceRejectedExportAddress')
+          errorMessage = t(
+            'page.newAddress.keystone.deviceRejectedExportAddress'
           );
+          break;
+        case StatusCode.PRS_PARSING_DISALLOWED:
+          errorMessage = t(
+            'page.signFooterBar.keystone.shouldOpenKeystoneHomePageError'
+          );
+          break;
+        case StatusCode.PRS_PARSING_REJECTED:
+          errorMessage = t('page.signFooterBar.keystone.hardwareRejectError');
+          break;
+        case StatusCode.PRS_PARSING_ERROR:
+          errorMessage = error?.message;
           break;
         default:
           if (error.message.includes('No device selected')) {
-            message.error(t('page.newAddress.keystone.noDeviceFoundError'));
+            errorMessage = t('page.newAddress.keystone.noDeviceFoundError');
           } else {
-            message.error(t('page.newAddress.hd.tooltip.disconnected'));
+            errorMessage = t('page.newAddress.hd.tooltip.disconnected');
           }
       }
+
+      return errorMessage;
     },
     [t]
+  );
+};
+
+export const useKeystoneUSBErrorCatcher = () => {
+  const errorMessageGetter = useKeystoneUSBErrorMessage();
+
+  return useCallback(
+    (error: any) => {
+      message.error(errorMessageGetter(error));
+    },
+    [errorMessageGetter]
   );
 };

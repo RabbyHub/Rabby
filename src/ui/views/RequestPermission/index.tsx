@@ -13,7 +13,7 @@ import HDPathType = LedgerHDPathType;
 import { LedgerHDPathType } from '@/utils/ledger';
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
-import { useExportAddressViaUSBErrorCatcher } from '@/utils/keystone';
+import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -25,7 +25,7 @@ const RequestPermission = () => {
   const wallet = useWallet();
   const needConfirm = ['ledger', 'keystone'].includes(type);
   const [loading, setLoading] = useState(false);
-  const keystoneErrorCatcher = useExportAddressViaUSBErrorCatcher();
+  const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
 
   const PERMISSIONS = {

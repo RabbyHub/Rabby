@@ -15,7 +15,7 @@ import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useExportAddressViaUSBErrorCatcher } from '@/utils/keystone';
+import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
 
 interface Props {
   brand?: string;
@@ -37,7 +37,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   const wallet = useWallet();
   const history = useHistory();
   const currentAccountsRef = React.useRef(currentAccounts);
-  const keystoneErrorCatcher = useExportAddressViaUSBErrorCatcher();
+  const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
