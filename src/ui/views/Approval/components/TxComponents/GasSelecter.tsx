@@ -10,15 +10,16 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
+import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatTokenAmount } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 
@@ -649,7 +650,7 @@ const GasSelector = ({
                 </>
               ) : (
                 <div className="gas-selector-card-content-item">
-                  <div className="gas-selector-card-amount translate-y-1">
+                  <div className="gas-selector-card-amount translate-y-1 flex items-center">
                     <span className="text-blue-light font-medium text-15">
                       {formatTokenAmount(
                         new BigNumber(gas.gasCostAmount).toString(10)
@@ -657,6 +658,17 @@ const GasSelector = ({
                       {chain.nativeTokenSymbol}
                     </span>
                     &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                    <span className="relative ml-6">
+                      <TooltipWithMagnetArrow
+                        title={t('page.signTx.l2GasEstimateTooltip')}
+                        className="rectangle w-[max-content]"
+                      >
+                        <img
+                          src={IconQuestionMark}
+                          className="cursor-pointer w-14"
+                        />
+                      </TooltipWithMagnetArrow>
+                    </span>
                   </div>
                 </div>
               )}
