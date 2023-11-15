@@ -14,9 +14,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
-import IconCancel from 'ui/assets/cancel.svg';
+import { ReactComponent as RcIconCancel } from 'ui/assets/cancel.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
-import IconSpeedup from 'ui/assets/speedup.svg';
+import { ReactComponent as RcIconSpeedup } from 'ui/assets/speedup.svg';
 import { isSameAddress, sinceTime, useWallet } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
 import { ChildrenTxText } from './ChildrenTxText';
@@ -27,6 +27,7 @@ import { TransactionPendingTag } from './TransactionPendingTag';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { useGetTx, useLoadTxData } from '../hooks';
 import { PredictTime } from './PredictTime';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -269,11 +270,11 @@ export const TransactionItem = ({
                     }
                     overlayClassName="rectangle"
                   >
-                    <img
+                    <ThemeIcon
                       className={clsx('icon icon-action', {
                         'cursor-not-allowed': !canCancel,
                       })}
-                      src={IconSpeedup}
+                      src={RcIconSpeedup}
                       onClick={handleClickSpeedUp}
                     />
                   </Tooltip>
@@ -286,11 +287,11 @@ export const TransactionItem = ({
                     }
                     overlayClassName="rectangle"
                   >
-                    <img
+                    <ThemeIcon
                       className={clsx('icon icon-action', {
                         'cursor-not-allowed': !canCancel,
                       })}
-                      src={IconCancel}
+                      src={RcIconCancel}
                       onClick={handleClickCancel}
                     />
                   </Tooltip>
@@ -326,7 +327,7 @@ export const TransactionItem = ({
             {item.isSubmitFailed || maxGasTx.isWithdrawed ? (
               <>
                 {originTx.site && <TransactionWebsite site={originTx.site} />}
-                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-right">
+                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-right">
                   No Gas cost
                 </span>
               </>
@@ -335,9 +336,9 @@ export const TransactionItem = ({
                 {completedTx?.site ? (
                   <TransactionWebsite site={completedTx.site} />
                 ) : (
-                  <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light"></span>
+                  <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot"></span>
                 )}
-                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-right">
+                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-right">
                   Gas:{' '}
                   {gasTokenCount
                     ? `${gasTokenCount.toFixed(
