@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Form } from 'antd';
+import { Input, Form, message } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { KEYRING_TYPE } from 'consts';
+import IconSuccess from 'ui/assets/success.svg';
 
 import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -149,6 +150,16 @@ const ImportPrivateKey = () => {
                 autoFocus
                 spellCheck={false}
                 type="password"
+                onPaste={() => {
+                  clearClipboard();
+                  message.success({
+                    icon: (
+                      <img src={IconSuccess} className="icon icon-success" />
+                    ),
+                    content: t('page.newAddress.seedPhrase.pastedAndClear'),
+                    duration: 2,
+                  });
+                }}
               />
             </Form.Item>
             <TipTextList className="mt-32">

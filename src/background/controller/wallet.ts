@@ -1134,6 +1134,8 @@ export class WalletController extends BaseController {
   setSwapTrade = swapService.setSwapTrade;
   getSwapViewList = swapService.getSwapViewList;
   getSwapTradeList = swapService.getSwapTradeList;
+  getSwapSortIncludeGasFee = swapService.getSwapSortIncludeGasFee;
+  setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
@@ -2737,6 +2739,8 @@ export class WalletController extends BaseController {
   quickCancelTx = transactionHistoryService.quickCancelTx;
 
   retryPushTx = transactionHistoryService.retryPushTx;
+
+  getTxGroup = transactionHistoryService.getTxGroup;
 
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);

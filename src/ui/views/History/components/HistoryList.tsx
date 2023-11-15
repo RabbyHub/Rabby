@@ -46,16 +46,19 @@ export const HistoryList = ({
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
 
-    const getHistory = isFilterScam
-      ? getAllTxHistory
-      : isMainnet
+    const getHistory = isMainnet
       ? wallet.openapi.listTxHisotry
       : wallet.testnetOpenapi.listTxHisotry;
 
-    const res = await getHistory({
-      id: address,
-      start_time: !isFilterScam ? startTime : undefined,
-    });
+    const res = isFilterScam
+      ? await getAllTxHistory({
+          id: address,
+        })
+      : await getHistory({
+          id: address,
+          start_time: startTime,
+          page_count: PAGE_COUNT,
+        });
 
     const { project_dict, cate_dict, history_list: list } = res;
     const displayList = list

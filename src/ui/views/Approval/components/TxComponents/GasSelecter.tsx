@@ -4,7 +4,7 @@ import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -52,6 +52,8 @@ interface GasSelectorProps {
   selectedGas: GasLevel | null;
   is1559: boolean;
   isHardware: boolean;
+  isCancel: boolean;
+  isSpeedUp: boolean;
   gasCalcMethod: (
     price: number
   ) => Promise<{
@@ -142,11 +144,11 @@ const CardBody = styled.div<{
       text-align: center;
       font-size: 12px;
       line-height: 14px;
-      color: ${LessPalette['@color-comment']};
+      color: var(--r-neutral-body, #3e495e);
       margin: 8px auto 0;
     }
     .cardTitle {
-      color: ${LessPalette['@color-title']} !important;
+      color: var(--r-neutral-title-1, #192945) !important;
       font-weight: 500;
       font-size: 13px !important;
       margin: 4px auto 0;
@@ -158,7 +160,7 @@ const CardBody = styled.div<{
       text-align: center !important;
       font-size: 13px !important;
       font-weight: 500;
-      color: ${LessPalette['@color-title']};
+      color: var(--r-neutral-title-1, #192945);
       padding-top: 0;
       &.active {
         color: var(--r-blue-default, #7084ff) !important;
@@ -223,6 +225,8 @@ const GasSelector = ({
   engineResults = [],
   nativeTokenBalance,
   gasPriceMedian,
+  isCancel,
+  isSpeedUp,
 }: GasSelectorProps) => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -428,7 +432,12 @@ const GasSelector = ({
         price: Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
+        maxPriorityFee: calcMaxPriorityFee(
+          gasList,
+          target,
+          chainId,
+          isCancel || isSpeedUp
+        ),
       });
     } else {
       onChange({
@@ -436,7 +445,12 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: gas?.level,
-        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
+        maxPriorityFee: calcMaxPriorityFee(
+          gasList,
+          target,
+          chainId,
+          isCancel || isSpeedUp
+        ),
       });
     }
   };
@@ -573,7 +587,12 @@ const GasSelector = ({
 
   useEffect(() => {
     if (isReady && selectedGas && chainId === 1) {
-      const priorityFee = calcMaxPriorityFee(gasList, selectedGas, chainId);
+      const priorityFee = calcMaxPriorityFee(
+        gasList,
+        selectedGas,
+        chainId,
+        isSpeedUp || isCancel
+      );
       setMaxPriorityFee(priorityFee / 1e9);
     } else if (selectedGas) {
       setMaxPriorityFee(selectedGas.price / 1e9);
@@ -930,7 +949,7 @@ const GasPriceDesc = styled.ul`
   margin-top: 12px;
   margin-bottom: 0;
   font-size: 13px;
-  color: #4b4d59;
+  color: var(--r-neutral-body, #3e495e);
   li {
     position: relative;
     margin-bottom: 8px;
@@ -944,7 +963,7 @@ const GasPriceDesc = styled.ul`
       width: 4px;
       height: 4px;
       border-radius: 100%;
-      background-color: #4b4d59;
+      background-color: var(--r-neutral-body, #3e495e);
       left: 0;
       top: 8px;
     }
