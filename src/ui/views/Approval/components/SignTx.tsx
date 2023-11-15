@@ -30,7 +30,7 @@ import {
   SAFE_GAS_LIMIT_RATIO,
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
-  OP_STACK_ENUMS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -285,8 +285,7 @@ const explainGas = async ({
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
-  const isOpStack = OP_STACK_ENUMS.includes(chain.enum);
-  if (isOpStack) {
+  if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
     const res = await wallet.fetchEstimatedL1Fee(
       {
         txParams: tx,

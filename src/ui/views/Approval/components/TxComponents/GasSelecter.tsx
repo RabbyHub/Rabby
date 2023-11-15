@@ -4,7 +4,12 @@ import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
+import {
+  CHAINS,
+  MINIMUM_GAS_LIMIT,
+  L2_ENUMS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
+} from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -658,17 +663,20 @@ const GasSelector = ({
                       {chain.nativeTokenSymbol}
                     </span>
                     &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
-                    <span className="relative ml-6">
-                      <TooltipWithMagnetArrow
-                        title={t('page.signTx.l2GasEstimateTooltip')}
-                        className="rectangle w-[max-content]"
-                      >
-                        <img
-                          src={IconQuestionMark}
-                          className="cursor-pointer w-14"
-                        />
-                      </TooltipWithMagnetArrow>
-                    </span>
+                    {L2_ENUMS.includes(chain.enum) &&
+                      !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
+                        <span className="relative ml-6">
+                          <TooltipWithMagnetArrow
+                            title={t('page.signTx.l2GasEstimateTooltip')}
+                            className="rectangle w-[max-content]"
+                          >
+                            <img
+                              src={IconQuestionMark}
+                              className="cursor-pointer w-14"
+                            />
+                          </TooltipWithMagnetArrow>
+                        </span>
+                      )}
                   </div>
                 </div>
               )}
