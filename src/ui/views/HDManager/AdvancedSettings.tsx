@@ -30,7 +30,11 @@ const HDPathTypeGroup = {
   ],
   [KEYRING_CLASS.HARDWARE.TREZOR]: [HDPathType.BIP44],
   [KEYRING_CLASS.HARDWARE.ONEKEY]: [HDPathType.BIP44],
-  [KEYRING_CLASS.MNEMONIC]: [HDPathType.Default],
+  [KEYRING_CLASS.MNEMONIC]: [
+    HDPathType.LedgerLive,
+    HDPathType.BIP44,
+    HDPathType.Legacy,
+  ],
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: [
     HDPathType.LedgerLive,
     HDPathType.BIP44,

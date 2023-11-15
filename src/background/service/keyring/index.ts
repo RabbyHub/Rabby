@@ -733,38 +733,6 @@ export class KeyringService extends EventEmitter {
     return keyring.exportAccount(address, { withAppKeyOrigin: origin });
   }
 
-  //
-  // PRIVATE METHODS
-  //
-
-  /**
-   * Create First Key Tree
-   *
-   * - Clears the existing vault
-   * - Creates a new vault
-   * - Creates a random new HD Keyring with 1 account
-   * - Makes that account the selected account
-   * - Faucets that account on testnet
-   * - Puts the current seed words into the state tree
-   *
-   * @returns {Promise<void>} - A promise that resovles if the operation was successful.
-   */
-  createFirstKeyTree() {
-    this.clearKeyrings();
-    return this.addNewKeyring('HD Key Tree', { activeIndexes: [0] })
-      .then((keyring) => {
-        return keyring.getAccounts();
-      })
-      .then(([firstAccount]) => {
-        if (!firstAccount) {
-          throw new Error('KeyringController - No account found on keychain.');
-        }
-        const hexAccount = normalizeAddress(firstAccount);
-        this.emit('newVault', hexAccount);
-        return null;
-      });
-  }
-
   /**
    * Persist All Keyrings
    *

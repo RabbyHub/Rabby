@@ -95,6 +95,7 @@ import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
+import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1996,7 +1997,7 @@ export class WalletController extends BaseController {
   getPreMnemonics = () => keyringService.getPreMnemonics();
   generatePreMnemonic = () => keyringService.generatePreMnemonic();
   removePreMnemonics = () => keyringService.removePreMnemonics();
-  createKeyringWithMnemonics = async (mnemonic) => {
+  createKeyringWithMnemonics = async (mnemonic: string) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     keyringService.removePreMnemonics();
     // return this._setCurrentAccountFromKeyring(keyring);
@@ -2090,11 +2091,20 @@ export class WalletController extends BaseController {
   };
 
   getKeyringByMnemonic = (
-    mnemonic: string
-  ): (DisplayedKeryring & { index: number }) | undefined => {
-    return keyringService.keyrings.find((item) => {
-      return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
+    mnemonic: string,
+    passphrase: string
+  ): HdKeyring | undefined => {
+    const keyring = keyringService.keyrings.find((item) => {
+      return (
+        item.type === KEYRING_CLASS.MNEMONIC &&
+        item.mnemonic === mnemonic &&
+        item.checkPassphrase(passphrase)
+      );
     });
+
+    keyring?.setPassphrase(passphrase);
+
+    return keyring;
   };
 
   _getMnemonicKeyringByAddress = (address: string) => {
@@ -2162,12 +2172,15 @@ export class WalletController extends BaseController {
     return await keyring.getIndexByAddress(address);
   };
 
-  generateKeyringWithMnemonic = async (mnemonic: string) => {
+  generateKeyringWithMnemonic = async (
+    mnemonic: string,
+    passphrase: string
+  ) => {
     if (!bip39.validateMnemonic(mnemonic, wordlist)) {
       throw new Error(t('background.error.invalidMnemonic'));
     }
     // If import twice use same kerying
-    let keyring = this.getKeyringByMnemonic(mnemonic);
+    let keyring = this.getKeyringByMnemonic(mnemonic, passphrase);
     const result = {
       keyringId: null as number | null,
       isExistedKR: false,
@@ -2177,7 +2190,7 @@ export class WalletController extends BaseController {
         KEYRING_CLASS.MNEMONIC
       );
 
-      keyring = new Keyring({ mnemonic });
+      keyring = new Keyring({ mnemonic, passphrase });
       keyringService.updateHdKeyringIndex(keyring);
       result.keyringId = this.addKeyringToStash(keyring);
       keyringService.addKeyring(keyring);
@@ -2198,7 +2211,10 @@ export class WalletController extends BaseController {
 
   updateKeyringInStash = (keyring) => {
     let keyringId = Object.keys(stashKeyrings).find((key) => {
-      return stashKeyrings[key].mnemonic === keyring.mnemonic;
+      return (
+        stashKeyrings[key].mnemonic === keyring.mnemonic &&
+        stashKeyrings[key].publicKey === keyring.publicKey
+      );
     }) as number | undefined;
 
     if (!keyringId) {
@@ -2597,9 +2613,10 @@ export class WalletController extends BaseController {
   requestHDKeyringByMnemonics = (
     mnemonics: string,
     methodName: string,
+    passphrase: string,
     ...params: any[]
   ) => {
-    const keyring = this.getKeyringByMnemonic(mnemonics);
+    const keyring = this.getKeyringByMnemonic(mnemonics, passphrase);
     if (!keyring) {
       throw new Error(
         'failed to requestHDKeyringByMnemonics, no keyring found.'
@@ -2612,11 +2629,12 @@ export class WalletController extends BaseController {
 
   activeAndPersistAccountsByMnemonics = async (
     mnemonics: string,
+    passphrase: string,
     accountsToImport: Required<
       Pick<Account, 'address' | 'alianName' | 'index'>
     >[]
   ) => {
-    const keyring = this.getKeyringByMnemonic(mnemonics);
+    const keyring = this.getKeyringByMnemonic(mnemonics, passphrase);
     if (!keyring) {
       throw new Error(
         '[activeAndPersistAccountsByMnemonics] no keyring found.'
@@ -2625,6 +2643,7 @@ export class WalletController extends BaseController {
     await this.requestHDKeyringByMnemonics(
       mnemonics,
       'activeAccounts',
+      passphrase,
       accountsToImport.map((acc) => acc.index! - 1)
     );
 

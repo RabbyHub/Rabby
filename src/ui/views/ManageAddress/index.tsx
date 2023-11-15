@@ -228,6 +228,7 @@ const ManageAddress = () => {
     history.replace('/add-address');
     return null;
   }
+  console.log(typedWalletIdList, TypedWalletObj);
 
   return (
     <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">

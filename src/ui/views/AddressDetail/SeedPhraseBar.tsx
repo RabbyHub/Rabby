@@ -23,7 +23,11 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
       validationHandler: async (password: string) => {
         await wallet.getMnemonics(password, address);
         const mnemonics = await wallet.getMnemonicByAddress(address);
-        const result = await wallet.generateKeyringWithMnemonic(mnemonics);
+        // TODO
+        const result = await wallet.generateKeyringWithMnemonic(
+          mnemonics,
+          'passphprase'
+        );
         keyringId = result.keyringId;
       },
       async onFinished() {
