@@ -31,6 +31,7 @@ import {
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
   OP_STACK_ENUMS,
+  GAS_TOP_UP_ADDRESS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -883,6 +884,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return Level.WARNING;
     return undefined;
   }, [engineResults, currentTx]);
+
+  const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -1929,6 +1932,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             value={pushInfo}
             isCancel={isCancel}
             isSpeedUp={isSpeedUp}
+            isGasTopUp={isGasTopUp}
             onChange={(value) => {
               setPushInfo(value);
             }}
