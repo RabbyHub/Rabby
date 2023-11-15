@@ -12,7 +12,7 @@ import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { ReactComponent as HardwareSVG } from 'ui/assets/import/hardware.svg';
 import { useAsyncRetry } from 'react-use';
 import { useWallet } from '@/ui/utils';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
@@ -100,6 +100,10 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
            * This code is written to be consistent with the behavior of importing wallets via QR Code.
            */
           await removeAddressAndForgetDevice();
+          const stashKeyringId = await wallet.initQRHardware(
+            WALLET_BRAND_TYPES.KEYSTONE
+          );
+          await wallet.requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId);
         }
 
         await wallet.requestKeyring(
