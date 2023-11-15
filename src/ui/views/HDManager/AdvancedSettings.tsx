@@ -44,12 +44,17 @@ const useHDPathTypeGroup = (brand?: string) => {
   const isAvaliable = useIsKeystoneUsbAvailable(brand);
 
   useEffect(() => {
+    if (HDPathTypeGroup[KEYRING_CLASS.HARDWARE.KEYSTONE].length === 3) {
+      // If the Keystone hardware wallet has been previously connected via USB (indicated by having 3 types
+      // of connection paths), then there's no need to proceed further.
+      return;
+    }
     if (isAvaliable) {
       setHDPathTypeGroup((prev) => ({
         ...prev,
         [KEYRING_CLASS.HARDWARE.KEYSTONE]: [
-          HDPathType.LedgerLive,
           HDPathType.BIP44,
+          HDPathType.LedgerLive,
           HDPathType.Legacy,
         ],
       }));

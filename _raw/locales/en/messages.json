@@ -1206,7 +1206,7 @@
         "title": "Connect Keystone",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
         "keystonePermission1": "Connect to an USB device",
-        "keystonePermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Keystone in the following pop-up window.",
+        "keystonePermissionTip": "Please click \"Allow\" below and authorize access to your Keystone in the following pop-up window.",
         "noDeviceFoundError": "Plug in a single Keystone",
         "deviceIsLockedError": "Enter password to unlock",
         "deviceRejectedExportAddress": "Approve connection to Rabby",
