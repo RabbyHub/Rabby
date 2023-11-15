@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import IconArrowRight from '@/ui/assets/history/icon-arrow-right.svg';
+import { ReactComponent as RcIconArrowRight } from '@/ui/assets/history/icon-arrow-right.svg';
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
@@ -11,6 +11,7 @@ import { PageHeader } from 'ui/component';
 import { HistoryList } from './components/HistoryList';
 import './style.less';
 import qs from 'qs';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const Null = () => null;
 
@@ -22,7 +23,9 @@ const History = () => {
 
   return (
     <div className="txs-history">
-      <PageHeader fixed>{t('page.transactions.title')}</PageHeader>
+      <PageHeader className="transparent-wrap" fixed>
+        {t('page.transactions.title')}
+      </PageHeader>
       {isShowTestnet && (
         <NetSwitchTabs
           value={selectedTab}
@@ -37,7 +40,7 @@ const History = () => {
         }}
       >
         {t('page.transactions.filterScam.btn')}
-        <img src={IconArrowRight} alt="" />
+        <ThemeIcon src={RcIconArrowRight} />
       </div>
       <Tabs
         className="h-full"
@@ -67,7 +70,9 @@ const HistoryFilterScam = () => {
 
   return (
     <div className="txs-history">
-      <PageHeader fixed>{t('page.transactions.filterScam.title')}</PageHeader>
+      <PageHeader className="transparent-wrap" fixed>
+        {t('page.transactions.filterScam.title')}
+      </PageHeader>
       <HistoryList isMainnet={query.net !== 'testnet'} isFilterScam={true} />
     </div>
   );

@@ -13,11 +13,11 @@ export const NFTEmpty: React.FC<Props> = ({ Icon, title, description }) => {
   return (
     <div className="mt-[110px] flex flex-col text-center">
       {Icon}
-      <div className="mt-[16px] text-black text-15 font-medium text-center">
+      <div className="mt-[16px] text-r-neutral-body text-15 font-medium text-center">
         {title}
       </div>
       {description && (
-        <div className="mt-[8px] text-black text-13 text-center">
+        <div className="mt-[8px] text-r-neutral-body text-13 text-center">
           {description}
         </div>
       )}

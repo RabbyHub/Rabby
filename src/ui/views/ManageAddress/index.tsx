@@ -3,10 +3,10 @@ import { Empty, PageHeader } from '@/ui/component';
 import { useRabbyDispatch } from '@/ui/store';
 import React, { useCallback, useState } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
-import { ReactComponent as IconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
-import { ReactComponent as IconDelete } from '@/ui/assets/address/delete-current-color.svg';
 import { ReactComponent as IconPlus } from '@/ui/assets/address/plus.svg';
-import { ReactComponent as IconPlusButton } from '@/ui/assets/import/plus.svg';
+import { ReactComponent as RcIconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
+import { ReactComponent as RcIconDelete } from '@/ui/assets/address/delete-current-color.svg';
+import { ReactComponent as RcIconPlusButton } from '@/ui/assets/import/plus.svg';
 
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 
@@ -230,7 +230,7 @@ const ManageAddress = () => {
   }
 
   return (
-    <div className="page-address-management px-0 pb-0 bg-[#F0F2F5] overflow-hidden">
+    <div className="page-address-management px-0 pb-0 bg-r-neutral-bg-2 overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="px-20">
           <PageHeader className="pt-[24px]" canBack={back} closeable={!back}>
@@ -240,7 +240,7 @@ const ManageAddress = () => {
 
         <div className="flex-1 flex flex-col overflow-y-auto">
           <div className="px-20 mb-8">
-            <div className="rounded-[6px] bg-white flex flex-wrap p-[3px]">
+            <div className="rounded-[6px] bg-r-neutral-card-1 flex flex-wrap p-[3px]">
               {typedWalletIdList?.map((id, i) => {
                 const item = TypedWalletObj?.[id];
                 const list = item?.list;
@@ -264,19 +264,19 @@ const ManageAddress = () => {
 
             {TypedWalletObj?.[activeIndex] ? (
               <div className="flex items-center justify-between mt-20 ">
-                <div className="text-[17px] font-medium">
+                <div className="text-[17px] text-r-neutral-title-1 font-medium">
                   {TypedWalletObj?.[activeIndex]?.name}
                 </div>
                 <div className="flex items-center gap-16">
                   {isSeedPhrase && (
-                    <IconPlusButton
+                    <RcIconPlusButton
                       onClick={handleAddSeedPhraseAddress}
-                      className="cursor-pointer"
+                      className="cursor-pointer text-r-neutral-body"
                     />
                   )}
                   {isSeedPhrase && (
-                    <IconShowSeedPhrase
-                      className="cursor-pointer"
+                    <RcIconShowSeedPhrase
+                      className="cursor-pointer text-r-neutral-body"
                       onClick={() => {
                         if (TypedWalletObj?.[activeIndex]?.publicKey) {
                           backup(
@@ -287,8 +287,8 @@ const ManageAddress = () => {
                       }}
                     />
                   )}
-                  <IconDelete
-                    className="cursor-pointer text-gray-content hover:text-red-forbidden"
+                  <RcIconDelete
+                    className="cursor-pointer text-r-neutral-body hover:text-red-forbidden"
                     onClick={() => {
                       if (
                         TypedWalletObj?.[activeIndex]?.type ===

@@ -1,6 +1,9 @@
 import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { pickKeyringThemeIcon } from '@/utils/account';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
@@ -30,12 +33,16 @@ export const GroupItem = ({
       : null
   );
 
+  const { isDarkTheme } = useThemeMode();
+
   const addressTypeIcon = useMemo(
     () =>
       (address && brandName ? brandIcon : null) ||
+      pickKeyringThemeIcon(type as any, isDarkTheme) ||
       KEYRING_ICONS[type] ||
+      WALLET_BRAND_CONTENT?.[brandName || type]?.rcSvg ||
       WALLET_BRAND_CONTENT?.[brandName || type]?.image,
-    [type, brandName, brandIcon]
+    [type, brandName, brandIcon, isDarkTheme]
   );
 
   return (
@@ -49,7 +56,7 @@ export const GroupItem = ({
       )}
     >
       <div className="relative flex items-center justify-center">
-        <img
+        <ThemeIcon
           src={addressTypeIcon}
           className={clsx(
             'w-24 h-24',

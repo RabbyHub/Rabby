@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
-// import IconBack from 'ui/assets/back.svg';
-import { ReactComponent as RcIconBack } from 'ui/assets/back.svg';
+import IconBack from 'ui/assets/back.svg';
+import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
 import { ReactComponent as RcIconClose } from 'ui/assets/component/close.svg';
 import './style.less';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
@@ -16,6 +16,7 @@ const PageHeader = ({
   fixed = false,
   wrapperClassName = '',
   invertBack = false,
+  keepBackLightVersion = false,
   className = '',
   closeable = false,
   onClose,
@@ -30,6 +31,7 @@ const PageHeader = ({
   fixed?: boolean;
   wrapperClassName?: string;
   invertBack?: boolean;
+  keepBackLightVersion?: boolean;
   className?: string;
   closeable?: boolean;
   closeCn?: string;
@@ -39,12 +41,8 @@ const PageHeader = ({
   const Content = (
     <div className={clsx('page-header', !fixed && className)}>
       {(forceShowBack || (canBack && history.length > 1)) && (
-        // <img
-        //   src={IconBack}
-        //   className={clsx('icon icon-back', invertBack && 'filter invert')}
-        //   onClick={onBack || (() => history.goBack())}
-        // />
-        <RcIconBack
+        <ThemeIcon
+          src={keepBackLightVersion ? IconBack : RcIconBackNew}
           className={clsx('icon icon-back', invertBack && 'filter invert')}
           onClick={onBack || (() => history.goBack())}
         />

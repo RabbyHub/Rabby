@@ -71,7 +71,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
   }, []);
   return (
     <Drawer
-      className="edit-contact-modal-with-remove"
+      className="edit-contact-modal-with-remove is-support-darkmode"
       title={t('component.Contact.EditModal.title')}
       visible={visible}
       onClose={onCancel}

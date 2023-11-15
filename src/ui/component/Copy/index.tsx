@@ -7,6 +7,7 @@ import IconAddressCopyLight from 'ui/assets/icon-copy-2-light.svg';
 import IconAddressCopyDark from 'ui/assets/icon-copy-2-dark.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 interface CopyProps {
   className?: string;

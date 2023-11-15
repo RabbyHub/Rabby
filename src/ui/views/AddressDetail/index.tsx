@@ -67,7 +67,7 @@ const AddressDetail = () => {
 
   return (
     <div className="page-address-detail overflow-auto">
-      <PageHeader className="transparent-wrap" fixed>
+      <PageHeader wrapperClassName="bg-r-neutral-bg-2" fixed>
         {t('page.addressDetail.address-detail')}
       </PageHeader>
       <AddressInfo

@@ -62,7 +62,7 @@
 
   &-card {
     position: relative;
-    background: #ffffff;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     padding: 0 12px;
     margin-bottom: 12px;
@@ -86,7 +86,7 @@
         white-space: nowrap;
       }
       .time {
-        color: #707880;
+        color: var(--r-neutral-foot, #BABEC5);
       }
     }
     &-body {
@@ -97,10 +97,10 @@
       gap: 8px;
     }
     &-footer {
-      border-top: 1px solid rgba(229, 233, 239, 0.5);
+      border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
       padding: 12px 0;
       display: flex;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #BABEC5);
       .tx-status {
         margin-left: auto;
         &.is-failed {
@@ -113,16 +113,16 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
-    color: @color-comment-1;
+    color: var(--r-neutral-foot, #BABEC5);
     padding: 3px 6px;
-    background: #e5e9ef;
+    background: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
     border-radius: 2px;
   }
   .tx-id {
-    color: @color-comment-1;
+    color: var(--r-neutral-foot, #BABEC5);
     text-decoration: underline;
     &-chain {
-      color: #5a6066;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-right: 8px;
     }
     &-container {
@@ -150,11 +150,11 @@
   }
 
   &-loading {
-    background-color: #fff;
+    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     padding: 8px 14px 16px;
     .ant-skeleton-input {
-      background-color: @color-bg;
+      background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     }
     &:not(:last-child) {
       margin-bottom: 12px;

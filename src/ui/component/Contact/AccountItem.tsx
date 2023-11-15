@@ -13,10 +13,13 @@ import { isSameAddress } from '@/ui/utils';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CopyChecked } from '../CopyChecked';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { pickKeyringThemeIcon } from '@/utils/account';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
-  background-color: #f5f6fa;
+  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
   border-radius: 6px;
   margin-bottom: 8px;
   display: flex;
@@ -55,11 +58,14 @@ const AccountItemWrapper = styled.div`
   }
   &.disabled {
     cursor: not-allowed;
-    background-color: rgba(245, 246, 250, 0.5);
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     &:hover {
-      background-color: #f5f6fa;
       border-color: transparent;
     }
+    &:not(.is-darkmode):hover {
+      background-color: #f5f6fa;
+    }
+
     & > *,
     .account-info .name,
     .account-info .addr {
@@ -104,22 +110,31 @@ const AccountItem = ({
 
     onClick && onClick(account);
   };
+
+  const { isDarkTheme } = useThemeMode();
+
   return (
     <AccountItemWrapper
-      className={clsx({ disabled, 'cursor-pointer': !disabled && onClick })}
+      className={clsx({
+        disabled,
+        'cursor-pointer': !disabled && onClick,
+        'is-darkmode': isDarkTheme,
+      })}
       onClick={handleClickItem}
     >
-      <img
+      <ThemeIcon
         className="icon icon-account-type w-[24px] h-[24px]"
         src={
+          pickKeyringThemeIcon(account.brandName as any, isDarkTheme) ||
           WALLET_BRAND_CONTENT[account.brandName]?.image ||
+          pickKeyringThemeIcon(account.type as any, isDarkTheme) ||
           KEYRING_ICONS[account.type]
         }
       />
       <div className="account-info flex-1">
         <p className="name">
           <div className="flex items-center gap-4">
-            <span className="inline-block max-w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <span className="inline-block max-w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap text-r-neutral-title-1">
               {account.alianName}
             </span>
             {onClick && whitelistEnable && isInWhiteList && (
@@ -133,13 +148,17 @@ const AccountItem = ({
             )}
           </div>
         </p>
-        <p className="address" title={account.address} ref={addressElement}>
+        <p
+          className="address text-r-neutral-body"
+          title={account.address}
+          ref={addressElement}
+        >
           <div className="addr">{ellipsis(account.address)}</div>
 
           <CopyChecked addr={account.address} className="icon icon-copy" />
         </p>
       </div>
-      <p className="text-13 text-gray-title mb-0">
+      <p className="text-13 text-r-neutral-title-1 mb-0">
         ${splitNumberByStep(Math.floor(account.balance))}
       </p>
     </AccountItemWrapper>

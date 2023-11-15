@@ -53,6 +53,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
     }, 50);
     const { destroy } = Popup.info({
       title: t('page.addressDetail.edit-memo-title'),
+      isSupportDarkMode: true,
       height: 215,
       content: (
         <div className="pt-[4px]">

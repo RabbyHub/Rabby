@@ -40,7 +40,7 @@ import IconWhitelist, {
 import IconContact, {
   ReactComponent as RcIconContact,
 } from 'ui/assets/send-token/contact.svg';
-import IconEdit from 'ui/assets/edit-purple.svg';
+import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck, {
@@ -1205,7 +1205,10 @@ const SendToken = () => {
                   >
                     {contactInfo && (
                       <>
-                        <img src={IconEdit} className="icon icon-edit" />
+                        <ThemeIcon
+                          src={RcIconEdit}
+                          className="icon icon-edit"
+                        />
                         <span
                           title={contactInfo.name}
                           className="inline-block align-middle truncate max-w-[240px]"
@@ -1216,22 +1219,11 @@ const SendToken = () => {
                     )}
                   </div>
                 )}
-                {/* <img
+                <ThemeIcon
                   className="icon icon-contact"
-                  src={whitelistEnabled ? IconWhitelist : IconContact}
+                  src={whitelistEnabled ? RcIconWhitelist : RcIconContact}
                   onClick={handleListContact}
-                /> */}
-                {whitelistEnabled ? (
-                  <RcIconWhitelist
-                    className="icon icon-contact"
-                    onClick={handleListContact}
-                  />
-                ) : (
-                  <RcIconContact
-                    className="icon icon-contact"
-                    onClick={handleListContact}
-                  />
-                )}
+                />
               </div>
             </div>
             <div className="to-address">
