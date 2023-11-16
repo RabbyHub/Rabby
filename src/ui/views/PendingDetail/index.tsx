@@ -53,6 +53,10 @@ const useSetup = ({
     [txGroup]
   );
 
+  const maxGasTx = useMemo(() => {
+    return findMaxGasTx(txGroup?.txs || []);
+  }, [txGroup]);
+
   const reqId = useMemo(() => {
     return findMaxGasTx(txGroup?.txs || [])?.reqId;
   }, [txGroup]);
@@ -167,6 +171,7 @@ const useSetup = ({
     pendingTxList,
     baseFee,
     isPending,
+    maxGasTx,
   };
 };
 
@@ -195,6 +200,7 @@ export const PendingDetail = () => {
     pendingTxList,
     baseFee,
     isPending,
+    maxGasTx,
   } = useSetup({
     address,
     chainId,
@@ -231,7 +237,7 @@ export const PendingDetail = () => {
         isPending={isPending}
       >
         <PrePackInfo
-          explain={txGroup?.explain}
+          explain={maxGasTx?.explain || txGroup?.explain}
           latestExplain={latestExplain}
           loading={loading.txRequest || loading.latestExplain}
           isPending={isPending}

@@ -1,4 +1,7 @@
-import { TransactionGroup } from '@/background/service/transactionHistory';
+import {
+  TransactionGroup,
+  TransactionHistoryItem,
+} from '@/background/service/transactionHistory';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { useWallet } from '@/ui/utils';
 import {
