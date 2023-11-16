@@ -180,6 +180,7 @@ const QRHardWareWaiting = ({ params }) => {
             createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
             source: params?.$ctx?.ga?.source || '',
             trigger: params?.$ctx?.ga?.trigger || '',
+            signMethod,
           });
         }
       } else {
@@ -194,21 +195,17 @@ const QRHardWareWaiting = ({ params }) => {
     }
   };
 
-  const showErrorChecker = useMemo(() => {
-    return errorMessage !== '' && status == QRHARDWARE_STATUS.SIGN;
-  }, [errorMessage]);
-
   const [scanMessage, setScanMessage] = React.useState();
   const handleScan = (scanMessage) => {
     setScanMessage(scanMessage);
     setStatus(QRHARDWARE_STATUS.RECEIVED);
   };
 
-  const handleDone = () => {
-    history.push('/');
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // cache signMethod in statsData
+    await wallet.setStatsData({
+      signMethod,
+    });
     wallet.submitQRHardwareSignature(
       signPayload!.requestId,
       scanMessage!,

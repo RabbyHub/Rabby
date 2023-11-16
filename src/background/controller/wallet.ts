@@ -102,6 +102,7 @@ import { getWeb3Provider } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { StatsData } from '../service/notification';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3365,6 +3366,10 @@ export class WalletController extends BaseController {
     });
 
     return await keyring.scanAccount();
+  };
+
+  setStatsData = (data: any) => {
+    notificationService.setStatsData(data);
   };
 }
 

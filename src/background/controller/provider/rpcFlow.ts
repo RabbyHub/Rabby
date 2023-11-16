@@ -12,6 +12,7 @@ import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
+import { StatsData } from '@/background/service/notification';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -288,7 +289,7 @@ export default (request: ProviderRequest) => {
     const statsData = notificationService.getStatsData();
 
     if (statsData?.signed) {
-      stats.report('signedTransaction', {
+      const sData: any = {
         type: statsData?.type,
         chainId: statsData?.chainId,
         category: statsData?.category,
@@ -297,7 +298,11 @@ export default (request: ProviderRequest) => {
         createBy: statsData?.createBy,
         source: statsData?.source,
         trigger: statsData?.trigger,
-      });
+      };
+      if (statsData.signMethod) {
+        sData.signMethod = statsData.signMethod;
+      }
+      stats.report('signedTransaction', sData);
     }
     if (statsData?.submit) {
       stats.report('submitTransaction', {

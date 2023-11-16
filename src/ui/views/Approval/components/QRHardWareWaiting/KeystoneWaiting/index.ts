@@ -3,6 +3,6 @@ export { UnderlineButton } from './Styled';
 export { KeystoneWiredWaiting } from './KeystoneWiredWaiting';
 
 export enum SIGNATURE_METHOD {
-  QRCODE,
-  USB,
+  QRCODE = 'QRCODE',
+  USB = 'USB',
 }
