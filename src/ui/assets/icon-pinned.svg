@@ -1,8 +1,8 @@
 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_56143_20899)">
-<path d="M5.762 2V6.47156L3.27148 9.4526V10.9431H12.7241V9.4526L10.2336 6.47156V2" stroke="#707280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.9414V14.6677" stroke="#707280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.01367 2H10.9758" stroke="#707280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.762 2V6.47156L3.27148 9.4526V10.9431H12.7241V9.4526L10.2336 6.47156V2" stroke="var(--r-neutral-body, #BABEC5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 10.9414V14.6677" stroke="var(--r-neutral-body, #BABEC5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.01367 2H10.9758" stroke="var(--r-neutral-body, #BABEC5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </g>
 <defs>
 <clipPath id="clip0_56143_20899">

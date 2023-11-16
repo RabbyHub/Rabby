@@ -9,15 +9,22 @@ import ChainIcon from 'ui/component/ChainIcon';
 import EditRPCModal from './components/EditRPCModal';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import IconEdit from 'ui/assets/custom-rpc/edit.svg';
-import IconDelete from 'ui/assets/custom-rpc/delete.svg';
-import IconSuccess from 'ui/assets/success.svg';
+import IconEdit, {
+  ReactComponent as RcIconEdit,
+} from 'ui/assets/custom-rpc/edit.svg';
+import IconDelete, {
+  ReactComponent as RcIconDelete,
+} from 'ui/assets/custom-rpc/delete.svg';
+import IconSuccess, {
+  ReactComponent as RcIconSuccess,
+} from 'ui/assets/success.svg';
 import './style.less';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const RPCItemWrapper = styled.div`
-  background: #ffffff;
+  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   border-radius: 6px;
   padding: 12px;
   display: flex;
@@ -42,13 +49,13 @@ const RPCItemWrapper = styled.div`
         font-size: 13px;
         font-weight: 500;
         line-height: 18px;
-        color: #13141a;
+        color: var(--r-neutral-title-1, #f7fafc);
       }
       &:nth-child(2) {
         font-weight: 400;
         font-size: 13px;
         line-height: 15px;
-        color: #4b4d59;
+        color: var(--r-neutral-body, #d3d8e0);
       }
     }
   }
@@ -92,7 +99,8 @@ const RPCListContainer = styled.div`
 
 const Footer = styled.div`
   height: 76px;
-  background: #ffffff;
+  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 16px 0;
   display: flex;
   justify-content: center;
@@ -171,9 +179,13 @@ const RPCItemComp = ({
         <p title={item.rpc.url}>{item.rpc.url}</p>
       </div>
       <div className="operation">
-        <img src={IconEdit} className="icon icon-edit" onClick={handleEdit} />
-        <img
-          src={IconDelete}
+        <ThemeIcon
+          src={RcIconEdit}
+          className="icon icon-edit"
+          onClick={handleEdit}
+        />
+        <ThemeIcon
+          src={RcIconDelete}
           className="icon icon-delete"
           onClick={handleDelete}
         />
@@ -270,7 +282,7 @@ const CustomRPC = () => {
         src="/images/nodata-tx.png"
         alt="no address"
       />
-      <p className="text-gray-content text-14 text-center font-medium">
+      <p className="text-r-neutral-body text-14 text-center font-medium">
         {t('page.customRpc.empty')}
       </p>
     </div>
@@ -285,7 +297,7 @@ const CustomRPC = () => {
       >
         {t('page.customRpc.title')}
       </PageHeader>
-      <p className="text-gray-subTitle text-14 mb-20 px-20">
+      <p className="text-r-neutral-body text-14 mb-20 px-20">
         {t('page.customRpc.desc')}
       </p>
       {rpcList.length <= 0 ? (

@@ -558,6 +558,7 @@ const SettingsInner = ({
 
   const handleClickClearWatchMode = () => {
     confirm({
+      className: 'modal-support-darkmode',
       title: t('page.dashboard.settings.warning'),
       content: t('page.dashboard.settings.clearWatchAddressContent'),
       onOk() {
@@ -1152,6 +1153,7 @@ const Settings = (props: SettingsProps) => {
       bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
       destroyOnClose
       className="settings-popup-wrapper"
+      isSupportDarkMode
     >
       <SettingsInner {...props} />
     </Popup>

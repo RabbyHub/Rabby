@@ -9,7 +9,7 @@
   line-height: 14px;
   height: 100vh;
   overflow: auto;
-  background-color: #f0f2f5;
+  background: var(--r-neutral-bg-2, #3D4251);
   position: relative;
 
   .header {
@@ -17,7 +17,7 @@
       font-weight: 400;
       font-size: 14px;
       line-height: 18px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-top: 18px;
       margin-bottom: 18px;
     }
@@ -31,7 +31,7 @@
   .dapp-card {
     display: flex;
     align-items: center;
-    background: #ffffff;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     padding: 10px 16px;
     gap: 12px;
@@ -54,7 +54,7 @@
       font-weight: 400;
       font-size: 13px;
       line-height: 15px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
     }
 
     &-action {
@@ -64,11 +64,11 @@
       &-delete {
         width: 16px;
         height: 16px;
-        color: @color-comment-1;
+        color: var(--r-neutral-foot, #6A7587);
 
         cursor: pointer;
         &:hover {
-          color: @color-red;
+          color: var(--r-neutral-red-default, #e34935);
         }
       }
     }
@@ -84,8 +84,9 @@
     align-items: center;
     justify-content: center;
     background-color: #fff;
-    border-top: 1px solid @color-border;
-    border-top: 0.5px solid @color-border;
+    border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
 
     .ant-btn {
       width: 172px;
@@ -107,7 +108,7 @@
       font-weight: 500;
       font-size: 15px;
       line-height: 18px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-bottom: 16px;
     }
 

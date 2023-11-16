@@ -53,7 +53,7 @@ export const PreferMetamaskDapps = () => {
     Popup.info({
       title: t('page.preferMetamaskDapps.howToAdd'),
       closable: true,
-      className: 'prefer-metamask-popup',
+      className: 'prefer-metamask-popup is-support-darkmode',
       height: 270,
       content: (
         <div className="content">
