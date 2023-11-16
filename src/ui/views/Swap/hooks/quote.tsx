@@ -19,6 +19,7 @@ import React from 'react';
 import pRetry from 'p-retry';
 import { useRabbySelector } from '@/ui/store';
 import stats from '@/stats';
+import { ChainGas } from '@/background/service/preference';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -160,9 +161,33 @@ export const useQuoteMethods = () => {
         from: userAddress,
         chainId: CHAINS[chain].id,
       });
-
+      const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
+        CHAINS[chain].id
+      );
       const gasMarket = await walletOpenapi.gasMarket(CHAINS[chain].serverId);
-      const gasPrice = gasMarket?.[1]?.price;
+
+      let gasPrice = 0;
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        gasPrice = lastTimeGas.gasPrice;
+      } else if (
+        lastTimeGas?.lastTimeSelect &&
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
+      ) {
+        const target = gasMarket.find(
+          (item) => item.level === lastTimeGas?.gasLevel
+        )!;
+        if (target) {
+          gasPrice = target.price;
+        } else {
+          gasPrice =
+            gasMarket.find((item) => item.level === 'normal')?.price || 0;
+        }
+      } else {
+        // no cache, use the fast level in gasMarket
+        gasPrice =
+          gasMarket.find((item) => item.level === 'normal')?.price || 0;
+      }
 
       let nextNonce = nonce;
       const pendingTx: Tx[] = [];
