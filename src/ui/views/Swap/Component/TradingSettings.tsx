@@ -49,9 +49,10 @@ export const TradingSettings = ({
       bodyStyle={{
         paddingTop: 16,
       }}
+      isSupportDarkMode
     >
       <div>
-        <div className="flex items-center text-gray-content text-12 pb-8 px-12">
+        <div className="flex items-center text-r-neutral-foot text-12 pb-8 px-12">
           <div className="w-[252px] flex justify-between">
             <div>{t('page.swap.exchanges')}</div>
             <div>{t('page.swap.view-quotes')}</div>
@@ -63,7 +64,7 @@ export const TradingSettings = ({
           {list.map((item) => {
             return (
               <div
-                className="flex items-center h-[52px] bg-gray-bg rounded-[6px] px-12 py-14"
+                className="flex items-center h-[52px] bg-r-neutral-card-2 rounded-[6px] px-12 py-14"
                 key={item.name}
               >
                 <div className="flex items-center gap-8 w-[188px]">
@@ -71,13 +72,13 @@ export const TradingSettings = ({
                     src={item.logo}
                     className="w-[24px] h-[24px] rounded-full"
                   />
-                  <span className="text-15 text-gray-title font-medium ">
+                  <span className="text-15 text-r-neutral-title-1 font-medium">
                     {item.name}
                   </span>
                   <span
                     className={clsx(
-                      'text-12 text-gray-content rounded-[2px] px-[4px] py-[1px]',
-                      'border-[0.5px] border-solid border-gray-comment'
+                      'text-12 text-r-neutral-foot rounded-[2px] px-[4px] py-[1px]',
+                      'border-[0.5px] border-solid border--r-neutral-line'
                     )}
                   >
                     {item?.chains ? t('page.swap.dex') : t('page.swap.cex')}
@@ -117,7 +118,7 @@ export const TradingSettings = ({
       </div>
       <Modal
         bodyStyle={{
-          background: 'white',
+          background: 'var(--r-neutral-bg-1, #3D4251)',
           height: 280,
         }}
         // center
@@ -140,14 +141,14 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
   const { t } = useTranslation();
   return (
     <div>
-      <div className="relative -mt-8 mb-20  text-20 font-medium text-center text-gray-title">
+      <div className="relative -mt-8 mb-20 text-20 font-medium text-center text-r-neutral-title-1">
         {t('page.swap.enable-trading')}
       </div>
-      <div className="text-13 leading-[18px] text-gray-subTitle">
+      <div className="text-13 leading-[18px] text-r-neutral-body">
         <p>{t('page.swap.tradingSettingTip1')}</p>
         <p>{t('page.swap.tradingSettingTip2')}</p>
       </div>
-      <div className="flex flex-col justify-center items-center gap-16 text-gray-subTitle mt-[30px]">
+      <div className="flex flex-col justify-center items-center gap-16 text-r-neutral-body mt-[30px]">
         <Checkbox checked={checked} onChange={setChecked}>
           {t('page.swap.i-understand-and-accept-it')}
         </Checkbox>
