@@ -143,12 +143,6 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
           </Trans>
         );
       }
-      // if (
-      //   AUTO_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
-      // ) {
-      //   handleRetry();
-      //   return '';
-      // }
       if (
         SHOULD_RETRY_KEYWORDS.some((keyword) => error.message.includes(keyword))
       ) {
