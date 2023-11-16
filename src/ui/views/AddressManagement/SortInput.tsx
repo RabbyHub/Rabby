@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import IconSearch from 'ui/assets/search.svg';
+import { ReactComponent as RcIconSearch } from 'ui/assets/search-currentcolor.svg';
 import { AddressSortPopup } from './SortPopup';
 import { useSwitch } from '@/ui/utils/switch';
 
@@ -11,6 +11,7 @@ import { ReactComponent as IconSortByType } from '@/ui/assets/address/sort-by-ty
 import { ReactComponent as IconSortByAlphabet } from '@/ui/assets/address/sort-by-alphabet.svg';
 import { AddressSortStore } from '@/background/service/preference';
 import clsx from 'clsx';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export const AddressSortIconMapping: Record<
   AddressSortStore['sortType'],
@@ -41,7 +42,12 @@ export const SortInput = ({
 
   return (
     <>
-      <div className={clsx('sort-input', value && 'searching')}>
+      <div
+        className={clsx(
+          'sort-input widget-has-ant-input',
+          value && 'searching'
+        )}
+      >
         <div className="sort" onClick={turnOn}>
           {/* <img className="w-16 h-16" src={AddressSortIconMapping[sortType]} /> */}
           {SortIcon}
@@ -49,7 +55,12 @@ export const SortInput = ({
         <Input
           className="search-input"
           placeholder={t('page.manageAddress.search')}
-          prefix={<img src={IconSearch} className="w-16 h-16" />}
+          prefix={
+            <ThemeIcon
+              src={RcIconSearch}
+              className="w-16 h-16 text-r-neutral-foot"
+            />
+          }
           suffix={null}
           onChange={onChange}
           value={value}

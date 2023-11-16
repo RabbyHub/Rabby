@@ -164,7 +164,7 @@ const AddressItem = memo(
         isCurrentAccount
           ? brandIcon ||
             pickKeyringThemeIcon(type as any, {
-              needLightVersion: isDarkTheme,
+              needLightVersion: true,
             }) ||
             WALLET_BRAND_CONTENT?.[brandName]?.image ||
             KEYRINGS_LOGOS[type]
