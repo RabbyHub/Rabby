@@ -78,14 +78,22 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   );
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
-  const removeAddressAndForgetDevice = React.useCallback(async () => {
-    await Promise.all(
-      currentAccountsRef.current?.map(async (account) =>
-        wallet.removeAddress(account.address, KEYSTONE_TYPE, undefined, true)
-      )
-    );
-    await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', keyringId);
-  }, [currentAccountsRef, wallet, keyringId]);
+  const removeAddressAndForgetDevice = React.useCallback(
+    async (removeEmptyKeyrings?: boolean) => {
+      await Promise.all(
+        currentAccountsRef.current?.map(async (account) =>
+          wallet.removeAddress(
+            account.address,
+            KEYSTONE_TYPE,
+            undefined,
+            removeEmptyKeyrings
+          )
+        )
+      );
+      await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', keyringId);
+    },
+    [currentAccountsRef, wallet, keyringId]
+  );
 
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
@@ -99,11 +107,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
           /**
            * This code is written to be consistent with the behavior of importing wallets via QR Code.
            */
-          await removeAddressAndForgetDevice();
-          const stashKeyringId = await wallet.initQRHardware(
-            WALLET_BRAND_TYPES.KEYSTONE
-          );
-          await wallet.requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId);
+          await removeAddressAndForgetDevice(false);
         }
 
         await wallet.requestKeyring(
@@ -147,7 +151,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       content: t('page.newAddress.hd.qrCode.switch.content', [brand]),
       okText: t('global.confirm'),
       onOk: async () => {
-        await removeAddressAndForgetDevice();
+        await removeAddressAndForgetDevice(true);
         history.push('/import/hardware/keystone');
       },
       okCancel: false,
