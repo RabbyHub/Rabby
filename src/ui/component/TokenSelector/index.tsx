@@ -206,7 +206,7 @@ const TokenSelector = ({
 
   return (
     <Drawer
-      className="token-selector"
+      className="token-selector custom-popup is-support-darkmode"
       height="580px"
       placement="bottom"
       visible={visible}
@@ -310,7 +310,7 @@ const TokenSelector = ({
                       />
                       <div className="flex flex-col gap-4">
                         <span
-                          className="symbol text-13 text-gray-title font-medium"
+                          className="symbol text-13 text-r-neutral-title-1 font-medium"
                           title={token.amount.toString()}
                         >
                           {formatTokenAmount(token.amount)}
@@ -346,7 +346,7 @@ const TokenSelector = ({
                             .toFixed()
                         )}
                         className={clsx(
-                          'max-w-full text-13 text-gray-title',
+                          'max-w-full text-13 text-r-neutral-title-1',
                           'truncate'
                         )}
                       >

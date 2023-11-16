@@ -13,12 +13,15 @@
       flex-direction: column;
     }
   }
+  .ant-drawer-close .anticon.anticon-close > svg {
+    color: var(--r-neutral-foot, #6A7587);
+  }
   .header {
     font-weight: 500;
     font-size: 20px;
     line-height: 23px;
     text-align: center;
-    color: #161819;
+    color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
     margin-bottom: 20px;
   }
   .input-wrapper {
@@ -31,12 +34,12 @@
     .ant-input-affix-wrapper-lg {
       padding: 12px;
       border-radius: 6px;
-      border: 1px solid @color-border;
-      background-color: @color-bg;
+      // border: 1px solid @color-border;
+      // background-color: @color-bg;
       transition: border-color 0.3s;
       .ant-input {
-        border-radius: 0;
-        background-color: transparent;
+        // border-radius: 0;
+        // background-color: transparent;
       }
       &:hover,
       &.active {
@@ -50,7 +53,7 @@
     padding: 0 @token-selector-px;
     justify-content: flex-end;
     align-items: center;
-    color: #707880;
+    color: var(--r-neutral-foot, #6A7587);
     font-size: 12px;
     line-height: 14px;
     span {
@@ -69,7 +72,7 @@
   }
   .token-list {
     position: relative;
-    background-color: #fff;
+    background-color: transparent;
     flex: 1;
     overflow-y: auto;
     margin: 0;
@@ -89,7 +92,7 @@
             white-space: nowrap;
             font-size: 12px;
             line-height: 15px;
-            color: #4b4d59;
+            color: var(--r-neutral-body, #3E495E);
             margin-left: 12px;
           }
         }
@@ -98,14 +101,14 @@
           text-align: left;
           font-size: 12px;
           line-height: 14px;
-          color: #4b4d59;
+          color: var(--r-neutral-body, #3E495E);
         }
         &:nth-child(3) {
           width: 100px;
           text-align: right;
           font-size: 13px;
           line-height: 15px;
-          color: #13141a;
+          color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
           font-weight: 500;
           flex: 1;
         }
@@ -115,16 +118,17 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background-color: #fff;
+      background-color: var(--r-neutral-bg-1, #fff);
       cursor: initial;
       font-size: 12px;
       line-height: 14px;
-      color: #707880;
+      color: var(--r-neutral-foot, #6A7587);
       height: 35px;
       align-items: center;
       margin-bottom: 8px;
       &::after {
         .part-border(360px);
+        background-color: transparent;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
@@ -132,7 +136,7 @@
       & > div {
         font-size: 12px;
         line-height: 14px;
-        color: #707880;
+        color: var(--r-neutral-foot, #6A7587);
         font-weight: normal;
         &:nth-last-child(1) {
           flex: 1;
@@ -184,7 +188,8 @@
       align-items: center;
 
       border-radius: 4px;
-      background: #f5f6fa;
+      color: var(--r-neutral-body, #D3D8E0);
+      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     }
 
     img.filter-item__chain-logo {
