@@ -75,6 +75,7 @@ import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -1228,6 +1229,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleAllow = async () => {
     if (!selectedGas) return;
 
@@ -1237,6 +1239,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     const currentAccount =
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
 
     try {
       validateGasPriceRange(tx);

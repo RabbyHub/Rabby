@@ -2112,11 +2112,7 @@ export class WalletController extends BaseController {
       return (
         item.type === KEYRING_CLASS.MNEMONIC &&
         item.mnemonic &&
-        Object.keys(item._index2wallet).some((key) => {
-          return (
-            item._index2wallet[key][0].toLowerCase() === address.toLowerCase()
-          );
-        })
+        item.accounts.includes(address)
       );
     });
   };
@@ -2164,12 +2160,51 @@ export class WalletController extends BaseController {
     return keyring.mnemonic;
   };
 
-  getMnemonicAddressIndex = async (address: string) => {
+  private getMnemonicKeyring = async (
+    type: 'address' | 'publickey',
+    value: string
+  ) => {
+    let keyring;
+    if (type === 'address') {
+      keyring = await this._getMnemonicKeyringByAddress(value);
+    } else {
+      keyring = await this.getMnemonicKeyRingFromPublicKey(value);
+    }
+
+    if (!keyring) {
+      throw new Error(t('background.error.notFoundKeyringByAddress'));
+    }
+
+    return keyring;
+  };
+
+  getMnemonicKeyringIfNeedPassphrase = async (
+    type: 'address' | 'publickey',
+    value: string
+  ) => {
+    const keyring = await this.getMnemonicKeyring(type, value);
+    return keyring.needPassphrase;
+  };
+
+  checkPassphraseBelongToMnemonic = async (
+    type: 'address' | 'publickey',
+    value: string,
+    passphrase: string
+  ) => {
+    const keyring = await this.getMnemonicKeyring(type, value);
+    const result = keyring.checkPassphrase(passphrase);
+    if (result) {
+      keyring.setPassphrase(passphrase);
+    }
+    return result;
+  };
+
+  getMnemonicAddressInfo = async (address: string) => {
     const keyring = this._getMnemonicKeyringByAddress(address);
     if (!keyring) {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
-    return await keyring.getIndexByAddress(address);
+    return await keyring.getInfoByAddress(address);
   };
 
   generateKeyringWithMnemonic = async (

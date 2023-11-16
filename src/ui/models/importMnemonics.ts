@@ -160,19 +160,23 @@ export const importMnemonics = createModel<RootModel>()({
           let index = 0;
 
           if (!isExistedKeyring) {
-            index = await wallet.requestKeyring(
-              KEYRING_TYPE.HdKeyring,
-              'getIndexByAddress',
-              stashKeyringId ?? null,
-              address
-            );
+            index = (
+              await wallet.requestKeyring(
+                KEYRING_TYPE.HdKeyring,
+                'getInfoByAddress',
+                stashKeyringId ?? null,
+                address
+              )
+            ).index;
           } else {
-            index = await wallet.requestHDKeyringByMnemonics(
-              finalMnemonics,
-              'getIndexByAddress',
-              store.importMnemonics.passphrase,
-              address
-            );
+            index = (
+              await wallet.requestHDKeyringByMnemonics(
+                finalMnemonics,
+                'getInfoByAddress',
+                store.importMnemonics.passphrase,
+                address
+              )
+            ).index;
           }
           return {
             address,

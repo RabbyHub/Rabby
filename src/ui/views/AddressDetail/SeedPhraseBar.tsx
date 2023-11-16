@@ -1,5 +1,6 @@
 import { KEYRING_CLASS } from '@/constant';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
@@ -13,24 +14,25 @@ interface Props {
 export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const goToHDManager = async () => {
-    let keyringId;
     AuthenticationModalPromise({
       confirmText: t('global.Confirm'),
       cancelText: t('global.Cancel'),
       title: t('page.addressDetail.manage-seed-phrase'),
       validationHandler: async (password: string) => {
         await wallet.getMnemonics(password, address);
-        const mnemonics = await wallet.getMnemonicByAddress(address);
-        // TODO
-        const result = await wallet.generateKeyringWithMnemonic(
-          mnemonics,
-          'passphprase'
-        );
-        keyringId = result.keyringId;
       },
       async onFinished() {
+        const passphrase = await invokeEnterPassphrase(address);
+        const mnemonics = await wallet.getMnemonicByAddress(address);
+        const result = await wallet.generateKeyringWithMnemonic(
+          mnemonics,
+          passphrase
+        );
+        const keyringId = result.keyringId;
+
         openInternalPageInTab(
           `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
         );

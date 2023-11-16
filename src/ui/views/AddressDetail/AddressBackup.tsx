@@ -7,6 +7,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { useHistory } from 'react-router-dom';
 import { KEYRING_TYPE } from '@/constant';
 import { useTranslation } from 'react-i18next';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 type Props = {
   address: string;
@@ -25,10 +26,12 @@ export const AddressBackup = ({ address, type }: Props) => {
   ) {
     return null;
   }
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();
     let data = '';
+
     await AuthenticationModalPromise({
       confirmText: t('global.confirm'),
       cancelText: t('global.Cancel'),
@@ -37,6 +40,10 @@ export const AddressBackup = ({ address, type }: Props) => {
           ? t('page.addressDetail.backup-private-key')
           : t('page.addressDetail.backup-seed-phrase'),
       validationHandler: async (password: string) => {
+        if (type === KEYRING_TYPE.HdKeyring) {
+          await invokeEnterPassphrase(address);
+        }
+
         if (path === 'private-key') {
           data = await wallet.getPrivateKey(password, {
             address,

@@ -41,6 +41,7 @@ import { isTestnetChainId } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface SignTypedDataProps {
   method: string;
@@ -298,6 +299,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
     if (activeApprovalPopup()) {
@@ -306,6 +308,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = isGnosis
       ? account
       : await wallet.getCurrentAccount();
+
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
+
     if (isGnosis && params.account) {
       if (WaitingSignMessageComponent[params.account.type]) {
         wallet.signTypedData(

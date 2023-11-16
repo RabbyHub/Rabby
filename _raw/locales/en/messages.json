@@ -314,7 +314,8 @@
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
         "safe": "Safe address",
-        "coboSafe": "Cobo Argus Address"
+        "coboSafe": "Cobo Argus Address",
+        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)"
       },
       "qrcode": {
         "signWith": "Sign with {{brand}}",
@@ -817,7 +818,9 @@
       "sort-by-balance": "Sort by balance",
       "sort-by-address-type": "Sort by address type",
       "sort-by-address-note": "Sort by address note",
-      "sort-address": "Sort Address"
+      "sort-address": "Sort Address",
+      "enterThePassphrase": "Enter the Passphrase",
+      "enterPassphraseTitle": "Enter Passphrase to Sign"
     },
     "dashboard": {
       "home": {
@@ -1869,6 +1872,7 @@
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "Mainnet & Testnet",
       "TESTNET": "Only Testnets"
-    }
+    },
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Imported by Seed Phrase (Passphrase)"
   }
 }

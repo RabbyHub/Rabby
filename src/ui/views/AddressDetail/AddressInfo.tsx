@@ -186,7 +186,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
           <div className="rabby-list-item-label">
             {t('page.addressDetail.source')}
           </div>
-          <div className="rabby-list-item-extra flex gap-[4px]">
+          <div className="rabby-list-item-extra flex gap-[4px] max-w-full">
             <img
               className="w-[16px] h-[16px]"
               src={

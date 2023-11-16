@@ -22,6 +22,7 @@ import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/utils/ledger';
 import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 const ManageAddress = () => {
   const { t } = useTranslation();
@@ -197,10 +198,20 @@ const ManageAddress = () => {
     });
   };
 
+  const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const handleAddSeedPhraseAddress = async () => {
     if (TypedWalletObj?.[activeIndex]?.publicKey) {
+      const passphrase = await invokeEnterPassphrase(
+        TypedWalletObj?.[activeIndex]?.publicKey
+      );
       const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
         TypedWalletObj[activeIndex].publicKey!
+      );
+      await wallet.requestKeyring(
+        KEYRING_CLASS.MNEMONIC,
+        'setPassphrase',
+        keyringId,
+        passphrase
       );
       openInternalPageInTab(
         `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
