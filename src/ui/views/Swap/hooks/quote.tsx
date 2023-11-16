@@ -197,11 +197,17 @@ export const useQuoteMethods = () => {
         if (!tokenApprovePreExecTx?.pre_exec?.success) {
           throw new Error('pre_exec_tx error');
         }
-        gasUsed += tokenApprovePreExecTx.gas.gas_used;
+
+        gasUsed +=
+          tokenApprovePreExecTx.gas.gas_limit ||
+          tokenApprovePreExecTx.gas.gas_used;
 
         pendingTx.push({
           ...tokenApproveTx,
-          gas: `0x${new BigNumber(tokenApprovePreExecTx.gas.gas_used)
+          gas: `0x${new BigNumber(
+            tokenApprovePreExecTx.gas.gas_limit ||
+              tokenApprovePreExecTx.gas.gas_used
+          )
             .times(4)
             .toString(16)}`,
         });
@@ -247,7 +253,7 @@ export const useQuoteMethods = () => {
         throw new Error('pre_exec_tx error');
       }
 
-      gasUsed += swapPreExecTx.gas.gas_used;
+      gasUsed += swapPreExecTx.gas.gas_limit || swapPreExecTx.gas.gas_used;
 
       const gasUsdValue = new BigNumber(gasUsed)
         .times(gasPrice)
