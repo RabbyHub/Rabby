@@ -1108,6 +1108,7 @@
         "shouldRetry": "发生了某些错误。请重试。",
         "hardwareRejectError": "硬件拒绝了签名请求",
         "mismatchedWalletError": "钱包不匹配",
+        "verifyPasswordError": "签名失败，请解锁后重试",
         "shouldOpenKeystoneHomePageError": "请打开 Keystone 主页"
       },
       "resend": "重试",

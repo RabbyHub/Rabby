@@ -338,6 +338,7 @@
         "shouldRetry": "Some error occurred. Please retry.",
         "hardwareRejectError": "Hardware rejects signature",
         "mismatchedWalletError": "Mismatched wallet",
+        "verifyPasswordError": "Signature failure, please try again after unlocking",
         "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
       },
       "ledger": {
