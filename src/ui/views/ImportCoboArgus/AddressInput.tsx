@@ -28,7 +28,7 @@ export const AddressInput: React.FC<Props> = ({
           'rounded-[6px] py-16 px-12',
           'bg-r-neutral-card-1',
           {
-            'border-r-neutral-line': !error,
+            'border-rabby-neutral-line': !error,
             'border-red': error,
           }
         )}

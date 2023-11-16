@@ -52,7 +52,7 @@ export const TxStatus = ({
 
   if (isSuccess) {
     return (
-      <div className="p-[8px] h-[36px] border-r-neutral-bg-1 text-r-neutral-bg-1 hover:border-r-neutral-bg-1 rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]">
+      <div className="p-[8px] h-[36px] border-rabby-neutral-bg-1 text-r-neutral-bg-1 hover:border-rabby-neutral-bg-1 rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]">
         {t('page.pendingDetail.TxStatus.completed')}
       </div>
     );
@@ -81,7 +81,7 @@ export const TxStatus = ({
         </div>
       </Popover>
       <Button
-        className="h-[36px] border-r-neutral-bg-1 text-r-neutral-bg-1 hover:border-[#FFF] rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]"
+        className="h-[36px] border-rabby-neutral-bg-1 text-r-neutral-bg-1 hover:border-[#FFF] rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]"
         ghost
         onClick={onReBroadcast}
       >

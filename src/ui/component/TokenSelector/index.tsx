@@ -171,15 +171,15 @@ const TokenSelector = ({
           />
 
           {!query || isSearchAddr ? (
-            <p className="text-gray-content text-14 mt-12 text-center mb-0">
+            <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
               {t('component.TokenSelector.noTokens')}
             </p>
           ) : (
             <>
-              <p className="text-gray-content text-14 mt-12 text-center mb-0">
+              <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
                 {t('component.TokenSelector.noMatch')}
               </p>
-              <p className="text-gray-content text-14 mt-0 text-center">
+              <p className="text-r-neutral-foot text-14 mt-0 text-center">
                 {/* Try to search contract address on {{ chainName }} */}
                 {t('component.TokenSelector.noMatchSuggestion', {
                   chainName:
@@ -371,29 +371,29 @@ const DefaultLoading = () => (
     <div className="gap-x-12 flex">
       <Skeleton.Input
         active
-        className="rounded-full w-[24px] h-[24px] bg-gray-bg"
+        className="rounded-full w-[24px] h-[24px] bg-r-neutral-bg-1"
       />
       <div className="gap-y-2 flex flex-col">
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[72px] h-[15px]"
+          className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[15px]"
         />
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[44px] h-[10px]"
+          className="bg-r-neutral-bg-1 rounded-[2px] w-[44px] h-[10px]"
         />
       </div>
     </div>
     <div>
       <Skeleton.Input
         active
-        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
+        className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
     <div>
       <Skeleton.Input
         active
-        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
+        className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
   </div>

@@ -23,14 +23,14 @@ export const QuoteLoading = ({
     <div
       className={clsx(
         'flex-1 p-12 h-[48px] flex item-center rounded-[6px]',
-        isCex ? '' : 'border-solid border border-gray-divider'
+        isCex ? '' : 'border-solid border border-rabby-neutral-line'
       )}
     >
       <QuoteLogo isLoading={true} logo={logo} />
-      <span className="ml-[8px] text-13 font-medium text-gray-title flex items-center ">
+      <span className="ml-[8px] text-13 font-medium text-r-neutral-title-1 flex items-center">
         {name}
       </span>
-      <div className="ml-auto gap-[48px] flex  justify-between items-center">
+      <div className="ml-auto gap-[48px] flex justify-between items-center">
         <Skeleton.Input
           active
           style={{
