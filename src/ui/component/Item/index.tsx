@@ -12,6 +12,7 @@ import IconArrowRight, {
 } from 'ui/assets/address/right-arrow.svg';
 import ArrowLeftWhiteBack from 'ui/assets/import/arrow-left-white.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { ThemeIconType } from '@/constant';
 
 const ItemWrapper = styled.div<{
   hoverBorder: boolean;
@@ -46,17 +47,6 @@ const ItemWrapper = styled.div<{
       : ''}
 `;
 
-export const IconImg = styled.img`
-  width: 24px;
-  height: 24px;
-`;
-
-const RightIconImg = styled(IconImg)`
-  margin-left: auto;
-  width: 16px;
-  height: 16px;
-`;
-
 const RightIconSvg = styled(RcIconArrowRight)`
   margin-left: auto;
   width: 16px;
@@ -73,7 +63,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   hoverBgColor?: string;
   className?: string;
 
-  leftIcon?: string;
+  leftIcon?: ThemeIconType;
   rightIcon?: string | null;
   leftIconClassName?: string;
   rightIconClassName?: string;
@@ -112,7 +102,10 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
       {left ? (
         left
       ) : leftIcon ? (
-        <IconImg src={leftIcon} className={leftIconClassName} alt="" />
+        <ThemeIcon
+          src={leftIcon}
+          className={clsx(leftIconClassName, 'w-24 h-24')}
+        />
       ) : null}
       {children}
       {right ? (
