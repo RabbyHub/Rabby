@@ -98,6 +98,9 @@ export const useKeystoneUSBErrorMessage = () => {
         case StatusCode.PRS_PARSING_ERROR:
           errorMessage = error?.message;
           break;
+        case StatusCode.PRS_PARSING_MISMATCHED_WALLET:
+          errorMessage = t('page.signFooterBar.keystone.mismatchedWalletError');
+          break;
         default:
           if (error.message.includes('No device selected')) {
             errorMessage = t('page.newAddress.keystone.noDeviceFoundError');

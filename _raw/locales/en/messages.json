@@ -337,6 +337,7 @@
         "txRejected": "Transaction rejected",
         "shouldRetry": "Some error occurred. Please retry.",
         "hardwareRejectError": "Hardware rejects signature",
+        "mismatchedWalletError": "Mismatched wallet",
         "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
       },
       "ledger": {
