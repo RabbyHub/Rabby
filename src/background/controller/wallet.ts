@@ -4,9 +4,8 @@ import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
-import { chain, groupBy, uniq } from 'lodash';
+import { groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
-import * as optimismContracts from '@eth-optimism/contracts';
 import {
   keyringService,
   preferenceService,
@@ -37,7 +36,6 @@ import BaseController from './base';
 import {
   KEYRING_WITH_INDEX,
   CHAINS,
-  INTERNAL_REQUEST_ORIGIN,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -50,12 +48,7 @@ import {
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import {
-  TokenItem,
-  TotalBalanceResponse,
-  Tx,
-  testnetOpenapiService,
-} from '../service/openapi';
+import { TokenItem, Tx, testnetOpenapiService } from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -81,7 +74,6 @@ import KeystoneKeyring, {
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
-import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
@@ -102,6 +94,7 @@ import { getWeb3Provider } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { estimateL1Fee } from '@/utils/l2';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -635,23 +628,13 @@ export class WalletController extends BaseController {
       buildinProvider.currentProvider
     );
 
-    const signer = provider.getSigner();
-    const OVMGasPriceOracle = optimismContracts
-      .getContractFactory('OVM_GasPriceOracle')
-      .attach(optimismContracts.predeploys.OVM_GasPriceOracle);
-    const abi = JSON.parse(
-      OVMGasPriceOracle.interface.format(
-        ethers.utils.FormatTypes.json
-      ) as string
-    );
+    const res = await estimateL1Fee({
+      txParams: txMeta.txParams,
+      chain,
+      provider,
+    });
 
-    const contract = new Contract(OVMGasPriceOracle.address, abi, signer);
-    const serializedTransaction = buildUnserializedTransaction(
-      txMeta
-    ).serialize();
-
-    const res = await contract.getL1Fee(serializedTransaction);
-    return res.toHexString();
+    return res;
   };
 
   transferNFT = async (
