@@ -2,15 +2,33 @@ import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
-import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
-import IconHardWallet from 'ui/assets/address/hardwallet.svg';
-import IconMobileWallet from 'ui/assets/address/mobile-wallet.svg';
-import InstitutionalWallet from 'ui/assets/address/institutional-wallet.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
-import IconMnemonics from 'ui/assets/import/mnemonics-light.svg';
-import IconPrivatekey from 'ui/assets/import/privatekey-light.svg';
+import IconWalletConnect, {
+  ReactComponent as RcIconWalletConnect,
+} from 'ui/assets/walletlogo/walletconnect.svg';
+import IconCreatenewaddr, {
+  ReactComponent as RcIconCreatenewaddr,
+} from 'ui/assets/walletlogo/createnewaddr.svg';
+import IconAddwatchmodo, {
+  ReactComponent as RcIconAddwatchmodo,
+} from 'ui/assets/walletlogo/addwatchmode.svg';
+import IconHardWallet, {
+  ReactComponent as RcIconHardWallet,
+} from 'ui/assets/address/hardwallet.svg';
+import IconMobileWallet, {
+  ReactComponent as RcIconMobileWallet,
+} from 'ui/assets/address/mobile-wallet.svg';
+import InstitutionalWallet, {
+  ReactComponent as RcInstitutionalWallet,
+} from 'ui/assets/address/institutional-wallet.svg';
+import IconMetamask, {
+  ReactComponent as RcIconMetamask,
+} from 'ui/assets/dashboard/icon-metamask.svg';
+import IconMnemonics, {
+  ReactComponent as RcIconMnemonics,
+} from 'ui/assets/import/mnemonics-light.svg';
+import IconPrivatekey, {
+  ReactComponent as RcIconPrivatekey,
+} from 'ui/assets/import/privatekey-light.svg';
 
 import './style.less';
 
@@ -189,17 +207,17 @@ const AddAddressOptions = () => {
         {
           title: t('page.newAddress.connectHardwareWallets'),
           key: WALLET_BRAND_CATEGORY.HARDWARE,
-          icon: IconHardWallet,
+          icon: RcIconHardWallet,
         },
         {
           title: t('page.newAddress.connectMobileWalletApps'),
           key: WALLET_BRAND_CATEGORY.MOBILE,
-          icon: IconMobileWallet,
+          icon: RcIconMobileWallet,
         },
         {
           title: t('page.newAddress.connectInstitutionalWallets'),
           key: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
-          icon: InstitutionalWallet,
+          icon: RcInstitutionalWallet,
         },
       ]
         .map((item) => {
@@ -212,7 +230,7 @@ const AddAddressOptions = () => {
     [wallets]
   );
 
-  const createIMportAddrList = React.useMemo(
+  const createImportAddrList = React.useMemo(
     () => [
       {
         leftIcon: IconCreatenewaddr,
@@ -292,14 +310,19 @@ const AddAddressOptions = () => {
 
   return (
     <div className="rabby-container pb-[12px]" ref={rootRef}>
-      {[createIMportAddrList, centerList].map((items, index) => (
+      {[createImportAddrList, centerList].map((items, index) => (
         <div
           className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]"
           key={index}
         >
           {items.map((e) => {
             return (
-              <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
+              <Item
+                key={e.brand}
+                bgColor="transparent"
+                leftIcon={e.leftIcon}
+                onClick={e.onClick}
+              >
                 <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
@@ -316,6 +339,7 @@ const AddAddressOptions = () => {
             <div key={item.key} className={clsx(isSelected && 'pb-[16px]')}>
               <Item
                 hoverBorder={false}
+                bgColor="transparent"
                 leftIcon={item.icon}
                 className={clsx('bg-transparent', item.key)}
                 rightIconClassName={clsx(

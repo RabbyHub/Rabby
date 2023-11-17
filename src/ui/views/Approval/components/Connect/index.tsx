@@ -52,7 +52,8 @@ const ConnectWrapper = styled.div`
       border-radius: 8px;
       background: #fff;
       font-size: 13px;
-      border: 1px solid #e5e9ef;
+      border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       box-shadow: none;
       .chain-icon-comp {
         width: 16px;
