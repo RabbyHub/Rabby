@@ -1106,6 +1106,11 @@ export class WalletController extends BaseController {
 
   getLastSelectedSwapChain = swapService.getSelectedChain;
   setLastSelectedSwapChain = swapService.setSelectedChain;
+  getSelectedFromToken = swapService.getSelectedFromToken;
+  getSelectedToToken = swapService.getSelectedToToken;
+  setSelectedFromToken = swapService.setSelectedFromToken;
+  setSelectedToToken = swapService.setSelectedToToken;
+
   getSwap = swapService.getSwap;
   getSwapGasCache = swapService.getLastTimeGasSelection;
   updateSwapGasCache = swapService.updateLastTimeGasSelection;
