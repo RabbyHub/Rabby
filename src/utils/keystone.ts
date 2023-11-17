@@ -65,6 +65,11 @@ export const useIsKeystoneUsbAvailable = (brand?: string) => {
   return isAvailable;
 };
 
+const extractErrorCode = (errorMsg: string): number | null => {
+  const match = errorMsg.match(/error_code: (\d+)/);
+  return match ? parseInt(match[1]) : null;
+};
+
 export const useKeystoneUSBErrorMessage = () => {
   const { t } = useTranslation();
 
@@ -72,7 +77,7 @@ export const useKeystoneUSBErrorMessage = () => {
     (error: any) => {
       let errorMessage = '';
 
-      switch (error?.code) {
+      switch (extractErrorCode(error?.message)) {
         case StatusCode.PRS_EXPORT_ADDRESS_DISALLOWED:
           if (error.message.includes('locked')) {
             errorMessage = t('page.newAddress.keystone.deviceIsLockedError');
