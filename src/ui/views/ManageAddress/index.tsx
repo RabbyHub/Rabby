@@ -201,17 +201,9 @@ const ManageAddress = () => {
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const handleAddSeedPhraseAddress = async () => {
     if (TypedWalletObj?.[activeIndex]?.publicKey) {
-      const passphrase = await invokeEnterPassphrase(
-        TypedWalletObj?.[activeIndex]?.publicKey
-      );
+      await invokeEnterPassphrase(TypedWalletObj?.[activeIndex]?.publicKey);
       const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
         TypedWalletObj[activeIndex].publicKey!
-      );
-      await wallet.requestKeyring(
-        KEYRING_CLASS.MNEMONIC,
-        'setPassphrase',
-        keyringId,
-        passphrase
       );
       openInternalPageInTab(
         `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`

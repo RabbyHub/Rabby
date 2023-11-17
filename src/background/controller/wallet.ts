@@ -2186,6 +2186,14 @@ export class WalletController extends BaseController {
     return keyring.needPassphrase;
   };
 
+  getMnemonicKeyringPassphrase = async (
+    type: 'address' | 'publickey',
+    value: string
+  ) => {
+    const keyring = await this.getMnemonicKeyring(type, value);
+    return keyring.passphrase;
+  };
+
   checkPassphraseBelongToMnemonic = async (
     type: 'address' | 'publickey',
     value: string,
