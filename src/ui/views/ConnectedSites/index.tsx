@@ -62,7 +62,7 @@ const ConnectedSites = () => {
               }
             >
               <div className="site-info">
-                <p className="text-13 font-medium text-gray-title">
+                <p className="text-13 font-medium text-r-neutral-title-1">
                   {site.origin}
                 </p>
               </div>

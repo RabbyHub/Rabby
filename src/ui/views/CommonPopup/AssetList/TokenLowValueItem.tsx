@@ -35,7 +35,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
     <div className={clsx('flex justify-between items-center mt-8', className)}>
       <div
         className={clsx(
-          'text-black text-13',
+          'text-r-neutral-foot text-13',
           'flex items-center',
           'cursor-pointer',
           'hover:opacity-60'
@@ -50,7 +50,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         </div>
         <LowValueArrowSVG />
       </div>
-      <div className="text-13 text-gray-title font-medium">
+      <div className="text-13 text-r-neutral-title-1 font-medium">
         ${splitNumberByStep(totalValue?.toFixed(2) ?? '0')}
       </div>
 
@@ -70,6 +70,7 @@ export const TokenLowValueItem: React.FC<Props> = ({ className, list }) => {
         bodyStyle={{
           padding: '20px 20px 0',
         }}
+        isSupportDarkMode
       >
         {list?.length ? (
           <TokenTable

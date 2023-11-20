@@ -12,7 +12,7 @@ export enum TokenTabEnum {
 }
 
 const TabsStyled = styled(Radio.Group)`
-  background: #f5f6fa;
+  background: var(--r-neutral-card-2, #f2f4f7);
   border-radius: 6px;
   padding: 2px;
 
@@ -28,7 +28,7 @@ const TabsStyled = styled(Radio.Group)`
     border-radius: 4px;
     padding: 6px 8px;
     margin-right: 0;
-    color: #707280;
+    color: var(--r-neutral-foot, #6a7587);
 
     &:after {
       display: none;
@@ -36,8 +36,8 @@ const TabsStyled = styled(Radio.Group)`
   }
 
   .ant-radio-wrapper-checked {
-    background: #fff;
-    color: #13141a;
+    background: var(--r-neutral-card-1, #fff);
+    color: var(--r-neutral-title-1, rgba(247, 250, 252, 1));
   }
 `;
 

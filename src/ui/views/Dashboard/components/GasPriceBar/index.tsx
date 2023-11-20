@@ -91,7 +91,12 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
     >
       <div className="eth-price">
         {tokenLoading ? (
-          <Skeleton.Avatar size={18} active shape="circle" />
+          <Skeleton.Avatar
+            className="bg-r-neutral-card-2"
+            size={18}
+            active
+            shape="circle"
+          />
         ) : (
           <img
             src={tokenLogo}
@@ -102,7 +107,10 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
           />
         )}
         {currentPriceLoading ? (
-          <Skeleton.Button className="h-[14px]" active={true} />
+          <Skeleton.Button
+            className="h-[14px] bg-r-neutral-card-2"
+            active={true}
+          />
         ) : (
           <>
             <div className="gasprice">
@@ -135,7 +143,10 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
           className="w-[16px] h-[16px] relative -top-1"
         />
         {gasPriceLoading ? (
-          <Skeleton.Button className="h-[14px]" active={true} />
+          <Skeleton.Button
+            className="h-[14px] bg-r-neutral-card-2"
+            active={true}
+          />
         ) : (
           <>
             <div className="gasprice">{`${splitNumberByStep(gasPrice)}`}</div>

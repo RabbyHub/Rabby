@@ -37,8 +37,8 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
             'font-medium leading-[15px]',
             'flex gap-x-4 items-center',
             {
-              'text-13 text-gray-title': !isSmallAssets,
-              'text-12 text-gray-subTitle': isSmallAssets,
+              'text-13 text-r-neutral-title-1': !isSmallAssets,
+              'text-12 text-r-neutral-body': isSmallAssets,
             }
           )}
         >
@@ -60,7 +60,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           ) : null}
         </div>
         {!isSmallAssets && (
-          <div className="text-gray-subTitle text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <div className="text-r-neutral-body text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
             @{isNil(item.price) ? '-' : formatUsdValue(item.price || 0)}
           </div>
         )}
@@ -73,10 +73,10 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
   const isSmallAssets = [MINI_ASSET_ID, MINI_DEBT_ID].includes(item.id);
 
   return (
-    <TCell className="py-8 text-gray-subTitle text-12 w-[30%]">
+    <TCell className="py-8 text-r-neutral-body text-12 w-[30%]">
       <div className="flex flex-col gap-4 overflow-hidden">
         {!isSmallAssets && (
-          <span className="text-gray-title text-13 font-medium leading-[15px]">
+          <span className="text-r-neutral-title-1 text-13 font-medium leading-[15px]">
             {isNil(item.amount)
               ? '-'
               : formatAmount(Math.abs(item.amount || 0))}
@@ -84,8 +84,8 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
         )}
         <span
           className={clsx({
-            'text-gray-subTitle text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden': !isSmallAssets,
-            'text-gray-title text-13 font-medium leading-[15px]': isSmallAssets,
+            'text-r-neutral-body text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden': !isSmallAssets,
+            'text-r-neutral-title-1 text-13 font-medium leading-[15px]': isSmallAssets,
           })}
         >
           {formatUsdValue(Math.abs(item._value))}
@@ -108,7 +108,7 @@ const TokenItemPercent: React.FC<Props> = ({ item }) => {
       <div
         className={clsx(
           'absolute inset-0 flex items-center pl-8',
-          'text-12 text-gray-subTitle'
+          'text-12 text-r-neutral-body'
         )}
       >
         {item._percent.toFixed(2)}%

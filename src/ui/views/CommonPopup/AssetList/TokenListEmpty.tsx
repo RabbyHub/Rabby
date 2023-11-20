@@ -15,7 +15,7 @@ export const TokenListEmpty: React.FC<Props> = ({ className, text }) => {
   return (
     <div className={clsx('mt-[117px]', className)}>
       <TokenEmptySVG className="m-auto" />
-      <div className="mt-[24px] text-gray-subTitle text-13 text-center">
+      <div className="mt-[24px] text-r-neutral-body text-13 text-center">
         {text}
       </div>
     </div>
