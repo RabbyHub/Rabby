@@ -57,28 +57,28 @@ export default function SwitchThemeModal({
         {t('page.dashboard.settings.settings.themeMode')}
       </PageHeader>
       <div className="switch-theme-option-list">
-        {ThemeModes.filter((x) => x.code !== DARK_MODE_TYPE.system).map(
-          (item) => {
-            return (
-              <div
-                className="switch-theme-option-list-item"
-                key={item.code}
-                onClick={() => {
-                  handleSelect(item.code);
-                }}
-              >
-                {item.name}
-                {themeMode === item.code && (
-                  <img
-                    src={IconCheck}
-                    alt=""
-                    className="switch-theme-option-list-item-icon"
-                  />
-                )}
-              </div>
-            );
-          }
-        )}
+        {ThemeModes.filter(
+          (x) => x.code !== DARK_MODE_TYPE.system || !!process.env.DEBUG
+        ).map((item) => {
+          return (
+            <div
+              className="switch-theme-option-list-item"
+              key={item.code}
+              onClick={() => {
+                handleSelect(item.code);
+              }}
+            >
+              {item.name}
+              {themeMode === item.code && (
+                <img
+                  src={IconCheck}
+                  alt=""
+                  className="switch-theme-option-list-item-icon"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

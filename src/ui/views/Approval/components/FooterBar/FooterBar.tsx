@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -227,16 +228,18 @@ export const FooterBar: React.FC<Props> = ({
     init();
   }, []);
 
+  const { isDarkTheme } = useThemeMode();
+
   if (!account) {
     return null;
   }
 
   return (
     <div className="relative">
-      {hasShadow && <Shadow />}
+      {!isDarkTheme && hasShadow && <Shadow />}
       <Wrapper
         className={clsx({
-          'has-shadow': hasShadow,
+          'has-shadow': !isDarkTheme && hasShadow,
         })}
       >
         {origin && (

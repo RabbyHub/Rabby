@@ -75,10 +75,10 @@ export const ActionWrapper = styled.div`
           }
         }
         .ant-tooltip-arrow-content {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
         }
         .ant-tooltip-inner {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
           padding: 0;
           font-size: 13px;
           font-weight: 500;
@@ -93,7 +93,7 @@ export const ActionWrapper = styled.div`
   }
   .container {
     padding: 14px;
-    border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+    /* border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1)); */
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
 
@@ -162,7 +162,7 @@ const MessageWrapper = styled.div`
   }
   &.no-action {
     .content {
-      background-color: #fff;
+      background: var(--r-neutral-card-3, rgba(255, 255, 255, 0.06));
     }
   }
 `;

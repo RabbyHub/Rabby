@@ -22,7 +22,7 @@ export const NoActionBody: React.FC<Props> = ({
 
   return (
     <>
-      <div className="h-1 bg-[#000] bg-opacity-5 w-full my-12" />
+      <div className="h-1 bg-r-neutral-line w-full my-12" />
       <div className="leading-[16px]">
         {isRequested ? (
           <div className="text-r-neutral-foot text-center">

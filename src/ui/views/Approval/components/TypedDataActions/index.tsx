@@ -68,7 +68,6 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   border-radius: 8px;
   margin-bottom: 8px;
-  background-color: #fff;
   .action-header {
     display: flex;
     justify-content: space-between;
@@ -96,10 +95,10 @@ export const ActionWrapper = styled.div`
           }
         }
         .ant-tooltip-arrow-content {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
         }
         .ant-tooltip-inner {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
           padding: 0;
           font-size: 13px;
           font-weight: 500;
@@ -114,6 +113,11 @@ export const ActionWrapper = styled.div`
   }
   .container {
     padding: 14px;
+    /* border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1)); */
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -138,7 +142,7 @@ const MessageWrapper = styled.div`
     position: relative;
     font-size: 14px;
     line-height: 16px;
-    color: #666666;
+    color: var(--r-neutral-title-1, #f7fafc);
     text-align: center;
     margin-bottom: 10px;
     margin-left: -20px;
@@ -147,7 +151,7 @@ const MessageWrapper = styled.div`
       content: '';
       width: 40%;
       height: 1px;
-      border-top: 1px dashed #c7c9d7;
+      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       position: absolute;
       top: 50%;
       left: 0;
@@ -156,7 +160,7 @@ const MessageWrapper = styled.div`
       content: '';
       width: 40%;
       height: 1px;
-      border-top: 1px dashed #c7c9d7;
+      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       position: absolute;
       top: 50%;
       right: 0;
@@ -166,20 +170,20 @@ const MessageWrapper = styled.div`
     padding: 15px;
     word-break: break-all;
     white-space: pre-wrap;
-    background: #ebedf7;
-    border: 1px solid rgba(225, 227, 234, 0.9);
+    background: var(--r-neutral-card-1, #ffffff);
+    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     border-radius: 6px;
     font-size: 13px;
     line-height: 16px;
     font-weight: 500;
-    color: #4b4d59;
+    color: var(--r-neutral-body, #3e495e);
     height: 320px;
     overflow-y: auto;
     /* font-family: 'Roboto Mono'; */
   }
   &.no-action {
     .content {
-      background-color: #fff;
+      background: var(--r-neutral-card-3, rgba(255, 255, 255, 0.06));
     }
   }
 `;

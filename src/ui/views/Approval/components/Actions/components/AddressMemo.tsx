@@ -24,6 +24,7 @@ const AddressMemo = ({ address }: { address: string }) => {
     }, 50);
     const { destroy } = Popup.info({
       title: t('component.Contact.EditModal.title'),
+      isSupportDarkMode: true,
       height: 215,
       content: (
         <div className="pt-[4px]">

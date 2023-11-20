@@ -31,7 +31,7 @@
       padding: 20px 20px 28px;
     }
     .site {
-      background: #f6f7f9;
+      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       padding: 10px 16px;
       display: flex;
@@ -45,7 +45,7 @@
         font-weight: 500;
         font-size: 15px;
         line-height: 18px;
-        color: @color-title;
+        color: var(--r-neutral-title-1, #F7FAFC);
         .ellipsis();
       }
     }
@@ -54,7 +54,7 @@
       font-size: 15px;
       line-height: 20px;
       text-align: center;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #F7FAFC);
     }
     .footer {
       .ant-btn {
@@ -72,12 +72,12 @@
       font-weight: 400;
       font-size: 14px;
       line-height: 20px;
-      color: @color-comment-1;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-bottom: 20px;
     }
     .data {
-      background: @color-bg;
-      border: 1px solid @color-border;
+      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
       border-radius: 6px;
       overflow: auto;
       height: 350px;
@@ -88,6 +88,7 @@
         height: 100%;
         overflow: auto;
         padding: 16px;
+        color: var(--r-neutral-title-1, #F7FAFC);
       }
       &-mask {
         background: rgba(0, 0, 0, 0.9);
@@ -186,7 +187,9 @@
     padding: 24px 20px;
     flex: 1;
     overflow: auto;
-    background-color: var(--r-neutral-bg-1, #fff);
+    // background-color: var(--r-neutral-bg-1, #fff);
+    background: var(--r-neutral-bg-2, #F2F4F7);
+
     .view-raw {
       line-height: 16px !important;
       color: var(--r-neutral-foot, #6A7587);
@@ -961,7 +964,8 @@
 
     .token-balance-change {
       margin-top: 14px;
-      background-color: var(--r-neutral-bg-1, #fff);
+      // background-color: var(--r-neutral-bg-1, #fff);
+      background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
       border-radius: 8px;
       padding: 15px;
       .token-balance-change-content {
@@ -1271,7 +1275,8 @@
 
 .gas-selector {
   margin-top: 15px;
-  background: var(--r-neutral-bg-1, #fff);
+  // background: var(--r-neutral-bg-1, #fff);
+  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   border-radius: 6px;
   display: flex;
   padding: 16px;
@@ -1338,7 +1343,7 @@
     &-usd {
       font-size: 12px;
       line-height: 14px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
     }
     &-extra {
       a {
@@ -1397,7 +1402,7 @@
         font-size: 16px;
         line-height: 19px;
         text-align: center;
-        color: @color-body;
+        color: var(--r-neutral-body, #D3D8E0);
       }
     }
     &-amount {
@@ -1405,13 +1410,13 @@
       font-size: 24px;
       line-height: 28px;
       text-align: center;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #F7FAFC);
       margin-bottom: 8px;
     }
     &-usd {
       font-size: 16px;
       line-height: 19px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
       text-align: center;
     }
   }
@@ -1420,7 +1425,7 @@
     &-title {
       font-size: 14px;
       line-height: 16px;
-      color: @color-title;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-bottom: 8px;
       &.disabled {
         opacity: 0.5;
@@ -1511,7 +1516,7 @@
       align-items: center;
       font-size: 14px;
       line-height: 16px;
-      color: @color-title;
+      color: var(--r-neutral-body, #D3D8E0);
       margin-bottom: 8px;
 
       span {
@@ -1527,7 +1532,7 @@
     }
 
     &-body {
-      background: #f5f6fa;
+      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
       border-radius: 4px;
       padding: 20px 14px 6px 12px;
       margin-bottom: 12px;
@@ -1543,7 +1548,7 @@
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: #707280;
+      color: var(--r-neutral-foot, #BABEC5);
       margin-bottom: 0;
       margin-top: 2px;
     }
@@ -1565,13 +1570,13 @@
     }
     &-label {
       margin-bottom: 0;
-      color: @color-title;
+      color: var(--r-neutral-body, #D3D8E0);
       &.disabled {
         opacity: 0.5;
       }
     }
     &-title {
-      color: @color-title;
+      color: var(--r-neutral-body, #D3D8E0);
     }
     .gas-limit-panel-wrapper {
       max-height: 0;
@@ -1583,7 +1588,7 @@
     }
     .gas-limit-panel {
       margin-top: 8px;
-      background-color: #fff;
+      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       overflow: hidden;
       .ant-input {
@@ -1594,7 +1599,7 @@
         transition: none;
         font-size: 15px;
         font-weight: 500;
-        color: @color-title;
+        color: var(--r-neutral-title-1, #F7FAFC);
         position: relative;
         border-width: 1px;
         border-style: solid;
@@ -1612,7 +1617,7 @@
       }
     }
     .tip {
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #BABEC5);
       font-size: 12px;
       margin-top: 12px;
       margin-bottom: 0;
@@ -1823,7 +1828,7 @@
   }
   .ant-tabs-tabpane {
     // font-family: 'Roboto Mono', monospace;
-    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     color: var(--r-neutral-title-1, #192945);
     border-radius: 6px 6px 0 0;
     padding: 16px;
