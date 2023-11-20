@@ -2092,7 +2092,7 @@ export class WalletController extends BaseController {
 
   getKeyringByMnemonic = (
     mnemonic: string,
-    passphrase: string
+    passphrase = ''
   ): HdKeyring | undefined => {
     const keyring = keyringService.keyrings.find((item) => {
       return (
@@ -2219,10 +2219,13 @@ export class WalletController extends BaseController {
     mnemonic: string,
     passphrase: string
   ) => {
+    // keep passphrase is empty string if not set
+    passphrase = passphrase || '';
+
     if (!bip39.validateMnemonic(mnemonic, wordlist)) {
       throw new Error(t('background.error.invalidMnemonic'));
     }
-    // If import twice use same kerying
+    // If import twice use same keyring
     let keyring = this.getKeyringByMnemonic(mnemonic, passphrase);
     const result = {
       keyringId: null as number | null,
