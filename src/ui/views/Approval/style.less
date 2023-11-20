@@ -11,12 +11,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  .gray-section-block {
-    background-color: @color-bg;
-    border: 1px solid @color-border;
-    border-radius: 6px;
-    width: 100%;
-  }
+  background: var(--r-neutral-bg-1, #fff);
 
   header {
     background: @primary-linear;
@@ -191,7 +186,7 @@
     padding: 24px 20px;
     flex: 1;
     overflow: auto;
-    background-color: @color-bg;
+    background-color: var(--r-neutral-bg-1, #fff);
     .view-raw {
       line-height: 16px !important;
       color: var(--r-neutral-foot, #6A7587);
@@ -938,13 +933,6 @@
               line-height: 18px;
             }
           }
-          .gray-section-block {
-            background-color: #fff;
-            width: 100%;
-            .title {
-              font-size: 15px;
-            }
-          }
           .view-raw {
             display: none !important;
           }
@@ -1208,8 +1196,9 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: #fff;
-    border-top: 0.5px solid @color-border;
+    background: var(--r-neutral-bg-1, #3D4251);
+    border-top: 0.5px solid transparent;
+
     width: 100%;
     z-index: 10;
     &.add-rpc-footer {
@@ -1834,7 +1823,8 @@
   }
   .ant-tabs-tabpane {
     // font-family: 'Roboto Mono', monospace;
-    background-color: @color-bg;
+    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+    color: var(--r-neutral-title-1, #192945);
     border-radius: 6px 6px 0 0;
     padding: 16px;
     height: 660px;

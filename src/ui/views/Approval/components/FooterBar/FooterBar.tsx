@@ -32,15 +32,17 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 const Wrapper = styled.section`
   padding: 20px;
   padding-top: 12px;
-  box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 16px 16px 0px 0px;
+  background: var(--r-neutral-bg-1, #3d4251);
+  box-shadow: 0px -8px 24px 0px rgba(0, 0, 0, 0.1);
   position: relative;
+
   .request-origin {
     height: 30px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    color: #666;
+    color: #707280;
     padding-bottom: 12px;
     position: relative;
     margin-bottom: 12px;
@@ -48,7 +50,7 @@ const Wrapper = styled.section`
     align-items: center;
     position: relative;
     .origin {
-      color: #333;
+      color: var(--r-neutral-title-1, #f7fafc);
       flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -72,7 +74,7 @@ const Wrapper = styled.section`
       width: 100vw;
       margin-left: -20px;
       height: 1px;
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
   }
   .security-level-tip {
@@ -233,7 +235,7 @@ export const FooterBar: React.FC<Props> = ({
     <div className="relative">
       {hasShadow && <Shadow />}
       <Wrapper
-        className={clsx('bg-white', {
+        className={clsx({
           'has-shadow': hasShadow,
         })}
       >
