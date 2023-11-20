@@ -1141,7 +1141,8 @@
         "clearAll": "Clear All",
         "pastedAndClear": "Pasted and clipboard cleared",
         "invalidContent": "Invalid content",
-        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check."
+        "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
+        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check."
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
