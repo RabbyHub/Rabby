@@ -1281,7 +1281,10 @@
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "Default: The Default HD path for importing a seed phrase is used."
+            "default": "Default: The Default HD path for importing a seed phrase is used.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
             "default": "Default: The Default HD path for importing a seed phrase is used."

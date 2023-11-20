@@ -517,7 +517,10 @@
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "默认：使用导入助记词的默认 HDpath"
+            "default": "默认：使用导入助记词的默认 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "bip44": "BIP44标准：BIP44 协议定义的 HDpath",
+            "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           },
           "hdPathTypeNoChain": {
             "default": "默认：使用导入助记词的默认 HDpath"

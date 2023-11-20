@@ -71,11 +71,11 @@ export const AdvancedSettings: React.FC<Props> = ({
       [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathType.bip44'),
     },
     [KEYRING_CLASS.MNEMONIC]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.ledger.hdPathType.bip44'),
+      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
       [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.ledger.hdPathType.ledgerLive'
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
       ),
-      [HDPathType.Legacy]: t('page.newAddress.hd.ledger.hdPathType.legacy'),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
       [HDPathType.LedgerLive]: t(
@@ -116,14 +116,10 @@ export const AdvancedSettings: React.FC<Props> = ({
     },
     [KEYRING_CLASS.MNEMONIC]: {
       [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.ledgerLive'
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
       ),
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.bip44'
-      ),
-      [HDPathType.Legacy]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.legacy'
-      ),
+      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
       [HDPathType.LedgerLive]: t(
