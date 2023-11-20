@@ -467,7 +467,7 @@ export const Main = () => {
       <div
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-card-1 border border-transparent border-t-rabby-neutral-line',
+          'bg-r-neutral-bg-1 border border-transparent border-t-rabby-neutral-line',
           activeProvider && activeProvider.shouldApproveToken && 'pt-16'
         )}
       >

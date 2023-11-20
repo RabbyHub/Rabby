@@ -17,10 +17,15 @@ const Activities = () => {
 
   return (
     <div className="activities">
-      <PageHeader canBack={false} closeable className="transparent-wrap" fixed>
+      <PageHeader
+        canBack={false}
+        closeable
+        wrapperClassName="bg-r-neutral-bg-2"
+        fixed
+      >
         {t('page.activities.title')}
       </PageHeader>
-      <div className="sticky top-[64px] z-10">
+      <div className="bg-r-neutral-bg-2 mx-[-20px] sticky top-[64px] z-10">
         <PillsSwitch
           value={selectedTab}
           onTabChange={(v) => {
