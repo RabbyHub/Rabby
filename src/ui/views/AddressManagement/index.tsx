@@ -16,6 +16,7 @@ import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-addr
 import { ReactComponent as RcIconRefresh } from '@/ui/assets/address/refresh.svg';
 import { ReactComponent as RcIconLoading } from '@/ui/assets/address/loading.svg';
 import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
 import { Dictionary, groupBy, omit } from 'lodash';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -25,7 +26,6 @@ import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar'
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
-import LessPalette from '@/ui/style/var-defs';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
@@ -37,13 +37,12 @@ function NoAddressUI() {
   const { t } = useTranslation();
 
   return (
-    <div className="no-address">
-      <img
-        className="no-data-image"
-        src="/images/nodata-address.png"
-        alt={t('page.manageAddress.no-address')}
+    <div className="no-address pt-[90px]">
+      <ThemeIcon
+        className="no-data-image w-[52px] h-[52px]"
+        src={RcNoMatchedAddress}
       />
-      <p className="text-gray-content text-14">
+      <p className="text-14 text-r-neutral-foot mt-[24px]">
         {t('page.manageAddress.no-address')}
       </p>
     </div>
@@ -55,15 +54,11 @@ function NoSearchedAddressUI() {
 
   return (
     <div className="no-matched-address">
-      <img
+      <ThemeIcon
         className="no-data-image w-[52px] h-[52px]"
-        src="/images/no-matched-addr.svg"
-        alt={t('page.manageAddress.no-match')}
+        src={RcNoMatchedAddress}
       />
-      <p
-        className="text-14 mt-[24px]"
-        style={{ color: LessPalette['@color-body'] }}
-      >
+      <p className="text-14 text-r-neutral-foot mt-[24px]">
         {t('page.manageAddress.no-match')}
       </p>
     </div>
