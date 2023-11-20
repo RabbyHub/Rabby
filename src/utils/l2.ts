@@ -1,4 +1,4 @@
-import ethers, { Contract } from 'ethers';
+import { ethers, Contract } from 'ethers';
 import * as optimismContracts from '@eth-optimism/contracts';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import { CHAINS_ENUM, OP_STACK_ENUMS } from 'consts';
