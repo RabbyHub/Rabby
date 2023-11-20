@@ -5,6 +5,7 @@ import { GasCache, ChainGas } from './preference';
 import { CEX, DEX } from '@/constant';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { openapiService } from 'background/service';
+import { TokenItem } from './openapi';
 
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
@@ -12,6 +13,8 @@ export type SwapServiceStore = {
   gasPriceCache: GasCache;
   selectedDex: DEX_ENUM | null;
   selectedChain: CHAINS_ENUM | null;
+  selectedFromToken?: TokenItem;
+  selectedToToken?: TokenItem;
   unlimitedAllowance: boolean;
   viewList: Record<ViewKey, boolean>;
   tradeList: Record<ViewKey, boolean>;
@@ -22,6 +25,8 @@ class SwapService {
   store: SwapServiceStore = {
     gasPriceCache: {},
     selectedChain: null,
+    selectedFromToken: undefined,
+    selectedToToken: undefined,
     selectedDex: null,
     unlimitedAllowance: false,
     viewList: {} as SwapServiceStore['viewList'],
@@ -107,6 +112,20 @@ class SwapService {
 
   setSelectedChain = (chain: CHAINS_ENUM) => {
     this.store.selectedChain = chain;
+  };
+
+  getSelectedFromToken = () => {
+    return this.store.selectedFromToken;
+  };
+  getSelectedToToken = () => {
+    return this.store.selectedToToken;
+  };
+
+  setSelectedFromToken = (token?: TokenItem) => {
+    this.store.selectedFromToken = token;
+  };
+  setSelectedToToken = (token?: TokenItem) => {
+    this.store.selectedToToken = token;
   };
 
   getUnlimitedAllowance = () => {

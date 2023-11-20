@@ -4,6 +4,7 @@ import { ChainGas } from 'background/service/preference';
 import { CHAINS_ENUM } from 'consts';
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export const swap = createModel<RootModel>()({
   name: 'swap',
@@ -91,6 +92,23 @@ export const swap = createModel<RootModel>()({
         selectedChain,
       });
     },
+
+    async setSelectedFromToken(selectedFromToken?: TokenItem, store?) {
+      await store.app.wallet.setSelectedFromToken(selectedFromToken);
+
+      this.setField({
+        selectedFromToken,
+      });
+    },
+
+    async setSelectedToToken(selectedToToken?: TokenItem, store?) {
+      await store.app.wallet.setSelectedToToken(selectedToToken);
+
+      this.setField({
+        selectedToToken,
+      });
+    },
+
     async setUnlimitedAllowance(unlimitedAllowance: boolean, store) {
       await store.app.wallet.setUnlimitedAllowance(unlimitedAllowance);
 

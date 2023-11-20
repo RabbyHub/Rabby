@@ -36,6 +36,8 @@ export interface TransactionHistoryItem {
   pushType?: TxPushType;
   reqId?: string;
   isWithdrawed?: boolean;
+  explain?: TransactionGroup['explain'];
+  action?: TransactionGroup['action'];
 }
 
 export interface TransactionSigningItem {
@@ -249,6 +251,9 @@ class TxHistory {
       const site = permissionService.getConnectedSite(origin);
       tx.site = site;
     }
+    if (explain) {
+      tx.explain = explain;
+    }
 
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
@@ -316,6 +321,13 @@ class TxHistory {
     } else {
       const site = permissionService.getConnectedSite(origin);
       tx.site = site;
+    }
+
+    if (explain) {
+      tx.explain = explain;
+    }
+    if (actionData) {
+      tx.action = actionData;
     }
 
     if (!this.store.transactions[from]) {

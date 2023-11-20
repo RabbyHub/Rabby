@@ -178,6 +178,7 @@ interface BroadcastModeProps {
   chain: CHAINS_ENUM;
   isSpeedUp?: boolean;
   isCancel?: boolean;
+  isGasTopUp?: boolean;
 }
 export const BroadcastMode = ({
   value,
@@ -187,6 +188,7 @@ export const BroadcastMode = ({
   chain,
   isSpeedUp,
   isCancel,
+  isGasTopUp,
 }: BroadcastModeProps) => {
   const [drawerVisible, setDrawerVisible] = React.useState(false);
   const { t } = useTranslation();
@@ -242,7 +244,7 @@ export const BroadcastMode = ({
         };
       }
     });
-    if (isSpeedUp || isCancel) {
+    if (isSpeedUp || isCancel || isGasTopUp) {
       result.low_gas.disabled = true;
       result.low_gas.tips = t('page.signTx.BroadcastMode.tips.notSupported');
     }

@@ -17,9 +17,8 @@ import {
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
-  L2_ENUMS,
-  INTERNAL_REQUEST_ORIGIN,
-  OP_STACK_ENUMS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
+  ARB_LIKE_L2_CHAINS,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
@@ -584,12 +583,12 @@ const SendToken = () => {
         } else if (
           code &&
           (code === '0x' || code === '0x0') &&
-          !L2_ENUMS.includes(chain.enum)
+          !ARB_LIKE_L2_CHAINS.includes(chain.enum)
         ) {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       } catch (e) {
-        if (!L2_ENUMS.includes(chain.enum)) {
+        if (!ARB_LIKE_L2_CHAINS.includes(chain.enum)) {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       }
@@ -814,7 +813,7 @@ const SendToken = () => {
         );
         setEstimateGas(Number(gasUsed));
         let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
-        if (OP_STACK_ENUMS.includes(chain)) {
+        if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
           const l1GasFee = await wallet.fetchEstimatedL1Fee(
             {
               txParams: {
