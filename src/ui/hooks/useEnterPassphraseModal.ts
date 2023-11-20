@@ -40,7 +40,7 @@ export const useEnterPassphraseModal = (type: 'address' | 'publickey') => {
               passphrase
             ))
           ) {
-            throw new Error('Passphrase not belong to this seed phrase');
+            throw new Error(t('page.manageAddress.passphraseError'));
           }
           return;
         },

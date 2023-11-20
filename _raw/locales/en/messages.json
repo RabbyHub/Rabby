@@ -820,7 +820,8 @@
       "sort-by-address-note": "Sort by address note",
       "sort-address": "Sort Address",
       "enterThePassphrase": "Enter the Passphrase",
-      "enterPassphraseTitle": "Enter Passphrase to Sign"
+      "enterPassphraseTitle": "Enter Passphrase to Sign",
+      "passphraseError": "Passphrase invalid"
     },
     "dashboard": {
       "home": {
