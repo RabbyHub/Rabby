@@ -791,6 +791,7 @@ export const WALLET_BRAND_CONTENT: {
     name: 'imToken',
     brand: WALLET_BRAND_TYPES.IMTOKENOFFLINE,
     icon: LogoImtokenOffline,
+    lightIcon: LogoImtokenOffline,
     image: LogoImtokenOffline,
     rcSvg: RcLogoImtokenOffline,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
