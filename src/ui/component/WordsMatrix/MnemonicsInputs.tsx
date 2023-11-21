@@ -235,6 +235,7 @@ function MnemonicsInputs({
     setInputTexts([]);
     setFocusing({ ...DFLT_FOCUSING });
     setMnemonics('');
+    validateWords();
   }, [mnemonicsCount]);
 
   const onWordUpdated = React.useCallback(
