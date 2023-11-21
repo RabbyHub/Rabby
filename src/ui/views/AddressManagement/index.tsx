@@ -42,7 +42,7 @@ function NoAddressUI() {
         className="no-data-image w-[52px] h-[52px]"
         src={RcNoMatchedAddress}
       />
-      <p className="text-14 text-r-neutral-foot mt-[24px]">
+      <p className="text-14 text-r-neutral-body mt-[24px]">
         {t('page.manageAddress.no-address')}
       </p>
     </div>
@@ -58,7 +58,7 @@ function NoSearchedAddressUI() {
         className="no-data-image w-[52px] h-[52px]"
         src={RcNoMatchedAddress}
       />
-      <p className="text-14 text-r-neutral-foot mt-[24px]">
+      <p className="text-14 text-r-neutral-body mt-[24px]">
         {t('page.manageAddress.no-match')}
       </p>
     </div>

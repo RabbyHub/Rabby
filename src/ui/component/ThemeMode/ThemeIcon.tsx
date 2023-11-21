@@ -10,7 +10,7 @@ export default function ThemeIcon<T extends ThemeIconType>({
   svgClassName,
   ...props
 }: (T extends string
-  ? React.HTMLAttributes<HTMLImageElement>
+  ? React.ImgHTMLAttributes<HTMLImageElement>
   : React.SVGProps<SVGSVGElement>) & {
   src: T;
   // darkModeIcon?: React.ReactNode,
@@ -21,7 +21,7 @@ export default function ThemeIcon<T extends ThemeIconType>({
   if (typeof ImgSrcOrSvg === 'string') {
     return (
       <img
-        {...(props as React.HTMLAttributes<HTMLImageElement>)}
+        {...(props as React.ImgHTMLAttributes<HTMLImageElement>)}
         src={ImgSrcOrSvg}
         className={clsx(className, imgClassName)}
       />
