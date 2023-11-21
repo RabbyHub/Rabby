@@ -12,6 +12,7 @@ interface IState {
   isExistedKeyring: boolean;
   finalMnemonics: string;
   stashKeyringId: number | null;
+  passphrase: string;
 
   queriedAccountsByAddress: Record<
     Exclude<Account['address'], undefined>,
@@ -29,6 +30,7 @@ const makeInitValues = () => {
   return {
     isExistedKeyring: false,
     finalMnemonics: '',
+    passphrase: '',
     stashKeyringId: null,
 
     queriedAccountsByAddress: {},
@@ -82,6 +84,7 @@ export const importMnemonics = createModel<RootModel>()({
   effects: (dispatch) => ({
     switchKeyring(payload: {
       finalMnemonics?: IState['finalMnemonics'];
+      passphrase?: IState['passphrase'];
       isExistedKeyring?: IState['isExistedKeyring'];
       stashKeyringId: IState['stashKeyringId'];
     }) {
@@ -101,6 +104,7 @@ export const importMnemonics = createModel<RootModel>()({
         queriedAccountsByAddress: initValues.queriedAccountsByAddress,
 
         finalMnemonics: payload.finalMnemonics || '',
+        passphrase: payload.passphrase || '',
         stashKeyringId: payload.stashKeyringId ?? null,
         isExistedKeyring: payload.isExistedKeyring ?? false,
       });
@@ -115,7 +119,11 @@ export const importMnemonics = createModel<RootModel>()({
           )
         : await store.app.wallet.requestHDKeyringByMnemonics<
             Account['address'][]
-          >(store.importMnemonics.finalMnemonics, 'getAccounts');
+          >(
+            store.importMnemonics.finalMnemonics,
+            'getAccounts',
+            store.importMnemonics.passphrase
+          );
 
       dispatch.importMnemonics.setField({
         importedAddresses: new Set(
@@ -142,7 +150,8 @@ export const importMnemonics = createModel<RootModel>()({
       } else {
         addresses = await wallet.requestHDKeyringByMnemonics(
           finalMnemonics,
-          'getAccounts'
+          'getAccounts',
+          store.importMnemonics.passphrase
         );
       }
 
@@ -151,18 +160,23 @@ export const importMnemonics = createModel<RootModel>()({
           let index = 0;
 
           if (!isExistedKeyring) {
-            index = await wallet.requestKeyring(
-              KEYRING_TYPE.HdKeyring,
-              'getIndexByAddress',
-              stashKeyringId ?? null,
-              address
-            );
+            index = (
+              await wallet.requestKeyring(
+                KEYRING_TYPE.HdKeyring,
+                'getInfoByAddress',
+                stashKeyringId ?? null,
+                address
+              )
+            ).index;
           } else {
-            index = await wallet.requestHDKeyringByMnemonics(
-              finalMnemonics,
-              'getIndexByAddress',
-              address
-            );
+            index = (
+              await wallet.requestHDKeyringByMnemonics(
+                finalMnemonics,
+                'getInfoByAddress',
+                store.importMnemonics.passphrase,
+                address
+              )
+            ).index;
           }
           return {
             address,
@@ -184,7 +198,8 @@ export const importMnemonics = createModel<RootModel>()({
       } else {
         store.app.wallet.requestHDKeyringByMnemonics(
           store.importMnemonics.finalMnemonics,
-          'cleanUp'
+          'cleanUp',
+          store.importMnemonics.passphrase
         );
       }
     },
@@ -221,22 +236,25 @@ export const importMnemonics = createModel<RootModel>()({
             );
       } else {
         const finalMnemonics = store.importMnemonics.finalMnemonics;
-
+        const passphrase = store.importMnemonics.passphrase;
         accounts = firstFlag
           ? await wallet.requestHDKeyringByMnemonics(
               finalMnemonics,
-              'getFirstPage'
+              'getFirstPage',
+              passphrase
             )
           : end
           ? await wallet.requestHDKeyringByMnemonics(
               finalMnemonics,
               'getAddresses',
+              passphrase,
               start,
               end
             )
           : await wallet.requestHDKeyringByMnemonics(
               finalMnemonics,
-              'getNextPage'
+              'getNextPage',
+              passphrase
             );
       }
 
@@ -366,6 +384,7 @@ export const importMnemonics = createModel<RootModel>()({
       } else {
         await store.app.wallet.activeAndPersistAccountsByMnemonics(
           store.importMnemonics.finalMnemonics,
+          store.importMnemonics.passphrase,
           accountsToImport
         );
       }

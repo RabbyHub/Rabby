@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button, Form } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import clsx from 'clsx';
@@ -46,6 +46,7 @@ const TipTextList = styled.div`
 
 type IFormStates = {
   mnemonics: string;
+  passphrase: string;
 };
 const ImportMnemonics = () => {
   const history = useHistory();
@@ -53,17 +54,23 @@ const ImportMnemonics = () => {
   const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const [needPassphrase, setNeedPassphrase] = React.useState(false);
   let keyringId: number | null;
 
+  const onPassphrase = React.useCallback((val: boolean) => {
+    setNeedPassphrase(val);
+  }, []);
+
   const [run, loading] = useWalletRequest(
-    async (mnemonics: string) => {
+    async (mnemonics: string, passphrase: string) => {
       const {
         keyringId: stashKeyringId,
         isExistedKR,
-      } = await wallet.generateKeyringWithMnemonic(mnemonics);
+      } = await wallet.generateKeyringWithMnemonic(mnemonics, passphrase);
 
       dispatch.importMnemonics.switchKeyring({
         finalMnemonics: mnemonics,
+        passphrase,
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
@@ -111,6 +118,7 @@ const ImportMnemonics = () => {
           form.setFieldsValue({
             ...cache.states,
             mnemonics: '',
+            passphrase: '',
           });
         }
       }
@@ -120,6 +128,14 @@ const ImportMnemonics = () => {
       wallet.clearPageStateCache();
     };
   }, []);
+
+  useEffect(() => {
+    if (!needPassphrase) {
+      form.setFieldsValue({
+        passphrase: '',
+      });
+    }
+  }, [needPassphrase]);
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
@@ -133,7 +149,7 @@ const ImportMnemonics = () => {
             'px-[100px] pt-[36px] pb-[40px]',
             'bg-white rounded-[12px]'
           )}
-          onFinish={({ mnemonics }: { mnemonics: string }) => run(mnemonics)}
+          onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
           onValuesChange={(states) => {
             setErrMsgs([]);
             wallet.setPageStateCache({
@@ -158,12 +174,27 @@ const ImportMnemonics = () => {
               <Form.Item
                 name="mnemonics"
                 className={clsx(
-                  'mb-[12px]',
+                  'mb-[24px]',
                   errMsgs?.length && 'mnemonics-with-error'
                 )}
               >
-                <WordsMatrix.MnemonicsInputs errMsgs={errMsgs} />
+                <WordsMatrix.MnemonicsInputs
+                  onPassphrase={onPassphrase}
+                  errMsgs={errMsgs}
+                />
               </Form.Item>
+              {needPassphrase && (
+                <Form.Item name="passphrase" className={clsx('mb-[12px]')}>
+                  <Input
+                    type="password"
+                    className={clsx(
+                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-3'
+                    )}
+                    spellCheck={false}
+                    placeholder={t('page.newAddress.seedPhrase.passphrase')}
+                  />
+                </Form.Item>
+              )}
             </FormItemWrapper>
             <TipTextList>
               <section>
