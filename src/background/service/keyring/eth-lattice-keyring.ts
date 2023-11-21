@@ -47,6 +47,14 @@ class LatticeKeyring extends OldLatticeKeyring {
     });
   }
 
+  async signTypedData(address, msg, opts) {
+    return this.signHelper.invoke(async () => {
+      // waiting ui render
+      await new Promise((r) => setTimeout(r, 500));
+      return super.signTypedData(address, msg, opts);
+    });
+  }
+
   async getCurrentAccounts() {
     const addrs = await this.getAccounts();
     const hdPath = this.hdPath;

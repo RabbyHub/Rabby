@@ -570,6 +570,7 @@
         "connectedToOnekey": "连接 Onekey",
         "manageSeedPhrase": "管理助记词",
         "manageGridplus": "管理 Gridplus",
+        "manageImtokenOffline": "管理 imToken",
         "manageKeystone": "管理 Keystone",
         "manageAirgap": "管理 Airgap",
         "manageCoolwallet": "管理 CoolWallet",

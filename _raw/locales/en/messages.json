@@ -1146,7 +1146,8 @@
         "clearAll": "Clear All",
         "pastedAndClear": "Pasted and clipboard cleared",
         "invalidContent": "Invalid content",
-        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
+        "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
+        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
         "passphrase": "Passphrase"
       },
       "metamask": {
@@ -1336,6 +1337,7 @@
         "manageGridplus": "Manage GridPlus",
         "manageKeystone": "Manage Keystone",
         "manageAirgap": "Manage AirGap",
+        "manageImtokenOffline": "Manage imToken",
         "manageCoolwallet": "Manage CoolWallet",
         "manageBitbox02": "Manage BitBox02",
         "done": "Done",

@@ -23,6 +23,7 @@ import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
 import { ReactComponent as AirGapSVG } from '@/ui/assets/walletlogo/airgap.svg';
 import { ReactComponent as CoolWalletSVG } from '@/ui/assets/walletlogo/coolwallet.svg';
 import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.svg';
+import { ReactComponent as imtokenOfflineSVG } from '@/ui/assets/walletlogo/imTokenOffline.svg';
 import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +37,7 @@ const LOGO_MAP = {
   [WALLET_BRAND_TYPES.AIRGAP]: AirGapSVG,
   [WALLET_BRAND_TYPES.COOLWALLET]: CoolWalletSVG,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
+  [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: imtokenOfflineSVG,
 };
 
 const MANAGER_MAP = {
@@ -76,7 +78,9 @@ export const HDManager: React.FC<StateProviderProps> = ({
       'page.newAddress.hd.manageGridplus'
     ),
     [WALLET_BRAND_TYPES.KEYSTONE]: t('page.newAddress.hd.manageKeystone'),
-    [WALLET_BRAND_TYPES.AIRGAP]: t('page.newAddress.hd.manageAirgap'),
+    [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: t(
+      'page.newAddress.hd.manageImtokenOffline'
+    ),
     [WALLET_BRAND_TYPES.COOLWALLET]: t('page.newAddress.hd.manageCoolwallet'),
     [HARDWARE_KEYRING_TYPES.BitBox02.type]: t(
       'page.newAddress.hd.manageBitbox02'

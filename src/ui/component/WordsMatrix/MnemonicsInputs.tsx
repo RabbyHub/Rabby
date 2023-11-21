@@ -276,7 +276,7 @@ function MnemonicsInputs({
     [focusing, inputTexts, mnemonicsCount]
   );
 
-  React.useEffect(() => {
+  const validateWords = () => {
     const arr: number[] = [];
     for (let i = 0; i < inputTexts.length; i++) {
       if (inputTexts[i] && !wordlist.includes(inputTexts[i])) {
@@ -284,7 +284,7 @@ function MnemonicsInputs({
       }
     }
     setInvalidWords(arr);
-  }, [inputTexts]);
+  };
 
   const { setMnemonics } = useTypingMnemonics();
   const { t } = useTranslation();
@@ -473,6 +473,7 @@ function MnemonicsInputs({
                   }}
                   onBlur={() => {
                     setFocusing(DFLT_FOCUSING);
+                    validateWords();
                   }}
                   onPaste={(e) => {
                     clearClipboard();
@@ -519,7 +520,7 @@ function MnemonicsInputs({
           {invalidWords.length > 0 && (
             <div role="alert" className="mb-8">
               {t('page.newAddress.seedPhrase.inputInvalidCount', {
-                count: invalidWords.length.toString(),
+                count: invalidWords.length,
               })}
             </div>
           )}
