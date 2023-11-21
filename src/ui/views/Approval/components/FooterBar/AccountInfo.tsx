@@ -42,6 +42,18 @@ export const AccountInfo: React.FC<Props> = ({
       account?.address?.toLowerCase() || ''
     );
     setNickname(result);
+    checkIfNeedPassphrase();
+  };
+
+  const [needPassphrase, setNeedPassphrase] = React.useState(false);
+  const checkIfNeedPassphrase = () => {
+    if (account?.type === KEYRING_CLASS.MNEMONIC && account?.address) {
+      wallet
+        .getMnemonicKeyringIfNeedPassphrase('address', account.address)
+        .then((result) => {
+          setNeedPassphrase(result);
+        });
+    }
   };
 
   React.useEffect(() => {
@@ -168,7 +180,11 @@ export const AccountInfo: React.FC<Props> = ({
               KEYRING_CLASS.MNEMONIC
             ]
           }
-          tip={t('page.signFooterBar.addressTip.seedPhrase')}
+          tip={
+            needPassphrase
+              ? t('page.signFooterBar.addressTip.seedPhraseWithPassphrase')
+              : t('page.signFooterBar.addressTip.seedPhrase')
+          }
         />
       )}
       {account?.type === KEYRING_CLASS.WATCH && (

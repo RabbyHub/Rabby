@@ -162,6 +162,9 @@ import LogoRainbow, {
 import LogoMPCVault, {
   ReactComponent as RcLogoMPCVault,
 } from 'ui/assets/walletlogo/mpcvault.svg';
+import LogoImtokenOffline, {
+  ReactComponent as RcLogoImtokenOffline,
+} from 'ui/assets/walletlogo/imTokenOffline.svg';
 import LogoZerion, {
   ReactComponent as RcLogoZerion,
 } from 'ui/assets/walletlogo/zerion.svg';
@@ -464,6 +467,7 @@ export enum WALLET_BRAND_TYPES {
   DEFIANT = 'Defiant',
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
+  IMTOKENOFFLINE = 'imTokenOffline',
   Rainbow = 'Rainbow',
   Bitkeep = 'Bitget',
   // Uniswap = 'Uniswap',
@@ -781,6 +785,16 @@ export const WALLET_BRAND_CONTENT: {
     rcSvg: RcLogoMPCVault,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: {
+    id: 27,
+    name: 'imToken',
+    brand: WALLET_BRAND_TYPES.IMTOKENOFFLINE,
+    icon: LogoImtokenOffline,
+    image: LogoImtokenOffline,
+    rcSvg: RcLogoImtokenOffline,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
 };
 
@@ -1237,6 +1251,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.BITBOX02,
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
+  WALLET_BRAND_TYPES.IMTOKENOFFLINE,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,

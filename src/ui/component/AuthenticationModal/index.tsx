@@ -19,6 +19,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   title?: string;
   description?: string;
   checklist?: string[];
+  placeholder?: string;
 }
 
 const Description = styled.div`
@@ -108,6 +109,7 @@ const AuthenticationModal = ({
   cancelText,
   confirmText = 'Confirm',
   title = 'Enter Password',
+  placeholder,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -207,7 +209,10 @@ const AuthenticationModal = ({
         >
           <Input
             className="popup-input"
-            placeholder={t('component.AuthenticationModal.passwordPlaceholder')}
+            placeholder={
+              placeholder ??
+              t('component.AuthenticationModal.passwordPlaceholder')
+            }
             type="password"
             size="large"
             autoFocus

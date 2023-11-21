@@ -22,6 +22,7 @@ import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/utils/ledger';
 import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 const ManageAddress = () => {
   const { t } = useTranslation();
@@ -197,8 +198,10 @@ const ManageAddress = () => {
     });
   };
 
+  const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const handleAddSeedPhraseAddress = async () => {
     if (TypedWalletObj?.[activeIndex]?.publicKey) {
+      await invokeEnterPassphrase(TypedWalletObj?.[activeIndex]?.publicKey);
       const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
         TypedWalletObj[activeIndex].publicKey!
       );
@@ -228,6 +231,7 @@ const ManageAddress = () => {
     history.replace('/add-address');
     return null;
   }
+  console.log(typedWalletIdList, TypedWalletObj);
 
   return (
     <div className="page-address-management px-0 pb-0 bg-r-neutral-bg-2 overflow-hidden">

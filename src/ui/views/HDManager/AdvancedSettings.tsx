@@ -24,13 +24,17 @@ export const DEFAULT_SETTING_DATA: SettingData = {
 
 const HDPathTypeGroup = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: [
-    HDPathType.LedgerLive,
     HDPathType.BIP44,
+    HDPathType.LedgerLive,
     HDPathType.Legacy,
   ],
   [KEYRING_CLASS.HARDWARE.TREZOR]: [HDPathType.BIP44],
   [KEYRING_CLASS.HARDWARE.ONEKEY]: [HDPathType.BIP44],
-  [KEYRING_CLASS.MNEMONIC]: [HDPathType.Default],
+  [KEYRING_CLASS.MNEMONIC]: [
+    HDPathType.BIP44,
+    HDPathType.LedgerLive,
+    HDPathType.Legacy,
+  ],
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: [
     HDPathType.LedgerLive,
     HDPathType.BIP44,
@@ -67,7 +71,11 @@ export const AdvancedSettings: React.FC<Props> = ({
       [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathType.bip44'),
     },
     [KEYRING_CLASS.MNEMONIC]: {
-      [HDPathType.Default]: t('page.newAddress.hd.mnemonic.hdPathType.default'),
+      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
+      [HDPathType.LedgerLive]: t(
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+      ),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
       [HDPathType.LedgerLive]: t(
@@ -107,9 +115,11 @@ export const AdvancedSettings: React.FC<Props> = ({
       ),
     },
     [KEYRING_CLASS.MNEMONIC]: {
-      [HDPathType.Default]: t(
-        'page.newAddress.hd.mnemonic.hdPathTypeNoChain.default'
+      [HDPathType.LedgerLive]: t(
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
       ),
+      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
       [HDPathType.LedgerLive]: t(
@@ -170,7 +180,6 @@ export const AdvancedSettings: React.FC<Props> = ({
     return (
       keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
       keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
-      keyring === KEYRING_CLASS.MNEMONIC ||
       keyring === KEYRING_CLASS.HARDWARE.KEYSTONE ||
       keyring === KEYRING_CLASS.HARDWARE.BITBOX02
     );

@@ -28,10 +28,12 @@ const AddressDetail = () => {
   };
 
   const { address, type, brandName, byImport } = qs || {};
+
   const source = useAddressSource({
     type,
     brandName,
     byImport: !!byImport,
+    address,
   });
 
   useEffect(() => {
