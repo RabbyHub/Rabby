@@ -117,6 +117,10 @@ export const AdvancedSettings: React.FC<Props> = ({
     },
     [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
       [HDPathType.BIP44]: t('page.newAddress.hd.keystone.hdPathType.bip44'),
+      [HDPathType.LedgerLive]: t(
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+      ),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.BITBOX02]: {
       [HDPathType.BIP44]: t('page.newAddress.hd.bitbox02.hdPathType.bip44'),
@@ -167,6 +171,10 @@ export const AdvancedSettings: React.FC<Props> = ({
       [HDPathType.BIP44]: t(
         'page.newAddress.hd.keystone.hdPathTypeNochain.bip44'
       ),
+      [HDPathType.LedgerLive]: t(
+        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+      ),
+      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.BITBOX02]: {
       [HDPathType.BIP44]: t(
@@ -208,14 +216,18 @@ export const AdvancedSettings: React.FC<Props> = ({
       });
   }, []);
 
+  const currentBrandIsKeystoneAndUsbAvailable = useIsKeystoneUsbAvailable(
+    brand
+  );
+
   const disabledSelectHDPath = React.useMemo(() => {
     return (
       keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
       keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
-      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE ||
+      !currentBrandIsKeystoneAndUsbAvailable ||
       keyring === KEYRING_CLASS.HARDWARE.BITBOX02
     );
-  }, [keyring]);
+  }, [keyring, currentBrandIsKeystoneAndUsbAvailable]);
 
   const isOnChain = React.useCallback(
     (type) => {
