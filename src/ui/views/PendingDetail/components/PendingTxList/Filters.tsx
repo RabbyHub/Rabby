@@ -18,6 +18,7 @@ import {
   SwapRequireData,
 } from '../../../Approval/components/Actions/utils';
 import { findChainByServerID } from '@/utils/chain';
+import { findMaxGasTx } from '@/utils/tx';
 
 export interface FilterItem {
   label: ReactNode | string;
@@ -48,10 +49,13 @@ const createContractFilter = ({
 };
 
 export const createFilter = (tx: TransactionGroup) => {
+  const maxGasTx = findMaxGasTx(tx.txs || []);
   const results: FilterItem[] = [];
+  const action = maxGasTx?.action || tx.action;
+  const explain = maxGasTx?.explain || tx.explain;
 
-  if (tx.action?.actionData?.send) {
-    const requiredData = tx.action?.requiredData as SendRequireData;
+  if (action?.actionData?.send) {
+    const requiredData = action?.requiredData as SendRequireData;
     results.push({
       label: 'Action: Send Token',
       filter: (item: PendingTxItem) => {
@@ -69,8 +73,8 @@ export const createFilter = (tx: TransactionGroup) => {
       });
     }
   }
-  if (tx.action?.actionData?.swap) {
-    const requiredData = tx.action?.requiredData as SwapRequireData;
+  if (action?.actionData?.swap) {
+    const requiredData = action?.requiredData as SwapRequireData;
     results.push({
       label: 'Action: Swap Token',
       filter: (item: PendingTxItem) => {
@@ -81,11 +85,11 @@ export const createFilter = (tx: TransactionGroup) => {
   }
 
   if (
-    tx.action?.actionData?.swap ||
-    tx.action?.actionData?.crossSwapToken ||
-    tx.action?.actionData?.crossToken
+    action?.actionData?.swap ||
+    action?.actionData?.crossSwapToken ||
+    action?.actionData?.crossToken
   ) {
-    const requiredData = tx.action?.requiredData as SwapRequireData;
+    const requiredData = action?.requiredData as SwapRequireData;
 
     if (requiredData?.id) {
       results.push(
@@ -96,8 +100,8 @@ export const createFilter = (tx: TransactionGroup) => {
       );
     }
   }
-  if (tx.action?.actionData?.approveToken) {
-    const requiredData = tx.action?.requiredData as ApproveTokenRequireData;
+  if (action?.actionData?.approveToken) {
+    const requiredData = action?.requiredData as ApproveTokenRequireData;
     results.push({
       label: `Approve To: ${
         requiredData?.protocol?.name || ellipsisAddress(requiredData?.token?.id)
@@ -111,9 +115,9 @@ export const createFilter = (tx: TransactionGroup) => {
       key: `approveTokenFilter-${requiredData?.token?.id}`,
     });
   }
-  if (tx.action?.actionData?.approveNFT) {
-    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
-    const spender = tx?.action?.actionData?.approveNFT?.spender;
+  if (action?.actionData?.approveNFT) {
+    const requiredData = action?.requiredData as ApproveNFTRequireData;
+    const spender = action?.actionData?.approveNFT?.spender;
     results.push({
       label: `Approve To: ${
         requiredData?.protocol?.name || ellipsisAddress(spender)
@@ -124,9 +128,9 @@ export const createFilter = (tx: TransactionGroup) => {
       key: `approveNFTFilter-${spender}`,
     });
   }
-  if (tx.action?.actionData?.approveNFTCollection) {
-    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
-    const spender = tx?.action?.actionData?.approveNFTCollection?.spender;
+  if (action?.actionData?.approveNFTCollection) {
+    const requiredData = action?.requiredData as ApproveNFTRequireData;
+    const spender = action?.actionData?.approveNFTCollection?.spender;
     results.push({
       label: `Approve To: ${
         requiredData?.protocol?.name || ellipsisAddress(spender)
@@ -140,9 +144,9 @@ export const createFilter = (tx: TransactionGroup) => {
     });
   }
 
-  if (tx.action?.actionData?.revokeNFT) {
-    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
-    const spender = tx?.action?.actionData?.revokeNFT?.spender;
+  if (action?.actionData?.revokeNFT) {
+    const requiredData = action?.requiredData as ApproveNFTRequireData;
+    const spender = action?.actionData?.revokeNFT?.spender;
     if (spender) {
       results.push(
         createContractFilter({
@@ -153,9 +157,9 @@ export const createFilter = (tx: TransactionGroup) => {
     }
   }
 
-  if (tx.action?.actionData?.revokeNFTCollection) {
-    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
-    const spender = tx?.action?.actionData?.revokeNFTCollection?.spender;
+  if (action?.actionData?.revokeNFTCollection) {
+    const requiredData = action?.requiredData as ApproveNFTRequireData;
+    const spender = action?.actionData?.revokeNFTCollection?.spender;
     if (spender) {
       results.push(
         createContractFilter({
@@ -165,9 +169,9 @@ export const createFilter = (tx: TransactionGroup) => {
       );
     }
   }
-  if (tx.action?.actionData?.revokeToken) {
-    const requiredData = tx.action?.requiredData as ApproveNFTRequireData;
-    const spender = tx?.action?.actionData?.revokeToken?.spender;
+  if (action?.actionData?.revokeToken) {
+    const requiredData = action?.requiredData as ApproveNFTRequireData;
+    const spender = action?.actionData?.revokeToken?.spender;
     if (spender) {
       results.push(
         createContractFilter({
@@ -178,15 +182,11 @@ export const createFilter = (tx: TransactionGroup) => {
     }
   }
 
-  if (
-    tx.action?.actionData?.crossSwapToken ||
-    tx.action?.actionData?.crossToken
-  ) {
+  if (action?.actionData?.crossSwapToken || action?.actionData?.crossToken) {
     const parsedData =
-      tx.action?.actionData?.crossSwapToken ||
-      tx.action?.actionData?.crossToken;
+      action?.actionData?.crossSwapToken || action?.actionData?.crossToken;
     const token = parsedData?.receiveToken;
-    const requiredData = tx.action?.requiredData;
+    const requiredData = action?.requiredData;
     if (token) {
       const chain = findChainByServerID(parsedData?.receiveToken?.chain);
       results.push({
@@ -213,8 +213,8 @@ export const createFilter = (tx: TransactionGroup) => {
     }
   }
 
-  const tokenList = (tx.explain?.balance_change?.send_token_list || []).concat(
-    tx.explain?.balance_change?.receive_token_list || []
+  const tokenList = (explain?.balance_change?.send_token_list || []).concat(
+    explain?.balance_change?.receive_token_list || []
   );
   if (tokenList.length > 0) {
     tokenList.forEach((token) => {
@@ -243,8 +243,8 @@ export const createFilter = (tx: TransactionGroup) => {
   }
 
   const nftList = _.uniqBy(
-    (tx.explain?.balance_change?.send_nft_list || []).concat(
-      tx.explain?.balance_change?.receive_nft_list || []
+    (explain?.balance_change?.send_nft_list || []).concat(
+      explain?.balance_change?.receive_nft_list || []
     ),
     'collection_id'
   );

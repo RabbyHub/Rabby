@@ -209,6 +209,7 @@
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
       "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "l2GasEstimateTooltip": "The gas estimate for L2 chain does not include the L1 gas fee. The actual fee will be higher than current estimate.",
       "BroadcastMode": {
         "instant": {
           "title": "Instant",
@@ -315,7 +316,8 @@
         "seedPhrase": "Seed Phrase address",
         "watchAddress": "Unable to sign with watch-only address",
         "safe": "Safe address",
-        "coboSafe": "Cobo Argus Address"
+        "coboSafe": "Cobo Argus Address",
+        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)"
       },
       "qrcode": {
         "signWith": "Sign with {{brand}}",
@@ -830,7 +832,10 @@
       "sort-by-balance": "Sort by balance",
       "sort-by-address-type": "Sort by address type",
       "sort-by-address-note": "Sort by address note",
-      "sort-address": "Sort Address"
+      "sort-address": "Sort Address",
+      "enterThePassphrase": "Enter the Passphrase",
+      "enterPassphraseTitle": "Enter Passphrase to Sign",
+      "passphraseError": "Passphrase invalid"
     },
     "dashboard": {
       "home": {
@@ -1159,10 +1164,13 @@
         "verifySeedPhrase": "Verify Seed Phrase",
         "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
         "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
+        "wordPhraseAndPassphrase": "I have a <1>{{count}}</1>-word phrase with Passphrase",
         "clearAll": "Clear All",
         "pastedAndClear": "Pasted and clipboard cleared",
         "invalidContent": "Invalid content",
-        "inputInvalidCount": "{{count}} inputs do not conform to Seed Phrase norms, please check."
+        "inputInvalidCount_one": "1 input do not conform to Seed Phrase norms, please check.",
+        "inputInvalidCount_other": "{{count}} inputs do not conform to Seed Phrase norms, please check.",
+        "passphrase": "Passphrase"
       },
       "metamask": {
         "step1": " Export seed phrase or private key from MetaMask <br /> <1>Click to view tutorial <1/></1>",
@@ -1308,7 +1316,10 @@
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "Default: The Default HD path for importing a seed phrase is used."
+            "default": "Default: The Default HD path for importing a seed phrase is used.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
             "default": "Default: The Default HD path for importing a seed phrase is used."
@@ -1360,6 +1371,7 @@
         "manageGridplus": "Manage GridPlus",
         "manageKeystone": "Manage Keystone",
         "manageAirgap": "Manage AirGap",
+        "manageImtokenOffline": "Manage imToken",
         "manageCoolwallet": "Manage CoolWallet",
         "manageBitbox02": "Manage BitBox02",
         "done": "Done",
@@ -1903,6 +1915,7 @@
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "Mainnet & Testnet",
       "TESTNET": "Only Testnets"
-    }
+    },
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Imported by Seed Phrase (Passphrase)"
   }
 }

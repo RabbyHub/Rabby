@@ -366,10 +366,7 @@ const AddAddressOptions = () => {
                         key={v.brand}
                         left={
                           <div className="relative w-[28px] h-[28px]">
-                            <img
-                              src={v.image}
-                              className="w-[28px] h-[28px] rounded-full"
-                            />
+                            <img src={v.image} className="w-[28px] h-[28px]" />
                             {v.connectType === 'WalletConnect' &&
                               v.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
                                 <img

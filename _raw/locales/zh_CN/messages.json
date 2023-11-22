@@ -538,7 +538,10 @@
         },
         "mnemonic": {
           "hdPathType": {
-            "default": "默认：使用导入助记词的默认 HDpath"
+            "default": "默认：使用导入助记词的默认 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "bip44": "BIP44标准：BIP44 协议定义的 HDpath",
+            "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           },
           "hdPathTypeNoChain": {
             "default": "默认：使用导入助记词的默认 HDpath"
@@ -588,6 +591,7 @@
         "connectedToOnekey": "连接 Onekey",
         "manageSeedPhrase": "管理助记词",
         "manageGridplus": "管理 Gridplus",
+        "manageImtokenOffline": "管理 imToken",
         "manageKeystone": "管理 Keystone",
         "manageAirgap": "管理 Airgap",
         "manageCoolwallet": "管理 CoolWallet",
@@ -1302,6 +1306,7 @@
       "contractPopularity": "No.{{0}} on {{1}}",
       "myMarkWithContract": "My mark on {{chainName}} contract",
       "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "l2GasEstimateTooltip": "该L2链的交易Gas预估值不包括L1的验证费用，实际的Gas消耗比当前预估值要多",
       "BroadcastMode": {
         "instant": {
           "title": "立即广播",

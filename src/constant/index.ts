@@ -162,6 +162,9 @@ import LogoRainbow, {
 import LogoMPCVault, {
   ReactComponent as RcLogoMPCVault,
 } from 'ui/assets/walletlogo/mpcvault.svg';
+import LogoImtokenOffline, {
+  ReactComponent as RcLogoImtokenOffline,
+} from 'ui/assets/walletlogo/imTokenOffline.svg';
 import LogoZerion, {
   ReactComponent as RcLogoZerion,
 } from 'ui/assets/walletlogo/zerion.svg';
@@ -464,6 +467,7 @@ export enum WALLET_BRAND_TYPES {
   DEFIANT = 'Defiant',
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
+  IMTOKENOFFLINE = 'imTokenOffline',
   Rainbow = 'Rainbow',
   Bitkeep = 'Bitget',
   // Uniswap = 'Uniswap',
@@ -755,6 +759,16 @@ export const WALLET_BRAND_CONTENT: {
     rcSvg: RcLogoMPCVault,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: {
+    id: 27,
+    name: 'imToken',
+    brand: WALLET_BRAND_TYPES.IMTOKENOFFLINE,
+    icon: LogoImtokenOffline,
+    image: LogoImtokenOffline,
+    rcSvg: RcLogoImtokenOffline,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
 };
 
@@ -1063,6 +1077,18 @@ export const L2_ENUMS = [
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.NOVA,
+  CHAINS_ENUM.BOBA,
+  CHAINS_ENUM.MANTLE,
+  CHAINS_ENUM.LINEA,
+  CHAINS_ENUM.MANTA,
+  CHAINS_ENUM.SCRL,
+  CHAINS_ENUM.ERA,
+  CHAINS_ENUM.PZE,
+  CHAINS_ENUM.MANTA,
+  CHAINS_ENUM.OP,
+  CHAINS_ENUM.BASE,
+  CHAINS_ENUM.ZORA,
+  CHAINS_ENUM.OPBNB,
 ];
 
 // opstack L2 chains
@@ -1070,6 +1096,15 @@ export const OP_STACK_ENUMS = [
   CHAINS_ENUM.OP,
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
+  CHAINS_ENUM.OPBNB,
+];
+
+export const ARB_LIKE_L2_CHAINS = [CHAINS_ENUM.ARBITRUM, CHAINS_ENUM.AURORA];
+
+export const CAN_ESTIMATE_L1_FEE_CHAINS = [
+  ...OP_STACK_ENUMS,
+  CHAINS_ENUM.SCRL,
+  ...ARB_LIKE_L2_CHAINS,
 ];
 
 export const SecurityEngineLevelOrder = [
@@ -1190,6 +1225,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.BITBOX02,
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
+  WALLET_BRAND_TYPES.IMTOKENOFFLINE,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,

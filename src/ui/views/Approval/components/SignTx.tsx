@@ -30,7 +30,8 @@ import {
   SAFE_GAS_LIMIT_RATIO,
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
-  OP_STACK_ENUMS,
+  GAS_TOP_UP_ADDRESS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -74,6 +75,7 @@ import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -285,8 +287,7 @@ const explainGas = async ({
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
-  const isOpStack = OP_STACK_ENUMS.includes(chain.enum);
-  if (isOpStack) {
+  if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
     const res = await wallet.fetchEstimatedL1Fee(
       {
         txParams: tx,
@@ -884,6 +885,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return undefined;
   }, [engineResults, currentTx]);
 
+  const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
+
   const gasExplainResponse = useExplainGas({
     gasUsed,
     gasPrice: selectedGas?.price || 0,
@@ -1226,6 +1229,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleAllow = async () => {
     if (!selectedGas) return;
 
@@ -1235,6 +1239,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     const currentAccount =
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
 
     try {
       validateGasPriceRange(tx);
@@ -1929,6 +1937,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             value={pushInfo}
             isCancel={isCancel}
             isSpeedUp={isSpeedUp}
+            isGasTopUp={isGasTopUp}
             onChange={(value) => {
               setPushInfo(value);
             }}

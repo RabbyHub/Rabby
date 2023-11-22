@@ -39,5 +39,10 @@ export default function ThemeIcon<T extends ThemeIconType>({
 
   const SvgComponet = ImgSrcOrSvg as React.FC<React.SVGProps<SVGSVGElement>>;
 
-  return <SvgComponet className={clsx(className, svgClassName)} />;
+  return (
+    <SvgComponet
+      {...(props as React.SVGProps<SVGSVGElement>)}
+      className={clsx(className, svgClassName)}
+    />
+  );
 }

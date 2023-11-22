@@ -160,6 +160,13 @@ const DFLT_FOCUSING = { index: -1, visible: false };
 const DFLT_HOVERING = { index: -1, isHovering: false };
 type IMnemonicsCount = 12 | 15 | 18 | 21 | 24;
 const MNEMONICS_COUNTS: IMnemonicsCount[] = [12, 15, 18, 21, 24];
+const NEED_PASSPHRASE_MNEMONICS_COUNTS: IMnemonicsCount[] = [
+  12,
+  15,
+  18,
+  21,
+  24,
+];
 
 function MnemonicsInputs({
   className,
@@ -169,6 +176,7 @@ function MnemonicsInputs({
   onChange,
   errMsgs = [],
   errorIndexes = [],
+  onPassphrase,
   ...props
 }: React.PropsWithChildren<{
   className?: string;
@@ -182,10 +190,13 @@ function MnemonicsInputs({
   onChange?: (value: string) => any;
   errMsgs?: string[];
   errorIndexes?: number[];
+  onPassphrase?: (val: boolean) => any;
 }>) {
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
     12
   );
+  const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
+
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
     return {
@@ -235,6 +246,7 @@ function MnemonicsInputs({
     setInputTexts([]);
     setFocusing({ ...DFLT_FOCUSING });
     setMnemonics('');
+    validateWords();
   }, [mnemonicsCount]);
 
   const onWordUpdated = React.useCallback(
@@ -265,7 +277,7 @@ function MnemonicsInputs({
     [focusing, inputTexts, mnemonicsCount]
   );
 
-  React.useEffect(() => {
+  const validateWords = () => {
     const arr: number[] = [];
     for (let i = 0; i < inputTexts.length; i++) {
       if (inputTexts[i] && !wordlist.includes(inputTexts[i])) {
@@ -273,7 +285,7 @@ function MnemonicsInputs({
       }
     }
     setInvalidWords(arr);
-  }, [inputTexts]);
+  };
 
   const { setMnemonics } = useTypingMnemonics();
   const { t } = useTranslation();
@@ -298,6 +310,10 @@ function MnemonicsInputs({
     }, 0);
   };
 
+  React.useEffect(() => {
+    onPassphrase?.(needPassphrase);
+  }, [needPassphrase]);
+
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
       <HeadToolbar className="mb-[8px]">
@@ -313,6 +329,7 @@ function MnemonicsInputs({
                     style={{ color: LessPalette['@color-body'] }}
                     onClick={() => {
                       setMnemonicsCount(count);
+                      setNeedPassphrase(false);
                     }}
                   >
                     <div className="text-wrapper">
@@ -331,18 +348,56 @@ function MnemonicsInputs({
                   </Menu.Item>
                 );
               })}
+              {NEED_PASSPHRASE_MNEMONICS_COUNTS.map((count) => {
+                return (
+                  <Menu.Item
+                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                    key={`countSelector-need-passphrase-${count}`}
+                    style={{ color: LessPalette['@color-body'] }}
+                    onClick={() => {
+                      setMnemonicsCount(count);
+                      setNeedPassphrase(true);
+                    }}
+                  >
+                    <div className="text-wrapper">
+                      <Trans
+                        t={t}
+                        i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
+                        values={{ count }}
+                      >
+                        I have a
+                        <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
+                          {count}
+                        </b>
+                        -word phrase and Passphrase
+                      </Trans>
+                    </div>
+                  </Menu.Item>
+                );
+              })}
             </Menu>
           }
         >
           <div className="left flex items-center cursor-pointer">
             <span>
-              <Trans
-                t={t}
-                i18nKey="page.newAddress.seedPhrase.wordPhrase"
-                values={{ count: mnemonicsCount }}
-              >
-                I have a <span>{mnemonicsCount}</span>-word phrase
-              </Trans>
+              {needPassphrase ? (
+                <Trans
+                  t={t}
+                  i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
+                  values={{ count: mnemonicsCount }}
+                >
+                  I have a <span>{mnemonicsCount}</span>-word phrase and
+                  Passphrase
+                </Trans>
+              ) : (
+                <Trans
+                  t={t}
+                  i18nKey="page.newAddress.seedPhrase.wordPhrase"
+                  values={{ count: mnemonicsCount }}
+                >
+                  I have a <span>{mnemonicsCount}</span>-word phrase
+                </Trans>
+              )}
             </span>
 
             <img className="ml-[2px]" src={IconCaretDown} />
@@ -419,6 +474,7 @@ function MnemonicsInputs({
                   }}
                   onBlur={() => {
                     setFocusing(DFLT_FOCUSING);
+                    validateWords();
                   }}
                   onPaste={(e) => {
                     clearClipboard();
@@ -465,7 +521,7 @@ function MnemonicsInputs({
           {invalidWords.length > 0 && (
             <div role="alert" className="mb-8">
               {t('page.newAddress.seedPhrase.inputInvalidCount', {
-                count: invalidWords.length.toString(),
+                count: invalidWords.length,
               })}
             </div>
           )}
