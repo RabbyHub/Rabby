@@ -159,6 +159,9 @@ const CardBody = styled.div<{
       font-weight: 500;
       font-size: 13px !important;
       margin: 4px auto 0;
+      .ant-input {
+        background: transparent;
+      }
     }
     .custom-input {
       margin: 4px auto 0;
@@ -169,13 +172,14 @@ const CardBody = styled.div<{
       font-weight: 500;
       color: var(--r-neutral-title-1, #192945);
       padding-top: 0;
+      transition: none;
       &.active {
         color: var(--r-blue-default, #7084ff) !important;
       }
     }
     .ant-input:focus,
     .ant-input-focused {
-      color: #000000;
+      color: var(--r-neutral-title-1);
     }
   }
 `;
@@ -185,7 +189,7 @@ const ManuallySetGasLimitAlert = styled.div`
   font-size: 13px;
   line-height: 15px;
   margin-top: 10px;
-  color: #707280;
+  color: var(--r-neutral-body);
 `;
 
 const ErrorsWrapper = styled.div`

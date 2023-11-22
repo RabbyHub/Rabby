@@ -358,7 +358,7 @@
 
 .send-token-gas-selector {
   .gas-selector {
-    background: #f5f6fa;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border: 1px solid #e5e9ef;
     border-radius: 6px;
     display: flex;
@@ -392,13 +392,13 @@
       line-height: 18px;
       .usmoney {
         font-size: 15px;
-        color: @color-body;
+        color: var(--r-neutral-title-1);
         line-height: 18px;
         font-weight: 500;
       }
       .gasmoney {
         font-size: 12px;
-        color: @color-body;
+        color: var(--r-neutral-title-1);
         margin-left: 8px;
       }
     }
@@ -412,7 +412,7 @@
       .card {
         width: 76px;
         height: 48px;
-        background: #ffffff;
+        background: var(--r-neutral-bg-1);
         border-radius: 4px;
         display: flex;
         flex-direction: column;
@@ -436,17 +436,18 @@
           text-align: center;
           font-size: 12px;
           line-height: 14px;
-          color: @color-comment-1;
+          color: var(--r-neutral-body, #3e495e);
           margin: 8px auto 0;
         }
         .cardTitle {
           .gas-level;
-          color: @color-body !important;
+          color: var(--r-neutral-title-1) !important;
           font-size: 13px !important;
           margin: 4px auto 0;
           font-weight: 500;
-          &.active {
-            color: var(--r-blue-default, #7084ff) !important;
+          .ant-input {
+            background: transparent;
+            transition: none;
           }
         }
         .custom-input {
@@ -463,7 +464,7 @@
         }
         .ant-input:focus,
         .ant-input-focused {
-          color: @color-body;
+          color: var(--r-neutral-title-1);
         }
       }
     }

@@ -1948,7 +1948,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <Drawer
             placement="bottom"
             height="400px"
-            className="gnosis-drawer"
+            className="gnosis-drawer is-support-darkmode"
             visible={drawerVisible}
             onClose={() => setDrawerVisible(false)}
             maskClosable
@@ -1964,7 +1964,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <Drawer
             placement="bottom"
             height="260px"
-            className="gnosis-drawer"
+            className="gnosis-drawer is-support-darkmode"
             visible={drawerVisible}
             onClose={() => setDrawerVisible(false)}
             maskClosable

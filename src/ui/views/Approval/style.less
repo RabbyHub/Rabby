@@ -1288,6 +1288,7 @@
 
     &-content {
       margin-right: 4px;
+      color: var(--r-neutral-title-1);
       // flex: 1;
       &-item {
         display: flex;
@@ -2268,28 +2269,28 @@
       font-size: 20px;
       line-height: 23px;
       text-align: center;
-      color: @color-title;
+      color: var(--r-neutral-title-1);
     }
     .list {
       flex: 1;
       overflow: auto;
       height: 100%;
       .item {
-        background-color: @color-bg !important;
-        border-color: @color-border;
+        background-color: var(--r-neutral-card-2) !important;
+        border-color: transparent;
         opacity: 1 !important;
         .address-viewer-text.normal {
-          color: @color-title;
+          color: var(--r-neutral-title-1);
         }
         .icon-tag {
           margin-left: 8px;
           height: 16px;
         }
         &.disabled {
-          color: @color-comment-2;
+          color: var(--r-neutral-foot);
           border-color: transparent !important;
           .address-viewer-text.normal {
-            color: @color-comment-2;
+            color: var(--r-neutral-foot);
           }
         }
       }
