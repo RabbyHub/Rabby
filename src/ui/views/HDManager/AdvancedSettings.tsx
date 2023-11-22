@@ -216,18 +216,18 @@ export const AdvancedSettings: React.FC<Props> = ({
       });
   }, []);
 
-  const currentBrandIsKeystoneAndUsbAvailable = useIsKeystoneUsbAvailable(
-    brand
-  );
+  const isAvailable = useIsKeystoneUsbAvailable(brand);
 
   const disabledSelectHDPath = React.useMemo(() => {
-    return (
-      keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
-      keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
-      !currentBrandIsKeystoneAndUsbAvailable ||
-      keyring === KEYRING_CLASS.HARDWARE.BITBOX02
-    );
-  }, [keyring, currentBrandIsKeystoneAndUsbAvailable]);
+    const hardwareKeyringTypes = [
+      KEYRING_CLASS.HARDWARE.TREZOR,
+      KEYRING_CLASS.HARDWARE.ONEKEY,
+      KEYRING_CLASS.HARDWARE.KEYSTONE,
+      KEYRING_CLASS.HARDWARE.BITBOX02,
+    ];
+
+    return !isAvailable && hardwareKeyringTypes.includes(keyring as any);
+  }, [keyring, isAvailable]);
 
   const isOnChain = React.useCallback(
     (type) => {
