@@ -1404,7 +1404,7 @@
 }
 .first-notice {
   .ant-modal-header {
-    background: #ffffff;
+    background: var(--r-neutral-bg-1);
     text-align: left;
     border-bottom: 0;
   }
@@ -1413,13 +1413,17 @@
     font-weight: 500;
     font-size: 20px;
     line-height: 23px;
-    color: @color-title;
+    color: var(--r-neutral-title-1);
     text-align: left;
   }
   .ant-modal-content {
-    background-color: #fff;
+    background: var(--r-neutral-bg-1);
+    color: var(--r-neutral-title-1);
     .ant-modal-body {
       max-height: 420px;
+      h2 {
+        color: var(--r-neutral-title-1);
+      }
       li {
         padding-left: 10px;
         position: relative;
@@ -1428,7 +1432,7 @@
           position: absolute;
           width: 4px;
           height: 4px;
-          background-color: #000;
+          background-color: var(--r-neutral-title-1);
           border-radius: 100%;
           left: 0;
           top: 9px;
