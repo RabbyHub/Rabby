@@ -30,10 +30,7 @@ import IconCheck from 'ui/assets/check.svg';
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
-import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 
 export interface AddressItemProps {
@@ -161,8 +158,8 @@ const AddressItem = memo(
             WALLET_BRAND_CONTENT?.[brandName]?.image ||
             KEYRINGS_LOGOS[type]
           : brandIcon ||
-            KEYRING_ICONS[type] ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image,
+            WALLET_BRAND_CONTENT?.[brandName]?.image ||
+            KEYRING_ICONS[type],
       [type, brandName, brandIcon]
     );
 
