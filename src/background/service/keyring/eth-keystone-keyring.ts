@@ -96,6 +96,10 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return Promise.resolve();
   }
 
+  async exportCurrentSignRequestIdIfExist() {
+    return this.getMemStore().getState().sign?.request?.requestId ?? null;
+  }
+
   async signTransactionViaUSB(address: string, tx: any) {
     const keystoneEth = await this.getKeystoneDevice();
     return await keystoneEth.signTransaction(this, address, tx);

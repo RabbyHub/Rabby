@@ -5,6 +5,7 @@ import Reader from './Reader';
 import {
   CHAINS,
   EVENTS,
+  HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
@@ -25,6 +26,7 @@ import {
 } from './KeystoneWaiting';
 import clsx from 'clsx';
 
+const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
   SYNC,
   SIGN,
@@ -83,10 +85,26 @@ const QRHardWareWaiting = ({ params }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
 
+    let currentSignId = null;
+    if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
+      currentSignId = await wallet.requestKeyring(
+        KEYSTONE_TYPE,
+        'exportCurrentSignRequestIdIfExist',
+        null
+      );
+    }
+
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
       ({ request }) => {
-        setSignPayload(request);
+        if (currentSignId) {
+          if (currentSignId === request.requestId) {
+            setSignPayload(request);
+          }
+          return;
+        } else {
+          setSignPayload(request);
+        }
       }
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
