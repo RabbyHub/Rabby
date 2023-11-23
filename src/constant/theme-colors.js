@@ -70,7 +70,7 @@ const themeColors = {
     'neutral-line': 'rgba(255, 255, 255, 0.1)',
     'neutral-bg-1': 'rgba(61, 66, 81, 1)',
     'neutral-bg-2': 'rgba(61, 66, 81, 1)',
-    'neutral-bg-3': 'rgba(247, 250, 252, 1)',
+    'neutral-bg-3': 'rgba(61, 66, 81, 1)',
     'neutral-card-1': 'rgba(255, 255, 255, 0.06)',
     'neutral-card-2': 'rgba(255, 255, 255, 0.06)',
     'neutral-card-3': 'rgba(255, 255, 255, 0.06)',
