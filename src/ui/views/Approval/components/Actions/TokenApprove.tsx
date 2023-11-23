@@ -197,7 +197,7 @@ const TokenApprove = ({
     const result = new BigNumber(value).isGreaterThan(Number.MAX_SAFE_INTEGER)
       ? String(Number.MAX_SAFE_INTEGER)
       : value;
-    const data = getCustomTxParamsData(raw.data, {
+    const data = getCustomTxParamsData(raw.data as string, {
       customPermissionAmount: result,
       decimals: actionData.token.decimals,
     });
