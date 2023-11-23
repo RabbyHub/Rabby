@@ -692,6 +692,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'normal',
@@ -699,6 +700,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'fast',
@@ -706,6 +708,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'custom',
@@ -713,6 +716,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
@@ -1281,7 +1285,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
       transaction.maxPriorityFeePerGas =
-        maxPriorityFee <= 0 ? tx.maxFeePerGas : intToHex(maxPriorityFee);
+        maxPriorityFee <= 0
+          ? tx.maxFeePerGas
+          : intToHex(Math.round(maxPriorityFee));
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
@@ -1305,6 +1311,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+      console.log('t', transaction);
+      return;
       resolveApproval({
         ...transaction,
         isSend,
@@ -1366,7 +1374,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: gas.front_tx_count,
       estimated_seconds: gas.estimated_seconds,
       base_fee: gas.base_fee,
-      price: gas.price,
+      price: Math.round(gas.price),
+      priority_price: gas.priority_price,
     });
     if (gas.level === 'custom') {
       setGasList(
@@ -1385,7 +1394,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gas: intToHex(gas.gasLimit),
         nonce: afterNonce,
       });
-      setMaxPriorityFee(gas.maxPriorityFee);
+      setMaxPriorityFee(Math.round(gas.maxPriorityFee));
     } else {
       setTx({
         ...tx,
