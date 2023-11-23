@@ -1311,8 +1311,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      console.log('t', transaction);
-      return;
       resolveApproval({
         ...transaction,
         isSend,
