@@ -60,6 +60,7 @@ type StatsData = {
   createBy: string;
   source: any;
   trigger: any;
+  reported: boolean;
 };
 
 // something need user approval in window
