@@ -277,9 +277,14 @@ export const SafeNonceSelector = ({
               suffix={
                 <img
                   src={IconDown}
-                  onClick={() => setIsShowOptionList((v) => !v)}
+                  onClick={() => {
+                    if (disabled) {
+                      return;
+                    }
+                    setIsShowOptionList((v) => !v);
+                  }}
                   className={clsx(
-                    'cursor-pointer',
+                    disabled ? 'cursor-not-allowed' : 'cursor-pointer',
                     isShowOptionList && 'rotate-180'
                   )}
                 ></img>
