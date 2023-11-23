@@ -320,7 +320,11 @@ export const useAddressSource = ({
   return source;
 };
 
-export const useAccountInfo = (type: string, address: string) => {
+export const useAccountInfo = (
+  type: string,
+  address: string,
+  brand?: string
+) => {
   const wallet = useWallet();
   const [account, setAccount] = useState<{
     address: string;
@@ -335,6 +339,7 @@ export const useAccountInfo = (type: string, address: string) => {
     type === KEYRING_CLASS.HARDWARE.TREZOR ||
     type === KEYRING_CLASS.HARDWARE.ONEKEY;
   const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
+  const isKeystone = brand === 'Keystone';
   const mnemonicAccounts = useRabbySelector((state) => state.account);
   const fetAccountInfo = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
@@ -371,7 +376,7 @@ export const useAccountInfo = (type: string, address: string) => {
   }, []);
 
   useEffect(() => {
-    if (isLedger || isGridPlus) {
+    if (isLedger || isGridPlus || isKeystone) {
       fetAccountInfo();
     } else if (isTrezorLike) {
       fetchTrezorLikeAccount();
