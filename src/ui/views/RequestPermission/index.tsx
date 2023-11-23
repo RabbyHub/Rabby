@@ -103,6 +103,8 @@ const RequestPermission = () => {
           return;
         }
 
+        await wallet.requestKeyring(KEYSTONE_TYPE, 'forgetDevice', null);
+
         const stashKeyringId = await wallet.initQRHardware(
           WALLET_BRAND_TYPES.KEYSTONE
         );
