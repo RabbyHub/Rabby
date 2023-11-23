@@ -159,6 +159,7 @@ interface SafeNonceSelectorProps {
   isReady?: boolean;
   chainId: number;
   safeInfo?: BasicSafeInfo | null;
+  disabled?: boolean;
 }
 export const SafeNonceSelector = ({
   value,
@@ -166,6 +167,7 @@ export const SafeNonceSelector = ({
   isReady,
   chainId,
   safeInfo,
+  disabled,
 }: SafeNonceSelectorProps) => {
   const { t } = useTranslation();
   const [isShowOptionList, setIsShowOptionList] = useState(false);
@@ -271,6 +273,7 @@ export const SafeNonceSelector = ({
                 handleOnChange(v);
               }}
               // type="number"
+              disabled={disabled}
               suffix={
                 <img
                   src={IconDown}
