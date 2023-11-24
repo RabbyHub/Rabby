@@ -246,7 +246,11 @@ const GasSelector = ({
     rawSelectedGas
   );
   const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
-    selectedGas ? selectedGas.price / 1e9 : 0
+    selectedGas
+      ? (selectedGas.priority_price === null
+          ? selectedGas.price
+          : selectedGas.priority_price) / 1e9
+      : 0
   );
   const [isReal1559, setIsReal1559] = useState(false);
   const [customNonce, setCustomNonce] = useState(Number(nonce));
@@ -268,11 +272,6 @@ const GasSelector = ({
     },
   });
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
-  const sliderStep = useMemo(() => {
-    if (!selectedGas) return 0;
-    if (selectedGas.price / 1e9 <= 50) return 0.1;
-    return 1;
-  }, [selectedGas]);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
@@ -478,6 +477,7 @@ const GasSelector = ({
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
+        priority_price: 0,
       };
 
       const currentObj = {
@@ -503,6 +503,7 @@ const GasSelector = ({
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
+      priority_price: null,
     };
     setSelectedGas({
       ...gas,
@@ -536,6 +537,7 @@ const GasSelector = ({
           price: Number(customGas) * 1e9,
           front_tx_count: 0,
           estimated_seconds: 0,
+          priority_price: null,
           base_fee: gasList[0].base_fee,
         }));
     },
@@ -593,13 +595,17 @@ const GasSelector = ({
 
   useEffect(() => {
     if (isReady && selectedGas && chainId === 1) {
-      const priorityFee = calcMaxPriorityFee(
-        gasList,
-        selectedGas,
-        chainId,
-        isSpeedUp || isCancel
-      );
-      setMaxPriorityFee(priorityFee / 1e9);
+      if (selectedGas.priority_price !== null) {
+        setMaxPriorityFee(selectedGas.priority_price / 1e9);
+      } else {
+        const priorityFee = calcMaxPriorityFee(
+          gasList,
+          selectedGas,
+          chainId,
+          isSpeedUp || isCancel
+        );
+        setMaxPriorityFee(priorityFee / 1e9);
+      }
     } else if (selectedGas) {
       setMaxPriorityFee(selectedGas.price / 1e9);
     }
@@ -849,7 +855,7 @@ const GasSelector = ({
                   max={selectedGas ? selectedGas.price / 1e9 : 0}
                   onChange={handleMaxPriorityFeeChange}
                   value={maxPriorityFee}
-                  step={sliderStep}
+                  step={0.01}
                 />
                 <p className="priority-slider__mark">
                   <span>0</span>

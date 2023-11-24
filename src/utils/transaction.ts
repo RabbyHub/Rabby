@@ -62,6 +62,9 @@ export const calcMaxPriorityFee = (
   if (chainId !== 1 || useMaxFee) {
     return target.price;
   }
+  if (target.priority_price && target.priority_price !== null) {
+    return target.priority_price;
+  }
   // only enable auto-priorityFee for ETH currently
   const min = minBy(
     gasList.filter((item) => item.level !== 'custom'),
