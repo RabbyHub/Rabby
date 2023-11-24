@@ -34,13 +34,14 @@
 .chromelike-scrollbar(@bar-width: 6px) {
   &::-webkit-scrollbar {
     width: @bar-width;
-    background-color: #fafafa;
+    // background-color: #fafafa;
+    background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
     padding-left: 1px;
     padding-right: 1px;
   }
   &::-webkit-scrollbar-thumb {
-    // background-color: #c1c1c1;
-    background-color: rgba(193, 193, 193, 0.7);
+    // background-color: rgba(193, 193, 193, 0.7);
+    background-color: rgba(var(--r-neutral-foot-rgb), 0.5);
     border-radius: 4px;
   }
 }
@@ -101,9 +102,9 @@
   }
 
   .ant-input-suffix {
-    color: var(--r-neutral-title-1, #192945);
+    color: var(--r-neutral-foot);
     .anticon-close-circle {
-      color: var(--r-neutral-title-1, #192945);
+      color: var(--r-neutral-foot);
     }
   }
 }

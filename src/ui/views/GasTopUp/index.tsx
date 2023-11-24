@@ -484,7 +484,7 @@ const GasBox = ({
         ) : (
           <div
             className={clsx(
-              'text-12 text-gray-subTitle mt-2',
+              'text-12 text-r-neutral-body mt-2',
               !(gasCostExceedsBudget || chainInsufficientBalance) &&
                 index === selectedIndex &&
                 'text-blue-light'

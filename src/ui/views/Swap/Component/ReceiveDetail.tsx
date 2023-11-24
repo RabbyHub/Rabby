@@ -66,7 +66,7 @@ const ReceiveWrapper = styled.div`
   border-radius: 4px;
   padding: 12px;
 
-  color: #4b4d59;
+  color: var(--r-neutral-title-1, #192945);
   font-size: 13px;
   .receive-token {
     font-size: 15px;
@@ -118,6 +118,10 @@ const ReceiveWrapper = styled.div`
     position: relative;
     border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
     padding-top: 8px;
+
+    .rate {
+      color: var(--r-neutral-body, #d3d8e0) !important;
+    }
   }
   .quote-provider {
     position: absolute;

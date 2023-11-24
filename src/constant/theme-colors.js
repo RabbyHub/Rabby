@@ -8,7 +8,7 @@ const themeColors = {
     'blue-light-2': 'rgba(222, 227, 252, 1)',
     /* blue/disable #7084ff80 50% */
     'blue-disable': 'rgba(112, 132, 255, 0.5)',
-    'blue-disable-rgb': 'rgb(183, 193, 255)',
+    'blue-disable-opaque': 'rgb(183, 193, 255)',
     /* green/default #2abb7f */
     'green-default': 'rgba(42, 187, 127, 1)',
     /* green/light #2abb7f26 15% */
@@ -32,6 +32,7 @@ const themeColors = {
     'neutral-body': 'rgba(62, 73, 94, 1)',
     /* neutral/foot #6a7587 */
     'neutral-foot': 'rgba(106, 117, 135, 1)',
+    'neutral-foot-rgb': '106, 117, 135',
     /* neutral/line #d3d8e0 */
     'neutral-line': 'rgba(211, 216, 224, 1)',
     /* neutral/bg1 #ffffff */
@@ -57,7 +58,7 @@ const themeColors = {
     'blue-light-1': 'rgba(112, 132, 255, 0.1)',
     'blue-light-2': 'rgba(112, 132, 255, 0.1)',
     'blue-disable': 'rgba(112, 132, 255, 0.3)',
-    'blue-disable-rgb': 'rgb(183, 193, 255)',
+    'blue-disable-opaque': 'rgb(183, 193, 255)',
     'green-default': 'rgba(42, 187, 127, 1)',
     'green-light': 'rgba(42, 187, 127, 0.2)',
     'orange-default': 'rgba(255, 198, 74, 1)',
@@ -69,6 +70,7 @@ const themeColors = {
     'neutral-title-1': 'rgba(247, 250, 252, 1)',
     'neutral-body': 'rgba(211, 216, 224, 1)',
     'neutral-foot': 'rgba(186, 190, 197, 1)',
+    'neutral-foot-rgb': '186, 190, 197',
     'neutral-line': 'rgba(255, 255, 255, 0.1)',
     'neutral-bg-1': 'rgba(61, 66, 81, 1)',
     'neutral-bg-2': 'rgba(61, 66, 81, 1)',
