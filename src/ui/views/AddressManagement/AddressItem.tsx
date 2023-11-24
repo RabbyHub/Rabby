@@ -31,10 +31,7 @@ import IconCheck from 'ui/assets/check.svg';
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
-import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -172,7 +169,8 @@ const AddressItem = memo(
             pickKeyringThemeIcon(brandName as any, {
               needLightVersion: isDarkTheme,
             }) ||
-            WALLET_BRAND_CONTENT?.[brandName]?.image,
+            WALLET_BRAND_CONTENT?.[brandName]?.image ||
+            KEYRING_ICONS[type],
       [type, brandName, brandIcon, isDarkTheme]
     );
 

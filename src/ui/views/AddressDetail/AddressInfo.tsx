@@ -19,6 +19,7 @@ import { connectStore } from '@/ui/store';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
+import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import { SeedPhraseBar } from './SeedPhraseBar';
 import { GnonisSafeInfo } from './GnosisSafeInfo';
 import { CoboArgusInfo } from './CoboArugsInfo';
@@ -38,7 +39,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const [balance] = useBalance(address);
   const [form] = useForm();
   const inputRef = useRef<Input>(null);
-  const accountInfo = useAccountInfo(type, address);
+  const accountInfo = useAccountInfo(type, address, brandName);
   const { t } = useTranslation();
 
   const isGnosis = type === KEYRING_CLASS.GNOSIS;
@@ -217,6 +218,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         {type === KEYRING_CLASS.HARDWARE.LEDGER && (
           <div className="pb-[20px]">
             <LedgerStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
+        )}
+        {brandName === 'Keystone' && (
+          <div className="pb-[20px]">
+            <KeystoneStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
           </div>
         )}
         {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (

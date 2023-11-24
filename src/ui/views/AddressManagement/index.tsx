@@ -32,6 +32,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
 import { nanoid } from 'nanoid';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -394,6 +395,7 @@ const AddressManagement = () => {
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.WALLETCONNECT;
   const isLedger =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.LEDGER;
+  const isKeystone = accountList[currentAccountIndex]?.brandName === 'Keystone';
   const isGridPlus =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
   const hasStatusBar = isWalletConnect || isLedger || isGridPlus;
@@ -543,6 +545,9 @@ const AddressManagement = () => {
               )}
               {isLedger && (
                 <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+              )}
+              {isKeystone && (
+                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
               )}
               {isGridPlus && (
                 <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />

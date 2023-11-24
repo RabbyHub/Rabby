@@ -1284,10 +1284,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.0.tgz#9c67288816d62e3548e0c2193ec4cd73758f5b26"
   integrity sha512-PWdFuKuqDtGdYALFToDQQCyas3Tgz1tXXlir6UVTVHz2MPi4uK6ZK8UUNrWdU6lncHNvcRsNf3Xamk0Ga9jxeg==
 
-"@debank/common@^0.3.43":
-  version "0.3.43"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.43.tgz#87cd496370c545235e1aacae1842ba50f128a7a3"
-  integrity sha512-g2WKyCvx6k0tQFKG922epi0KV/WFvWPBPdTa1si4bZn5BNTVZ3YxSs7A/rNWuNeVdqXVu7u5AVLh6cVswFPshw==
+"@debank/common@^0.3.44":
+  version "0.3.44"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.44.tgz#0b9e314d55293aaa5ca65e311575202abe1c6780"
+  integrity sha512-7Cs6xGewoqX1sRe7diZY0zg2EcXWzp+DXDcUUT2L2CGdeZ1eRGxnpmjJIHfChTLhBjDY8cspljxMKiScQi9DNg==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3301,6 +3301,27 @@
     base58check "^2.0.0"
     tslib "^2.3.0"
 
+"@keystonehq/hw-app-eth@^0.2.17":
+  version "0.2.17"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-app-eth/-/hw-app-eth-0.2.17.tgz#9168ac64fb40e34484bc8c556b24c6a5c557adb3"
+  integrity sha512-TXdOhBjfMgkQ4JMLiavJh7Ipag/ZVp+V8HOmCCxS6yyZ+lwzkw5xFANu7SNw7cHg6yD0IKp39No5+IWuXVaYzg==
+  dependencies:
+    "@ethereumjs/tx" "^3.3.2"
+    "@keystonehq/bc-ur-registry-eth" "^0.8.1-alpha.0"
+    "@keystonehq/hw-transport-webusb" "0.2.17"
+    "@ngraveio/bc-ur" "^1.1.6"
+    buffer "^6.0.3"
+    hdkey "^2.0.1"
+    rlp "^2.2.6"
+    uuid "^8.3.2"
+
+"@keystonehq/hw-transport-webusb@0.2.17", "@keystonehq/hw-transport-webusb@^0.2.17":
+  version "0.2.17"
+  resolved "https://registry.yarnpkg.com/@keystonehq/hw-transport-webusb/-/hw-transport-webusb-0.2.17.tgz#f5ffb69f8058f28162237107699dd1120e423d67"
+  integrity sha512-pooySf/sn7FbO01kS/suTlRNFlrhgHSX6Vj9aVNTb90e3iQxLC0nDKUKqskLZaKMZvH8aSvfvJjGFOBaemiYtw==
+  dependencies:
+    buffer "^6.0.3"
+
 "@keystonehq/metamask-airgapped-keyring@^0.2.5-alpha.0":
   version "0.2.5-alpha.2.1"
   resolved "https://registry.yarnpkg.com/@keystonehq/metamask-airgapped-keyring/-/metamask-airgapped-keyring-0.2.5-alpha.2.1.tgz#999d80aa9a00db5485417e9cff2f4c6780032add"
@@ -3911,10 +3932,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@^0.6.26":
-  version "0.6.26"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.26.tgz#4faf0b90cdccc93b231c73a75f707faac7ac1f80"
-  integrity sha512-G0AdbJi+SHY+kw2FnPBosrZGJZeey+lbhzJ+Wu/5SbzYygQ9TU7Ebx5za9n4XQ8ZdJqjDvnAE/NX0IM2gx2cBA==
+"@rabby-wallet/rabby-api@^0.6.27":
+  version "0.6.27"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.27.tgz#7951ff2d66a38bfaa5f97121602feea8116e3f2b"
+  integrity sha512-ccX7xLtV7vf0tm7B3qPQOF2nOZMS6LMzPEHHagY5fKLZUHXu5A5kj4UYbK1yfapX+sgGhyBNou2f+67G4Ldt8w==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"

@@ -3,6 +3,7 @@ import React from 'react';
 import { SessionSignal } from '../WalletConnect/SessionSignal';
 import { GridPlusSignal } from './GridPlusSignal';
 import { LedgerSignal } from './LedgerSignal';
+import { KeystoneSignal } from './KeystoneSignal';
 
 export interface Props {
   className?: string;
@@ -33,6 +34,10 @@ export const CommonSignal: React.FC<Props> = ({
       )}
       {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
         <GridPlusSignal isBadge className={className} />
+      )}
+      {/* FIXME: The type `KEYSTONE` refers to airgap type wallets, not specifically to Keystone. To specifically identify Keystone, use `brand`. */}
+      {brandName === 'Keystone' && (
+        <KeystoneSignal isBadge className={className} />
       )}
     </div>
   );

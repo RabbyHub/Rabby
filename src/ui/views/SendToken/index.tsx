@@ -484,6 +484,7 @@ const SendToken = () => {
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: 0,
+        priority_price: null,
       };
     } else if (
       lastTimeGas?.lastTimeSelect &&

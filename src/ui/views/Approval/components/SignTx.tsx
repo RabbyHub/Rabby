@@ -119,6 +119,11 @@ const normalizeTxParams = (tx) => {
         copy.value = normalizeHex(copy.value);
       }
     }
+    if ('data' in copy) {
+      if (!tx.data.startsWith('0x')) {
+        copy.data = `0x${tx.data}`;
+      }
+    }
   } catch (e) {
     Sentry.captureException(
       new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
@@ -692,6 +697,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'normal',
@@ -699,6 +705,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'fast',
@@ -706,6 +713,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'custom',
@@ -713,6 +721,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
@@ -1281,7 +1290,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
       transaction.maxPriorityFeePerGas =
-        maxPriorityFee <= 0 ? tx.maxFeePerGas : intToHex(maxPriorityFee);
+        maxPriorityFee <= 0
+          ? tx.maxFeePerGas
+          : intToHex(Math.round(maxPriorityFee));
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
@@ -1366,7 +1377,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: gas.front_tx_count,
       estimated_seconds: gas.estimated_seconds,
       base_fee: gas.base_fee,
-      price: gas.price,
+      price: Math.round(gas.price),
+      priority_price: gas.priority_price,
     });
     if (gas.level === 'custom') {
       setGasList(
@@ -1385,7 +1397,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gas: intToHex(gas.gasLimit),
         nonce: afterNonce,
       });
-      setMaxPriorityFee(gas.maxPriorityFee);
+      setMaxPriorityFee(Math.round(gas.maxPriorityFee));
     } else {
       setTx({
         ...tx,
@@ -1876,6 +1888,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
             {isGnosisAccount ? (
               <SafeNonceSelector
+                disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
                 value={realNonce}

@@ -15,6 +15,7 @@ import { WalletConnectAccount } from './WalletConnectAccount';
 import { Chain } from '@debank/common';
 import { LedgerAccount } from './LedgerAccount';
 import { CommonAccount } from './CommonAccount';
+import { KeystoneAccount } from './KeystoneAccount';
 import { GridPlusAccount } from './GridPlusAccount';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -134,14 +135,7 @@ export const AccountInfo: React.FC<Props> = ({
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.KEYSTONE && (
-        <CommonAccount
-          icon={
-            isDarkTheme
-              ? WALLET_BRAND_CONTENT.Keystone.lightIcon
-              : WALLET_BRAND_CONTENT.Keystone.icon
-          }
-          tip={t('page.signFooterBar.addressTip.keystone')}
-        />
+        <KeystoneAccount />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.AIRGAP && (
         <CommonAccount
