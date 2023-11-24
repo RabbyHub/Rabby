@@ -1881,6 +1881,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
             {isGnosisAccount ? (
               <SafeNonceSelector
+                disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
                 value={realNonce}
