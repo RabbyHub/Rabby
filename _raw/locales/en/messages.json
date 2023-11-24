@@ -284,6 +284,8 @@
       "connectButton": "Connect",
       "connecting": "Connecting...",
       "ledgerNotConnected": "Ledger is not connected",
+      "keystoneNotConnected": "Keystone is not connected",
+      "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
       "signAndSubmitButton": "Sign and Create",
       "walletConnect": {
@@ -328,6 +330,18 @@
         "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
         "unknownQRCode": "Error: We couldn't identify that QR code",
         "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
+      },
+      "keystone": {
+        "signWith": "Switch to {{method}} for signing",
+        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "unsupportedType": "Error: The transaction type is unsupported or unknown.",
+        "siging": "Sending signing request",
+        "txRejected": "Transaction rejected",
+        "shouldRetry": "Some error occurred. Please retry.",
+        "hardwareRejectError": "Hardware rejects signature",
+        "mismatchedWalletError": "Mismatched wallet",
+        "verifyPasswordError": "Signature failure, please try again after unlocking",
+        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
       },
       "ledger": {
         "resent": "Resent",
@@ -1062,11 +1076,19 @@
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
+        "howToConnectKeystone": "How to Connect Keystone",
         "userRejectedTheRequest": "User rejected the request.",
         "ledger": {
           "doc1": "Plug in a single Ledger",
           "doc2": "Enter pin to unlock",
           "doc3": "Open Ethereum App",
+          "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
+        },
+        "keystone": {
+          "title": "*USB connect only for Keystone 3(Pro)",
+          "doc1": "Plug in a single Keystone",
+          "doc2": "Enter password to unlock",
+          "doc3": "Approve connection to computer",
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
         "howToSwitch": "How to switch"
@@ -1189,6 +1211,18 @@
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
         "allow": "Allow"
+      },
+      "keystone": {
+        "title": "Connect Keystone",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "keystonePermission1": "Connect to an USB device",
+        "keystonePermissionTip": "Please click \"Allow\" below and authorize access to your Keystone in the following pop-up window.",
+        "noDeviceFoundError": "Plug in a single Keystone",
+        "deviceIsLockedError": "Enter password to unlock",
+        "deviceRejectedExportAddress": "Approve connection to Rabby",
+        "deviceIsBusy": "Device is busy",
+        "exportAddressJustAllowedOnHomePage": "Export address just allowed on home page",
+        "unknowError": "Unknown error, please try again"
       },
       "walletConnect": {
         "connectYour": "Connect your",
@@ -1701,7 +1735,9 @@
       "gridPlusConnected": "GridPlus is connected",
       "gridPlusNotConnected": "GridPlus is not connected",
       "ledgerNotConnected": "Ledger is not connected",
-      "ledgerConnected": "Ledger is connected"
+      "ledgerConnected": "Ledger is connected",
+      "keystoneConnected": "Keystone is connected",
+      "keystoneNotConnected": "Keystone is not connected"
     },
     "Contact": {
       "AddressItem": {
@@ -1831,7 +1867,8 @@
     "nonce": "nonce",
     "Balance": "Balance",
     "Done": "Done",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "tryAgain": "Try Again"
   },
   "background": {
     "error": {

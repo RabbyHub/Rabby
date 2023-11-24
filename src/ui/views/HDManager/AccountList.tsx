@@ -146,7 +146,7 @@ export const AccountList: React.FC<Props> = ({
 
       return;
     },
-    []
+    [keyring, keyringId, wallet]
   );
 
   const handleChangeAliasName = React.useCallback(

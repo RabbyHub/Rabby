@@ -289,7 +289,7 @@ function reportStatsData() {
   if (!statsData || statsData.reported) return;
 
   if (statsData?.signed) {
-    stats.report('signedTransaction', {
+    const sData: any = {
       type: statsData?.type,
       chainId: statsData?.chainId,
       category: statsData?.category,
@@ -298,7 +298,11 @@ function reportStatsData() {
       createBy: statsData?.createBy,
       source: statsData?.source,
       trigger: statsData?.trigger,
-    });
+    };
+    if (statsData.signMethod) {
+      sData.signMethod = statsData.signMethod;
+    }
+    stats.report('signedTransaction', sData);
   }
   if (statsData?.submit) {
     stats.report('submitTransaction', {

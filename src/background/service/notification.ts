@@ -16,7 +16,6 @@ import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
-import { permissionService } from '.';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -48,7 +47,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'PrivatekeyWaiting',
 ];
 
-type StatsData = {
+export type StatsData = {
   signed: boolean;
   signedSuccess: boolean;
   submit: boolean;
@@ -61,6 +60,7 @@ type StatsData = {
   source: any;
   trigger: any;
   reported: boolean;
+  signMethod?: string;
 };
 
 // something need user approval in window
