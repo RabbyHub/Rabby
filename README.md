@@ -114,4 +114,4 @@ it's used by 3 pages which share the same js code, but the template html is diff
 Thanks for contributions from MetaMask team to browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
 
 ## Other Docs
-- [How to add a new translation to MetaMask](https://github.com/RabbyHub/Rabby/blob/develop/docs/translation.md)
+- [How to add a new translation to Rabby](https://github.com/RabbyHub/Rabby/blob/develop/docs/translation.md)
