@@ -600,7 +600,7 @@ const GasSelector = ({
 
   useEffect(() => {
     if (isReady && selectedGas && chainId === 1) {
-      if (selectedGas.priority_price !== null) {
+      if (selectedGas.priority_price && selectedGas.priority_price !== null) {
         setMaxPriorityFee(selectedGas.priority_price / 1e9);
       } else {
         const priorityFee = calcMaxPriorityFee(
