@@ -140,7 +140,7 @@ const EditWhitelist = ({
               width="20px"
               height="20px"
               className="mr-12"
-              background="#27C193"
+              background="var(--r-green-default, #2ABB7F)"
               checked={
                 !!checkedList.find((item) =>
                   isSameAddress(account.address, item)

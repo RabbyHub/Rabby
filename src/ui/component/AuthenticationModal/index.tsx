@@ -184,7 +184,8 @@ const AuthenticationModal = ({
                     checked={q.checked}
                     width={'20px'}
                     height={'20px'}
-                    background="#27C193"
+                    background="var(--r-green-default, #2ABB7F)"
+                    unCheckBackground="var(--r-neutral-line, rgba(255, 255, 255, 0.1))"
                     onChange={handleClickItem}
                   />
                 }
