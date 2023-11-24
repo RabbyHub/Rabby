@@ -437,6 +437,7 @@ class ProviderController extends BaseController {
       createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
+      reported: false,
     };
 
     try {
