@@ -53,7 +53,6 @@ export function getCustomTxParamsData(
       customPermissionAmount,
       decimals
     );
-    console.log('customPermissionValue', customPermissionValue.toFixed());
     const calldata = iface.encodeFunctionData('increaseAllowance', [
       spender,
       customPermissionValue.toFixed(),
