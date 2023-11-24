@@ -119,6 +119,11 @@ const normalizeTxParams = (tx) => {
         copy.value = normalizeHex(copy.value);
       }
     }
+    if ('data' in copy) {
+      if (!tx.data.startsWith('0x')) {
+        copy.data = `0x${tx.data}`;
+      }
+    }
   } catch (e) {
     Sentry.captureException(
       new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
