@@ -53,6 +53,7 @@ import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChainByEnum } from '@/utils/chain';
 import eventBus from '@/eventBus';
+import { StatsData } from '../../service/notification';
 
 const reportSignText = (params: {
   method: string;
@@ -422,7 +423,7 @@ class ProviderController extends BaseController {
     ) {
       await new Promise((r) => setTimeout(r, 200));
     }
-    const statsData = {
+    const statsData: StatsData = {
       signed: false,
       signedSuccess: false,
       submit: false,
@@ -436,6 +437,7 @@ class ProviderController extends BaseController {
       createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
+      reported: false,
     };
 
     try {
@@ -450,18 +452,6 @@ class ProviderController extends BaseController {
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
       ) {
         signedTransactionSuccess = true;
-        // stats.report('signedTransaction', {
-        //   type: currentAccount.brandName,
-        //   chainId: chainItem?.serverId || '',
-        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        //   success: true,
-        //   preExecSuccess: cacheExplain
-        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-        //     : true,
-        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-        //   source: options?.data?.$ctx?.ga?.source || '',
-        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
-        // });
         statsData.signed = true;
         statsData.signedSuccess = true;
         return;
@@ -490,18 +480,6 @@ class ProviderController extends BaseController {
           swapService.postSwap(chain, hash, other);
         }
 
-        // stats.report('submitTransaction', {
-        //   type: currentAccount.brandName,
-        //   chainId: chainItem?.serverId || '',
-        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        //   success: true,
-        //   preExecSuccess: cacheExplain
-        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-        //     : true,
-        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-        //   source: options?.data?.$ctx?.ga?.source || '',
-        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
-        // });
         statsData.submit = true;
         statsData.submitSuccess = true;
         if (isSend) {
@@ -578,11 +556,6 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
-          // const cacheExplain = transactionHistoryService.getExplainCache({
-          //   address: txParams.from,
-          //   chainId: Number(approvalRes.chainId),
-          //   nonce: Number(approvalRes.nonce),
-          // });
           transactionHistoryService.addSubmitFailedTransaction(
             {
               rawTx: approvalRes,
@@ -597,12 +570,9 @@ class ProviderController extends BaseController {
           );
         }
         const errMsg = e.message || JSON.stringify(e);
-        // notification.create(
-        //   undefined,
-        //   i18n.t('background.error.txPushFailed'),
-        //   errMsg
-        // );
-        // transactionHistoryService.removeSigningTx(signingTxId!);
+        if (notificationService.statsData?.signMethod) {
+          statsData.signMethod = notificationService.statsData?.signMethod;
+        }
         notificationService.setStatsData(statsData);
         throw new Error(errMsg);
       };
@@ -615,6 +585,9 @@ class ProviderController extends BaseController {
         if (currentAccount.type === KEYRING_TYPE.WalletConnectKeyring) {
           statsData.signed = true;
           statsData.signedSuccess = true;
+        }
+        if (notificationService.statsData?.signMethod) {
+          statsData.signMethod = notificationService.statsData?.signMethod;
         }
         notificationService.setStatsData(statsData);
         return signedTx;
@@ -643,18 +616,6 @@ class ProviderController extends BaseController {
         }
       }
       signedTransactionSuccess = true;
-      // stats.report('signedTransaction', {
-      //   type: currentAccount.brandName,
-      //   chainId: chainItem?.serverId || '',
-      //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      //   success: true,
-      //   preExecSuccess: cacheExplain
-      //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-      //     : true,
-      //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-      //   source: options?.data?.$ctx?.ga?.source || '',
-      //   trigger: options?.data?.$ctx?.ga?.trigger || '',
-      // });
       statsData.signed = true;
       statsData.signedSuccess = true;
       eventBus.emit(EVENTS.broadcastToUI, {
@@ -685,16 +646,6 @@ class ProviderController extends BaseController {
 
           onTransactionCreated({ hash, reqId, pushType });
         } else {
-          // hash = await openapiService.pushTx(
-          //   {
-          //     ...approvalRes,
-          //     r: bufferToHex(signedTx.r),
-          //     s: bufferToHex(signedTx.s),
-          //     v: bufferToHex(signedTx.v),
-          //     value: approvalRes.value || '0x0',
-          //   },
-          //   traceId
-          // );
           const res = await openapiService.submitTx({
             tx: {
               ...approvalRes,
@@ -714,6 +665,9 @@ class ProviderController extends BaseController {
             onTransactionSubmitFailed(new Error('Submit tx failed'));
           } else {
             onTransactionCreated({ hash, reqId, pushType });
+            if (notificationService.statsData?.signMethod) {
+              statsData.signMethod = notificationService.statsData?.signMethod;
+            }
             notificationService.setStatsData(statsData);
           }
         }
@@ -725,22 +679,12 @@ class ProviderController extends BaseController {
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
-        // stats.report('signedTransaction', {
-        //   type: currentAccount.brandName,
-        //   chainId: chainItem?.serverId || '',
-        //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        //   success: false,
-        //   preExecSuccess: cacheExplain
-        //     ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-        //     : true,
-        //   createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-        //   source: options?.data?.$ctx?.ga?.source || '',
-        //   trigger: options?.data?.$ctx?.ga?.trigger || '',
-        // });
         statsData.signed = true;
         statsData.signedSuccess = false;
       }
-      // transactionHistoryService.removeSigningTx(signingTxId!);
+      if (notificationService.statsData?.signMethod) {
+        statsData.signMethod = notificationService.statsData?.signMethod;
+      }
       notificationService.setStatsData(statsData);
       throw new Error(e);
     }

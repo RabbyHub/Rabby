@@ -119,6 +119,11 @@ const normalizeTxParams = (tx) => {
         copy.value = normalizeHex(copy.value);
       }
     }
+    if ('data' in copy) {
+      if (!tx.data.startsWith('0x')) {
+        copy.data = `0x${tx.data}`;
+      }
+    }
   } catch (e) {
     Sentry.captureException(
       new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
@@ -1883,6 +1888,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
             {isGnosisAccount ? (
               <SafeNonceSelector
+                disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
                 value={realNonce}

@@ -3419,6 +3419,10 @@ export class WalletController extends BaseController {
 
     return await keyring.scanAccount();
   };
+
+  setStatsData = (data: any) => {
+    notificationService.setStatsData(data);
+  };
 }
 
 const wallet = new WalletController();

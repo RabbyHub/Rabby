@@ -130,6 +130,14 @@ const AddAddressOptions = () => {
       } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
         checkQRBasedWallet(item).then((success) => {
           if (!success) return;
+          /**
+           * Check if the wallet brand is Keystone. Although Keystone supports both USB signing and import,
+           * due to its dual-mode (QR and USB) design, it is still limited to import only one QR wallet at a time.
+           */
+          if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
+            openInternalPageInTab('import/hardware/keystone');
+            return;
+          }
           openInternalPageInTab(`import/hardware/qrcode?brand=${item.brand}`);
         });
       } else if (
