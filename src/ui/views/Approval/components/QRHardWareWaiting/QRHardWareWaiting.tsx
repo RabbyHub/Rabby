@@ -70,9 +70,10 @@ const QRHardWareWaiting = ({ params }) => {
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
     setBrand(account.brandName);
+    const icon = WALLET_BRAND_CONTENT[account.brandName].icon;
     setTitle(
       <div className="flex justify-center items-center">
-        <img src={walletBrandContent.icon} className="w-20 mr-8" />
+        <img src={icon} className="w-20 mr-8" />
         <span>
           {t('page.signFooterBar.qrcode.signWith', {
             brand: account.brandName,
