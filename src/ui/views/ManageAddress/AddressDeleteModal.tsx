@@ -44,7 +44,7 @@ export const AddressDeleteModal = ({
       pickKeyringThemeIcon(type as any, isDarkTheme) ||
       KEYRING_ICONS[type] ||
       pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-      WALLET_BRAND_CONTENT?.[brandName]?.rcSvg ||
+      WALLET_BRAND_CONTENT?.[brandName]?.maybeSvg ||
       WALLET_BRAND_CONTENT?.[brandName]?.image,
     [type, brandName, brandIcon, isDarkTheme]
   );
