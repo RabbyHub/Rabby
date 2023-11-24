@@ -8,6 +8,7 @@ export default function ThemeIcon<T extends ThemeIconType>({
   className,
   imgClassName,
   svgClassName,
+  svgSize,
   ...props
 }: (T extends string
   ? React.ImgHTMLAttributes<HTMLImageElement>
@@ -17,6 +18,7 @@ export default function ThemeIcon<T extends ThemeIconType>({
   className?: string;
   imgClassName?: string;
   svgClassName?: string;
+  svgSize?: number | string;
 }) {
   if (typeof ImgSrcOrSvg === 'string') {
     return (
@@ -43,6 +45,10 @@ export default function ThemeIcon<T extends ThemeIconType>({
     <SvgComponet
       {...(props as React.SVGProps<SVGSVGElement>)}
       className={clsx(className, svgClassName)}
+      {...(svgSize && {
+        width: svgSize,
+        height: svgSize,
+      })}
     />
   );
 }

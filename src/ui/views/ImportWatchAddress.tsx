@@ -228,7 +228,7 @@ const ImportWatchAddress = () => {
           <img src="/images/watch-mask.png" className="mask" />
         </div>
       </header>
-      <div className="rabby-container">
+      <div className="rabby-container widget-has-ant-input">
         <div className="relative">
           <Form.Item
             className="pt-32 px-20"
@@ -304,7 +304,7 @@ const ImportWatchAddress = () => {
             <div className="qrcode">
               <QRCode value={walletconnectUri} size={176} />
             </div>
-            <div className="text-12 text-gray-content text-center  mt-12">
+            <div className="text-12 text-r-neutral-foot text-center mt-12">
               {t('page.newAddress.addContacts.walletConnectVPN')}
             </div>
           </>

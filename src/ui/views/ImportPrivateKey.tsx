@@ -133,7 +133,7 @@ const ImportPrivateKey = () => {
         >
           {t('page.newAddress.importPrivateKey')}
         </Navbar>
-        <div className="rabby-container">
+        <div className="rabby-container widget-has-ant-input">
           <div className="px-20 pt-24">
             <Form.Item
               name="key"

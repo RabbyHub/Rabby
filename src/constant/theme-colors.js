@@ -8,6 +8,7 @@ const themeColors = {
     'blue-light-2': 'rgba(222, 227, 252, 1)',
     /* blue/disable #7084ff80 50% */
     'blue-disable': 'rgba(112, 132, 255, 0.5)',
+    'blue-disable-rgb': 'rgb(183, 193, 255)',
     /* green/default #2abb7f */
     'green-default': 'rgba(42, 187, 127, 1)',
     /* green/light #2abb7f26 15% */
@@ -56,6 +57,7 @@ const themeColors = {
     'blue-light-1': 'rgba(112, 132, 255, 0.1)',
     'blue-light-2': 'rgba(112, 132, 255, 0.1)',
     'blue-disable': 'rgba(112, 132, 255, 0.3)',
+    'blue-disable-rgb': 'rgb(183, 193, 255)',
     'green-default': 'rgba(42, 187, 127, 1)',
     'green-light': 'rgba(42, 187, 127, 0.2)',
     'orange-default': 'rgba(255, 198, 74, 1)',

@@ -28,13 +28,13 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
-import IconDiscord from 'ui/assets/discord.svg';
+import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
+import IconTwitterHover from 'ui/assets/twitter-hover.svg';
+import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconTwitterHover from 'ui/assets/twitter-hover.svg';
-import IconTwitter from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
@@ -905,12 +905,12 @@ const SettingsInner = ({
                 className="ml-12 group"
               >
                 <ThemeIcon
-                  src={IconTwitter}
-                  className="w-16 group-hover:w-0 group-hover:h-0 group-hover:overflow-hidden"
+                  src={RcIconTwitter}
+                  className="w-20 group-hover:w-0 group-hover:h-0 group-hover:overflow-hidden"
                 />
                 <ThemeIcon
                   src={IconTwitterHover}
-                  className=" w-0 h-0 overflow-hidden group-hover:w-16 group-hover:h-16"
+                  className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
                 />
               </a>
               <a
@@ -927,13 +927,13 @@ const SettingsInner = ({
                 }}
                 className="ml-12 group"
               >
-                <img
-                  src={IconDiscord}
-                  className="w-16 overflow-hidden group-hover:w-0 group-hover:h-0 "
+                <ThemeIcon
+                  src={RcIconDiscord}
+                  className="w-20 overflow-hidden group-hover:w-0 group-hover:h-0 "
                 />
-                <img
+                <ThemeIcon
                   src={IconDiscordHover}
-                  className=" w-0 h-0 overflow-hidden group-hover:w-16 group-hover:h-16"
+                  className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
                 />
               </a>
             </>
@@ -1075,7 +1075,7 @@ const SettingsInner = ({
         })}
       </div>
       <footer className="footer">
-        <div className="px-8 py-2 rounded hover:bg-[#EEF1FF] inline-block">
+        <div className="px-8 py-2 rounded hover:bg-r-blue-light-1 inline-block">
           <img
             className="inline-block cursor-pointer"
             src={LogoRabby}
