@@ -578,14 +578,13 @@ const SettingsInner = ({
   };
 
   const updateVersionClassName = useCss({
-    '& .ant-modal-content': {
-      background: '#fff',
-    },
     '& .ant-modal-body': {
       padding: '15px 14px 28px 14px',
     },
     '& .ant-modal-confirm-content': {
       padding: '24px 0 0 0',
+      background: 'transparent',
+      'background-color': 'transparent',
     },
     '& .ant-modal-confirm-btns': {
       justifyContent: 'center',
@@ -601,10 +600,10 @@ const SettingsInner = ({
         width: 320,
         closable: true,
         centered: true,
-        className: updateVersionClassName,
-        title: null,
+        className: clsx(updateVersionClassName, 'modal-support-darkmode'),
+        title: t('page.dashboard.settings.updateVersion.title'),
         content: (
-          <div className="text-14 leading-[18px] text-center text-gray-subTitle">
+          <div className="text-14 leading-[18px] text-center text-r-neutral-body">
             {t('page.dashboard.settings.updateVersion.content')}
           </div>
         ),
@@ -843,7 +842,10 @@ const SettingsInner = ({
                   <span
                     className={clsx('underline')}
                     role="button"
-                    onClick={updateVersion}
+                    onClick={(evt) => {
+                      evt.stopPropagation();
+                      updateVersion();
+                    }}
                   >
                     {t('page.dashboard.settings.updateAvailable')}
                   </span>
