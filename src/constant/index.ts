@@ -781,7 +781,7 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
-  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
+  // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 } as const;
 
 type BasicKeyringNames = {
@@ -805,7 +805,7 @@ export const KEYRING_ICONS_WHITE: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
-  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
+  // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const KEYRING_PURPLE_LOGOS = {
@@ -823,7 +823,7 @@ export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
-  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
+  // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 type NextKeyringIconType = {

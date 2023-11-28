@@ -59,6 +59,7 @@ export type StatsData = {
   createBy: string;
   source: any;
   trigger: any;
+  reported: boolean;
   signMethod?: string;
 };
 

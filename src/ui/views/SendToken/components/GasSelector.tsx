@@ -99,6 +99,7 @@ const GasSelector = ({
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
+      priority_price: null,
     };
     setSelectedGas({
       ...gas,
@@ -115,6 +116,7 @@ const GasSelector = ({
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: 0,
+        priority_price: null,
       });
     }
   }, [customGas]);
