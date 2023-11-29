@@ -566,10 +566,14 @@
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44：BIP44协议定义的 HDpath"
+            "bip44": "BIP44：BIP44协议定义的 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44：BIP44协议定义的 HDpath"
+            "bip44": "BIP44：BIP44协议定义的 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           }
         },
         "bitbox02": {

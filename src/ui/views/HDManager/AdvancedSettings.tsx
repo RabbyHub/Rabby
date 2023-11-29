@@ -118,9 +118,9 @@ export const AdvancedSettings: React.FC<Props> = ({
     [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
       [HDPathType.BIP44]: t('page.newAddress.hd.keystone.hdPathType.bip44'),
       [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+        'page.newAddress.hd.keystone.hdPathType.ledgerLive'
       ),
-      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
+      [HDPathType.Legacy]: t('page.newAddress.hd.keystone.hdPathType.legacy'),
     },
     [KEYRING_CLASS.HARDWARE.BITBOX02]: {
       [HDPathType.BIP44]: t('page.newAddress.hd.bitbox02.hdPathType.bip44'),
@@ -172,9 +172,11 @@ export const AdvancedSettings: React.FC<Props> = ({
         'page.newAddress.hd.keystone.hdPathTypeNochain.bip44'
       ),
       [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+        'page.newAddress.hd.keystone.hdPathTypeNochain.ledgerLive'
       ),
-      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
+      [HDPathType.Legacy]: t(
+        'page.newAddress.hd.keystone.hdPathTypeNochain.legacy'
+      ),
     },
     [KEYRING_CLASS.HARDWARE.BITBOX02]: {
       [HDPathType.BIP44]: t(
