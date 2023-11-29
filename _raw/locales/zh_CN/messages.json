@@ -567,12 +567,12 @@
         "keystone": {
           "hdPathType": {
             "bip44": "BIP44：BIP44协议定义的 HDpath",
-            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath。只能通过Ledger Live路径管理10个地址。",
             "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           },
           "hdPathTypeNochain": {
             "bip44": "BIP44：BIP44协议定义的 HDpath",
-            "ledgerLive": "Ledger Live：Ledger 官方 HDpath",
+            "ledgerLive": "Ledger Live：Ledger 官方 HDpath。只能通过Ledger Live路径管理10个地址。",
             "legacy": "旧版：MEW / Mycrypto 使用的 HDpath"
           }
         },
