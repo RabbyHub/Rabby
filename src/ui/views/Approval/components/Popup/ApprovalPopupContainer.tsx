@@ -78,13 +78,13 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
       case 'SENDING':
         setImage('');
         setIconColor('bg-blue-light');
-        setContentColor('text-gray-title');
+        setContentColor('text-r-neutral-title-1');
         break;
       case 'WAITING':
       case 'SUBMITTING':
         setImage('');
         setIconColor('bg-blue-light');
-        setContentColor('text-gray-title');
+        setContentColor('text-r-neutral-title-1');
         break;
       case 'FAILED':
       case 'REJECTED':

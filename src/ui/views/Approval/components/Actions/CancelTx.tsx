@@ -36,8 +36,7 @@ const Wrapper = styled.div`
         bottom: 0;
         width: 100%;
         height: 6px;
-        // background-color: #eaecfb;
-        background: #ebedfa;
+        background: var(--r-blue-light-1, #424962);
         z-index: -1;
       }
     }
@@ -50,10 +49,10 @@ const Wrapper = styled.div`
         font-size: 14px;
         line-height: 16px;
         &:nth-child(1) {
-          color: #000;
+          color: var(--r-neutral-title-1, #F7FAFC);
         }
         &:nth-child(2) {
-          color: #666;
+          color: var(--r-neutral-foot, #BABEC5);
         }
       }
       &:nth-last-child(1) {
