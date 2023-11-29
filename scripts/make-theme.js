@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const lessVarsToJs = require('less-vars-to-js');
+const tinycolor2 = require('tinycolor2');
 
 const { themeColors, rabbyCssPrefix } = require('../src/constant/theme-colors');
 
@@ -11,53 +12,73 @@ const ROOT = path.resolve(__dirname, '..');
 const cssvarSrcfile = path.resolve(ROOT, 'src/ui/style/cssvars.css');
 
 const SPACES = `  `;
+const LINE_BREAK = '\n';
+
+const SPECIAL_DEFAULT_ALPHA = {
+  light: [],
+  dark: [],
+}
 
 makeCssVar: {
   const cssvarSrcContent = `
 /* this file is genetared automatically, never modify it manually! */
 :root {
+  --rabby-color-opacity: 1;
+  --tw-bg-opacity: 1;
+
   /* -------------------- base define -------------------- */
 ${['light', 'dark'].map(theme => {
   return Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
     const varcore = cssvarKey.replace(/^\-\-/, '');
+
     return `${SPACES}--rabby-${theme}-${varcore}: ${cssvarValue};`;
-  }).join('\n')
-}).join('\n\n')}
+  }).join(LINE_BREAK)
+}).join(LINE_BREAK.repeat(2))}
 }
 
-:root {
-  /* -------------------- light mode -------------------- */
-${Object.entries(themeColors.light).map(([cssvarKey]) => {
-  const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-light-${varcore});`;
-}).join('\n')}
+${[
+  {
+    theme: 'light',
+    parentSelector: ':root',
+  },
+  {
+    theme: 'dark',
+    parentSelector: 'html.in-dark-mode, body.in-dark-mode',
+  }
+].map(({ theme, parentSelector }) => {
+  const isDarkTheme = theme === 'dark';
 
-${Object.entries(themeColors.light).map(([cssvarKey]) => {
+  return `${parentSelector} {
+${SPACES}/* -------------------- ${theme} mode -------------------- */
+${Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-light-${varcore});`;
-}).join('\n')}
+
+  const tinyColor = tinycolor2(cssvarValue);
+  const rgbs = tinyColor.toRgb();
+  const alpha = tinyColor.getAlpha();
+  if (alpha !== 1) {
+    SPECIAL_DEFAULT_ALPHA[theme].push({ cssvarKey, alpha });
+  }
+
+  return [
+    `${SPACES}--${rabbyCssPrefix}${cssvarKey}-rgb: ${rgbs.r}, ${rgbs.g}, ${rgbs.b};`,
+    // `${SPACES}--${rabbyCssPrefix}${cssvarKey}-opacity: ${alpha};`,
+    // `${SPACES}--${rabbyCssPrefix}${cssvarKey}: rgba(${rgbs.r}, ${rgbs.g}, ${rgbs.b}, var(--${rabbyCssPrefix}${cssvarKey}-opacity, 1));`,
+    `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-${theme}-${varcore});`,
+  ].filter(Boolean).join(LINE_BREAK);
+}).join(LINE_BREAK)}
 }
-
-html.in-dark-mode, body.in-dark-mode {
-  /* -------------------- dark mode -------------------- */
-${Object.entries(themeColors.dark).map(([cssvarKey]) => {
-  const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-dark-${varcore});`;
-}).join('\n')}
-
-${Object.entries(themeColors.dark).map(([cssvarKey]) => {
-  const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--rabby-${cssvarKey}: var(--rabby-dark-${varcore});`;
-}).join('\n')}
-}
-
-html.in-dark-mode, body.in-dark-mode {
-  /* -------------------- dark mode -------------------- */
-${Object.entries(themeColors.dark).map(([cssvarKey]) => {
-  const varcore = cssvarKey.replace(/^\-\-/, '');
-  return `${SPACES}--${rabbyCssPrefix}${cssvarKey}: var(--rabby-dark-${varcore});`;
-}).join('\n')}
-}
+${!SPECIAL_DEFAULT_ALPHA[theme].length ? '' : SPECIAL_DEFAULT_ALPHA[theme].map(({ cssvarKey, alpha }) => {
+  return [
+//     `${isDarkTheme ? `.in-dark-mode ` : ''} {
+// ${SPACES}--${rabbyCssPrefix}${cssvarKey}-opacity: ${alpha};
+// }`,
+//     `${isDarkTheme ? `.in-dark-mode ` : ''}.bg-${rabbyCssPrefix}${cssvarKey} {
+// ${SPACES}--bg-${rabbyCssPrefix}${cssvarKey}-opacity: ${alpha};
+// }`,
+  ].filter(Boolean).join(LINE_BREAK);
+}).filter(Boolean).join(LINE_BREAK)}`
+}).join(LINE_BREAK)}
 `;
   fs.writeFileSync(cssvarSrcfile, cssvarSrcContent, 'utf8');
 
