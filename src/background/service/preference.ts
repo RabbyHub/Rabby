@@ -19,6 +19,7 @@ import browser from 'webextension-polyfill';
 import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
+import dayjs from 'dayjs';
 
 const version = process.env.release || '0';
 
@@ -107,6 +108,7 @@ export interface AddressSortStore {
   search: string;
   sortType: 'usd' | 'addressType' | 'alphabet';
   lastCurrent?: string;
+  lastCurrentRecordTime?: string;
 }
 
 const defaultAddressSortStore: AddressSortStore = {
@@ -160,8 +162,6 @@ class PreferenceService {
         },
       },
     });
-    //lifetime in background
-    this.store.addressSortStore = { ...defaultAddressSortStore };
 
     if (
       !this.store.locale ||
@@ -248,6 +248,9 @@ class PreferenceService {
   };
 
   getPreference = (key?: string) => {
+    if (!key || ['search', 'lastCurrent'].includes(key)) {
+      this.resetAddressSortStoreExpiredValue();
+    }
     return key ? this.store[key] : this.store;
   };
 
@@ -725,13 +728,44 @@ class PreferenceService {
     this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
   };
 
-  getAddressSortStoreValue = (key: keyof AddressSortStore) =>
-    this.store.addressSortStore[key];
+  resetAddressSortStoreExpiredValue = () => {
+    if (
+      !this.store.addressSortStore.lastCurrentRecordTime ||
+      (this.store.addressSortStore.lastCurrentRecordTime &&
+        dayjs().isAfter(
+          dayjs(this.store.addressSortStore.lastCurrentRecordTime).add(
+            15,
+            'minute'
+          )
+        ))
+    ) {
+      this.store.addressSortStore = {
+        ...this.store.addressSortStore,
+        search: '',
+        lastCurrent: undefined,
+        lastCurrentRecordTime: undefined,
+      };
+    }
+  };
+
+  getAddressSortStoreValue = (key: keyof AddressSortStore) => {
+    if (['search', 'lastCurrent'].includes(key)) {
+      this.resetAddressSortStoreExpiredValue();
+    }
+    return this.store.addressSortStore[key];
+  };
 
   setAddressSortStoreValue = <K extends keyof AddressSortStore>(
     key: K,
     value: AddressSortStore[K]
   ) => {
+    console.log('key,value', key, value);
+    if (['search', 'lastCurrent'].includes(key)) {
+      this.store.addressSortStore = {
+        ...this.store.addressSortStore,
+        lastCurrentRecordTime: dayjs().toISOString(),
+      };
+    }
     this.store.addressSortStore = {
       ...this.store.addressSortStore,
       [key]: value,
