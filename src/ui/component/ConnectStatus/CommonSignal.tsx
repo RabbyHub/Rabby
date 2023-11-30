@@ -39,6 +39,15 @@ export const CommonSignal: React.FC<Props> = ({
       {brandName === 'Keystone' && (
         <KeystoneSignal isBadge className={className} />
       )}
+      {type === KEYRING_CLASS.Coinbase && (
+        <SessionSignal
+          isBadge
+          address={address}
+          brandName={KEYRING_CLASS.Coinbase}
+          pendingConnect
+          className={className}
+        />
+      )}
     </div>
   );
 };

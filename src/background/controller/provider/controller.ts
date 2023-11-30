@@ -686,7 +686,7 @@ class ProviderController extends BaseController {
         statsData.signMethod = notificationService.statsData?.signMethod;
       }
       notificationService.setStatsData(statsData);
-      throw new Error(e);
+      throw typeof e === 'object' ? e : new Error(e);
     }
   };
   @Reflect.metadata('SAFE', true)

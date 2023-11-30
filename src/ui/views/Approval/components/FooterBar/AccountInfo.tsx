@@ -167,6 +167,9 @@ export const AccountInfo: React.FC<Props> = ({
           tip={t('page.signFooterBar.addressTip.coboSafe')}
         />
       )}
+      {account?.type === KEYRING_CLASS.Coinbase && (
+        <WalletConnectAccount chain={chain} account={account} />
+      )}
     </div>
   );
 };

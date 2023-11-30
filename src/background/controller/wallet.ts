@@ -96,6 +96,7 @@ import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
+import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1702,7 +1703,10 @@ export class WalletController extends BaseController {
   };
 
   getWalletConnectSessionStatus = (address: string, brandName: string) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyringType =
+      brandName === KEYRING_CLASS.COINBASE
+        ? KEYRING_CLASS.COINBASE
+        : KEYRING_CLASS.WALLETCONNECT;
     try {
       const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
       if (keyring) {
@@ -1727,7 +1731,10 @@ export class WalletController extends BaseController {
   };
 
   getWalletConnectSessionAccount = (address: string, brandName: string) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyringType =
+      brandName === KEYRING_CLASS.COINBASE
+        ? KEYRING_CLASS.COINBASE
+        : KEYRING_CLASS.WALLETCONNECT;
     try {
       const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
       if (keyring) {
@@ -1850,7 +1857,10 @@ export class WalletController extends BaseController {
     resetConnect: boolean,
     silent?: boolean
   ) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyringType =
+      brandName === KEYRING_CLASS.COINBASE
+        ? KEYRING_CLASS.COINBASE
+        : KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
       await keyring.closeConnector({ address, brandName }, silent);
@@ -3422,6 +3432,68 @@ export class WalletController extends BaseController {
 
   setStatsData = (data: any) => {
     notificationService.setStatsData(data);
+  };
+
+  connectCoinbase = async (curStashId?: number | null) => {
+    let keyring: CoinbaseKeyring, isNewKey;
+    const keyringType = KEYRING_CLASS.COINBASE;
+    try {
+      if (curStashId !== null && curStashId !== undefined) {
+        keyring = stashKeyrings[curStashId];
+        isNewKey = false;
+      } else {
+        keyring = this._getKeyringByType(keyringType);
+      }
+    } catch {
+      const CoinbaseKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new CoinbaseKeyring();
+      isNewKey = true;
+    }
+
+    let stashId = curStashId;
+    if (isNewKey) {
+      stashId = this.addKeyringToStash(keyring);
+    }
+
+    const uri = await keyring.connect();
+
+    keyring.on('message', (data) => {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+        params: data,
+      });
+    });
+
+    return { uri, stashId };
+  };
+
+  importCoinbase = async (address: string, stashId?: number) => {
+    let keyring: CoinbaseKeyring, isNewKey;
+    const keyringType = KEYRING_CLASS.COINBASE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      if (stashId !== null && stashId !== undefined) {
+        keyring = stashKeyrings[stashId];
+      } else {
+        const coinbaseKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new coinbaseKeyring();
+      }
+      isNewKey = true;
+    }
+
+    keyring.setAccountToAdd(address);
+
+    if (isNewKey) {
+      await keyringService.addKeyring(keyring);
+    }
+
+    await keyringService.addNewAccount(keyring);
+    return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 }
 
