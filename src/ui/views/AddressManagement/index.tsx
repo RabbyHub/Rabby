@@ -403,7 +403,9 @@ const AddressManagement = () => {
   const isKeystone = accountList[currentAccountIndex]?.brandName === 'Keystone';
   const isGridPlus =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
-  const hasStatusBar = isWalletConnect || isLedger || isGridPlus;
+  const isCoinbase =
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.Coinbase;
+  const hasStatusBar = isWalletConnect || isLedger || isGridPlus || isCoinbase;
 
   useEffect(() => {
     dispatch.preference.setAddressSortStoreValue({
@@ -575,6 +577,13 @@ const AddressManagement = () => {
               )}
               {isGridPlus && (
                 <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+              )}
+              {isCoinbase && (
+                <SessionStatusBar
+                  address={accountList[currentAccountIndex].address || ''}
+                  brandName={KEYRING_CLASS.Coinbase}
+                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                />
               )}
             </AddressItem>
           </div>

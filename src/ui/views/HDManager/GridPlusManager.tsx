@@ -134,7 +134,6 @@ export const GridPlusManager: React.FC = () => {
           'getAccounts',
           keyringId
         );
-        console.log(accounts);
         await Promise.all(
           accounts.map(async (account) =>
             wallet.removeAddress(account, GRIDPLUS_TYPE, undefined, true)

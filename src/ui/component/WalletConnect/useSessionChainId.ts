@@ -1,4 +1,4 @@
-import { EVENTS } from '@/constant';
+import { EVENTS, KEYRING_CLASS, KEYRING_TYPE_TEXT } from '@/constant';
 import eventBus from '@/eventBus';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import React from 'react';
@@ -27,15 +27,36 @@ export const useSessionChainId = (
       }
     };
 
+    const handleCoinbaseSessionChange = (data: {
+      chainId?: number;
+      account: string;
+    }) => {
+      if (isSameAddress(data.account, account?.address ?? '')) {
+        setChainId(data.chainId);
+      }
+    };
+
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
       handleSessionChange
     );
 
+    if (account?.brandName === KEYRING_CLASS.Coinbase) {
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+        handleCoinbaseSessionChange
+      );
+    }
+
     return () => {
       eventBus.removeEventListener(
         EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
         handleSessionChange
+      );
+
+      eventBus.removeEventListener(
+        EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+        handleCoinbaseSessionChange
       );
     };
   }, [account, pendingConnect]);
