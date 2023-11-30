@@ -462,7 +462,7 @@ const AddressManagement = () => {
       return () => {
         dispatch.preference.setAddressSortStoreValue({
           key: 'lastCurrentRecordTime',
-          value: dayjs().toISOString(),
+          value: dayjs().unix(),
         });
       };
     }

@@ -108,7 +108,7 @@ export interface AddressSortStore {
   search: string;
   sortType: 'usd' | 'addressType' | 'alphabet';
   lastCurrent?: string;
-  lastCurrentRecordTime?: string;
+  lastCurrentRecordTime?: number;
 }
 
 const defaultAddressSortStore: AddressSortStore = {
@@ -762,7 +762,7 @@ class PreferenceService {
     if (['search', 'lastCurrent'].includes(key)) {
       this.store.addressSortStore = {
         ...this.store.addressSortStore,
-        lastCurrentRecordTime: dayjs().toISOString(),
+        lastCurrentRecordTime: dayjs().unix(),
       };
     }
     this.store.addressSortStore = {
