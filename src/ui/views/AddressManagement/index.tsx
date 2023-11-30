@@ -420,11 +420,16 @@ const AddressManagement = () => {
     if (
       addressSortStore.lastCurrentRecordTime &&
       dayjs().isAfter(
-        dayjs(addressSortStore.lastCurrentRecordTime).add(15, 'minute')
+        dayjs.unix(addressSortStore.lastCurrentRecordTime).add(15, 'minute')
       )
     ) {
       setSearchKeyword('');
-      return;
+      return () => {
+        dispatch.preference.setAddressSortStoreValue({
+          key: 'lastCurrentRecordTime',
+          value: dayjs().unix(),
+        });
+      };
     }
     if (addressSortStore.lastCurrent && filteredAccounts?.length) {
       let index = -1;

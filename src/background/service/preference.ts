@@ -733,10 +733,9 @@ class PreferenceService {
       !this.store.addressSortStore.lastCurrentRecordTime ||
       (this.store.addressSortStore.lastCurrentRecordTime &&
         dayjs().isAfter(
-          dayjs(this.store.addressSortStore.lastCurrentRecordTime).add(
-            15,
-            'minute'
-          )
+          dayjs
+            .unix(this.store.addressSortStore.lastCurrentRecordTime)
+            .add(15, 'minute')
         ))
     ) {
       this.store.addressSortStore = {
