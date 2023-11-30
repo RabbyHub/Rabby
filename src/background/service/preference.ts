@@ -759,7 +759,6 @@ class PreferenceService {
     key: K,
     value: AddressSortStore[K]
   ) => {
-    console.log('key,value', key, value);
     if (['search', 'lastCurrent'].includes(key)) {
       this.store.addressSortStore = {
         ...this.store.addressSortStore,
