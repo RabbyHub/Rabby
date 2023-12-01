@@ -88,7 +88,7 @@ button:focus {
 
 @media (min-width: 401px) {
   .rabby-stray-page {
-    background-color: #f5f6fa;
+    background-color: var(--r-neutral-bg-2, #F2F4F7);
     height: 100%;
 
     .footer {
@@ -193,7 +193,7 @@ button:focus {
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #192945);
     }
   }
   .icon-checked {
@@ -218,7 +218,7 @@ button:focus {
     padding-top: 32px;
   }
   .guide {
-    color: @color-title;
+    color: var(--r-neutral-title-1, #192945);
     font-weight: 500;
     font-size: 15px;
     line-height: 18px;
@@ -325,7 +325,8 @@ button:focus {
 }
 
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:hover {
-  background: #f3f5fe !important;
+  // background: #f3f5fe !important;
+  background: var(--r-blue-light-1, #eef1ff) !important;
   color: var(--r-blue-default, #7084ff);
   box-shadow: none;
   &::before {
@@ -349,6 +350,20 @@ button:focus {
   }
 }
 
-.page-has-ant-input {
+.page-has-ant-input,
+.widget-has-ant-input {
   .ant-input-darkmode();
+
+  &.rabby-input-pure-bg {
+    .ant-input, .ant-input-affix-wrapper {
+      background-color: var(--r-neutral-card-1, #fff) !important;
+    }
+  }
+
+  .ant-form-item-has-error .ant-input {
+    &, &:hover {
+      background-color: var(--r-neutral-card-1, #fff) !important;
+      border-color: var(--r-red-default);
+    }
+  }
 }

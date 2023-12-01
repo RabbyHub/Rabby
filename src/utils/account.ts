@@ -1,4 +1,12 @@
-import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import {
+  BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  KEYRING_ICONS_WHITE,
+  KEYRING_PURPLE_LOGOS,
+  KEYRING_TYPE,
+  KeyringWithIcon,
+} from 'consts';
 import { t } from 'i18next';
 
 export function generateAliasName({
@@ -35,4 +43,39 @@ export function generateAliasName({
       addressCount + 1
     }`;
   }
+}
+
+export function pickKeyringThemeIcon(
+  keyringClass?: KeyringWithIcon,
+  options?:
+    | boolean
+    | {
+        needLightVersion?: boolean;
+        purpleFirst?: boolean;
+      }
+) {
+  if (!keyringClass) return null;
+
+  if (typeof options !== 'object') {
+    options = { needLightVersion: !!options };
+  }
+
+  const {
+    needLightVersion,
+    purpleFirst = ![KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC].includes(
+      keyringClass as any
+    ),
+  } = options || {};
+
+  if (
+    purpleFirst &&
+    keyringClass in KEYRING_PURPLE_LOGOS &&
+    KEYRING_PURPLE_LOGOS[keyringClass]
+  ) {
+    return KEYRING_PURPLE_LOGOS[keyringClass];
+  }
+
+  return needLightVersion
+    ? KEYRING_ICONS_WHITE[keyringClass]
+    : KEYRING_ICONS[keyringClass];
 }

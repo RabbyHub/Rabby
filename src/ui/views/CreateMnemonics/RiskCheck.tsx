@@ -125,7 +125,7 @@ const RiskCheck = () => {
                       checked={q.checked}
                       width={'20px'}
                       height={'20px'}
-                      background="#27C193"
+                      background="var(--r-green-default, #2ABB7F)"
                       onChange={handleClickItem}
                     />
                   }

@@ -1,18 +1,22 @@
 import { Item, Popup } from '@/ui/component';
 import React, { useMemo } from 'react';
-import ImgSortByUsd from '@/ui/assets/address/sort-by-usd-l.svg';
-import ImgSortByType from '@/ui/assets/address/sort-by-type.svg';
-import ImgSortByAlphabet from '@/ui/assets/address/sort-by-alphabet-2.svg';
+import { ReactComponent as RcImgSortByUsd } from '@/ui/assets/address/sort-by-usd-l.svg';
+import { ReactComponent as RcImgSortByType } from '@/ui/assets/address/sort-by-type.svg';
+import { ReactComponent as RcImgSortByAlphabet } from '@/ui/assets/address/sort-by-alphabet-2.svg';
 import ImgChecked from '@/ui/assets/address/checked.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressSortStore } from '@/background/service/preference';
 import { useTranslation } from 'react-i18next';
+import { ThemeIconType } from '@/constant';
 
-const AddressSortImgMapping: Record<AddressSortStore['sortType'], string> = {
-  usd: ImgSortByUsd,
-  addressType: ImgSortByType,
-  alphabet: ImgSortByAlphabet,
+const AddressSortImgMapping: Record<
+  AddressSortStore['sortType'],
+  ThemeIconType
+> = {
+  usd: RcImgSortByUsd,
+  addressType: RcImgSortByType,
+  alphabet: RcImgSortByAlphabet,
 };
 
 export const AddressSortPopup = ({
@@ -57,6 +61,7 @@ export const AddressSortPopup = ({
       visible={open}
       height={258}
       onCancel={onCancel}
+      isSupportDarkMode
     >
       <div className="flex flex-col gap-8">
         {arr.map((e) => (
@@ -67,7 +72,7 @@ export const AddressSortPopup = ({
             leftIcon={AddressSortImgMapping[e.key]}
             onClick={handleChange(e.key)}
             className="text-14 text-r-neutral-title-1 font-normal"
-            leftIconClassName="mr-12 w-20"
+            leftIconClassName="mr-12 w-20 text-r-neutral-title-1"
             rightIcon={sortType === e.key ? ImgChecked : null}
             rightIconClassName="w-20"
           >

@@ -48,13 +48,13 @@ const Unlock = () => {
   };
 
   return (
-    <div className="unlock">
+    <div className="unlock page-has-ant-input">
       <div className="header">
         <img src="./images/welcome-image.svg" className="image" />
       </div>
       <Form
         autoComplete="off"
-        className="bg-gray-bg flex-1"
+        className="bg-r-neutral-bg-1 flex-1"
         form={form}
         onFinish={handleSubmit}
       >

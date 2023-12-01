@@ -13,7 +13,7 @@ const EditWhitelistWrapper = styled.div`
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: #fff;
+  background: var(--r-neutral-bg-1, #3d4251);
   z-index: 100;
   padding: 0 12px 80px 20px;
   display: flex;
@@ -130,7 +130,7 @@ const EditWhitelist = ({
       <PageHeader onBack={handleClickBack}>
         {t('component.Contact.EditWhitelist.title')}
       </PageHeader>
-      <p className="text-gray-content text-14 mb-20 text-center">
+      <p className="text-r-neutral-body text-14 mb-20 text-center">
         {t('component.Contact.EditWhitelist.tip')}
       </p>
       <ListScrollWrapper>
@@ -140,7 +140,7 @@ const EditWhitelist = ({
               width="20px"
               height="20px"
               className="mr-12"
-              background="#27C193"
+              background="var(--r-green-default, #2ABB7F)"
               checked={
                 !!checkedList.find((item) =>
                   isSameAddress(account.address, item)

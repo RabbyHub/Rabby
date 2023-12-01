@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import cx from 'clsx';
-import { IconFileJson, IconUploader } from 'ui/assets';
+import { RcIconFileJson, RcIconUploader } from 'ui/assets';
+import ThemeIcon from './ThemeMode/ThemeIcon';
 
 interface UploaderProps {
   onChange({ file, fileList }: { file: File; fileList: FileList }): void;
@@ -48,7 +49,7 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
   return (
     <div
       className={cx(
-        'uploader rounded bg-white flex items-center justify-center cursor-pointer text-center',
+        'uploader rounded bg-r-neutral-card-1 flex items-center justify-center cursor-pointer text-center',
         className
       )}
       onClick={handleClick}
@@ -63,13 +64,13 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
       />
       {uploadState === UPLOADER_STATE.INITIAL && (
         <div className="text-center text-13 text-gray-comment">
-          <img src={IconUploader} className="mb-12 block mx-auto" />
+          <ThemeIcon src={RcIconUploader} className="mb-12 block mx-auto" />
           <div>{t('component.Uploader.placeholder')}</div>
         </div>
       )}
       {uploadState === UPLOADER_STATE.SELECTED && (
         <div className="text-13 text-gray-comment w-full">
-          <img src={IconFileJson} className="mb-12 block mx-auto" />
+          <ThemeIcon src={RcIconFileJson} className="mb-12 block mx-auto" />
           <div className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[80%] mx-auto">
             {filename}
           </div>

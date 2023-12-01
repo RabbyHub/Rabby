@@ -27,7 +27,7 @@
     height: 100%;
     overflow: auto;
     display: flex;
-    background: #fff;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     flex-wrap: wrap;
     border-radius: 4px;
     margin-bottom: 20px;
@@ -39,13 +39,13 @@
       font-weight: 500;
       font-size: 14px;
       line-height: 18px;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #192945);
       padding: 14px 16px;
       width: 50%;
       white-space: nowrap;
-      border-bottom: 0.5px solid #e5e9ef;
+      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
       &:nth-child(2n + 1) {
-        border-right: 0.5px solid #e5e9ef;
+        border-right: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
       }
       &:nth-last-child(1),
       &:nth-last-child(2) {

@@ -9,7 +9,7 @@ export const HistoryList: React.FC = () => {
   return (
     <div className={clsx('flex flex-col text-center', 'gap-y-20 mt-[80px]')}>
       <SkeletonHistorySVG className="m-auto" />
-      <div className="text-15 text-gray-comment font-medium">
+      <div className="text-15 text-r-neutral-foot font-medium">
         {t('page.dashboard.assets.comingSoon')}
       </div>
     </div>

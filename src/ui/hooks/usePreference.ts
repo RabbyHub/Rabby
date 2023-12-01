@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { DARK_MODE_TYPE } from '@/constant';
+import { getUiType } from '../utils';
 
-const darkModeClassName = 'in-dark-mode';
+const darkModeClassName = 'dark';
 
 function checkIsDarkMode() {
   try {
@@ -32,6 +33,21 @@ function useIsDarkMode() {
   return isDarkMode;
 }
 
+const uiTypes = getUiType();
+
+function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
+  if (process.env.DEBUG) {
+    return (
+      themeMode === DARK_MODE_TYPE.dark ||
+      (themeMode === DARK_MODE_TYPE.system && isDarkOnSystem)
+    );
+  }
+
+  if (uiTypes.isTab) return false;
+
+  return themeMode === DARK_MODE_TYPE.dark;
+}
+
 export function useThemeModeOnMain() {
   const dispatch = useRabbyDispatch();
 
@@ -46,15 +62,13 @@ export function useThemeModeOnMain() {
   }, [dispatch]);
 
   useLayoutEffect(() => {
-    // const isDark =
-    //   themeMode === DARK_MODE_TYPE.dark ||
-    //   (themeMode === DARK_MODE_TYPE.system && isDarkOnSystem);
-    const isDark = themeMode === DARK_MODE_TYPE.dark;
+    const isDark = isFinalDarkMode(themeMode, isDarkOnSystem);
 
     if (isDark) {
-      document.body.classList.add(darkModeClassName);
+      // see https://v2.tailwindcss.com/docs/dark-mode
+      document.documentElement.classList.add(darkModeClassName);
     } else {
-      document.body.classList.remove(darkModeClassName);
+      document.documentElement.classList.remove(darkModeClassName);
     }
   }, [themeMode, isDarkOnSystem]);
 }
@@ -65,8 +79,6 @@ export function useThemeMode() {
   const isDarkOnSystem = useIsDarkMode();
 
   return {
-    isDarkTheme: !process.env.DEBUG
-      ? false
-      : themeMode === DARK_MODE_TYPE.dark || isDarkOnSystem,
+    isDarkTheme: isFinalDarkMode(themeMode, isDarkOnSystem),
   };
 }

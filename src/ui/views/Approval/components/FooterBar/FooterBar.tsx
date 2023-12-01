@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -32,15 +33,17 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 const Wrapper = styled.section`
   padding: 20px;
   padding-top: 12px;
-  box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 16px 16px 0px 0px;
+  background: var(--r-neutral-bg-1, #3d4251);
+  box-shadow: 0px -8px 24px 0px rgba(0, 0, 0, 0.1);
   position: relative;
+
   .request-origin {
     height: 30px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    color: #666;
+    color: #707280;
     padding-bottom: 12px;
     position: relative;
     margin-bottom: 12px;
@@ -48,7 +51,7 @@ const Wrapper = styled.section`
     align-items: center;
     position: relative;
     .origin {
-      color: #333;
+      color: var(--r-neutral-title-1, #f7fafc);
       flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -72,7 +75,8 @@ const Wrapper = styled.section`
       width: 100vw;
       margin-left: -20px;
       height: 1px;
-      background-color: rgba(0, 0, 0, 0.05);
+      height: 0.5px;
+      background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
   }
   .security-level-tip {
@@ -129,18 +133,18 @@ const ChainLogo = styled.img`
 
 const SecurityLevelTipColor = {
   [Level.FORBIDDEN]: {
-    bg: 'rgba(175, 22, 14, 0.1)',
-    text: '#AF160E',
+    bg: 'var(--r-red-light-2, #EFD4D1)',
+    text: 'var(--r-red-dark, #AE2A19)',
     icon: SecurityEngineLevel[Level.FORBIDDEN].icon,
   },
   [Level.DANGER]: {
-    bg: 'rgba(236, 81, 81, 0.1)',
-    text: '#EC5151',
+    bg: 'var(--r-red-light, #FFDFDB)',
+    text: 'var(--r-red-default, #E34935)',
     icon: SecurityEngineLevel[Level.DANGER].icon,
   },
   [Level.WARNING]: {
-    bg: 'rgba(255, 176, 32, 0.1)',
-    text: '#FFB020',
+    bg: 'var(--r-orange-light, #FFEDCB)',
+    text: 'var(--r-orange-default, #FFB020)',
     icon: SecurityEngineLevel[Level.WARNING].icon,
   },
 };
@@ -225,16 +229,18 @@ export const FooterBar: React.FC<Props> = ({
     init();
   }, []);
 
+  const { isDarkTheme } = useThemeMode();
+
   if (!account) {
     return null;
   }
 
   return (
     <div className="relative">
-      {hasShadow && <Shadow />}
+      {!isDarkTheme && hasShadow && <Shadow />}
       <Wrapper
-        className={clsx('bg-white', {
-          'has-shadow': hasShadow,
+        className={clsx({
+          'has-shadow': !isDarkTheme && hasShadow,
         })}
       >
         {origin && (

@@ -13,8 +13,8 @@ const RuleResultWrapper = styled.div`
   min-height: 56px;
   padding: 15px 16px;
   padding-right: 24px;
-  background: #f5f6fa;
-  border: 1px solid #e5e9ef;
+  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+  border: none;
   border-radius: 8px;
   margin-bottom: 8px;
   position: relative;
@@ -23,7 +23,7 @@ const RuleResultWrapper = styled.div`
     font-weight: 400;
     font-size: 13px;
     line-height: 15px;
-    color: #4b4d59;
+    color: var(--r-neutral-body, #3e495e);
     width: 49%;
   }
   .rule-value {
@@ -33,7 +33,7 @@ const RuleResultWrapper = styled.div`
     font-weight: 500;
     font-size: 15px;
     line-height: 18px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #192945);
   }
   .collect-list {
     display: flex;

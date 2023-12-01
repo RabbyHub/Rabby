@@ -59,7 +59,7 @@ export const CustomizedButton: React.FC<Props> = ({
             }
           }}
         />
-        <span className="text-black text-12">
+        <span className="text-r-neutral-foot text-12">
           {t('page.dashboard.tokenDetail.customized')}
         </span>
       </label>

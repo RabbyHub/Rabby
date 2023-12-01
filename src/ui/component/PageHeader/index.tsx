@@ -2,8 +2,10 @@ import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
-import IconClose from 'ui/assets/component/close.svg';
+import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
+import { ReactComponent as RcIconClose } from 'ui/assets/component/close.svg';
 import './style.less';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 const PageHeader = ({
   children,
@@ -12,7 +14,9 @@ const PageHeader = ({
   onBack,
   forceShowBack,
   fixed = false,
+  wrapperClassName = '',
   invertBack = false,
+  keepBackLightVersion = false,
   className = '',
   closeable = false,
   onClose,
@@ -25,7 +29,9 @@ const PageHeader = ({
   onClose?(): void;
   forceShowBack?: boolean;
   fixed?: boolean;
+  wrapperClassName?: string;
   invertBack?: boolean;
+  keepBackLightVersion?: boolean;
   className?: string;
   closeable?: boolean;
   closeCn?: string;
@@ -35,8 +41,8 @@ const PageHeader = ({
   const Content = (
     <div className={clsx('page-header', !fixed && className)}>
       {(forceShowBack || (canBack && history.length > 1)) && (
-        <img
-          src={IconBack}
+        <ThemeIcon
+          src={keepBackLightVersion ? IconBack : RcIconBackNew}
           className={clsx('icon icon-back', invertBack && 'filter invert')}
           onClick={onBack || (() => history.goBack())}
         />
@@ -44,8 +50,8 @@ const PageHeader = ({
       <div className="header-content">{children}</div>
       {rightSlot && rightSlot}
       {closeable && (
-        <img
-          src={IconClose}
+        <ThemeIcon
+          src={RcIconClose}
           className={clsx('icon-close', invertBack && 'filter invert', closeCn)}
           onClick={onClose || (() => history.goBack())}
         />
@@ -54,7 +60,9 @@ const PageHeader = ({
   );
   return fixed ? (
     <div className={clsx('page-header-container', className)}>
-      <div className="page-header-wrap">{Content}</div>
+      <div className={clsx('page-header-wrap', wrapperClassName)}>
+        {Content}
+      </div>
     </div>
   ) : (
     Content

@@ -14,14 +14,14 @@
   }
   .section {
     padding: 12px;
-    background-color: #fff;
+    background-color: var(--r-neutral-card-1, #fff);
     border-radius: 6px;
     margin-bottom: 16px;
     .section-title {
       display: flex;
       font-size: 12px;
       line-height: 14px;
-      color: #707880;
+      color: var(--r-neutral-body, #3e495e);
       margin-bottom: 8px;
       .token-balance {
         display: flex;
@@ -40,7 +40,7 @@
         border-left: none;
       }
       .left:hover {
-        background: rgba(134, 151, 255, 0.3);
+        background: var(--r-neutral-card-2, #f2f4f7);
       }
     }
     .token-price {
@@ -49,7 +49,7 @@
       font-size: 12px;
       line-height: 14px;
       text-align: right;
-      color: #707280;
+      color: var(--r-neutral-title-1, #192945);
     }
   }
   .account-card {
@@ -72,6 +72,7 @@
       height: 36px;
       width: 100%;
       padding: 10px 12px;
+      background-color: var(--r-blue-light-1, #eef1ff);
       .send-text {
         color: var(--r-blue-default, #7084ff) !important;
       }
@@ -85,14 +86,14 @@
     }
   }
   .ant-input {
-    border: 1px solid transparent;
-    background: @color-bg;
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-card-2, #f5f6fa);
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    color: #161819;
+    color: var(--r-neutral-title-1, #192945);
   }
   .ant-form-item {
     margin: 0;
@@ -106,7 +107,7 @@
     }
   }
   .ant-form-item-has-error .ant-input:hover {
-    background: @color-bg;
+    background: var(--r-neutral-card-1, #FFF);
   }
   .ant-form-item-explain,
   .ant-form-item-extra {
@@ -202,17 +203,9 @@
       }
     }
   }
-  .token-info__header {
-    position: absolute;
-    left: 16px;
-    top: -15px;
-    height: 27px;
-    width: 18px;
-    z-index: 0;
-  }
   .token-info {
     margin-top: 15px;
-    background: #f5f6fa;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 4px;
     padding: 12px;
     position: relative;
@@ -222,12 +215,12 @@
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: rgba(112, 120, 128, 0.6);
+      color: var(--r-neutral-foot, #6A7587);
       margin-bottom: 8px;
       .address-viewer-text.normal {
         font-size: 12px;
         line-height: 14px;
-        color: rgba(112, 120, 128, 0.6);
+        color: var(--r-neutral-foot, #6A7587);
         font-weight: normal;
         margin-right: 0;
       }
@@ -241,19 +234,30 @@
         margin-bottom: 0;
       }
     }
+
+    &::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 16px;
+      top: -16px;
+      border: 6px solid transparent;
+      border-bottom: 10px solid var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+      z-index: 0;
+    }
   }
   .whitelist-alert {
     display: flex;
     font-weight: 400;
     font-size: 12px;
-    line-height: 14px;
-    color: #af160e;
+    line-height: 16px;
+    color: var(--r-red-dark, #ae2a19);
     margin-top: 16px;
     margin-bottom: 16px;
     justify-content: center;
     .icon-check {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       margin-right: 4px;
     }
     &__content {
@@ -261,7 +265,7 @@
       margin-bottom: 0;
     }
     &.granted {
-      color: #707280;
+      color: var(--r-neutral-foot, #babec5);
     }
   }
   .token-validation {
@@ -342,8 +346,8 @@
     margin-right: -20px;
     width: 100vw;
 
-    background-color: white;
-    border-top: 1px solid #e5e9ef;
+    background-color: var(--r-neutral-card-1, #FFF);
+    border-top: 0.5px solid var(--r-neutral-line, #D3D8E0);
   }
 
   .footer .whitelist-alert {
@@ -354,8 +358,8 @@
 
 .send-token-gas-selector {
   .gas-selector {
-    background: #f5f6fa;
-    border: 1px solid #e5e9ef;
+    background: var(--r-neutral-card-2);
+    border: 1px solid var(--r-neutral-line, #D3D8E0);
     border-radius: 6px;
     display: flex;
     margin-bottom: 20px;
@@ -388,13 +392,13 @@
       line-height: 18px;
       .usmoney {
         font-size: 15px;
-        color: @color-body;
+        color: var(--r-neutral-title-1);
         line-height: 18px;
         font-weight: 500;
       }
       .gasmoney {
         font-size: 12px;
-        color: @color-body;
+        color: var(--r-neutral-title-1);
         margin-left: 8px;
       }
     }
@@ -408,7 +412,7 @@
       .card {
         width: 76px;
         height: 48px;
-        background: #ffffff;
+        background: var(--r-neutral-card-1);
         border-radius: 4px;
         display: flex;
         flex-direction: column;
@@ -432,17 +436,18 @@
           text-align: center;
           font-size: 12px;
           line-height: 14px;
-          color: @color-comment-1;
+          color: var(--r-neutral-body, #3e495e);
           margin: 8px auto 0;
         }
         .cardTitle {
           .gas-level;
-          color: @color-body !important;
+          color: var(--r-neutral-title-1) !important;
           font-size: 13px !important;
           margin: 4px auto 0;
           font-weight: 500;
-          &.active {
-            color: var(--r-blue-default, #7084ff) !important;
+          .ant-input {
+            background: transparent;
+            transition: none;
           }
         }
         .custom-input {
@@ -459,7 +464,7 @@
         }
         .ant-input:focus,
         .ant-input-focused {
-          color: @color-body;
+          color: var(--r-neutral-title-1);
         }
       }
     }

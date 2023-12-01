@@ -25,13 +25,14 @@ export const SelectAddressPopup: React.FC<Props> = ({
       visible={visible}
       title={t('page.newAddress.coboSafe.findTheAssociatedSafeAddress')}
       height={227}
+      isSupportDarkMode
     >
       <div
         className={clsx(
           'flex items-center gap-8',
           'py-16 px-12',
           'rounded-[6px]',
-          'bg-gray-bg',
+          'bg-r-neutral-card-2 text-r-neutral-body',
           'relative'
         )}
       >

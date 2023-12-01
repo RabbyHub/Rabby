@@ -4,6 +4,7 @@ import {
   KEYRING_CLASS,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
+  KEYRING_ICONS_WHITE,
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
@@ -18,6 +19,7 @@ import { KeystoneAccount } from './KeystoneAccount';
 import { GridPlusAccount } from './GridPlusAccount';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export interface Props {
   account: Account;
@@ -59,6 +61,8 @@ export const AccountInfo: React.FC<Props> = ({
     init();
   }, [account]);
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
     <div
       className={clsx(
@@ -72,7 +76,7 @@ export const AccountInfo: React.FC<Props> = ({
           <Tooltip title={nickname}>
             <div
               className={clsx(
-                'text-gray-subTitle text-[15px]',
+                'text-r-neutral-body text-[15px]',
                 'max-w-[170px] overflow-ellipsis whitespace-nowrap overflow-hidden',
                 'leading-[20px]'
               )}
@@ -83,12 +87,12 @@ export const AccountInfo: React.FC<Props> = ({
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-black mt-[2px]')}
+            className={clsx('text-13 text-r-neutral-foot mt-[2px]')}
           />
         </div>
         {isTestnet ? null : (
           <div
-            className="text-13 font-medium text-black mt-[4px]"
+            className="text-13 font-medium text-r-neutral-foot mt-[4px]"
             title={displayBalance}
           >
             ${displayBalance}
@@ -102,19 +106,31 @@ export const AccountInfo: React.FC<Props> = ({
       {account?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS && <GridPlusAccount />}
       {account?.type === KEYRING_CLASS.HARDWARE.ONEKEY && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.ONEKEY.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.ONEKEY.lightIcon
+              : WALLET_BRAND_CONTENT.ONEKEY.icon
+          }
           tip={t('page.signFooterBar.addressTip.onekey')}
         />
       )}
       {account?.type === KEYRING_CLASS.HARDWARE.TREZOR && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.TREZOR.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.TREZOR.lightIcon
+              : WALLET_BRAND_CONTENT.TREZOR.icon
+          }
           tip={t('page.signFooterBar.addressTip.trezor')}
         />
       )}
       {account?.type === KEYRING_CLASS.HARDWARE.BITBOX02 && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.BITBOX02.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.BITBOX02.lightIcon
+              : WALLET_BRAND_CONTENT.BITBOX02.icon
+          }
           tip={t('page.signFooterBar.addressTip.bitbox')}
         />
       )}
@@ -123,25 +139,41 @@ export const AccountInfo: React.FC<Props> = ({
       )}
       {account?.brandName === WALLET_BRAND_TYPES.AIRGAP && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.AirGap.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.AirGap.lightIcon
+              : WALLET_BRAND_CONTENT.AirGap.icon
+          }
           tip={t('page.signFooterBar.addressTip.airgap')}
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.COOLWALLET && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.CoolWallet.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.CoolWallet.lightIcon
+              : WALLET_BRAND_CONTENT.CoolWallet.icon
+          }
           tip={t('page.signFooterBar.addressTip.coolwallet')}
         />
       )}
       {account?.type === KEYRING_CLASS.PRIVATE_KEY && (
         <CommonAccount
-          icon={KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY]}
+          icon={
+            (isDarkTheme ? KEYRING_ICONS_WHITE : KEYRING_ICONS)[
+              KEYRING_CLASS.PRIVATE_KEY
+            ]
+          }
           tip={t('page.signFooterBar.addressTip.privateKey')}
         />
       )}
       {account?.type === KEYRING_CLASS.MNEMONIC && (
         <CommonAccount
-          icon={KEYRING_ICONS[KEYRING_CLASS.MNEMONIC]}
+          icon={
+            (isDarkTheme ? KEYRING_ICONS_WHITE : KEYRING_ICONS)[
+              KEYRING_CLASS.MNEMONIC
+            ]
+          }
           tip={
             needPassphrase
               ? t('page.signFooterBar.addressTip.seedPhraseWithPassphrase')
@@ -151,19 +183,31 @@ export const AccountInfo: React.FC<Props> = ({
       )}
       {account?.type === KEYRING_CLASS.WATCH && (
         <CommonAccount
-          icon={KEYRING_ICONS[KEYRING_CLASS.WATCH]}
+          icon={
+            (isDarkTheme ? KEYRING_ICONS_WHITE : KEYRING_ICONS)[
+              KEYRING_CLASS.WATCH
+            ]
+          }
           tip={t('page.signFooterBar.addressTip.watchAddress')}
         />
       )}
       {account?.type === KEYRING_CLASS.GNOSIS && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.Gnosis.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.Gnosis.lightIcon
+              : WALLET_BRAND_CONTENT.Gnosis.icon
+          }
           tip={t('page.signFooterBar.addressTip.safe')}
         />
       )}
       {account?.type === KEYRING_CLASS.CoboArgus && (
         <CommonAccount
-          icon={WALLET_BRAND_CONTENT.CoboArgus.icon}
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.CoboArgus.lightIcon
+              : WALLET_BRAND_CONTENT.CoboArgus.icon
+          }
           tip={t('page.signFooterBar.addressTip.coboSafe')}
         />
       )}

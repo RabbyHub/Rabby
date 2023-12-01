@@ -100,7 +100,7 @@ export const ImportCoboArgus = () => {
   }, []);
 
   return (
-    <section className="bg-gray-bg relative">
+    <section className="bg-r-neutral-bg-2 relative">
       <Header hasBack={!isByImportAddressEvent}>
         {step === 'select-chain' &&
           t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}
@@ -136,8 +136,8 @@ export const ImportCoboArgus = () => {
         className={clsx(
           'flex py-[18px]',
           'absolute bottom-0 left-0 right-0',
-          'border-t border-gray-divider',
-          'bg-white'
+          'border-t border-t-r-neutral-line',
+          'bg-r-neutral-bg-1'
         )}
       >
         <Button

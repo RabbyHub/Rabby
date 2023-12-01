@@ -54,6 +54,15 @@
     border-color: var(--r-blue-default, #7084ff);
     box-shadow: 0px 8px 16px rgba(134, 151, 255, 0.3);
   }
+
+  &[disabled],
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled]:active {
+    color: var(--r-neutral-title-2, #FFF);
+    background-color: var(--r-blue-disable, rgba(219, 224, 255, 1));
+    border-color: var(--r-blue-disable, rgba(219, 224, 255, 1));
+  }
 }
 /*---------------------
         message
@@ -113,6 +122,30 @@
 .modal-bg-white {
   .ant-modal-content {
     background: white;
+  }
+}
+
+.modal-support-darkmode,
+.modal-support-darkmode.rabby-modal {
+  .ant-modal-header,
+  .ant-modal-content,
+  .ant-modal-content {
+    background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  .ant-modal-confirm-body .ant-modal-confirm-content {
+    // background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06)); 
+    // background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  .ant-modal-confirm-title,
+  .ant-modal-confirm-body .ant-modal-confirm-title,
+  .ant-modal-confirm-body .ant-modal-confirm-content {
+    color: var(--r-neutral-title-1, #F7FAFC);
+  }
+
+  .ant-modal-close-x .anticon-close svg {
+    color: var(--r-neutral-foot, #6A7587);
   }
 }
 
@@ -298,6 +331,9 @@ textarea {
     font-size: 12px;
     border-radius: 14px;
     padding: 6px 12px;
+    background-color: rgba(45, 48, 51, 0.95);
+  }
+  .ant-tooltip-arrow-content {
     background-color: rgba(45, 48, 51, 0.95);
   }
   .ant-tooltip-arrow {

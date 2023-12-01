@@ -17,7 +17,7 @@
     gap: 20px 10px;
     flex-wrap: wrap;
     &-container {
-      background-color: #f5f6fa;
+      background-color: var(--r-neutral-bg-2, #f5f6fa);
       position: sticky;
       top: 64px;
       padding-bottom: 20px;
@@ -29,7 +29,7 @@
       font-weight: 400;
       font-size: 13px;
       line-height: 14px;
-      color: #4b4d59;
+      color: var(--r-neutral-body);
       position: relative;
       cursor: pointer;
 
@@ -48,7 +48,7 @@
     }
   }
   .queue-item {
-    background-color: #fff;
+    background-color: var(--r-neutral-card-1);
     border-radius: 6px;
     padding: 12px;
     margin-bottom: 20px;
@@ -72,7 +72,7 @@
           font-weight: 500;
           font-size: 15px;
           line-height: 18px;
-          color: @color-title;
+          color: var(--r-neutral-title-1);
         }
         .icon-explain {
           width: 20px;
@@ -136,18 +136,18 @@
       }
     }
     .tx-confirm {
-      background: @color-bg;
+      background: var(--r-neutral-card-2);
       border-radius: 4px;
       padding: 12px;
       .tx-confirm__head {
-        border-bottom: 1px solid @color-border;
+        border-bottom: 1px solid var(--r-neutral-line);
         padding-bottom: 8px;
-        color: #707281;
+        color: var(--r-neutral-foot);
         font-size: 12px;
         line-height: 14px;
         .number {
           font-weight: 500;
-          color: @color-title;
+          color: var(--r-neutral-title-1);
         }
       }
       .tx-confirm__list {
@@ -157,7 +157,7 @@
           display: flex;
           font-size: 13px;
           line-height: 15px;
-          color: @color-comment-1;
+          color: var(--r-neutral-foot);
           margin-bottom: 20px;
           align-items: center;
           &:nth-last-child(1) {
@@ -165,7 +165,7 @@
           }
           &.checked {
             font-weight: 500;
-            color: #4b4d59;
+            color: var(--r-neutral-body);
           }
           .icon-check {
             width: 16px;
@@ -200,7 +200,7 @@
     }
   }
   .queue-group {
-    background-color: #ffffff;
+    background-color: var(--r-neutral-card-1);
     border: 1px solid var(--r-blue-default, #7084ff);
     border-radius: 6px;
     margin-bottom: 20px;

@@ -19,7 +19,7 @@ const Wrapper = styled.div`
     font-weight: 500;
     font-size: 12px;
     line-height: 14px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #192945);
     margin-bottom: 0;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -29,6 +29,7 @@ const Wrapper = styled.div`
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    color: var(--r-neutral-title-1, #192945);
   }
 `;
 const PortfolioHeader = ({

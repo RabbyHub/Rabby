@@ -20,7 +20,7 @@ export const SummaryList: React.FC<Props> = () => {
   return (
     <div className={clsx('flex flex-col text-center', 'gap-y-20 mt-[80px]')}>
       <SkeletonSummarySVG className="m-auto" />
-      <div className="text-15 text-gray-comment font-medium">
+      <div className="text-15 text-r-neutral-foot font-medium">
         {t('page.dashboard.assets.comingSoon')}
       </div>
     </div>
@@ -69,7 +69,7 @@ export const SummaryListTemp: React.FC<Props> = ({ chainId }) => {
           })}
         </TBody>
       </Table>
-      <div className="text-12 text-black leading-[16px] mt-12">
+      <div className="text-12 text-r-neutral-foot leading-[16px] mt-12">
         {t('page.dashboard.assets.table.summaryDescription')}
       </div>
     </div>

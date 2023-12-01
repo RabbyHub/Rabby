@@ -62,7 +62,7 @@ const ImportJson = () => {
       >
         {t('page.newAddress.importYourKeystore')}
       </Navbar>
-      <div className="rabby-container">
+      <div className="rabby-container widget-has-ant-input">
         <div className="px-20">
           <Form.Item
             className="mx-auto mt-[32px] mb-[24px]"

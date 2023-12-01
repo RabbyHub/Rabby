@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from '@/ui/utils/token';
 
 const CexListWrapper = styled.div`
-  border: 1px solid #e5e9ef;
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 6px;
   &:empty {
     display: none;
@@ -32,7 +32,7 @@ const CexListWrapper = styled.div`
       position: absolute;
       width: 328px;
       height: 0;
-      border-bottom: 1px solid #e5e9ef;
+      border-bottom: 1px solid var(--r-neutral-line, #d3d8e0);
       left: 16px;
       bottom: 0;
     }
@@ -196,7 +196,7 @@ export const Quotes = ({
           />
         )}
 
-        <div className="text-13 text-gray-content">
+        <div className="text-13 text-r-neutral-foot">
           {t('page.swap.directlySwap', {
             symbol: getTokenSymbol(other.payToken),
           })}
@@ -256,7 +256,7 @@ export const Quotes = ({
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
       <div className="pt-[40px]" />
-      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full  bg-gray-bg2  text-gray-light ">
+      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot">
         {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
         <span
           onClick={openSettings}
@@ -289,12 +289,12 @@ export const QuoteList = (props: QuotesProps) => {
   return (
     <Popup
       closeIcon={
-        <SvgIconCross className="w-14 fill-current text-gray-content pt-[2px]" />
+        <SvgIconCross className="w-14 fill-current text-r-neutral-foot pt-[2px]" />
       }
       visible={visible}
       title={
         <div className="flex items-center justify-between mb-[-2px] pb-10">
-          <div className="flex items-center gap-6 text-left text-gray-title text-[16px] font-medium ">
+          <div className="flex items-center gap-6 text-left text-r-neutral-title-1 text-[16px] font-medium ">
             <div>{t('page.swap.the-following-swap-rates-are-found')}</div>
             <div className="w-14 h-14 relative overflow-hidden">
               <div className="w-[26px] h-[26px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
@@ -357,6 +357,7 @@ export const QuoteList = (props: QuotesProps) => {
       destroyOnClose
       className="isConnectView z-[999]"
       bodyStyle={bodyStyle}
+      isSupportDarkMode
     >
       <Quotes {...props} />
     </Popup>

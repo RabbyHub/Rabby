@@ -15,8 +15,9 @@ import { findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
+import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select/chain-filter-close.svg';
 import { isNil } from 'lodash';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -171,15 +172,15 @@ const TokenSelector = ({
           />
 
           {!query || isSearchAddr ? (
-            <p className="text-gray-content text-14 mt-12 text-center mb-0">
+            <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
               {t('component.TokenSelector.noTokens')}
             </p>
           ) : (
             <>
-              <p className="text-gray-content text-14 mt-12 text-center mb-0">
+              <p className="text-r-neutral-foot text-14 mt-12 text-center mb-0">
                 {t('component.TokenSelector.noMatch')}
               </p>
-              <p className="text-gray-content text-14 mt-0 text-center">
+              <p className="text-r-neutral-foot text-14 mt-0 text-center">
                 {/* Try to search contract address on {{ chainName }} */}
                 {t('component.TokenSelector.noMatchSuggestion', {
                   chainName:
@@ -206,7 +207,7 @@ const TokenSelector = ({
 
   return (
     <Drawer
-      className="token-selector"
+      className="token-selector custom-popup is-support-darkmode"
       height="580px"
       placement="bottom"
       visible={visible}
@@ -251,9 +252,9 @@ const TokenSelector = ({
                   });
                 }}
               >
-                <img
+                <ThemeIcon
                   className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                  src={IconChainFilterClose}
+                  src={RcIconChainFilterClose}
                 />
               </div>
             </div>
@@ -310,7 +311,7 @@ const TokenSelector = ({
                       />
                       <div className="flex flex-col gap-4">
                         <span
-                          className="symbol text-13 text-gray-title font-medium"
+                          className="symbol text-13 text-r-neutral-title-1 font-medium"
                           title={token.amount.toString()}
                         >
                           {formatTokenAmount(token.amount)}
@@ -346,7 +347,7 @@ const TokenSelector = ({
                             .toFixed()
                         )}
                         className={clsx(
-                          'max-w-full text-13 text-gray-title',
+                          'max-w-full text-13 text-r-neutral-title-1',
                           'truncate'
                         )}
                       >
@@ -371,29 +372,29 @@ const DefaultLoading = () => (
     <div className="gap-x-12 flex">
       <Skeleton.Input
         active
-        className="rounded-full w-[24px] h-[24px] bg-gray-bg"
+        className="rounded-full w-[24px] h-[24px] bg-r-neutral-bg-1"
       />
       <div className="gap-y-2 flex flex-col">
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[72px] h-[15px]"
+          className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[15px]"
         />
         <Skeleton.Input
           active
-          className="bg-gray-bg rounded-[2px] w-[44px] h-[10px]"
+          className="bg-r-neutral-bg-1 rounded-[2px] w-[44px] h-[10px]"
         />
       </div>
     </div>
     <div>
       <Skeleton.Input
         active
-        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
+        className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
     <div>
       <Skeleton.Input
         active
-        className="bg-gray-bg rounded-[2px] w-[72px] h-[20px]"
+        className="bg-r-neutral-bg-1 rounded-[2px] w-[72px] h-[20px]"
       />
     </div>
   </div>

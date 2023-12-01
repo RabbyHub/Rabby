@@ -1,9 +1,13 @@
+@import '../../style/mixin.less';
+
 .import-gnosis {
   overflow: auto;
-  background-color: #f5f6fa;
+  background: var(--r-neutral-bg-2, #f2f4f7);
   .header {
-    background: var(--r-brand-default, #7084ff);
+    background: var(--r-blue-default, #7084ff);
   }
+
+  .ant-input-darkmode();
 
   .unlock-logo {
     border: 1px solid #fff;
@@ -25,7 +29,7 @@
     font-weight: 400;
     font-size: 13px;
     line-height: 15px;
-    color: @color-body;
+    color: var(--r-neutral-body, #3e495e);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -38,7 +42,7 @@
       font-weight: 400;
       font-size: 13px;
       line-height: 15px;
-      color: #4b4d59;
+      color: var(--r-neutral-body, #3e495e);
       margin-bottom: 12px;
     }
     .chain-list {
@@ -54,7 +58,7 @@
         font-weight: 500;
         font-size: 13px;
         line-height: 15px;
-        color: #13141a;
+        color: var(--r-neutral-title-1, #192945);
 
         .chain-logo {
           width: 20px;
@@ -65,8 +69,8 @@
     }
   }
   .footer {
-    background-color: #fff;
-    border-top: 0.5px solid #e5e9ef;
+    border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    background: var(--r-neutral-card-1, #fff);
     text-align: center;
 
     .ant-btn {

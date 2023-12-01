@@ -23,6 +23,9 @@ import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBa
 import { SeedPhraseBar } from './SeedPhraseBar';
 import { GnonisSafeInfo } from './GnosisSafeInfo';
 import { CoboArgusInfo } from './CoboArugsInfo';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { pickKeyringThemeIcon } from '@/utils/account';
 
 type Props = {
   address: string;
@@ -51,6 +54,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
     }, 50);
     const { destroy } = Popup.info({
       title: t('page.addressDetail.edit-memo-title'),
+      isSupportDarkMode: true,
       height: 215,
       content: (
         <div className="pt-[4px]">
@@ -107,6 +111,8 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
       ),
     });
   };
+
+  const { isDarkTheme } = useThemeMode();
 
   return (
     <div className="rabby-list">
@@ -188,9 +194,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             {t('page.addressDetail.source')}
           </div>
           <div className="rabby-list-item-extra flex gap-[4px] max-w-full">
-            <img
+            <ThemeIcon
               className="w-[16px] h-[16px]"
               src={
+                pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
                 KEYRING_ICONS[type] ||
                 WALLET_BRAND_CONTENT[brandName as string]?.image
               }

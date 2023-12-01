@@ -227,7 +227,7 @@ export const ConfirmDrawer = ({
               </div>
             </div>
             <div className="px-20">
-              <div className="flex justify-between border-b-[0.5px] border-gray-divider text-12 text-gray-subTitle pt-[24px] pb-8">
+              <div className="flex justify-between border-b-[0.5px] border-gray-divider text-12 text-r-neutral-body pt-[24px] pb-8">
                 <div>
                   {t('page.gasTopUp.Token')} / {t('page.gasTopUp.Balance')}
                 </div>
@@ -238,7 +238,7 @@ export const ConfirmDrawer = ({
           <div className="overflow-y-auto flex-1 relative">
             {!loading && list.length === 0 && (
               <Empty className="pt-[80px]">
-                <div className="text-14 text-gray-subTitle mb-12">
+                <div className="text-14 text-r-neutral-body mb-12">
                   {t('page.gasTopUp.No_Tokens')}
                 </div>
               </Empty>

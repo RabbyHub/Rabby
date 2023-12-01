@@ -17,7 +17,7 @@ type HistoryItemProps = {
 const EtherscanLink = styled.div`
   cursor: pointer;
   text-decoration: underline;
-  color: #707880;
+  color: var(--r-neutral-foot, #6a7587);
   font-size: 12px;
   line-height: 14px;
 `;

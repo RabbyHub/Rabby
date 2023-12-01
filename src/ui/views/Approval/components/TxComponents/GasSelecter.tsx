@@ -23,10 +23,11 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -158,6 +159,9 @@ const CardBody = styled.div<{
       font-weight: 500;
       font-size: 13px !important;
       margin: 4px auto 0;
+      .ant-input {
+        background: transparent;
+      }
     }
     .custom-input {
       margin: 4px auto 0;
@@ -168,13 +172,14 @@ const CardBody = styled.div<{
       font-weight: 500;
       color: var(--r-neutral-title-1, #192945);
       padding-top: 0;
+      transition: none;
       &.active {
         color: var(--r-blue-default, #7084ff) !important;
       }
     }
     .ant-input:focus,
     .ant-input-focused {
-      color: #000000;
+      color: var(--r-neutral-title-1);
     }
   }
 `;
@@ -184,11 +189,11 @@ const ManuallySetGasLimitAlert = styled.div`
   font-size: 13px;
   line-height: 15px;
   margin-top: 10px;
-  color: #707280;
+  color: var(--r-neutral-body);
 `;
 
 const ErrorsWrapper = styled.div`
-  border-top: 1px solid #ededed;
+  border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   padding-top: 14px;
   margin-top: 14px;
   .item {
@@ -196,7 +201,7 @@ const ErrorsWrapper = styled.div`
     font-weight: 500;
     font-size: 14px;
     line-height: 16px;
-    color: #333333;
+    color: var(--r-neutral-body, #3e495e);
     margin-bottom: 10px;
     align-items: flex-start;
     .icon-alert {
@@ -704,7 +709,7 @@ const GasSelector = ({
           </div>
           <div className="flex-1" />
           <div
-            className="flex items-center text-12 text-gray-content cursor-pointer"
+            className="flex items-center text-12 text-r-neutral-foot cursor-pointer"
             role="button"
             onClick={handleClickEdit}
           >
@@ -732,7 +737,10 @@ const GasSelector = ({
           <ErrorsWrapper>
             {errors.map((error) => (
               <div className="item" key={error.code}>
-                <img src={IconAlert} className="icon icon-alert" />
+                <ThemeIcon
+                  src={RcIconAlert}
+                  className="icon icon-alert text-r-neutral-body"
+                />
                 {error.msg} #{error.code}
               </div>
             ))}
@@ -747,6 +755,7 @@ const GasSelector = ({
         onCancel={() => setModalVisible(false)}
         destroyOnClose
         closable
+        isSupportDarkMode
       >
         <div className="gas-selector-modal-top">
           {disabled ? (
@@ -880,7 +889,7 @@ const GasSelector = ({
               >
                 <span className="flex-1">{t('page.signTx.gasLimitTitle')}</span>
               </p>
-              <div className="expanded gas-limit-panel-wrapper">
+              <div className="expanded gas-limit-panel-wrapper widget-has-ant-input">
                 <Tooltip
                   overlayClassName="rectangle"
                   title={

@@ -18,7 +18,7 @@ const TipTextList = styled.div`
     font-weight: 700;
     font-size: 13px;
     line-height: 15px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #f7fafc);
     margin-top: 0;
     margin-bottom: 8px;
   }
@@ -26,7 +26,7 @@ const TipTextList = styled.div`
     font-weight: 400;
     font-size: 13px;
     line-height: 15px;
-    color: #4b4d59;
+    color: var(--r-neutral-body, #d3d8e0);
     margin: 0;
   }
   section + section {
@@ -133,7 +133,7 @@ const ImportPrivateKey = () => {
         >
           {t('page.newAddress.importPrivateKey')}
         </Navbar>
-        <div className="rabby-container">
+        <div className="rabby-container widget-has-ant-input">
           <div className="px-20 pt-24">
             <Form.Item
               name="key"
@@ -196,7 +196,7 @@ const ImportPrivateKey = () => {
                   >
                     Yes, you can
                     <a
-                      className="underline text-blue-light cursor-pointer"
+                      className="underline text-r-blue-default cursor-pointer"
                       onClick={() => history.push('/import/json')}
                     >
                       import KeyStore

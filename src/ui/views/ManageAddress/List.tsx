@@ -10,11 +10,12 @@ import { useHistory } from 'react-router-dom';
 import { useRabbyDispatch } from '@/ui/store';
 import { obj2query } from '@/ui/utils/url';
 
-import IconPinned from 'ui/assets/icon-pinned.svg';
-import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 import { message } from 'antd';
 import IconSuccess from 'ui/assets/success.svg';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export const AccountList = ({
   list,
@@ -82,7 +83,7 @@ export const AccountList = ({
           extra={
             <div
               className={clsx(
-                'icon-star  border-none px-0',
+                'icon-star border-none px-0',
                 favorited ? 'is-active' : 'opacity-0 group-hover:opacity-100'
               )}
               onClick={(e) => {
@@ -93,10 +94,9 @@ export const AccountList = ({
                 });
               }}
             >
-              <img
+              <ThemeIcon
                 className="w-[13px] h-[13px]"
-                src={favorited ? IconPinnedFill : IconPinned}
-                alt=""
+                src={favorited ? RcIconPinnedFill : RcIconPinned}
               />
             </div>
           }

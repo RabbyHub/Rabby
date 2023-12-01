@@ -118,7 +118,7 @@ ChainSelectorProps) => {
           src={chainItem?.logo || ''}
           className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden"
         />
-        <span className="text-13 font-medium text-gray-title">
+        <span className="text-13 font-medium text-r-neutral-title-1">
           {chainItem?.name || ''}
         </span>
         {!readonly && <SvgIconSwapArrowDownTriangle className="ml-4 pt-1" />}

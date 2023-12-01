@@ -1,6 +1,6 @@
 .recent-connections-popup {
   .title {
-    color: @color-comment-1;
+    color: var(--r-neutral-body, #D3D8E0);
     font-size: 12px;
     margin: 0;
   }
@@ -23,7 +23,7 @@
     &-title {
       font-size: 12px;
       line-height: 14px;
-      color: @color-comment-1;
+      color: var(--r-neutral-body, #D3D8E0);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -33,7 +33,7 @@
       flex-shrink: 0;
       a {
         text-decoration-line: underline;
-        color: @color-comment-1;
+        color: var(--r-neutral-body, #D3D8E0);
       }
     }
     &-empty {
@@ -41,20 +41,20 @@
       left: 0px;
       bottom: 0px;
       padding: 12px;
-      background: @color-bg;
+      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
       line-height: 14px;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
     }
   }
   .list-content {
     display: flex;
     flex-wrap: wrap;
-    background-color: @color-bg;
+    background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     .item {
       position: relative;
@@ -78,7 +78,7 @@
       }
       &.is-dragging {
         opacity: 0.5;
-        background-color: @color-bg;
+        background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
       }
       &.is-overlay {
         cursor: grabbing;
@@ -90,7 +90,7 @@
         font-weight: 500;
         font-size: 13px;
         line-height: 15px;
-        color: @color-title;
+        color: var(--r-neutral-title-1, #F7FAFC);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -115,8 +115,8 @@
       }
       &:hover {
         // background: rgba(134, 151, 255, 0.2);
-        background-color: #dce0f9;
-        border: 1px solid var(--r-blue-default, #7084ff);
+        border: 1px solid var(--r-blue-default, #7084FF);
+        background: var(--r-blue-light-1, rgba(112, 132, 255, 0.10));
         .pin-website {
           opacity: 1;
         }
@@ -161,15 +161,8 @@
       opacity: 0;
       width: 16px;
       height: 16px;
-      path {
-        stroke: #707280;
-      }
       &.is-active {
         opacity: 1;
-        fill: #ffb020;
-        path {
-          stroke: #ffb020;
-        }
       }
     }
   }
@@ -210,13 +203,13 @@
           margin-bottom: 0;
         }
         .origin {
-          color: @color-title;
+          color: var(--r-neutral-title-1, #F7FAFC);
           font-size: 13px;
           line-height: 15px;
           font-weight: 500;
         }
         .name {
-          color: @color-comment-1;
+          color: var(--r-neutral-body, #D3D8E0);
           font-size: 10px;
           white-space: nowrap;
           overflow: hidden;
@@ -228,7 +221,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: @color-comment-1;
+      color: var(--r-neutral-body, #D3D8E0);
       font-size: 12px;
       margin-bottom: 0;
       .icon-no-connect {
@@ -257,7 +250,7 @@
     word-break: break-all;
   }
   .origin {
-    color: @color-title;
+    color: var(--r-neutral-title-1, #F7FAFC);
     margin-bottom: 4px;
     font-weight: 500;
   }
@@ -273,7 +266,7 @@
   }
   .ant-modal {
     &-content {
-      background-color: #fff;
+      background-color: var(--r-neutral-bg-1,#fff);
     }
   }
   .ant-modal-body {
@@ -283,7 +276,7 @@
       font-size: 15px;
       line-height: 22px;
       text-align: center;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #F7FAFC);
       margin-bottom: 8px;
       strong {
         color: var(--r-blue-default, #7084ff);
@@ -294,7 +287,7 @@
       font-size: 12px;
       line-height: 14px;
       text-align: center;
-      color: @color-body;
+      color: var(--r-neutral-body, #D3D8E0);
     }
   }
   .ant-modal-confirm-body .ant-modal-confirm-content {
@@ -302,7 +295,8 @@
     font-size: 14px;
     line-height: 22px;
     text-align: center;
-    color: @color-body;
+    color: var(--r-neutral-body, #D3D8E0);
+    background-color: transparent !important;
     padding: 0;
     margin: 0;
     min-height: initial;

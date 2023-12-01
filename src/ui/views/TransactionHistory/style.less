@@ -6,7 +6,7 @@
 
   &__item {
     position: relative;
-    background: #ffffff;
+    background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     margin-bottom: 12px;
     box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.08);
@@ -20,7 +20,7 @@
       font-weight: 500;
       font-size: 15px;
       line-height: 18px;
-      color: @color-body;
+      color: var(--r-neutral-title-1, #F7FAFC);
       flex: 1;
       .icon-explain {
         width: 18px;
@@ -41,7 +41,7 @@
           display: none;
           margin-left: 6px;
           path {
-            fill: @color-comment-1;
+            fill: var(--r-neutral-foot, #BABEC5);
           }
         }
         &:hover {
@@ -57,13 +57,13 @@
       top: 0;
       left: 12px;
       border-radius: 0px 0px 4px 4px;
-      background: var(--r-orange-light, rgba(255, 176, 32, 0.15));
+      background: var(--r-orange-light, #645D50);
       padding: 4px 6px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 12px;
-      color: var(--r-orange-default, #ffb020);
+      color: var(--r-orange-default, #FFC64A);
       font-weight: 400;
       line-height: 14px;
       gap: 4px;
@@ -74,7 +74,7 @@
         animation: spining 1.5s infinite linear;
 
         path {
-          fill: var(--r-orange-default, #ffb020);
+          fill: var(--r-orange-default, #FFC64A);
         }
       }
     }
@@ -82,7 +82,7 @@
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #BABEC5);
       margin-bottom: 14px;
       line-height: 14px;
     }
@@ -124,7 +124,7 @@
       padding: 12px;
       font-size: 12px;
       line-height: 14px;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #BABEC5);
       .pending-detail {
         display: flex;
         align-items: center;
@@ -151,7 +151,7 @@
         .icon-spin {
           animation: spining 1.5s infinite linear;
           path {
-            fill: @color-comment-1;
+            fill: var(--r-neutral-foot, #BABEC5);
           }
         }
         &:nth-last-child(1) {
@@ -214,7 +214,7 @@
 .bottom-view-all-transaction {
   display: flex;
   font-size: 12px;
-  color: @color-comment-1;
+  color: var(--r-neutral-foot, #BABEC5);
   align-items: center;
   white-space: nowrap;
   position: absolute;
@@ -223,14 +223,14 @@
   bottom: 0;
   font-weight: normal;
   &:hover {
-    color: @color-comment-1;
+    color: var(--r-neutral-foot, #BABEC5);
   }
   .icon-external {
     width: 12px;
     height: 12px;
     margin-left: 4px;
     path {
-      fill: @color-comment-1;
+      fill: var(--r-neutral-foot, #BABEC5);
     }
   }
 }
@@ -243,10 +243,16 @@
 
 .mempool-list-popover {
   padding-top: 3px;
+
   .ant-popover-arrow {
     display: none;
   }
   .ant-popover-inner-content {
     padding: 0;
+  }
+  .ant-popover-inner {
+    border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    background: var(--r-neutral-bg-1, #3D4251);
+    box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.25);
   }
 }

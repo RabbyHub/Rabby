@@ -31,7 +31,7 @@
           .address {
             font-weight: normal;
             margin: 0;
-            color: @color-comment-1;
+            color: var(--r-neutral-foot, #BABEC5);
             font-size: 12px;
             line-height: 14px;
           }
@@ -44,10 +44,10 @@
         text-overflow: ellipsis;
       }
       &-title {
-        color: @color-title;
+        color: var(--r-neutral-title-1, #F7FAFC);
       }
       &-desc {
-        color: @color-comment-1;
+        color: var(--r-neutral-foot, #BABEC5);
       }
     }
   }
@@ -55,10 +55,10 @@
     font-size: 12px;
     line-height: 14px;
     .tx-id {
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #BABEC5);
       text-decoration: underline;
       &-chain {
-        color: #5a6066;
+        color: var(--r-neutral-body, #D3D8E0);
         margin-right: 8px;
       }
       &-container {
@@ -79,7 +79,7 @@
     .token-change {
       &-item {
         display: flex;
-        color: #4b4d59;
+        color: var(--r-neutral-body, #D3D8E0);
         justify-content: flex-end;
         &-text {
           white-space: nowrap;
@@ -87,7 +87,7 @@
           text-overflow: ellipsis;
         }
         &.is-success {
-          color: #27c193;
+          color: var(--r-green-default, #2ABB7F);
         }
         .token-icon {
           flex-shrink: 0;

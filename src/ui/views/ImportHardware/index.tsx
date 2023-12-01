@@ -100,7 +100,7 @@ const ImportHardware = () => {
           );
         })}
       </div>
-      {/* <div className="text-center mb-[100px] text-gray-content text-14">
+      {/* <div className="text-center mb-[100px] text-r-neutral-body text-14">
         {t('hardwareImportTip')}
       </div> */}
     </StrayPage>

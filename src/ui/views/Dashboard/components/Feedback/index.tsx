@@ -5,11 +5,18 @@ import React from 'react';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
-import IconDirectMessage from 'ui/assets/feedback-popup/entry-hi.svg';
-import IconProposal from 'ui/assets/feedback-popup/entry-proposal.svg';
-import IconItemLink from 'ui/assets/feedback-popup/item-link.svg';
+import IconDirectMessage, {
+  ReactComponent as RcIconDirectMessage,
+} from 'ui/assets/feedback-popup/entry-hi.svg';
+import IconProposal, {
+  ReactComponent as RcIconProposal,
+} from 'ui/assets/feedback-popup/entry-proposal.svg';
+import IconItemLink, {
+  ReactComponent as RcIconItemLink,
+} from 'ui/assets/feedback-popup/item-link.svg';
 import { openInTab } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 interface SettingsProps {
   visible?: boolean;
@@ -21,19 +28,23 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
 
   const renderData = [
     {
-      leftIcon: IconDirectMessage,
+      leftIcon: RcIconDirectMessage,
       content: t('page.dashboard.feedback.directMessage.content'),
       description: t('page.dashboard.feedback.directMessage.description'),
-      rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
+      rightIcon: (
+        <ThemeIcon src={RcIconItemLink} className="icon icon-item-link" />
+      ),
       onClick: () => {
         openInTab('https://debank.com/hi/0a110032');
       },
     },
     {
-      leftIcon: IconProposal,
+      leftIcon: RcIconProposal,
       content: t('page.dashboard.feedback.proposal.content'),
       description: t('page.dashboard.feedback.proposal.description'),
-      rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
+      rightIcon: (
+        <ThemeIcon src={RcIconItemLink} className="icon icon-item-link" />
+      ),
       onClick: () => {
         openInTab('https://debank.com/official/Rabby_Wallet/proposals');
       },
@@ -48,8 +59,9 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       bodyStyle={{ height: '100%', padding: '20px' }}
       closable={false}
       className="dashboard-feedback-popup"
+      isSupportDarkMode
     >
-      <div className="popup-feedback">
+      <div className="popup-feedback-inner">
         <header className="pb-[20px]">
           <div className="popup-title">
             {t('page.dashboard.feedback.title')}
@@ -59,7 +71,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
           {renderData.map((data, index) => (
             <Field
               key={index}
-              leftIcon={<img src={data.leftIcon} className="icon" />}
+              leftIcon={<ThemeIcon src={data.leftIcon} className="icon" />}
               rightIcon={
                 data.rightIcon || (
                   <img src={IconArrowRight} className="icon icon-arrow-right" />

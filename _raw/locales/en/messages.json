@@ -982,7 +982,8 @@
         "updateVersion": {
           "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
           "okText": "See Tutorial",
-          "successTip": "You are using the latest version"
+          "successTip": "You are using the latest version",
+          "title": "Update Available"
         },
         "features": {
           "label": "Features",
