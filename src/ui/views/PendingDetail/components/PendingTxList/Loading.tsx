@@ -30,7 +30,7 @@ export const Loading = () => {
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 68, height: 16 }} />;
       },
-      width: 160,
+      width: 260,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.interact'),
@@ -44,7 +44,7 @@ export const Loading = () => {
           </div>
         );
       },
-      width: 304,
+      width: 264,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),

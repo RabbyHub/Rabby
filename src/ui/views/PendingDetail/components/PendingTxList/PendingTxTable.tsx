@@ -60,14 +60,14 @@ export const PendingTxTable = ({
       render(value, record, index) {
         return <TransactionActionType data={record} />;
       },
-      width: 200,
+      width: 260,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.interact'),
       render(value, record, index) {
         return <TransactionAction data={record} />;
       },
-      width: 304,
+      width: 264,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),

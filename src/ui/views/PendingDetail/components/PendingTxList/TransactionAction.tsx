@@ -27,7 +27,7 @@ export const TransactionAction = ({ data }: { data: PendingTxItem }) => {
         src={icon}
         alt=""
         className={clsx(
-          'flex-shrink-0 w-[28px] h-[28px]',
+          'flex-shrink-0 w-[24px] h-[24px]',
           isSend || !protocol?.logo_url ? '' : 'rounded-full'
         )}
       />{' '}

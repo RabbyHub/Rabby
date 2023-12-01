@@ -85,29 +85,29 @@ export const Predict = ({
 
       <div className="flex items-center justify-center gap-[24px]">
         <div className="flex items-center justify-center gap-[16px]">
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.hours[0] ?? '-'}
           </div>
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.hours[1] ?? '-'}
           </div>
         </div>
         <img src={IconDot} alt="" />
         <div className="flex items-center justify-center gap-[16px]">
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.minutes[0] ?? '-'}
           </div>
 
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.minutes[1] ?? '-'}
           </div>
         </div>
         <img src={IconDot} alt="" />
         <div className="flex items-center justify-center gap-[16px]">
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.seconds[0] ?? '-'}
           </div>
-          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
+          <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[72px] text-white font-bold leading-[95px]">
             {predict?.seconds[1] ?? '-'}
           </div>
         </div>

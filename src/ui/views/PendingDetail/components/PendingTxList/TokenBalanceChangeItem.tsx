@@ -21,7 +21,7 @@ export const TokenBalanceChangeItem = ({
   return (
     <div className="flex items-center gap-[8px]">
       <img
-        className="w-[16px] h-[16px] rounded-full"
+        className="w-[18px] h-[18px] rounded-full"
         src={token?.logo_url || IconToken}
         alt=""
       />
