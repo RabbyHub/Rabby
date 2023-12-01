@@ -11,7 +11,8 @@
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest",
-    "pub": "node build/release.js"
+    "pub": "node build/release.js",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@debank/common": "^0.3.45",
@@ -36,7 +37,7 @@
     "@ngraveio/bc-ur": "^1.1.6",
     "@onekeyfe/hd-core": "^0.3.27",
     "@onekeyfe/hd-web-sdk": "^0.3.27",
-    "@rabby-wallet/eth-coinbase-keyring": "^0.0.0-beta.5",
+    "@rabby-wallet/eth-coinbase-keyring": "^0.0.0-beta.6",
     "@rabby-wallet/eth-gnosis-keyring": "^0.0.1",
     "@rabby-wallet/eth-hd-keyring": "^4.1.0",
     "@rabby-wallet/eth-lattice-keyring": "^1.0.5",
