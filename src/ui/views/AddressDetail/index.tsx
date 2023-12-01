@@ -28,10 +28,12 @@ const AddressDetail = () => {
   };
 
   const { address, type, brandName, byImport } = qs || {};
+
   const source = useAddressSource({
     type,
     brandName,
     byImport: !!byImport,
+    address,
   });
 
   useEffect(() => {
@@ -53,7 +55,7 @@ const AddressDetail = () => {
         }
       },
       onFinished() {
-        dispatch.whitelist.getWhitelist();
+        // dispatch.whitelist.getWhitelist();
       },
       onCancel() {
         // do nothing

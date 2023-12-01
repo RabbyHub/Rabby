@@ -20,6 +20,8 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       'TP',
       'WALLETCONNECT',
       'WalletConnect',
+      'FIREBLOCKS',
+      'MPCVault',
     ],
   };
 };

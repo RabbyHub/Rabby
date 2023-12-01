@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import React from 'react';
 import NFTModal from '@/ui/views/Dashboard/components/NFT/NFTModal';
 import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   token: TokenItem;
@@ -20,6 +21,12 @@ export const TokenLabel: React.FC<Props> = ({
   onClose,
 }) => {
   const [visible, setVisible] = React.useState(false);
+  const { t } = useTranslation();
+  const symbol = getTokenSymbol(token);
+  const name = isNft
+    ? token?.name ||
+      (symbol ? `${symbol} ${token?.inner_id}` : t('global.unknownNFT'))
+    : symbol;
 
   return (
     <>
@@ -28,11 +35,11 @@ export const TokenLabel: React.FC<Props> = ({
           if (!canClickToken) return;
           setVisible(true);
         }}
-        className={clsx('ml-2', {
+        className={clsx('ml-2', 'truncate', {
           'underline cursor-pointer': canClickToken,
         })}
       >
-        {getTokenSymbol(token)}
+        {name}
       </span>
       {isNft ? (
         <Modal

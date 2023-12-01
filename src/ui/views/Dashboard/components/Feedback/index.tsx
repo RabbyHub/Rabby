@@ -35,7 +35,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       description: t('page.dashboard.feedback.proposal.description'),
       rightIcon: <img src={IconItemLink} className="icon icon-item-link" />,
       onClick: () => {
-        openInTab('https://debank.com/official-account/110032/proposals');
+        openInTab('https://debank.com/official/Rabby_Wallet/proposals');
       },
     },
   ];

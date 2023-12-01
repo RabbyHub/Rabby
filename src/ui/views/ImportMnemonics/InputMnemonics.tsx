@@ -1,30 +1,16 @@
 import React, { useEffect } from 'react';
-import { Button, Form } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import LessPalette from '@/ui/style/var-defs';
 import { connectStore, useRabbyDispatch } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import IconMnemonicInk from '@/ui/assets/walletlogo/mnemonic-ink.svg';
 import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
-
-const Toptip = styled.div`
-  background: var(--r-blue-light-1, #eef1ff);
-  border-radius: 4px;
-  padding: 9px 17px;
-
-  font-style: normal;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-
-  color: var(--r-blue-default, #7084ff);
-`;
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -37,7 +23,7 @@ const FormItemWrapper = styled.div`
 `;
 
 const TipTextList = styled.div`
-  margin-top: 40px;
+  margin-top: 32px;
   h3 {
     font-weight: 700;
     font-size: 13px;
@@ -60,6 +46,7 @@ const TipTextList = styled.div`
 
 type IFormStates = {
   mnemonics: string;
+  passphrase: string;
 };
 const ImportMnemonics = () => {
   const history = useHistory();
@@ -67,17 +54,23 @@ const ImportMnemonics = () => {
   const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const [needPassphrase, setNeedPassphrase] = React.useState(false);
   let keyringId: number | null;
 
+  const onPassphrase = React.useCallback((val: boolean) => {
+    setNeedPassphrase(val);
+  }, []);
+
   const [run, loading] = useWalletRequest(
-    async (mnemonics: string) => {
+    async (mnemonics: string, passphrase: string) => {
       const {
         keyringId: stashKeyringId,
         isExistedKR,
-      } = await wallet.generateKeyringWithMnemonic(mnemonics);
+      } = await wallet.generateKeyringWithMnemonic(mnemonics, passphrase);
 
       dispatch.importMnemonics.switchKeyring({
         finalMnemonics: mnemonics,
+        passphrase,
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
@@ -125,6 +118,7 @@ const ImportMnemonics = () => {
           form.setFieldsValue({
             ...cache.states,
             mnemonics: '',
+            passphrase: '',
           });
         }
       }
@@ -134,6 +128,14 @@ const ImportMnemonics = () => {
       wallet.clearPageStateCache();
     };
   }, []);
+
+  useEffect(() => {
+    if (!needPassphrase) {
+      form.setFieldsValue({
+        passphrase: '',
+      });
+    }
+  }, [needPassphrase]);
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
@@ -147,7 +149,7 @@ const ImportMnemonics = () => {
             'px-[100px] pt-[36px] pb-[40px]',
             'bg-white rounded-[12px]'
           )}
-          onFinish={({ mnemonics }: { mnemonics: string }) => run(mnemonics)}
+          onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
           onValuesChange={(states) => {
             setErrMsgs([]);
             wallet.setPageStateCache({
@@ -168,19 +170,31 @@ const ImportMnemonics = () => {
             <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>
           <div>
-            <Toptip className="mb-[28px]">
-              {t('page.newAddress.seedPhrase.importTips')}
-            </Toptip>
             <FormItemWrapper className="relative">
               <Form.Item
                 name="mnemonics"
                 className={clsx(
-                  'mb-[12px]',
+                  'mb-[24px]',
                   errMsgs?.length && 'mnemonics-with-error'
                 )}
               >
-                <WordsMatrix.MnemonicsInputs errMsgs={errMsgs} />
+                <WordsMatrix.MnemonicsInputs
+                  onPassphrase={onPassphrase}
+                  errMsgs={errMsgs}
+                />
               </Form.Item>
+              {needPassphrase && (
+                <Form.Item name="passphrase" className={clsx('mb-[12px]')}>
+                  <Input
+                    type="password"
+                    className={clsx(
+                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-3'
+                    )}
+                    spellCheck={false}
+                    placeholder={t('page.newAddress.seedPhrase.passphrase')}
+                  />
+                </Form.Item>
+              )}
             </FormItemWrapper>
             <TipTextList>
               <section>

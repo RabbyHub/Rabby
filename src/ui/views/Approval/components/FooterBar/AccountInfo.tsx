@@ -14,6 +14,7 @@ import { WalletConnectAccount } from './WalletConnectAccount';
 import { Chain } from '@debank/common';
 import { LedgerAccount } from './LedgerAccount';
 import { CommonAccount } from './CommonAccount';
+import { KeystoneAccount } from './KeystoneAccount';
 import { GridPlusAccount } from './GridPlusAccount';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,18 @@ export const AccountInfo: React.FC<Props> = ({
       account?.address?.toLowerCase() || ''
     );
     setNickname(result);
+    checkIfNeedPassphrase();
+  };
+
+  const [needPassphrase, setNeedPassphrase] = React.useState(false);
+  const checkIfNeedPassphrase = () => {
+    if (account?.type === KEYRING_CLASS.MNEMONIC && account?.address) {
+      wallet
+        .getMnemonicKeyringIfNeedPassphrase('address', account.address)
+        .then((result) => {
+          setNeedPassphrase(result);
+        });
+    }
   };
 
   React.useEffect(() => {
@@ -106,10 +119,7 @@ export const AccountInfo: React.FC<Props> = ({
         />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.KEYSTONE && (
-        <CommonAccount
-          icon={WALLET_BRAND_CONTENT.Keystone.icon}
-          tip={t('page.signFooterBar.addressTip.keystone')}
-        />
+        <KeystoneAccount />
       )}
       {account?.brandName === WALLET_BRAND_TYPES.AIRGAP && (
         <CommonAccount
@@ -132,7 +142,11 @@ export const AccountInfo: React.FC<Props> = ({
       {account?.type === KEYRING_CLASS.MNEMONIC && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.MNEMONIC]}
-          tip={t('page.signFooterBar.addressTip.seedPhrase')}
+          tip={
+            needPassphrase
+              ? t('page.signFooterBar.addressTip.seedPhraseWithPassphrase')
+              : t('page.signFooterBar.addressTip.seedPhrase')
+          }
         />
       )}
       {account?.type === KEYRING_CLASS.WATCH && (

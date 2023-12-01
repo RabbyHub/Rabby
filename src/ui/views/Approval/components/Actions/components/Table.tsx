@@ -5,7 +5,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const TableWrapper = styled.div`
-  border: 1px solid #ededed;
+  border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   border-radius: 8px;
 `;
 
@@ -21,11 +21,19 @@ const Table = ({
 
 const ColWrapper = styled.div`
   display: flex;
-  border-bottom: 1px solid #ededed;
+  border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
   align-items: stretch;
   width: 100%;
+  &:nth-child(1) {
+    .row:nth-child(1) {
+      border-top-left-radius: 8px;
+    }
+  }
   &:nth-last-child(1) {
     border-bottom: none;
+    .row:nth-child(1) {
+      border-bottom-left-radius: 8px;
+    }
   }
 `;
 
@@ -39,7 +47,8 @@ const RowWrapper = styled.div`
   font-weight: 500;
   font-size: 15px;
   line-height: 18px;
-  color: #333333;
+  color: var(--r-neutral-title-1);
+  word-break: break-all;
   &:not(.title) {
     flex: 1;
     width: 190px;
@@ -50,9 +59,9 @@ const RowWrapper = styled.div`
   &.title {
     font-size: 15px;
     line-height: 18px;
-    color: #333333;
-    border-right: 1px solid #ededed;
-    width: 120px;
+    color: var(--r-neutral-title-1, #192945);
+    border-right: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    width: 123px;
     flex-shrink: 0;
     background-color: var(--r-neutral-card-3, #f7fafc);
     .icon-tip {
@@ -70,7 +79,7 @@ const RowWrapper = styled.div`
   .desc-list {
     font-size: 13px;
     line-height: 15px;
-    color: #4b4d59;
+    color: var(--r-neutral-body, #3e495e);
     margin: 0;
     font-weight: 400;
     li {
@@ -84,7 +93,7 @@ const RowWrapper = styled.div`
         left: 3px;
         width: 3px;
         height: 3px;
-        background-color: #999;
+        background-color: var(--r-neutral-body);
         border-radius: 100%;
         top: 6px;
       }

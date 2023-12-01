@@ -274,43 +274,59 @@ const flowContext = flow
     }
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      return await requestApprovalLoop({ uiRequestComponent, ...rest });
+      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      reportStatsData();
+      return result;
     }
 
     return requestDefer;
   })
   .callback();
 
+function reportStatsData() {
+  const statsData = notificationService.getStatsData();
+
+  if (!statsData || statsData.reported) return;
+
+  if (statsData?.signed) {
+    const sData: any = {
+      type: statsData?.type,
+      chainId: statsData?.chainId,
+      category: statsData?.category,
+      success: statsData?.signedSuccess,
+      preExecSuccess: statsData?.preExecSuccess,
+      createBy: statsData?.createBy,
+      source: statsData?.source,
+      trigger: statsData?.trigger,
+    };
+    if (statsData.signMethod) {
+      sData.signMethod = statsData.signMethod;
+    }
+    stats.report('signedTransaction', sData);
+  }
+  if (statsData?.submit) {
+    stats.report('submitTransaction', {
+      type: statsData?.type,
+      chainId: statsData?.chainId,
+      category: statsData?.category,
+      success: statsData?.submitSuccess,
+      preExecSuccess: statsData?.preExecSuccess,
+      createBy: statsData?.createBy,
+      source: statsData?.source,
+      trigger: statsData?.trigger,
+    });
+  }
+
+  statsData.reported = true;
+
+  notificationService.setStatsData(statsData);
+}
+
 export default (request: ProviderRequest) => {
   const ctx: any = { request: { ...request, requestedApproval: false } };
   notificationService.setStatsData();
   return flowContext(ctx).finally(() => {
-    const statsData = notificationService.getStatsData();
-
-    if (statsData?.signed) {
-      stats.report('signedTransaction', {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.signedSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createBy: statsData?.createBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-      });
-    }
-    if (statsData?.submit) {
-      stats.report('submitTransaction', {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.submitSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createBy: statsData?.createBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-      });
-    }
+    reportStatsData();
 
     if (ctx.request.requestedApproval) {
       flow.requestedApproval = false;

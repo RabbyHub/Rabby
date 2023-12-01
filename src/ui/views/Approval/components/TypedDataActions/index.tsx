@@ -26,11 +26,16 @@ import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
 import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
+import IconCheck from 'ui/assets/icon-check.svg';
 import clsx from 'clsx';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
+import CoboSafeCreate from './CoboSafeCreate';
+import CoboSafeModificationRule from './CoboSafeModificationRole';
+import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
+import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -63,7 +68,7 @@ export const ActionWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     background: var(--r-blue-default, #7084ff);
-    padding: 14px;
+    padding: 13px;
     align-items: center;
     color: #fff;
     border-top-left-radius: 8px;
@@ -76,13 +81,30 @@ export const ActionWrapper = styled.div`
     .right {
       font-size: 14px;
       line-height: 16px;
-      .icon-tip {
-        margin-top: 1px;
-        margin-left: 4px;
-        path {
-          stroke: #fff;
+      position: relative;
+      .decode-tooltip {
+        max-width: 358px;
+        &:not(.ant-tooltip-hidden) {
+          left: -321px !important;
+          .ant-tooltip-arrow {
+            left: 333px;
+          }
+        }
+        .ant-tooltip-arrow-content {
+          background-color: #fff;
+        }
+        .ant-tooltip-inner {
+          background-color: #fff;
+          padding: 0;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--r-neutral-body, #3e495e);
+          border-radius: 6px;
         }
       }
+    }
+    &.is-unknown {
+      background: var(--r-neutral-foot, #6a7587);
     }
   }
   .container {
@@ -177,7 +199,6 @@ const Actions = ({
   const { t } = useTranslation();
 
   const actionName = useMemo(() => {
-    if (!data) return '';
     return getActionTypeText(data);
   }, [data]);
 
@@ -186,7 +207,6 @@ const Actions = ({
       raw,
     });
   };
-
   return (
     <>
       <SignTitle>
@@ -203,25 +223,55 @@ const Actions = ({
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
       </SignTitle>
-      {data?.actionType && (
-        <ActionWrapper>
-          <div className="action-header">
-            <div className="left">{actionName}</div>
-            <div className="right">
-              {data.contractCall && (
-                <span className="flex items-center relative">
-                  {t('page.signTx.unknownActionType')}{' '}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    title={t('page.signTx.sigCantDecode')}
-                    placement="top"
-                  >
-                    <IconQuestionMark className="icon icon-tip" />
-                  </TooltipWithMagnetArrow>
-                </span>
-              )}
-            </div>
+
+      <ActionWrapper>
+        <div
+          className={clsx('action-header', {
+            'is-unknown': !data?.actionType || data.contractCall,
+          })}
+        >
+          <div className="left flex items-center">
+            {data?.brand ? (
+              <img
+                src={data?.brand?.logo_url}
+                title={data?.brand?.name}
+                className="mr-8 w-20 h-20 rounded-full object-cover"
+              />
+            ) : null}
+            <span>{actionName}</span>
           </div>
+          <div className="right">
+            <TooltipWithMagnetArrow
+              placement="bottom"
+              overlayClassName="rectangle w-[max-content] decode-tooltip"
+              title={
+                !data?.actionType || data?.contractCall ? (
+                  <NoActionAlert
+                    data={{
+                      origin,
+                      text: message,
+                    }}
+                  />
+                ) : (
+                  <span className="flex w-[358px] p-12">
+                    <img src={IconCheck} className="mr-4 w-12" />
+                    {t('page.signTx.decodedTooltip')}
+                  </span>
+                )
+              }
+            >
+              {!data?.actionType || data?.contractCall ? (
+                <img src={IconQuestionMark} className="w-24" />
+              ) : (
+                <img
+                  src={IconRabbyDecoded}
+                  className="icon icon-rabby-decoded"
+                />
+              )}
+            </TooltipWithMagnetArrow>
+          </div>
+        </div>
+        {data?.actionType && (
           <div className="container">
             {data.permit && chain && (
               <Permit
@@ -308,17 +358,25 @@ const Actions = ({
                 raw={raw}
               />
             )}
+            {data.coboSafeCreate && (
+              <CoboSafeCreate data={data.coboSafeCreate} />
+            )}
+            {data.coboSafeModificationRole && (
+              <CoboSafeModificationRule data={data.coboSafeModificationRole} />
+            )}
+            {data.coboSafeModificationDelegatedAddress && (
+              <CoboSafeModificationDelegatedAddress
+                data={data.coboSafeModificationDelegatedAddress}
+              />
+            )}
+            {data.coboSafeModificationTokenApproval && (
+              <CoboSafeModificationTokenApproval
+                data={data.coboSafeModificationTokenApproval}
+              />
+            )}
           </div>
-        </ActionWrapper>
-      )}
-      {(!data || !data.actionType) && (
-        <NoActionAlert
-          data={{
-            origin,
-            text: message,
-          }}
-        />
-      )}
+        )}
+      </ActionWrapper>
       <MessageWrapper
         className={clsx({
           'no-action': !data,

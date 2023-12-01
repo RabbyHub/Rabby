@@ -95,7 +95,6 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
         wallet.setWhitelist(password, list),
       onFinished() {
         setEditWhitelistVisible(false);
-        dispatch.whitelist.getWhitelist();
         message.success({
           duration: 3,
           icon: <i />,

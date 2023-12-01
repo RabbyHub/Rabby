@@ -19,6 +19,7 @@ import React from 'react';
 import pRetry from 'p-retry';
 import { useRabbySelector } from '@/ui/store';
 import stats from '@/stats';
+import { ChainGas } from '@/background/service/preference';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -160,9 +161,33 @@ export const useQuoteMethods = () => {
         from: userAddress,
         chainId: CHAINS[chain].id,
       });
-
+      const lastTimeGas: ChainGas | null = await walletController.getLastTimeGasSelection(
+        CHAINS[chain].id
+      );
       const gasMarket = await walletOpenapi.gasMarket(CHAINS[chain].serverId);
-      const gasPrice = gasMarket?.[1]?.price;
+
+      let gasPrice = 0;
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        gasPrice = lastTimeGas.gasPrice;
+      } else if (
+        lastTimeGas?.lastTimeSelect &&
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
+      ) {
+        const target = gasMarket.find(
+          (item) => item.level === lastTimeGas?.gasLevel
+        )!;
+        if (target) {
+          gasPrice = target.price;
+        } else {
+          gasPrice =
+            gasMarket.find((item) => item.level === 'normal')?.price || 0;
+        }
+      } else {
+        // no cache, use the fast level in gasMarket
+        gasPrice =
+          gasMarket.find((item) => item.level === 'normal')?.price || 0;
+      }
 
       let nextNonce = nonce;
       const pendingTx: Tx[] = [];
@@ -197,11 +222,17 @@ export const useQuoteMethods = () => {
         if (!tokenApprovePreExecTx?.pre_exec?.success) {
           throw new Error('pre_exec_tx error');
         }
-        gasUsed += tokenApprovePreExecTx.gas.gas_used;
+
+        gasUsed +=
+          tokenApprovePreExecTx.gas.gas_limit ||
+          tokenApprovePreExecTx.gas.gas_used;
 
         pendingTx.push({
           ...tokenApproveTx,
-          gas: `0x${new BigNumber(tokenApprovePreExecTx.gas.gas_used)
+          gas: `0x${new BigNumber(
+            tokenApprovePreExecTx.gas.gas_limit ||
+              tokenApprovePreExecTx.gas.gas_used
+          )
             .times(4)
             .toString(16)}`,
         });
@@ -247,20 +278,21 @@ export const useQuoteMethods = () => {
         throw new Error('pre_exec_tx error');
       }
 
-      gasUsed += swapPreExecTx.gas.gas_used;
+      gasUsed += swapPreExecTx.gas.gas_limit || swapPreExecTx.gas.gas_used;
+
+      const gasUsdValue = new BigNumber(gasUsed)
+        .times(gasPrice)
+        .div(10 ** swapPreExecTx.native_token.decimals)
+        .times(swapPreExecTx.native_token.price)
+        .toString(10);
 
       return {
         shouldApproveToken: !tokenApproved,
         shouldTwoStepApprove,
         swapPreExecTx,
         gasPrice,
-        gasUsd: formatUsdValue(
-          new BigNumber(gasUsed)
-            .times(gasPrice)
-            .div(10 ** swapPreExecTx.native_token.decimals)
-            .times(swapPreExecTx.native_token.price)
-            .toString(10)
-        ),
+        gasUsdValue,
+        gasUsd: formatUsdValue(gasUsdValue),
       };
     },
     [
@@ -576,6 +608,7 @@ export type QuotePreExecResultInfo = {
   swapPreExecTx: ExplainTxResponse;
   gasPrice: number;
   gasUsd: string;
+  gasUsdValue: string;
 } | null;
 
 interface getDexQuoteParams {

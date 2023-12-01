@@ -30,7 +30,8 @@ import {
   SAFE_GAS_LIMIT_RATIO,
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
-  OP_STACK_ENUMS,
+  GAS_TOP_UP_ADDRESS,
+  CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -74,6 +75,7 @@ import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -115,6 +117,11 @@ const normalizeTxParams = (tx) => {
         copy.value = '0x0';
       } else {
         copy.value = normalizeHex(copy.value);
+      }
+    }
+    if ('data' in copy) {
+      if (!tx.data.startsWith('0x')) {
+        copy.data = `0x${tx.data}`;
       }
     }
   } catch (e) {
@@ -192,23 +199,28 @@ const getRecommendGas = async ({
       gasUsed: Number(txGas),
     };
   }
-  const res = await wallet.openapi.historyGasUsed({
-    tx: {
-      ...tx,
-      nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
-      data: tx.data,
-      value: tx.value || '0x0',
-      gas: tx.gas || '', // set gas limit if dapp not set
-    },
-    user_addr: tx.from,
-  });
-  if (res.gas_used > 0) {
-    return {
-      needRatio: true,
-      gas: new BigNumber(res.gas_used),
-      gasUsed: res.gas_used,
-    };
+  try {
+    const res = await wallet.openapi.historyGasUsed({
+      tx: {
+        ...tx,
+        nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+        data: tx.data,
+        value: tx.value || '0x0',
+        gas: tx.gas || '', // set gas limit if dapp not set
+      },
+      user_addr: tx.from,
+    });
+    if (res.gas_used > 0) {
+      return {
+        needRatio: true,
+        gas: new BigNumber(res.gas_used),
+        gasUsed: res.gas_used,
+      };
+    }
+  } catch (e) {
+    // NOTHING
   }
+
   return {
     needRatio: false,
     gas: new BigNumber(1000000),
@@ -285,8 +297,7 @@ const explainGas = async ({
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
-  const isOpStack = OP_STACK_ENUMS.includes(chain.enum);
-  if (isOpStack) {
+  if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
     const res = await wallet.fetchEstimatedL1Fee(
       {
         txParams: tx,
@@ -691,6 +702,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'normal',
@@ -698,6 +710,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'fast',
@@ -705,6 +718,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       price: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
     {
       level: 'custom',
@@ -712,6 +726,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: 0,
+      priority_price: null,
     },
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
@@ -883,6 +898,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return Level.WARNING;
     return undefined;
   }, [engineResults, currentTx]);
+
+  const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -1226,6 +1243,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleAllow = async () => {
     if (!selectedGas) return;
 
@@ -1235,6 +1253,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     const currentAccount =
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
 
     try {
       validateGasPriceRange(tx);
@@ -1273,7 +1295,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
       transaction.maxPriorityFeePerGas =
-        maxPriorityFee <= 0 ? tx.maxFeePerGas : intToHex(maxPriorityFee);
+        maxPriorityFee <= 0
+          ? tx.maxFeePerGas
+          : intToHex(Math.round(maxPriorityFee));
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
@@ -1358,7 +1382,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       front_tx_count: gas.front_tx_count,
       estimated_seconds: gas.estimated_seconds,
       base_fee: gas.base_fee,
-      price: gas.price,
+      price: Math.round(gas.price),
+      priority_price: gas.priority_price,
     });
     if (gas.level === 'custom') {
       setGasList(
@@ -1377,7 +1402,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gas: intToHex(gas.gasLimit),
         nonce: afterNonce,
       });
-      setMaxPriorityFee(gas.maxPriorityFee);
+      setMaxPriorityFee(Math.round(gas.maxPriorityFee));
     } else {
       setTx({
         ...tx,
@@ -1600,7 +1625,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
       const is1559 =
-        support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
+        support1559 &&
+        SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
       setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
       setUseLedgerLive(await wallet.isUseLedgerLive());
       setIsHardware(
@@ -1680,7 +1706,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
       }
-      const fee = calcMaxPriorityFee(gasList, gas, chainId);
+      const fee = calcMaxPriorityFee(
+        gasList,
+        gas,
+        chainId,
+        isCancel || isSpeedUp
+      );
       setMaxPriorityFee(fee);
 
       setSelectedGas(gas);
@@ -1862,6 +1893,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
             {isGnosisAccount ? (
               <SafeNonceSelector
+                disabled={isViewGnosisSafe}
                 isReady={isReady}
                 chainId={chainId}
                 value={realNonce}
@@ -1903,6 +1935,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 onChange={handleGasChange}
                 nonce={realNonce || tx.nonce}
                 disableNonce={isSpeedUp || isCancel}
+                isSpeedUp={isSpeedUp}
+                isCancel={isCancel}
                 is1559={support1559}
                 isHardware={isHardware}
                 manuallyChangeGasLimit={manuallyChangeGasLimit}
@@ -1921,6 +1955,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             value={pushInfo}
             isCancel={isCancel}
             isSpeedUp={isSpeedUp}
+            isGasTopUp={isGasTopUp}
             onChange={(value) => {
               setPushInfo(value);
             }}

@@ -117,6 +117,7 @@ module.exports = {
     extend: {
       colors: {
         [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors,
+        [`${'rabby-'.replace(/\-$/, '')}`]: rabbyColors,
       }
     },
   },

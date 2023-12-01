@@ -6,6 +6,7 @@ import { ReconnectView } from '@/ui/component/WalletConnect/ReconnectView';
 import { SwitchAddress } from './SwitchAddress';
 import { SwitchChain } from './SwitchChain';
 import { Ledger } from './Ledger';
+import { Keystone } from './Keystone';
 import { AssetList } from './AssetList/AssetList';
 import { CancelApproval } from './CancelApproval/CancelApproval';
 import { CancelConnect } from './CancelConnect/CancelConnect';
@@ -17,6 +18,7 @@ export type CommonPopupComponentName =
   | 'SwitchChain'
   | 'AssetList'
   | 'Ledger'
+  | 'Keystone'
   | 'CancelConnect'
   | 'CancelApproval';
 
@@ -37,6 +39,7 @@ const ComponentConfig = {
     closeable: false,
     titleSize: '16px',
     maskClosable: false,
+    padding: '20px',
   },
   CancelApproval: {
     padding: '8px 20px 22px',
@@ -98,6 +101,7 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'SwitchAddress' && <SwitchAddress />}
       {componentName === 'SwitchChain' && <SwitchChain />}
       {componentName === 'Ledger' && <Ledger />}
+      {componentName === 'Keystone' && <Keystone />}
       {componentName === 'AssetList' && <AssetList visible={visible} />}
       {componentName === 'CancelApproval' && <CancelApproval />}
       {componentName === 'CancelConnect' && <CancelConnect />}

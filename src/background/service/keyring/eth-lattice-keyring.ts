@@ -2,12 +2,11 @@
 import OldLatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
-
-const keyringType = 'GridPlus Hardware';
-
-import HDPathType = LedgerHDPathType;
 import { LedgerHDPathType } from '@/utils/ledger';
 import { isSameAddress } from '@/background/utils';
+
+const keyringType = 'GridPlus Hardware';
+import HDPathType = LedgerHDPathType;
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",
@@ -45,6 +44,14 @@ class LatticeKeyring extends OldLatticeKeyring {
   async signMessage(address, msg) {
     return this.signHelper.invoke(async () => {
       return super.signMessage(address, msg);
+    });
+  }
+
+  async signTypedData(address, msg, opts) {
+    return this.signHelper.invoke(async () => {
+      // waiting ui render
+      await new Promise((r) => setTimeout(r, 500));
+      return super.signTypedData(address, msg, opts);
     });
   }
 

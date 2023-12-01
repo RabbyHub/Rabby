@@ -145,7 +145,6 @@ const Wrapper = styled.div`
     &-message {
       color: var(--r-neutral-body, #3e495e);
       text-align: center;
-      font-family: SF Pro;
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
@@ -160,6 +159,7 @@ interface SafeNonceSelectorProps {
   isReady?: boolean;
   chainId: number;
   safeInfo?: BasicSafeInfo | null;
+  disabled?: boolean;
 }
 export const SafeNonceSelector = ({
   value,
@@ -167,6 +167,7 @@ export const SafeNonceSelector = ({
   isReady,
   chainId,
   safeInfo,
+  disabled,
 }: SafeNonceSelectorProps) => {
   const { t } = useTranslation();
   const [isShowOptionList, setIsShowOptionList] = useState(false);
@@ -272,12 +273,18 @@ export const SafeNonceSelector = ({
                 handleOnChange(v);
               }}
               // type="number"
+              disabled={disabled}
               suffix={
                 <img
                   src={IconDown}
-                  onClick={() => setIsShowOptionList((v) => !v)}
+                  onClick={() => {
+                    if (disabled) {
+                      return;
+                    }
+                    setIsShowOptionList((v) => !v);
+                  }}
                   className={clsx(
-                    'cursor-pointer',
+                    disabled ? 'cursor-not-allowed' : 'cursor-pointer',
                     isShowOptionList && 'rotate-180'
                   )}
                 ></img>

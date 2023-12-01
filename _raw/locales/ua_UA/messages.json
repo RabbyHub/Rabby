@@ -183,7 +183,7 @@
       "signTransactionOnChain": "Підписати {{chain}} Транзакцію",
       "viewRaw": "Переглянути Raw",
       "unknownActionType": "Невідомий тип дії",
-      "sigCantDecode": "Цей підпис не може бути розшифрований Rabby, але це не означає, що він є небезпечним",
+      "sigCantDecode": "Цей підпис не може бути розшифрований Rabby",
       "nftCollection": "NFT Колекція",
       "floorPrice": "Мінімальна ціна",
       "contractAddress": "Адреса контракту",

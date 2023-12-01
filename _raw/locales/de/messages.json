@@ -183,7 +183,7 @@
       "signTransactionOnChain": "Signiere {{chain}} Transaktion",
       "viewRaw": "Rohdaten anzeigen",
       "unknownActionType": "Unbekannter Aktionstyp",
-      "sigCantDecode": "Diese Signatur kann von Rabby nicht dekodiert werden, dies bedeutet jedoch kein erhöhtes Risiko",
+      "sigCantDecode": "Diese Signatur kann von Rabby nicht dekodiert werden",
       "nftCollection": "NFT Sammlung",
       "floorPrice": "Mindestpreis (Floor)",
       "contractAddress": "Adresse des Smart Contracts",

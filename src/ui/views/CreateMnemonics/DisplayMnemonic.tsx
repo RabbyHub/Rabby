@@ -80,7 +80,8 @@ const DisplayMnemonic = () => {
 
   const onSubmit = React.useCallback(() => {
     wallet.createKeyringWithMnemonics(mnemonics).then(async () => {
-      const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+      // Passphrase is not supported on new creation
+      const keyring = await wallet.getKeyringByMnemonic(mnemonics, '');
       const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
         keyring!.publicKey!
       );

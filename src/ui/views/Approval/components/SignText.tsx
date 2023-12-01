@@ -33,6 +33,7 @@ import { isTestnetChainId } from '@/utils/chain';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { WaitingSignMessageComponent } from './map';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface SignTextProps {
   data: string[];
@@ -192,11 +193,18 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   };
 
   const { activeApprovalPopup } = useCommonPopupView();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+
   const handleAllow = async () => {
     if (activeApprovalPopup()) {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
+
+    if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+      await invokeEnterPassphrase(currentAccount.address);
+    }
+
     if (
       currentAccount?.type &&
       WaitingSignMessageComponent[currentAccount?.type]
@@ -290,7 +298,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type &&
-      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type)
+      REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }

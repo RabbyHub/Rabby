@@ -5,7 +5,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
-import { getUiType } from 'ui/utils';
+import { getUiType, useApproval } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import stats from '@/stats';
@@ -45,6 +45,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics = false,
     importedLength = 0,
   } = state;
+  const [, resolveApproval] = useApproval();
 
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e?.stopPropagation();
@@ -56,6 +57,12 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
 
       return;
     }
+
+    if (getUiType().isNotification) {
+      resolveApproval();
+      return;
+    }
+
     history.push('/dashboard');
   };
   const importedIcon =
@@ -73,7 +80,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   useEffect(() => {
-    if (Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type)) {
+    if (
+      Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type as any)
+    ) {
       stats.report('importHardware', {
         type: accounts[0].type,
       });
