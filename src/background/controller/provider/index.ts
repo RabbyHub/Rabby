@@ -14,7 +14,7 @@ import internalMethod from './internalMethod';
 const IGNORE_CHECK = ['wallet_importAddress'];
 
 tab.on('tabRemove', (id) => {
-  sessionService.deleteSession(id);
+  sessionService.deleteSessionsByTabId(id);
 });
 
 export default async <T = void>(req: ProviderRequest): Promise<T> => {
