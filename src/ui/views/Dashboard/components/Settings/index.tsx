@@ -704,9 +704,13 @@ const SettingsInner = ({
                 className="text-14 mr-[8px] text-r-neutral-title1"
                 role="button"
               >
-                {ThemeModes.find((item) => item.code === themeMode)?.name || '-'}
+                {ThemeModes.find((item) => item.code === themeMode)?.name ||
+                  '-'}
               </span>
-              <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
             </>
           ),
         },
