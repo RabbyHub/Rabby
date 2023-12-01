@@ -784,7 +784,7 @@ export const WALLET_BRAND_CONTENT: {
     image: IconCoinbase,
     rcSvg: RCIconCoinbase,
     connectType: BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect,
-    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
 };
 
@@ -1243,6 +1243,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
   WALLET_BRAND_TYPES.IMTOKENOFFLINE,
+  WALLET_BRAND_TYPES.Coinbase,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,
@@ -1250,7 +1251,6 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.FIREBLOCKS,
   WALLET_BRAND_TYPES.JADE,
   WALLET_BRAND_TYPES.MPCVault,
-  WALLET_BRAND_TYPES.Coinbase,
 ].reduce((pre, now, i) => {
   pre[now] = i + 1;
   return pre;

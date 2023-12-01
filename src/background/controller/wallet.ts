@@ -3455,16 +3455,16 @@ export class WalletController extends BaseController {
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
+
+      keyring.on('message', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+          params: data,
+        });
+      });
     }
 
     const uri = await keyring.connect();
-
-    keyring.on('message', (data) => {
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
-        params: data,
-      });
-    });
 
     return { uri, stashId };
   };
