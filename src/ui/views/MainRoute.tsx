@@ -63,6 +63,7 @@ import ApprovalManagePage from './ApprovalManagePage';
 import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { PendingDetail } from './PendingDetail';
+import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 
 declare global {
   interface Window {
@@ -202,6 +203,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/cobo-argus">
           <ImportCoboArgus />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/coinbase">
+          <ImportCoinbase />
         </PrivateRoute>
         <PrivateRoute exact path="/add-address">
           <AddAddress />

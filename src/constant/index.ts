@@ -171,6 +171,9 @@ import LogoZerion, {
 import LogoCoboArgus, {
   ReactComponent as RcLogoCoboArgus,
 } from 'ui/assets/walletlogo/CoboArgus.svg';
+import IconCoinbase, {
+  ReactComponent as RCIconCoinbase,
+} from 'ui/assets/walletlogo/coinbase.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
@@ -224,6 +227,7 @@ export const KEYRING_CLASS = {
   WALLETCONNECT: 'WalletConnect',
   GNOSIS: 'Gnosis',
   CoboArgus: 'CoboArgus',
+  Coinbase: 'Coinbase',
 } as const;
 
 export const KEYRING_WITH_INDEX = [
@@ -388,6 +392,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   GridPlusConnect = 'GridPlusConnect',
   QRCodeBase = 'QR Hardware Wallet Device',
   CoboArgusConnect = 'CoboArgusConnect',
+  CoinbaseConnect = 'CoinbaseConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -474,6 +479,7 @@ export enum WALLET_BRAND_TYPES {
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
   MPCVault = 'MPCVault',
+  Coinbase = 'Coinbase',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -829,6 +835,16 @@ export const WALLET_BRAND_CONTENT: {
     maybeSvg: LogoImtokenOffline,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.Coinbase]: {
+    id: 28,
+    name: 'Coinbase',
+    brand: WALLET_BRAND_TYPES.Coinbase,
+    icon: IconCoinbase,
+    image: IconCoinbase,
+    rcSvg: RCIconCoinbase,
+    connectType: BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
 };
 
@@ -1238,6 +1254,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [WALLET_BRAND_TYPES.IMTOKEN]: WALLET_BRAND_CONTENT.IMTOKEN.name,
   [WALLET_BRAND_TYPES.MATHWALLET]: WALLET_BRAND_CONTENT.MATHWALLET.name,
   [WALLET_BRAND_TYPES.TRUSTWALLET]: WALLET_BRAND_CONTENT.TRUSTWALLET.name,
+  [KEYRING_CLASS.Coinbase]: WALLET_BRAND_CONTENT.Coinbase.name,
 };
 
 export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
@@ -1286,6 +1303,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
   WALLET_BRAND_TYPES.IMTOKENOFFLINE,
+  WALLET_BRAND_TYPES.Coinbase,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,
