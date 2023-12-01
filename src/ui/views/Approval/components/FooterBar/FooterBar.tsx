@@ -132,18 +132,18 @@ const ChainLogo = styled.img`
 
 const SecurityLevelTipColor = {
   [Level.FORBIDDEN]: {
-    bg: 'rgba(175, 22, 14, 0.1)',
-    text: '#AF160E',
+    bg: 'var(--r-red-light-2, #EFD4D1)',
+    text: 'var(--r-red-dark, #AE2A19)',
     icon: SecurityEngineLevel[Level.FORBIDDEN].icon,
   },
   [Level.DANGER]: {
-    bg: 'rgba(236, 81, 81, 0.1)',
-    text: '#EC5151',
+    bg: 'var(--r-red-light, #FFDFDB)',
+    text: 'var(--r-red-default, #E34935)',
     icon: SecurityEngineLevel[Level.DANGER].icon,
   },
   [Level.WARNING]: {
-    bg: 'rgba(255, 176, 32, 0.1)',
-    text: '#FFB020',
+    bg: 'var(--r-orange-light, #FFEDCB)',
+    text: 'var(--r-orange-default, #FFB020)',
     icon: SecurityEngineLevel[Level.WARNING].icon,
   },
 };
