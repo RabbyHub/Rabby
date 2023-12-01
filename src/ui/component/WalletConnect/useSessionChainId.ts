@@ -1,4 +1,4 @@
-import { EVENTS } from '@/constant';
+import { EVENTS, KEYRING_CLASS, KEYRING_TYPE_TEXT } from '@/constant';
 import eventBus from '@/eventBus';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import React from 'react';

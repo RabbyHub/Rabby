@@ -23,6 +23,7 @@ import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
 import CoboArgusKeyring from './eth-cobo-argus-keyring';
 import { WalletConnectKeyring } from '@rabby-wallet/eth-walletconnect-keyring';
+import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -51,6 +52,7 @@ export const KEYRING_SDK_TYPES = {
   LatticeKeyring,
   KeystoneKeyring,
   CoboArgusKeyring,
+  CoinbaseKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -68,6 +70,7 @@ export const KEYRING_CLASS = {
   GNOSIS: GnosisKeyring.type,
   QRCODE: KeystoneKeyring.type,
   COBO_ARGUS: CoboArgusKeyring.type,
+  COINBASE: CoinbaseKeyring.type,
 };
 
 interface MemStoreState {
@@ -901,6 +904,42 @@ export class KeyringService extends EventEmitter {
         Sentry.captureException(error);
       });
     }
+
+    if (keyring.type === KEYRING_CLASS.COINBASE) {
+      const coinbaseKeyring = keyring as CoinbaseKeyring;
+      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
+        const uri = coinbaseKeyring.connect({
+          address,
+        });
+
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.INITED,
+          params: { uri },
+        });
+      });
+
+      coinbaseKeyring.on('message', (data) => {
+        if (data.status === 'CHAIN_CHANGED') {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
+            params: {
+              ...data,
+              status: 'CONNECTED',
+            },
+          });
+        } else {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+            params: data,
+          });
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
+            params: data,
+          });
+        }
+      });
+    }
+
     if (keyring.type === KEYRING_CLASS.GNOSIS) {
       (keyring as GnosisKeyring).on(TransactionBuiltEvent, (data) => {
         eventBus.emit(EVENTS.broadcastToUI, {

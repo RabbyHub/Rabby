@@ -147,6 +147,13 @@ const AddAddressOptions = () => {
           pathname: '/import/cobo-argus',
           state: params,
         });
+      } else if (
+        item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
+      ) {
+        history.push({
+          pathname: '/import/coinbase',
+          state: params,
+        });
       } else {
         history.push({
           pathname: '/import/wallet-connect',
