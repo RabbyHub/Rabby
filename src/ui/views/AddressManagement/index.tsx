@@ -32,6 +32,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
 import { nanoid } from 'nanoid';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
+import dayjs from 'dayjs';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -416,6 +417,20 @@ const AddressManagement = () => {
   >(null);
 
   useEffect(() => {
+    if (
+      addressSortStore.lastCurrentRecordTime &&
+      dayjs().isAfter(
+        dayjs.unix(addressSortStore.lastCurrentRecordTime).add(15, 'minute')
+      )
+    ) {
+      setSearchKeyword('');
+      return () => {
+        dispatch.preference.setAddressSortStoreValue({
+          key: 'lastCurrentRecordTime',
+          value: dayjs().unix(),
+        });
+      };
+    }
     if (addressSortStore.lastCurrent && filteredAccounts?.length) {
       let index = -1;
       let secondIndex = -1;
@@ -448,6 +463,13 @@ const AddressManagement = () => {
       }
 
       listRef.current?.scrollTo(sum);
+
+      return () => {
+        dispatch.preference.setAddressSortStoreValue({
+          key: 'lastCurrentRecordTime',
+          value: dayjs().unix(),
+        });
+      };
     }
   }, []);
 
