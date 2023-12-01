@@ -473,13 +473,10 @@ export const Main = () => {
       >
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
           <div className="flex items-center justify-between w-full self-start">
-            <div className="tips">{t('page.swap.approve-tips')}</div>
-            <div
-              className={clsx(
-                'allowance',
-                unlimitedAllowance && 'text-r-neutral-body'
-              )}
-            >
+            <div className="tips text-r-neutral-body">
+              {t('page.swap.approve-tips')}
+            </div>
+            <div className={clsx('allowance text-r-neutral-title-1')}>
               <span>{t('page.swap.unlimited-allowance')}</span>{' '}
               <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
             </div>
