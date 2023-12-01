@@ -1281,7 +1281,7 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@coinbase/wallet-sdk@beta":
+"@coinbase/wallet-sdk@3.8.0-beta.3", "@coinbase/wallet-sdk@beta":
   version "3.8.0-beta.3"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-sdk/-/wallet-sdk-3.8.0-beta.3.tgz#28400b01047be18f6b06bb91520eed36546259e0"
   integrity sha512-PffXu/F4plqaHNEBIVHAX6WsKv6Es9r/tkXZj/myGoUk+lfkzIV8tudZh+2ugRqGCIidl8CgVcpqjWD453Nr4g==

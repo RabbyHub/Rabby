@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@debank/common": "^0.3.45",
+    "@coinbase/wallet-sdk": "3.8.0-beta.3",
     "@debank/festats": "1.0.0",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
