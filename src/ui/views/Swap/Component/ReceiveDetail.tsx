@@ -136,11 +136,11 @@ const ReceiveWrapper = styled.div`
     cursor: pointer;
 
     color: var(--r-neutral-body, #d3d8e0);
-    background: var(--r-neutral-bg-2, #f2f4f7);
+    background: var(--r-blue-light-2);
     border-radius: 4px;
     border: 1px solid transparent;
     &:hover {
-      background: var(--r-neutral-bg-1, #fff);
+      /* background: var(--r-neutral-bg-1, #fff); */
       border: 1px solid var(--r-neutral-line, #d3d8e0);
     }
   }
