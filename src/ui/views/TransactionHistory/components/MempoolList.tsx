@@ -3,11 +3,14 @@ import { CHAINS_LIST } from '@debank/common';
 import { useRequest } from 'ahooks';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconChecked from 'ui/assets/signature-record/checked.svg';
 import { useWallet } from 'ui/utils';
+import IconCheck from '@/ui/assets/pending/icon-check-1.svg';
+import IconClock from '@/ui/assets/pending/icon-clock.svg';
+import iconSpin from '@/ui/assets/pending/icon-spin-1.svg';
 
 const Wrapper = styled.div`
   min-width: 168px;
@@ -103,14 +106,22 @@ export const MempoolList = ({
       if (!chain) {
         return undefined;
       }
-      return wallet.openapi.mempoolChecks(tx.hash, chain?.serverId);
+      return wallet.openapi.mempoolChecks(tx.hash, chain?.serverId, true);
     },
     {
       refreshDeps: [tx.hash, tx.rawTx.chainId],
     }
   );
 
-  const isEmpty = !data || !data.length;
+  const list = useMemo(
+    () => data?.filter((item) => item.check_success !== null) || [],
+    [data]
+  );
+  const isEmpty = !list || !list.length;
+  const appearedCount = useMemo(
+    () => data?.filter((item) => item.check_success)?.length || 0,
+    [data]
+  );
 
   if (loading) {
     return (
@@ -141,15 +152,42 @@ export const MempoolList = ({
       ) : (
         <>
           <div className="title">
-            {t('page.activities.signedTx.MempoolList.title')}
+            {t('page.activities.signedTx.MempoolList.title', {
+              count: appearedCount,
+            })}
           </div>
           <div className="mempool-list">
-            {data?.map((item, index) => {
+            {list?.map((item, index) => {
               return (
                 <div className="mempool-item" key={item.id + '-' + index}>
-                  <img src={IconChecked} alt="" className="flex-shrink-0" />
-                  <div className="min-w-0 truncate" title={item.rpc}>
-                    {item.rpc}
+                  <div>
+                    {item.check_success ? (
+                      <div
+                        className="flex items-center gap-[6px] font-medium text-r-blue-default"
+                        title={item.name || item.rpc}
+                      >
+                        <img src={IconCheck} alt="" />
+                        {item.name || item.rpc}
+                      </div>
+                    ) : null}
+                    {item.check_success === false ? (
+                      <div
+                        className="flex items-center gap-[6px] text-r-neutral-body"
+                        title={item.name || item.rpc}
+                      >
+                        <img src={IconClock} alt="" />
+                        {item.name || item.rpc}
+                      </div>
+                    ) : null}
+                    {item.check_success == null ? (
+                      <div
+                        className="flex items-center gap-[6px] text-r-neutral-foot"
+                        title={item.name || item.rpc}
+                      >
+                        <img src={iconSpin} alt="" className="animate-spin" />
+                        {item.name || item.rpc}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               );

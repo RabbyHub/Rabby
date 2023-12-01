@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   min-width: 376px;
+  max-height: 600px;
+  overflow-y: auto;
   .ant-timeline-item-head {
     background-color: transparent;
   }
@@ -60,14 +62,21 @@ export const TxTimeline = ({ txRequest }: { txRequest: TxRequest }) => {
             </div>
           </Timeline.Item>
 
-          {txRequest.push_at ? (
-            <Timeline.Item dot={Dot}>
-              <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
-                {dayjs.unix(txRequest.push_at).format('HH:mm')}{' '}
-                {t('page.pendingDetail.TxTimeline.broadcasted')}
-              </div>
-            </Timeline.Item>
-          ) : null}
+          {txRequest?.push_at_list?.map((item, index) => {
+            return (
+              <Timeline.Item dot={Dot} key={index}>
+                <div className="text-r-neutral-title-1 text-[15px] leading-[18px] font-medium">
+                  {dayjs.unix(item).format('HH:mm')}{' '}
+                  {index + 1 === txRequest?.push_at_list?.length
+                    ? t('page.pendingDetail.TxTimeline.broadcasted')
+                    : t('page.pendingDetail.TxTimeline.broadcastedCount', {
+                        count: index + 1,
+                        ordinal: true,
+                      })}
+                </div>
+              </Timeline.Item>
+            );
+          })}
         </Timeline>
       </div>
     </Wrapper>

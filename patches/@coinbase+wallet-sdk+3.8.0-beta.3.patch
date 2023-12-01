@@ -1,0 +1,114 @@
+diff --git a/node_modules/@coinbase/wallet-sdk/dist/provider/CoinbaseWalletProvider.js b/node_modules/@coinbase/wallet-sdk/dist/provider/CoinbaseWalletProvider.js
+index e4f5fa5..086b153 100644
+--- a/node_modules/@coinbase/wallet-sdk/dist/provider/CoinbaseWalletProvider.js
++++ b/node_modules/@coinbase/wallet-sdk/dist/provider/CoinbaseWalletProvider.js
+@@ -10,7 +10,6 @@ const safe_event_emitter_1 = __importDefault(require("@metamask/safe-event-emitt
+ const bn_js_1 = __importDefault(require("bn.js"));
+ const DiagnosticLogger_1 = require("../connection/DiagnosticLogger");
+ const errors_1 = require("../errors");
+-const MobileRelay_1 = require("../relay/MobileRelay");
+ const Session_1 = require("../relay/Session");
+ const WalletSDKRelayAbstract_1 = require("../relay/WalletSDKRelayAbstract");
+ const Web3Method_1 = require("../relay/Web3Method");
+@@ -77,24 +76,6 @@ class CoinbaseWalletProvider extends safe_event_emitter_1.default {
+         if (this._addresses.length > 0) {
+             void this.initializeRelay();
+         }
+-        window.addEventListener("message", event => {
+-            var _a;
+-            // Used to verify the source and window are correct before proceeding
+-            if (event.origin !== location.origin || event.source !== window) {
+-                return;
+-            }
+-            if (event.data.type !== "walletLinkMessage")
+-                return; // compatibility with CBW extension
+-            if (event.data.data.action === "defaultChainChanged" ||
+-                event.data.data.action === "dappChainSwitched") {
+-                const _chainId = event.data.data.chainId;
+-                const jsonRpcUrl = (_a = event.data.data.jsonRpcUrl) !== null && _a !== void 0 ? _a : this.jsonRpcUrl;
+-                this.updateProviderInfo(jsonRpcUrl, Number(_chainId));
+-            }
+-            if (event.data.data.action === "addressChanged") {
+-                this._setAddresses([event.data.data.address]);
+-            }
+-        });
+     }
+     /** @deprecated Use `.request({ method: 'eth_accounts' })` instead. */
+     get selectedAddress() {
+@@ -358,63 +339,6 @@ class CoinbaseWalletProvider extends safe_event_emitter_1.default {
+         }
+         return res.result;
+     }
+-    /**
+-     * @beta
+-     * This method is currently in beta. While it is available for use, please note that it is still under testing and may undergo significant changes.
+-     *
+-     * @remarks
+-     * IMPORTANT: Signature validation is not performed by this method. Users of this method are advised to perform their own signature validation.
+-     * Common web3 frontend libraries such as ethers.js and viem provide the `verifyMessage` utility function that can be used for signature validation.
+-     *
+-     * It combines `eth_requestAccounts` and "Sign-In with Ethereum" (EIP-4361) into a single call.
+-     * The returned account and signed message can be used to authenticate the user.
+-     *
+-     * @param {Object} params - An object with the following properties:
+-     * - `nonce` {string}: A unique string to prevent replay attacks.
+-     * - `statement` {string}: An optional human-readable ASCII assertion that the user will sign.
+-     * - `resources` {string[]}: An optional list of information the user wishes to have resolved as part of authentication by the relying party.
+-     *
+-     * @returns {Promise<ConnectAndSignInResponse>} A promise that resolves to an object with the following properties:
+-     * - `accounts` {string[]}: The Ethereum accounts of the user.
+-     * - `message` {string}: The overall message that the user signed. Hex encoded.
+-     * - `signature` {string}: The signature of the message, signed with the user's private key. Hex encoded.
+-     */
+-    async connectAndSignIn(params) {
+-        // NOTE: It was intentionally built by following the pattern of the existing eth_requestAccounts method
+-        // to maintain consistency and avoid introducing a new pattern.
+-        // We acknowledge the need for a better design, and it is planned to address and improve it in a future refactor.
+-        var _a;
+-        (_a = this.diagnostic) === null || _a === void 0 ? void 0 : _a.log(DiagnosticLogger_1.EVENTS.ETH_ACCOUNTS_STATE, {
+-            method: "provider::connectAndSignIn",
+-            sessionIdHash: this._relay
+-                ? Session_1.Session.hash(this._relay.session.id)
+-                : undefined,
+-        });
+-        let res;
+-        try {
+-            const relay = await this.initializeRelay();
+-            if (!(relay instanceof MobileRelay_1.MobileRelay)) {
+-                throw new Error("connectAndSignIn is only supported on mobile");
+-            }
+-            res = await relay.connectAndSignIn(params).promise;
+-        }
+-        catch (err) {
+-            if (typeof err.message === "string" &&
+-                err.message.match(/(denied|rejected)/i)) {
+-                throw errors_1.standardErrors.provider.userRejectedRequest("User denied account authorization");
+-            }
+-            throw err;
+-        }
+-        if (!res.result) {
+-            throw new Error("accounts received is empty");
+-        }
+-        const { accounts } = res.result;
+-        this._setAddresses(accounts);
+-        if (!(this.isLedger || this.isCoinbaseBrowser)) {
+-            await this.switchEthereumChain(this.getChainId());
+-        }
+-        return res.result;
+-    }
+     async selectProvider(providerOptions) {
+         var _a;
+         const relay = await this.initializeRelay();
+@@ -454,6 +378,12 @@ class CoinbaseWalletProvider extends safe_event_emitter_1.default {
+         if (!Array.isArray(addresses)) {
+             throw new Error("addresses is not an array");
+         }
++        
++        if (isDisconnect) {
++          this.emit('disconnect', this._addresses);
++          return;
++        }
++
+         const newAddresses = addresses.map(address => (0, util_1.ensureAddressString)(address));
+         if (JSON.stringify(newAddresses) === JSON.stringify(this._addresses)) {
+             return;

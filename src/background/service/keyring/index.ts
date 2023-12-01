@@ -919,14 +919,24 @@ export class KeyringService extends EventEmitter {
       });
 
       coinbaseKeyring.on('message', (data) => {
-        let method = EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED;
         if (data.status === 'CHAIN_CHANGED') {
-          method = EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED;
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
+            params: {
+              ...data,
+              status: 'CONNECTED',
+            },
+          });
+        } else {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+            params: data,
+          });
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
+            params: data,
+          });
         }
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method,
-          params: data,
-        });
       });
     }
 

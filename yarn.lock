@@ -1281,7 +1281,7 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@coinbase/wallet-sdk@beta":
+"@coinbase/wallet-sdk@3.8.0-beta.3", "@coinbase/wallet-sdk@beta":
   version "3.8.0-beta.3"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-sdk/-/wallet-sdk-3.8.0-beta.3.tgz#28400b01047be18f6b06bb91520eed36546259e0"
   integrity sha512-PffXu/F4plqaHNEBIVHAX6WsKv6Es9r/tkXZj/myGoUk+lfkzIV8tudZh+2ugRqGCIidl8CgVcpqjWD453Nr4g==
@@ -3872,10 +3872,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@rabby-wallet/eth-coinbase-keyring@^0.0.0-beta.5":
-  version "0.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-coinbase-keyring/-/eth-coinbase-keyring-0.0.0-beta.5.tgz#88dd652d34fb5abb8a1cc1ff0446f2522ce65e92"
-  integrity sha512-kKYOuLDYmm28hLUZVj153o9XrLMTefPeVx7xvFrkm8B2WJz17i9Wfv7zAgfNMYVvUwzC6QanwTEcpuNlSB7xKA==
+"@rabby-wallet/eth-coinbase-keyring@^0.0.0-beta.8":
+  version "0.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-coinbase-keyring/-/eth-coinbase-keyring-0.0.0-beta.8.tgz#389e813d14e7aee9283410b07b6be189c5f48e79"
+  integrity sha512-AXgCS2GcKiR8k2dNQxiPJETJXxsG23dpIrnKejkeD6k7yCmHWn7OGp52ZmEVLABqFnljfgbb4477ptmpqcP9oA==
   dependencies:
     "@coinbase/wallet-sdk" beta
     "@ethereumjs/util" "^8.1.0"
@@ -4025,10 +4025,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@^0.6.27":
-  version "0.6.27"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.27.tgz#7951ff2d66a38bfaa5f97121602feea8116e3f2b"
-  integrity sha512-ccX7xLtV7vf0tm7B3qPQOF2nOZMS6LMzPEHHagY5fKLZUHXu5A5kj4UYbK1yfapX+sgGhyBNou2f+67G4Ldt8w==
+"@rabby-wallet/rabby-api@^0.6.28":
+  version "0.6.28"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.6.28.tgz#4d0558d07a775fc7bef8ee0fd1b310f1c7d68467"
+  integrity sha512-snGwuneyw8PQlYBdrmEuOW0nJFY31In6zYXE/+2tLfmFn0lJkOnLybaQmqMOgsHXF3QDn5afQ8nBzAdw0mBSog==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
