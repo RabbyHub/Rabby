@@ -108,7 +108,7 @@
   --r-neutral-black: var(--rabby-light-neutral-black);
 }
 
-html.in-dark-mode, body.in-dark-mode {
+html.dark, body.dark {
   /* -------------------- dark mode -------------------- */
   --r-blue-default-rgb: 112, 132, 255;
   --r-blue-default: var(--rabby-dark-blue-default);

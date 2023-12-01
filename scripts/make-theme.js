@@ -28,10 +28,10 @@ makeCssVar: {
 
   /* -------------------- base define -------------------- */
 ${['light', 'dark'].map(theme => {
-  return Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
+  return Object.entries(themeColors[theme]).map(([cssvarKey, colorValue]) => {
     const varcore = cssvarKey.replace(/^\-\-/, '');
 
-    return `${SPACES}--rabby-${theme}-${varcore}: ${cssvarValue};`;
+    return `${SPACES}--rabby-${theme}-${varcore}: ${colorValue};`;
   }).join(LINE_BREAK)
 }).join(LINE_BREAK.repeat(2))}
 }
@@ -43,17 +43,17 @@ ${[
   },
   {
     theme: 'dark',
-    parentSelector: 'html.in-dark-mode, body.in-dark-mode',
+    parentSelector: 'html.dark, body.dark',
   }
 ].map(({ theme, parentSelector }) => {
   const isDarkTheme = theme === 'dark';
 
   return `${parentSelector} {
 ${SPACES}/* -------------------- ${theme} mode -------------------- */
-${Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
+${Object.entries(themeColors[theme]).map(([cssvarKey, colorValue]) => {
   const varcore = cssvarKey.replace(/^\-\-/, '');
 
-  const tinyColor = tinycolor2(cssvarValue);
+  const tinyColor = tinycolor2(colorValue);
   const rgbs = tinyColor.toRgb();
   const alpha = tinyColor.getAlpha();
   if (alpha !== 1) {
@@ -70,10 +70,10 @@ ${Object.entries(themeColors[theme]).map(([cssvarKey, cssvarValue]) => {
 }
 ${!SPECIAL_DEFAULT_ALPHA[theme].length ? '' : SPECIAL_DEFAULT_ALPHA[theme].map(({ cssvarKey, alpha }) => {
   return [
-//     `${isDarkTheme ? `.in-dark-mode ` : ''} {
+//     `${isDarkTheme ? `.dark ` : ''} {
 // ${SPACES}--${rabbyCssPrefix}${cssvarKey}-opacity: ${alpha};
 // }`,
-//     `${isDarkTheme ? `.in-dark-mode ` : ''}.bg-${rabbyCssPrefix}${cssvarKey} {
+//     `${isDarkTheme ? `.dark ` : ''}.bg-${rabbyCssPrefix}${cssvarKey} {
 // ${SPACES}--bg-${rabbyCssPrefix}${cssvarKey}-opacity: ${alpha};
 // }`,
   ].filter(Boolean).join(LINE_BREAK);

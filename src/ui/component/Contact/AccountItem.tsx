@@ -6,8 +6,7 @@ import { ellipsis } from 'ui/utils/address';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { splitNumberByStep } from 'ui/utils/number';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
-import IconWhitelist from 'ui/assets/address/whitelist.svg';
+import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { copyAddress } from '@/ui/utils/clipboard';
@@ -143,7 +142,7 @@ const AccountItem = ({
                 placement="top"
                 title={t('component.Contact.AddressItem.whitelistedTip')}
               >
-                <img src={IconWhitelist} className={'w-14 h-14'} />
+                <ThemeIcon src={RcIconWhitelist} className={'w-14 h-14'} />
               </Tooltip>
             )}
           </div>

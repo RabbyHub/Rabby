@@ -19,7 +19,7 @@ import React, {
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactComponent as IconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 
 import { AddressViewer } from 'ui/component';
@@ -28,13 +28,14 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconCheck from 'ui/assets/check.svg';
 
-import IconWhitelist from 'ui/assets/address/whitelist.svg';
+import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export interface AddressItemProps {
   balance: number;
@@ -194,7 +195,7 @@ const AddressItem = memo(
               'rabby-address-item relative',
               isCurrentAccount
                 ? 'bg-blue-light hover:bg-blue-light pr-0'
-                : 'group hover:bg-blue-light hover:bg-opacity-[0.1]',
+                : 'group',
               {
                 'is-switch': enableSwitch,
               }
@@ -212,6 +213,8 @@ const AddressItem = memo(
             <div
               className={clsx(
                 'rabby-address-item-left',
+                !isCurrentAccount &&
+                  'hover:bg-blue-light hover:bg-opacity-[0.1]',
                 isCurrentAccount && 'w-[calc(100%-34px)] pr-0'
               )}
             >
@@ -261,8 +264,8 @@ const AddressItem = memo(
                             placement="top"
                             title={t('page.manageAddress.whitelisted-address')}
                           >
-                            <img
-                              src={IconWhitelist}
+                            <ThemeIcon
+                              src={RcIconWhitelist}
                               className={clsx(
                                 'w-14 h-14',
                                 isCurrentAccount && 'brightness-[100]'
@@ -371,7 +374,7 @@ const AddressItem = memo(
                     : 'text-blue-light hidden group-hover:flex'
                 )}
               >
-                <IconArrowRight />
+                <RcIconArrowRight />
               </div>
             </div>
           </div>

@@ -34,6 +34,7 @@ const Wrapper = styled.div`
       .bg {
         position: absolute;
         bottom: 0;
+        left: 0.5px;
         width: 100%;
         height: 6px;
         background: var(--r-blue-light-1, #424962);

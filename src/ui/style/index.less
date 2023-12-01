@@ -356,7 +356,14 @@ button:focus {
 
   &.rabby-input-pure-bg {
     .ant-input, .ant-input-affix-wrapper {
-      background-color: var(--r-neutral-bg-1, #fff) !important;
+      background-color: var(--r-neutral-card-1, #fff) !important;
+    }
+  }
+
+  .ant-form-item-has-error .ant-input {
+    &, &:hover {
+      background-color: var(--r-neutral-card-1, #fff) !important;
+      border-color: var(--r-red-default);
     }
   }
 }

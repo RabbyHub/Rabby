@@ -121,10 +121,10 @@ export const SelectChainItem = forwardRef(
           </div>
           <ThemeIcon
             className={clsx(
-              'select-chain-item-star',
+              'select-chain-item-star w-16 h-16',
               stared ? 'is-active' : ''
             )}
-            src={stared ? IconPinnedFill : IconPinned}
+            src={stared ? RcIconPinnedFill : RcIconPinned}
             onClick={(e) => {
               e.stopPropagation();
               onStarChange?.(!stared);

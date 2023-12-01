@@ -1,14 +1,33 @@
 const colors = require('tailwindcss/colors');
+const tinycolor2 = require('tinycolor2');
 
 const { themeColors, rabbyCssPrefix } = require('./src/constant/theme-colors');
-const rabbyColors = Object.entries(themeColors.light).reduce((accu, [cssvarKey, cssvarValue]) => {
-  // const splitorIdx = cssvarKey.indexOf('-');
-  // const group = cssvarKey.slice(0, splitorIdx);
-  // const suffix = cssvarKey.slice(splitorIdx + 1);
-  accu[cssvarKey] = `var(--${rabbyCssPrefix}${cssvarKey}, ${cssvarValue})`;
-  return accu;
-}, {});
 
+const rabbyColors = ['light', 'dark'].reduce((accu, theme) => {
+  Object.entries(themeColors[theme]).forEach(([cssvarKey, colorValue]) => {
+    // const splitorIdx = cssvarKey.indexOf('-');
+    // const group = cssvarKey.slice(0, splitorIdx);
+    // const suffix = cssvarKey.slice(splitorIdx + 1);
+    const tinyColor = tinycolor2(colorValue);
+    const alpha = tinyColor.getAlpha();
+  
+    const hexValue = alpha === 1 ? tinyColor.toHexString() : tinyColor.toHex8String();
+    
+    if (!accu.auto[cssvarKey]) {
+      accu.auto[cssvarKey] = `var(--${rabbyCssPrefix}${cssvarKey}, ${hexValue})`;
+    }
+
+    accu[theme][cssvarKey] = hexValue;
+  });
+
+  return accu;
+}, {
+  light: {},
+  dark: {},
+  auto: {},
+});
+
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
@@ -46,7 +65,7 @@ module.exports = {
       blue: {
         from: '#8A78FD',
         to: '#796BFD',
-        light: '#7084ff',
+        light: rabbyColors.light['blue-default'],
         DEFAULT: '#796BFD',
         purple: '#5F75FF',
       },
@@ -116,13 +135,17 @@ module.exports = {
     /** @notice configuration here would override the default config above */
     extend: {
       colors: {
-        [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors,
-        [`${'rabby-'.replace(/\-$/, '')}`]: rabbyColors,
-        [`${'-r-'.replace(/\-$/, '')}`]: rabbyColors,
+        [`${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.auto,
+        [`${'rabby-'.replace(/\-$/, '')}`]: rabbyColors.auto,
+        [`${'-r-'.replace(/\-$/, '')}`]: rabbyColors.auto,
+        
+        [`light-${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.light,
+        [`dark-${rabbyCssPrefix.replace(/\-$/, '')}`]: rabbyColors.dark,
       }
     },
   },
-  // use media-query prefers-color-scheme
-  darkMode: 'media',
+  // use class insteadof media-query prefers-color-scheme
+  // see https://v2.tailwindcss.com/docs/dark-mode
+  darkMode: 'class',
   important: true,
 };

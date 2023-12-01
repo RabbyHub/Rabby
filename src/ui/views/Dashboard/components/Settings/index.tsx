@@ -436,7 +436,7 @@ const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
             />
           }
           onClick={onClick}
-          className="text-blue-light bg-[#f5f7ff] font-medium"
+          className="text-blue-light bg-r-blue-light-1 font-medium"
         >
           {t('page.dashboard.settings.claimRabbyBadge')}
         </Field>
@@ -464,7 +464,7 @@ const RequestDeBankTestnetGasToken = () => {
           onClick={() => {
             history.push('/request-debank-testnet-gas-token');
           }}
-          className="text-[#FF6238] bg-[#FFF4F1] font-medium hover:border-[#FF6238]"
+          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#564A46] font-medium hover:border-[#FF6238]"
         >
           {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
         </Field>

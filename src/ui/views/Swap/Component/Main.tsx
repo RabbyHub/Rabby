@@ -30,12 +30,12 @@ import { Trans, useTranslation } from 'react-i18next';
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
-  background: #f5f6fa;
+  /* background: #f5f6fa; */
   border-radius: 6px;
   height: 46px;
   font-weight: 500;
   font-size: 18px;
-  color: #ffffff;
+  /* color: #ffffff; */
   box-shadow: none;
   & > .ant-input {
     font-weight: 500;
@@ -48,7 +48,7 @@ const StyledInput = styled(Input)`
     border: 1px solid transparent;
   }
   &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
 

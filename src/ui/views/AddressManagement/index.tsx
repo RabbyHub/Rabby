@@ -4,8 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList } from 'react-window';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
-import IconPinned from 'ui/assets/icon-pinned.svg';
-import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
@@ -342,7 +342,7 @@ const AddressManagement = () => {
             extra={
               <div
                 className={clsx(
-                  'icon-star  border-none px-0',
+                  'icon-star border-none px-0',
                   favorited ? 'is-active' : 'opacity-0 group-hover:opacity-100'
                 )}
                 onClick={(e) => {
@@ -353,10 +353,9 @@ const AddressManagement = () => {
                   });
                 }}
               >
-                <img
+                <ThemeIcon
                   className="w-[13px] h-[13px]"
-                  src={favorited ? IconPinnedFill : IconPinned}
-                  alt=""
+                  src={favorited ? RcIconPinnedFill : RcIconPinned}
                 />
               </div>
             }

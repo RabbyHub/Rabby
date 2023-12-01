@@ -3,7 +3,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { DARK_MODE_TYPE } from '@/constant';
 import { getUiType } from '../utils';
 
-const darkModeClassName = 'in-dark-mode';
+const darkModeClassName = 'dark';
 
 function checkIsDarkMode() {
   try {
@@ -65,9 +65,10 @@ export function useThemeModeOnMain() {
     const isDark = isFinalDarkMode(themeMode, isDarkOnSystem);
 
     if (isDark) {
-      document.body.classList.add(darkModeClassName);
+      // see https://v2.tailwindcss.com/docs/dark-mode
+      document.documentElement.classList.add(darkModeClassName);
     } else {
-      document.body.classList.remove(darkModeClassName);
+      document.documentElement.classList.remove(darkModeClassName);
     }
   }, [themeMode, isDarkOnSystem]);
 }

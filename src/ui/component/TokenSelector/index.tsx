@@ -15,8 +15,9 @@ import { findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
-import IconChainFilterClose from 'ui/assets/chain-select/chain-filter-close.svg';
+import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select/chain-filter-close.svg';
 import { isNil } from 'lodash';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -251,9 +252,9 @@ const TokenSelector = ({
                   });
                 }}
               >
-                <img
+                <ThemeIcon
                   className="filter-item__chain-close w-[12px] h-[12px] ml-[6px]"
-                  src={IconChainFilterClose}
+                  src={RcIconChainFilterClose}
                 />
               </div>
             </div>

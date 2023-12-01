@@ -78,7 +78,7 @@ export const ImportMyMetaMaskAccount = () => {
             </div>
           </div>
           <div className="relative rounded border border-rabby-blue-default mt-14 mb-16">
-            <div className="absolute left-[9px] top-[-8px] bg-r-neutral-card-1 text-r-blue-default text-12 font-medium pl-2 pr-4">
+            <div className="absolute left-[9px] top-[-8px] bg-r-neutral-bg-2 text-r-blue-default text-12 font-medium pl-2 pr-4">
               {t('page.newAddress.metamask.tips')}
             </div>
             <div className="p-8 text-r-blue-default text-12 font-normal leading-[16px]">

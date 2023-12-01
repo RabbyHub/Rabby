@@ -423,7 +423,12 @@ const AddAddressOptions = () => {
       <div className="bg-r-neutral-card-1 rounded-[6px]">
         {bottomList.map((e) => {
           return (
-            <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
+            <Item
+              bgColor="transparent"
+              key={e.brand}
+              leftIcon={e.leftIcon}
+              onClick={e.onClick}
+            >
               <div className="flex flex-col pl-[12px]">
                 <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
