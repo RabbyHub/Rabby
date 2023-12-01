@@ -119,7 +119,7 @@ export const AssetListContainer: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between gap-x-12 widget-has-ant-input rabby-input-pure-bg">
+      <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
         <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
       </div>

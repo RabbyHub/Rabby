@@ -4,7 +4,7 @@ import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import PortfolioTemplate from './ProtocolTemplates';
-import { ReactComponent as IconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
+import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown.svg';
 import clsx from 'clsx';
 import { useCommonPopupView } from '@/ui/utils';
 
@@ -133,7 +133,7 @@ const ProtocolItem = ({
           />
           <span className="name">{protocol.name}</span>
           <span className="net-worth">{protocol._netWorth}</span>
-          <IconDropdown
+          <RcIconDropdown
             className={clsx('ml-8', {
               'transform rotate-180': isExpand,
             })}
