@@ -311,7 +311,7 @@ const ManageAddress = () => {
             ) : null}
 
             {!!isLedger && !!TypedWalletObj?.[activeIndex]?.hdPathType && (
-              <div className="text-gray-content text-12 mb-4">
+              <div className="text-r-neutral-body text-12 mb-4">
                 {t('page.manageAddress.hd-path')}{' '}
                 {LedgerHDPathTypeLabel[TypedWalletObj[activeIndex].hdPathType!]}
               </div>
@@ -330,7 +330,7 @@ const ManageAddress = () => {
             <div className="flex-1 flex flex-col items-center justify-center gap-[30px] min-h-[300px]">
               <Empty
                 desc={
-                  <div className="text-gray-content text-14 max-w-[296px] mt-12">
+                  <div className="text-r-neutral-body text-14 max-w-[296px] mt-12">
                     {t('page.manageAddress.no-address-under-seed-phrase')}
                   </div>
                 }
@@ -345,7 +345,7 @@ const ManageAddress = () => {
                   {t('page.manageAddress.add-address')}
                 </Button>
                 <div
-                  className="mt-20 cursor-pointer underline text-gray-content text-14 text-center"
+                  className="mt-20 cursor-pointer underline text-r-neutral-body text-14 text-center"
                   onClick={handleDeleteEmptySeedPhrase}
                 >
                   {t('page.manageAddress.delete-seed-phrase')}
