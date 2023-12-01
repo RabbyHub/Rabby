@@ -1344,10 +1344,14 @@
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           }
         },
         "bitbox02": {
