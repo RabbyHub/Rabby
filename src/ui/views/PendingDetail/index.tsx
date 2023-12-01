@@ -61,7 +61,11 @@ const useSetup = ({
     return findMaxGasTx(txGroup?.txs || [])?.reqId;
   }, [txGroup]);
 
-  const { data: txRequest, cancel: cancelGetTxRequest } = useRequest(
+  const {
+    data: txRequest,
+    cancel: cancelGetTxRequest,
+    runAsync: runGetTxrequest,
+  } = useRequest(
     async () => {
       if (reqId && isPending) {
         setLoading({ txRequest: !txRequest });
@@ -172,6 +176,7 @@ const useSetup = ({
     baseFee,
     isPending,
     maxGasTx,
+    runGetTxrequest,
   };
 };
 
@@ -201,6 +206,7 @@ export const PendingDetail = () => {
     baseFee,
     isPending,
     maxGasTx,
+    runGetTxrequest,
   } = useSetup({
     address,
     chainId,
@@ -225,6 +231,7 @@ export const PendingDetail = () => {
         chainId: findChainByServerID(txRequest?.chain_id)!.id,
         nonce: txRequest?.nonce,
       });
+      runGetTxrequest();
     }
   };
 
@@ -235,6 +242,7 @@ export const PendingDetail = () => {
         tx={txGroup}
         onReBroadcast={handleReBroadcast}
         isPending={isPending}
+        loading={loading.txRequest}
       >
         <PrePackInfo
           explain={maxGasTx?.explain || txGroup?.explain}

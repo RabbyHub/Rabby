@@ -16,29 +16,35 @@ export const Loading = () => {
       render(value, record, index) {
         return <div className="text-r-neutral-foot">{index + 1}</div>;
       },
-      width: 120,
+      width: 80,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.gasPrice'),
       render(value, record, index) {
         return <SkeletonInput active style={{ width: 68, height: 16 }} />;
       },
-      width: 240,
+      width: 160,
     },
     {
-      title: t('page.pendingDetail.PendingTxList.col.action'),
+      title: t('page.pendingDetail.PendingTxList.col.actionType'),
+      render(value, record, index) {
+        return <SkeletonInput active style={{ width: 68, height: 16 }} />;
+      },
+      width: 260,
+    },
+    {
+      title: t('page.pendingDetail.PendingTxList.col.interact'),
       render(value, record, index) {
         return (
           <div className="flex items-center gap-[12px]">
             <SkeletonAvatar active size={32} shape="circle" />
             <div className="flex flex-col gap-[4px]">
               <SkeletonInput active style={{ width: 88, height: 16 }} />
-              <SkeletonInput active style={{ width: 64, height: 16 }} />
             </div>
           </div>
         );
       },
-      width: 344,
+      width: 264,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),

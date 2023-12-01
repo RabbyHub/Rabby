@@ -9,6 +9,7 @@ import { useCountDown } from 'ahooks';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { usePredictTime } from '../../PendingDetail/components/Header/Predict';
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,17 +40,9 @@ export const PredictTime = ({
   const [account] = useAccount();
   const { t } = useTranslation();
 
-  const leftTime = useMemo(() => {
-    const leftTime = txRequest?.predict_packed_at
-      ? txRequest?.predict_packed_at * 1000 - Date.now()
-      : 0;
-    return leftTime > 0 ? leftTime : undefined;
-  }, [txRequest?.predict_packed_at]);
-
-  const [countDown, { minutes, seconds }] = useCountDown({
-    leftTime: leftTime || 0,
-    interval: 1000,
-  });
+  const predictTime = usePredictTime(
+    (txRequest?.predict_packed_at || 0) * 1000
+  );
 
   if (
     !isPending ||
@@ -67,13 +60,22 @@ export const PredictTime = ({
         );
       }}
     >
-      {leftTime
-        ? t('page.activities.signedTx.PredictTime.time', {
-            time: `${
-              minutes > 0 ? `${minutes} ${minutes > 1 ? 'mins' : 'min'}` : ''
-            } ${seconds}s`,
-          })
-        : t('page.activities.signedTx.PredictTime.noTime')}
+      {txRequest?.predict_err_code ? (
+        t('page.activities.signedTx.PredictTime.failed')
+      ) : (
+        <>
+          {!txRequest?.predict_packed_at
+            ? t('page.activities.signedTx.PredictTime.noTime')
+            : t('page.activities.signedTx.PredictTime.time', {
+                time: `${
+                  predictTime
+                    ? `${predictTime?.hours}:${predictTime?.minutes}:${predictTime?.seconds}`
+                    : ''
+                }`,
+              })}
+        </>
+      )}
+
       <img src={IconArrowRight} alt="" />
     </Wrapper>
   );

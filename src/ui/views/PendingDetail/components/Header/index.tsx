@@ -1,14 +1,12 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import IconBg from '@/ui/assets/pending/header-bg.png';
-import IconDot from '@/ui/assets/pending/icon-dot.svg';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
-import { useCountDown } from 'ahooks';
+import { Predict } from './Predict';
 import { TxHash } from './TxHash';
 import { TxStatus } from './TxStatus';
-import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
   position: relative;
@@ -24,48 +22,24 @@ const Wrapper = styled.div`
   }
 `;
 
-const usePredict = (leftTime?: number) => {
-  const [countDown, { minutes, seconds }] = useCountDown({
-    leftTime: leftTime || 0,
-    interval: 1000,
-  });
-
-  return useMemo(() => {
-    if (leftTime == null) {
-      return ['-', '-', '-', '-'];
-    }
-
-    return minutes
-      .toString()
-      .padStart(2, '0')
-      .split('')
-      .concat(seconds.toString().padStart(2, '0').split(''));
-  }, [minutes, seconds, leftTime]);
-};
-
 export const Header = ({
   data,
   children,
   tx,
   onReBroadcast,
   isPending,
+  loading,
 }: {
   data?: TxRequest;
   tx?: TransactionGroup | null;
   children?: ReactNode;
   onReBroadcast?(): void;
   isPending?: boolean;
+  loading?: boolean;
 }) => {
-  const leftTime = useMemo(() => {
-    const leftTime = data?.predict_packed_at
-      ? data?.predict_packed_at * 1000 - Date.now()
-      : 0;
-    return leftTime > 0 ? leftTime : undefined;
-  }, [data?.predict_packed_at]);
-
-  const predict = usePredict(leftTime);
-
-  const { t } = useTranslation();
+  const key = useMemo(() => {
+    return Math.random();
+  }, [data]);
 
   return (
     <Wrapper>
@@ -82,34 +56,12 @@ export const Header = ({
           </div>
           <div>{tx ? <TxHash tx={tx} /> : null}</div>
         </div>
-        {isPending ? (
-          <div className="mb-[34px]">
-            <div className="text-r-neutral-title-2 text-center text-[24px] leading-[29px] mt-[40px] mb-[24px]">
-              {t('page.pendingDetail.Header.predictTime')}
-            </div>
-            <div className="flex items-center justify-center gap-[16px]">
-              <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                {predict[0]}
-              </div>
-              <div className="flex items-center gap-[24px]">
-                <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                  {predict[1]}
-                </div>
-                <img src={IconDot} alt="" />
-                <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                  {predict[2]}
-                </div>
-              </div>
-              <div className="bg-[rgba(0,0,0,0.5)] rounded-[12px] w-[120px] h-[120px] flex items-center justify-center text-[80px] text-white font-bold leading-[95px]">
-                {predict[3]}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-[48px] text-medium leading-[57px] text-[#fff] text-center mt-[93px] mb-[103px]">
-            Transaction Completed
-          </div>
-        )}
+        <Predict
+          data={data}
+          isPending={isPending}
+          key={key}
+          loading={loading}
+        />
         {children}
       </div>
     </Wrapper>
