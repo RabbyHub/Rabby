@@ -1,4 +1,4 @@
-import { EVENTS, WALLET_BRAND_TYPES } from '@/constant';
+import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { WALLETCONNECT_SESSION_STATUS_MAP } from '@rabby-wallet/eth-walletconnect-keyring/dist/type';
