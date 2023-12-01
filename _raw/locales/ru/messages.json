@@ -8,7 +8,7 @@
       },      
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
-        "unknown": "Взаимодействие с контраком",       
+        "unknown": "Вызов контракта",       
         "cancel": "Отменена ожидающая транзакция"
       },      
       "txHistory": {
@@ -17,6 +17,11 @@
       },     
       "modalViewMessage": {
         "title": "Просмотр сообщения"       
+      },
+      "filterScam": {
+        "title": "Скрыть скам транзакции",
+        "loading": "Загрузка займёт немного времени, возможны задержки",
+        "btn": "Скрыть скам транзакции"
       }
     },
     "chainList": {
@@ -78,7 +83,8 @@
         "slippageFailToLoad": "Не удалось загрузить допустимое отклонение курса",
         "slippageTolerance": "Допустимое отклонение курса",
         "receiver": "Получатель",
-        "notPaymentAddress": "Не адрес оплаты"
+        "notPaymentAddress": "Не адрес оплаты",
+        "unknownAddress": "Неизвестный адрес"
       },
       "crossChain": {
         "title": "Кросс-чейн"
@@ -183,7 +189,7 @@
       "signTransactionOnChain": "Подписать {{chain}} транзакцию",
       "viewRaw": "Посмотреть исходный код",
       "unknownActionType": "Неизвестный тип действия",
-      "sigCantDecode": "Эта подпись не может быть декодирована Rabby",
+      "sigCantDecode": "Эта подпись не может быть декодирована Rabby, но это не означает риска",
       "nftCollection": "Коллекция NFT",
       "floorPrice": "Начальная цена",
       "contractAddress": "Адрес контракта",
@@ -201,6 +207,9 @@
       "importedDelegatedAddress": "Импортированный делегированный адрес",
       "noDelegatedAddress": "Нет импортированного делегированного адреса",
       "coboSafeNotPermission": "У этого делегированного адреса нет разрешения на инициацию этой транзакции",
+      "noDelegatedAddress": "Нет импортированного делегированного адреса",
+      "coboSafeNotPermission": "У этого испортированного делигированного адреса нет разрешения на инициацию транзакции",
+      "l2GasEstimateTooltip": "Оценка газа для L2 не включает газ L1. Итоговая стоимость газа будет выше.",
       "BroadcastMode": {
         "instant": {
           "title": "Мгновенный",
@@ -244,6 +253,26 @@
         "error": {
           "pendingList": "Не удалось загрузить ожидающие транзакции, <1/><2>Повторить</2>"
         }
+      },
+      "coboSafeCreate": {
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Описание",
+        "title": "Создать Cobo Safe"
+      },
+      "coboSafeModificationRole": {
+        "title": "Submit Safe Role Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Описание"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "title": "Submit Delegated Address Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "DescriОписание"
+      },
+      "coboSafeModificationTokenApproval": {
+        "title": "Submit Token Approval Modification",
+        "safeWalletTitle": "Safe{Wallet}",
+        "descriptionTitle": "Описание"
       }
     },
     "signFooterBar": {
@@ -255,6 +284,8 @@
       "connectButton": "Подключить",
       "connecting": "Подключение...",
       "ledgerNotConnected": "Ledger не подключен",
+      "keystoneNotConnected": "Keystone не подключен",
+      "keystoneConnected": "Keystone подключен",
       "ledgerConnected": "Ledger подключен",
       "signAndSubmitButton": "Подписать и отправить",
       "walletConnect": {
@@ -285,7 +316,8 @@
         "seedPhrase": "Адрес Seed фразы",
         "watchAddress": "Невозможно подписать адресом для просмотра",
         "safe": "Адрес Safe",
-        "coboSafe": "Адрес Cobo Argus"
+        "coboSafe": "Адрес Cobo Argus",
+        "seedPhraseWithPassphrase": "Адрес из сид фразы (Passphrase)"
       },
       "qrcode": {
         "signWith": "Подписать с помощью {{brand}}",
@@ -298,6 +330,18 @@
         "misMatchSignId": "Несоответствующие данные транзакции. Пожалуйста, проверьте детали транзакции.",
         "unknownQRCode": "Ошибка: мы не смогли идентифицировать этот QR-код",
         "afterSignDesc": "После подписи поместите QR-код с {{brand}} перед веб-камерой вашего ПК"
+      },
+      "keystone": {
+        "signWith": "Переключиться на {{method}} для подписи",
+        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "unsupportedType": "Error: The transaction type is unsupported or unknown.",
+        "siging": "Sending signing request",
+        "txRejected": "Transaction rejected",
+        "shouldRetry": "Some error occurred. Please retry.",
+        "hardwareRejectError": "Hardware rejects signature",
+        "mismatchedWalletError": "Mismatched wallet",
+        "verifyPasswordError": "Signature failure, please try again after unlocking",
+        "shouldOpenKeystoneHomePageError": "Please open Keystone home page"
       },
       "ledger": {
         "resent": "Повторно отправлено",
@@ -398,7 +442,8 @@
           "pending": "В ожидании",
           "withdrawed": "Быстрая отмена",
           "pendingBroadcasted": "В ожидании: передано",
-          "pendingBroadcast": "В ожидании: передача"
+          "pendingBroadcast": "В ожидании: передача",
+          "pendingBroadcastFailed": "В ожидании: отправка не удалась"
         },
         "txType": {
           "initial": "Исходная транзакция",
@@ -444,6 +489,10 @@
         },
         "SkipNonceAlert": {
           "alert": "Nonce #{{nonce}} пропущен в цепочке {{chainName}}. Это может вызвать ожидание транзакций впереди. <5></5> <6>Отправить транзакцию</6> <7></7> в сеть, чтобы решить проблему"
+        },
+        "PredictTime": {
+          "time": "Предполагаемое время упаковки {{time}}",
+          "noTime": "Время упаковки предположено"
         }
       },
       "signedText": {
@@ -717,8 +766,9 @@
       "directlySwap": "Обернуть токены {{symbol}} напрямую через смарт-контракт",
       "rates-from-cex": "Курсы из CEX",
       "edit": "Изменить",
-      "tradingSettingTips": "{{viewCount}} биржи предлагают котировки, и {{tradeCount}} разрешают торговлю",
+      "tradingSettingTips": "{{viewCount}} бирж дают котировки, на {{tradeCount}} разрешен обмен",
       "the-following-swap-rates-are-found": "Найдены следующие курсы обмена",
+      "sort-with-gas": "Сортировка по газу",
       "est-payment": "Расч. оплата:",
       "est-receiving": "Расч. получение:",
       "est-difference": "Расч. разница:",
@@ -782,7 +832,10 @@
       "sort-by-balance": "Сортировать по балансу",
       "sort-by-address-type": "Сортировать по типу адреса",  
       "sort-by-address-note": "Сортировать по примечанию к адресу",
-      "sort-address": "Сортировать адреса"
+      "sort-address": "Сортировать адреса",
+      "enterThePassphrase": "Введите пароль",
+      "enterPassphraseTitle": "Введите пароль для Подписи",
+      "passphraseError": "Неверный пароль"
     },
     "dashboard": {
       "home": {
@@ -791,7 +844,7 @@
         "swap": "Обмен",
         "send": "Отправить",
         "receive": "Получить",
-        "gasTopUp": "Пополнение газа",
+        "gasTopUp": "Пополнить газ",
         "queue": "Очередь",
         "transactions": "Транзакции",
         "approvals": "Аппрувы",
@@ -943,7 +996,9 @@
           "customRpc": "Пользовательский RPC",        
           "metamaskPreferredDapps": "Предпочитаемые dApp для MetaMask",        
           "currentLanguage": "Текущий язык",        
-          "enableTestnets": "Включить тестовые сети"        
+          "enableTestnets": "Включить тестовые сети",        
+          "toggleThemeMode": "Theme Mode",
+          "themeMode": "Theme Mode"
         },      
         "aboutUs": "О нас",      
         "currentVersion": "Текущая версия",      
@@ -1021,12 +1076,20 @@
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
+        "howToConnectKeystone": "Как подключить Keystone",
         "userRejectedTheRequest": "Пользователь отклонил запрос.",  
         "ledger": {
           "doc1": "Подключите один Ledger",
           "doc2": "Введите pin",
           "doc3": "Откройте Ethereum App",
           "reconnect": "Если не работает, <1>начните подключение с начала.</1>"
+        },
+        "keystone": {
+          "title": "*USB соединение Keystone 3(Pro)",
+          "doc1": "Подключите один Keystone",
+          "doc2": "Введите пароль",
+          "doc3": "Разрешите соединение к ПК",
+          "reconnect": "Если не работает, попробуйте <1>подключить с начала.</1>"
         },
         "howToSwitch": "Как переключить"
       },
@@ -1101,7 +1164,13 @@
         "verifySeedPhrase": "Проверить секретную фразу",
         "fillInTheBackupSeedPhraseInOrder": "Заполните резервную секретную фразу в порядке",
         "wordPhrase": "У меня есть <1>{{count}}</1>-словная фраза",
-        "clearAll": "Очистить все"
+        "wordPhraseAndPassphrase": "У меня есть сид фраза из <1>{{count}}</1> слов с паролем",       
+        "clearAll": "Очистить все",
+        "pastedAndClear": "Вставлено и очищено из буфера",
+        "invalidContent": "Неверные данные",
+        "inputInvalidCount_one": "1 ввод не похож на нормальную сид фразу, проверьте.",
+        "inputInvalidCount_other": "{{count}} ввода(-ов) не похожи на нормальную сид фразу, проверьте.",
+        "passphrase": "Пароль"
       },
       "metamask": {
         "step1": "Экспорт секретной фразы или приватного ключа из MetaMask <br /> <1>Нажмите, чтобы просмотреть руководство<1/></1>",
@@ -1142,6 +1211,18 @@
         "permissionsAuthorized": "Разрешения авторизованы",
         "nowYouCanReInitiateYourTransaction": "Теперь вы можете повторно инициировать вашу транзакцию.",
         "allow": "Разрешить"
+      },
+      "keystone": {
+        "title": "Подключить Keystone",
+        "allowRabbyPermissionsTitle": "Дать Rabby разрешение на:",
+        "keystonePermission1": "Подключение к USB устройству",
+        "keystonePermissionTip": "Нажмите \"Разрешить\" ниже чтобы дать разрешение на Keystone в поп-ап окне.",
+        "noDeviceFoundError": "Подключите один Keystone",
+        "deviceIsLockedError": "Введите пароль",
+        "deviceRejectedExportAddress": "Разрешите подключение к Rabby",
+        "deviceIsBusy": "Устройсво занято",
+        "exportAddressJustAllowedOnHomePage": "Экспорт адреса разрешен на домашней странице",
+        "unknowError": "Неизвестная ошибка, попробуйте еще раз"
       },
       "walletConnect": {
         "connectYour": "Подключите ваш",
@@ -1236,6 +1317,9 @@
         "mnemonic": {
           "hdPathType": {
             "default": "По умолчанию: используется HD путь по умолчанию для импорта фразы восстановления."
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol.",
+            "ledgerLive": "Ledger Live: Ledger official HD path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
             "default": "По умолчанию: используется HD путь по умолчанию для импорта фразы восстановления."
@@ -1261,9 +1345,13 @@
          "keystone": {
           "hdPathType": {
             "bip44": "BIP44: HDpath, определенный протоколом BIP44."
+            "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNochain": {
             "bip44": "BIP44: HDpath, определенный протоколом BIP44."
+            "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto."
           }
       },
       "bitbox02": {
@@ -1287,6 +1375,7 @@
         "manageGridplus": "Управление GridPlus",
         "manageKeystone": "Управление Keystone",
         "manageAirgap": "Управление AirGap",
+        "manageImtokenOffline": "Управление imToken",
         "manageCoolwallet": "Управление CoolWallet",
         "manageBitbox02": "Управление BitBox02",
         "done": "Готово",
@@ -1551,6 +1640,74 @@
     "importQrBase": {
       "desc": "Сканируйте QR-код на аппаратном кошельке {{brandName}}",
       "btnText": "Попробовать снова"
+    },
+    "pendingDetail": {
+      "Header": {
+        "predictTime": "Предположительно будет упаковано через"
+      },
+      "TxStatus": {
+        "completed": "Завершено",
+        "pendingBroadcasted": "Ожидание: Отправлено",
+        "pendingBroadcast": "Ожидание: Будет отправлено",
+        "reBroadcastBtn": "Переотправить"
+      },
+      "TxHash": {
+        "hash": "Tx Hash"
+      },
+      "TxTimeline": {
+        "pending": "Проверяем статус...",
+        "created": "Транзакция создана",
+        "broadcasted": "Недавно отправлено"
+      },
+      "MempoolList": {
+        "col": {
+          "nodeName": "Имя ноды",
+          "nodeOperator": "Оператор ноды",
+          "txStatus": "Статус транзакции"
+        },
+        "txStatus": {
+          "appeared": "Появилась",
+          "appearedOnce": "Появилась однажды",
+          "notFound": "Не найдено"
+        },
+        "title": "Найдено на {{count}} RPC нодах"
+      },
+      "PendingTxList": {
+        "title": "Рейтинг по GasPrice #{{rank}} среди Ожидающих Txs",
+        "titleNotFound": "Нет рейтинга среди Ожидающих Txs",
+        "filterBaseFee": {
+          "label": "Удовлетворяет только Base fee",
+          "tooltip": "Показывает только транзакции с достаточным Base fee"
+        },
+        "col": {
+          "gasPrice": "Цена газа",
+          "action": "Действие транзакции",
+          "balanceChange": "Изменение баланса"
+        },
+        "titleSame": "Рейтинг по GasPrice #{{rank}} в таких же, как текущая",
+        "titleSameNotFound": "нет рейтинга в таких же, как текущая"
+      },
+      "Empty": {
+        "noData": "Нет данных"
+      },
+      "PrePackInfo": {
+        "col": {
+          "prePackContent": "Предупакованное содержание",
+          "expectations": "Ожидание",
+          "prePackResults": "Результат предупаковки",
+          "difference": "Проверить результат"
+        },
+        "type": {
+          "pay": "Оплатить",
+          "receive": "Получить"
+        },
+        "noLoss": "Потерь не найдено",
+        "noError": "Ошибок не найдено",
+        "title": "Проверка предупаковки",
+        "error": "Найдено {{count}} ошибок",
+        "loss": "{{lossCount}} потерь найдено",
+        "desc": "Симуляция запущена в последнем блоке, обновлено {{time}}"
+      }
     }
   },
   "component": {
@@ -1582,7 +1739,9 @@
         "gridPlusConnected": "GridPlus подключен",
         "gridPlusNotConnected": "GridPlus не подключен",
         "ledgerNotConnected": "Ledger не подключен",
-        "ledgerConnected": "Ledger подключен"
+        "ledgerConnected": "Ledger подключен",
+        "keystoneConnected": "Keystone подключен",
+        "keystoneNotConnected": "Keystone не подключен"
     },
     "Contact": {
         "AddressItem": {
@@ -1712,7 +1871,8 @@
     "nonce": "nonce",
     "Balance": "Баланс",
     "Done": "Готово",
-    "Nonce": "Nonce"
+    "Nonce": "Nonce",
+    "tryAgain": "Попробовать снова"
   },
   "background": {
     "error": {
@@ -1738,6 +1898,8 @@
     "transactionWatcher": {
         "submitted": "Транзакция отправлена",
         "more": "нажмите, чтобы просмотреть больше информации",
+        "txCompleteMoreContent": "{{chain}} #{{nonce}} завершена. Кликните для деталей.",
+        "txFailedMoreContent": "{{chain}} #{{nonce}} не удалась. Кликните для деталей.",   
         "completed": "Транзакция завершена",
         "failed": "Транзакция не удалась"
     },
@@ -1758,5 +1920,6 @@
         "MAINNET_AND_TESTNET": "Mainnet & Testnet",
         "TESTNET": "Только Testnets"
     }
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Импортировано по сид фразе (С паролем)"
   }
 }
