@@ -51,13 +51,6 @@ export const Predict = ({
   const isCompleted = !isPending;
   const jumpNonce = data?.predict_err_code === 1;
 
-  console.log({
-    loading,
-    isCompleted,
-    isPending,
-    jumpNonce,
-  });
-
   if (isCompleted) {
     return (
       <div className="min-h-[253px] pt-[93px]">
