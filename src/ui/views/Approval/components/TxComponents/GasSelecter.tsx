@@ -669,7 +669,8 @@ const GasSelector = ({
                   <div className="gas-selector-card-amount translate-y-1 flex items-center">
                     <span className="text-blue-light font-medium text-15">
                       {formatTokenAmount(
-                        new BigNumber(gas.gasCostAmount).toString(10)
+                        new BigNumber(gas.gasCostAmount).toString(10),
+                        6
                       )}{' '}
                       {chain.nativeTokenSymbol}
                     </span>
@@ -777,7 +778,8 @@ const GasSelector = ({
             <>
               <div className="gas-selector-modal-amount">
                 {formatTokenAmount(
-                  new BigNumber(modalExplainGas.gasCostAmount).toString(10)
+                  new BigNumber(modalExplainGas.gasCostAmount).toString(10),
+                  6
                 )}{' '}
                 {chain.nativeTokenSymbol}
               </div>

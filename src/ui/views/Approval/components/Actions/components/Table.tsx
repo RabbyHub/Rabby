@@ -61,7 +61,7 @@ const RowWrapper = styled.div`
     line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
     border-right: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    width: 120px;
+    width: 123px;
     flex-shrink: 0;
     background-color: var(--r-neutral-card-3, #f7fafc);
     .icon-tip {

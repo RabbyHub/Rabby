@@ -122,6 +122,10 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
         history.goBack();
         keystoneErrorCatcher(error);
       }
+      rest.startNo =
+        type === HDPathType.LedgerLive
+          ? DEFAULT_SETTING_DATA.startNo
+          : rest.startNo;
     }
     await fetchCurrentAccounts({
       type,
