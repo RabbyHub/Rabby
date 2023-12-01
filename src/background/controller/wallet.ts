@@ -1747,11 +1747,18 @@ export class WalletController extends BaseController {
   };
 
   walletConnectSwitchChain = async (account: Account, chainId: number) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyringType =
+      account.brandName === KEYRING_CLASS.COINBASE
+        ? KEYRING_CLASS.COINBASE
+        : KEYRING_CLASS.WALLETCONNECT;
     try {
-      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      const keyring = this._getKeyringByType(keyringType);
       if (keyring) {
-        await keyring.switchEthereumChain(account.brandName, chainId);
+        await keyring.switchEthereumChain(
+          account.brandName,
+          chainId,
+          account.address
+        );
       }
     } catch (e) {
       // ignore
@@ -3457,12 +3464,12 @@ export class WalletController extends BaseController {
       stashId = this.addKeyringToStash(keyring);
 
       keyring.on('message', (data) => {
-        let method = EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED;
-        if (data.status === 'CHAIN_CHANGED') {
-          method = EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED;
-        }
         eventBus.emit(EVENTS.broadcastToUI, {
-          method,
+          method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+          params: data,
+        });
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
           params: data,
         });
       });
