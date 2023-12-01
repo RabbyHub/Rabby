@@ -75,6 +75,7 @@ const Wrapper = styled.section`
       width: 100vw;
       margin-left: -20px;
       height: 1px;
+      height: 0.5px;
       background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
   }

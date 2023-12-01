@@ -687,34 +687,6 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.settings.label'),
       items: [
         {
-          leftIcon: RcIconThemeMode,
-          content: t('page.dashboard.settings.settings.toggleThemeMode'),
-          onClick: () => {
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Theme Mode',
-            });
-            reportSettings('Theme Mode');
-            setIsShowThemeModeModal(true);
-          },
-          rightIcon: (
-            <>
-              <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
-                role="button"
-              >
-                {ThemeModes.find((item) => item.code === themeMode)?.name ||
-                  '-'}
-              </span>
-              <ThemeIcon
-                src={RcIconArrowRight}
-                className="icon icon-arrow-right"
-              />
-            </>
-          ),
-        },
-        {
           leftIcon: RcIconWhitelist,
           content: t(
             'page.dashboard.settings.settings.enableWhitelistForSendingAssets'
@@ -768,6 +740,34 @@ const SettingsInner = ({
                 role="button"
               >
                 {langLabel}
+              </span>
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
+            </>
+          ),
+        },
+        {
+          leftIcon: RcIconThemeMode,
+          content: t('page.dashboard.settings.settings.toggleThemeMode'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Theme Mode',
+            });
+            reportSettings('Theme Mode');
+            setIsShowThemeModeModal(true);
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-r-neutral-title1"
+                role="button"
+              >
+                {ThemeModes.find((item) => item.code === themeMode)?.name ||
+                  '-'}
               </span>
               <ThemeIcon
                 src={RcIconArrowRight}
