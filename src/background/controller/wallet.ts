@@ -1865,7 +1865,7 @@ export class WalletController extends BaseController {
     if (keyring) {
       await keyring.closeConnector({ address, brandName }, silent);
       // reset onAfterConnect
-      if (resetConnect) keyring.resetConnect();
+      // if (resetConnect) keyring.resetConnect();
     }
   };
 
