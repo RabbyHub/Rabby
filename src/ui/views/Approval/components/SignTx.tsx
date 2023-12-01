@@ -199,23 +199,28 @@ const getRecommendGas = async ({
       gasUsed: Number(txGas),
     };
   }
-  const res = await wallet.openapi.historyGasUsed({
-    tx: {
-      ...tx,
-      nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
-      data: tx.data,
-      value: tx.value || '0x0',
-      gas: tx.gas || '', // set gas limit if dapp not set
-    },
-    user_addr: tx.from,
-  });
-  if (res.gas_used > 0) {
-    return {
-      needRatio: true,
-      gas: new BigNumber(res.gas_used),
-      gasUsed: res.gas_used,
-    };
+  try {
+    const res = await wallet.openapi.historyGasUsed({
+      tx: {
+        ...tx,
+        nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+        data: tx.data,
+        value: tx.value || '0x0',
+        gas: tx.gas || '', // set gas limit if dapp not set
+      },
+      user_addr: tx.from,
+    });
+    if (res.gas_used > 0) {
+      return {
+        needRatio: true,
+        gas: new BigNumber(res.gas_used),
+        gasUsed: res.gas_used,
+      };
+    }
+  } catch (e) {
+    // NOTHING
   }
+
   return {
     needRatio: false,
     gas: new BigNumber(1000000),
