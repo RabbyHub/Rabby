@@ -45,6 +45,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'WatchAddressWaiting',
   'CommonWaiting',
   'PrivatekeyWaiting',
+  'CoinbaseWaiting',
 ];
 
 export type StatsData = {

@@ -235,6 +235,15 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             <SeedPhraseBar address={address} />
           </div>
         )}
+        {type === KEYRING_CLASS.Coinbase && (
+          <div className="pb-[20px]">
+            <SessionStatusBar
+              className="text-gray-subTitle bg-gray-bg connect-status"
+              address={address}
+              brandName={KEYRING_CLASS.Coinbase}
+            />
+          </div>
+        )}
       </div>
       {accountInfo && (
         <div className="rabby-list-item">
