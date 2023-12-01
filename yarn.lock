@@ -3872,10 +3872,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@rabby-wallet/eth-coinbase-keyring@^0.0.0-beta.3":
-  version "0.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-coinbase-keyring/-/eth-coinbase-keyring-0.0.0-beta.3.tgz#37b19b001a1cad2bb1e789bd359115c84334b284"
-  integrity sha512-zWOlo8QW1uOy+syClk/sa/bWvhUnk3qtGoUe8lphmcIuABYA2x1nXOHySL6iqa7BriOrploab1B53t2y1TOIgQ==
+"@rabby-wallet/eth-coinbase-keyring@^0.0.0-beta.4":
+  version "0.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-coinbase-keyring/-/eth-coinbase-keyring-0.0.0-beta.4.tgz#1014748374269b49335a65264296480703884824"
+  integrity sha512-HzSZO3dGhgMYU+5o9D9Ye5AQqZBkI90roEK0QZl1XepMquZq+tZ8mlZN0Yrco/A3wypJWxQ04UtTp6kZpB4qsw==
   dependencies:
     "@coinbase/wallet-sdk" beta
     "@ethereumjs/util" "^8.1.0"
