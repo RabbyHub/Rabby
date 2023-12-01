@@ -10,8 +10,19 @@ export const BalanceChange = ({
   data?: NonNullable<PendingTxItem['pre_exec_result']>['balance_change'];
   tokenDict?: Record<string, any>;
 }) => {
+  const isEmpty = [
+    'send_token_list',
+    'receive_token_list',
+    'send_nft_list',
+    'receive_nft_list',
+  ].every((key) => {
+    return (data?.[key]?.length || 0) === 0;
+  });
   if (!data) {
     return null;
+  }
+  if (isEmpty) {
+    return <div>-</div>;
   }
   return (
     <div className="flex flex-col gap-[8px]">

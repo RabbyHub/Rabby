@@ -23,6 +23,7 @@ import IconUnknownNFT from 'ui/assets/pending/icon-unknown-nft.svg';
 import NFTAvatar from '../../../Dashboard/components/NFT/NFTAvatar';
 import { Empty } from '../Empty';
 import { Loading } from './Loading';
+import { useSinceTimeWithSecs } from '@/ui/hooks/useSinceTimeWithSecs';
 
 export interface Props {
   explain?: TransactionGroup['explain'];
@@ -260,6 +261,8 @@ export const PrePackInfo = ({
 
   const isEmpty = !res?.length || !isPending;
 
+  const lastExplainTime = useSinceTimeWithSecs(latestExplain?.create_at);
+
   return (
     <div
       className={clsx(
@@ -326,9 +329,7 @@ export const PrePackInfo = ({
         <>
           <div className="text-r-neutral-foot text-[12px] mt-[8px] leading-[14px]">
             {t('page.pendingDetail.PrePackInfo.desc', {
-              time: latestExplain?.create_at
-                ? sinceTime(latestExplain?.create_at || 0)
-                : null,
+              time: lastExplainTime,
             })}
           </div>
           <div className="bg-r-neutral-line h-[0.5px] mx-[-24px] mt-[16px]"></div>

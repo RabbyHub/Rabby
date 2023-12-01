@@ -477,7 +477,7 @@
         "MempoolList": {
           "empty": "Not found in any node",
           "reBroadcastBtn": "Re-broadcast",
-          "title": "Found in the below memopools"
+          "title": "Appeared in {{count}} RPC nodes"
         },
         "message": {
           "reBroadcastSuccess": "Re-broadcasted",
@@ -492,7 +492,8 @@
         },
         "PredictTime": {
           "time": "Predicted to be packed in {{time}}",
-          "noTime": "Packing time is being predicted"
+          "noTime": "Packing time is being predicted",
+          "failed": "Packing time prediction failed"
         }
       },
       "signedText": {
@@ -1653,7 +1654,11 @@
       "TxTimeline": {
         "pending": "Checking status...",
         "created": "Transaction created",
-        "broadcasted": "Recently broadcasted"
+        "broadcasted": "Recently broadcasted",
+        "broadcastedCount_ordinal_one": "{{count}}st broadcast",
+        "broadcastedCount_ordinal_two": "{{count}}nd broadcast",
+        "broadcastedCount_ordinal_few": "{{count}}rd broadcast",
+        "broadcastedCount_ordinal_other": "{{count}}th broadcast"
       },
       "MempoolList": {
         "col": {
@@ -1666,7 +1671,7 @@
           "appearedOnce": "Appeared once",
           "notFound": "Not found"
         },
-        "title": "Found in {{count}} RPC nodes"
+        "title": "Appeared in {{count}} RPC nodes"
       },
       "PendingTxList": {
         "title": "GasPrice Ranks #{{rank}} in All Pending Txs",
@@ -1678,7 +1683,9 @@
         "col": {
           "gasPrice": "Gas Price",
           "action": "Transaction Action",
-          "balanceChange": "Balance change"
+          "balanceChange": "Balance change",
+          "actionType": "Action type",
+          "interact": "Interact with"
         },
         "titleSame": "GasPrice Ranks #{{rank}} in Same as Current",
         "titleSameNotFound": "No Rank in Same as Current"
@@ -1703,6 +1710,11 @@
         "error": "{{count}} error found",
         "loss": "{{lossCount}} loss found",
         "desc": "Simulation executed in the latest block, updated {{time}}"
+      },
+      "Predict": {
+        "completed": "Transaction Completed",
+        "predictFailed": "Packing time prediction failed",
+        "skipNonce": "Your address has Nonce skipped on Ethereum chain causing current transaction can’t complete"
       }
     }
   },

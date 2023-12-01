@@ -11,6 +11,8 @@ import { Empty } from '../Empty';
 import { TransactionAction } from './TransactionAction';
 import { BalanceChange } from './BalanceChange';
 import { useTranslation } from 'react-i18next';
+import { TransactionActionType } from './TransactionActionType';
+import SkeletonInput from 'antd/lib/skeleton/Input';
 
 export const PendingTxTable = ({
   list,
@@ -40,7 +42,7 @@ export const PendingTxTable = ({
           </>
         );
       },
-      width: 120,
+      width: 80,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.gasPrice'),
@@ -51,18 +53,28 @@ export const PendingTxTable = ({
           </div>
         );
       },
-      width: 240,
+      width: 160,
     },
     {
-      title: t('page.pendingDetail.PendingTxList.col.action'),
+      title: t('page.pendingDetail.PendingTxList.col.actionType'),
+      render(value, record, index) {
+        return <TransactionActionType data={record} />;
+      },
+      width: 200,
+    },
+    {
+      title: t('page.pendingDetail.PendingTxList.col.interact'),
       render(value, record, index) {
         return <TransactionAction data={record} />;
       },
-      width: 344,
+      width: 304,
     },
     {
       title: t('page.pendingDetail.PendingTxList.col.balanceChange'),
       render(value, record, index) {
+        if (!record?.pre_exec_result?.pre_exec?.success) {
+          return <SkeletonInput active style={{ width: 109, height: 21 }} />;
+        }
         return (
           <BalanceChange
             data={record.pre_exec_result?.balance_change}

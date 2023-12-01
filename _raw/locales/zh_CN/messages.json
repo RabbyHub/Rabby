@@ -682,8 +682,7 @@
         },
         "MempoolList": {
           "empty": "未发现包含这笔交易的节点",
-          "reBroadcastBtn": "重新广播",
-          "title": "已在以下节点的memopool发现这笔交易"
+          "reBroadcastBtn": "重新广播"
         },
         "message": {
           "broadcastSuccess": "已广播",
