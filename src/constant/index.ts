@@ -1105,6 +1105,9 @@ export const CAN_ESTIMATE_L1_FEE_CHAINS = [
   ...OP_STACK_ENUMS,
   CHAINS_ENUM.SCRL,
   ...ARB_LIKE_L2_CHAINS,
+  CHAINS_ENUM.PZE,
+  CHAINS_ENUM.ERA,
+  CHAINS_ENUM.LINEA,
 ];
 
 export const SecurityEngineLevelOrder = [
