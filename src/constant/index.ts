@@ -840,6 +840,7 @@ export const WALLET_BRAND_CONTENT: {
     id: 28,
     name: 'Coinbase',
     brand: WALLET_BRAND_TYPES.Coinbase,
+    lightIcon: IconCoinbase,
     icon: IconCoinbase,
     image: IconCoinbase,
     rcSvg: RCIconCoinbase,
