@@ -100,7 +100,7 @@ export const PendingTxTable = ({
         position: ['bottomCenter'],
       }}
       rowKey={(item) => item.id}
-      className="simple-table"
+      className="simple-table pending-tx-table"
     ></Table>
   );
 };
