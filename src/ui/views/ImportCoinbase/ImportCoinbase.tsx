@@ -121,7 +121,7 @@ export const ImportCoinbase = () => {
   }, []);
 
   return (
-    <div className="wallet-connect pb-0">
+    <div className="import-coinbase pb-0">
       <div className="create-new-header create-password-header h-[180px] py-[20px]">
         <img
           src={IconBack}
