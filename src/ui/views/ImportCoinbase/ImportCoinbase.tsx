@@ -25,7 +25,6 @@ export const ImportCoinbase = () => {
   const [runParams, setRunParams] = useState<
     Parameters<typeof run> | undefined
   >();
-  const [curStashId, setCurStashId] = useState<number | null>();
 
   const [run, loading] = useWalletRequest(wallet.importCoinbase, {
     onSuccess(accounts) {
@@ -57,8 +56,7 @@ export const ImportCoinbase = () => {
   };
 
   const handleImportCoinbase = async () => {
-    const { stashId, uri } = await wallet.connectCoinbase(curStashId);
-    setCurStashId(stashId);
+    const { uri } = await wallet.connectCoinbase();
     setWalletconnectUri(uri!);
   };
 
@@ -90,7 +88,7 @@ export const ImportCoinbase = () => {
     switch (status) {
       case SESSION_STATUS_MAP.CONNECTED:
         setResult(account.address);
-        setRunParams([account, curStashId === null ? undefined : curStashId]);
+        setRunParams([account]);
         break;
       case SESSION_STATUS_MAP.REJECTED:
         handleImportCoinbase();

@@ -3441,9 +3441,12 @@ export class WalletController extends BaseController {
     notificationService.setStatsData(data);
   };
 
-  connectCoinbase = async (curStashId?: number | null) => {
+  _currentCoinbaseStashId?: undefined | null | number;
+
+  connectCoinbase = async () => {
     let keyring: CoinbaseKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.COINBASE;
+    const curStashId = this._currentCoinbaseStashId;
     try {
       if (curStashId !== null && curStashId !== undefined) {
         keyring = stashKeyrings[curStashId];
@@ -3462,6 +3465,17 @@ export class WalletController extends BaseController {
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
+
+      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
+        const uri = keyring.connect({
+          address,
+        });
+
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.INITED,
+          params: { uri },
+        });
+      });
 
       keyring.on('message', (data) => {
         if (data.status === 'CHAIN_CHANGED') {
@@ -3487,12 +3501,14 @@ export class WalletController extends BaseController {
 
     const uri = await keyring.connect();
 
-    return { uri, stashId };
+    this._currentCoinbaseStashId = stashId;
+    return { uri };
   };
 
-  importCoinbase = async (address: string, stashId?: number) => {
+  importCoinbase = async (address: string) => {
     let keyring: CoinbaseKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.COINBASE;
+    const stashId = this._currentCoinbaseStashId;
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
