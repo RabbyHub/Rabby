@@ -28,6 +28,14 @@ const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
 
+export enum LedgerHDPathType {
+  LedgerLive = 'LedgerLive',
+  Legacy = 'Legacy',
+  BIP44 = 'BIP44',
+}
+
+type HDPathType = LedgerHDPathType;
+
 interface Account {
   address: string;
   index: number;
@@ -35,6 +43,9 @@ interface Account {
 
 interface AccountDetail {
   hdPathBasePublicKey?: string;
+  hdPath: string;
+  hdPathType: HDPathType;
+  index: number;
 }
 
 /**
@@ -225,6 +236,12 @@ class OneKeyKeyring extends EventEmitter {
             const address = this._addressFromIndex(pathBase, i);
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
+              this.accountDetails[ethUtil.toChecksumAddress(address)] = {
+                hdPath: this._pathFromAddress(address),
+                hdPathType: LedgerHDPathType.BIP44,
+                hdPathBasePublicKey: this.getPathBasePublicKey(),
+                index: i,
+              };
             }
             this.page = 0;
           }
@@ -655,7 +672,10 @@ class OneKeyKeyring extends EventEmitter {
 
   indexFromAddress(address: string) {
     const checksummedAddress = ethUtil.toChecksumAddress(address);
-    let index = this.paths[checksummedAddress];
+    let index =
+      this.paths[checksummedAddress] ||
+      this.accountDetails[checksummedAddress]?.index;
+
     if (typeof index === 'undefined') {
       for (let i = 0; i < MAX_INDEX; i++) {
         if (checksummedAddress === this._addressFromIndex(pathBase, i)) {
@@ -710,14 +730,15 @@ class OneKeyKeyring extends EventEmitter {
     const detail = this.accountDetails[checksummedAddress];
 
     // The detail is already fixed
-    if (detail?.hdPathBasePublicKey) {
+    if (detail?.hdPathBasePublicKey && detail.hdPath) {
       return;
     }
 
     let addressInDevice;
+    let index;
 
     try {
-      const index = this.indexFromAddress(address);
+      index = this.indexFromAddress(address);
       addressInDevice = this._addressFromIndex(pathBase, index);
     } catch (e) {
       console.log('address not found', address);
@@ -729,6 +750,9 @@ class OneKeyKeyring extends EventEmitter {
 
     this.accountDetails[checksummedAddress] = {
       ...detail,
+      index,
+      hdPath: this._pathFromAddress(address),
+      hdPathType: LedgerHDPathType.BIP44,
       hdPathBasePublicKey: this.getPathBasePublicKey(),
     };
   }
