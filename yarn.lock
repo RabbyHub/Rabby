@@ -4009,10 +4009,10 @@
     typescript "^4.5.0"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.24-alpha.1":
-  version "0.1.24-alpha.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.24-alpha.1.tgz#f8782af820fd41d00554c0d44ade62cefd6ada44"
-  integrity sha512-OVyEjjNFY2Ke7Mltw3hcVyQgkRsLsFHshPv4cUl+RR5n3AlW4xgVAEVCx2MTio5FmfkHF8I5adNhySQDWf95VA==
+"@rabby-wallet/page-provider@^0.1.24":
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.24.tgz#67d822c51356d4f02bdc3368f9f62ba7d1d1ad34"
+  integrity sha512-wf75yp6fPNepP7nAXVq7MEF+Vwknpx5YT0sTSG2+JdlvHaVPkMWlRARuGaPhSKLynrDO/HFVo3w/pZfLY2YuPQ==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
