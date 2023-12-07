@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { VariableSizeList as VList } from 'react-window';
+import { VariableSizeList as VList, ListOnScrollProps } from 'react-window';
+import { useDebounce } from 'react-use';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
@@ -174,6 +175,7 @@ const AddressManagement = () => {
   const [searchKeyword, setSearchKeyword] = React.useState(
     addressSortStore?.search || ''
   );
+  const [scrollKey, setScrollKey] = React.useState<string | null>(null);
   const debouncedSearchKeyword = useDebounceValue(searchKeyword, 250);
 
   const {
@@ -329,9 +331,6 @@ const AddressManagement = () => {
           )}
           style={!isGroup ? style : undefined}
           key={account.address}
-          onMouseEnter={() => {
-            recordLatestAddress(`${account.type}-${account.address}`);
-          }}
         >
           <AddressItem
             balance={account.balance}
@@ -446,16 +445,16 @@ const AddressManagement = () => {
         });
         if (index !== -1) {
           for (let i = 0; i < index; i++) {
-            sum += accounts[i].length * 56 + 16;
+            sum += accounts[i].length * 52 + 16;
           }
-          sum += secondIndex * 56;
+          sum += secondIndex * 52;
         }
       } else {
         index = (filteredAccounts as IDisplayedAccountWithBalance[]).findIndex(
           (e) => `${e.type}-${e.address}` === addressSortStore.lastCurrent
         );
         if (index !== -1) {
-          sum = index * 64;
+          sum = index * 60;
         }
       }
 
@@ -484,6 +483,52 @@ const AddressManagement = () => {
       return lastPadding + (i !== sortedAccountsList.length - 1 ? 60 : 76);
     },
     [filteredAccounts, sortedAccountsList, addressSortStore.sortType]
+  );
+
+  const handleScroll = (e: ListOnScrollProps) => {
+    if (addressSortStore.sortType === 'addressType') {
+      const accounts = filteredAccounts as IDisplayedAccountWithBalance[][];
+      let sum = 0;
+      let target: null | IDisplayedAccountWithBalance = null;
+      for (let i = 0; i < accounts.length; i++) {
+        const groupHeight = accounts[i].length * 52;
+        if (sum + groupHeight > e.scrollOffset) {
+          // is current group
+          let k = 0;
+          while (sum < e.scrollOffset && k < accounts[i].length) {
+            sum += 52;
+            k++;
+          }
+          if (k === 0) k = 1; // make sure target always have value
+          target = accounts[i][k - 1];
+          if (target) {
+            setScrollKey(`${target.type}-${target.address}`);
+          }
+          break;
+        } else {
+          sum += groupHeight + 16;
+        }
+      }
+    } else {
+      const accounts = filteredAccounts as IDisplayedAccountWithBalance[];
+      let index = Math.round(e.scrollOffset / 60);
+      if (index > accounts.length - 1) {
+        index = accounts.length - 1;
+      }
+      if (accounts[index]) {
+        setScrollKey(`${accounts[index].type}-${accounts[index].address}`);
+      }
+    }
+  };
+
+  useDebounce(
+    () => {
+      if (scrollKey) {
+        recordLatestAddress(scrollKey);
+      }
+    },
+    200,
+    [scrollKey]
   );
 
   useEffect(() => {
@@ -615,6 +660,7 @@ const AddressManagement = () => {
             itemSize={getItemSize}
             className="address-scroll-container"
             overscanCount={6}
+            onScroll={handleScroll}
           >
             {Row}
           </VList>
