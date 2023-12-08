@@ -44,7 +44,7 @@ const ConfirmOpenExternalModal = ({
         <div className="text-15 font-medium mb-12">
           {t('You will be visiting') + ' ' + origin}
         </div>
-        <div className="text-12 text-gray-subTitle mb-20 px-16 text-center">
+        <div className="text-12 text-r-neutral-body mb-20 px-16 text-center">
           {t('debankExternalLinkAlert')}
         </div>
         <Button

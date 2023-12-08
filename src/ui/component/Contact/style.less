@@ -20,7 +20,7 @@
         font-size: 20px;
         line-height: 23px;
         text-align: center;
-        color: @color-title;
+        color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
       }
       .ant-drawer-close {
         display: none;
@@ -33,7 +33,7 @@
   .ant-input-affix-wrapper {
     padding: 15px 16px;
     border-radius: 6px;
-    background: @color-bg;
+    background: var(--r-neutral-card-2, #F2F4F7);
     &::before {
       display: none;
     }
@@ -44,7 +44,7 @@
     line-height: 18px;
     color: #161819;
     border-radius: 0;
-    background: @color-bg;
+    background: var(--r-neutral-card-2, #F2F4F7);
   }
 
   .remove-btn {
@@ -69,6 +69,8 @@
 }
 .edit-contact-modal-with-remove {
   .edit-contact-modal;
+
+  .ant-input-darkmode();
   .ant-modal-content {
     border-radius: 6px;
     overflow: hidden;

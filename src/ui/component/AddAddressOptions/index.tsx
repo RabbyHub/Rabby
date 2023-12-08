@@ -2,15 +2,33 @@ import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
-import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
-import IconHardWallet from 'ui/assets/address/hardwallet.svg';
-import IconMobileWallet from 'ui/assets/address/mobile-wallet.svg';
-import InstitutionalWallet from 'ui/assets/address/institutional-wallet.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
-import IconMnemonics from 'ui/assets/import/mnemonics-light.svg';
-import IconPrivatekey from 'ui/assets/import/privatekey-light.svg';
+import IconWalletConnect, {
+  ReactComponent as RcIconWalletConnect,
+} from 'ui/assets/walletlogo/walletconnect.svg';
+import IconCreatenewaddr, {
+  ReactComponent as RcIconCreatenewaddr,
+} from 'ui/assets/walletlogo/createnewaddr.svg';
+import IconAddwatchmodo, {
+  ReactComponent as RcIconAddwatchmodo,
+} from 'ui/assets/walletlogo/addwatchmode.svg';
+import IconHardWallet, {
+  ReactComponent as RcIconHardWallet,
+} from 'ui/assets/address/hardwallet.svg';
+import IconMobileWallet, {
+  ReactComponent as RcIconMobileWallet,
+} from 'ui/assets/address/mobile-wallet.svg';
+import InstitutionalWallet, {
+  ReactComponent as RcInstitutionalWallet,
+} from 'ui/assets/address/institutional-wallet.svg';
+import IconMetamask, {
+  ReactComponent as RcIconMetamask,
+} from 'ui/assets/dashboard/icon-metamask.svg';
+import IconMnemonics, {
+  ReactComponent as RcIconMnemonics,
+} from 'ui/assets/import/mnemonics-light.svg';
+import IconPrivatekey, {
+  ReactComponent as RcIconPrivatekey,
+} from 'ui/assets/import/privatekey-light.svg';
 
 import './style.less';
 
@@ -30,6 +48,7 @@ import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
 import { Modal } from 'antd';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -147,6 +166,13 @@ const AddAddressOptions = () => {
           pathname: '/import/cobo-argus',
           state: params,
         });
+      } else if (
+        item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
+      ) {
+        history.push({
+          pathname: '/import/coinbase',
+          state: params,
+        });
       } else {
         history.push({
           pathname: '/import/wallet-connect',
@@ -196,17 +222,17 @@ const AddAddressOptions = () => {
         {
           title: t('page.newAddress.connectHardwareWallets'),
           key: WALLET_BRAND_CATEGORY.HARDWARE,
-          icon: IconHardWallet,
+          icon: RcIconHardWallet,
         },
         {
           title: t('page.newAddress.connectMobileWalletApps'),
           key: WALLET_BRAND_CATEGORY.MOBILE,
-          icon: IconMobileWallet,
+          icon: RcIconMobileWallet,
         },
         {
           title: t('page.newAddress.connectInstitutionalWallets'),
           key: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
-          icon: InstitutionalWallet,
+          icon: RcInstitutionalWallet,
         },
       ]
         .map((item) => {
@@ -219,7 +245,7 @@ const AddAddressOptions = () => {
     [wallets]
   );
 
-  const createIMportAddrList = React.useMemo(
+  const createImportAddrList = React.useMemo(
     () => [
       {
         leftIcon: IconCreatenewaddr,
@@ -299,11 +325,19 @@ const AddAddressOptions = () => {
 
   return (
     <div className="rabby-container pb-[12px]" ref={rootRef}>
-      {[createIMportAddrList, centerList].map((items, index) => (
-        <div className="bg-white rounded-[6px] mb-[12px]" key={index}>
+      {[createImportAddrList, centerList].map((items, index) => (
+        <div
+          className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]"
+          key={index}
+        >
           {items.map((e) => {
             return (
-              <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
+              <Item
+                key={e.brand}
+                bgColor="transparent"
+                leftIcon={e.leftIcon}
+                onClick={e.onClick}
+              >
                 <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}
                 </div>
@@ -313,13 +347,14 @@ const AddAddressOptions = () => {
         </div>
       ))}
 
-      <div className="bg-white rounded-[6px] mb-[12px]">
+      <div className="bg-r-neutral-card-1 rounded-[6px] mb-[12px]">
         {renderList.map((item) => {
           const isSelected = selectedWalletType === item.key;
           return (
             <div key={item.key} className={clsx(isSelected && 'pb-[16px]')}>
               <Item
                 hoverBorder={false}
+                bgColor="transparent"
                 leftIcon={item.icon}
                 className={clsx('bg-transparent', item.key)}
                 rightIconClassName={clsx(
@@ -332,12 +367,12 @@ const AddAddressOptions = () => {
                   );
                 }}
               >
-                <div className="pl-[12px] text-13 leading-[15px] text-gray-title font-medium">
+                <div className="pl-[12px] text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {item.title}
                 </div>
                 <div className="ml-auto relative w-[52px] h-[20px]">
                   {item.values.slice(0, 3).map((wallet, i) => (
-                    <img
+                    <ThemeIcon
                       key={wallet.image}
                       src={wallet.leftIcon || wallet.image}
                       className="absolute top-0 w-[20px] h-[20px] select-none"
@@ -351,7 +386,7 @@ const AddAddressOptions = () => {
               </Item>
               <div
                 className={clsx(
-                  'mx-[16px] bg-gray-bg2 rounded-[6px] transition-all  overflow-hidden',
+                  'mx-[16px] bg-r-neutral-card-2 rounded-[6px] transition-all overflow-hidden',
                   !isSelected ? 'max-h-0' : 'max-h-[500px]'
                 )}
               >
@@ -379,7 +414,7 @@ const AddAddressOptions = () => {
                         rightIcon={null}
                         onClick={v.onClick}
                       >
-                        <span className="text-12 font-medium text-gray-title mt-[8px]">
+                        <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
                           {v.content}
                         </span>
                       </Item>
@@ -392,10 +427,15 @@ const AddAddressOptions = () => {
         })}
       </div>
 
-      <div className="bg-white rounded-[6px]">
+      <div className="bg-r-neutral-card-1 rounded-[6px]">
         {bottomList.map((e) => {
           return (
-            <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>
+            <Item
+              bgColor="transparent"
+              key={e.brand}
+              leftIcon={e.leftIcon}
+              onClick={e.onClick}
+            >
               <div className="flex flex-col pl-[12px]">
                 <div className="text-13 leading-[15px] text-r-neutral-title-1 font-medium">
                   {e.content}

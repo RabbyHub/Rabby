@@ -14,11 +14,12 @@ import { SecurityEngineLevel, SecurityEngineLevelOrder } from 'consts';
 import clsx from 'clsx';
 import { useHover } from '@/ui/utils';
 import RuleDetailDrawer from './RuleDetailDrawer';
-import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/sign/arrow-right.svg';
 import IconError from 'ui/assets/sign/security-engine/error-big.svg';
 import IconDisable from 'ui/assets/sign/security-engine/disable-big.svg';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const RuleDrawerWrapper = styled.div`
   border-radius: 8px;
@@ -31,15 +32,15 @@ const RuleDrawerWrapper = styled.div`
     font-weight: 500;
     font-size: 15px;
     line-height: 18px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #f7fafc);
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(19, 20, 26, 0.1);
+    border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     margin-bottom: 14px;
     display: flex;
     .desc-title {
       font-size: 13px;
       line-height: 15px;
-      color: #4b4d59;
+      color: var(--r-neutral-body, #d3d8e0);
       margin-right: 6px;
       font-weight: normal;
       margin-top: 1px;
@@ -48,11 +49,11 @@ const RuleDrawerWrapper = styled.div`
   .threshold {
     font-size: 13px;
     line-height: 18px;
-    color: #4b4d59;
+    color: var(--r-neutral-body, #d3d8e0);
     p {
       font-size: 13px;
       line-height: 15px;
-      color: #4b4d59;
+      color: var(--r-neutral-body, #d3d8e0);
       margin-bottom: 8px;
     }
     .value {
@@ -79,12 +80,12 @@ const RuleDrawerWrapper = styled.div`
         font-weight: 500;
         font-size: 15px;
         line-height: 18px;
-        color: #13141a;
+        color: var(--r-neutral-title-1, #f7fafc);
       }
       .current-value {
         font-size: 12px;
         line-height: 14px;
-        color: #707280;
+        color: var(--r-neutral-foot, #babec5);
       }
     }
   }
@@ -210,17 +211,21 @@ const RuleDrawerWrapper = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #f5f6fa;
+    background: var(--r-neutral-card-2, #f5f6fa);
   }
   &.proceed {
-    background: #f5f6fa;
+    background: var(--r-neutral-card-2, #f5f6fa);
     .rule-threshold {
-      background: rgba(0, 0, 0, 0.03);
+      background: var(--r-neutral-card-3, #f7fafc);
       .level-text {
-        color: #707280;
+        color: var(--r-neutral-foot, #babec5);
       }
     }
     .rule-threshold-footer {
+      .rabby-checkbox__label {
+        color: var(--r-neutral-foot, #babec5);
+      }
+
       .button-ignore {
         background: #707280;
         border-color: transparent;
@@ -238,7 +243,7 @@ const RuleDrawerWrapper = styled.div`
 `;
 
 const RuleFooter = styled.div`
-  background: #f5f6fa;
+  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
   border-radius: 6px;
   .item {
     display: flex;
@@ -248,13 +253,13 @@ const RuleFooter = styled.div`
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #f7fafc);
     .right {
       display: flex;
       font-size: 12px;
       line-height: 14px;
       text-align: right;
-      color: #4b4d59;
+      color: var(--r-neutral-body, #d3d8e0);
       font-weight: normal;
       align-items: center;
     }
@@ -267,7 +272,7 @@ const RuleFooter = styled.div`
         left: 18px;
         width: 328px;
         height: 1px;
-        background-color: #e5e9ef;
+        background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       }
     }
     &:nth-child(2) {
@@ -602,8 +607,10 @@ const RuleDrawer = ({
       visible={visible}
       onClose={handleClose}
       height="510"
+      className="rule-detail-modal"
       closable
       title={t('page.securityEngine.ruleDetailTitle')}
+      isSupportDarkMode
     >
       {selectRule && (
         <>
@@ -629,7 +636,10 @@ const RuleDrawer = ({
               </div>
               <div className="right">
                 {ruleLevels}
-                <img src={IconArrowRight} className="icon-arrow-right" />
+                <ThemeIcon
+                  src={RcIconArrowRight}
+                  className="icon-arrow-right"
+                />
               </div>
             </div>
           </RuleFooter>

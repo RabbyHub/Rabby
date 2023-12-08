@@ -24,21 +24,32 @@ import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
-import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
-import IconEdit from 'ui/assets/edit-purple.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
-import IconContact from 'ui/assets/send-token/contact.svg';
-import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import IconWhitelist, {
+  ReactComponent as RcIconWhitelist,
+} from 'ui/assets/dashboard/whitelist.svg';
+import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
+import IconContact, {
+  ReactComponent as RcIconContact,
+} from 'ui/assets/send-token/contact.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'ui/assets/send-token/check.svg';
+import IconTemporaryGrantCheckbox, {
+  ReactComponent as RcIconTemporaryGrantCheckbox,
+} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-2-currentcolor.svg';
+
 import { findChainByEnum } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConfirmAllowTransfer';
 import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -433,7 +444,10 @@ const SendNFT = () => {
                     >
                       {contactInfo && (
                         <>
-                          <img src={IconEdit} className="icon icon-edit" />
+                          <ThemeIcon
+                            src={RcIconEdit}
+                            className="icon icon-edit"
+                          />
                           <span
                             title={contactInfo.name}
                             className="inline-block align-middle truncate max-w-[240px]"
@@ -444,9 +458,9 @@ const SendNFT = () => {
                       )}
                     </div>
                   )}
-                  <img
+                  <ThemeIcon
                     className="icon icon-contact"
-                    src={whitelistEnabled ? IconWhitelist : IconContact}
+                    src={whitelistEnabled ? RcIconWhitelist : RcIconContact}
                     onClick={handleListContact}
                   />
                 </div>
@@ -497,13 +511,14 @@ const SendNFT = () => {
                   />
                 </Form.Item>
                 {toAddressIsValid && !toAddressInContactBook && (
-                  <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
+                  <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
                     {/* Not on address list.{' '} */}
                     {t('page.sendNFT.tipNotOnAddressList')}{' '}
                     <span
                       onClick={handleClickAddContact}
-                      className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                      className={clsx(
+                        'ml-[2px] underline cursor-pointer text-r-blue-default'
+                      )}
                     >
                       {/* Add to contacts */}
                       {t('page.sendNFT.tipAddToContacts')}
@@ -542,12 +557,16 @@ const SendNFT = () => {
                         address={nftItem.contract_id}
                         showArrow={false}
                       />
-                      <img
-                        src={IconExternal}
-                        className="icon icon-copy"
+                      <ThemeIcon
+                        src={RcIconExternal}
+                        className="icon icon-copy text-r-neutral-foot"
                         onClick={handleClickContractId}
                       />
-                      <Copy data={nftItem.contract_id} variant="address"></Copy>
+                      <Copy
+                        data={nftItem.contract_id}
+                        variant="address"
+                        className="text-r-neutral-foot w-14 h-14"
+                      />
                     </span>
                   </p>
                 </div>
@@ -580,11 +599,11 @@ const SendNFT = () => {
               >
                 <p className="whitelist-alert__content text-center">
                   {whitelistEnabled && (
-                    <img
+                    <ThemeIcon
                       src={
                         whitelistAlertContent.success
-                          ? IconCheck
-                          : IconTemporaryGrantCheckbox
+                          ? RcIconCheck
+                          : RcIconTemporaryGrantCheckbox
                       }
                       className="icon icon-check inline-block relative -top-1"
                     />

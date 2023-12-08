@@ -156,6 +156,7 @@ const NoTokenWrapper = styled.div`
     font-weight: 500;
     line-height: 24px;
     text-align: center;
+    color: var(--r-neutral-body, #d3d8e0);
     .icon-warning {
       margin: 0 auto 40px;
     }
@@ -164,8 +165,8 @@ const NoTokenWrapper = styled.div`
     display: flex;
     justify-content: center;
     padding: 24px;
-    background-color: #fff;
-    border-top: 0.5px solid #e5e9ef;
+    background-color: var(--r-neutral-bg-1, #fff);
+    border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   }
 `;
 

@@ -21,8 +21,8 @@ const ErrorMsg = styled.div`
 
 const Footer = styled.div`
   height: 76px;
-  background: #ffffff;
-  border-top: 1px solid #e5e9ef;
+  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -133,6 +133,7 @@ const EditRPCModal = ({
       style={{
         zIndex: 1001,
       }}
+      isSupportDarkMode
     >
       <EditRPCWrapped>
         <PageHeader forceShowBack onBack={onCancel} className="pt-0">
@@ -143,10 +144,10 @@ const EditRPCModal = ({
             className="w-[56px] h-[56px] mx-auto mb-12"
             src={chainItem?.logo || ''}
           />
-          <div className="mb-8 text-20 text-gray-title leading-none">
+          <div className="mb-8 text-20 text-r-neutral-title-1 leading-none">
             {chainItem?.name}
           </div>
-          <div className="mb-8 text-14 text-gray-title text-left">
+          <div className="mb-8 text-14 text-r-neutral-title-1 text-left">
             {t('page.customRpc.EditRPCModal.rpcUrl')}
           </div>
         </div>

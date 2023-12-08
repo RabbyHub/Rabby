@@ -27,18 +27,17 @@ import type { SelectChainItemProps } from '@/ui/component/ChainSelector/componen
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
 
-const tipsClassName = clsx('text-gray-subTitle text-12 mb-4 pt-10');
+const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
-  background: #f5f6fa;
+  /* background: #f5f6fa; */
   border-radius: 6px;
   height: 46px;
   font-weight: 500;
   font-size: 18px;
-  color: #ffffff;
+  /* color: #ffffff; */
   box-shadow: none;
   & > .ant-input {
-    background: #f5f6fa;
     font-weight: 500;
     font-size: 18px;
   }
@@ -49,7 +48,7 @@ const StyledInput = styled(Input)`
     border: 1px solid transparent;
   }
   &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
 
@@ -274,7 +273,7 @@ export const Main = () => {
   return (
     <div
       className={clsx(
-        'flex-1 overflow-auto',
+        'flex-1 overflow-auto page-has-ant-input',
         isWrapToken
           ? ''
           : activeProvider?.shouldApproveToken
@@ -282,7 +281,11 @@ export const Main = () => {
           : 'pb-[110px]'
       )}
     >
-      <div className={clsx('bg-white rounded-[6px] p-12 pt-0 pb-10 mx-20')}>
+      <div
+        className={clsx(
+          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-10 mx-20'
+        )}
+      >
         <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
         <ChainSelectorInForm
           value={chain}
@@ -314,7 +317,7 @@ export const Main = () => {
             tokenRender={(p) => <TokenRender {...p} />}
           />
           <IconSwapArrow
-            className="text-gray-content text-opacity-60 hover:text-opacity-100 cursor-pointer"
+            className="text-r-neutral-line text-opacity-60 hover:text-opacity-100 cursor-pointer"
             onClick={exchangeToken}
           />
           <TokenSelect
@@ -346,7 +349,7 @@ export const Main = () => {
           </div>
           <div
             className={clsx(
-              'text-gray-title',
+              'text-r-neutral-title-1',
               !payTokenIsNativeToken && 'underline cursor-pointer'
             )}
             onClick={() => {
@@ -365,7 +368,7 @@ export const Main = () => {
           onChange={handleAmountChange}
           ref={inputRef as any}
           suffix={
-            <span className="text-gray-content text-12">
+            <span className="text-r-neutral-foot text-12">
               {payAmount
                 ? `≈ ${formatUsdValue(
                     new BigNumber(payAmount)
@@ -395,11 +398,11 @@ export const Main = () => {
                 // loading={receiveSlippageLoading}
               />
               {isWrapToken ? (
-                <div className="mt-12 text-13 text-gray-subTitle">
+                <div className="mt-12 text-13 text-r-neutral-body">
                   {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
                 </div>
               ) : (
-                <div className="section text-13 leading-4 text-gray-subTitle mt-12">
+                <div className="section text-13 leading-4 text-r-neutral-body mt-12">
                   <div className="subText flex flex-col gap-12">
                     <Slippage
                       displaySlippage={slippage}
@@ -416,14 +419,16 @@ export const Main = () => {
                     />
                     <div className="flex justify-between">
                       <span>{t('page.swap.minimum-received')}</span>
-                      <span className="font-medium text-gray-title">
+                      <span className="font-medium text-r-neutral-title-1">
                         {miniReceivedAmount}{' '}
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t('page.swap.rabby-fee')}</span>
-                      <span className="font-medium text-gray-title">0%</span>
+                      <span className="font-medium text-r-neutral-title-1">
+                        0%
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -435,7 +440,7 @@ export const Main = () => {
       {inSufficient ? (
         <Alert
           className={clsx(
-            'mx-[20px]  rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+            'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
           )}
           icon={
             <InfoCircleFilled
@@ -462,19 +467,16 @@ export const Main = () => {
       <div
         className={clsx(
           'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-white border border-gray-divider',
+          'bg-r-neutral-bg-1 border border-transparent border-t-rabby-neutral-line',
           activeProvider && activeProvider.shouldApproveToken && 'pt-16'
         )}
       >
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
           <div className="flex items-center justify-between w-full self-start">
-            <div className="tips">{t('page.swap.approve-tips')}</div>
-            <div
-              className={clsx(
-                'allowance',
-                unlimitedAllowance && 'text-gray-subTitle'
-              )}
-            >
+            <div className="tips text-r-neutral-body">
+              {t('page.swap.approve-tips')}
+            </div>
+            <div className={clsx('allowance text-r-neutral-title-1')}>
               <span>{t('page.swap.unlimited-allowance')}</span>{' '}
               <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
             </div>
@@ -499,10 +501,10 @@ export const Main = () => {
                 title: null,
                 content: (
                   <>
-                    <div className="text-[16px] font-medium text-gray-title mb-18 text-center">
+                    <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
                       Sign 2 transactions to change allowance
                     </div>
-                    <div className="text-13 leading-[17px]  text-gray-subTitle">
+                    <div className="text-13 leading-[17px]  text-r-neutral-body">
                       Token USDT requires 2 transactions to change allowance.
                       First you would need to reset allowance to zero, and only
                       then set new allowance value.

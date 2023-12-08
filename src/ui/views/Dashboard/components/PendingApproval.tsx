@@ -21,7 +21,7 @@ const Inner = styled.div`
   transform: translateX(-50%);
   top: 160px;
   width: 360px;
-  background: #fff;
+  background: var(--r-neutral-bg-1);
   box-shadow: 0px 20px 20px rgba(45, 48, 51, 0.16);
   border-radius: 6px;
   padding: 40px 16px 24px;
@@ -36,7 +36,7 @@ const TextContent = styled.p`
   line-height: 22px;
   margin: 0 0 36px 0;
   text-align: center;
-  color: ${LessPalette['@color-title']};
+  color: var(--r-neutral-title-1);
 `;
 
 const RejectAllButton = styled.a`

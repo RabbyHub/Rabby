@@ -6,7 +6,7 @@ import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { Copy, TokenWithChain } from 'ui/component';
 import {
   splitNumberByStep,
@@ -28,6 +28,7 @@ import { CustomizedButton } from './CustomizedButton';
 import { BlockedButton } from './BlockedButton';
 import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -190,10 +191,9 @@ const TokenDetail = ({
             {isShowAddress ? (
               <>
                 {ellipsis(token.id)}
-                <img
-                  src={IconExternal}
+                <ThemeIcon
+                  src={RcIconExternal}
                   className="w-14 cursor-pointer"
-                  alt=""
                   onClick={() => {
                     handleClickLink(token);
                   }}

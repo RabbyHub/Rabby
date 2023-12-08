@@ -171,6 +171,9 @@ import LogoZerion, {
 import LogoCoboArgus, {
   ReactComponent as RcLogoCoboArgus,
 } from 'ui/assets/walletlogo/CoboArgus.svg';
+import IconCoinbase, {
+  ReactComponent as RCIconCoinbase,
+} from 'ui/assets/walletlogo/coinbase.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
@@ -224,6 +227,7 @@ export const KEYRING_CLASS = {
   WALLETCONNECT: 'WalletConnect',
   GNOSIS: 'Gnosis',
   CoboArgus: 'CoboArgus',
+  Coinbase: 'Coinbase',
 } as const;
 
 export const KEYRING_WITH_INDEX = [
@@ -388,6 +392,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   GridPlusConnect = 'GridPlusConnect',
   QRCodeBase = 'QR Hardware Wallet Device',
   CoboArgusConnect = 'CoboArgusConnect',
+  CoinbaseConnect = 'CoinbaseConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -474,6 +479,7 @@ export enum WALLET_BRAND_TYPES {
   Zerion = 'Zerion',
   CoboArgus = 'CoboArgus',
   MPCVault = 'MPCVault',
+  Coinbase = 'Coinbase',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -489,8 +495,16 @@ export type IWalletBrandContent = {
   name: string;
   brand: WALLET_BRAND_TYPES;
   icon: string;
+  lightIcon: string;
   image: string;
   rcSvg: Exclude<ThemeIconType, string>;
+  /**
+   * @description some brand's logo has no dark mode svg because it's colorful,
+   * for those brand, we use lightIcon as dark mode svg. When maybeSvg provided
+   * for those brand, we set maybeSvg as image string and `ThemeIcon` would rendered
+   * as <img />.
+   */
+  maybeSvg?: ThemeIconType;
   connectType: BRAND_WALLET_CONNECT_TYPE;
   category: WALLET_BRAND_CATEGORY;
   hidden?: boolean;
@@ -504,8 +518,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Amber',
     brand: WALLET_BRAND_TYPES.AMBER,
     icon: IconAmber,
+    lightIcon: IconAmber,
     image: LogoAmber,
     rcSvg: RcLogoAmber,
+    maybeSvg: LogoAmber,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -514,8 +530,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'BitBox02',
     brand: WALLET_BRAND_TYPES.BITBOX02,
     icon: IconBitBox02,
+    lightIcon: IconBitBox02,
     image: IconBitBox02WithBorder,
     rcSvg: RcIconBitBox02WithBorder,
+    maybeSvg: IconBitBox02WithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.BitBox02Connect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -524,8 +542,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Cobo Wallet',
     brand: WALLET_BRAND_TYPES.COBO,
     icon: IconCobo,
+    lightIcon: IconCobo,
     image: LogoCobo,
     rcSvg: RcLogoCobo,
+    maybeSvg: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
     hidden: true,
@@ -535,8 +555,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'CoolWallet',
     brand: WALLET_BRAND_TYPES.COOLWALLET,
     icon: LogoCoolWallet,
+    lightIcon: LogoCoolWallet,
     image: LogoCoolWallet,
     rcSvg: RcLogoCoolWallet,
+    maybeSvg: LogoCoolWallet,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -545,8 +567,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Defiant',
     brand: WALLET_BRAND_TYPES.DEFIANT,
     icon: LogoDefiant,
+    lightIcon: LogoDefiant,
     image: LogoDefiantWhite,
     rcSvg: RcLogoDefiantWhite,
+    maybeSvg: LogoDefiantWhite,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
     hidden: true,
@@ -556,8 +580,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Wallet Connect',
     brand: WALLET_BRAND_TYPES.WALLETCONNECT,
     icon: LogoWalletConnect,
+    lightIcon: LogoWalletConnect,
     image: LogoWalletConnectWhite,
     rcSvg: RcLogoWalletConnectWhite,
+    maybeSvg: LogoWalletConnectWhite,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -566,8 +592,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Fireblocks',
     brand: WALLET_BRAND_TYPES.FIREBLOCKS,
     icon: IconFireblocks,
+    lightIcon: IconFireblocks,
     image: IconFireblocksWithBorder,
     rcSvg: RcIconFireblocksWithBorder,
+    maybeSvg: IconFireblocksWithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -576,8 +604,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Safe',
     brand: WALLET_BRAND_TYPES.GNOSIS,
     icon: IconGnosis,
+    lightIcon: IconGnosis,
     image: IconGnosis,
     rcSvg: RcIconGnosis,
+    maybeSvg: IconGnosis,
     connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -586,8 +616,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'GridPlus',
     brand: WALLET_BRAND_TYPES.GRIDPLUS,
     icon: IconGridPlus,
+    lightIcon: IconGridPlus,
     image: IconGridPlus,
     rcSvg: RcIconGridPlus,
+    maybeSvg: IconGridPlus,
     connectType: BRAND_WALLET_CONNECT_TYPE.GridPlusConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -596,8 +628,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'imToken',
     brand: WALLET_BRAND_TYPES.IMTOKEN,
     icon: IconImtoken,
+    lightIcon: IconImtoken,
     image: LogoImtoken,
     rcSvg: RcLogoImtoken,
+    maybeSvg: LogoImtoken,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -606,8 +640,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Jade Wallet',
     brand: WALLET_BRAND_TYPES.JADE,
     icon: IconJade,
+    lightIcon: IconJade,
     image: LogoJade,
     rcSvg: RcLogoJade,
+    maybeSvg: LogoJade,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -616,8 +652,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Keystone',
     brand: WALLET_BRAND_TYPES.KEYSTONE,
     icon: LogoKeystone,
+    lightIcon: LogoKeystone,
     image: LogoKeystone,
     rcSvg: RcLogoKeystone,
+    maybeSvg: LogoKeystone,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -626,8 +664,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'AirGap Vault',
     brand: WALLET_BRAND_TYPES.AIRGAP,
     icon: LogoAirGap,
+    lightIcon: LogoAirGap,
     image: LogoAirGap,
     rcSvg: RcLogoAirGap,
+    maybeSvg: LogoAirGap,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -636,8 +676,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Ledger',
     brand: WALLET_BRAND_TYPES.LEDGER,
     icon: LogoLedgerWhite,
+    lightIcon: LogoLedgerWhite,
     image: LogoLedgerDark,
     rcSvg: RcLogoLedgerDark,
+    maybeSvg: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -646,8 +688,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Math Wallet',
     brand: WALLET_BRAND_TYPES.MATHWALLET,
     icon: IconMath,
+    lightIcon: IconMath,
     image: LogoMath,
     rcSvg: RcLogoMath,
+    maybeSvg: LogoMath,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -656,8 +700,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'MetaMask Mobile',
     brand: WALLET_BRAND_TYPES.METAMASK,
     icon: IconMetaMask,
+    lightIcon: IconMetaMask,
     image: IconMetaMask,
     rcSvg: RcIconMetaMask,
+    maybeSvg: RcIconMetaMask,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -666,8 +712,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'OneKey',
     brand: WALLET_BRAND_TYPES.ONEKEY,
     icon: IconOnekey,
+    lightIcon: IconOnekey,
     image: LogoOnekey,
     rcSvg: RcLogoOnekey,
+    maybeSvg: LogoOnekey,
     connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -676,8 +724,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'TokenPocket',
     brand: WALLET_BRAND_TYPES.TP,
     icon: IconTokenpocket,
+    lightIcon: IconTokenpocket,
     image: LogoTp,
     rcSvg: RcLogoTp,
+    maybeSvg: LogoTp,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -686,8 +736,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Trezor',
     brand: WALLET_BRAND_TYPES.TREZOR,
     icon: IconTrezor,
+    lightIcon: IconTrezor,
     image: LogoTrezor,
     rcSvg: RcLogoTrezor,
+    maybeSvg: LogoTrezor,
     connectType: BRAND_WALLET_CONNECT_TYPE.TrezorConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
@@ -696,8 +748,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Trust Wallet',
     brand: WALLET_BRAND_TYPES.TRUSTWALLET,
     icon: IconTrust,
+    lightIcon: IconTrust,
     image: LogoTrust,
     rcSvg: RcLogoTrust,
+    maybeSvg: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -706,8 +760,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Rainbow',
     brand: WALLET_BRAND_TYPES.Rainbow,
     icon: LogoRainbow,
+    lightIcon: LogoRainbow,
     image: LogoRainbow,
     rcSvg: RcLogoRainbow,
+    maybeSvg: LogoRainbow,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -716,8 +772,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Bitget Wallet',
     brand: WALLET_BRAND_TYPES.Bitkeep,
     icon: LogoBitkeep,
+    lightIcon: LogoBitkeep,
     image: LogoBitkeep,
     rcSvg: RcLogoBitkeep,
+    maybeSvg: LogoBitkeep,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -726,8 +784,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Zerion Wallet',
     brand: WALLET_BRAND_TYPES.Zerion,
     icon: LogoZerion,
+    lightIcon: LogoZerion,
     image: LogoZerion,
     rcSvg: RcLogoZerion,
+    maybeSvg: LogoZerion,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -745,8 +805,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'Cobo Argus',
     brand: WALLET_BRAND_TYPES.CoboArgus,
     icon: LogoCoboArgus,
+    lightIcon: LogoCoboArgus,
     image: LogoCoboArgus,
     rcSvg: RcLogoCoboArgus,
+    maybeSvg: LogoCoboArgus,
     connectType: BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -755,8 +817,10 @@ export const WALLET_BRAND_CONTENT: {
     name: 'MPCVault',
     brand: WALLET_BRAND_TYPES.MPCVault,
     icon: LogoMPCVault,
+    lightIcon: LogoMPCVault,
     image: LogoMPCVault,
     rcSvg: RcLogoMPCVault,
+    maybeSvg: LogoMPCVault,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
@@ -765,10 +829,23 @@ export const WALLET_BRAND_CONTENT: {
     name: 'imToken',
     brand: WALLET_BRAND_TYPES.IMTOKENOFFLINE,
     icon: LogoImtokenOffline,
+    lightIcon: LogoImtokenOffline,
     image: LogoImtokenOffline,
     rcSvg: RcLogoImtokenOffline,
+    maybeSvg: LogoImtokenOffline,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.Coinbase]: {
+    id: 28,
+    name: 'Coinbase',
+    brand: WALLET_BRAND_TYPES.Coinbase,
+    lightIcon: IconCoinbase,
+    icon: IconCoinbase,
+    image: IconCoinbase,
+    rcSvg: RCIconCoinbase,
+    connectType: BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
 };
 
@@ -1181,6 +1258,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [WALLET_BRAND_TYPES.IMTOKEN]: WALLET_BRAND_CONTENT.IMTOKEN.name,
   [WALLET_BRAND_TYPES.MATHWALLET]: WALLET_BRAND_CONTENT.MATHWALLET.name,
   [WALLET_BRAND_TYPES.TRUSTWALLET]: WALLET_BRAND_CONTENT.TRUSTWALLET.name,
+  [KEYRING_CLASS.Coinbase]: WALLET_BRAND_CONTENT.Coinbase.name,
 };
 
 export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
@@ -1229,6 +1307,7 @@ export const WALLET_SORT_SCORE = [
   WALLET_BRAND_TYPES.COOLWALLET,
   WALLET_BRAND_TYPES.AIRGAP,
   WALLET_BRAND_TYPES.IMTOKENOFFLINE,
+  WALLET_BRAND_TYPES.Coinbase,
   //institutional
   WALLET_BRAND_TYPES.GNOSIS,
   WALLET_BRAND_TYPES.CoboArgus,
@@ -1337,9 +1416,9 @@ export enum CANCEL_TX_TYPE {
 export const REJECT_SIGN_TEXT_KEYRINGS = [KEYRING_TYPE.CoboArgusKeyring];
 
 export enum DARK_MODE_TYPE {
-  'system' = 0,
-  'light' = 1,
-  'dark' = 2,
+  'light' = 0,
+  'dark' = 1,
+  'system' = 2,
 }
 
 export const ThemeModes = [

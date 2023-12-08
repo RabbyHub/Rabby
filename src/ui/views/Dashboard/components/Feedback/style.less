@@ -1,13 +1,13 @@
 @import '../../../../style/var.less';
 
-.popup-feedback {
+.popup-feedback-inner {
   display: flex;
   flex-direction: column;
   overflow: auto;
   height: 100%;
 
   .popup-title {
-    color: @color-title;
+    color: var(--r-neutral-title-1, #F7FAFC);
     text-align: center;
     font-size: 20px;
     font-style: normal;
@@ -19,16 +19,16 @@
     flex: 1;
   }
   .field {
-    background: @color-bg;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     font-size: 14px;
     line-height: 16px;
-    color: @color-title;
+    color: var(--r-neutral-title-1, #F7FAFC);
     padding: 0 16px;
     border: 1px solid transparent;
     min-height: 52px;
     .title {
-      color: @color-title;
+      color: var(--r-neutral-title-1, #F7FAFC);
       font-size: 15px;
       font-style: normal;
       font-weight: 500;
@@ -51,7 +51,7 @@
         font-weight: 400;
         font-size: 12px;
         line-height: 14px;
-        color: #4b4d59;
+        color: var(--r-neutral-body, #D3D8E0);
         margin-top: 4px;
         margin-bottom: 0;
         white-space: nowrap;
@@ -85,8 +85,8 @@
 
     .left-icon {
       .icon {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
       }
     }
     .right-icon {

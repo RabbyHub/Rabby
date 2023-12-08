@@ -23,7 +23,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 const Wrapper = styled.div`
   border-radius: 6px;
-  background: var(--r-neutral-bg-1, #fff);
+  background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 0 12px;
 
   .broadcast-mode {
@@ -56,7 +56,7 @@ const Wrapper = styled.div`
 
       svg {
         path {
-          stroke: #6a7587;
+          stroke: var(--r-neutral-foot, #6a7587);
         }
       }
     }
@@ -355,6 +355,7 @@ export const BroadcastMode = ({
         closable
         title={t('page.signTx.BroadcastMode.title')}
         className="broadcast-mode-popup"
+        isSupportDarkMode
       >
         <OptionList>
           {options.map((option) => (

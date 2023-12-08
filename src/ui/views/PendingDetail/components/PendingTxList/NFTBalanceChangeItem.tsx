@@ -26,7 +26,7 @@ export const NFTBalanceChangeItem = ({
   return (
     <div className="flex items-center gap-[8px]">
       <NFTAvatar
-        className="w-[16px] h-[16px]"
+        className="w-[18px] h-[18px]"
         thumbnail
         unknown={IconUnknownNFT}
         content={token?.content}

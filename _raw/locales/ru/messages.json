@@ -492,7 +492,8 @@
         },
         "PredictTime": {
           "time": "Предполагаемое время упаковки {{time}}",
-          "noTime": "Время упаковки предположено"
+          "noTime": "Время упаковки предположено",
+          "failed": "Время упаковки не определено"
         }
       },
       "signedText": {
@@ -839,39 +840,39 @@
     },
     "dashboard": {
       "home": {
-      "offline": "Сеть отключена и данные не получены",
-      "panel": {
-        "swap": "Обмен",
-        "send": "Отправить",
-        "receive": "Получить",
-        "gasTopUp": "Пополнить газ",
-        "queue": "Очередь",
-        "transactions": "Транзакции",
-        "approvals": "Аппрувы",
-        "feedback": "Обратная связь",
-        "more": "Больше",
-        "manageAddress": "Управление адресами",
-        "nft": "NFT"
-      },
-      "comingSoon": "Скоро будет",
-      "soon": "Скоро",
-      "refreshTheWebPageToTakeEffect": "Обновите веб-страницу, чтобы изменения вступили в силу",
-      "rabbyIsInUseAndMetamaskIsBanned": "Rabby используется, а Metamask заблокирован",
-      "flip": "Поменять",
-      "metamaskIsInUseAndRabbyIsBanned": "MetaMask используется, а Rabby заблокирован",
-      "transactionNeedsToSign": "транзакция требует подписи",
-      "transactionsNeedToSign": "транзакции требуют подписи",
-      "view": "Просмотреть",
-      "viewFirstOne": "Просмотреть первую",
-      "rejectAll": "Отклонить все",
-      "pendingCount": "1 в ожидании",
-      "pendingCountPlural": "{{countStr}} ожидающих",
-      "queue": {
-        "title": "Очередь",
-        "count": "{{count}} в"
-      },
-      "whatsNew": "Что нового",
-      "importType": "Импортировано по {{type}}"
+        "offline": "Сеть отключена и данные не получены",
+        "panel": {
+          "swap": "Обмен",
+          "send": "Отправить",
+          "receive": "Получить",
+          "gasTopUp": "Пополнить газ",
+          "queue": "Очередь",
+          "transactions": "Транзакции",
+          "approvals": "Аппрувы",
+          "feedback": "Обратная связь",
+          "more": "Больше",
+          "manageAddress": "Управление адресами",
+          "nft": "NFT"
+        },
+        "comingSoon": "Скоро будет",
+        "soon": "Скоро",
+        "refreshTheWebPageToTakeEffect": "Обновите веб-страницу, чтобы изменения вступили в силу",
+        "rabbyIsInUseAndMetamaskIsBanned": "Rabby используется, а Metamask заблокирован",
+        "flip": "Поменять",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask используется, а Rabby заблокирован",
+        "transactionNeedsToSign": "транзакция требует подписи",
+        "transactionsNeedToSign": "транзакции требуют подписи",
+        "view": "Просмотреть",
+        "viewFirstOne": "Просмотреть первую",
+        "rejectAll": "Отклонить все",
+        "pendingCount": "1 в ожидании",
+        "pendingCountPlural": "{{countStr}} ожидающих",
+        "queue": {
+          "title": "Очередь",
+          "count": "{{count}} в"
+        },
+        "whatsNew": "Что нового",
+        "importType": "Импортировано по {{type}}"
       },
       "recentConnection": {
         "disconnected": "Отключено",
@@ -981,7 +982,8 @@
         "updateVersion": {
           "content": "Доступно обновление для кошелька Rabby. Нажмите, чтобы узнать, как обновить вручную.",
           "okText": "Смотреть руководство",
-            "successTip": "У вас последняя версия"
+          "successTip": "У вас последняя версия",
+          "title": "Доступно обновление"
         },
         "features": {      
           "label": "Возможности",        
@@ -1657,7 +1659,11 @@
       "TxTimeline": {
         "pending": "Проверяем статус...",
         "created": "Транзакция создана",
-        "broadcasted": "Недавно отправлено"
+        "broadcasted": "Недавно отправлено",
+        "broadcastedCount_ordinal_one": "{{count}}й отправлен",
+        "broadcastedCount_ordinal_two": "{{count}}й отправлен",
+        "broadcastedCount_ordinal_few": "{{count}} отправлено",
+        "broadcastedCount_ordinal_other": "{{count}} отправлен"
       },
       "MempoolList": {
         "col": {
@@ -1682,7 +1688,9 @@
         "col": {
           "gasPrice": "Цена газа",
           "action": "Действие транзакции",
-          "balanceChange": "Изменение баланса"
+          "balanceChange": "Изменение баланса",
+          "actionType": "Тип действия",
+          "interact": "Вызов"
         },
         "titleSame": "Рейтинг по GasPrice #{{rank}} в таких же, как текущая",
         "titleSameNotFound": "нет рейтинга в таких же, как текущая"
@@ -1707,6 +1715,11 @@
         "error": "Найдено {{count}} ошибок",
         "loss": "{{lossCount}} потерь найдено",
         "desc": "Симуляция запущена в последнем блоке, обновлено {{time}}"
+      },
+      "Predict": {
+        "completed": "Транзакция успешна",
+        "predictFailed": "Предположение времени упаковки не успешно",
+        "skipNonce": "Nonce вашей транзакции пропущен на Ethereum, что вызвало невозможность обработки транзакции"
       }
     }
   },

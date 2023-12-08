@@ -38,14 +38,19 @@ import {
   WrapTokenRequireData,
   getActionTypeText,
 } from './utils';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import IconArrowRight, {
+  ReactComponent as RcIconArrowRight,
+} from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'src/ui/assets/approval/icon-check.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import clsx from 'clsx';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -55,7 +60,7 @@ export const SignTitle = styled.div`
     display: flex;
     font-size: 18px;
     line-height: 21px;
-    color: #333333;
+    color: var(--r-neutral-title-1, #f7fafc);
     flex: 1;
     .icon-speedup {
       width: 10px;
@@ -101,10 +106,10 @@ export const ActionWrapper = styled.div`
           }
         }
         .ant-tooltip-arrow-content {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
         }
         .ant-tooltip-inner {
-          background-color: #fff;
+          background-color: var(--r-neutral-bg-1, #fff);
           padding: 0;
           font-size: 13px;
           font-weight: 500;
@@ -119,6 +124,11 @@ export const ActionWrapper = styled.div`
   }
   .container {
     padding: 14px;
+    /* border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1)); */
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -188,7 +198,7 @@ const Actions = ({
           onClick={handleViewRawClick}
         >
           {t('page.signTx.viewRaw')}
-          <img className="icon icon-arrow-right" src={IconArrowRight} />
+          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
       </SignTitle>
       <ActionWrapper>
@@ -215,8 +225,8 @@ const Actions = ({
                     }}
                   />
                 ) : (
-                  <span className="flex w-[358px] p-12">
-                    <img src={IconCheck} className="mr-4 w-12" />
+                  <span className="flex w-[358px] p-12 items-center">
+                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
                     {t('page.signTx.decodedTooltip')}
                   </span>
                 )

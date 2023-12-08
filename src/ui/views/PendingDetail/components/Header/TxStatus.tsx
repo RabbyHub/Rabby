@@ -1,14 +1,16 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import IconArrowDown from '@/ui/assets/pending/icon-arrow-down-white.svg';
 import IconSpin from '@/ui/assets/pending/icon-spin.svg';
-import { sinceTime } from '@/ui/utils';
+import { sinceTime, sinceTimeWithSecs } from '@/ui/utils';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Popover } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createGlobalStyle } from 'styled-components';
 import { TxTimeline } from './TxTimeline';
+import { useInterval } from 'ahooks';
+import { useSinceTimeWithSecs } from '@/ui/hooks/useSinceTimeWithSecs';
 
 const GlobalStyle = createGlobalStyle`
   .pending-detail-popover {
@@ -46,13 +48,15 @@ export const TxStatus = ({
   const isSuccess = !isPending && !isSubmitFailed && !isWithdrawed;
   const { t } = useTranslation();
 
+  const pushAt = useSinceTimeWithSecs(txRequest?.push_at);
+
   if (isSubmitFailed || isWithdrawed) {
     return null;
   }
 
   if (isSuccess) {
     return (
-      <div className="p-[8px] h-[36px] border-r-neutral-bg-1 text-r-neutral-bg-1 hover:border-r-neutral-bg-1 rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]">
+      <div className="p-[8px] h-[36px] border-rabby-neutral-bg-1 text-r-neutral-title-2 hover:border-[#fff] rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]">
         {t('page.pendingDetail.TxStatus.completed')}
       </div>
     );
@@ -71,8 +75,7 @@ export const TxStatus = ({
           <img src={IconSpin} className="animate-spin" />
           {isBroadcasted ? (
             <>
-              {t('page.pendingDetail.TxStatus.pendingBroadcasted')}{' '}
-              {txRequest?.push_at ? sinceTime(txRequest?.push_at) : null}
+              {t('page.pendingDetail.TxStatus.pendingBroadcasted')} {pushAt}
             </>
           ) : (
             <>{t('page.pendingDetail.TxStatus.pendingBroadcast')}</>
@@ -81,7 +84,7 @@ export const TxStatus = ({
         </div>
       </Popover>
       <Button
-        className="h-[36px] border-r-neutral-bg-1 text-r-neutral-bg-1 hover:border-[#FFF] rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]"
+        className="h-[36px] border-rabby-neutral-bg-1 text-r-neutral-title-2 hover:border-[#fff] rounded-[4px] before:content-none z-10 flex items-center justify-center gap-2 border-[0.5px]"
         ghost
         onClick={onReBroadcast}
       >

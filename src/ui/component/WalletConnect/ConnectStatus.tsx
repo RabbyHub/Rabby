@@ -112,9 +112,10 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
         'w-[360px] text-center leading-none',
         'text-13',
         {
-          'bg-[#E5E9EF] text-[#4B4D59] font-medium': !type || type === 'info',
-          'bg-[#27C1930D] text-[#27C193]': type === 'success',
-          'bg-[#FFB0200D] text-[#FFB020]': type === 'warning',
+          'bg-r-neutral-line text-r-neutral-title-1 font-medium':
+            !type || type === 'info',
+          'bg-r-green-light text-r-green-default': type === 'success',
+          'bg-r-orange-light text-r-orange-default': type === 'warning',
         }
       )}
     >

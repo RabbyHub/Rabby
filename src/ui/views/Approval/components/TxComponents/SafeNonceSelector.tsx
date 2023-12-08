@@ -54,6 +54,7 @@ const Wrapper = styled.div`
 
       .ant-input {
         background: var(--r-neutral-bg-3, #f7fafc);
+        color: var(--r-neutral-title-1);
       }
     }
 

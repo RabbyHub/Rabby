@@ -48,8 +48,8 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
       )}
       <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
         {data?.isOffline && (
-          <div className="text-gray-subTitle mt-40 flex items-center justify-center">
-            <SvgIconOffline className="mr-4 text-gray-subTitle" />
+          <div className="text-r-neutral-foot mt-40 flex items-center justify-center">
+            <SvgIconOffline className="mr-4 text-r-neutral-foot" />
             <span className="leading-tight">
               {t('page.dashboard.home.offline')}
             </span>
@@ -62,7 +62,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
           )}
         >
           <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-gray-subTitle text-12 text-center">
+          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
@@ -82,8 +82,8 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
         {data?.isTestnetOffline && (
-          <div className="text-gray-subTitle mt-40 flex items-center justify-center">
-            <SvgIconOffline className="mr-4 text-gray-subTitle" />
+          <div className="text-r-neutral-foot mt-40 flex items-center justify-center">
+            <SvgIconOffline className="mr-4 text-r-neutral-foot" />
             <span className="leading-tight">
               {t('page.dashboard.home.offline')}
             </span>
@@ -96,7 +96,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
           )}
         >
           <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-gray-subTitle text-12 text-center">
+          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>

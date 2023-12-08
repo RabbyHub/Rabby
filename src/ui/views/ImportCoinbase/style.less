@@ -1,0 +1,114 @@
+@import '../../style/var.less';
+.import-coinbase {
+  background: var(--r-neutral-bg-2, #f2f4f7);
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 36px;
+}
+@media (min-width: 401px) {
+  .import-coinbase .goback {
+    display: none;
+  }
+}
+.button-container {
+  width: 148px;
+  height: 32px;
+  margin: 32px auto 24px;
+  background: var(--r-neutral-line, #d3d8e0);
+  display: flex;
+  border-radius: 6px;
+  div {
+    width: 72px;
+    height: 28px;
+    margin: 2px;
+    padding: 3px;
+    border-radius: 4px;
+    color: var(--r-neutral-body, #3e495e);
+    text-align: center;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .active {
+    background: var(--r-neutral-bg-1, #fff);
+    color: var(--r-blue-default, #7084ff);
+  }
+}
+.goback {
+  position: absolute;
+  color: #ffffff;
+  top: 38px;
+  left: 34px;
+  z-index: 100;
+}
+.qrcode {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid @color-border;
+  position: relative;
+  .refresh-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: #ffffff;
+    opacity: 0.9;
+    z-index: 10;
+    border-radius: 12px;
+    .refresh-wrapper {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      left: 60px;
+      top: 60px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 8px;
+      .qrcode-refresh {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+      }
+    }
+  }
+}
+
+.url-container {
+  position: relative;
+  border-radius: 4px;
+  .ant-input-disabled {
+    color: var(--r-neutral-title-1);
+    background: var(--r-neutral-card-1);
+    border-color: var(--r-neutral-line);
+    cursor: default;
+  }
+}
+.icon-copy-wallet {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+}
+.icon-refresh-wallet {
+  .icon-copy-wallet;
+  position: absolute;
+  right: 46px;
+}
+.change-bridge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: @color-comment-1;
+  font-size: 12px;
+  cursor: pointer;
+  img {
+    margin-right: 4px;
+  }
+}

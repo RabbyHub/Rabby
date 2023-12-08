@@ -21,6 +21,7 @@ const ListStyled = styled.div`
   }
 
   .alian-name {
+    color: var(--r-neutral-title-1);
     font-size: 13px;
     margin: 0;
     font-weight: 500;
@@ -133,7 +134,7 @@ export const CoboDelegatedDrawer = ({
         ) : (
           <div className="text-center mt-12">
             <img className="w-[40px] mb-16 mx-auto" src={EmptyIcon} />
-            <p className="text-20 leading-[23px] mb-12 text-[#192945]">
+            <p className="text-20 leading-[23px] mb-12 text-r-neutral-title-1">
               {t('page.signTx.noDelegatedAddress')}
             </p>
           </div>

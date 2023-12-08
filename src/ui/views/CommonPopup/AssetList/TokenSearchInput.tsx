@@ -50,7 +50,7 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
         onBlur={() => setIsFocus(false)}
         className={clsx(
           'text-12 text-black py-0 px-[9px] h-[32px]',
-          'border border-gray-divider rounded-[6px]',
+          'rounded-[6px]',
           'transform-none w-[160px]',
           {
             'w-[248px]': isFocus || input,

@@ -4,18 +4,19 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList } from 'react-window';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
-import IconPinned from 'ui/assets/icon-pinned.svg';
-import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
-import { ReactComponent as IconAddAddress } from '@/ui/assets/address/new-address.svg';
-import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
-import { ReactComponent as IconLoading } from '@/ui/assets/address/loading.svg';
-import { ReactComponent as IconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcIconAddAddress } from '@/ui/assets/address/new-address.svg';
+import { ReactComponent as RcIconRefresh } from '@/ui/assets/address/refresh.svg';
+import { ReactComponent as RcIconLoading } from '@/ui/assets/address/loading.svg';
+import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
+import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
 import { Dictionary, groupBy, omit } from 'lodash';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -25,12 +26,12 @@ import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar'
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
-import LessPalette from '@/ui/style/var-defs';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
 import { getWalletScore } from '../ManageAddress/hooks';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { SortInput } from './SortInput';
 import { nanoid } from 'nanoid';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';
 import dayjs from 'dayjs';
 
@@ -38,13 +39,12 @@ function NoAddressUI() {
   const { t } = useTranslation();
 
   return (
-    <div className="no-address">
-      <img
-        className="no-data-image"
-        src="/images/nodata-address.png"
-        alt={t('page.manageAddress.no-address')}
+    <div className="no-address pt-[90px]">
+      <ThemeIcon
+        className="no-data-image w-[52px] h-[52px]"
+        src={RcNoMatchedAddress}
       />
-      <p className="text-gray-content text-14">
+      <p className="text-14 text-r-neutral-body mt-[24px]">
         {t('page.manageAddress.no-address')}
       </p>
     </div>
@@ -56,15 +56,11 @@ function NoSearchedAddressUI() {
 
   return (
     <div className="no-matched-address">
-      <img
+      <ThemeIcon
         className="no-data-image w-[52px] h-[52px]"
-        src="/images/no-matched-addr.svg"
-        alt={t('page.manageAddress.no-match')}
+        src={RcNoMatchedAddress}
       />
-      <p
-        className="text-14 mt-[24px]"
-        style={{ color: LessPalette['@color-body'] }}
-      >
+      <p className="text-14 text-r-neutral-body mt-[24px]">
         {t('page.manageAddress.no-match')}
       </p>
     </div>
@@ -347,7 +343,7 @@ const AddressManagement = () => {
             extra={
               <div
                 className={clsx(
-                  'icon-star  border-none px-0',
+                  'icon-star border-none px-0',
                   favorited ? 'is-active' : 'opacity-0 group-hover:opacity-100'
                 )}
                 onClick={(e) => {
@@ -358,10 +354,9 @@ const AddressManagement = () => {
                   });
                 }}
               >
-                <img
+                <ThemeIcon
                   className="w-[13px] h-[13px]"
-                  src={favorited ? IconPinnedFill : IconPinned}
-                  alt=""
+                  src={favorited ? RcIconPinnedFill : RcIconPinned}
                 />
               </div>
             }
@@ -403,7 +398,9 @@ const AddressManagement = () => {
   const isKeystone = accountList[currentAccountIndex]?.brandName === 'Keystone';
   const isGridPlus =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
-  const hasStatusBar = isWalletConnect || isLedger || isGridPlus;
+  const isCoinbase =
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.Coinbase;
+  const hasStatusBar = isWalletConnect || isLedger || isGridPlus || isCoinbase;
 
   useEffect(() => {
     dispatch.preference.setAddressSortStoreValue({
@@ -500,9 +497,11 @@ const AddressManagement = () => {
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
         <div className="absolute top-24 right-[42px]">
-          <IconAddAddress
+          <RcIconAddAddress
             viewBox="0 0 20 20"
-            className={clsx('text-gray-title w-[20px] h-[20px] cursor-pointer')}
+            className={clsx(
+              'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
+            )}
             onClick={gotoAddAddress}
           />
         </div>
@@ -514,15 +513,15 @@ const AddressManagement = () => {
           <div className="absolute right-0 top-[24px]">
             {isUpdateAllBalanceLoading ? (
               <div className="w-[20px] h-[20px] flex items-center justify-center">
-                <IconLoading
+                <RcIconLoading
                   viewBox="0 0 20 20"
-                  className="text-gray-title w-[16px] h-[16px] cursor-pointer"
+                  className="text-r-neutral-title-1 w-[16px] h-[16px] cursor-pointer"
                 />
               </div>
             ) : (
-              <IconRefresh
+              <RcIconRefresh
                 className={clsx(
-                  'text-gray-title w-[20px] h-[20px] cursor-pointer'
+                  'text-r-neutral-title-1 w-[20px] h-[20px] cursor-pointer'
                 )}
                 onClick={() => {
                   if (isUpdateAllBalanceLoading) {
@@ -576,11 +575,18 @@ const AddressManagement = () => {
               {isGridPlus && (
                 <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
               )}
+              {isCoinbase && (
+                <SessionStatusBar
+                  address={accountList[currentAccountIndex].address || ''}
+                  brandName={KEYRING_CLASS.Coinbase}
+                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                />
+              )}
             </AddressItem>
           </div>
         </>
       )}
-      <div className="flex justify-between items-center text-gray-subTitle text-13 px-20 py-16">
+      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-16">
         <SortInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
@@ -590,7 +596,7 @@ const AddressManagement = () => {
           onClick={gotoManageAddress}
         >
           <span>{t('page.manageAddress.manage-address')}</span>
-          <IconRight />
+          <RcIconRight />
         </div>
       </div>
       {noAnyAccount ? (

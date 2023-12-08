@@ -316,7 +316,12 @@ export const GasTopUp = () => {
         background: `url(${bgIcon}) no-repeat`,
       }}
     >
-      <PageHeader onBack={handleClickBack} forceShowBack invertBack>
+      <PageHeader
+        onBack={handleClickBack}
+        forceShowBack
+        invertBack
+        keepBackLightVersion
+      >
         <span className="text-white">{t('page.gasTopUp.title')}</span>
       </PageHeader>
       <div className="text-12 leading-[17px] text-white pt-[4px] pb-[24px]">
@@ -479,7 +484,7 @@ const GasBox = ({
         ) : (
           <div
             className={clsx(
-              'text-12 text-gray-subTitle mt-2',
+              'text-12 text-r-neutral-body mt-2',
               !(gasCostExceedsBudget || chainInsufficientBalance) &&
                 index === selectedIndex &&
                 'text-blue-light'

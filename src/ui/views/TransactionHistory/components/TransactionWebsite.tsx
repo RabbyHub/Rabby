@@ -7,20 +7,20 @@ const TransactionWebsiteWrapper = styled.a`
   font-weight: 400;
   font-size: 12px;
   line-height: 14px;
-  color: #707280;
+  color: var(--r-neutral-foot, #babec5);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   &:hover {
-    color: #707280;
+    color: var(--r-neutral-foot, #babec5);
     text-decoration: underline;
   }
 `;
 
 export const TransactionWebsite = ({ site }: { site: ConnectedSite }) => {
   return site.origin === INTERNAL_REQUEST_ORIGIN ? (
-    <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-12">
+    <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-12">
       Rabby Wallet
     </span>
   ) : (

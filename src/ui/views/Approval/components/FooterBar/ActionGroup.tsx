@@ -18,7 +18,10 @@ export const ActionGroup: React.FC<Props> = (props) => {
   ) {
     return <SubmitActions {...props} />;
   }
-  if (account.type === KEYRING_CLASS.WALLETCONNECT) {
+  if (
+    account.type === KEYRING_CLASS.WALLETCONNECT ||
+    account.type === KEYRING_CLASS.Coinbase
+  ) {
     return <WalletConnectProcessActions {...props} />;
   }
 

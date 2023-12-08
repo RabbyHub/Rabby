@@ -1,14 +1,14 @@
 import { TokenWithChain } from '@/ui/component';
 import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as IconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
+import { ReactComponent as RcIconRcArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useTranslation } from 'react-i18next';
 const TokenRenderWrapper = styled.div`
   width: 150px;
   height: 46px;
-  background: #f5f6fa;
+  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -28,6 +28,7 @@ const TokenRenderWrapper = styled.div`
     align-items: center;
 
     .text {
+      color: var(--r-neutral-title-1, #f7fafc);
       max-width: 68px;
       display: inline-block;
       white-space: nowrap;
@@ -36,6 +37,7 @@ const TokenRenderWrapper = styled.div`
     }
   }
   .select {
+    color: var(--r-neutral-title-1, #f7fafc);
     flex: 1;
     display: flex;
     justify-content: space-between;
@@ -72,12 +74,18 @@ export const TokenRender = ({
           <span className="text" title={getTokenSymbol(token)}>
             {getTokenSymbol(token)}
           </span>
-          <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
+          <RcIconRcArrowDownTriangle
+            viewBox="0 0 24 24"
+            className="arrow text-r-neutral-foot"
+          />
         </div>
       ) : (
         <div className="select">
           <span>{t('page.swap.select-token')}</span>
-          <IconRcArrowDownTriangle viewBox="0 0 24 24" className="arrow" />
+          <RcIconRcArrowDownTriangle
+            viewBox="0 0 24 24"
+            className="arrow text-r-neutral-foot"
+          />
         </div>
       )}
     </TokenRenderWrapper>

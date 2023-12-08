@@ -95,6 +95,7 @@ export const CommonPopup: React.FC = () => {
       bodyStyle={{
         padding: config.padding,
       }}
+      isSupportDarkMode
     >
       {componentName === 'Approval' && <Approval className="h-full" />}
       {componentName === 'WalletConnect' && <ReconnectView />}

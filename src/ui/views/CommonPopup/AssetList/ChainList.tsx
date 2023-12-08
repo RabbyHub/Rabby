@@ -63,7 +63,7 @@ export const ChainList = ({
     return (
       <Skeleton.Input
         active
-        className="block rounded-[6px] w-[360px] h-[68px] bg-gray-bg"
+        className="block rounded-[6px] w-[360px] h-[68px] bg-r-neutral-card-2"
       />
     );
   }
@@ -75,7 +75,7 @@ export const ChainList = ({
   return (
     <div
       className={clsx(
-        'bg-gray-bg2 rounded-[6px] p-[12px]',
+        'bg-r-neutral-card-2 rounded-[6px] p-[12px]',
         'flex gap-12 flex-wrap'
       )}
     >
@@ -103,7 +103,7 @@ export const ChainList = ({
       ) : (
         <div
           className={clsx(
-            'cursor-pointer text-12 underline text-black leading-[20px]',
+            'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',
             {
               hidden: moreLen === 0,
             }

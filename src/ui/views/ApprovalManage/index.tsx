@@ -399,13 +399,13 @@ const ApprovalManage = () => {
           >
             <div
               role="button"
-              className="bg-white cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-gray-subTitle hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
+              className="bg-white cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-r-neutral-body hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
             >
               {FILTER_TYPES[filterType]} <IconDownArrow className="ml-4" />
             </div>
           </Dropdown>
         </div>
-        <div className="mt-[16px] mb-[8px] text-12 text-gray-subTitle w-full flex justify-between items-center">
+        <div className="mt-[16px] mb-[8px] text-12 text-r-neutral-body w-full flex justify-between items-center">
           <span>{subTitle}</span>
         </div>
 

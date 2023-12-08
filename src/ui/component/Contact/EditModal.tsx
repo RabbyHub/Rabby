@@ -71,7 +71,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
   }, []);
   return (
     <Drawer
-      className="edit-contact-modal-with-remove"
+      className="edit-contact-modal-with-remove custom-popup is-support-darkmode"
       title={t('component.Contact.EditModal.title')}
       visible={visible}
       onClose={onCancel}
@@ -84,7 +84,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
           autoFocus
           allowClear
           value={name}
-          style={{ background: '#F5F6FA' }}
+          // style={{ background: '#F5F6FA' }}
           onChange={(e) => handleNameChange(e.target.value)}
           ref={inputRef}
         />

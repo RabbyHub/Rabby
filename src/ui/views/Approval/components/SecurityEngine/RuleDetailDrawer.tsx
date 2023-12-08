@@ -25,7 +25,7 @@ const ThresholdWrapper = styled.div`
     font-weight: 700;
     font-size: 13px;
     line-height: 18px;
-    color: #13141a;
+    color: var(--r-neutral-title-1, #f7fafc);
     margin-left: 8px;
   }
   &.safe {
@@ -129,7 +129,7 @@ const RuleDetailDrawerWrapper = styled.div`
   height: 100%;
   left: 0;
   top: 0;
-  background-color: #fff;
+  background: var(--r-neutral-bg-1, #3d4251);
   transform: translateX(100%);
   transition: transform 0.3s;
   padding: 20px;

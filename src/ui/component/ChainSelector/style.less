@@ -6,9 +6,10 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  -webkit-user-select: none;
+  user-select: none;
   background: rgba(134, 151, 255, 0.12);
-  border: 1px solid #e5e9ef;
+  border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
   border-radius: 6px;
   padding: 8px 4px 8px 8px;
   font-weight: 500;
@@ -52,9 +53,11 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    background-color: #fff;
+    background: var(--r-neutral-bg-1, #3D4251);
+
     .ant-input-affix-wrapper {
-      border: 1px solid #e5e9ef;
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       height: 36px;
     }
@@ -76,14 +79,14 @@
       font-weight: 400;
       font-size: 12px;
       line-height: 14px;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot, #6A7587);
       margin-bottom: 2px;
     }
     .chain-selector-site {
       font-weight: 500;
       font-size: 13px;
       line-height: 15px;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #192945);
     }
   }
   .ant-drawer-body {
@@ -164,7 +167,7 @@
 
 .select-chain {
   &-list {
-    background: #f5f6fa;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     & + & {
       margin-top: 24px;
@@ -186,7 +189,8 @@
       bottom: -1px;
       left: 16px;
       right: 16px;
-      border-bottom: 1px solid @color-border;
+      border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
     }
 
     .chain-icon-comp {
@@ -207,10 +211,10 @@
       font-weight: 500;
       font-size: 15px;
       line-height: 18px;
-      color: @color-title;
+      color: var(--r-neutral-title-1, #192945);
     }
     &-balance {
-      color: #707280;
+      color: var(--r-neutral-foot, #6A7587);
       font-size: 12px;
       display: flex;
       align-items: center;
@@ -224,8 +228,7 @@
       margin-left: 16px;
     }
     &:hover {
-      // background: var(--r-blue-light-1, #eef1ff);
-      background-color: #dce0f9;
+      background: var(--r-blue-light-1, #eef1ff);
       border: 1px solid var(--r-blue-default, #7084ff);
       &::after {
         display: none;

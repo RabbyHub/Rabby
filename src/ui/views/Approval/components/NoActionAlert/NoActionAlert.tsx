@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import IconAlert from '@/ui/assets/sign/tx/alert.svg';
+import { ReactComponent as RcIconAlert } from '@/ui/assets/sign/tx/alert-currentcolor.svg';
 import React from 'react';
 import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
 import { NoActionBody } from './NoActionBody';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const NoActionAlertStyled = styled.div`
   display: flex;
@@ -19,7 +20,7 @@ const NoActionAlertStyled = styled.div`
   width: 358px;
   .icon-alert {
     margin-right: 4px;
-    width: 14px;
+    width: 15px;
     margin-top: 2px;
   }
 `;
@@ -74,7 +75,11 @@ export const NoActionAlert: React.FC<Props> = ({ data }) => {
   return (
     <NoActionAlertStyled>
       <div className="flex items-start">
-        <img src={IconAlert} className="icon icon-alert" />
+        {/* <img src={IconAlert} className="icon icon-alert" /> */}
+        <ThemeIcon
+          src={RcIconAlert}
+          className="icon icon-alert text-r-neutral-body"
+        />
         {t('page.signTx.sigCantDecode')}
       </div>
       <NoActionBody

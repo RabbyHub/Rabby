@@ -152,6 +152,7 @@ const AddressDeleteModal = ({
       height={240}
       className="address-delete-modal"
       onClose={onClose}
+      isSupportDarkMode
     >
       <div className="desc">
         {t('page.addressDetail.direct-delete-desc', { renderBrand })}

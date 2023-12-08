@@ -93,6 +93,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
       onClose={onClose}
       closable
       height={228}
+      isSupportDarkMode
     >
       <OptionsList>
         {options.map((item) => {

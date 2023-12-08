@@ -6,20 +6,22 @@ import { Account } from '@/background/service/preference';
 
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconPinned from 'ui/assets/icon-pinned.svg';
-import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { message } from 'antd';
 import {
   KEYRING_ICONS,
   KEYRING_WITH_INDEX,
+  KeyringWithIcon,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useIsMountedRef from '@/ui/hooks/useMountedRef';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 function AddressRow({
   data,
@@ -123,7 +125,7 @@ function AddressRow({
               )}
             </div>
             <span className={clsx('ml-[3px] favorite-star flex-shrink-0')}>
-              <img
+              <ThemeIcon
                 onClick={(e) => {
                   e.stopPropagation();
                   if (account)
@@ -132,7 +134,7 @@ function AddressRow({
                       brandName: account.brandName,
                     });
                 }}
-                src={favorited ? IconPinnedFill : IconPinned}
+                src={favorited ? RcIconPinnedFill : RcIconPinned}
                 className={clsx('w-[12px] h-[12px]')}
               />
             </span>

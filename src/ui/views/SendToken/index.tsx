@@ -33,14 +33,22 @@ import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import GasReserved from './components/GasReserved';
 import GasSelector from './components/GasSelector';
-import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
-import IconEdit from 'ui/assets/edit-purple.svg';
+import IconWhitelist, {
+  ReactComponent as RcIconWhitelist,
+} from 'ui/assets/dashboard/whitelist.svg';
+import IconContact, {
+  ReactComponent as RcIconContact,
+} from 'ui/assets/send-token/contact.svg';
+import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconCheck from 'ui/assets/icon-check.svg';
-import IconContact from 'ui/assets/send-token/contact.svg';
-import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
-import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'ui/assets/send-token/check.svg';
+import IconTemporaryGrantCheckbox, {
+  ReactComponent as RcIconTemporaryGrantCheckbox,
+} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -64,6 +72,8 @@ import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -1195,7 +1205,10 @@ const SendToken = () => {
                   >
                     {contactInfo && (
                       <>
-                        <img src={IconEdit} className="icon icon-edit" />
+                        <ThemeIcon
+                          src={RcIconEdit}
+                          className="icon icon-edit"
+                        />
                         <span
                           title={contactInfo.name}
                           className="inline-block align-middle truncate max-w-[240px]"
@@ -1206,9 +1219,9 @@ const SendToken = () => {
                     )}
                   </div>
                 )}
-                <img
+                <ThemeIcon
                   className="icon icon-contact"
-                  src={whitelistEnabled ? IconWhitelist : IconContact}
+                  src={whitelistEnabled ? RcIconWhitelist : RcIconContact}
                   onClick={handleListContact}
                 />
               </div>
@@ -1255,13 +1268,14 @@ const SendToken = () => {
                 />
               </Form.Item>
               {toAddressIsValid && !toAddressInContactBook && (
-                <div className="tip-no-contact font-normal text-[12px] pt-[12px]">
+                <div className="tip-no-contact font-normal text-[12px] text-r-neutral-body pt-[12px]">
                   <Trans i18nKey="page.sendToken.addressNotInContract" t={t}>
                     Not on address list.{' '}
                     <span
                       onClick={handleClickAddContact}
-                      className={clsx('ml-[2px] underline cursor-pointer')}
-                      style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                      className={clsx(
+                        'ml-[2px] underline cursor-pointer text-r-blue-default'
+                      )}
                     >
                       Add to contacts
                     </span>
@@ -1330,7 +1344,6 @@ const SendToken = () => {
               )}
             </Form.Item>
             <div className="token-info">
-              <img className="token-info__header" src={TokenInfoArrow} />
               {!isNativeToken ? (
                 <div className="section-field">
                   <span>
@@ -1394,11 +1407,11 @@ const SendToken = () => {
             >
               <p className="whitelist-alert__content text-center">
                 {whitelistEnabled && (
-                  <img
+                  <ThemeIcon
                     src={
                       whitelistAlertContent.success
-                        ? IconCheck
-                        : IconTemporaryGrantCheckbox
+                        ? RcIconCheck
+                        : RcIconTemporaryGrantCheckbox
                     }
                     className="icon icon-check inline-block relative -top-1"
                   />

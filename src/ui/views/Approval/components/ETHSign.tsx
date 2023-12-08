@@ -34,7 +34,7 @@ const ETHSign = ({ params }: { params: AddAssetProps }) => {
             src={IconWarning}
             className="w-[68px] h-[68px] mt-[32px] mb-[20px] mx-auto"
           />
-          <div className="text-gray-title text-[20px] leading-[26px] w-[344px] mx-auto font-medium text-center">
+          <div className="text-r-neutral-body text-[20px] leading-[26px] w-[344px] mx-auto font-medium text-center">
             {t('page.ethSign.alert')}
           </div>
         </>

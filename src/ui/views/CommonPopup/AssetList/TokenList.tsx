@@ -67,7 +67,7 @@ export const TokenList: React.FC<Props> = ({
         )}
       </div>
       {!isSearch && hasList && (
-        <div className="flex gap-12 pt-12 border-t-[0.5px] border-gray-divider">
+        <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line">
           <CustomizedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
           <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
         </div>

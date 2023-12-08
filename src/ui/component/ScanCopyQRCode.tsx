@@ -8,12 +8,13 @@ import WalletConnectBridgeModal from './WalletConnectBridgeModal';
 import IconSuccess from 'ui/assets/success.svg';
 import IconBridgeChange from 'ui/assets/bridgechange.svg';
 import IconQRCodeRefresh from 'ui/assets/qrcoderefresh.svg';
-import IconCopy from 'ui/assets/urlcopy.svg';
-import IconRefresh from 'ui/assets/urlrefresh.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/urlcopy.svg';
+import { ReactComponent as RcIconRefresh } from 'ui/assets/urlrefresh.svg';
 import { ConnectStatus } from './WalletConnect/ConnectStatus';
 import { useSessionStatus } from './WalletConnect/useSessionStatus';
 import { Account } from '@/background/service/preference';
 import Spin from './Spin';
+import ThemeIcon from './ThemeMode/ThemeIcon';
 
 interface Props {
   showURL: boolean;
@@ -122,15 +123,15 @@ const ScanCopyQRCode: React.FC<Props> = ({
             value={qrcodeURL}
             disabled={true}
           />
-          <img
-            src={IconRefresh}
+          <ThemeIcon
+            src={RcIconRefresh}
             onClick={refreshFun}
-            className="icon-refresh-wallet cursor-pointer"
+            className="w-16 h-16 icon-refresh-wallet cursor-pointer"
           />
-          <img
-            src={IconCopy}
+          <ThemeIcon
+            src={RcIconCopy}
             onClick={handleCopyCurrentAddress}
-            className={clsx('icon-copy-wallet cursor-pointer', {
+            className={clsx('w-16 h-16 icon-copy-wallet cursor-pointer', {
               success: copySuccess,
             })}
           />

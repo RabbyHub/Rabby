@@ -4,8 +4,7 @@ import clsx from 'clsx';
 import { WALLET_BRAND_CONTENT, WALLET_BRAND_TYPES } from '@/constant';
 import { CommonAccount } from './CommonAccount';
 import { useKeystoneStatus } from '@/ui/component/ConnectStatus/useKeystoneStatus';
-
-const KeystoneIcon = WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon;
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export const KeystoneAccount: React.FC = () => {
   const { status, onClickConnect } = useKeystoneStatus();
@@ -48,7 +47,17 @@ export const KeystoneAccount: React.FC = () => {
     }
   };
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
-    <CommonAccount signal={signal} icon={KeystoneIcon} tip={<TipContent />} />
+    <CommonAccount
+      signal={signal}
+      icon={
+        isDarkTheme
+          ? WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].lightIcon
+          : WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE].icon
+      }
+      tip={<TipContent />}
+    />
   );
 };
