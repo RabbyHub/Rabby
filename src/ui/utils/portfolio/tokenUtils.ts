@@ -3,10 +3,13 @@ import {
   PortfolioItemToken,
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
+import { CHAINS } from 'consts';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
 import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
+import { pQueue } from './utils';
+import { flatten } from 'lodash';
 
 export const queryTokensCache = async (
   user_id: string,
@@ -28,6 +31,24 @@ export const batchQueryTokens = async (
   chainId?: string,
   isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId)
 ) => {
+  if (!chainId && !isTestnet) {
+    const usedChains = await wallet.openapi.usedChainList(user_id);
+    const chainIdList = usedChains.map((item) => item.id);
+    const res = await Promise.all(
+      chainIdList.map((serverId) =>
+        pQueue.add(() => {
+          return requestOpenApiWithChainId(
+            ({ openapi }) => openapi.listToken(user_id, serverId, true),
+            {
+              wallet,
+              isTestnet,
+            }
+          );
+        })
+      )
+    );
+    return flatten(res);
+  }
   return requestOpenApiWithChainId(
     ({ openapi }) => openapi.listToken(user_id, chainId, true),
     {

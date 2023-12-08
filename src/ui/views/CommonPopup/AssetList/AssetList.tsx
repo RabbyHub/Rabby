@@ -7,7 +7,6 @@ import NetSwitchTabs, {
 } from 'ui/component/PillsSwitch/NetSwitchTabs';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
-import { SvgIconOffline } from '@/ui/assets';
 import { useTranslation } from 'react-i18next';
 
 export const AssetList = ({ visible }: { visible: boolean }) => {
@@ -47,30 +46,13 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         />
       )}
       <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
-        {data?.isOffline && (
-          <div className="text-r-neutral-foot mt-40 flex items-center justify-center">
-            <SvgIconOffline className="mr-4 text-r-neutral-foot" />
-            <span className="leading-tight">
-              {t('page.dashboard.home.offline')}
-            </span>
-          </div>
-        )}
-        <div
-          className={clsx(
-            'mt-[160px]',
-            isEmptyAssets && !data?.isOffline ? 'block' : 'hidden'
-          )}
-        >
+        <div className={clsx('mt-[160px]', isEmptyAssets ? 'block' : 'hidden')}>
           <AssetEmptySVG className="m-auto" />
           <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
-        <div
-          className={clsx(
-            isEmptyAssets || data?.isOffline ? 'hidden' : 'block'
-          )}
-        >
+        <div className={clsx(isEmptyAssets ? 'hidden' : 'block')}>
           <ChainList onChange={handleSelectChainChange} />
           <AssetListContainer
             className="mt-12"
@@ -81,18 +63,10 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        {data?.isTestnetOffline && (
-          <div className="text-r-neutral-foot mt-40 flex items-center justify-center">
-            <SvgIconOffline className="mr-4 text-r-neutral-foot" />
-            <span className="leading-tight">
-              {t('page.dashboard.home.offline')}
-            </span>
-          </div>
-        )}
         <div
           className={clsx(
             'mt-[160px]',
-            isTestnetEmptyAssets && !data?.isTestnetOffline ? 'block' : 'hidden'
+            isTestnetEmptyAssets ? 'block' : 'hidden'
           )}
         >
           <AssetEmptySVG className="m-auto" />
@@ -100,11 +74,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
-        <div
-          className={clsx(
-            isTestnetEmptyAssets || data?.isTestnetOffline ? 'hidden' : 'block'
-          )}
-        >
+        <div className={clsx(isTestnetEmptyAssets ? 'hidden' : 'block')}>
           <ChainList onChange={handleTestnetSelectChainChange} isTestnet />
           <AssetListContainer
             className="mt-12"
