@@ -4,17 +4,17 @@
       "title": "Транзакции",      
       "empty": {
         "title": "Нет транзакций",
-        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"         
-      },      
+        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"
+      },
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
-        "unknown": "Вызов контракта",       
+        "unknown": "Вызов контракта",
         "cancel": "Отменена ожидающая транзакция"
-      },      
+      },
       "txHistory": {
         "tipInputData": "Транзакция включает сообщение",
         "parseInputDataError": "Ошибка при разборе сообщения"
-      },     
+      }, 
       "modalViewMessage": {
         "title": "Просмотр сообщения"       
       },
@@ -1318,7 +1318,7 @@
         },  
         "mnemonic": {
           "hdPathType": {
-            "default": "По умолчанию: используется HD путь по умолчанию для импорта фразы восстановления."
+            "default": "По умолчанию: используется HD путь по умолчанию для импорта фразы восстановления.",
             "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol.",
             "ledgerLive": "Ledger Live: Ledger official HD path.",
             "legacy": "Legacy: HD path used by MEW / Mycrypto."
@@ -1344,19 +1344,19 @@
           },
           "switchToAnotherGridplus": "Переключиться на другой GridPlus"
         },
-         "keystone": {
+        "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath, определенный протоколом BIP44."
+            "bip44": "BIP44: HDpath, определенный протоколом BIP44.",
             "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
             "legacy": "Legacy: HD path used by MEW / Mycrypto."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: HDpath, определенный протоколом BIP44."
+            "bip44": "BIP44: HDpath, определенный протоколом BIP44.",
             "ledgerLive": "Ledger Live: Ledger official HD path. You can only manage 10 addresses with Ledger Live path.",
             "legacy": "Legacy: HD path used by MEW / Mycrypto."
           }
-      },
-      "bitbox02": {
+        },
+        "bitbox02": {
           "hdPathType": {
             "bip44": "BIP44: HDpath, определенный протоколом BIP44."
           },
