@@ -107,7 +107,7 @@ export interface PreferenceStore {
 export interface AddressSortStore {
   search: string;
   sortType: 'usd' | 'addressType' | 'alphabet';
-  lastCurrent?: string;
+  lastScrollOffset?: number;
   lastCurrentRecordTime?: number;
 }
 
@@ -741,14 +741,14 @@ class PreferenceService {
       this.store.addressSortStore = {
         ...this.store.addressSortStore,
         search: '',
-        lastCurrent: undefined,
+        lastScrollOffset: undefined,
         lastCurrentRecordTime: undefined,
       };
     }
   };
 
   getAddressSortStoreValue = (key: keyof AddressSortStore) => {
-    if (['search', 'lastCurrent'].includes(key)) {
+    if (['search', 'lastScrollOffset'].includes(key)) {
       this.resetAddressSortStoreExpiredValue();
     }
     return this.store.addressSortStore[key];

@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { VariableSizeList as VList } from 'react-window';
+import { VariableSizeList as VList, ListOnScrollProps } from 'react-window';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
@@ -284,112 +284,119 @@ const AddressManagement = () => {
     );
   }, [accountList, currentAccount, enableSwitch]);
 
-  const gotoAddAddress = () => {
+  const gotoAddAddress = useCallback(() => {
     history.push('/add-address');
-  };
+  }, []);
 
-  const gotoManageAddress = () => {
+  const gotoManageAddress = useCallback(() => {
     history.push('/settings/address?back=true');
-  };
+  }, []);
 
-  const switchAccount = async (account: typeof accountsList[number]) => {
-    await dispatch.account.changeAccountAsync(account);
-    history.push('/dashboard');
-  };
+  const switchAccount = useCallback(
+    async (account: typeof accountsList[number]) => {
+      await dispatch.account.changeAccountAsync(account);
+      history.push('/dashboard');
+    },
+    [dispatch?.account?.changeAccountAsync]
+  );
 
   useEffect(() => {
     dispatch.whitelist.init();
   }, []);
 
-  const recordLatestAddress = (value: string) => {
-    dispatch.preference.setAddressSortStoreValue({
-      key: 'lastCurrent',
-      value,
-    });
-  };
+  const Row = useCallback(
+    (
+      props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
+    ) => {
+      const { data, index, style } = props;
+      const account = data[index];
 
-  const Row = (
-    props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
-  ) => {
-    const { data, index, style } = props;
-    const account = data[index];
+      const render = (
+        account: typeof accountsList[number],
+        isGroup = false
+      ) => {
+        const favorited = highlightedAddresses.some(
+          (highlighted) =>
+            account.address === highlighted.address &&
+            account.brandName === highlighted.brandName
+        );
 
-    const render = (account: typeof accountsList[number], isGroup = false) => {
-      const favorited = highlightedAddresses.some(
-        (highlighted) =>
-          account.address === highlighted.address &&
-          account.brandName === highlighted.brandName
-      );
-
-      return (
-        <div
-          className={clsx(
-            'address-wrap-with-padding px-[20px]',
-            isGroup && 'row-group'
-          )}
-          style={!isGroup ? style : undefined}
-          key={account.address}
-          onMouseEnter={() => {
-            recordLatestAddress(`${account.type}-${account.address}`);
-          }}
-        >
-          <AddressItem
-            balance={account.balance}
-            address={account.address}
-            type={account.type}
-            brandName={account.brandName}
-            alias={account.alianName}
-            isUpdatingBalance={isUpdateAllBalanceLoading}
-            extra={
-              <div
-                className={clsx(
-                  'icon-star border-none px-0',
-                  favorited ? 'is-active' : 'opacity-0 group-hover:opacity-100'
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  dispatch.addressManagement.toggleHighlightedAddressAsync({
+        return (
+          <div
+            className={clsx(
+              'address-wrap-with-padding px-[20px]',
+              isGroup && 'row-group'
+            )}
+            style={!isGroup ? style : undefined}
+            key={account.address}
+          >
+            <AddressItem
+              balance={account.balance}
+              address={account.address}
+              type={account.type}
+              brandName={account.brandName}
+              alias={account.alianName}
+              isUpdatingBalance={isUpdateAllBalanceLoading}
+              extra={
+                <div
+                  className={clsx(
+                    'icon-star border-none px-0',
+                    favorited
+                      ? 'is-active'
+                      : 'opacity-0 group-hover:opacity-100'
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch.addressManagement.toggleHighlightedAddressAsync({
+                      address: account.address,
+                      brandName: account.brandName,
+                    });
+                  }}
+                >
+                  <ThemeIcon
+                    className="w-[13px] h-[13px]"
+                    src={favorited ? RcIconPinnedFill : RcIconPinned}
+                  />
+                </div>
+              }
+              onClick={() => {
+                history.push(
+                  `/settings/address-detail?${obj2query({
                     address: account.address,
+                    type: account.type,
                     brandName: account.brandName,
-                  });
-                }}
-              >
-                <ThemeIcon
-                  className="w-[13px] h-[13px]"
-                  src={favorited ? RcIconPinnedFill : RcIconPinned}
-                />
-              </div>
-            }
-            onClick={() => {
-              history.push(
-                `/settings/address-detail?${obj2query({
-                  address: account.address,
-                  type: account.type,
-                  brandName: account.brandName,
-                  //@ts-expect-error byImport is boolean
-                  byImport: account.byImport || '',
-                })}`
-              );
-            }}
-            onSwitchCurrentAccount={() => {
-              switchAccount(account);
-            }}
-            enableSwitch={enableSwitch}
-          />
-        </div>
-      );
-    };
+                    //@ts-expect-error byImport is boolean
+                    byImport: account.byImport || '',
+                  })}`
+                );
+              }}
+              onSwitchCurrentAccount={() => {
+                switchAccount(account);
+              }}
+              enableSwitch={enableSwitch}
+            />
+          </div>
+        );
+      };
 
-    if (addressSortStore.sortType === 'addressType') {
-      return (
-        <div style={style} className="address-type-container">
-          {(account as typeof accountsList)?.map((e) => render(e, true))}
-        </div>
-      );
-    }
+      if (addressSortStore.sortType === 'addressType') {
+        return (
+          <div style={style} className="address-type-container">
+            {(account as typeof accountsList)?.map((e) => render(e, true))}
+          </div>
+        );
+      }
 
-    return render(account as typeof accountsList[number]);
-  };
+      return render(account as typeof accountsList[number]);
+    },
+    [
+      highlightedAddresses,
+      isUpdateAllBalanceLoading,
+      switchAccount,
+      addressSortStore?.sortType,
+      dispatch?.addressManagement?.toggleHighlightedAddressAsync,
+    ]
+  );
 
   const isWalletConnect =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.WALLETCONNECT;
@@ -413,6 +420,16 @@ const AddressManagement = () => {
     VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>
   >(null);
 
+  const handleScroll = useCallback(
+    (p: ListOnScrollProps) => {
+      dispatch.preference.setAddressSortStoreValue({
+        key: 'lastScrollOffset',
+        value: p.scrollOffset,
+      });
+    },
+    [dispatch?.preference?.setAddressSortStoreValue]
+  );
+
   useEffect(() => {
     if (
       addressSortStore.lastCurrentRecordTime &&
@@ -428,38 +445,13 @@ const AddressManagement = () => {
         });
       };
     }
-    if (addressSortStore.lastCurrent && filteredAccounts?.length) {
-      let index = -1;
-      let secondIndex = -1;
-      let sum = 0;
-      if (addressSortStore.sortType === 'addressType') {
-        const accounts = filteredAccounts as IDisplayedAccountWithBalance[][];
-        index = accounts.findIndex((arr) => {
-          const i = arr.findIndex(
-            (e) => `${e.type}-${e.address}` === addressSortStore.lastCurrent
-          );
-          if (i !== -1) {
-            secondIndex = i;
-            return true;
-          }
-          return false;
-        });
-        if (index !== -1) {
-          for (let i = 0; i < index; i++) {
-            sum += accounts[i].length * 56 + 16;
-          }
-          sum += secondIndex * 56;
-        }
-      } else {
-        index = (filteredAccounts as IDisplayedAccountWithBalance[]).findIndex(
-          (e) => `${e.type}-${e.address}` === addressSortStore.lastCurrent
-        );
-        if (index !== -1) {
-          sum = index * 64;
-        }
-      }
 
-      listRef.current?.scrollTo(sum);
+    if (
+      addressSortStore.lastCurrentRecordTime &&
+      addressSortStore.lastScrollOffset &&
+      filteredAccounts?.length
+    ) {
+      listRef.current?.scrollTo(addressSortStore.lastScrollOffset);
 
       return () => {
         dispatch.preference.setAddressSortStoreValue({
@@ -615,6 +607,7 @@ const AddressManagement = () => {
             itemSize={getItemSize}
             className="address-scroll-container"
             overscanCount={6}
+            onScroll={handleScroll}
           >
             {Row}
           </VList>
