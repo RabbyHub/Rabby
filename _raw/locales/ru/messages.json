@@ -384,10 +384,10 @@
         "approvalExpiretime": "Срок действия подтверждения"
       },
       "swapTokenOrder": {
-        "title": "Ордер на обмен токенов"
+        "title": "Заявка на обмен токенов"
       },
       "sellNFT": {
-        "title": "Ордер на продажу NFT",
+        "title": "Заявка на продажу NFT",
         "receiveToken": "Получить токен",
         "listNFT": "Выставить NFT",
         "specificBuyer": "Конкретный покупатель"
@@ -1932,7 +1932,7 @@
       "SIGN_PERMISSION_OPTIONS": {
         "MAINNET_AND_TESTNET": "Mainnet & Testnet",
         "TESTNET": "Только Testnets"
-    }
+    },
     "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Импортировано по сид фразе (С паролем)"
   }
 }
