@@ -40,21 +40,19 @@ const TransactionHistory = () => {
     console.log('loadList', pendings, completeds);
   };
 
-  const loadList = async () => {
+  const loadPendingListQueue = async () => {
     const account = await wallet.syncGetCurrentAccount<Account>()!;
-    const pendings = await wallet.loadPendingListQueue(account.address);
-    setPendingList(pendings);
-
-    const { completeds } = await wallet.getTransactionHistory(account.address);
-    setCompleteList(completeds);
+    await wallet.loadPendingListQueue(account.address);
   };
 
   const handleTxComplete = () => {
     init();
+    loadPendingListQueue();
   };
 
   useEffect(() => {
     init();
+    loadPendingListQueue();
   }, []);
 
   const { txRequests, reloadTxRequests } = useLoadTxRequests(pendingList);
