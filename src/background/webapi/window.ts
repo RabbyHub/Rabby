@@ -77,7 +77,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
           ...rest,
         });
       } else {
-        Sentry.captureException(e);
+        Sentry.captureException(`tx prompt error: ${JSON.stringify(e)}`);
       }
     }
   }
