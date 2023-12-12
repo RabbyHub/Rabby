@@ -54,7 +54,7 @@ const MatrixWrapper = styled.div.withConfig<{
 
     font-size: 15px;
     font-weight: 500;
-    color: var(--r-neutral-title1);
+    color: var(--r-neutral-title-1);
     position: relative;
 
     border-right: 1px solid var(--r-neutral-line);

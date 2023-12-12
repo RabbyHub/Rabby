@@ -106,7 +106,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
 
       <Modal
         destroyOnClose
-        className="AdvancedModal"
+        className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered

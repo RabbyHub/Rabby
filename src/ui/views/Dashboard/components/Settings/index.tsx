@@ -736,7 +736,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
+                className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
                 {langLabel}
@@ -763,7 +763,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
+                className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
                 {ThemeModes.find((item) => item.code === themeMode)?.name ||
@@ -804,7 +804,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
+                className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
                 {autoLockTimeLabel}
@@ -855,7 +855,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
+                className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
                 onClick={updateVersion}
               >
@@ -902,7 +902,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title1"
+                className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
                 {Object.values(CHAINS).length}

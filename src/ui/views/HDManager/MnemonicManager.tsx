@@ -1,7 +1,7 @@
 import React from 'react';
 import { MainContainer } from './MainContainer';
 import { Modal } from 'antd';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import {
   AdvancedSettings,
   SettingData,
@@ -73,8 +73,8 @@ export const MnemonicManager: React.FC = () => {
 
   return (
     <>
-      <div className="setting" onClick={openAdvanced}>
-        <SettingSVG className="icon" />
+      <div className="setting text-r-neutral-body" onClick={openAdvanced}>
+        <RcSettingSVG className="icon" />
         <span className="title">
           {t('page.newAddress.hd.advancedSettings')}
         </span>
@@ -84,7 +84,7 @@ export const MnemonicManager: React.FC = () => {
 
       <Modal
         destroyOnClose
-        className="AdvancedModal"
+        className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered

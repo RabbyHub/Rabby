@@ -281,7 +281,7 @@ export const AdvancedSettings: React.FC<Props> = ({
   }, [keyring, hdPathType, HDPathTypeGroup, isOnChain]);
 
   return (
-    <div className="AdvancedSettings">
+    <div className="AdvancedSettings widget-has-ant-input2">
       <div className="group">
         <div className="label">{t('page.newAddress.hd.selectHdPath')}</div>
         <div className="group-field">{HDPathTypeGroupRender()}</div>
