@@ -3,11 +3,10 @@ import styled, { css } from 'styled-components';
 import { Dropdown, Menu, message } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
-import LessPalette from 'ui/style/var-defs';
 import { styid } from 'ui/utils/styled';
 
 import IconCaretDown from './icon-caret-down.svg';
-import IconClearAll from './icon-clear-all.svg';
+import { ReactComponent as RcIconClearAll } from './icon-clear-all.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 import clsx from 'clsx';
@@ -18,9 +17,11 @@ import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 import './MnemonicsInputs.less';
 import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
+const DEFAULT_MEMONICS_COUNT = 12;
 
 const NumberFlag = styled.div`
   color: var(--r-neutral-title-1, #192945);
@@ -32,6 +33,7 @@ const NumberFlag = styled.div`
 
 const MatrixWrapper = styled.div.withConfig<{
   rowCount?: number;
+  totalCount?: number;
 }>({
   shouldForwardProp: (prop, defaultValidatorFn) => {
     return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
@@ -49,14 +51,16 @@ const MatrixWrapper = styled.div.withConfig<{
 
     font-size: 15px;
     font-weight: 500;
-    color: ${LessPalette['@color-title']};
+    color: var(--r-neutral-title-1);
     position: relative;
 
-    border-right: 1px solid ${LessPalette['@color-border']};
-    border-bottom: 1px solid ${LessPalette['@color-border']};
+    border-right: 1px solid var(--r-neutral-line);
+    border-bottom: 1px solid var(--r-neutral-line);
 
     ${(props) => {
       const rowCount = props.rowCount || ROW_COUNT;
+      const totalCount = props.totalCount || DEFAULT_MEMONICS_COUNT;
+
       return css`
         width: ${(1 / rowCount) * 100}%;
 
@@ -67,6 +71,25 @@ const MatrixWrapper = styled.div.withConfig<{
         &:nth-last-child(-n + ${rowCount}) {
           border-bottom: 0;
         }
+
+        // &:nth-child(1) .mnemonics-input {
+        //   border-top-left-radius: 6px;
+        // }
+        // &:nth-child(${rowCount}) .mnemonics-input {
+        //   border-top-right-radius: 6px;
+        // }
+        // &:nth-child(${totalCount - rowCount + 1}) .mnemonics-input {
+        //   border-bottom-left-radius: 6px;
+        // }
+        // &:nth-child(${totalCount}) .mnemonics-input {
+        //   border-bottom-right-radius: 6px;
+        // }
+        // &:not(.invalid):nth-child(-n + ${rowCount}) .mnemonics-input:not(:focus) {
+        //   border-top: 1px solid var(--r-neutral-line);
+        // }
+        // &:not(.invalid):nth-child(${rowCount}n+1) .mnemonics-input:not(:focus) {
+        //   border-left: 1px solid var(--r-neutral-line);
+        // }
       `;
     }}
 
@@ -86,11 +109,14 @@ const MatrixWrapper = styled.div.withConfig<{
 
   /* for MnemonicsInputs :start */
   .mnemonics-input {
-    background-color: var(--r-neutral-card-3, #f7fafc);
+    background-color: transparent;
+    color: var(--r-neutral-title-1, #192945);
     height: 100%;
     display: inline-block;
     line-height: ${ITEM_H}px;
-    border-color: #f5f6fa;
+    border-color: transparent;
+    border-radius: 6px;
+
     &:focus,
     &.ant-input-focused {
       border-color: var(--r-blue-default, #7084ff);
@@ -153,7 +179,7 @@ const HeadToolbar = styled.div`
   font-size: 13px;
   line-height: 14px;
 
-  color: ${LessPalette['@color-body']};
+  color: var(--r-neutral-body);
 `;
 
 const DFLT_FOCUSING = { index: -1, visible: false };
@@ -193,7 +219,7 @@ function MnemonicsInputs({
   onPassphrase?: (val: boolean) => any;
 }>) {
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
-    12
+    DEFAULT_MEMONICS_COUNT
   );
   const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
 
@@ -316,7 +342,7 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[8px]">
+      <HeadToolbar className="mb-[8px] text-r-neutral-body">
         <Dropdown
           trigger={['click']}
           overlay={
@@ -324,9 +350,8 @@ function MnemonicsInputs({
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
-                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                    className="h-[38px] py-0 px-[8px] text-r-neutral-body hover:bg-transparent"
                     key={`countSelector-${count}`}
-                    style={{ color: LessPalette['@color-body'] }}
                     onClick={() => {
                       setMnemonicsCount(count);
                       setNeedPassphrase(false);
@@ -353,7 +378,7 @@ function MnemonicsInputs({
                   <Menu.Item
                     className="h-[38px] py-0 px-[8px] hover:bg-transparent"
                     key={`countSelector-need-passphrase-${count}`}
-                    style={{ color: LessPalette['@color-body'] }}
+                    style={{ color: 'var(--r-neutral-body)' }}
                     onClick={() => {
                       setMnemonicsCount(count);
                       setNeedPassphrase(true);
@@ -409,7 +434,7 @@ function MnemonicsInputs({
             clearAll();
           }}
         >
-          <img src={IconClearAll} />
+          <ThemeIcon src={RcIconClearAll} />
           <span className="ml-[6px]">
             {t('page.newAddress.seedPhrase.clearAll')}
           </span>
@@ -418,10 +443,11 @@ function MnemonicsInputs({
       <MatrixWrapper
         className={clsx(
           'rounded-[6px] text-center',
-          'border border-[#E1E5F2] border-solid',
+          'border border-rabby-neutral-line border-solid',
           className
         )}
         rowCount={rowCount}
+        totalCount={mnemonicsCount}
       >
         {wordPlaceHolders.map((_, idx) => {
           const word = inputTexts[idx] || '';

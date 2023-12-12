@@ -24,7 +24,7 @@ const CreateMnemonic = () => {
       throw new Error(t('page.newAddress.seedPhrase.importError'));
   }
 
-  return <div className="w-screen h-screen bg-gray-bg">{node}</div>;
+  return <div className="w-screen h-screen bg-r-neutral-bg-2">{node}</div>;
 };
 
 export default connectStore()(CreateMnemonic);

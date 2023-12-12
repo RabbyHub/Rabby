@@ -4,31 +4,31 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
-import LessPalette from '@/ui/style/var-defs';
 import { styid } from '@/ui/utils/styled';
 import { openInternalPageInTab, useWallet } from 'ui/utils';
 import { Account } from '@/background/service/preference';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/component/icon-copy-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Button, message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import { generateAliasName } from '@/utils/account';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import LogoSVG from '@/ui/assets/logo.svg';
-import IconBack from 'ui/assets/back.svg';
+import { ReactComponent as RcIconBack } from 'ui/assets/back-cc.svg';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const AlertBlock = styled.div`
   padding: 10px 12px;
-  color: ${LessPalette['@color-red']};
-  background: rgba(236, 81, 81, 0.1);
+  color: var(--r-red-default);
+  background: var(--r-red-light);
   font-weight: 400;
   font-size: 14px;
   line-height: 16px;
 `;
 
 const CopySection = styled.div`
-  color: ${LessPalette['@color-comment-1']};
+  color: var(--r-neutral-body);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@ const TipTextList = styled.ol`
 
   > li {
     font-weight: 400;
-    color: ${LessPalette['@color-body']};
+    color: var(--r-neutral-body);
     line-height: 20px;
   }
 
@@ -100,7 +100,7 @@ const DisplayMnemonic = () => {
       <div
         className={clsx(
           'px-[100px] pt-[32px] pb-[40px]',
-          'bg-white rounded-[12px]',
+          'bg-r-neutral-card-1 rounded-[12px]',
           'relative'
         )}
       >
@@ -108,13 +108,16 @@ const DisplayMnemonic = () => {
           className="cursor-pointer absolute left-[100px] top-[32px]"
           onClick={() => dispatch.createMnemonics.stepTo('risk-check')}
         >
-          <img src={IconBack} />
+          <ThemeIcon
+            src={RcIconBack}
+            className="w-[20px] h-[20px] text-r-neutral-title-1"
+          />
         </div>
         <h1
           className={clsx(
             'flex items-center justify-center',
             'space-x-[16px] mb-[14px]',
-            'text-[20px] text-gray-title'
+            'text-[20px] text-r-neutral-title-1'
           )}
         >
           <span>{t('page.newAddress.seedPhrase.backup')}</span>
@@ -138,7 +141,10 @@ const DisplayMnemonic = () => {
             onClick={onCopyMnemonics}
             className="text-13 pt-16 pb-16 mt-8"
           >
-            <img className="mr-6" src={IconCopy} />
+            <ThemeIcon
+              className="mr-6 w-[16px] h-[16px] text-r-neutral-body"
+              src={RcIconCopy}
+            />
             {t('page.newAddress.seedPhrase.copy')}
           </CopySection>
         </div>
