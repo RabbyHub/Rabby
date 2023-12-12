@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser';
 import browser, { Windows } from 'webextension-polyfill';
 import { EventEmitter } from 'events';
 import { IS_WINDOWS } from 'consts';
@@ -54,15 +55,31 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
     // browser.windows.create not pass state to chrome
     win = await createFullScreenWindow({ url, ...rest });
   } else {
-    win = await browser.windows.create({
-      focused: true,
-      url,
-      type: 'popup',
-      top,
-      left,
-      ...WINDOW_SIZE,
-      ...rest,
-    });
+    try {
+      win = await browser.windows.create({
+        focused: true,
+        url,
+        type: 'popup',
+        top,
+        left,
+        ...WINDOW_SIZE,
+        ...rest,
+      });
+    } catch (e) {
+      if (e.message && /Invalid value for bound/i.test(e.message)) {
+        win = await browser.windows.create({
+          focused: true,
+          url,
+          type: 'popup',
+          top: 0,
+          left: 0,
+          ...WINDOW_SIZE,
+          ...rest,
+        });
+      } else {
+        Sentry.captureException(e);
+      }
+    }
   }
   // shim firefox
   if (win.left !== left && currentWindow.state !== 'fullscreen') {
