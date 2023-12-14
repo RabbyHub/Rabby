@@ -192,7 +192,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
 
       <Modal
         destroyOnClose
-        className="AdvancedModal"
+        className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
         visible={visibleAdvanced}
         centered

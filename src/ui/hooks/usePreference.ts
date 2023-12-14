@@ -36,16 +36,31 @@ function useIsDarkMode() {
 const uiTypes = getUiType();
 
 function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
+  const userSelectedDark = themeMode === DARK_MODE_TYPE.dark;
+  const useSystemAndOnDark =
+    themeMode === DARK_MODE_TYPE.system && isDarkOnSystem;
+
   if (process.env.DEBUG) {
+    return userSelectedDark || useSystemAndOnDark;
+  }
+
+  if (uiTypes.isTab) {
+    const hashValue = window.location.hash;
+
     return (
-      themeMode === DARK_MODE_TYPE.dark ||
-      (themeMode === DARK_MODE_TYPE.system && isDarkOnSystem)
+      userSelectedDark &&
+      [
+        '#/mnemonics/create',
+        '#/import/mnemonics',
+
+        '#/import/select-address',
+
+        '#/pending-detail',
+      ].includes(hashValue)
     );
   }
 
-  if (uiTypes.isTab) return false;
-
-  return themeMode === DARK_MODE_TYPE.dark;
+  return userSelectedDark;
 }
 
 export function useThemeModeOnMain() {

@@ -28,7 +28,7 @@ const TipTextList = styled.div`
     font-weight: 700;
     font-size: 13px;
     line-height: 15px;
-    color: #13141a;
+    color: var(--r-neutral-title-1);
     margin-top: 0;
     margin-bottom: 8px;
   }
@@ -36,7 +36,7 @@ const TipTextList = styled.div`
     font-weight: 400;
     font-size: 13px;
     line-height: 15px;
-    color: #4b4d59;
+    color: var(--r-neutral-body);
     margin: 0;
   }
   section + section {
@@ -140,14 +140,14 @@ const ImportMnemonics = () => {
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
   return (
-    <main className="w-screen h-screen bg-gray-bg">
+    <main className="w-screen h-screen bg-r-neutral-bg-2">
       <div className={clsx('mx-auto pt-[58px]', 'w-[600px]')}>
         <img src={LogoSVG} alt="Rabby" className="mb-[12px]" />
         <Form
           form={form}
           className={clsx(
             'px-[100px] pt-[36px] pb-[40px]',
-            'bg-white rounded-[12px]'
+            'bg-r-neutral-card-1 rounded-[12px]'
           )}
           onFinish={({ mnemonics, passphrase }) => run(mnemonics, passphrase)}
           onValuesChange={(states) => {
@@ -163,7 +163,7 @@ const ImportMnemonics = () => {
             className={clsx(
               'flex items-center justify-center',
               'space-x-[16px] mb-[24px]',
-              'text-[20px] text-gray-title'
+              'text-[20px] text-r-neutral-title-1'
             )}
           >
             <img className="w-[24px]" src={IconMnemonicInk} />

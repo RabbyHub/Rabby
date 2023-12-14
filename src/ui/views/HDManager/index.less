@@ -1,7 +1,9 @@
+@import '../../style/mixin.less';
+
 .HDManager {
   font-weight: 500;
   line-height: 1.15;
-  background: @color-bg;
+  background: var(--r-neutral-bg-2);
   overflow-x: auto;
   min-height: 100vh;
 
@@ -30,7 +32,7 @@
     }
     .title {
       font-size: 20px;
-      color: @color-title;
+      color: var(--r-neutral-title-1);
       margin-bottom: 0;
     }
   }
@@ -44,7 +46,7 @@
     column-gap: 20px;
     font-size: 12px;
     line-height: 1;
-    color: @color-body;
+    color: var(--r-neutral-body);
   }
 
   .toolbar-item {
@@ -69,7 +71,7 @@
       margin-right: 4px;
     }
     .title {
-      color: @color-body;
+      color: var(--r-neutral-body);
       font-size: 12px;
       line-height: 1;
     }
@@ -81,7 +83,7 @@
     }
     .ant-tabs-nav-list {
       margin: auto;
-      background: @color-border;
+      background: var(--r-neutral-line);
       border-radius: 8px;
       padding: 4px;
     }
@@ -91,53 +93,89 @@
     .ant-tabs-tab {
       padding: 7px 34px;
       border-radius: 6px;
-      color: @color-comment;
+      color: var(--r-neutral-body);
       font-size: 15px;
       transition: all 0.3s ease-in-out;
       margin: 0;
       &.ant-tabs-tab-active {
-        background: #fff;
+        background: var(--r-neutral-bg-1);
+        .ant-tabs-tab-btn {
+          color: var(--r-blue-default);
+        }
       }
     }
   }
 }
 
 .AccountList {
+  .ant-table {
+    background: var(--r-neutral-bg-2);
+  }
   .ant-table-cell {
     height: 55px;
     padding: 0 16px;
+    background-color: var(--r-neutral-card-1);
+    color: var(--r-neutral-title-1);
   }
   tr > td {
-    border-bottom: 1px solid @color-bg;
+    border-bottom: 1px solid var(--r-neutral-bg-2);
+  }
+  .ant-table-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+  .ant-table-body {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+  &.is-win32 .ant-table-body {
+    .chromelike-scrollbar();
   }
   .ant-table-thead {
     font-size: 12px;
     line-height: 14px;
+    background: var(--r-neutral-card-3);
     
     .ant-table-cell {
       padding: 8px 16px;
-      background: #FAFBFD;
+      background: var(--r-neutral-card-3);
       border-bottom: none;
       height: auto;
     }
 
     .column-group {
-      color: @color-comment;
+      color: var(--r-neutral-foot);
       text-align: left;
       font-weight: normal;
       padding: 10px 0 0;
 
       a {
-        color: @color-comment;
+        color: var(--r-neutral-foot);
         text-decoration: underline;
       }
     }
 
     .column-group-wrap {
-      border-right: 1px solid @color-bg;
+      border-right: 1px solid var(--r-neutral-bg-2);
       padding-top: 0;
       padding-bottom: 0;
+
+      &:nth-last-child(-n+2) {
+        border-right-color: transparent;
+      }
     }
+  }
+  .ant-table-tbody {
+    background-color: var(--r-neutral-bg-2);
+    .ant-empty-description {
+      color: var(--r-neutral-foot);
+    }
+  }
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    background-color: var(--r-neutral-line);
+  }
+  .ant-table-cell-scrollbar {
+    box-shadow: none;
   }
 
   .cell-address {
@@ -149,27 +187,27 @@
   }
 
   &-skeleton {
-    background: @color-bg;
+    background: var(--r-neutral-bg-2);
     padding: 4px 6px;
     border-radius: 4px;
-    color: @color-comment;
+    color: var(--r-neutral-foot);
     font-size: 13px;
     display: block;
     margin: auto;
   }
 
   .cell-index {
-    color: @color-comment;
+    color: var(--r-neutral-foot);
     font-weight: 400;
     padding-right: 3px;
   }
 
   .cell-note {
-    border-right: 1px solid @color-bg;
+    border-right: 1px solid var(--r-neutral-bg-2);
   }
 
   .cell-add {
-    border-right: 1px solid @color-bg;
+    border-right: 1px solid var(--r-neutral-bg-2);
   }
 
   .copy-icon {
@@ -181,7 +219,8 @@
     cursor: pointer;
     position: absolute;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(var(--r-neutral-title-1-rgb), 0.1);
+    // backdrop-filter: blur(100px);
     bottom: 0;
     display: flex;
     flex-direction: column;
@@ -194,6 +233,7 @@
     }
 
     td {
+      color: var(--r-neutral-title-1);
       border-bottom: none;
       padding: 0;
       display: flex;
@@ -206,7 +246,7 @@
 
   .AliasName {
     &--disabled {
-      color: @color-comment;
+      color: var(--r-neutral-foot);
     }
     .label {
       display: flex;
@@ -238,8 +278,8 @@
       height: 20px;
       margin-right: 8px;
       border-radius: 100%;
-      background: @color-border;
-      color: @color-comment;
+      background: var(--r-neutral-line);
+      color: var(--r-neutral-foot);
       font-size: 12px;
       line-height: 14px;
       font-weight: 400;
@@ -259,15 +299,19 @@
     margin-bottom: 40px;
    
     .label {
-      color: @color-title;
+      color: var(--r-neutral-title-1);
       font-size: 15px;
       line-height: 17.5px;
       margin-bottom: 12px;
       font-weight: 500;
     }
 
+    .ant-input-number {
+      border-radius: 6px;
+    }
+
     .tip {
-      color: @color-comment;
+      color: var(--r-neutral-body);
       font-size: 13px;
       line-height: 15px;
       font-weight: 500;
@@ -298,7 +342,11 @@
   .ant-modal-header {
     border-bottom: none;
     padding: 40px 0;
-    background-color: #fff;
+    background: var(--r-neutral-bg-1);
+  }
+
+  .ant-modal-title {
+    color: var(--r-neutral-title-1);
   }
 
   .ant-modal-body {
@@ -306,7 +354,7 @@
   }
 
   .ant-modal-content {
-    background-color: #fff;
+    background: var(--r-neutral-bg-1);
     border-radius: 12px;
   }
 
@@ -326,9 +374,9 @@
 }
 
 .HDPathTypeButton {
-  background: @color-bg;
+  background: var(--r-neutral-card-2);
   border-radius: 6px;
-  color: @color-title;
+  color: var(--r-neutral-title-1);
   font-size: 15px;
   font-weight: 500;
   line-height: 17.5px;
@@ -342,13 +390,13 @@
   }
 
   &--selected {
-    background: rgba(134, 151, 255, 0.2);
-    color: var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light-1);
+    color: var(--r-blue-default);
   }
 
   &--on-chain::before {
     content: '';
-    background: @color-green;
+    background: var(--r-green-default);
     position: absolute;
     right: 8px;
     top: 8px;
@@ -363,7 +411,7 @@
   height: 20px;
   line-height: 20px;
   border-radius: 90px;
-  background-color: #D9DEE5;
+  background-color: var(--r-neutral-line);
   .icon {
     position: absolute;
     top: 6px;
