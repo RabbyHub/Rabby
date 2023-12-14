@@ -99,6 +99,7 @@ const normalizeHex = (value: string | number) => {
 
 const normalizeTxParams = (tx) => {
   const copy = tx;
+  console.log('copy', tx);
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
@@ -111,6 +112,15 @@ const normalizeTxParams = (tx) => {
     }
     if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
       copy.gasPrice = normalizeHex(copy.gasPrice);
+    }
+    if ('maxFeePerGas' in copy && isStringOrNumber(copy.maxFeePerGas)) {
+      copy.maxFeePerGas = normalizeHex(copy.maxFeePerGas);
+    }
+    if (
+      'maxPriorityFeePerGas' in copy &&
+      isStringOrNumber(copy.maxPriorityFeePerGas)
+    ) {
+      copy.maxPriorityFeePerGas = normalizeHex(copy.maxPriorityFeePerGas);
     }
     if ('value' in copy) {
       if (!isStringOrNumber(copy.value)) {
