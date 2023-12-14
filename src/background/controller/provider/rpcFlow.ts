@@ -12,6 +12,7 @@ import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -173,6 +174,11 @@ const flowContext = flow
       } else {
         from = second;
         message = first;
+      }
+      const hexReg = /^[0-9A-Fa-f]+$/gu;
+      const stripped = stripHexPrefix(message);
+      if (stripped.match(hexReg)) {
+        message = addHexPrefix(stripped);
       }
       ctx.request.data.params[0] = message;
       ctx.request.data.params[1] = from;
