@@ -54,7 +54,7 @@ const Unlock = () => {
       </div>
       <Form
         autoComplete="off"
-        className="bg-r-neutral-bg-1 flex-1"
+        className="bg-r-neutral-bg-2 flex-1"
         form={form}
         onFinish={handleSubmit}
       >
@@ -70,6 +70,7 @@ const Unlock = () => {
         >
           <Input
             placeholder={t('page.unlock.password.placeholder')}
+            className="bg-r-neutral-card-1"
             size="large"
             type="password"
             ref={inputEl}
