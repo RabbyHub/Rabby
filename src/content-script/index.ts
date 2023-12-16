@@ -1,4 +1,4 @@
-import { Message } from '@/utils';
+import { Message } from '@/utils/message';
 import { nanoid } from 'nanoid';
 
 import { v4 as uuid } from 'uuid';

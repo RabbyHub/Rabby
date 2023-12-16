@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
-import { Message } from '@/utils';
+import { Message } from '@/utils/message';
 import { CHAINS, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
 import { storage } from './webapi';
 import {
