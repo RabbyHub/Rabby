@@ -1,6 +1,6 @@
 # Content-script
 
-this script is intented to inject the `ethereum provider` into dapp's page.
+this script is intended to inject the `ethereum provider` into dapp's page.
 
 Although `content-script` share the same dom with `dapp`, but the context is different.
 
