@@ -919,7 +919,7 @@
       },
       "ledger": {
         "allow": "Permettre",
-        "allowRabbyPermissionsTitle": "Autorisezr Rabby à :",
+        "allowRabbyPermissionsTitle": "Autorisez Rabby à :",
         "cameraPermission1": "Autoriser Rabby à accéder à la caméra dans la fenêtre contextuelle du navigateur",
         "cameraPermissionTitle": "Autoriser Rabby à accéder à la caméra",
         "ledgerPermission1": "Se connecter à un appareil HID",
