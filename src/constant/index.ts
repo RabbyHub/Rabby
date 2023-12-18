@@ -176,6 +176,7 @@ import IconCoinbase, {
 } from 'ui/assets/walletlogo/coinbase.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import browser from 'webextension-polyfill';
 
 import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import Logo0X from 'ui/assets/swap/0xswap.png';
@@ -296,6 +297,13 @@ export enum TX_TYPE_ENUM {
 export const IS_CHROME = /Chrome\//i.test(global.navigator?.userAgent);
 
 export const IS_FIREFOX = /Firefox\//i.test(global.navigator?.userAgent);
+
+export let IS_VIVALDI = false;
+browser.tabs.onCreated.addListener((tab) => {
+  if (tab && 'vivExtData' in tab) {
+    IS_VIVALDI = true;
+  }
+});
 
 export const IS_LINUX = /linux/i.test(global.navigator?.userAgent);
 

@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Views from './views';
-import { Message } from '@/utils';
+import { Message } from '@/utils/message';
 import { getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
