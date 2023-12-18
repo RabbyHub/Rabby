@@ -300,7 +300,7 @@ export const IS_FIREFOX = /Firefox\//i.test(global.navigator?.userAgent);
 
 export let IS_VIVALDI = false;
 browser.tabs.onCreated.addListener((tab) => {
-  if ('vivExtData' in tab) {
+  if (tab && 'vivExtData' in tab) {
     IS_VIVALDI = true;
   }
 });
