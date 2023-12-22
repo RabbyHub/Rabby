@@ -17,7 +17,7 @@ import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1-cc.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
 import IconSuccess from 'ui/assets/icon-success-1.svg';
-import IconWarning from 'ui/assets/icon-warning-large.svg';
+import { ReactComponent as RcIconWarning } from 'ui/assets/icon-warning-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
@@ -158,10 +158,10 @@ const Receive = () => {
     const modal = Modal.info({
       maskClosable: false,
       closable: false,
-      className: 'page-receive-modal',
+      className: 'page-receive-modal modal-support-darkmode',
       content: (
         <div>
-          <img className="icon" src={IconWarning} alt="" />
+          <ThemeIcon className="icon" src={RcIconWarning} />
           <div className="content">
             {t('page.receive.watchModeAlert1')}
             <br />
