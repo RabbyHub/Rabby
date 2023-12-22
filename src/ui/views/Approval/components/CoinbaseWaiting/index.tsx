@@ -97,38 +97,6 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
 
-    if (!isText && !isSignTriggered) {
-      const explain = explainRef.current;
-
-      if (explain) {
-        wallet.reportStats('signTransaction', {
-          type: account.brandName,
-          chainId: findChainByEnum(chain)?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain
-            ? explain?.calcSuccess && explain?.pre_exec.success
-            : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: params?.$ctx?.ga?.source || '',
-          trigger: params?.$ctx?.ga?.trigger || '',
-        });
-      }
-      matomoRequestEvent({
-        category: 'Transaction',
-        action: 'Submit',
-        label: account.brandName,
-      });
-      isSignTriggered = true;
-    }
-    if (isText && !isSignTriggered) {
-      wallet.reportStats('startSignText', {
-        type: account.brandName,
-        category: KEYRING_CATEGORY_MAP[account.type],
-        method: params?.extra?.signTextMethod,
-      });
-      isSignTriggered = true;
-    }
-
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         let sig = data.data;
@@ -162,7 +130,39 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
       }
     });
 
-    initWalletConnect();
+    await initWalletConnect();
+
+    if (!isText && !isSignTriggered) {
+      const explain = explainRef.current;
+
+      if (explain) {
+        wallet.reportStats('signTransaction', {
+          type: account.brandName,
+          chainId: findChainByEnum(chain)?.serverId || '',
+          category: KEYRING_CATEGORY_MAP[account.type],
+          preExecSuccess: explain
+            ? explain?.calcSuccess && explain?.pre_exec.success
+            : true,
+          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: params?.$ctx?.ga?.source || '',
+          trigger: params?.$ctx?.ga?.trigger || '',
+        });
+      }
+      matomoRequestEvent({
+        category: 'Transaction',
+        action: 'Submit',
+        label: account.brandName,
+      });
+      isSignTriggered = true;
+    }
+    if (isText && !isSignTriggered) {
+      wallet.reportStats('startSignText', {
+        type: account.brandName,
+        category: KEYRING_CATEGORY_MAP[account.type],
+        method: params?.extra?.signTextMethod,
+      });
+      isSignTriggered = true;
+    }
   };
 
   useEffect(() => {

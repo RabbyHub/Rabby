@@ -322,7 +322,7 @@
       "qrcode": {
         "signWith": "Sign with {{brand}}",
         "failedToGetExplain": "Failed to get explain",
-        "txFailed": "Fail to created",
+        "txFailed": "Fail to create",
         "sigReceived": "Signature received",
         "sigCompleted": "Transaction created",
         "getSig": "Get signature",
