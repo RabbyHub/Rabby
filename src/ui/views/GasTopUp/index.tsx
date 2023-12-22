@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import bgIcon from '@/ui/assets/gas-top-up/light.svg';
+import { ReactComponent as RcBubleInBg } from '@/ui/assets/gas-top-up/bulb-in-bg.svg';
 import { Button, message, Skeleton, Space, Tooltip } from 'antd';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useAsync, useAsyncRetry, useCss } from 'react-use';
@@ -310,64 +310,69 @@ export const GasTopUp = () => {
   };
 
   return (
-    <div
-      className="relative p-20 pt-0 h-full bg-gray-bg"
-      style={{
-        background: `url(${bgIcon}) no-repeat`,
-      }}
-    >
-      <PageHeader
-        onBack={handleClickBack}
-        forceShowBack
-        invertBack
-        keepBackLightVersion
-      >
-        <span className="text-white">{t('page.gasTopUp.title')}</span>
-      </PageHeader>
-      <div className="text-12 leading-[17px] text-white pt-[4px] pb-[24px]">
-        {t('page.gasTopUp.description')}
+    <div className="relative pt-0 h-full bg-r-neutral-bg-2">
+      <div className="absolute top-0 left-0 right-0 h-[217px] bg-r-blue-default dark:bg-r-blue-disable">
+        <RcBubleInBg className="absolute right-[25px] top-[35px] z-[0]" />
       </div>
-
-      <div className="w-[360px] h-[284px] bg-white rounded-[6px] px-[16px] py-[32px]">
-        <div className="text-15 font-medium text-gray-title mb-12">
-          {t('page.gasTopUp.topUpChain')}
-        </div>
-        <ChainSelect value={chain} onChange={setChain} />
-
-        <div className="text-15 font-medium text-gray-title mt-[40px] mb-[12px]">
-          {t('page.gasTopUp.Amount')}
-        </div>
-        <Space size={8}>
-          {prices.map((e, i) => (
-            <GasBox
-              key={i + chain}
-              chainUsdBalanceLoading={chainUsdBalanceLoading}
-              instantGasValue={instantGasValue}
-              item={e}
-              selectedIndex={index}
-              index={i}
-              onSelect={setIndex}
-              gasTokenLoading={gasTokenLoading}
-              gasToken={gasToken}
-              chainUsdBalance={chainUsdBalance}
-            />
-          ))}
-        </Space>
-      </div>
-      <div className="flex justify-center ">
-        <Button
-          style={{
-            width: 280,
-            height: 52,
-            marginTop: 63,
-          }}
-          type="primary"
-          size="large"
-          onClick={handleContinue}
-          disabled={btnDisabled}
+      <div className="p-20 pt-0 h-full relative bg-transparent">
+        <PageHeader
+          onBack={handleClickBack}
+          forceShowBack
+          invertBack
+          keepBackLightVersion
         >
-          {t('page.gasTopUp.Continue')}
-        </Button>
+          <span className="text-white">{t('page.gasTopUp.title')}</span>
+        </PageHeader>
+        <div className="text-12 leading-[17px] text-r-neutral-title-2 pt-[4px] pb-[24px]">
+          {t('page.gasTopUp.description')}
+        </div>
+
+        <div
+          className="w-[360px] h-[284px] bg-r-neutral-bg-1 rounded-[6px] px-[16px] py-[32px]"
+          style={{
+            boxShadow: '0px 8px 20px 0px rgba(0, 0, 0, 0.10)',
+          }}
+        >
+          <div className="text-15 font-medium text-r-neutral-title-1 mb-12">
+            {t('page.gasTopUp.topUpChain')}
+          </div>
+          <ChainSelect value={chain} onChange={setChain} />
+
+          <div className="text-15 font-medium text-r-neutral-title-1 mt-[40px] mb-[12px]">
+            {t('page.gasTopUp.Amount')}
+          </div>
+          <Space size={8}>
+            {prices.map((e, i) => (
+              <GasBox
+                key={i + chain}
+                chainUsdBalanceLoading={chainUsdBalanceLoading}
+                instantGasValue={instantGasValue}
+                item={e}
+                selectedIndex={index}
+                index={i}
+                onSelect={setIndex}
+                gasTokenLoading={gasTokenLoading}
+                gasToken={gasToken}
+                chainUsdBalance={chainUsdBalance}
+              />
+            ))}
+          </Space>
+        </div>
+        <div className="flex justify-center ">
+          <Button
+            style={{
+              width: 280,
+              height: 52,
+              marginTop: 63,
+            }}
+            type="primary"
+            size="large"
+            onClick={handleContinue}
+            disabled={btnDisabled}
+          >
+            {t('page.gasTopUp.Continue')}
+          </Button>
+        </div>
       </div>
 
       <ConfirmDrawer
@@ -449,13 +454,13 @@ const GasBox = ({
       <div
         key={item[1]}
         className={clsx(
-          'w-[104px] h-[56px] cursor-pointer rounded border  text-center flex flex-col items-center justify-center',
+          'w-[104px] h-[56px] cursor-pointer rounded border text-center flex flex-col items-center justify-center',
 
           gasCostExceedsBudget || chainInsufficientBalance
-            ? 'cursor-not-allowed opacity-[0.6] bg-gray-bg  border-transparent'
+            ? 'cursor-not-allowed opacity-[0.6] bg-r-neutral-card-2 border-transparent'
             : index === selectedIndex
-            ? 'bg-blue-light border-blue-light bg-opacity-[0.1]'
-            : 'bg-gray-bg border-transparent hover:border-blue-light'
+            ? 'bg-r-blue-light-1 border-rabby-blue-default'
+            : 'bg-r-neutral-card-2 border-transparent hover:border-rabby-blue-default'
         )}
         onClick={() => {
           if (!(gasCostExceedsBudget || chainInsufficientBalance)) {
@@ -465,7 +470,7 @@ const GasBox = ({
       >
         <div
           className={clsx(
-            'text-15 text-gray-title font-medium ',
+            'text-15 text-r-neutral-title-1 font-medium ',
             !(gasCostExceedsBudget || chainInsufficientBalance) &&
               index === selectedIndex &&
               'text-blue-light'

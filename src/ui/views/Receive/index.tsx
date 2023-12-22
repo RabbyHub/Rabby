@@ -13,11 +13,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
-import IconCopy from 'ui/assets/icon-copy-1.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1-cc.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
 import IconSuccess from 'ui/assets/icon-success-1.svg';
-import IconWarning from 'ui/assets/icon-warning-large.svg';
+import { ReactComponent as RcIconWarning } from 'ui/assets/icon-warning-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
@@ -25,6 +25,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -157,10 +158,10 @@ const Receive = () => {
     const modal = Modal.info({
       maskClosable: false,
       closable: false,
-      className: 'page-receive-modal',
+      className: 'page-receive-modal modal-support-darkmode',
       content: (
         <div>
-          <img className="icon" src={IconWarning} alt="" />
+          <ThemeIcon className="icon" src={RcIconWarning} />
           <div className="content">
             {t('page.receive.watchModeAlert1')}
             <br />
@@ -197,7 +198,7 @@ const Receive = () => {
     };
   }, [account?.type]);
   return (
-    <div className="page-receive">
+    <div className="page-receive bg-r-blue-default dark:bg-r-blue-disable">
       <div className="page-nav">
         <div
           className="page-nav-left pointer"
@@ -255,7 +256,10 @@ const Receive = () => {
         </div>
         <div className="qr-card-address">{account?.address}</div>
         <button type="button" className="qr-card-btn" ref={ref}>
-          <img src={IconCopy} alt="" className="icon-copy" />
+          <ThemeIcon
+            src={RcIconCopy}
+            className="icon-copy text-r-neutral-title-1"
+          />
           {t('global.copyAddress')}
         </button>
       </div>

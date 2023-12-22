@@ -3,15 +3,15 @@ import React, { CSSProperties, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCss } from 'react-use';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
-import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { ChainWrapper } from '.';
 import { Empty, TokenWithChain } from '@/ui/component';
 import { TokenItem } from '@/background/service/openapi';
-import { ReactComponent as IconBack } from 'ui/assets/back.svg';
+import { ReactComponent as RcIconBack } from 'ui/assets/back-cc.svg';
 import { splitNumberByStep } from '@/ui/utils';
-import { ReactComponent as IconRightArrow } from '@/ui/assets/arrow-right-gray.svg';
+import { ReactComponent as RcIconRightArrow } from '@/ui/assets/arrow-right-cc.svg';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -77,7 +77,7 @@ export const ConfirmDrawer = ({
             style={style}
             className={clsx(
               'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
-              'text-13 font-medium text-gray-title',
+              'text-13 font-medium text-r-neutral-title-1',
               new BigNumber(item.amount)
                 .times(item.price)
                 .lt(new BigNumber(cost).times(1.2)) &&
@@ -117,15 +117,15 @@ export const ConfirmDrawer = ({
       height={346}
       visible={visible}
       onClose={onClose}
-      className={drawClassName}
+      className={clsx(drawClassName, 'is-support-darkmode')}
       bodyStyle={{
         padding: '20px 0',
       }}
       push={false}
       closeIcon={null}
     >
-      <div className="relative w-full bg-white">
-        <div className="text-20 font-medium text-center text-gray-title ">
+      <div className="relative w-full">
+        <div className="text-20 font-medium text-center text-r-neutral-title-1 ">
           {t('page.gasTopUp.payment')}
         </div>
         <div className="absolute top-1/2 -translate-y-1/2  right-[20px]">
@@ -138,12 +138,12 @@ export const ConfirmDrawer = ({
             fontWeight: 700,
             fontSize: 28,
           }}
-          className="text-gray-title"
+          className="text-r-neutral-title-1"
         >
           ${new BigNumber(cost).times(1.2).toString(10)}
         </div>
         <div className="flex items-center">
-          <span className="text-12 text-gray-content mr-4">
+          <span className="text-12 text-r-neutral-body mr-4">
             {t('page.gasTopUp.Including-service-fee', {
               fee: new BigNumber(cost).times(0.2).toString(10),
             })}
@@ -154,7 +154,7 @@ export const ConfirmDrawer = ({
             placement="bottom"
             title={t('page.gasTopUp.service-fee-tip')}
           >
-            <IconInfo />
+            <RcIconInfo className="text-r-neutral-body" />
           </Tooltip>
         </div>
 
@@ -165,7 +165,7 @@ export const ConfirmDrawer = ({
             setTokenModalVisible(true);
           }}
         >
-          <div className="text-gray-title text-14">
+          <div className="text-r-neutral-title-1 text-14">
             {token
               ? t('page.gasTopUp.Payment-Token')
               : t('page.gasTopUp.Select-payment-token')}
@@ -174,12 +174,12 @@ export const ConfirmDrawer = ({
             {token ? (
               <>
                 <TokenWithChain token={token} hideConer />
-                <div className="ml-12 mr-[18px] text-gray-title text-15 font-medium">
+                <div className="ml-12 mr-[18px] text-r-neutral-title-1 text-15 font-medium">
                   {getTokenSymbol(token)}
                 </div>
               </>
             ) : null}
-            <IconRightArrow />
+            <RcIconRightArrow className="text-r-neutral-body" />
           </div>
         </ChainWrapper>
 
@@ -218,16 +218,16 @@ export const ConfirmDrawer = ({
         <div className="flex flex-col h-full pt-20">
           <div>
             <div className="relative flex justify-center items-center text-center">
-              <IconBack
-                className="cursor-pointer absolute top-1/2 -translate-y-1/2  left-[20px]"
+              <RcIconBack
+                className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-[20px] text-r-neutral-title1 w-[20px] h-[20px]"
                 onClick={() => setTokenModalVisible(false)}
               />
-              <div className="text-20 font-medium text-center text-gray-title ">
+              <div className="text-20 font-medium text-center text-r-neutral-title-1 ">
                 {t('page.gasTopUp.Select-from-supported-tokens')}
               </div>
             </div>
             <div className="px-20">
-              <div className="flex justify-between border-b-[0.5px] border-gray-divider text-12 text-r-neutral-body pt-[24px] pb-8">
+              <div className="flex justify-between border-b-[0.5px] border-rabby-neutral-line text-12 text-r-neutral-body pt-[24px] pb-8">
                 <div>
                   {t('page.gasTopUp.Token')} / {t('page.gasTopUp.Balance')}
                 </div>
@@ -249,7 +249,9 @@ export const ConfirmDrawer = ({
                   className="animate-spin"
                   fill="var(--r-blue-default, #7084ff)"
                 />
-                <div className="mt-12">{t('page.gasTopUp.Loading_Tokens')}</div>
+                <div className="mt-12 text-r-neutral-title-1">
+                  {t('page.gasTopUp.Loading_Tokens')}
+                </div>
               </div>
             )}
 
