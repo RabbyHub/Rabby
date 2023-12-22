@@ -741,7 +741,9 @@ const GasSelector = ({
                   src={RcIconAlert}
                   className="icon icon-alert text-r-neutral-body"
                 />
-                {error.msg} #{error.code}
+                <span className="flex-1">
+                  {error.msg} #{error.code}
+                </span>
               </div>
             ))}
           </ErrorsWrapper>
