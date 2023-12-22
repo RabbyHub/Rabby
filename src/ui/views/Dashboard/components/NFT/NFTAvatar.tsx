@@ -1,5 +1,4 @@
 import { NFTItem } from '@/background/service/openapi';
-import { CHAINS_ENUM } from '@/constant';
 import { Image } from 'antd';
 import clsx from 'clsx';
 import React from 'react';

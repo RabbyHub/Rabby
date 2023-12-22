@@ -211,6 +211,7 @@ export const KEYRING_TYPE = {
   WalletConnectKeyring: 'WalletConnect',
   GnosisKeyring: 'Gnosis',
   CoboArgusKeyring: 'CoboArgus',
+  CoinbaseKeyring: 'Coinbase',
 } as const;
 
 export const KEYRING_CLASS = {
@@ -1053,6 +1054,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
+  [KEYRING_CLASS.Coinbase]: KEYRING_CATEGORY.WalletConnect,
   [KEYRING_CLASS.GNOSIS]: KEYRING_CATEGORY.Contract,
 };
 

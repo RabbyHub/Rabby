@@ -335,7 +335,6 @@ class ProviderController extends BaseController {
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
-    const traceId = approvalRes.traceId;
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
     const isCoboSafe = !!txParams.isCoboSafe;
@@ -582,7 +581,10 @@ class ProviderController extends BaseController {
           hash: signedTx,
           pushType: 'default',
         });
-        if (currentAccount.type === KEYRING_TYPE.WalletConnectKeyring) {
+        if (
+          currentAccount.type === KEYRING_TYPE.WalletConnectKeyring ||
+          currentAccount.type === KEYRING_TYPE.CoinbaseKeyring
+        ) {
           statsData.signed = true;
           statsData.signedSuccess = true;
         }
