@@ -116,6 +116,9 @@
       color: var(--r-neutral-foot);
     }
   }
+  // .ant-form-item-explain:not(.ant-form-item-explain-error) {
+  //   color: var(--r-neutral-title-1);
+  // }
 }
 
 .ant-input-darkmode2() {
@@ -132,5 +135,15 @@
     .ant-input-number-input {
       background-color: transparent;
     }
+  }
+  // .ant-form-item-explain:not(.ant-form-item-explain-error) {
+  //   color: var(--r-neutral-title-1);
+  // }
+
+  .ant-form-item-has-error .ant-input,
+  .ant-form-item-has-error .ant-input-affix-wrapper,
+  .ant-form-item-has-error .ant-input:hover,
+  .ant-form-item-has-error .ant-input-affix-wrapper:hover {
+    background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
   }
 }

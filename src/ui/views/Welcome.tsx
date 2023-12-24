@@ -10,13 +10,14 @@ import WelcomeStep2 from 'ui/assets/welcome-step-2.png';
 const Container = styled.div`
   .step {
     padding: 42px 20px 32px 20px;
+    background: var(--r-neutral-bg1);
   }
   .step-title {
     font-weight: 700;
     font-size: 22px;
     line-height: 24px;
     text-align: center;
-    color: #333333;
+    color: var(--r-neutral-title1);
     margin-bottom: 13px;
   }
   .step-content {
@@ -24,7 +25,7 @@ const Container = styled.div`
     font-size: 14px;
     line-height: 24px;
     text-align: center;
-    color: #333333;
+    color: var(--r-neutral-title1);
     margin-bottom: 45px;
   }
   .step-image {
