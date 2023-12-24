@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: rgb(45, 48, 51, 0.2);
+  background-color: var(--rabby-custom-ant-drawer-mask);
   z-index: 999;
   position: fixed;
   top: 0;

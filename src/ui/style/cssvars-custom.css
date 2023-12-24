@@ -1,0 +1,7 @@
+:root {
+  --rabby-custom-ant-drawer-mask: rgb(45, 48, 51, 0.2);
+}
+
+html.dark, body.dark {
+  --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.45);
+}

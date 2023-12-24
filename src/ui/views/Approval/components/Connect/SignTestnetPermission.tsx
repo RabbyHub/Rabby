@@ -32,11 +32,11 @@ const SelectPopup = styled(Popup)`
     display: flex;
     flex-direction: column;
     border-radius: 6px;
-    background-color: #f2f4f7;
+    background-color: var(--r-neutral-card2);
 
     .option {
       display: flex;
-      color: #192945;
+      color: var(--r-neutral-title1);
       font-size: 15px;
       line-height: 18px;
       font-weight: 500;
@@ -53,7 +53,7 @@ const SelectPopup = styled(Popup)`
         bottom: 0;
         height: 1px;
         height: 0.5px;
-        background-color: #d3d8e0;
+        background-color: var(--r-neutral-line);
       }
     }
   }
@@ -92,11 +92,11 @@ export const SignTestnetPermission = ({
   return (
     <>
       <Container>
-        <div className="text-13 text-[#3E495E] leading-[18px]">
+        <div className="text-13 text-r-neutral-body leading-[18px]">
           {t('page.connect.SignTestnetPermission.title')}
         </div>
         <div
-          className="flex items-center ml-auto gap-[2px] font-medium text-15 leading-[18px] text-gray-title cursor-pointer"
+          className="flex items-center ml-auto gap-[2px] font-medium text-15 leading-[18px] text-r-neutral-title1 cursor-pointer"
           onClick={() => {
             setIsShowPopup(true);
           }}
@@ -113,6 +113,7 @@ export const SignTestnetPermission = ({
         }}
         closable={true}
         height={208}
+        isSupportDarkMode
       >
         <Radio.Group
           value={value}

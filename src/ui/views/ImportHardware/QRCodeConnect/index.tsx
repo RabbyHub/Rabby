@@ -150,7 +150,7 @@ export const QRCodeConnect = () => {
           'py-[40px]'
         )}
       >
-        <div className="font-medium text-gray-title text-center">
+        <div className="font-medium text-r-neutral-title1 text-center">
           <h1 className="text-[28px] leading-[33px]">{brandInfo.name}</h1>
           <p className="text-15 opacity-80 mt-16">
             Scan the QR code on the {brandInfo.name} hardware wallet

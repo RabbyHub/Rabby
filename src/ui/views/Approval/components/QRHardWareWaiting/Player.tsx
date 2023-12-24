@@ -45,7 +45,7 @@ const Player = ({
       <p
         className={clsx(
           layoutStyle === 'normal' ? 'mt-20' : 'mt-6',
-          'text-13 leading-[18px] mb-0 text-gray-subTitle font-medium text-center whitespace-nowrap'
+          'text-13 leading-[18px] mb-0 text-r-neutral-body font-medium text-center whitespace-nowrap'
         )}
       >
         <Trans

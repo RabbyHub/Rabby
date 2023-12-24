@@ -160,7 +160,7 @@ const TiledSelect = ({
           <div className="flex text-12 justify-between absolute left-0 bottom-12 px-12 w-full">
             <span className="text-red-light">{errMsg}</span>
             <span
-              className="text-gray-subTitle flex cursor-pointer"
+              className="text-r-neutral-body flex cursor-pointer"
               onClick={() => {
                 clearSlots();
                 onClear?.();
@@ -181,7 +181,7 @@ const TiledSelect = ({
               'h-[32px] w-[84px] rounded-lg text-center mb-8 font-medium transition-colors border',
               isOptionSelected(i)
                 ? 'bg-gray-bg text-gray-comment border-gray-divider'
-                : 'bg-white text-gray-title border-white cursor-pointer'
+                : 'bg-white text-r-neutral-title1 border-white cursor-pointer'
             )}
             key={i}
             onClick={() => {

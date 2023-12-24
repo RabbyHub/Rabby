@@ -174,7 +174,7 @@ export const KeystoneConnect = () => {
         <div className="mt-[40px] mb-[20px]">
           <img className="w-[80px] h-[80px] mx-auto" src={brandInfo.image} />
         </div>
-        <div className="font-medium text-gray-title text-center">
+        <div className="font-medium text-r-neutral-title1 text-center">
           <h1 className="text-[28px] leading-[33px]">{brandInfo.name}</h1>
           <PillsSwitch
             value={connectType}
@@ -239,10 +239,10 @@ export const KeystoneConnect = () => {
           </div>
         ) : (
           <div className="connect-keystone mt-[6px]">
-            <p className="text-gray-title text-14 leading-[20px] mb-[20px]">
+            <p className="text-r-neutral-title1 text-14 leading-[20px] mb-[20px]">
               {t('page.dashboard.hd.keystone.title')}
             </p>
-            <ul className="list-decimal w-[240px] pl-[20px] m-auto text-gray-title text-14 leading-[20px] mb-[35px]">
+            <ul className="list-decimal w-[240px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[35px]">
               <li>{t('page.dashboard.hd.keystone.doc1')}</li>
               <li>{t('page.dashboard.hd.keystone.doc2')}</li>
               <li>{t('page.dashboard.hd.keystone.doc3')}</li>

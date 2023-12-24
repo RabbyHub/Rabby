@@ -11,9 +11,6 @@
     text-align: center;
     color: @color-title;
   }
-  &:not(.is-support-darkmode) .ant-drawer-mask {
-    background-color: rgba(45, 48, 51, 0.2);
-  }
   .ant-drawer-header {
     background: transparent;
   }
@@ -102,5 +99,13 @@
 
   .ant-input-affix-wrapper {
     border-width: 0.5px;
+  }
+}
+
+
+.ant-drawer,
+.custom-popup {
+  .ant-drawer-mask {
+    background-color: var(--rabby-custom-ant-drawer-mask);
   }
 }

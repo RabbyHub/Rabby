@@ -6,7 +6,7 @@ import { SvgIconCross } from 'ui/assets';
 import './index.less';
 
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 const CustomModal = (props) => (

@@ -200,7 +200,7 @@ const CreatePassword = () => {
             >
               <img src={IconCheck} className="w-[10px]" />
             </div>
-            <span className="text-[13px] text-gray-subTitle">
+            <span className="text-[13px] text-r-neutral-body">
               <Trans t={t} i18nKey="page.createPassword.agree">
                 have read and agree to the{' '}
                 <span
@@ -241,7 +241,7 @@ const CreatePassword = () => {
           height: 580,
         }}
       >
-        <header className="text-gray-title mb-[20px] text-20 font-medium leading-[20px] text-center">
+        <header className="text-r-neutral-title1 mb-[20px] text-20 font-medium leading-[20px] text-center">
           Rabby Term of Use
         </header>
         <div

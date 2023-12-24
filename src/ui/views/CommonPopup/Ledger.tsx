@@ -31,7 +31,7 @@ export const Ledger: React.FC = () => {
 
   return (
     <div className="pt-[10px]">
-      <ul className="list-decimal w-[180px] pl-[20px] m-auto text-gray-title text-14 leading-[20px]">
+      <ul className="list-decimal w-[180px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px]">
         <li>{t('page.dashboard.hd.ledger.doc1')}</li>
         <li>{t('page.dashboard.hd.ledger.doc2')}</li>
         <li>{t('page.dashboard.hd.ledger.doc3')}</li>
@@ -40,7 +40,7 @@ export const Ledger: React.FC = () => {
         src="/images/ledger-plug.png"
         className="w-[240px] bg-gray-bg mt-[20px] mx-auto py-20 px-40"
       />
-      <div className="mt-[46px] text-13 text-gray-subTitle">
+      <div className="mt-[46px] text-13 text-r-neutral-body">
         <Trans t={t} i18nKey="page.dashboard.hd.ledger.reconnect">
           If it doesn't work, please try
           <span className="underline cursor-pointer" onClick={handleClick}>

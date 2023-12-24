@@ -66,7 +66,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
           <Progress percent={progress} />
         </div>
       ) : (
-        <p className="text-13 leading-[18px] mb-0 mt-24 text-gray-subTitle font-medium text-center">
+        <p className="text-13 leading-[18px] mb-0 mt-24 text-r-neutral-body font-medium text-center">
           {t('page.signFooterBar.qrcode.afterSignDesc', { brand: brandName })}
         </p>
       )}

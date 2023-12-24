@@ -104,8 +104,8 @@ const RuleDrawerWrapper = styled.div`
       margin-bottom: 12px;
       .rabby-checkbox__wrapper {
         .rabby-checkbox {
-          border: 1px solid #707280;
-          background-color: #fff !important;
+          border: 1px solid var(--r-neutral-line);
+          background-color: var(--r-neutral-foot) !important;
         }
         &.checked {
           .rabby-checkbox {

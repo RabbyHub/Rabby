@@ -71,7 +71,7 @@ const LedgerConnect = () => {
       footerFixed={false}
     >
       <div className="connect-ledger">
-        <ul className="list-decimal w-[180px] pl-[20px] m-auto text-gray-title text-14 leading-[20px] mb-[50px]">
+        <ul className="list-decimal w-[180px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[50px]">
           <li>{t('page.dashboard.hd.ledger.doc1')}</li>
           <li>{t('page.dashboard.hd.ledger.doc2')}</li>
           <li>{t('page.dashboard.hd.ledger.doc3')}</li>

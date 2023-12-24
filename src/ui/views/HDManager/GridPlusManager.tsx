@@ -146,7 +146,7 @@ export const GridPlusManager: React.FC = () => {
       centered: true,
       closable: true,
       maskClosable: true,
-      className: 'hd-manager-switch-modal',
+      className: 'hd-manager-switch-modal modal-support-darkmode',
     });
   }, []);
 
