@@ -3,7 +3,7 @@ import { MainContainer } from './MainContainer';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { Modal } from 'antd';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline.svg';
 import {
   AdvancedSettings,
   SettingData,
@@ -126,7 +126,7 @@ export const LedgerManager: React.FC = () => {
   return (
     <>
       <div className="setting" onClick={openAdvanced}>
-        <SettingSVG className="icon" />
+        <RcSettingSVG className="icon text-r-neutral-title1" />
         <span className="title">
           {t('page.newAddress.hd.advancedSettings')}
         </span>

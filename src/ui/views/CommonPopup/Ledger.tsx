@@ -38,7 +38,7 @@ export const Ledger: React.FC = () => {
       </ul>
       <img
         src="/images/ledger-plug.png"
-        className="w-[240px] bg-gray-bg mt-[20px] mx-auto py-20 px-40"
+        className="w-[240px] bg-r-neutral-card2 rounded-[4px] mt-[20px] mx-auto py-20 px-40"
       />
       <div className="mt-[46px] text-13 text-r-neutral-body">
         <Trans t={t} i18nKey="page.dashboard.hd.ledger.reconnect">

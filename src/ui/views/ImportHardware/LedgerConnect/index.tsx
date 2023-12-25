@@ -65,7 +65,8 @@ const LedgerConnect = () => {
         center: true,
       }}
       className="stray-page-wide"
-      headerClassName="mb-40"
+      backgroundClassName="bg-r-neutral-card2"
+      headerClassName="mb-40 text-r-neutral-title1"
       onSubmit={onSubmit}
       hasBack={false}
       footerFixed={false}

@@ -7,8 +7,8 @@ import {
 } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
-import { ReactComponent as HardwareSVG } from 'ui/assets/import/hardware.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
+import { ReactComponent as RcHardwareSVG } from 'ui/assets/import/hardware-cc.svg';
 import { useWallet } from '@/ui/utils';
 import { Account } from './AccountList';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
@@ -154,13 +154,13 @@ export const GridPlusManager: React.FC = () => {
     <>
       <div className="toolbar">
         <div className="toolbar-item" onClick={openSwitchHD}>
-          <HardwareSVG className="icon" />
+          <RcHardwareSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.gridplus.switchToAnotherGridplus')}
           </span>
         </div>
         <div className="toolbar-item" onClick={openAdvanced}>
-          <SettingSVG className="icon" />
+          <RcSettingSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.advancedSettings')}
           </span>

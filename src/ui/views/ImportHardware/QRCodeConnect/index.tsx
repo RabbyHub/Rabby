@@ -142,16 +142,18 @@ export const QRCodeConnect = () => {
     decoder.current = new URDecoder();
   };
   return (
-    <div className="bg-gray-bg2 h-full flex">
+    <div className="bg-r-neutral-bg1 h-full flex">
       <main
         className={clsx(
-          'bg-white rounded-[12px]',
+          'bg-r-neutral-card2 rounded-[12px]',
           'm-auto w-[1000px] h-[750px]',
           'py-[40px]'
         )}
       >
-        <div className="font-medium text-r-neutral-title1 text-center">
-          <h1 className="text-[28px] leading-[33px]">{brandInfo.name}</h1>
+        <div className="font-medium text-r-neutral-body text-center">
+          <h1 className="text-[28px] leading-[33px] text-r-neutral-title1">
+            {brandInfo.name}
+          </h1>
           <p className="text-15 opacity-80 mt-16">
             Scan the QR code on the {brandInfo.name} hardware wallet
           </p>
@@ -162,9 +164,9 @@ export const QRCodeConnect = () => {
         <div className="mt-[60px]">
           <div
             className={clsx(
-              'm-auto rounded-[10px] p-[16px] bg-white',
+              'm-auto rounded-[10px] p-[16px] bg-transparent',
               'w-[320px] h-[320px]',
-              'border border-[#0000001A]'
+              'border border-rabby-neutral-line'
             )}
           >
             {scan && (
@@ -173,6 +175,7 @@ export const QRCodeConnect = () => {
                 height={288}
                 onSuccess={handleScanQRCodeSuccess}
                 onError={handleScanQRCodeError}
+                className="bg-r-neutral-line"
               />
             )}
           </div>

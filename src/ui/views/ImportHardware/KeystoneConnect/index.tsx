@@ -163,10 +163,10 @@ export const KeystoneConnect = () => {
     decoder.current = new URDecoder();
   };
   return (
-    <div className="bg-gray-bg2 h-full flex">
+    <div className="bg-r-neutral-bg1 h-full flex">
       <main
         className={clsx(
-          'bg-white rounded-[12px]',
+          'bg-r-neutral-card2 rounded-[12px]',
           'm-auto w-[1000px] h-[750px]',
           'py-[40px]'
         )}
@@ -174,8 +174,10 @@ export const KeystoneConnect = () => {
         <div className="mt-[40px] mb-[20px]">
           <img className="w-[80px] h-[80px] mx-auto" src={brandInfo.image} />
         </div>
-        <div className="font-medium text-r-neutral-title1 text-center">
-          <h1 className="text-[28px] leading-[33px]">{brandInfo.name}</h1>
+        <div className="font-medium text-r-neutral-body text-center">
+          <h1 className="text-[28px] leading-[33px] text-r-neutral-title1">
+            {brandInfo.name}
+          </h1>
           <PillsSwitch
             value={connectType}
             options={
@@ -191,9 +193,10 @@ export const KeystoneConnect = () => {
               ] as const
             }
             onTabChange={setConnectType}
-            className="mt-[40px] mb-[8px]"
+            className="bg-r-neutral-line mt-[40px] mb-[8px]"
             itemClassname="text-[15px] w-[148px] h-[40px]"
-            itemClassnameInActive="text-[#707280]"
+            itemClassnameActive="bg-r-neutral-bg-1"
+            itemClassnameInActive={clsx('text-r-neutral-body')}
           />
           {connectType === ConnectType.QRCode ? (
             <p className="text-15 opacity-80 mt-16">
@@ -205,9 +208,9 @@ export const KeystoneConnect = () => {
           <div className="mt-[24px]">
             <div
               className={clsx(
-                'm-auto rounded-[10px] p-[16px] bg-white',
+                'm-auto rounded-[10px] p-[16px] bg-transparent',
                 'w-[320px] h-[320px]',
-                'border border-[#0000001A]'
+                'border border-rabby-neutral-line'
               )}
             >
               {scan && (
@@ -216,6 +219,7 @@ export const KeystoneConnect = () => {
                   height={288}
                   onSuccess={handleScanQRCodeSuccess}
                   onError={handleScanQRCodeError}
+                  className="bg-r-neutral-line"
                 />
               )}
             </div>
@@ -247,7 +251,7 @@ export const KeystoneConnect = () => {
               <li>{t('page.dashboard.hd.keystone.doc2')}</li>
               <li>{t('page.dashboard.hd.keystone.doc3')}</li>
             </ul>
-            <img src="/images/keystone-plug.png" className="keystone-plug" />
+            <img src="/images/keystone-plug.svg" className="keystone-plug" />
             <Button
               type="primary"
               size="large"
