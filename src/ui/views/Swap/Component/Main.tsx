@@ -5,7 +5,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
 import { useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, Modal, Switch } from 'antd';
+import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import styled from 'styled-components';
@@ -59,6 +59,12 @@ const StyledInput = styled(Input)`
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+`;
+
+const PreferMEVGuardSwitch = styled(Switch)`
+  &.ant-switch-checked {
+    background-color: var(--r-blue-default, #7084ff);
   }
 `;
 
@@ -117,6 +123,19 @@ export const Main = () => {
     slippageValidInfo,
     expired,
   } = useTokenPair(userAddress);
+
+  const originPreferMEV = useRabbySelector((s) => s.swap.preferMEV);
+
+  const showMEVSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [chain]);
+
+  const switchPreferMEV = useCallback((bool: boolean) => {
+    dispatch.swap.setSwapPreferMEV(bool);
+  }, []);
+
+  const preferMEV = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? originPreferMEV : false),
+    [chain]
+  );
 
   const inputRef = useRef<Input>();
 
@@ -430,6 +449,27 @@ export const Main = () => {
                         0%
                       </span>
                     </div>
+                    {showMEVSwitch && (
+                      <div className="flex justify-between">
+                        <Tooltip
+                          placement={'topLeft'}
+                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                          title={t('page.swap.preferMEVTip')}
+                        >
+                          <span>{t('page.swap.preferMEV')}</span>
+                        </Tooltip>
+                        <Tooltip
+                          placement={'topRight'}
+                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                          title={t('page.swap.preferMEVTip')}
+                        >
+                          <PreferMEVGuardSwitch
+                            checked={originPreferMEV}
+                            onChange={switchPreferMEV}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
