@@ -124,17 +124,21 @@ export const Main = () => {
     expired,
   } = useTokenPair(userAddress);
 
-  const originPreferMEV = useRabbySelector((s) => s.swap.preferMEV);
+  const originPreferMEVGuarded = useRabbySelector(
+    (s) => !!s.swap.preferMEVGuarded
+  );
 
-  const showMEVSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [chain]);
+  const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
+    chain,
+  ]);
 
   const switchPreferMEV = useCallback((bool: boolean) => {
     dispatch.swap.setSwapPreferMEV(bool);
   }, []);
 
-  const preferMEV = useMemo(
-    () => (chain === CHAINS_ENUM.ETH ? originPreferMEV : false),
-    [chain]
+  const preferMEVGuarded = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? originPreferMEVGuarded : false),
+    [chain, originPreferMEVGuarded]
   );
 
   const inputRef = useRef<Input>();
@@ -214,6 +218,7 @@ export const Main = () => {
       try {
         wallet.dexSwap(
           {
+            swapPreferMEVGuarded: preferMEVGuarded,
             chain,
             quote: activeProvider?.quote,
             needApprove: activeProvider.shouldApproveToken,
@@ -257,6 +262,7 @@ export const Main = () => {
       }
     }
   }, [
+    preferMEVGuarded,
     inSufficient,
     payToken,
     unlimitedAllowance,
@@ -417,9 +423,34 @@ export const Main = () => {
                 // loading={receiveSlippageLoading}
               />
               {isWrapToken ? (
-                <div className="mt-12 text-13 text-r-neutral-body">
-                  {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
-                </div>
+                <>
+                  {showMEVGuardedSwitch && (
+                    <div className="section text-13 leading-4 text-r-neutral-body mt-12">
+                      <div className="flex justify-between">
+                        <Tooltip
+                          placement={'topLeft'}
+                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                          title={t('page.swap.preferMEVTip')}
+                        >
+                          <span>{t('page.swap.preferMEV')}</span>
+                        </Tooltip>
+                        <Tooltip
+                          placement={'topRight'}
+                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                          title={t('page.swap.preferMEVTip')}
+                        >
+                          <PreferMEVGuardSwitch
+                            checked={originPreferMEVGuarded}
+                            onChange={switchPreferMEV}
+                          />
+                        </Tooltip>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-12 text-13 text-r-neutral-body">
+                    {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
+                  </div>
+                </>
               ) : (
                 <div className="section text-13 leading-4 text-r-neutral-body mt-12">
                   <div className="subText flex flex-col gap-12">
@@ -449,7 +480,7 @@ export const Main = () => {
                         0%
                       </span>
                     </div>
-                    {showMEVSwitch && (
+                    {showMEVGuardedSwitch && (
                       <div className="flex justify-between">
                         <Tooltip
                           placement={'topLeft'}
@@ -464,7 +495,7 @@ export const Main = () => {
                           title={t('page.swap.preferMEVTip')}
                         >
                           <PreferMEVGuardSwitch
-                            checked={originPreferMEV}
+                            checked={originPreferMEVGuarded}
                             onChange={switchPreferMEV}
                           />
                         </Tooltip>
