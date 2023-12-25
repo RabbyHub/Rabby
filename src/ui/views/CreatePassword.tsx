@@ -111,7 +111,7 @@ const CreatePassword = () => {
 
   return (
     <Spin spinning={loading} wrapperClassName={spinClass} size="large">
-      <div className="rabby-container h-full bg-r-neutral-bg1">
+      <div className="rabby-container h-full bg-r-neutral-card2">
         <Form
           className="h-full"
           onFinish={({ password }) => run(password.trim())}
@@ -133,7 +133,7 @@ const CreatePassword = () => {
             </p>
             <img src="/images/create-password-mask.png" className="mask" />
           </header>
-          <div className="p-32 min-h-[232px] max-h-[232px] overflow-hidden widget-has-ant-input2">
+          <div className="p-32 min-h-[232px] max-h-[232px] overflow-hidden widget-has-ant-input-withborder">
             <Form.Item
               className="mb-0 overflow-hidden"
               name="password"

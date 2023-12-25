@@ -9,6 +9,7 @@ import { getChain } from '@/utils';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const PreviewModal = styled(Modal)`
   .ant-modal-body {
@@ -77,6 +78,7 @@ export default function ModalPreviewNFTItem({
   }, [collectProperty]);
 
   const { t } = useTranslation();
+  const { isDarkTheme } = useThemeMode();
 
   return (
     <PreviewModal

@@ -1,7 +1,10 @@
 :root {
-  --rabby-custom-ant-drawer-mask: rgb(45, 48, 51, 0.2);
+  --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.4);
+  --rabby-custom-ant-modal-mask: rgba(0, 0, 0, 0.4);
 }
 
-html.dark, body.dark {
-  --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.45);
+html.dark,
+html.dark > body,
+body.dark {
+  background: var(--r-neutral-bg-1);
 }
