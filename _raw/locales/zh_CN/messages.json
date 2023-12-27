@@ -1421,7 +1421,7 @@
       "pendingTip": "交易已提交。\n如果交易长时间处于待完成状态，你可以尝试点击“更多”>“清除待完成”",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Rabby手续费",
-      "preferMEV": "优先MEV模式",
+      "preferMEV": "优先 MEV 模式",
       "preferMEVTip": "开启后你在 Ethereum 链上的 Swap 交易将优先使用 Mev Guard 模式，这有助于减少你的交易被夹的风险。当你使用自定义 RPC 或者手机钱包地址时，则不支持该模式。",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
