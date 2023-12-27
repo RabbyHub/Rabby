@@ -63,8 +63,21 @@ const StyledInput = styled(Input)`
 `;
 
 const PreferMEVGuardSwitch = styled(Switch)`
+  min-width: 24px;
+  height: 12px;
+
   &.ant-switch-checked {
     background-color: var(--r-blue-default, #7084ff);
+    .ant-switch-handle {
+      left: calc(100% - 10px - 1px);
+      top: 1px;
+    }
+  }
+  .ant-switch-handle {
+    height: 10px;
+    width: 10px;
+    top: 1px;
+    left: 1px;
   }
 `;
 
