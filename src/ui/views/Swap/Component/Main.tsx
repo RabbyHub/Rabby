@@ -308,6 +308,39 @@ export const Main = () => {
     },
   });
 
+  const FeeAndMEVGuarded = useMemo(
+    () => (
+      <>
+        <div className="flex justify-between">
+          <span>{t('page.swap.rabby-fee')}</span>
+          <span className="font-medium text-r-neutral-title-1">0%</span>
+        </div>
+        {showMEVGuardedSwitch && (
+          <div className="flex justify-between">
+            <Tooltip
+              placement={'topLeft'}
+              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              title={t('page.swap.preferMEVTip')}
+            >
+              <span>{t('page.swap.preferMEV')}</span>
+            </Tooltip>
+            <Tooltip
+              placement={'topRight'}
+              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              title={t('page.swap.preferMEVTip')}
+            >
+              <PreferMEVGuardSwitch
+                checked={originPreferMEVGuarded}
+                onChange={switchPreferMEV}
+              />
+            </Tooltip>
+          </div>
+        )}
+      </>
+    ),
+    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded]
+  );
+
   return (
     <div
       className={clsx(
@@ -435,33 +468,18 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 // loading={receiveSlippageLoading}
               />
+
               {isWrapToken ? (
                 <>
-                  {showMEVGuardedSwitch && (
-                    <div className="section text-13 leading-4 text-r-neutral-body mt-12">
-                      <div className="flex justify-between">
-                        <Tooltip
-                          placement={'topLeft'}
-                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
-                          title={t('page.swap.preferMEVTip')}
-                        >
-                          <span>{t('page.swap.preferMEV')}</span>
-                        </Tooltip>
-                        <Tooltip
-                          placement={'topRight'}
-                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
-                          title={t('page.swap.preferMEVTip')}
-                        >
-                          <PreferMEVGuardSwitch
-                            checked={originPreferMEVGuarded}
-                            onChange={switchPreferMEV}
-                          />
-                        </Tooltip>
+                  <div className="section text-13 leading-4 text-r-neutral-body mt-12">
+                    <div className="subText flex flex-col gap-12">
+                      {FeeAndMEVGuarded}
+                      <div className="text-13 text-r-neutral-body">
+                        {t(
+                          'page.swap.there-is-no-fee-and-slippage-for-this-trade'
+                        )}
                       </div>
                     </div>
-                  )}
-                  <div className="mt-12 text-13 text-r-neutral-body">
-                    {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
                   </div>
                 </>
               ) : (
@@ -487,33 +505,7 @@ export const Main = () => {
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>{t('page.swap.rabby-fee')}</span>
-                      <span className="font-medium text-r-neutral-title-1">
-                        0%
-                      </span>
-                    </div>
-                    {showMEVGuardedSwitch && (
-                      <div className="flex justify-between">
-                        <Tooltip
-                          placement={'topLeft'}
-                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
-                          title={t('page.swap.preferMEVTip')}
-                        >
-                          <span>{t('page.swap.preferMEV')}</span>
-                        </Tooltip>
-                        <Tooltip
-                          placement={'topRight'}
-                          overlayClassName={clsx('rectangle', 'max-w-[312px]')}
-                          title={t('page.swap.preferMEVTip')}
-                        >
-                          <PreferMEVGuardSwitch
-                            checked={originPreferMEVGuarded}
-                            onChange={switchPreferMEV}
-                          />
-                        </Tooltip>
-                      </div>
-                    )}
+                    {FeeAndMEVGuarded}
                   </div>
                 </div>
               )}
