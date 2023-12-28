@@ -163,7 +163,7 @@ export const MempoolList = ({
                   <div>
                     {item.check_success ? (
                       <div
-                        className="flex items-center gap-[6px] font-medium text-r-blue-default"
+                        className="flex items-center gap-[6px] font-medium text-r-blue-default break-all"
                         title={item.name || item.rpc}
                       >
                         <img src={IconCheck} alt="" />
@@ -172,7 +172,7 @@ export const MempoolList = ({
                     ) : null}
                     {item.check_success === false ? (
                       <div
-                        className="flex items-center gap-[6px] text-r-neutral-body"
+                        className="flex items-center gap-[6px] text-r-neutral-body break-all"
                         title={item.name || item.rpc}
                       >
                         <img src={IconClock} alt="" />
@@ -181,7 +181,7 @@ export const MempoolList = ({
                     ) : null}
                     {item.check_success == null ? (
                       <div
-                        className="flex items-center gap-[6px] text-r-neutral-foot"
+                        className="flex items-center gap-[6px] text-r-neutral-foot break-all"
                         title={item.name || item.rpc}
                       >
                         <img src={iconSpin} alt="" className="animate-spin" />
