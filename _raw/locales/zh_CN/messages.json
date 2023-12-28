@@ -124,7 +124,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "更新内容",
-        "importType": "由 {{type}} 导入"
+        "importType": "由 {{type}} 导入",
+        "missingDataTooltip": "由于 {{text}}的当前网络问题，地址余额可能无法更新。",
+        "chain": " 链、",
+        "chainEnd": " 链"
       },
       "recentConnection": {
         "disconnected": "已断开连接",

@@ -872,7 +872,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "What's new",
-        "importType": "Imported by {{type}}"
+        "importType": "Imported by {{type}}",
+        "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
+        "chain": " chain, ",
+        "chainEnd": " chain"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
