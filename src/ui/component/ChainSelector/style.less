@@ -8,8 +8,8 @@
   flex-shrink: 0;
   user-select: none;
   background: rgba(134, 151, 255, 0.12);
-  border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+  border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   border-radius: 6px;
   padding: 8px 4px 8px 8px;
   font-weight: 500;
@@ -53,10 +53,10 @@
     position: sticky;
     top: 0;
     z-index: 1;
-    background: var(--r-neutral-bg-1, #3D4251);
+    background: var(--r-neutral-bg-1, #3d4251);
 
     .ant-input-affix-wrapper {
-      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
       border-radius: 6px;
       height: 36px;
@@ -79,7 +79,7 @@
       font-weight: 400;
       font-size: 12px;
       line-height: 14px;
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-foot, #6a7587);
       margin-bottom: 2px;
     }
     .chain-selector-site {
@@ -140,6 +140,123 @@
     margin-top: 16px;
   }
 }
+
+.chain-selector-large-modal {
+  .ant-modal-content {
+    background: var(--r-neutral-bg2, #f2f4f7);
+    box-shadow: 0px 24px 40px 0px rgba(19, 20, 26, 0.25);
+  }
+  .ant-modal-body {
+    padding: 0;
+    overflow: auto;
+    max-height: calc(100vh - 150px) !important;
+    height: 680px !important;
+    padding-bottom: 20px;
+  }
+  header {
+    padding-top: 8px;
+    padding-bottom: 24px;
+    padding-left: 20px;
+    padding-right: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--r-neutral-bg2, #f2f4f7);
+
+    .modal-title {
+      color: var(--r-neutral-title1, #192945);
+      text-align: center;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 24px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+    .ant-input-affix-wrapper {
+      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+      border-radius: 6px;
+      height: 36px;
+    }
+
+    .ant-input-affix-wrapper:focus,
+    .ant-input-affix-wrapper-focused {
+      border-color: #b0bdff;
+    }
+  }
+  .ant-drawer-header {
+    padding: 12px 20px;
+    background: linear-gradient(
+      180deg,
+      #eff1ff 0%,
+      rgba(238, 234, 255, 0) 111.46%
+    );
+    border: none;
+    .chain-selector-tips {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--r-neutral-foot, #6a7587);
+      margin-bottom: 2px;
+    }
+    .chain-selector-site {
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 15px;
+      color: var(--r-neutral-title-1, #192945);
+    }
+  }
+  .chain-selector-large-modal-content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .select-chain-list {
+    background: var(--r-neutral-card1, #fff);
+  }
+
+  .no-pinned-container {
+    width: 360px;
+    height: 56px;
+    background: @color-bg;
+    border-radius: 6px;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    color: @color-comment-1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .cardg {
+    background: @color-bg;
+  }
+  .all-chais {
+    width: 100%;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+
+    span {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: @color-comment-1;
+      cursor: pointer;
+    }
+  }
+
+  .tip {
+    margin-top: 16px;
+  }
+}
+
 .chain-tag-selector {
   min-width: 116px;
   display: inline-flex;
@@ -189,8 +306,8 @@
       bottom: -1px;
       left: 16px;
       right: 16px;
-      border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+      border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
 
     .chain-icon-comp {
@@ -214,7 +331,7 @@
       color: var(--r-neutral-title-1, #192945);
     }
     &-balance {
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-foot, #6a7587);
       font-size: 12px;
       display: flex;
       align-items: center;

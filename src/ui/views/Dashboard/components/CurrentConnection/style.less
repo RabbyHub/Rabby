@@ -8,9 +8,10 @@
   margin-top: 14px;
   display: flex;
   align-items: center;
+  gap: 12px;
   background: var(--r-neutral-card-2, #f5f6fa);
   border-radius: 6px;
-  padding: 10px 8px 10px 12px;
+  padding: 6px 12px 6px 8px;
 
   &-tooltip {
     max-width: 360px !important;
@@ -24,12 +25,39 @@
     align-items: center;
     gap: 8px;
     min-width: 0;
+    flex: 1;
     .prefer-metamask-badge {
       position: absolute;
-      top: -10px;
-      left: -10px;
-      width: 24px;
-      height: 24px;
+      top: -4px;
+      left: -4px;
+      width: 20px;
+      height: 20px;
+    }
+    &-chain-selector {
+      border: 1px solid transparent;
+      border: 0.5px solid transparent;
+      padding: 4px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      cursor: pointer;
+
+      &:hover {
+        border: 1px solid var(--r-blue-default, #7084ff);
+        border: 0.5px solid var(--r-blue-default, #7084ff);
+        background: var(--r-blue-light1, #eef1ff);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.11);
+      }
+    }
+    .chain-icon-comp {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      .chain-icon-inner {
+        width: 18px;
+        height: 18px;
+        border: 1px solid var(--r-neutral-title2, #fff);
+        border: 0.75px solid var(--r-neutral-title2, #fff);
+      }
     }
     &.is-empty {
       .site-icon {
@@ -37,76 +65,96 @@
         border-radius: none;
       }
       .site-content {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 14px;
-        color: var(--r-neutral-foot, #6A7587);
+        // font-weight: 400;
+        // font-size: 12px;
+        // line-height: 14px;
+        // color: var(--r-neutral-foot, #6a7587);
       }
     }
-    &:hover {
-      .site-status.active .site-status-icon {
-        display: block;
-      }
-    }
+
     &-icon {
       flex-shrink: 0;
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--r-neutral-title2, #fff);
     }
     &-content {
       flex: 1;
       overflow: hidden;
+      min-width: 0;
     }
     &-name {
-      font-weight: 400;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
-      margin-bottom: 2px;
-      .ellipsis();
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &-inner {
+        flex: 1;
+
+        color: var(--r-neutral-title1, #192945);
+        font-size: 14px;
+        line-height: 17px;
+        font-weight: 400;
+        margin-bottom: 2px;
+        .ellipsis();
+      }
+
+      .icon-star {
+        flex-shrink: 0;
+        cursor: pointer;
+        display: none;
+      }
+
+      &:hover {
+        .icon-star {
+          display: block;
+        }
+      }
     }
     &-status {
+      color: var(--r-neutral-foot, #6a7587);
+      font-size: 12px;
       font-weight: 400;
-      font-size: 11px;
-      line-height: 13px;
-      color: var(--r-neutral-foot, #6A7587);
+      line-height: 14px;
+
       display: flex;
       align-items: center;
       &.active {
-        color: #27c193;
+        color: var(--r-green-default, #2abb7f);
       }
       &-icon {
         display: none;
-        margin-left: 8px;
-        width: 12px;
+        margin-left: 4px;
         cursor: pointer;
+        color: var(--r-neutral-foot, #6a7587);
+      }
+      &.active:hover {
+        .site-status-icon {
+          display: block;
+        }
       }
     }
-  }
+    &-dapps {
+      border-radius: 4px;
+      background: var(--r-neutral-card1, #fff);
+      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.11);
+      padding: 8px 13px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
 
-  .chain-selector {
-    margin-left: auto;
-    background-color: transparent;
-    height: 36px;
-    padding-left: 8px;
-    color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
+      color: var(--r-neutral-body, #3e495e);
+      font-size: 13px;
+      line-height: 16px;
+      cursor: pointer;
 
-    .chain-logo {
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
-    }
-    .icon-arrow-down {
-      margin-left: 6px;
-      margin-right: 8px;
-    }
-    &.disabled {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    &:hover {
-      background-color: rgba(134, 151, 255, 0.2);
+      border: 0.5px solid transparent;
+
+      &:hover {
+        border: 0.5px solid var(--r-blue-default, #7084ff);
+        background: var(--r-blue-light1, #eef1ff);
+      }
     }
   }
 }
@@ -114,6 +162,13 @@
 .prefer-metamask-tooltip {
   max-width: 360px !important;
   .ant-tooltip-arrow {
-    left: 7px !important;
+    left: 13px !important;
+  }
+}
+
+.current-connection-custom-rpc-tooltip {
+  max-width: 360px !important;
+  .ant-tooltip-arrow {
+    left: 38px !important;
   }
 }

@@ -4,6 +4,7 @@ import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
 import { findChainByEnum } from '@/utils/chain';
+import { BasicDappInfo } from './openapi';
 
 export interface ConnectedSite {
   origin: string;
@@ -12,11 +13,16 @@ export interface ConnectedSite {
   chain: CHAINS_ENUM;
   e?: number;
   isSigned: boolean;
+  /**
+   * @deprecated
+   */
   isTop: boolean;
   order?: number;
   isConnected: boolean;
   preferMetamask?: boolean;
   signPermission?: SIGN_PERMISSION_TYPES;
+  isFavorite?: boolean;
+  info?: BasicDappInfo;
 }
 
 export type PermissionStore = {
@@ -248,6 +254,28 @@ class PermissionService {
       ...site,
       order,
       isTop: true,
+    });
+  };
+
+  favoriteWebsite = (origin: string, order?: number) => {
+    const site = this.getConnectedSite(origin);
+    if (!site || !this.lruCache) return;
+    order =
+      order ??
+      (max(this.getRecentConnectedSites().map((item) => item.order)) || 0) + 1;
+    this.updateConnectSite(origin, {
+      ...site,
+      order,
+      isFavorite: true,
+    });
+  };
+
+  unFavoriteWebsite = (origin: string) => {
+    const site = this.getConnectedSite(origin);
+    if (!site || !this.lruCache) return;
+    this.updateConnectSite(origin, {
+      ...site,
+      isFavorite: false,
     });
   };
 

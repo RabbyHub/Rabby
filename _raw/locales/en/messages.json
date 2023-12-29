@@ -892,7 +892,8 @@
         "noPinnedDapps": "No pinned dapps",
         "dragToSort": "Drag to sort",
         "recentlyConnected": "Recently connected",
-        "noRecentlyConnectedDapps": "No recently connected Dapps"
+        "noRecentlyConnectedDapps": "No recently connected Dapps",
+        "noConnectedDapps": "No connected Dapps"
       },
       "feedback": {
         "directMessage": {

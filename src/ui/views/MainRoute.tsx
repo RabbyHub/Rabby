@@ -64,6 +64,7 @@ import RequestDeBankTestnetGasToken from './RequestDeBankTestnetGasToken';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
+import { DappSearchPage } from './DappSearch';
 
 declare global {
   interface Window {
@@ -274,6 +275,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/dapp-search">
+          <DappSearchPage />
         </PrivateRoute>
         <PrivateRoute exact path="/pending-detail">
           <PendingDetail />

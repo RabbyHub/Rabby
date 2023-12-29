@@ -1,5 +1,5 @@
 import { Empty, Modal, PageHeader, Popup } from '@/ui/component';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -23,14 +23,8 @@ const RecentConnections = ({
   const dispatch = useRabbyDispatch();
   const connections = useRabbySelector((state) => state.permission.websites);
 
-  const pinnedList = useMemo(() => {
-    return connections
-      .filter((item) => item && item.isTop)
-      .sort((a, b) => (a.order || 0) - (b.order || 0));
-  }, [connections]);
-
-  const recentList = useMemo(() => {
-    return connections.filter((item) => item && !item.isTop);
+  const list = useMemo(() => {
+    return connections.sort((a, b) => (a.order || 0) - (b.order || 0));
   }, [connections]);
 
   const handleClick = (connection: ConnectedSite) => {
@@ -42,11 +36,6 @@ const RecentConnections = ({
     });
 
     openInTab(connection.origin);
-  };
-
-  const handleSort = (sites: ConnectedSite[]) => {
-    const list = sites.concat(recentList);
-    dispatch.permission.reorderWebsites(list);
   };
 
   const handleFavoriteChange = (item: ConnectedSite) => {
@@ -109,21 +98,16 @@ const RecentConnections = ({
       centered: true,
       closable: true,
       okText: t('page.dashboard.recentConnection.disconnectAll'),
-      width: 320,
+      width: 360,
       onOk: removeAll,
       autoFocusButton: null,
       content: (
         <div>
           <div className="title">
             <Trans
-              count={recentList.length}
+              count={list.length}
               i18nKey="page.dashboard.recentConnection.disconnectRecentlyUsed.title"
             ></Trans>
-          </div>
-          <div className="desc">
-            {t(
-              'page.dashboard.recentConnection.disconnectRecentlyUsed.description'
-            )}
           </div>
         </div>
       ),
@@ -155,56 +139,47 @@ const RecentConnections = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="bg-neutral-bg1 sticky top-0"
+      >
         {t('page.dashboard.recentConnection.title')}
       </PageHeader>
-      <div className="auto-lock-option-list mx-[-20px] px-[20px]">
-        {visible && (
-          <ConnectionList
-            onRemove={handleRemove}
-            data={pinnedList}
-            onFavoriteChange={handleFavoriteChange}
-            title={t('page.dashboard.recentConnection.pinned')}
-            empty={
-              <div className="list-empty">
-                {t('page.dashboard.recentConnection.noPinnedDapps')}
-              </div>
-            }
-            extra={
-              pinnedList.length > 0
-                ? t('page.dashboard.recentConnection.dragToSort')
-                : null
-            }
-            onClick={handleClick}
-            onSort={handleSort}
-            sortable={true}
-          ></ConnectionList>
-        )}
-        <ConnectionList
-          onRemove={handleRemove}
-          onClick={handleClick}
-          onFavoriteChange={handleFavoriteChange}
-          data={recentList}
-          title={t('page.dashboard.recentConnection.recentlyConnected')}
-          extra={
-            recentList.length > 0 ? (
-              <a onClick={handleRemoveAll}>
-                {t('page.dashboard.recentConnection.disconnectAll')}
-              </a>
-            ) : null
-          }
-          empty={
-            <div className="list-empty mb-[-24px] rounded-b-none">
-              <Empty
-                desc={t(
-                  'page.dashboard.recentConnection.noRecentlyConnectedDapps'
-                )}
-                className="pt-[68px] pb-[181px]"
-              ></Empty>
-            </div>
-          }
-        ></ConnectionList>
-      </div>
+      {list?.length ? (
+        <>
+          <div className="mx-[-20px] px-[20px] h-[calc(100%-100px)] overflow-auto">
+            <ConnectionList
+              onRemove={handleRemove}
+              onClick={handleClick}
+              data={list}
+            ></ConnectionList>
+          </div>
+          <footer
+            className={clsx(
+              'absolute z-10 bottom-0 left-0 right-0 bg-r-neutral-bg1',
+              'border-t-[0.5px] border-t-solid border-t-rabby-neutral-line px-[20px]',
+              'py-[16px]'
+            )}
+          >
+            <Button
+              ghost
+              block
+              className="btn-disconnect-all"
+              onClick={handleRemoveAll}
+            >
+              {t('page.dashboard.recentConnection.disconnectAll')}
+            </Button>
+          </footer>
+        </>
+      ) : (
+        <div className="list-empty mb-[-24px] rounded-b-none">
+          <Empty
+            desc={t('page.dashboard.recentConnection.noConnectedDapps')}
+            className="pt-[68px] pb-[181px]"
+          ></Empty>
+        </div>
+      )}
     </div>
   );
 };

@@ -1154,6 +1154,7 @@ export class WalletController extends BaseController {
   getConnectedSite = permissionService.getConnectedSite;
   getSite = permissionService.getSite;
   getConnectedSites = permissionService.getConnectedSites;
+  getSites = permissionService.getSites;
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
     permissionService.setRecentConnectedSites(sites);
   };
@@ -1268,10 +1269,9 @@ export class WalletController extends BaseController {
       data.origin
     );
   };
+  addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {
-    const sites = permissionService
-      .getRecentConnectedSites()
-      .filter((item) => !item.isTop);
+    const sites = permissionService.getRecentConnectedSites();
     sites.forEach((item) => {
       this.removeConnectedSite(item.origin);
     });
@@ -1286,6 +1286,10 @@ export class WalletController extends BaseController {
     permissionService.topConnectedSite(origin);
   unpinConnectedSite = (origin: string) =>
     permissionService.unpinConnectedSite(origin);
+  favoriteWebsite = (origin: string) =>
+    permissionService.favoriteWebsite(origin);
+  unFavoriteWebsite = (origin: string) =>
+    permissionService.unFavoriteWebsite(origin);
   /* keyrings */
 
   clearKeyrings = () => keyringService.clearKeyrings();
