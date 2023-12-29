@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import WelcomeHeaderImg from 'ui/assets/welcome-header.svg';
-import { ReactComponent as RcWelcomeStep1 } from 'ui/assets/welcome-step-1.svg';
-import { ReactComponent as RcWelcomeStep2 } from 'ui/assets/welcome-step-2.svg';
 
 const Container = styled.div`
   .step {
@@ -43,7 +41,10 @@ const Welcome = () => {
         <section className="step">
           <div className="step-title">{t('page.welcome.step1.title')}</div>
           <div className="step-content">{t('page.welcome.step1.desc')}</div>
-          <RcWelcomeStep1 className="w-[317px] h-[199px] mx-auto rounded-[10px]" />
+          <img
+            src="/images/welcome-step-1.png"
+            className="w-[317px] h-[199px] mx-auto rounded-[10px]"
+          />
           <footer className="mt-[64px]">
             <Button
               type="primary"
@@ -61,7 +62,10 @@ const Welcome = () => {
         <section className="step">
           <div className="step-title">{t('page.welcome.step2.title')}</div>
           <div className="step-content">{t('page.welcome.step2.desc')}</div>
-          <RcWelcomeStep2 className="bg-r-neutral-card2 w-[317px] h-[199px] mx-auto rounded-[10px]" />
+          <img
+            src="/images/welcome-step-2.png"
+            className="bg-r-neutral-card2 w-[317px] h-[199px] mx-auto rounded-[10px]"
+          />
           <footer className="mt-[64px]">
             <Link to="/no-address" replace>
               <Button type="primary" size="large" block>
