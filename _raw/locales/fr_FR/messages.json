@@ -30,7 +30,7 @@
       "failed": "La transaction a échoué",
       "more": "cliquer pour voir plus d'informations",
       "submitted": "Transaction envoyée",
-      "txCompleteMoreContent": "{{chain}} #{{nonce}} terminé. Cliquer pour en voir plus.",
+      "txCompleteMoreContent": "{{chain}} #{{nonce}} finalisée. Cliquer pour en voir plus.",
       "txFailedMoreContent": "{{chain}} #{{nonce}} a échoué. Cliquer pour en voir plus."
     }
   },
