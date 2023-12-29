@@ -115,6 +115,10 @@ export default function useCurrentBalance(
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
+      const chanList = cacheData.chain_list
+        .filter((item) => item.born_at !== null)
+        .map(formatChain);
+      setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
       if (update) {
         setBalanceLoading(true);
         getAddressBalance(account.toLowerCase(), force);
