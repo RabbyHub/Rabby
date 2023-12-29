@@ -150,3 +150,13 @@
 
   .override-ant-form-item-input-has-error;
 }
+
+.ant-spin-darkmode() {
+  .ant-spin-container.ant-spin-blur::after {
+    background: var(--r-neutral-bg-1, #fff);
+  }
+
+  .ant-spin.ant-spin-spinning .ant-spin-text {
+    text-shadow: 0 1px 2px var(--r-neutral-bg-1);
+  }
+}
