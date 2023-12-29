@@ -1,4 +1,4 @@
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
 import React from 'react';
 import {
   AdvancedSettings,
@@ -156,7 +156,11 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       okText: t('global.confirm'),
       onOk: async () => {
         await removeAddressAndForgetDevice(true);
-        history.push('/import/hardware/keystone');
+        if (brand === WALLET_BRAND_TYPES.KEYSTONE) {
+          history.push('/import/hardware/keystone');
+        } else {
+          history.push(`/import/hardware/qrcode?brand=${brand}`);
+        }
       },
       okCancel: false,
       centered: true,
