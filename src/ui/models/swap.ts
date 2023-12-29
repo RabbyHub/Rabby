@@ -17,7 +17,7 @@ export const swap = createModel<RootModel>()({
     viewList: {},
     tradeList: {},
     sortIncludeGasFee: false,
-
+    preferMEVGuarded: false,
     $$initialSelectedChain: null,
   } as Partial<SwapServiceStore> & {
     $$initialSelectedChain: CHAINS_ENUM | null;
@@ -164,6 +164,18 @@ export const swap = createModel<RootModel>()({
     async setSwapSortIncludeGasFee(bool: boolean, store) {
       await store.app.wallet.setSwapSortIncludeGasFee(bool);
       this.getSwapSortIncludeGasFee();
+    },
+
+    async getSwapPreferMEV(_?, store?) {
+      const preferMEVGuarded = await store.app.wallet.getSwapPreferMEVGuarded();
+      this.setField({
+        preferMEVGuarded,
+      });
+    },
+
+    async setSwapPreferMEV(bool: boolean, store) {
+      await store.app.wallet.setSwapPreferMEVGuarded(bool);
+      this.getSwapPreferMEV();
     },
   }),
 });

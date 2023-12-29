@@ -99,7 +99,6 @@ const normalizeHex = (value: string | number) => {
 
 const normalizeTxParams = (tx) => {
   const copy = tx;
-  console.log('copy', tx);
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
@@ -760,12 +759,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
-  const [pushInfo, setPushInfo] = useState<{
-    type: TxPushType;
-    lowGasDeadline?: number;
-  }>({
-    type: 'default',
-  });
 
   useSignPermissionCheck({
     origin,
@@ -854,10 +847,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isCancel,
     isSend,
     isSwap,
+    swapPreferMEVGuarded,
     isViewGnosisSafe,
     reqId,
     safeTxGas,
   } = normalizeTxParams(params.data[0]);
+
+  const [pushInfo, setPushInfo] = useState<{
+    type: TxPushType;
+    lowGasDeadline?: number;
+  }>({
+    type: swapPreferMEVGuarded ? 'mev' : 'default',
+  });
 
   let updateNonce = true;
   if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)

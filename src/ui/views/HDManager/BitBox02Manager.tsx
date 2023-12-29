@@ -8,7 +8,7 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
 import { HDManagerStateContext } from './utils';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
@@ -79,7 +79,7 @@ export const BitBox02Manager: React.FC = () => {
     <>
       <div className="toolbar">
         <div className="toolbar-item" onClick={openAdvanced}>
-          <SettingSVG className="icon" />
+          <RcSettingSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.advancedSettings')}
           </span>

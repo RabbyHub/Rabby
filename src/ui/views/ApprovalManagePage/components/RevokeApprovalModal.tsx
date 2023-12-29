@@ -460,7 +460,7 @@ export const RevokeApprovalModal = (props: {
         </div>
 
         <section className="mb-[6px] flex justify-between items-center">
-          <span className="text-12 text-gray-title">{subTitle}</span>
+          <span className="text-12 text-r-neutral-title1">{subTitle}</span>
           <div
             className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]"
             onClick={handleSelectAll}

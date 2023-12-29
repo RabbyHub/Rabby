@@ -67,24 +67,6 @@
     border-color: transparent;
     background: var(--r-neutral-card-1, #fff);
     color: var(--r-neutral-title-1, #192945);
-    // &.ant-input-affix-wrapper,
-    // &:focus,
-    // &:active {
-    //   border: 1px solid transparent;
-    // }
-    // &:hover {
-    //   border: 1px solid rgba(255, 255, 255, 0.8);
-    //   box-shadow: none;
-    // }
-  
-    // &:placeholder-shown {
-    //   color: #707280;
-    // }
-    // &::-webkit-inner-spin-button,
-    // &::-webkit-outer-spin-button {
-    //   -webkit-appearance: none;
-    //   margin: 0;
-    // }
   }
   .ant-input-number {
     border-color: transparent;
@@ -116,6 +98,35 @@
       color: var(--r-neutral-foot);
     }
   }
+  // .ant-form-item-explain:not(.ant-form-item-explain-error) {
+  //   color: var(--r-neutral-title-1);
+  // }
+}
+
+.override-ant-form-item-input-has-error() {
+  .ant-form-item-has-error .ant-input,
+  .ant-form-item-has-error .ant-input-affix-wrapper,
+  .ant-form-item-has-error .ant-input:hover,
+  .ant-form-item-has-error .ant-input-affix-wrapper:hover {
+    background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+  }
+}
+
+.ant-input-darkmode-withborder() {
+  .ant-input-darkmode;
+  
+  .ant-input {
+    border: 1px solid var(--r-neutral-line, #D3D8E0);
+  }
+
+  .ant-form-item-has-error .ant-input {
+    &, &:hover {
+      background-color: var(--r-neutral-card-1, #fff) !important;
+      border-color: var(--r-red-default);
+    }
+  }
+
+  .override-ant-form-item-input-has-error;
 }
 
 .ant-input-darkmode2() {
@@ -133,4 +144,9 @@
       background-color: transparent;
     }
   }
+  // .ant-form-item-explain:not(.ant-form-item-explain-error) {
+  //   color: var(--r-neutral-title-1);
+  // }
+
+  .override-ant-form-item-input-has-error;
 }

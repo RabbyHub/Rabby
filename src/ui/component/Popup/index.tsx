@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import './index.less';
 import { SvgIconCross } from 'ui/assets';
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 interface PopupProps extends DrawerProps {
