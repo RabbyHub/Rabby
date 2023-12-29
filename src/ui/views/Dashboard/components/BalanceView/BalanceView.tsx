@@ -175,7 +175,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
-      <div className="left">
+      <div className="left relative overflow-x-hidden mx-10">
         <div className={clsx('amount group', 'text-32 mt-6')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
@@ -209,7 +209,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           </div>
           {missingList?.length ? (
             <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[max-content] font-normal whitespace-pre-wrap"
+              overlayClassName="rectangle font-normal whitespace-pre-wrap"
               title={t('page.dashboard.home.missingDataTooltip', {
                 text:
                   missingList.join(t('page.dashboard.home.chain')) +
@@ -237,7 +237,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-[4px] mx-10 mb-10',
+            'mt-[4px] mb-10',
             currentHover && 'bg-[#000] bg-opacity-10',
             'rounded-[4px] relative cursor-pointer',
             'overflow-hidden'
