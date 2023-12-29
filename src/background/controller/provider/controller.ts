@@ -344,6 +344,8 @@ class ProviderController extends BaseController {
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
+    delete txParams.isSwap;
+    delete txParams.swapPreferMEVGuarded;
     delete approvalRes.isSend;
     delete approvalRes.isSwap;
     delete approvalRes.address;
