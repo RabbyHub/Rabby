@@ -11,9 +11,6 @@
     text-align: center;
     color: @color-title;
   }
-  &:not(.is-support-darkmode) .ant-drawer-mask {
-    background-color: rgba(45, 48, 51, 0.2);
-  }
   .ant-drawer-header {
     background: transparent;
   }
@@ -91,16 +88,23 @@
   .ant-input-darkmode();
 
   .ant-input {
-    // border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06)) !important;
   
     &.ant-input-affix-wrapper {
-      border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-      background: var(--r-neutral-card-2, #F2F4F7);
+      border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.10)) !important;
+      background: var(--r-neutral-card-2, #F2F4F7) !important;
     }
   }
 
   .ant-input-affix-wrapper {
     border-width: 0.5px;
+  }
+}
+
+
+.ant-drawer,
+.custom-popup {
+  .ant-drawer-mask {
+    background-color: var(--rabby-custom-ant-drawer-mask);
   }
 }

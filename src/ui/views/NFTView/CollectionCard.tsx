@@ -87,6 +87,7 @@ export const CollectionCard: React.FC<Props> = ({
             className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
           >
             <NFTAvatar
+              className="h-[59px] w-[59px]"
               onPreview={() => onClickNFT?.(item, collection.name)}
               type={item.content_type}
               amount={item.amount}

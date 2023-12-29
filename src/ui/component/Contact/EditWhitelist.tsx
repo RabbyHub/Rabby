@@ -73,10 +73,10 @@ const EditWhitelist = ({
         className: 'page-receive-modal edit-whitelist-back-modal',
         content: (
           <div>
-            <h1 className="text-gray-title text-center mb-12">
+            <h1 className="text-r-neutral-title1 text-center mb-12">
               {t('component.Contact.EditWhitelist.backModalTitle')}
             </h1>
-            <p className="text-gray-subTitle text-center text-15 mb-[52px]">
+            <p className="text-r-neutral-body text-center text-15 mb-[52px]">
               {t('component.Contact.EditWhitelist.backModalContent')}
             </p>
             <div className="footer">

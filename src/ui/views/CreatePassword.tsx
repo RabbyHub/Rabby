@@ -74,7 +74,7 @@ const CreatePassword = () => {
       'h1,h2': {
         fontSize: '15px',
         fontWeight: '700',
-        color: 'rgba(19, 20, 26, 1)',
+        color: 'var(--r-neutral-title1)',
         margin: '20px 0',
       },
       p: {
@@ -85,7 +85,7 @@ const CreatePassword = () => {
       },
       'p,li': {
         fontSize: '14px',
-        color: 'rgba(75, 77, 89, 1)',
+        color: 'var(--r-neutral-body)',
       },
       'ol, ul': {
         listStyle: 'disc outside none',
@@ -111,7 +111,7 @@ const CreatePassword = () => {
 
   return (
     <Spin spinning={loading} wrapperClassName={spinClass} size="large">
-      <div className="rabby-container h-full" style={{ background: '#F5F6FA' }}>
+      <div className="rabby-container h-full bg-r-neutral-card2">
         <Form
           className="h-full"
           onFinish={({ password }) => run(password.trim())}
@@ -125,15 +125,15 @@ const CreatePassword = () => {
               className="unlock-logo w-[100px] h-[100px] mx-auto mb-[16px]"
               src={UnlockLogo}
             />
-            <p className="text-24 mb-8 mt-0 text-white text-center font-bold">
+            <p className="text-24 mb-8 mt-0 text-r-neutral-title2 text-center font-bold">
               {t('page.createPassword.title')}
             </p>
-            <p className="text-14 mb-0 text-white opacity-80 text-center">
+            <p className="text-14 mb-0 text-r-neutral-title2 opacity-80 text-center">
               It will be used to unlock your wallet and encrypt local data
             </p>
             <img src="/images/create-password-mask.png" className="mask" />
           </header>
-          <div className="p-32 min-h-[232px] max-h-[232px] overflow-hidden">
+          <div className="p-32 min-h-[232px] max-h-[232px] overflow-hidden widget-has-ant-input-withborder">
             <Form.Item
               className="mb-0 overflow-hidden"
               name="password"
@@ -195,16 +195,16 @@ const CreatePassword = () => {
             <div
               className={clsx(
                 'w-[15px] h-[15px] mr-[6px] flex items-center justify-center  rounded-full overflow-hidden',
-                agreeTerm ? 'bg-blue-light' : 'bg-gray-comment'
+                agreeTerm ? 'bg-r-blue-default' : 'bg-r-neutral-foot'
               )}
             >
               <img src={IconCheck} className="w-[10px]" />
             </div>
-            <span className="text-[13px] text-gray-subTitle">
+            <span className="text-[13px] text-r-neutral-body">
               <Trans t={t} i18nKey="page.createPassword.agree">
                 have read and agree to the{' '}
                 <span
-                  className="text-blue-light cursor-pointer"
+                  className="text-r-blue-default cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleVisible();
@@ -234,14 +234,14 @@ const CreatePassword = () => {
         width={'100%'}
         visible={visible}
         onClose={toggleVisible}
-        className={drawClassName}
+        className={clsx(drawClassName, 'is-support-darkmode')}
         contentWrapperStyle={{
           boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
           borderRadius: '16px 16px 0px 0',
           height: 580,
         }}
       >
-        <header className="text-gray-title mb-[20px] text-20 font-medium leading-[20px] text-center">
+        <header className="text-r-neutral-title1 mb-[20px] text-20 font-medium leading-[20px] text-center">
           Rabby Term of Use
         </header>
         <div

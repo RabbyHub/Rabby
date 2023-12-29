@@ -81,7 +81,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     px = 16,
     py = 16,
     bgColor = 'var(--r-neutral-card-1, #fff)',
-    hoverBgColor = 'var(--r-blue-light-1, #eef1ff)',
+    hoverBgColor = 'var(--r-blue-light-2, rgba(222, 227, 252, 1))',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',
