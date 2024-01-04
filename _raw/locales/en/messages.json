@@ -893,7 +893,8 @@
         "dragToSort": "Drag to sort",
         "recentlyConnected": "Recently connected",
         "noRecentlyConnectedDapps": "No recently connected Dapps",
-        "noConnectedDapps": "No connected Dapps"
+        "noConnectedDapps": "No connected Dapps",
+        "dapps": "Dapps"
       },
       "feedback": {
         "directMessage": {
@@ -1722,6 +1723,17 @@
         "predictFailed": "Packing time prediction failed",
         "skipNonce": "Your address has Nonce skipped on Ethereum chain causing current transaction can’t complete"
       }
+    },
+    "dappSearch": {
+      "selectChain": "Select Chain",
+      "searchResult": {
+        "foundDapps": "Found <2>{{count}}</2> Dapps",
+        "totalDapps": "Total <2>{{count}}</2> Dapps"
+      },
+      "expand": "Expand",
+      "emptyFavorite": "No Favorite Dapp",
+      "favorite": "Favorites",
+      "emptySearch": "No Dapp Found"
     }
   },
   "component": {

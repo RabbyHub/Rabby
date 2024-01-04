@@ -5,16 +5,16 @@ import { ChainSelectorLargeModal } from '@/ui/component/ChainSelector/LargeModal
 import { useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
+import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import { useDebounce, useInfiniteScroll, useRequest } from 'ahooks';
 import { Input } from 'antd';
 import clsx from 'clsx';
+import { keyBy } from 'lodash';
 import React, { useMemo, useRef } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
-import { keyBy } from 'lodash';
-import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
-import ConnectedSites from '../ConnectedSites';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -36,6 +36,13 @@ const SearchWrapper = styled.div`
     &-focused {
       border: 1px solid var(--r-blue-default, #7084ff);
     }
+  }
+  .ant-input-group-addon {
+    border-radius: 0px 8px 8px 0px !important;
+  }
+
+  .anticon-close-circle {
+    font-size: 16px;
   }
 
   .ant-btn-primary {
@@ -76,10 +83,14 @@ export const DappSearchPage = () => {
   });
 
   const favoriteSites = useMemo(() => {
-    return (sites?.list
-      ?.filter((item) => item.isFavorite && item.info)
-      ?.map((item) => item.info) || []) as BasicDappInfo[];
+    return sites?.list?.filter((item) => item.isFavorite) || [];
   }, [sites?.list]);
+
+  const favoriteSiteInfos = useMemo(() => {
+    return favoriteSites
+      .map((item) => item.info)
+      .filter((v): v is BasicDappInfo => !!v);
+  }, [favoriteSites]);
 
   const { data, reloadAsync, loading, loadingMore } = useInfiniteScroll(
     async (d) => {
@@ -131,6 +142,27 @@ export const DappSearchPage = () => {
     runGetSites();
   };
 
+  useRequest(async () => {
+    const list = await wallet.getSites();
+    const dict = keyBy(list, 'origin');
+    const favoriteSites = list.filter((item) => item.isFavorite);
+    const infoList = await wallet.openapi.getDappsInfo({
+      ids: favoriteSites.map((item) => item.origin.replace(/^https?:\/\//, '')),
+    });
+    infoList.forEach((info) => {
+      const origin = `https://${info.id}`;
+      const local = dict?.[origin];
+      if (local) {
+        wallet.setSite({
+          ...local,
+          info,
+        });
+      }
+    });
+  });
+
+  const { t } = useTranslation();
+
   return (
     <div
       className="pt-[60px] pb-[48px] w-full h-full bg-r-neutral-bg2"
@@ -173,19 +205,29 @@ export const DappSearchPage = () => {
               leftSlot={
                 debouncedSearchValue ? (
                   <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-                    Found{' '}
-                    <span className="text-r-neutral-body font-medium">
-                      {data?.page?.total}
-                    </span>{' '}
-                    Dapps
+                    <Trans
+                      i18nKey="page.dappSearch.searchResult.foundDapps"
+                      values={{ count: data?.page?.total }}
+                    >
+                      Found{' '}
+                      <span className="text-r-neutral-body font-medium">
+                        {data?.page?.total}
+                      </span>{' '}
+                      Dapps
+                    </Trans>
                   </div>
                 ) : (
                   <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-                    Total{' '}
-                    <span className="text-r-neutral-body font-medium">
-                      {data?.page?.total}
-                    </span>{' '}
-                    Dapps
+                    <Trans
+                      i18nKey="page.dappSearch.searchResult.totalDapps"
+                      values={{ count: data?.page?.total }}
+                    >
+                      Total{' '}
+                      <span className="text-r-neutral-body font-medium">
+                        {data?.page?.total}
+                      </span>{' '}
+                      Dapps
+                    </Trans>
                   </div>
                 )
               }
@@ -200,16 +242,26 @@ export const DappSearchPage = () => {
                       className={clsx(
                         'rounded-[4px] bg-r-neutral-card1',
                         'border-[0.5px] border-solid border-rabby-neutral-line',
-                        'flex items-center cursor-pointer px-[10px] py-[6px]'
+                        'flex items-center cursor-pointer',
+                        'p-[2px]'
                       )}
                     >
-                      <img
-                        src={chainInfo?.logo}
-                        className="w-[20px] h-[20px] rounded-[4px] mr-[6px]"
-                      />
-                      <span className="ml-[4px]">{chainInfo?.name}</span>
+                      <div
+                        className={clsx(
+                          'flex items-center gap-[6px] py-[4px] pl-[9px] pr-[3px] rounded-[2px]',
+                          'hover:bg-r-blue-light1'
+                        )}
+                      >
+                        <img
+                          src={chainInfo?.logo}
+                          className="w-[20px] h-[20px] rounded-full"
+                        />
+                        <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
+                          {chainInfo?.name}
+                        </span>
+                      </div>
                       <span
-                        className="ml-[8px] cursor-pointer text-r-neutral-foot"
+                        className="p-[7px] cursor-pointer text-r-neutral-foot rounded-[2px] hover:bg-r-blue-light1"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -226,7 +278,7 @@ export const DappSearchPage = () => {
                         'text-r-neutral-body font-medium text-[13px] leading-[16px]'
                       )}
                     >
-                      Select Chain
+                      {t('page.dappSearch.selectChain')}
                       <RcIconDropdown />
                     </div>
                   )}
@@ -236,7 +288,7 @@ export const DappSearchPage = () => {
           </main>
           <aside className="flex-1">
             <DappFavoriteList
-              data={favoriteSites}
+              data={favoriteSiteInfos}
               onFavoriteChange={handleFavoriteChange}
             />
           </aside>

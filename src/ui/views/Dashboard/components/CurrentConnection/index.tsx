@@ -224,7 +224,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         onClick={handleClickSearch}
       >
         <RcIconSearch />
-        Dapps
+        {t('page.dashboard.recentConnection.dapps')}
       </div>
       <ChainSelectorModal
         value={site?.chain || CHAINS_ENUM.ETH}

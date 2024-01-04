@@ -1,12 +1,7 @@
-import FallbackImage from '@/ui/component/FallbackSiteLogo';
-import { Divider, Skeleton } from 'antd';
-import React from 'react';
-import { ReactComponent as RcIconArrow } from 'ui/assets/dapp-search/cc-arrow.svg';
-import { ReactComponent as RcIconStar } from 'ui/assets/dapp-search/cc-star.svg';
-import { ReactComponent as RcIconStarFill } from 'ui/assets/dapp-search/cc-star-fill.svg';
+import { Skeleton } from 'antd';
 import clsx from 'clsx';
+import React from 'react';
 import styled from 'styled-components';
-import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 
 const Wraper = styled.div`
   border: 1px solid transparent;
