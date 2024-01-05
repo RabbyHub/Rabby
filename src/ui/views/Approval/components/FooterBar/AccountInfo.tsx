@@ -157,6 +157,16 @@ export const AccountInfo: React.FC<Props> = ({
           tip={t('page.signFooterBar.addressTip.coolwallet')}
         />
       )}
+      {account?.brandName === WALLET_BRAND_TYPES.IMTOKENOFFLINE && (
+        <CommonAccount
+          icon={
+            isDarkTheme
+              ? WALLET_BRAND_CONTENT.imTokenOffline.lightIcon
+              : WALLET_BRAND_CONTENT.imTokenOffline.icon
+          }
+          tip={t('page.signFooterBar.addressTip.coolwallet')}
+        />
+      )}
       {account?.type === KEYRING_CLASS.PRIVATE_KEY && (
         <CommonAccount
           icon={

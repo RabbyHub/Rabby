@@ -750,8 +750,10 @@
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
       "rabby-fee": "Rabby fee",
+      "preferMEV": "Prefer MEV Guarded",
+      "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
       "minimum-received": "Minimum received",
-      "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
+      "there-is-no-fee-and-slippage-for-this-trade": "There is no slippage for this trade",
       "approve-tips": "1.Approve → 2.Swap",
       "best": "Best",
       "unable-to-fetch-the-price": "Unable to fetch the price",
@@ -872,7 +874,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "What's new",
-        "importType": "Imported by {{type}}"
+        "importType": "Imported by {{type}}",
+        "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
+        "chain": " chain, ",
+        "chainEnd": " chain"
       },
       "recentConnection": {
         "disconnected": "Disconnected",
@@ -1211,7 +1216,7 @@
         "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
         "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
         "ledgerPermission1": "Connect to an HID device",
-        "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
+        "ledgerPermissionTip": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window.",
         "permissionsAuthorized": "Permissions Authorized",
         "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
         "allow": "Allow"

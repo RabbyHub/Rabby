@@ -29,7 +29,9 @@
       "completed": "Transaction finalisée",
       "failed": "La transaction a échoué",
       "more": "cliquer pour voir plus d'informations",
-      "submitted": "Transaction envoyée"
+      "submitted": "Transaction envoyée",
+      "txCompleteMoreContent": "{{chain}} #{{nonce}} finalisée. Cliquer pour en voir plus.",
+      "txFailedMoreContent": "{{chain}} #{{nonce}} a échoué. Cliquer pour en voir plus."
     }
   },
   "component": {
@@ -65,7 +67,9 @@
       "gridPlusConnected": "GridPlus connecté",
       "gridPlusNotConnected": "GridPlus non connecté",
       "ledgerConnected": "Clé Ledger connectée",
-      "ledgerNotConnected": "Clé Ledger non connectée"
+      "ledgerNotConnected": "Clé Ledger non connectée",
+      "keystoneConnected": "Keystone connecté",
+      "keystoneNotConnected": "Keystone non connecté"
     },
     "Contact": {
       "AddressItem": {
@@ -122,7 +126,7 @@
     },
     "TokenSelector": {
       "header": {
-        "title": "Sélectionner un jeton"
+        "title": "Sélectionner un token"
       },
       "listTableHead": {
         "assetAmount": {
@@ -169,7 +173,8 @@
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "Mainnet & Testnet",
       "TESTNET": "Uniquement les testnets"
-    }
+    },
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Importé par seed phrase (phrase secrète)"
   },
   "global": {
     "Balance": "Solde",
@@ -202,7 +207,9 @@
     "refresh": "Actualiser",
     "scamTx": "Tx frauduleuse",
     "unknownNFT": "NFT inconnu",
-    "watchModeAddress": "Adresse en mode observation"
+    "watchModeAddress": "Adresse en mode observation",
+    "Nonce": "Nonce",
+    "tryAgain": "Essayer à nouveau"
   },
   "page": {
     "activities": {
@@ -241,16 +248,59 @@
           "canceled": "Annulée",
           "failed": "Échouée",
           "pending": "En attente",
-          "submitFailed": "Échec lors de l'envoi"
+          "submitFailed": "Échec lors de l'envoi",
+          "pendingBroadcast": "En attente : à diffuser",
+          "pendingBroadcastFailed": "En attente : échec de la diffusion",
+          "pendingBroadcasted": "En attente : diffusée",
+          "withdrawed": "Annulation rapide"
         },
         "tips": {
           "canNotCancel": "Impossible d'accélérer ou d'annuler : ce n'est pas la première transaction en attente",
-          "pendingDetail": "Une seule transaction sera complétée, et c'est presque toujours celle avec le prix du gaz le plus élevé"
+          "pendingDetail": "Une seule transaction sera complétée, et c'est presque toujours celle avec le prix du gaz le plus élevé",
+          "pendingBroadcast": "Mode économie de gaz : en attente de frais de réseau inférieurs. Max {{deadline}} heures d'attente.",
+          "pendingBroadcastBtn": "Diffuser maintenant",
+          "pendingBroadcastRetry": "La diffusion a échoué. Dernière tentative : {{pushAt}}",
+          "pendingBroadcastRetryBtn": "Diffuser à nouveau"
         },
         "txType": {
           "cancel": "Annuler tx",
           "initial": "Transaction initiale",
           "speedUp": "Accélérer la transaction"
+        },
+        "CancelTxPopup": {
+          "options": {
+            "onChainCancel": {
+              "desc": "Nouvelle transaction à annuler, nécessite du gaz",
+              "title": "Annuler on-chain"
+            },
+            "quickCancel": {
+              "desc": "Annuler avant la diffusion, pas de frais de gaz",
+              "tips": "Uniquement pris en charge pour les transactions qui n'ont pas été diffusées",
+              "title": "Annulation rapide"
+            }
+          },
+          "title": "Annuler la transaction"
+        },
+        "MempoolList": {
+          "empty": "Introuvable dans aucun nœud",
+          "reBroadcastBtn": "Diffuser à nouveau",
+          "title": "Apparu dans {{count}} nœuds RPC"
+        },
+        "PredictTime": {
+          "failed": "Échec de la prédiction du temps d'emballage",
+          "noTime": "Le temps d'emballage est prévu",
+          "time": "Prévu pour être emballé dans {{time}}"
+        },
+        "SkipNonceAlert": {
+          "alert": "Nonce #{{nonce}} ignoré sur la chaîne {{chainName}}. Cela peut entraîner de futures transactions en attente. <5></5> <6>Soumettre une tx</6> <7></7> on-chain pour régler le problème"
+        },
+        "message": {
+          "broadcastSuccess": "Diffusée",
+          "cancelSuccess": "Annulée",
+          "reBroadcastSuccess": "Rediffusée"
+        },
+        "gas": {
+          "noCost": "Pas de frais de gaz"
         }
       },
       "title": "Journal de signatures"
@@ -336,6 +386,12 @@
             "asset": "Actif",
             "myApprovalTime": "Heure d'approbation",
             "type": "Type"
+          },
+          "columnCell": {
+            "approvedAmount": {
+              "tipApprovedAmount": "Montant approuvé",
+              "tipMyBalance": "Mon solde"
+            }
           }
         },
         "byContracts": {
@@ -509,7 +565,15 @@
           "doc3": "Ouvrir l'application Ethereum",
           "reconnect": "Si cela ne fonctionne pas, essayez de <1>vous reconnecter depuis le début.</1>"
         },
-        "userRejectedTheRequest": "L'utilisateur a rejeté la demande."
+        "userRejectedTheRequest": "L'utilisateur a rejeté la demande.",
+        "howToConnectKeystone": "Comment connecter Keystone",
+        "keystone": {
+          "doc1": "Brancher un seul Keystone",
+          "doc2": "Entrer le mot de passe pour déverrouiller",
+          "doc3": "Approuver la connexion à l'ordinateur",
+          "reconnect": "Si cela ne fonctionne pas, essayez de <1>vous reconnecter depuis le début.</1>",
+          "title": "*Connexion USB uniquement pour Keystone 3(Pro)"
+        }
       },
       "home": {
         "comingSoon": "À venir",
@@ -544,7 +608,10 @@
         "transactionsNeedToSign": "les transactions doivent être signées",
         "view": "Voir",
         "viewFirstOne": "Voir le premier",
-        "whatsNew": "Quoi de neuf"
+        "whatsNew": "Quoi de neuf",
+        "chain": "chaîne,",
+        "chainEnd": "chaîne",
+        "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}."
       },
       "nft": {
         "collectionList": {
@@ -651,7 +718,9 @@
           "enableTestnets": "Activer les testnets",
           "enableWhitelistForSendingAssets": "Activer la liste blanche pour l'envoi d'actifs",
           "label": "Paramètres",
-          "metamaskPreferredDapps": "DApps préférées de MetaMask"
+          "metamaskPreferredDapps": "DApps préférées de MetaMask",
+          "themeMode": "Thème",
+          "toggleThemeMode": "Thème"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -659,7 +728,8 @@
         "updateVersion": {
           "content": "Une nouvelle mise à jour pour Rabby Wallet est disponible. Cliquer pour voir comment mettre à jour manuellement.",
           "okText": "Voir Tutoriel",
-          "successTip": "Vous utilisez la dernière version"
+          "successTip": "Vous utilisez la dernière version",
+          "title": "Mise à jour disponible"
         },
         "warning": "Avertissement"
       },
@@ -678,6 +748,9 @@
         "send": "Envoyer",
         "swap": "Échanger",
         "txFailed": "Échoué"
+      },
+      "GnosisWrongChainAlertBar": {
+        "warning": "L'adresse Safe ne prend pas en charge {{chain}}"
       }
     },
     "ethSign": {
@@ -758,7 +831,14 @@
       "seed-phrase-delete-title": "Supprimer la seed phrase ?",
       "update-balance-data": "Mettre à jour les données du solde",
       "watch-address": "Observer l'adresse",
-      "whitelisted-address": "Adresse sur liste blanche"
+      "whitelisted-address": "Adresse sur liste blanche",
+      "enterPassphraseTitle": "Entrer la pass phrase pour signer",
+      "enterThePassphrase": "Entrer la pass phrase",
+      "passphraseError": "Pass phrase invalide",
+      "sort-address": "Trier adresse",
+      "sort-by-address-note": "Trier par note d'adresse",
+      "sort-by-address-type": "Trier par type d'adresse",
+      "sort-by-balance": "Trier par solde"
     },
     "newAddress": {
       "addContacts": {
@@ -831,10 +911,14 @@
         "hideOnChainInformation": "Masquer les informations on-chain",
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44 : HDpath défini par le protocole BIP44."
+            "bip44": "BIP44 : HDpath défini par le protocole BIP44.",
+            "ledgerLive": "Ledger Live : HD path officiel de Ledger. Vous ne pouvez gérer que 10 adresses avec le path Ledger Live.",
+            "legacy": "Legacy : HD path utilisé par MEW / Mycrypto."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44 : HDpath défini par le protocole BIP44."
+            "bip44": "BIP44 : HDpath défini par le protocole BIP44.",
+            "ledgerLive": "Ledger Live : HD path officiel de Ledger. Vous ne pouvez gérer que 10 adresses avec le path Ledger Live.",
+            "legacy": "Legacy : HD path utilisé par MEW / Mycrypto."
           }
         },
         "ledger": {
@@ -859,7 +943,10 @@
         "manageSeedPhrase": "Gérer la seed phrase",
         "mnemonic": {
           "hdPathType": {
-            "default": "Par défaut : Le HD path par défaut est utilisé pour l'importation d'une seed phrase."
+            "default": "Par défaut : Le HD path par défaut est utilisé pour l'importation d'une seed phrase.",
+            "bip44": "Norme BIP44 : HDpath défini par le protocole BIP44.",
+            "ledgerLive": "Ledger Live : HD path officiel de Ledger.",
+            "legacy": "Legacy : HD path utilisé par MEW / Mycrypto."
           },
           "hdPathTypeNoChain": {
             "default": "Par défaut : Le HD path par défaut est utilisé pour l'importation d'une seed phrase."
@@ -901,7 +988,8 @@
           }
         },
         "usedChains": "Chaînes utilisées",
-        "waiting": "En attente"
+        "waiting": "En attente",
+        "manageImtokenOffline": "Gérer imToken"
       },
       "importKeystore": "Importer un \"keystore\"",
       "importMyMetamaskAccount": "Importer mon compte MetaMask",
@@ -983,7 +1071,13 @@
           "answer": "Une phrase de 12, 18 ou 24 mots utilisée pour contrôler vos actifs.",
           "question": "Qu'est-ce qu'une seed phrase ?"
         },
-        "wordPhrase": "J'ai une phrase de <1>{{count}}</1> mots"
+        "wordPhrase": "J'ai une phrase de <1>{{count}}</1> mots",
+        "inputInvalidCount_one": "1 entrée n'est pas conforme aux normes Seed Phrase, veuillez vérifier.",
+        "inputInvalidCount_other": "{{count}} entrées ne sont pas conformes aux normes Seed Phrase, veuillez vérifier.",
+        "invalidContent": "Contenu invalide",
+        "passphrase": "Pass phrase",
+        "pastedAndClear": "Collé et presse-papier effacé",
+        "wordPhraseAndPassphrase": "J'ai pass phrase de <1>{{count}}</1> mots"
       },
       "selectImportMethod": "Sélectionner la méthode d'importation",
       "theSeedPhraseIsInvalidPleaseCheck": "La seed phrase n'est pas valide, veuillez vérifier !",
@@ -1030,6 +1124,18 @@
         "title": "Se connecter avec {{brandName}}",
         "url": "URL",
         "viaWalletConnect": "via Wallet Connect"
+      },
+      "keystone": {
+        "allowRabbyPermissionsTitle": "Autoriser Rabby à :",
+        "deviceIsBusy": "Le périphérique est occupé",
+        "deviceIsLockedError": "Saisir le mot de passe pour déverrouiller",
+        "deviceRejectedExportAddress": "Approuver la connexion à Rabby",
+        "exportAddressJustAllowedOnHomePage": "Adresse d'exportation uniquement autorisée sur la page d'accueil",
+        "keystonePermission1": "Se connecter à un périphérique USB",
+        "keystonePermissionTip": "Veuillez cliquer sur « Autoriser » ci-dessous et autoriser l'accès à votre Keystone dans la fenêtre contextuelle suivante.",
+        "noDeviceFoundError": "Brancher un seul Keystone",
+        "title": "Connecter Keystone",
+        "unknowError": "Erreur inconnue, veuillez réessayer"
       }
     },
     "nft": {
@@ -1068,7 +1174,8 @@
       "LowerNonceError": "La transaction avec nonce {{nonce}} doit être exécutée en premier",
       "accountSelectTitle": "Vous pouvez soumettre cette transaction en utilisant n'importe quelle adresse",
       "action": {
-        "send": "Envoyer"
+        "send": "Envoyer",
+        "cancel": "Annuler la transaction en attente"
       },
       "approvalExplain": "Approuver {{count}} {{token}} pour {{protocol}}",
       "cancelExplain": "Annuler l'approbation de {{token}} pour {{protocol}}",
@@ -1081,7 +1188,16 @@
       "unknownProtocol": "Protocole inconnu",
       "unknownTx": "Transaction inconnue",
       "unlimited": "illimité",
-      "viewBtn": "Voir"
+      "viewBtn": "Voir",
+      "ReplacePopup": {
+        "desc": "Une transaction signée ne peut pas être supprimée mais elle peut être remplacée par une nouvelle transaction avec le même nonce.",
+        "options": {
+          "reject": "Rejeter la transaction",
+          "send": "Envoyer un token"
+        },
+        "title": "Sélectionner comment remplacer cette transaction"
+      },
+      "replaceBtn": "Remplacer"
     },
     "securityEngine": {
       "alertTriggerReason": "Raison du déclenchement de l'alerte :",
@@ -1205,7 +1321,20 @@
       "whitelistAlert__disabled": "Liste blanche désactivée. Vous pouvez transférer vers n’importe quelle adresse.",
       "whitelistAlert__notWhitelisted": "L'adresse n'est pas sur liste blanche. <1 /> J'accepte d'accorder une autorisation temporaire de transfert.",
       "whitelistAlert__temporaryGranted": "Autorisation temporaire accordée",
-      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche"
+      "whitelistAlert__whitelisted": "L'adresse est sur liste blanche",
+      "sectionMsgDataForContract": {
+        "notHexData": "Uniquement les données hexadécimales prises en charge",
+        "parseError": "Impossible de décoder l'appel du contrat",
+        "placeholder": "Facultatif",
+        "simulation": "Simulation d'appel de contrat :",
+        "title": "Appel de contrat"
+      },
+      "sectionMsgDataForEOA": {
+        "currentIsOriginal": "Actuellement sur : données originales. UTF-8 :",
+        "currentIsUTF8": "Actuellement sur : UTF-8. Données originales : ",
+        "placeholder": "Facultatif",
+        "title": "Message"
+      }
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} réservé pour le coût du gaz"
@@ -1222,7 +1351,8 @@
         "safe": "Adresse Safe",
         "seedPhrase": "Adresse de seed phrase",
         "trezor": "Adresse Trezor",
-        "watchAddress": "Impossible de signer avec une adresse du mode observation"
+        "watchAddress": "Impossible de signer avec une adresse du mode observation",
+        "seedPhraseWithPassphrase": "Adresse de la seed phrase (phrase secrète)"
       },
       "beginSigning": "Commencer le processus de signature",
       "common": {
@@ -1282,7 +1412,28 @@
         "switchChainAlert": "Veuillez passer sur {{chain}} sur le wallet mobile",
         "switchToCorrectAddress": "Veuillez passer sur la bonne adresse dans le wallet mobile",
         "wrongAddressAlert": "Vous avez changé d'adresse sur le wallet mobile. Veuillez passer sur la bonne adresse dans le wallet mobile"
-      }
+      },
+      "blockDappFromSendingRequests": "Empêcher la DApp d'envoyer des requêtes pendant 1 minute",
+      "cancelAll": "Annuler les {{count}} demandes de la DApp",
+      "cancelConnection": "Annuler la connexion",
+      "cancelCurrentConnection": "Annuler la connexion actuelle",
+      "cancelCurrentTransaction": "Annuler la transaction en cours",
+      "cancelTransaction": "Annuler la transaction",
+      "detectedMultipleRequestsFromThisDapp": "Détection de plusieurs requêtes de cette DApp",
+      "keystone": {
+        "hardwareRejectError": "Le matériel rejette la signature",
+        "misMatchSignId": "Données de transaction incongrues. Veuillez vérifier les détails de la transaction.",
+        "mismatchedWalletError": "Portefeuille invalide",
+        "shouldOpenKeystoneHomePageError": "Veuillez ouvrir la page d'accueil de Keystone",
+        "shouldRetry": "Une erreur s'est produite. Veuillez réessayer.",
+        "siging": "Envoi d'une demande de signature",
+        "signWith": "Passer à {{method}} pour la signature",
+        "txRejected": "Transaction rejetée",
+        "unsupportedType": "Erreur : le type de transaction n'est pas pris en charge ou est inconnu.",
+        "verifyPasswordError": "Échec de la signature, veuillez réessayer après le déverrouillage"
+      },
+      "keystoneConnected": "Keystone connecté",
+      "keystoneNotConnected": "Keystone non connecté"
     },
     "signText": {
       "createKey": {
@@ -1444,7 +1595,8 @@
         "slippageFailToLoad": "La tolérance de slippage ne parvient pas à se charger",
         "slippageTolerance": "Tolérance de slippage",
         "title": "Échanger un token",
-        "valueDiff": "Différence de valeur"
+        "valueDiff": "Différence de valeur",
+        "unknownAddress": "Adresse inconnue"
       },
       "swapAndCross": {
         "title": "Échanger le token en cross chain"
@@ -1468,7 +1620,74 @@
       "unknownActionType": "Type d'action inconnu",
       "unwrap": "\"Unwrapper\" le token",
       "viewRaw": "Voir au format brut",
-      "wrapToken": "\"Wrapper\" le token"
+      "wrapToken": "\"Wrapper\" le token",
+      "BroadcastMode": {
+        "instant": {
+          "desc": "Les transactions seront immédiatement diffusées sur le réseau",
+          "title": "Instantané"
+        },
+        "lowGas": {
+          "desc": "Les transactions seront diffusées lorsque le gaz du réseau sera faible",
+          "title": "Économie de gaz"
+        },
+        "lowGasDeadline": {
+          "1h": "1h",
+          "24h": "24h",
+          "4h": "4h",
+          "label": "Délai d'attente"
+        },
+        "mev": {
+          "desc": "Les transactions seront diffusées vers le nœud MEV désigné",
+          "title": "MEV sécurisé"
+        },
+        "tips": {
+          "customRPC": "Non pris en charge lors de l'utilisation d'un RPC personnalisé",
+          "notSupportChain": "Non pris en charge sur cette chaîne",
+          "notSupported": "Non supporté",
+          "walletConnect": "Non pris en charge par WalletConnect"
+        },
+        "title": "Mode de diffusion"
+      },
+      "SafeNonceSelector": {
+        "error": {
+          "pendingList": "Échec du chargement des transactions en attente, <1/><2>Réessayer</2>"
+        },
+        "explain": {
+          "contractCall": "Appel de contrat",
+          "send": "Envoyer token",
+          "unknown": "Transaction inconnue"
+        },
+        "option": {
+          "new": "Nouvelle transaction"
+        },
+        "optionGroup": {
+          "recommendTitle": "Nonce recommandé",
+          "replaceTitle": "Remplacer la transaction dans la file d'attente"
+        }
+      },
+      "coboSafeCreate": {
+        "descriptionTitle": "Description",
+        "safeWalletTitle": "Safe{Wallet}",
+        "title": "Créer Cobo Safe"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "descriptionTitle": "Description",
+        "safeWalletTitle": "Safe{Wallet}",
+        "title": "Soumettre une modification d'adresse déléguée"
+      },
+      "coboSafeModificationRole": {
+        "descriptionTitle": "Description",
+        "safeWalletTitle": "Safe{Wallet}",
+        "title": "Soumettre une modification de rôle sécurisé"
+      },
+      "coboSafeModificationTokenApproval": {
+        "descriptionTitle": "Description",
+        "safeWalletTitle": "Safe{Wallet}",
+        "title": "Soumettre la modification d'approbation du token"
+      },
+      "decodedTooltip": "Cette signature est décodée par Rabby Wallet",
+      "importedAddress": "Adresse importée",
+      "l2GasEstimateTooltip": "L'estimation du gaz pour la chaîne L2 n'inclut pas les frais de gaz L1. Les frais réels seront plus élevés que l’estimation actuelle."
     },
     "signTypedData": {
       "buyNFT": {
@@ -1579,12 +1798,21 @@
       "unable-to-fetch-the-price": "Impossible de récupérer le prix",
       "unlimited-allowance": "Allocation illimitée",
       "view-quotes": "Voir les cotations",
-      "wrap-contract": "Contrat de \"Wrap\""
+      "wrap-contract": "Contrat de \"Wrap\"",
+      "preferMEV": "Préférer MEV sécurisé",
+      "preferMEVTip": "Activer la fonctionnalité « MEV Sécurisé » pour les swaps Ethereum afin de réduire les risques d'attaque sandwich. Remarque : cette fonctionnalité n'est pas prise en charge si vous utilisez une adresse de connexion RPC personnalisée ou Wallet Connect.",
+      "sort-with-gas": "Tri au gaz"
     },
     "switchChain": {
       "chainNotSupport": "La chaîne demandée n'est pas encore prise en charge par Rabby",
       "testnetTip": "Veuillez activer « Activer les testnets » dans « Plus » avant de vous connecter aux testnets",
-      "title": "Passer sur {{chain}}"
+      "title": "Passer sur {{chain}}",
+      "chainId": "ID chaîne :",
+      "chainNotSupportYet": "La chaîne demandée n'est pas encore prise en charge par Rabby",
+      "requestRabbyToSupport": "Demander de l'aide à Rabby",
+      "requestsReceivedPlural": "{{count}} demandes reçues",
+      "unknownChain": "Chaîne inconnue",
+      "requestsReceived": "1 demande reçue"
     },
     "transactions": {
       "empty": {
@@ -1596,7 +1824,19 @@
         "cancel": "A annulé une transaction en attente",
         "unknown": "Interaction avec un contrat"
       },
-      "title": "Transactions"
+      "title": "Transactions",
+      "filterScam": {
+        "btn": "Masquer les tx frauduleuses",
+        "loading": "Le chargement peut prendre un moment et des retards de données sont possibles",
+        "title": "Masquer les tx frauduleuses"
+      },
+      "modalViewMessage": {
+        "title": "Voir message"
+      },
+      "txHistory": {
+        "parseInputDataError": "Échec de l'analyse du message",
+        "tipInputData": "La transaction comprend un message"
+      }
     },
     "unlock": {
       "btn": {
@@ -1617,6 +1857,85 @@
         "btnText": "Commencer",
         "desc": "Les clés privées sont stockées localement avec un accès exclusif pour vous",
         "title": "Self-custodial (à vous)"
+      }
+    },
+    "pendingDetail": {
+      "Empty": {
+        "noData": "Aucune donnée disponible"
+      },
+      "Header": {
+        "predictTime": "Prévu pour être emballé dans"
+      },
+      "MempoolList": {
+        "col": {
+          "nodeName": "Nom du nœud",
+          "nodeOperator": "Opérateur de nœud",
+          "txStatus": "Statut de la transaction"
+        },
+        "title": "Apparu dans {{count}} nœuds RPC",
+        "txStatus": {
+          "appeared": "Apparu",
+          "appearedOnce": "Apparu une fois",
+          "notFound": "Non trouvé"
+        }
+      },
+      "PendingTxList": {
+        "col": {
+          "action": "Action de transaction",
+          "actionType": "Type d'action",
+          "balanceChange": "Changement de solde",
+          "gasPrice": "Prix ​​du gaz",
+          "interact": "Interagir avec"
+        },
+        "filterBaseFee": {
+          "label": "Répond uniquement aux exigences relatives aux frais de base",
+          "tooltip": "Afficher uniquement les transactions dont le prix du gaz répond aux exigences des frais de base du bloc"
+        },
+        "title": "Classements des prix du gaz",
+        "titleNotFound": "Aucun classement dans toutes les transmissions en attente",
+        "titleSame": "GasPrice se classe #{{rank}} dans la même catégorie que l'actuel",
+        "titleSameNotFound": "Aucun classement identique à celui actuel"
+      },
+      "PrePackInfo": {
+        "col": {
+          "difference": "Vérifier les résultats",
+          "expectations": "Attentes",
+          "prePackContent": "Contenu pré-emballé",
+          "prePackResults": "Résultats pré-emballés"
+        },
+        "desc": "Simulation exécutée dans le dernier bloc, mise à jour {{time}}",
+        "error": "{{count}} erreur trouvée",
+        "loss": "{{lossCount}} perte trouvée",
+        "noError": "Aucune erreur trouvée",
+        "noLoss": "Aucune perte constatée",
+        "title": "Vérification du pré-emballage",
+        "type": {
+          "pay": "Payer",
+          "receive": "Recevoir"
+        }
+      },
+      "Predict": {
+        "completed": "Transaction terminée",
+        "predictFailed": "Échec de la prédiction du temps d'emballage",
+        "skipNonce": "Votre adresse a été ignorée (nonce sauté) sur la chaîne Ethereum, ce qui empêche la transaction en cours de se terminer"
+      },
+      "TxHash": {
+        "hash": "Hash de la tx"
+      },
+      "TxStatus": {
+        "completed": "Complété",
+        "pendingBroadcast": "En attente : à diffuser",
+        "pendingBroadcasted": "En attente : diffusé",
+        "reBroadcastBtn": "Diffuser à nouveau"
+      },
+      "TxTimeline": {
+        "broadcasted": "Récemment diffusé",
+        "broadcastedCount_ordinal_few": "{{count}}ème diffusion",
+        "broadcastedCount_ordinal_one": "{{count}}ère diffusion",
+        "broadcastedCount_ordinal_other": "{{count}}ième diffusion",
+        "broadcastedCount_ordinal_two": "{{count}}ème diffusion",
+        "created": "Transaction créée",
+        "pending": "Vérification de l'état..."
       }
     }
   }

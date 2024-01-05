@@ -4,6 +4,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import type { ChainWithBalance } from 'background/service/openapi';
 
 import { CHAINS } from 'consts';
+import { findChainByServerID } from '@/utils/chain';
 
 export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
@@ -51,6 +52,7 @@ export default function useCurrentBalance(
     hasTestnetValueChainBalances,
     setHasTestnetValueChainBalances,
   ] = useState<DisplayChainWithWhiteLogo[]>([]);
+  const [missingList, setMissingList] = useState<string[]>();
 
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value, chain_list }) {
@@ -65,9 +67,23 @@ export default function useCurrentBalance(
       setBalanceLoading(false);
       setBalanceFromCache(false);
     },
-    onError() {
-      setSuccess(false);
+    onError(e) {
       setBalanceLoading(false);
+      try {
+        const { error_code, err_chain_ids } = JSON.parse(e.message);
+        if (error_code === 2) {
+          const chainNames = err_chain_ids.map((serverId: string) => {
+            const chain = findChainByServerID(serverId);
+            return chain?.name;
+          });
+          setMissingList(chainNames);
+          setSuccess(true);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      setSuccess(false);
     },
   });
 
@@ -99,6 +115,10 @@ export default function useCurrentBalance(
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
+      const chanList = cacheData.chain_list
+        .filter((item) => item.born_at !== null)
+        .map(formatChain);
+      setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
       if (update) {
         setBalanceLoading(true);
         getAddressBalance(account.toLowerCase(), force);
@@ -155,5 +175,6 @@ export default function useCurrentBalance(
     testnetBalanceLoading,
     testnetBalanceFromCache,
     hasTestnetValueChainBalances,
+    missingList,
   ] as const;
 }

@@ -403,6 +403,7 @@ export class WalletController extends BaseController {
       gasPrice,
       shouldTwoStepApprove,
       postSwapParams,
+      swapPreferMEVGuarded,
     }: {
       chain: CHAINS_ENUM;
       quote: QuoteResult;
@@ -412,6 +413,7 @@ export class WalletController extends BaseController {
       unlimited: boolean;
       gasPrice?: number;
       shouldTwoStepApprove: boolean;
+      swapPreferMEVGuarded: boolean;
 
       postSwapParams?: Omit<
         Parameters<OpenApiService['postSwap']>[0],
@@ -440,7 +442,7 @@ export class WalletController extends BaseController {
             },
           },
           gasPrice,
-          { isSwap: true }
+          { isSwap: true, swapPreferMEVGuarded }
         );
         unTriggerTxCounter.decrease();
       }
@@ -461,7 +463,7 @@ export class WalletController extends BaseController {
             },
           },
           gasPrice,
-          { isSwap: true }
+          { isSwap: true, swapPreferMEVGuarded }
         );
         unTriggerTxCounter.decrease();
       }
@@ -491,6 +493,7 @@ export class WalletController extends BaseController {
               ? `0x${new BigNumber(gasPrice).toString(16)}`
               : undefined,
             isSwap: true,
+            swapPreferMEVGuarded,
           },
         ],
       });
@@ -558,7 +561,7 @@ export class WalletController extends BaseController {
     amount: number | string,
     $ctx?: any,
     gasPrice?: number,
-    extra?: { isSwap: boolean }
+    extra?: { isSwap: boolean; swapPreferMEVGuarded?: boolean }
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1126,6 +1129,8 @@ export class WalletController extends BaseController {
   getSwapTradeList = swapService.getSwapTradeList;
   getSwapSortIncludeGasFee = swapService.getSwapSortIncludeGasFee;
   setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
+  getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
+  setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;

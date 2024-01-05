@@ -19,6 +19,7 @@ export type SwapServiceStore = {
   viewList: Record<ViewKey, boolean>;
   tradeList: Record<ViewKey, boolean>;
   sortIncludeGasFee?: boolean;
+  preferMEVGuarded: boolean;
 };
 
 class SwapService {
@@ -32,6 +33,7 @@ class SwapService {
     viewList: {} as SwapServiceStore['viewList'],
     tradeList: {} as SwapServiceStore['tradeList'],
     sortIncludeGasFee: false,
+    preferMEVGuarded: false,
   };
 
   init = async () => {
@@ -44,6 +46,7 @@ class SwapService {
         unlimitedAllowance: false,
         viewList: {} as SwapServiceStore['viewList'],
         tradeList: {} as SwapServiceStore['tradeList'],
+        preferMEVGuarded: false,
       },
     });
     if (storage) {
@@ -202,6 +205,14 @@ class SwapService {
         tx_id: hash,
       });
     }
+  };
+
+  getSwapPreferMEVGuarded = () => {
+    return this.store.preferMEVGuarded || false;
+  };
+
+  setSwapPreferMEVGuarded = (bool: boolean) => {
+    this.store.preferMEVGuarded = bool;
   };
 }
 

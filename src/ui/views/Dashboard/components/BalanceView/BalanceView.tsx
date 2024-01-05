@@ -11,10 +11,12 @@ import { useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
+import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
 import { useDebounce } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const { t } = useTranslation();
@@ -37,6 +39,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     testnetBalanceLoading,
     _2,
     hasTestnetValueChainBalances,
+    missingList,
   ] = useCurrentBalance(
     currentAccount?.address,
     true,
@@ -172,7 +175,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
-      <div className="left">
+      <div className="left relative overflow-x-hidden mx-10">
         <div className={clsx('amount group', 'text-32 mt-6')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {startRefresh ||
@@ -204,9 +207,23 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               <span className="ml-4">({currentChangeValue})</span>
             ) : null}
           </div>
+          {missingList?.length ? (
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle font-normal whitespace-pre-wrap"
+              title={t('page.dashboard.home.missingDataTooltip', {
+                text:
+                  missingList.join(t('page.dashboard.home.chain')) +
+                  t('page.dashboard.home.chainEnd'),
+              })}
+            >
+              <div className={clsx('mb-[6px]')}>
+                <WarningSVG />
+              </div>
+            </TooltipWithMagnetArrow>
+          ) : null}
           <div
             onClick={onRefresh}
-            className={clsx(' mb-6', {
+            className={clsx('mb-[5px]', {
               'block animate-spin': startRefresh,
               hidden: !startRefresh,
               'group-hover:block': !hiddenBalance,
@@ -220,7 +237,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
           className={clsx(
-            'mt-[4px] mx-10 mb-10',
+            'mt-[4px] mb-10',
             currentHover && 'bg-[#000] bg-opacity-10',
             'rounded-[4px] relative cursor-pointer',
             'overflow-hidden'

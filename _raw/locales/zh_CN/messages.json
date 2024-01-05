@@ -124,7 +124,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "更新内容",
-        "importType": "由 {{type}} 导入"
+        "importType": "由 {{type}} 导入",
+        "missingDataTooltip": "由于 {{text}}的当前网络问题，地址余额可能无法更新。",
+        "chain": " 链、",
+        "chainEnd": " 链"
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -1421,6 +1424,8 @@
       "pendingTip": "交易已提交。\n如果交易长时间处于待完成状态，你可以尝试点击“更多”>“清除待完成”",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Rabby手续费",
+      "preferMEV": "优先 MEV 模式",
+      "preferMEVTip": "开启后你在 Ethereum 链上的 Swap 交易将优先使用 Mev Guard 模式，这有助于减少你的交易被夹的风险。当你使用自定义 RPC 或者手机钱包地址时，则不支持该模式。",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
       "recommend-slippage": "为了防止被抢先交易，我们建议滑点为 <2>{{ slippage }}</2>%",

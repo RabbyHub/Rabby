@@ -101,12 +101,7 @@
         modal
 ---------------------*/
 .ant-modal-mask {
-  background-color: rgba(0, 0, 0, 0.15);
-}
-html.dark, body.dark {
-  .ant-modal-mask {
-    background-color: rgba(0, 0, 0, 0.45);
-  }
+  background-color: var(--rabby-custom-ant-modal-mask);
 }
 .ant-modal-header,
 .ant-modal-content,
@@ -131,6 +126,7 @@ html.dark, body.dark {
 }
 
 .modal-support-darkmode,
+.modal-support-darkmode.ant-modal-confirm-error,
 .modal-support-darkmode.rabby-modal {
   .ant-modal-header,
   .ant-modal-content,
@@ -171,7 +167,7 @@ html.dark, body.dark {
   line-height: 23px;
   text-align: center;
 
-  color: @color-title;
+  color: var(--r-neutral-title-1);
 }
 .ant-modal-header {
   padding-bottom: 0;
@@ -188,11 +184,11 @@ html.dark, body.dark {
     line-height: 23px;
     text-align: center;
 
-    color: @color-title;
+    color: var(--r-neutral-title-1);
   }
   .ant-modal-confirm-content {
     margin-top: 20px;
-    background-color: #fff;
+    background-color: var(--r-neutral-bg-1);
     padding: 18px 12px;
     border-radius: 6px;
     margin-left: 0 !important;
@@ -391,6 +387,13 @@ textarea {
   }
   .ant-drawer-body {
     padding: 20px 20px 24px;
+  }
+  .ant-drawer-close {
+    color: var(--r-neutral-foot);
+  }
+  .ant-drawer-close:focus,
+  .ant-drawer-close:hover {
+    color: var(--r-neutral-body);
   }
 }
 .ant-drawer-bottom.ant-drawer-open .ant-drawer-content-wrapper {

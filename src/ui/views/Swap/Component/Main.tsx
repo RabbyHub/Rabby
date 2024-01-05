@@ -5,7 +5,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { ReactComponent as IconSwapArrow } from '@/ui/assets/swap/swap-arrow.svg';
 import { TokenRender } from './TokenRender';
 import { useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, Modal, Switch } from 'antd';
+import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import styled from 'styled-components';
@@ -59,6 +59,25 @@ const StyledInput = styled(Input)`
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+`;
+
+const PreferMEVGuardSwitch = styled(Switch)`
+  min-width: 24px;
+  height: 12px;
+
+  &.ant-switch-checked {
+    background-color: var(--r-blue-default, #7084ff);
+    .ant-switch-handle {
+      left: calc(100% - 10px - 1px);
+      top: 1px;
+    }
+  }
+  .ant-switch-handle {
+    height: 10px;
+    width: 10px;
+    top: 1px;
+    left: 1px;
   }
 `;
 
@@ -117,6 +136,23 @@ export const Main = () => {
     slippageValidInfo,
     expired,
   } = useTokenPair(userAddress);
+
+  const originPreferMEVGuarded = useRabbySelector(
+    (s) => !!s.swap.preferMEVGuarded
+  );
+
+  const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
+    chain,
+  ]);
+
+  const switchPreferMEV = useCallback((bool: boolean) => {
+    dispatch.swap.setSwapPreferMEV(bool);
+  }, []);
+
+  const preferMEVGuarded = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? originPreferMEVGuarded : false),
+    [chain, originPreferMEVGuarded]
+  );
 
   const inputRef = useRef<Input>();
 
@@ -195,6 +231,7 @@ export const Main = () => {
       try {
         wallet.dexSwap(
           {
+            swapPreferMEVGuarded: preferMEVGuarded,
             chain,
             quote: activeProvider?.quote,
             needApprove: activeProvider.shouldApproveToken,
@@ -238,6 +275,7 @@ export const Main = () => {
       }
     }
   }, [
+    preferMEVGuarded,
     inSufficient,
     payToken,
     unlimitedAllowance,
@@ -269,6 +307,39 @@ export const Main = () => {
       },
     },
   });
+
+  const FeeAndMEVGuarded = useMemo(
+    () => (
+      <>
+        <div className="flex justify-between">
+          <span>{t('page.swap.rabby-fee')}</span>
+          <span className="font-medium text-r-neutral-title-1">0%</span>
+        </div>
+        {showMEVGuardedSwitch && (
+          <div className="flex justify-between">
+            <Tooltip
+              placement={'topLeft'}
+              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              title={t('page.swap.preferMEVTip')}
+            >
+              <span>{t('page.swap.preferMEV')}</span>
+            </Tooltip>
+            <Tooltip
+              placement={'topRight'}
+              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              title={t('page.swap.preferMEVTip')}
+            >
+              <PreferMEVGuardSwitch
+                checked={originPreferMEVGuarded}
+                onChange={switchPreferMEV}
+              />
+            </Tooltip>
+          </div>
+        )}
+      </>
+    ),
+    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded]
+  );
 
   return (
     <div
@@ -397,10 +468,20 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 // loading={receiveSlippageLoading}
               />
+
               {isWrapToken ? (
-                <div className="mt-12 text-13 text-r-neutral-body">
-                  {t('page.swap.there-is-no-fee-and-slippage-for-this-trade')}
-                </div>
+                <>
+                  <div className="section text-13 leading-4 text-r-neutral-body mt-12">
+                    <div className="subText flex flex-col gap-12">
+                      {FeeAndMEVGuarded}
+                      <div className="text-13 text-r-neutral-body">
+                        {t(
+                          'page.swap.there-is-no-fee-and-slippage-for-this-trade'
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </>
               ) : (
                 <div className="section text-13 leading-4 text-r-neutral-body mt-12">
                   <div className="subText flex flex-col gap-12">
@@ -424,12 +505,7 @@ export const Main = () => {
                         {receiveToken ? getTokenSymbol(receiveToken) : ''}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>{t('page.swap.rabby-fee')}</span>
-                      <span className="font-medium text-r-neutral-title-1">
-                        0%
-                      </span>
-                    </div>
+                    {FeeAndMEVGuarded}
                   </div>
                 </div>
               )}
