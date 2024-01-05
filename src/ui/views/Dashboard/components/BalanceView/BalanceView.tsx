@@ -247,7 +247,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             src={ArrowNextSVG}
             className={clsx(
               'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
-              !currentHover && 'opacity-80'
+              startRefresh || balanceLoading || currentBalance === null
+                ? !currentHover && 'opacity-0'
+                : !currentHover && 'opacity-80'
             )}
           />
           <div
