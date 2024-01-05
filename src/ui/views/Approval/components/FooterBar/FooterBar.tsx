@@ -36,6 +36,11 @@ const Wrapper = styled.section`
   border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
   box-shadow: 0px -8px 24px 0px rgba(0, 0, 0, 0.1);
+
+  &.is-darkmode {
+    box-shadow: 0px -8px 12px 0px rgba(0, 0, 0, 0.2);
+  }
+
   position: relative;
 
   .request-origin {
@@ -240,7 +245,7 @@ export const FooterBar: React.FC<Props> = ({
       {!isDarkTheme && hasShadow && <Shadow />}
       <Wrapper
         className={clsx({
-          'has-shadow': !isDarkTheme && hasShadow,
+          'is-darkmode': hasShadow,
         })}
       >
         {origin && (
