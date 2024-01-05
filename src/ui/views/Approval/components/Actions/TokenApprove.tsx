@@ -348,6 +348,7 @@ const TokenApprove = ({
         title={t('page.signTx.tokenApprove.amountPopupTitle')}
         onCancel={() => setEditApproveModalVisible(false)}
         destroyOnClose
+        isSupportDarkMode
       >
         <ApproveAmountModal
           balance={tokenBalance}

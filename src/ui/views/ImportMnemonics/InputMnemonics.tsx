@@ -7,10 +7,11 @@ import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import { connectStore, useRabbyDispatch } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
-import IconMnemonicInk from '@/ui/assets/walletlogo/mnemonic-ink.svg';
+import { ReactComponent as RcIconMnemonicInkCC } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';
 import LogoSVG from '@/ui/assets/logo.svg';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -166,7 +167,10 @@ const ImportMnemonics = () => {
               'text-[20px] text-r-neutral-title-1'
             )}
           >
-            <img className="w-[24px]" src={IconMnemonicInk} />
+            <ThemeIcon
+              className="w-[24px] text-r-neutral-body"
+              src={RcIconMnemonicInkCC}
+            />
             <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>
           <div>
