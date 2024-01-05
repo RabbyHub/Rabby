@@ -2,6 +2,7 @@ import { INITIAL_OPENAPI_URL, INITIAL_TESTNET_OPENAPI_URL } from '@/constant';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { createPersistStore } from 'background/utils';
 export * from '@rabby-wallet/rabby-api/dist/types';
+import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign';
 
 const testnetStore = new (class TestnetStore {
   store!: { host: string; testnetHost: string };
@@ -26,6 +27,7 @@ const testnetStore = new (class TestnetStore {
 })();
 
 const service = new OpenApiService({
+  plugin: WebSignApiPlugin,
   store: !process.env.DEBUG
     ? {
         host: INITIAL_OPENAPI_URL,
@@ -41,6 +43,7 @@ const service = new OpenApiService({
 });
 
 export const testnetOpenapiService = new OpenApiService({
+  plugin: WebSignApiPlugin,
   store: !process.env.DEBUG
     ? {
         host: INITIAL_TESTNET_OPENAPI_URL,

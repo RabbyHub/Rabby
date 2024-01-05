@@ -242,7 +242,7 @@ export const RevokeApprovalDrawer = (props: {
             <div className="ml-auto flex justify-center items-center">
               <span
                 className={clsx(
-                  'mr-[14px] text-[13px] text-gray-subTitle',
+                  'mr-[14px] text-[13px] text-r-neutral-body',
                   item.type !== 'token' && 'hidden'
                 )}
               >
@@ -316,7 +316,7 @@ export const RevokeApprovalDrawer = (props: {
         </div>
 
         <section className="mb-[6px] flex justify-between items-center">
-          <span className="text-12 text-gray-title">{subTitle}</span>
+          <span className="text-12 text-r-neutral-title1">{subTitle}</span>
           <div
             className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light"
             onClick={handleSelectAll}
@@ -336,7 +336,7 @@ export const RevokeApprovalDrawer = (props: {
         )}
       >
         {selectedList.length > 1 && (
-          <div className="mb-[16px] text-13 leading-[15px] text-gray-subTitle">
+          <div className="mb-[16px] text-13 leading-[15px] text-r-neutral-body">
             {selectedList.length} transactions to be signed sequentially
           </div>
         )}

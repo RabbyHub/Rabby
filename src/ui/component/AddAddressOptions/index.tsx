@@ -110,7 +110,7 @@ const AddAddressOptions = () => {
         okText: t('global.ok'),
         centered: true,
         maskClosable: true,
-        className: 'text-center',
+        className: 'text-center modal-support-darkmode',
       });
       return false;
     }

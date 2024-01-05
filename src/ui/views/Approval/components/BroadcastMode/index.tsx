@@ -7,7 +7,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
 import { ReactComponent as SvgIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
@@ -250,6 +250,14 @@ export const BroadcastMode = ({
     }
     return result;
   }, [supportedPushType, account?.type]);
+
+  useEffect(() => {
+    if (value?.type && disabledMap[value.type]?.disabled) {
+      onChange?.({
+        type: 'default',
+      });
+    }
+  }, [disabledMap, value.type, onChange]);
 
   const options: {
     title: string;

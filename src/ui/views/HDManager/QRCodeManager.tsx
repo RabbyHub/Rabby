@@ -1,4 +1,4 @@
-import { Modal, message } from 'antd';
+import { Modal } from 'antd';
 import React from 'react';
 import {
   AdvancedSettings,
@@ -8,8 +8,8 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
 import { HDManagerStateContext } from './utils';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
-import { ReactComponent as HardwareSVG } from 'ui/assets/import/hardware.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
+import { ReactComponent as RcHardwareSVG } from 'ui/assets/import/hardware-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from '@/constant';
@@ -156,13 +156,17 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       okText: t('global.confirm'),
       onOk: async () => {
         await removeAddressAndForgetDevice(true);
-        history.push('/import/hardware/keystone');
+        if (brand === WALLET_BRAND_TYPES.KEYSTONE) {
+          history.push('/import/hardware/keystone');
+        } else {
+          history.push(`/import/hardware/qrcode?brand=${brand}`);
+        }
       },
       okCancel: false,
       centered: true,
       closable: true,
       maskClosable: true,
-      className: 'hd-manager-switch-modal',
+      className: 'hd-manager-switch-modal modal-support-darkmode',
     });
   }, []);
 
@@ -170,13 +174,13 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
     <>
       <div className="toolbar">
         <div className="toolbar-item" onClick={openSwitchHD}>
-          <HardwareSVG className="icon" />
+          <RcHardwareSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.qrCode.switchAnother', [brand])}
           </span>
         </div>
         <div className="toolbar-item" onClick={openAdvanced}>
-          <SettingSVG className="icon" />
+          <RcSettingSVG className="icon text-r-neutral-title1" />
           <span className="title">
             {t('page.newAddress.hd.advancedSettings')}
           </span>

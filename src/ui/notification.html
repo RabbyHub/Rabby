@@ -22,8 +22,11 @@
         background-color: #c1c1c1;
         border-radius: 4px;
       }
-      body {
-        transform: translate3d(0, 0, 0);
+      @media screen and (min-width: 401px) {
+        .ant-drawer-bottom {
+          max-width: 400px;
+          left: calc(50% - 200px) !important;
+        }
       }
     </style>
   </head>

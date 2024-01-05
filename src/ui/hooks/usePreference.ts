@@ -56,6 +56,10 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
         '#/import/select-address',
 
         '#/pending-detail',
+
+        '#/import/hardware/ledger-connect',
+        '#/import/hardware/keystone',
+        '#/import/hardware/qrcode',
       ].includes(hashValue)
     );
   }

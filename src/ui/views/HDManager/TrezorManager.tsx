@@ -8,7 +8,7 @@ import {
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
 import { HDManagerStateContext, sleep } from './utils';
-import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
 import * as Sentry from '@sentry/browser';
@@ -90,7 +90,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
   return (
     <>
       <div className="setting" onClick={openAdvanced}>
-        <SettingSVG className="icon" />
+        <RcSettingSVG className="icon text-r-neutral-title1" />
         <span className="title">
           {t('page.newAddress.hd.advancedSettings')}
         </span>

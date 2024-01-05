@@ -209,7 +209,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         {type === KEYRING_CLASS.WALLETCONNECT && (
           <div className="pb-[20px]">
             <SessionStatusBar
-              className="text-gray-subTitle bg-gray-bg connect-status"
+              className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
               address={address}
               brandName={brandName}
             />
@@ -217,17 +217,17 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         )}
         {type === KEYRING_CLASS.HARDWARE.LEDGER && (
           <div className="pb-[20px]">
-            <LedgerStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+            <LedgerStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
           </div>
         )}
         {brandName === 'Keystone' && (
           <div className="pb-[20px]">
-            <KeystoneStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+            <KeystoneStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
           </div>
         )}
         {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
           <div className="pb-[20px]">
-            <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+            <GridPlusStatusBar className="text-r-neutral-body bg-r-neutral-bg2 connect-status" />
           </div>
         )}
         {type === KEYRING_CLASS.MNEMONIC && (
@@ -238,7 +238,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         {type === KEYRING_CLASS.Coinbase && (
           <div className="pb-[20px]">
             <SessionStatusBar
-              className="text-gray-subTitle bg-gray-bg connect-status"
+              className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
               address={address}
               brandName={KEYRING_CLASS.Coinbase}
             />

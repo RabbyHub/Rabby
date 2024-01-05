@@ -163,6 +163,7 @@ const RequestPermission = () => {
       spinning={loading}
       headerClassName="mb-28"
       className="request-permission-wrapper"
+      backgroundClassName="bg-r-neutral-card-2"
     >
       {showSuccess ? (
         <div className="authorize-success">

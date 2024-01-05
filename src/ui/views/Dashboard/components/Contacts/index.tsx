@@ -67,7 +67,7 @@ const ContactItem = ({ item }: { item: ContactBookItem }) => {
   };
   return (
     <ContactItemWrapper>
-      <p className="name text-gray-title">{item.name}</p>
+      <p className="name text-r-neutral-title1">{item.name}</p>
       <p className="address" title={item.address}>
         {ellipsis(item.address)}
         <img
@@ -126,7 +126,7 @@ const Contacts = ({
           src="/images/nodata-tx.png"
           alt={t('page.dashboard.contacts.noDataLabel')}
         />
-        <p className="mt-[12px] text-14 text-gray-subTitle">
+        <p className="mt-[12px] text-14 text-r-neutral-body">
           {t('page.dashboard.contacts.noData')}
         </p>
       </div>
@@ -147,7 +147,7 @@ const Contacts = ({
       <PageHeader forceShowBack onBack={handleCancel}>
         {t('page.dashboard.contacts.oldContactList')}
       </PageHeader>
-      <div className="desc mb-20 text-gray-subTitle">
+      <div className="desc mb-20 text-r-neutral-body">
         {t('page.dashboard.contacts.oldContactListDescription')}
       </div>
       <ContractListElement>
