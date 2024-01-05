@@ -243,12 +243,13 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             'overflow-hidden'
           )}
         >
-          {currentHover ? (
-            <img
-              src={ArrowNextSVG}
-              className="absolute w-[20px] h-[20px] top-[8px] right-[10px]"
-            />
-          ) : null}
+          <img
+            src={ArrowNextSVG}
+            className={clsx(
+              'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
+              !currentHover && 'opacity-80'
+            )}
+          />
           <div
             className={clsx(
               'extra flex h-[28px]',
@@ -281,7 +282,6 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               </div>
             ) : null}
           </div>
-
           <div className={clsx('h-[80px] w-full relative')}>
             {(!success && !curveData) || hiddenBalance ? null : curveLoading ? (
               <div className="flex mt-[14px]">
