@@ -189,7 +189,9 @@ export const DappSearchPage = () => {
                 </div>
               }
               onSearch={(v) => {
-                reloadAsync();
+                if (v === debouncedSearchValue) {
+                  reloadAsync();
+                }
               }}
             />
           </SearchWrapper>
@@ -298,6 +300,7 @@ export const DappSearchPage = () => {
         visible={isShowChainSelector}
         title="Select chain"
         value={chain}
+        hideTestnetTab
         onChange={(v) => {
           setChain(v);
           setIsShowChainSelector(false);
