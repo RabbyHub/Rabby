@@ -116,23 +116,17 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     >
       {isPopup &&
         (!isWide ? (
-          <header className="create-new-header create-password-header h-[200px]">
+          <header className="create-new-header create-password-header h-[200px] dark:bg-r-blue-disable">
             <img
-              className="ml-[12px]"
-              src="/images/logo-rabby.svg"
-              alt="rabby logo"
-            />
-            <img
-              className="w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
+              className="w-[60px] h-[60px] mx-auto mb-[20px] mt-[-4px]"
               src={SuccessLogo}
             />
-            <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            <p className="text-20 mb-4 mt-0 text-white text-center font-bold">
               {title || t('page.importSuccess.title')}
             </p>
-            <img src="/images/success-mask.png" className="mask" />
           </header>
         ) : (
-          <div className="create-new-header create-password-header h-[200px]">
+          <div className="create-new-header create-password-header h-[200px] dark:bg-r-blue-disable">
             <div className="rabby-container">
               <img
                 className="w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
