@@ -32,6 +32,15 @@ const SearchWrapper = styled.div`
     border: 1px solid var(--r-neutral-line, #d3d8e0);
     padding: 13px;
     line-height: 18px !important;
+    background: var(--r-neutral-card1, #fff);
+
+    .ant-input {
+      background-color: transparent;
+      color: var(--r-neutral-title1, #192945);
+      &::placeholder {
+        color: var(--r-neutral-foot, #6a7587);
+      }
+    }
 
     &-focused {
       border: 1px solid var(--r-blue-default, #7084ff);
@@ -144,21 +153,10 @@ export const DappSearchPage = () => {
 
   useRequest(async () => {
     const list = await wallet.getSites();
-    const dict = keyBy(list, 'origin');
-    const favoriteSites = list.filter((item) => item.isFavorite);
-    const infoList = await wallet.openapi.getDappsInfo({
-      ids: favoriteSites.map((item) => item.origin.replace(/^https?:\/\//, '')),
-    });
-    infoList.forEach((info) => {
-      const origin = `https://${info.id}`;
-      const local = dict?.[origin];
-      if (local) {
-        wallet.setSite({
-          ...local,
-          info,
-        });
-      }
-    });
+    const favoriteSites = list
+      .filter((item) => item.isFavorite)
+      .map((item) => item.origin);
+    wallet.updateSiteBasicInfo(favoriteSites);
   });
 
   const { t } = useTranslation();

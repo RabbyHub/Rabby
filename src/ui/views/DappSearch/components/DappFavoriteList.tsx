@@ -33,10 +33,11 @@ export const DappFavoriteList = ({
         </div>
       </div>
       {data?.length ? (
-        <div className="flex flex-col gap-[16px]">
+        <div className="flex flex-col gap-[12px]">
           {data?.map((item) => {
             return (
               <DappCard
+                size="small"
                 key={item.id}
                 data={item}
                 isFavorite={true}

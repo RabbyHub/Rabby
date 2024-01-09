@@ -23,24 +23,30 @@ export const DappCard = ({
   data,
   isFavorite,
   onFavoriteChange,
+  className,
+  size = 'normal',
 }: {
   data: BasicDappInfo;
   isFavorite?: boolean;
   onFavoriteChange?: (v: boolean, info: BasicDappInfo) => void;
+  className?: string;
+  size?: 'small' | 'normal';
 }) => {
-  const [ellispsis, setEllipsis] = React.useState<boolean>(true);
   const { t } = useTranslation();
 
   return (
     <Wraper
       className={clsx(
-        'p-[16px] bg-r-neutral-card1 cursor-pointer rounded-[8px]'
+        'bg-r-neutral-card1 cursor-pointer rounded-[8px]',
+        size === 'normal' && 'p-[15px]',
+        size === 'small' && 'py-[13px] px-[16px]',
+        className
       )}
       onClick={() => {
         openInTab(`https://${data.id}`, false);
       }}
     >
-      <div className="flex items-center pb-[4px]">
+      <div className="flex items-center ">
         <div className="flex items-center gap-[12px]">
           <FallbackImage
             url={data.logo_url || ''}
@@ -54,7 +60,9 @@ export const DappCard = ({
             </div>
             <div className="text-r-neutral-foot text-[13px] leading-[16px]">
               {data.name}
-              <Divider type="vertical" />
+              {data.name && data.user_range ? (
+                <Divider type="vertical" />
+              ) : null}
               {data.user_range}
             </div>
           </div>
@@ -78,33 +86,18 @@ export const DappCard = ({
           )}
         </div>
       </div>
-      {data?.description ? (
-        <div className="relative p-[8px] bg-r-neutral-card3 mt-[10px] rounded-[4px]">
+      {size === 'normal' && data?.description ? (
+        <div className="relative p-[8px] bg-r-neutral-card3 mt-[10px] rounded-[4px] pt-[4px]">
           <div className="text-r-neutral-card3 absolute top-[-11px] left-[8px]">
             <RcIconArrow />
           </div>
           <Paragraph
             className="mb-0 text-r-neutral-body text-[14px] leading-[20px]"
-            ellipsis={
-              ellispsis
-                ? {
-                    rows: 1,
-                    expandable: true,
-                    symbol: (
-                      <span
-                        className="text-r-blue-default cursor-pointer underline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setEllipsis(false);
-                        }}
-                      >
-                        {t('page.dappSearch.expand')}
-                      </span>
-                    ),
-                  }
-                : false
-            }
+            ellipsis={{
+              rows: 2,
+              expandable: false,
+            }}
+            title={data.description}
           >
             {data.description}
           </Paragraph>

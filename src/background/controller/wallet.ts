@@ -1223,6 +1223,36 @@ export class WalletController extends BaseController {
       );
     }
   };
+
+  updateSiteBasicInfo = async (origin: string | string[]) => {
+    const origins = Array.isArray(origin) ? origin : [origin];
+    if (!origin?.length) {
+      return;
+    }
+    const infoList = await this.openapi.getDappsInfo({
+      ids: origins.map((item) => item.replace(/^https?:\/\//, '')),
+    });
+
+    origins.forEach((origin) => {
+      const local = permissionService.getSite(origin);
+      const id = origin.replace(/^https?:\/\//, '');
+      const info = infoList.find((item) => item.id === id) || {
+        id,
+        name: local?.name || '',
+        logo_url: local?.icon || '',
+        description: '',
+        user_range: '',
+        tags: [],
+        chain_ids: [],
+      };
+      if (local) {
+        wallet.setSite({
+          ...local,
+          info,
+        });
+      }
+    });
+  };
   removePreferMetamask = (origin: string) => {
     const site = permissionService.getSite(origin);
     if (!site?.preferMetamask) {

@@ -89,6 +89,19 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     }
   };
 
+  const handleFavoriteChnage = async (value: boolean) => {
+    const _site = {
+      ...site!,
+      isFavorite: value,
+    };
+    setSite(_site);
+    setVisible(false);
+    await wallet.setSite(_site);
+    if (value) {
+      await wallet.updateSiteBasicInfo(_site.origin);
+    }
+  };
+
   useEffect(() => {
     getCurrentSite();
   }, []);
@@ -159,12 +172,22 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       <div className="site-content">
         <div className="site-name" title={site?.origin}>
           <div className="site-name-inner">{site?.origin}</div>
-          {site?.isTop ? (
-            <div className="icon-star text-r-blue-default">
+          {site?.isFavorite ? (
+            <div
+              className="icon-star text-r-blue-default"
+              onClick={() => {
+                handleFavoriteChnage(false);
+              }}
+            >
               <RcIconStarFill />
             </div>
           ) : (
-            <div className="icon-star text-r-neutral-foot">
+            <div
+              className="icon-star text-r-neutral-foot"
+              onClick={() => {
+                handleFavoriteChnage(true);
+              }}
+            >
               <RcIconStar />
             </div>
           )}
