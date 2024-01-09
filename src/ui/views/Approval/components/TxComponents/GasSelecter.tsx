@@ -667,7 +667,7 @@ const GasSelector = ({
               ) : (
                 <div className="gas-selector-card-content-item">
                   <div className="gas-selector-card-amount translate-y-1 flex items-center">
-                    <span className="text-blue-light font-medium text-15">
+                    <span className="text-r-blue-default font-medium text-15">
                       {formatTokenAmount(
                         new BigNumber(gas.gasCostAmount).toString(10),
                         6

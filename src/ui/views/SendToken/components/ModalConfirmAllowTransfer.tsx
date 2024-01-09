@@ -10,7 +10,6 @@ import {
 } from '@/ui/component/Modal/WrapPromise';
 import { Field, Popup, Checkbox } from '@/ui/component';
 import clsx from 'clsx';
-import LessPalette from '@/ui/style/var-defs';
 
 import IconCheckboxChecked from 'ui/assets/send-token/modal/checkbox-checked.svg';
 import IconCheckboxUnchecked from 'ui/assets/send-token/modal/checkbox-unchecked.svg';
@@ -117,8 +116,7 @@ function ModalConfirmAllowTransfer({
         <p
           onClick={() => setConfirmToAddToWhitelist((prev) => !prev)}
           className={clsx(
-            'text-center text-[12px] cursor-pointer',
-            `text-[${LessPalette['@color-body']}]`,
+            'text-center text-[12px] cursor-pointer text-r-neutral-foot',
             !showAddToWhitelist && 'hidden'
           )}
         >
