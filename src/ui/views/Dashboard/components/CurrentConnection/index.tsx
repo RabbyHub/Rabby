@@ -174,7 +174,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           <div className="site-name-inner">{site?.origin}</div>
           {site?.isFavorite ? (
             <div
-              className="icon-star text-r-blue-default"
+              className="icon-star text-r-blue-default is-active"
               onClick={() => {
                 handleFavoriteChnage(false);
               }}
@@ -193,9 +193,20 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           )}
         </div>
         <div className={clsx('site-status', site?.isConnected && 'active')}>
-          {site?.isConnected
-            ? t('page.dashboard.recentConnection.connected')
-            : t('page.dashboard.recentConnection.notConnected')}
+          {site?.isConnected ? (
+            t('page.dashboard.recentConnection.connected')
+          ) : (
+            <Tooltip
+              placement="topLeft"
+              overlayClassName="rectangle current-connection-block-tooltip"
+              title={t('page.dashboard.recentConnection.connectedDapp')}
+              align={{
+                offset: [0, 4],
+              }}
+            >
+              <span>{t('page.dashboard.recentConnection.notConnected')}</span>
+            </Tooltip>
+          )}
           <Tooltip
             placement="top"
             overlayClassName="rectangle"
@@ -219,20 +230,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   return (
     <div className={clsx('current-connection-block h-[52px]')}>
       {site ? (
-        site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
-          Content
-        ) : (
-          <Tooltip
-            placement="topLeft"
-            overlayClassName="rectangle current-connection-block-tooltip"
-            align={{
-              offset: [-9, -4],
-            }}
-            title={t('page.dashboard.recentConnection.connectedDapp')}
-          >
-            {Content}
-          </Tooltip>
-        )
+        Content
       ) : (
         <div className="site is-empty">
           <img src={IconDapps} className="site-icon" alt="" />

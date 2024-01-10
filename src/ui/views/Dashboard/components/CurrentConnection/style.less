@@ -15,8 +15,9 @@
 
   &-tooltip {
     max-width: 360px !important;
+    left: 20px !important;
     .ant-tooltip-arrow {
-      left: 24px !important;
+      left: 90px !important;
     }
   }
 
@@ -53,8 +54,8 @@
       bottom: -2px;
       right: -2px;
       .chain-icon-inner {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         border: 1px solid var(--r-neutral-title2, #fff);
         border: 0.75px solid var(--r-neutral-title2, #fff);
       }
@@ -80,7 +81,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      border: 1px solid var(--r-neutral-title2, #fff);
+      // border: 1px solid var(--r-neutral-title2, #fff);
     }
     &-content {
       flex: 1;
@@ -93,8 +94,7 @@
       gap: 4px;
 
       &-inner {
-        flex: 1;
-
+        min-width: 0;
         color: var(--r-neutral-title1, #192945);
         font-size: 14px;
         line-height: 17px;
@@ -107,6 +107,10 @@
         flex-shrink: 0;
         cursor: pointer;
         display: none;
+
+        &.is-active {
+          display: block;
+        }
       }
 
       &:hover {
