@@ -1225,10 +1225,11 @@ export class WalletController extends BaseController {
   };
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
-    const origins = Array.isArray(origin) ? origin : [origin];
     if (!origin?.length) {
       return;
     }
+
+    const origins = Array.isArray(origin) ? origin : [origin];
     const infoList = await this.openapi.getDappsInfo({
       ids: origins.map((item) => item.replace(/^https?:\/\//, '')),
     });

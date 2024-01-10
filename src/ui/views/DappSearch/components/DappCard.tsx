@@ -32,6 +32,7 @@ export const DappCard = ({
   className?: string;
   size?: 'small' | 'normal';
 }) => {
+  const [ellispsis, setEllipsis] = React.useState<boolean>(true);
   const { t } = useTranslation();
 
   return (
@@ -93,10 +94,26 @@ export const DappCard = ({
           </div>
           <Paragraph
             className="mb-0 text-r-neutral-body text-[14px] leading-[20px]"
-            ellipsis={{
-              rows: 2,
-              expandable: false,
-            }}
+            ellipsis={
+              ellispsis
+                ? {
+                    rows: 2,
+                    expandable: true,
+                    symbol: (
+                      <span
+                        className="text-r-blue-default cursor-pointer underline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setEllipsis(false);
+                        }}
+                      >
+                        {t('page.dappSearch.expand')}
+                      </span>
+                    ),
+                  }
+                : false
+            }
             title={data.description}
           >
             {data.description}

@@ -562,7 +562,7 @@
       "sectionTo": {
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search",
+        "searchInputPlaceholder": "Search or enter address",
         "title": "To"
       },
       "sendButton": "Send",
@@ -613,7 +613,7 @@
         "title": "To",
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search"
+        "searchInputPlaceholder": "Search or enter address"
       },
       "nftInfoFieldLabel": {
         "Collection": "Collection",

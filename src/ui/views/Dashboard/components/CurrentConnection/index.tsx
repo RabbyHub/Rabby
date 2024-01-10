@@ -226,7 +226,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             placement="topLeft"
             overlayClassName="rectangle current-connection-block-tooltip"
             align={{
-              offset: [-9, -15],
+              offset: [-9, -4],
             }}
             title={t('page.dashboard.recentConnection.connectedDapp')}
           >
