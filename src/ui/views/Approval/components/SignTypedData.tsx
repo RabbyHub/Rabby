@@ -37,7 +37,7 @@ import {
   formatSecurityEngineCtx,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { isTestnetChainId } from '@/utils/chain';
+import { isTestnetChainId, findChainByID } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
@@ -194,7 +194,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.error(error);
       }
       if (chainId) {
-        return CHAINS_LIST.find((e) => e.id + '' === chainId + '');
+        return findChainByID(chainId);
       }
     }
 
