@@ -65,6 +65,7 @@ import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
+import RabbyPoints from './RabbyPoints';
 
 declare global {
   interface Window {
@@ -305,6 +306,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/request-debank-testnet-gas-token">
           <RequestDeBankTestnetGasToken />
+        </PrivateRoute>
+        <PrivateRoute exact path="/rabby-points">
+          <RabbyPoints />
         </PrivateRoute>
       </Switch>
 

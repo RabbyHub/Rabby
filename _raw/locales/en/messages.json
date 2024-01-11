@@ -852,6 +852,7 @@
           "transactions": "Transactions",
           "approvals": "Approvals",
           "feedback": "Feedback",
+          "rabbyPoints": "Rabby Points",
           "more": "More",
           "manageAddress": "Manage Address",
           "nft": "NFT"
@@ -1105,6 +1106,19 @@
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
+      },
+      "rabbyPoints": {
+        "claimModal": {
+          "title": "Claim your initial Points",
+          "snapshotTime": "Snapshot time: {{time}}",
+          "placeholder": "输入邀请码可再获得 500 积分（可选）",
+          "claim": "Claim",
+          "addressBalance": "Address Balance",
+          "MetaMaskSwap": "MetaMask Swap",
+          "rabbyUser": "Rabby Old User",
+          "rabbyValuedUserBadge": "Rabby Valued User Badge",
+          "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT"
+        }
       }
     },
     "nft": {
@@ -1740,6 +1754,11 @@
       "emptyFavorite": "No Favorite Dapp",
       "favorite": "Favorites",
       "emptySearch": "No Dapp Found"
+    },
+    "rabbyPoints": {
+      "title": "Rabby Points",
+      "out-of-x-current-total-points": "Out of {{total}} current total points",
+      "share-on": "Share on"
     }
   },
   "component": {

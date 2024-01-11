@@ -3572,6 +3572,19 @@ export class WalletController extends BaseController {
     await keyringService.addNewAccount(keyring);
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
+
+  rabbyPointVerifyAddress = async () => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const msg = `0x${Buffer.from(
+      'Verify Address for Rabby Points',
+      'utf-8'
+    ).toString('hex')}`;
+    return await this.sendRequest<string>({
+      method: 'personal_sign',
+      params: [msg, account.address],
+    });
+  };
 }
 
 const wallet = new WalletController();
