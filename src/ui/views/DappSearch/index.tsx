@@ -16,7 +16,7 @@ import {
 import { Input } from 'antd';
 import clsx from 'clsx';
 import { keyBy } from 'lodash';
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
@@ -113,6 +113,9 @@ export const DappSearchPage = () => {
 
   const { data, reloadAsync, loading, loadingMore } = useInfiniteScroll(
     async (d) => {
+      if (!d?.next) {
+        ref.current?.scrollTo(0, 0);
+      }
       const limit = d?.page?.limit || 30;
       const start = d?.next || 0;
       const res = await wallet.openapi.searchDapp({
@@ -183,7 +186,7 @@ export const DappSearchPage = () => {
     >
       <div
         className={clsx('sticky top-0 z-20 mt-[40px] bg-r-neutral-bg-2', {
-          'border-b-[1px] border-solid border-rabby-neutral-line':
+          'border-b-[0.5px] border-solid border-rabby-neutral-line':
             (scroll?.top || 0) > 30,
         })}
       >
