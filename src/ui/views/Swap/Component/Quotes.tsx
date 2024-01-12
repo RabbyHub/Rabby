@@ -291,6 +291,9 @@ export const QuoteList = (props: QuotesProps) => {
       closeIcon={
         <SvgIconCross className="w-14 fill-current text-r-neutral-foot pt-[2px]" />
       }
+      headerStyle={{
+        paddingTop: 16,
+      }}
       visible={visible}
       title={
         <div className="flex items-center justify-between mb-[-2px] pb-10">
