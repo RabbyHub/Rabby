@@ -1159,6 +1159,7 @@ export class WalletController extends BaseController {
   getConnectedSite = permissionService.getConnectedSite;
   getSite = permissionService.getSite;
   getConnectedSites = permissionService.getConnectedSites;
+  getSites = permissionService.getSites;
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
     permissionService.setRecentConnectedSites(sites);
   };
@@ -1222,6 +1223,37 @@ export class WalletController extends BaseController {
       );
     }
   };
+
+  updateSiteBasicInfo = async (origin: string | string[]) => {
+    if (!origin?.length) {
+      return;
+    }
+
+    const origins = Array.isArray(origin) ? origin : [origin];
+    const infoList = await this.openapi.getDappsInfo({
+      ids: origins.map((item) => item.replace(/^https?:\/\//, '')),
+    });
+
+    origins.forEach((origin) => {
+      const local = permissionService.getSite(origin);
+      const id = origin.replace(/^https?:\/\//, '');
+      const info = infoList.find((item) => item.id === id) || {
+        id,
+        name: local?.name || '',
+        logo_url: local?.icon || '',
+        description: '',
+        user_range: '',
+        tags: [],
+        chain_ids: [],
+      };
+      if (local) {
+        wallet.setSite({
+          ...local,
+          info,
+        });
+      }
+    });
+  };
   removePreferMetamask = (origin: string) => {
     const site = permissionService.getSite(origin);
     if (!site?.preferMetamask) {
@@ -1273,10 +1305,9 @@ export class WalletController extends BaseController {
       data.origin
     );
   };
+  addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {
-    const sites = permissionService
-      .getRecentConnectedSites()
-      .filter((item) => !item.isTop);
+    const sites = permissionService.getRecentConnectedSites();
     sites.forEach((item) => {
       this.removeConnectedSite(item.origin);
     });
@@ -1291,6 +1322,10 @@ export class WalletController extends BaseController {
     permissionService.topConnectedSite(origin);
   unpinConnectedSite = (origin: string) =>
     permissionService.unpinConnectedSite(origin);
+  favoriteWebsite = (origin: string) =>
+    permissionService.favoriteWebsite(origin);
+  unFavoriteWebsite = (origin: string) =>
+    permissionService.unFavoriteWebsite(origin);
   /* keyrings */
 
   clearKeyrings = () => keyringService.clearKeyrings();

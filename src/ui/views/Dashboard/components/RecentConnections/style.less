@@ -1,6 +1,9 @@
 .recent-connections-popup {
+  .page-header {
+    margin-bottom: 17px !important;
+  }
   .title {
-    color: var(--r-neutral-body, #D3D8E0);
+    color: var(--r-neutral-body, #d3d8e0);
     font-size: 12px;
     margin: 0;
   }
@@ -23,7 +26,7 @@
     &-title {
       font-size: 12px;
       line-height: 14px;
-      color: var(--r-neutral-body, #D3D8E0);
+      color: var(--r-neutral-body, #d3d8e0);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -33,7 +36,7 @@
       flex-shrink: 0;
       a {
         text-decoration-line: underline;
-        color: var(--r-neutral-body, #D3D8E0);
+        color: var(--r-neutral-body, #d3d8e0);
       }
     }
     &-empty {
@@ -41,39 +44,45 @@
       left: 0px;
       bottom: 0px;
       padding: 12px;
-      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-      border-radius: 6px;
+      // background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+      // border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
       line-height: 14px;
-      color: var(--r-neutral-body, #D3D8E0);
+      color: var(--r-neutral-body, #d3d8e0);
     }
   }
   .list-content {
     display: flex;
     flex-wrap: wrap;
-    background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+    // background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
     .item {
+      margin-bottom: 8px;
       position: relative;
       width: 100%;
       display: flex;
       align-items: center;
       column-gap: 12px;
-      padding: 12px;
+      padding: 13px 15px;
       border-radius: 6px;
       border: 1px solid transparent;
+      background: var(--r-neutral-card2, #f2f4f7);
       cursor: pointer;
       .icon-close {
-        position: absolute;
-        left: -19px;
-        top: 50%;
-        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
         opacity: 0;
+        path {
+          fill: var(--r-neutral-foot);
+        }
+
         &:hover {
-          opacity: 1;
+          path {
+            fill: var(--r-red-default, #e34935);
+          }
         }
       }
       &.is-dragging {
@@ -88,9 +97,9 @@
       }
       &-content {
         font-weight: 500;
-        font-size: 13px;
-        line-height: 15px;
-        color: var(--r-neutral-title-1, #F7FAFC);
+        color: var(--r-neutral-title1, #192945);
+        font-size: 15px;
+        line-height: 18px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -101,22 +110,12 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        padding: 6px;
         margin-left: auto;
-        margin-right: -2px;
-        &::after {
-          content: '';
-          position: absolute;
-          top: -12px;
-          right: -12px;
-          bottom: -12px;
-          left: -12px;
-        }
       }
       &:hover {
         // background: rgba(134, 151, 255, 0.2);
-        border: 1px solid var(--r-blue-default, #7084FF);
-        background: var(--r-blue-light-1, rgba(112, 132, 255, 0.10));
+        border: 1px solid var(--r-blue-default, #7084ff);
+        background: var(--r-blue-light-1, rgba(112, 132, 255, 0.1));
         .pin-website {
           opacity: 1;
         }
@@ -133,8 +132,8 @@
     }
     .connect-chain {
       position: absolute;
-      top: -7px;
-      right: -7px;
+      bottom: -2px;
+      right: -4px;
       width: 14px;
       height: 14px;
       z-index: 2;
@@ -173,6 +172,23 @@
     margin-left: 50%;
     transform: translateX(-70px);
   }
+  .btn-disconnect-all {
+    border-radius: 6px;
+    border: 1px solid var(--r-red-default, #e34935);
+
+    color: var(--r-red-default, #e34935);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 18px;
+    height: 48px;
+    &:hover::before {
+      display: none !important;
+    }
+    &:hover {
+      border: 1px solid var(--r-red-default, #e34935);
+      background: var(--r-red-light, #ffdfdb) !important;
+    }
+  }
   .current-connection {
     width: 344px;
     height: 56px;
@@ -203,13 +219,13 @@
           margin-bottom: 0;
         }
         .origin {
-          color: var(--r-neutral-title-1, #F7FAFC);
+          color: var(--r-neutral-title-1, #f7fafc);
           font-size: 13px;
           line-height: 15px;
           font-weight: 500;
         }
         .name {
-          color: var(--r-neutral-body, #D3D8E0);
+          color: var(--r-neutral-body, #d3d8e0);
           font-size: 10px;
           white-space: nowrap;
           overflow: hidden;
@@ -221,7 +237,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--r-neutral-body, #D3D8E0);
+      color: var(--r-neutral-body, #d3d8e0);
       font-size: 12px;
       margin-bottom: 0;
       .icon-no-connect {
@@ -250,7 +266,7 @@
     word-break: break-all;
   }
   .origin {
-    color: var(--r-neutral-title-1, #F7FAFC);
+    color: var(--r-neutral-title-1, #f7fafc);
     margin-bottom: 4px;
     font-weight: 500;
   }
@@ -261,33 +277,22 @@
     width: 46px;
     height: 46px;
   }
-  .ant-modal-close-x svg path {
-    fill: @color-comment-2;
-  }
   .ant-modal {
     &-content {
-      background-color: var(--r-neutral-bg-1,#fff);
+      background-color: var(--r-neutral-bg-1, #fff);
     }
   }
   .ant-modal-body {
-    padding: 44px 20px 24px;
+    padding: 32px 20px 36px;
     .title {
       font-weight: 500;
       font-size: 15px;
       line-height: 22px;
       text-align: center;
-      color: var(--r-neutral-title-1, #F7FAFC);
-      margin-bottom: 8px;
+      color: var(--r-neutral-title-1, #f7fafc);
       strong {
         color: var(--r-blue-default, #7084ff);
       }
-    }
-    .desc {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 14px;
-      text-align: center;
-      color: var(--r-neutral-body, #D3D8E0);
     }
   }
   .ant-modal-confirm-body .ant-modal-confirm-content {
@@ -295,14 +300,14 @@
     font-size: 14px;
     line-height: 22px;
     text-align: center;
-    color: var(--r-neutral-body, #D3D8E0);
+    color: var(--r-neutral-body, #d3d8e0);
     background-color: transparent !important;
     padding: 0;
     margin: 0;
     min-height: initial;
   }
   .ant-modal-confirm-btns {
-    margin-top: 36px;
+    margin-top: 34px;
     display: flex !important;
     justify-content: center;
 

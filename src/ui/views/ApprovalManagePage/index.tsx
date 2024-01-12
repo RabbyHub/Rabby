@@ -66,6 +66,7 @@ import NetSwitchTabs, {
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useTitle } from 'ahooks';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -1013,6 +1014,7 @@ function TableByAssetSpenders({
 }
 
 const ApprovalManagePage = () => {
+  useTitle('Approvals - Rabby Wallet');
   useCurrentAccount({
     onChanged: useCallback((ctx) => {
       if (ctx.reason === 'currentAccount') {

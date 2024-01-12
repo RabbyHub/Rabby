@@ -1,4 +1,4 @@
-import { Drawer, Input } from 'antd';
+import { Drawer, Input, Modal } from 'antd';
 import React, {
   ReactNode,
   useCallback,
@@ -12,6 +12,11 @@ import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
+import { SvgIconCross } from 'ui/assets';
+
+const closeIcon = (
+  <SvgIconCross className="w-14 fill-current text-gray-content" />
+);
 
 import Empty from '../Empty';
 import {
@@ -28,8 +33,8 @@ import { useTranslation } from 'react-i18next';
 interface ChainSelectorModalProps {
   visible: boolean;
   value?: CHAINS_ENUM;
-  onCancel(): void;
-  onChange(val: CHAINS_ENUM): void;
+  onCancel?(): void;
+  onChange?(val: CHAINS_ENUM): void;
   connection?: boolean;
   title?: ReactNode;
   className?: string;
@@ -38,7 +43,6 @@ interface ChainSelectorModalProps {
   hideTestnetTab?: boolean;
   showRPCStatus?: boolean;
   height?: number;
-  zIndex?: number;
 }
 
 const useChainSeletorList = ({
@@ -107,7 +111,7 @@ const useChainSeletorList = ({
   };
 };
 
-const ChainSelectorModal = ({
+export const ChainSelectorLargeModal = ({
   title,
   visible,
   onCancel,
@@ -120,14 +124,13 @@ const ChainSelectorModal = ({
   hideTestnetTab = false,
   showRPCStatus = false,
   height = 494,
-  zIndex,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
-    onCancel();
+    onCancel?.();
   };
 
   const handleChange = (val: CHAINS_ENUM) => {
-    onChange(val);
+    onChange?.(val);
   };
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab({
@@ -171,24 +174,22 @@ const ChainSelectorModal = ({
   }, [visible, rDispatch]);
 
   return (
-    <Drawer
-      title={title}
-      width="400px"
-      height={height}
-      closable={false}
-      placement={'bottom'}
+    <Modal
+      width={480}
+      footer={null}
       visible={visible}
-      onClose={handleCancel}
+      onCancel={handleCancel}
       className={clsx(
-        'custom-popup is-support-darkmode',
-        'chain-selector__modal',
+        'chain-selector-large-modal',
         connection && 'connection',
         className
       )}
-      zIndex={zIndex}
+      closeIcon={closeIcon}
+      centered
       destroyOnClose
     >
-      <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+      <header className={title ? 'pt-[0px]' : 'pt-[20px]'}>
+        <div className="modal-title">{title}</div>
         {isShowTestnet && (
           <NetSwitchTabs
             value={selectedTab}
@@ -205,7 +206,7 @@ const ChainSelectorModal = ({
           allowClear
         />
       </header>
-      <div className="chain-selector__modal-content">
+      <div className="chain-selector-large-modal-content">
         <SelectChainList
           supportChains={supportChains}
           data={matteredList}
@@ -237,8 +238,6 @@ const ChainSelectorModal = ({
           </div>
         ) : null}
       </div>
-    </Drawer>
+    </Modal>
   );
 };
-
-export default ChainSelectorModal;

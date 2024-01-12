@@ -1,10 +1,12 @@
-import { Tooltip } from 'antd';
+import { Tooltip, TooltipProps } from 'antd';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
 import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
+import { TooltipWithMagnetArrow } from './Tooltip/TooltipWithMagnetArrow';
+import { t } from 'i18next';
 
 const ChainIconWrapper = styled.div`
   position: relative;
@@ -89,6 +91,9 @@ interface Props {
   size?: 'normal' | 'small';
   showCustomRPCToolTip?: boolean;
   nonce?: number;
+  innerClassName?: string;
+  tooltipTriggerElement?: 'chain' | 'dot';
+  tooltipProps?: Omit<TooltipProps, 'title' | 'overlay'>;
 }
 
 const CustomRPCTooltipContent = ({
@@ -114,6 +119,9 @@ const ChainIcon = ({
   size = 'normal',
   showCustomRPCToolTip = false,
   nonce,
+  innerClassName,
+  tooltipTriggerElement = 'chain',
+  tooltipProps,
 }: Props) => {
   const wallet = useWallet();
   const [customRPCAvaliable, setCustomRPCAvaliable] = useState(true);
@@ -157,31 +165,67 @@ const ChainIcon = ({
     };
   }, [chain, _customRPC]);
 
-  return (
-    <Tooltip
-      placement="top"
-      overlayClassName={clsx('rectangle')}
-      title={
-        customRPC && showCustomRPCToolTip ? (
-          <CustomRPCTooltipContent
-            rpc={customRPC}
-            avaliable={customRPCAvaliable}
+  if (tooltipTriggerElement === 'chain') {
+    return (
+      <Tooltip
+        placement="top"
+        overlayClassName={clsx('rectangle')}
+        {...tooltipProps}
+        title={
+          customRPC && showCustomRPCToolTip ? (
+            <CustomRPCTooltipContent
+              rpc={customRPC}
+              avaliable={customRPCAvaliable}
+            />
+          ) : null
+        }
+      >
+        <ChainIconWrapper className="chain-icon-comp">
+          <ChainIconEle
+            className={clsx(size, innerClassName)}
+            src={chainItem?.logo || ''}
           />
-        ) : null
-      }
-    >
+          {customRPC &&
+            customRPCVlidated &&
+            (customRPCAvaliable ? (
+              <AvaliableIcon className={clsx(size)} />
+            ) : (
+              <UnavaliableIcon className={clsx(size)} />
+            ))}
+        </ChainIconWrapper>
+      </Tooltip>
+    );
+  } else {
+    return (
       <ChainIconWrapper className="chain-icon-comp">
-        <ChainIconEle className={clsx(size)} src={chainItem?.logo || ''} />
-        {customRPC &&
-          customRPCVlidated &&
-          (customRPCAvaliable ? (
-            <AvaliableIcon className={clsx(size)} />
-          ) : (
-            <UnavaliableIcon className={clsx(size)} />
-          ))}
+        <ChainIconEle
+          className={clsx(size, innerClassName)}
+          src={chainItem?.logo || ''}
+        />
+        <Tooltip
+          placement="top"
+          overlayClassName={clsx('rectangle')}
+          {...tooltipProps}
+          title={
+            customRPC && showCustomRPCToolTip ? (
+              <CustomRPCTooltipContent
+                rpc={customRPC}
+                avaliable={customRPCAvaliable}
+              />
+            ) : null
+          }
+        >
+          {customRPC &&
+            customRPCVlidated &&
+            (customRPCAvaliable ? (
+              <AvaliableIcon className={clsx(size)} />
+            ) : (
+              <UnavaliableIcon className={clsx(size)} />
+            ))}
+        </Tooltip>
       </ChainIconWrapper>
-    </Tooltip>
-  );
+    );
+  }
 };
 
 export default ChainIcon;

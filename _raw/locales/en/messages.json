@@ -562,7 +562,7 @@
       "sectionTo": {
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search",
+        "searchInputPlaceholder": "Search or enter address",
         "title": "To"
       },
       "sendButton": "Send",
@@ -613,7 +613,7 @@
         "title": "To",
         "addrValidator__empty": "Please input address",
         "addrValidator__invalid": "This address is invalid",
-        "searchInputPlaceholder": "Enter address or search"
+        "searchInputPlaceholder": "Search or enter address"
       },
       "nftInfoFieldLabel": {
         "Collection": "Collection",
@@ -889,7 +889,8 @@
         "noDappFound": "No Dapp found",
         "disconnectAll": "Disconnect All",
         "disconnectRecentlyUsed": {
-          "title": "Disconnect recently used <strong>{{count}}</strong> DApps",
+          "title_one": "Disconnect <strong>{{count}}</strong> connected Dapp",
+          "title_other": "Disconnect <strong>{{count}}</strong> connected Dapps",
           "description": "Pinned DApps will remain connected"
         },
         "title": "Connected Dapp",
@@ -897,7 +898,9 @@
         "noPinnedDapps": "No pinned dapps",
         "dragToSort": "Drag to sort",
         "recentlyConnected": "Recently connected",
-        "noRecentlyConnectedDapps": "No recently connected Dapps"
+        "noRecentlyConnectedDapps": "No recently connected Dapps",
+        "noConnectedDapps": "No connected Dapps",
+        "dapps": "Dapps"
       },
       "feedback": {
         "directMessage": {
@@ -1726,6 +1729,17 @@
         "predictFailed": "Packing time prediction failed",
         "skipNonce": "Your address has Nonce skipped on Ethereum chain causing current transaction can’t complete"
       }
+    },
+    "dappSearch": {
+      "selectChain": "Select Chain",
+      "searchResult": {
+        "foundDapps": "Found <2>{{count}}</2> Dapps",
+        "totalDapps": "Total <2>{{count}}</2> Dapps"
+      },
+      "expand": "Expand",
+      "emptyFavorite": "No Favorite Dapp",
+      "favorite": "Favorites",
+      "emptySearch": "No Dapp Found"
     }
   },
   "component": {
