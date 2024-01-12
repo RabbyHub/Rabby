@@ -141,13 +141,16 @@ class PermissionService {
   }) => {
     if (!this.lruCache) return;
 
+    const site = this._getSite(origin);
+
     this.lruCache.set(origin, {
+      ...site,
       origin,
       name,
       icon,
-      chain: defaultChain,
       isSigned,
       isTop: false,
+      chain: defaultChain,
       isConnected: true,
       signPermission,
     });
