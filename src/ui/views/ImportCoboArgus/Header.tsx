@@ -21,7 +21,7 @@ export const Header: React.FC<{
     }
   };
   return (
-    <div className="create-new-header create-password-header h-[180px] py-[20px]">
+    <div className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
       {hasBack ? (
         <img
           src={IconBack}

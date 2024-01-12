@@ -121,18 +121,12 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       {isPopup && (
         <header className="create-new-header create-password-header h-[234px]">
           <img
-            className="rabby-logo"
-            src="/images/logo-white.svg"
-            alt="rabby logo"
-          />
-          <img
             className="w-[100px] h-[100px] mx-auto"
             src={ConfirmMnemonicsLogo}
           />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold absolute left-0 w-[100%] mx-auto bottom-[24px]">
             {t('Import the following address')}
           </p>
-          <img src="/images/success-mask.png" className="mask" />
         </header>
       )}
       <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>
