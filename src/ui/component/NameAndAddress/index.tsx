@@ -16,6 +16,7 @@ import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconExternal from 'ui/assets/icon-share.svg';
 import './index.less';
 import { useTranslation } from 'react-i18next';
+import { getAddressScanLink } from '@/utils';
 
 interface NameAndAddressProps {
   className?: string;
@@ -82,10 +83,8 @@ const NameAndAddress = ({
   const handleClickContractId = () => {
     if (!chainEnum) return;
     const chainItem = findChainByEnum(chainEnum);
-    openInTab(
-      chainItem?.scanLink.replace(/tx\/_s_/, `address/${address}`),
-      false
-    );
+    if (!chainItem) return;
+    openInTab(getAddressScanLink(chainItem?.scanLink, address), false);
   };
 
   useEffect(() => {
