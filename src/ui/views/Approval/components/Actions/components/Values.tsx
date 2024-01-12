@@ -25,6 +25,7 @@ import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
 import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import AccountAlias from '../../AccountAlias';
+import { getAddressScanLink } from '@/utils';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -299,7 +300,7 @@ const Address = ({
   const { t } = useTranslation();
   const handleClickContractId = () => {
     if (!chain) return;
-    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${address}`), false);
+    openInTab(getAddressScanLink(chain.scanLink, address), false);
   };
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.value-address', {

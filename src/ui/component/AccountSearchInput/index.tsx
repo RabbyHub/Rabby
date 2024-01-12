@@ -8,6 +8,8 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { KEYRING_CLASS } from '@/constant';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import cx from 'clsx';
 
 import AddressItem from './AddressItem';
 
@@ -151,6 +153,7 @@ const AccountSearchInput = React.forwardRef<any, AccountSearchInputProps>(
     const { filteredAccounts, noAnySearchedAccount } = useSearchAccount(
       searchKeyword
     );
+    const { isDarkTheme } = useThemeMode();
 
     const [inputFocusing, setInputFocusing] = useState(false);
 
@@ -175,7 +178,9 @@ const AccountSearchInput = React.forwardRef<any, AccountSearchInputProps>(
           visible={!!searchKeyword && !isInputAddrLike && inputFocusing}
           placement="bottom"
           className="account-search-popover-input"
-          overlayClassName="account-search-input-overlay"
+          overlayClassName={cx('account-search-input-overlay', {
+            'dark-mode': isDarkTheme,
+          })}
           align={{
             targetOffset: [0, 10],
           }}

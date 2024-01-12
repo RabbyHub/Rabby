@@ -50,6 +50,7 @@ import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConf
 import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalConfirmAddToContacts';
 import { useContactAccounts } from '@/ui/hooks/useContact';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { getAddressScanLink } from '@/utils';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -158,7 +159,7 @@ const SendNFT = () => {
     if (!targetChain) return;
 
     openInTab(
-      targetChain.scanLink.replace(/tx\/_s_/, `address/${nftItem.contract_id}`),
+      getAddressScanLink(targetChain.scanLink, nftItem.contract_id),
       false
     );
   };

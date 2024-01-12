@@ -20,6 +20,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Chain } from '@debank/common';
 import { getUiType, openInTab } from '@/ui/utils';
+import { getAddressScanLink } from '@/utils';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
@@ -235,7 +236,7 @@ export function openScanLinkFromChainItem(
 ) {
   if (!scanLink) return;
 
-  openInTab(scanLink.replace(/tx\/_s_/, `address/${address}`), needClose);
+  openInTab(getAddressScanLink(scanLink, address), needClose);
 }
 
 const isTab = getUiType().isTab;

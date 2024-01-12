@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
-import { CHAINS_LIST } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { Skeleton, message } from 'antd';
@@ -37,7 +36,7 @@ import {
   formatSecurityEngineCtx,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { isTestnetChainId } from '@/utils/chain';
+import { isTestnetChainId, findChainByID } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
@@ -194,7 +193,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.error(error);
       }
       if (chainId) {
-        return CHAINS_LIST.find((e) => e.id + '' === chainId + '');
+        return findChainByID(chainId) || undefined;
       }
     }
 

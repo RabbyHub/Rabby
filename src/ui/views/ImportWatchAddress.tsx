@@ -210,7 +210,7 @@ const ImportWatchAddress = () => {
       NextButtonContent={t('global.confirm')}
       nextDisabled={!isValidAddr}
     >
-      <header className="create-new-header create-password-header h-[264px] res">
+      <header className="create-new-header create-password-header h-[264px] res dark:bg-r-blue-disable">
         <div className="rabby-container">
           <img
             className="icon-back z-10 relative"
@@ -225,7 +225,6 @@ const ImportWatchAddress = () => {
           <p className="text-14 mb-0 mt-4 text-white  text-center">
             {t('page.newAddress.addContacts.description')}
           </p>
-          <img src="/images/watch-mask.png" className="mask" />
         </div>
       </header>
       <div className="rabby-container widget-has-ant-input">
