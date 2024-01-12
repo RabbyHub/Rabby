@@ -22,18 +22,21 @@ const SearchWrapper = styled.div`
   }
 
   .ant-input {
-    height: 20px;
-    line-height: 20px !important;
-    font-size: 15px;
+    height: 24px;
+    line-height: 24px !important;
+    font-size: 18px;
   }
 
   .ant-input-affix-wrapper {
     border-radius: 8px 0 0 8px !important;
     border: 1px solid var(--r-neutral-line, #d3d8e0);
-    padding: 13px;
-    line-height: 18px !important;
+    padding: 14px 15px;
+    line-height: 24px !important;
     background: var(--r-neutral-card1, #fff);
 
+    .ant-input-prefix {
+      margin-right: 12px;
+    }
     .ant-input {
       background-color: transparent;
       color: var(--r-neutral-title1, #192945);
@@ -55,7 +58,7 @@ const SearchWrapper = styled.div`
   }
 
   .ant-btn-primary {
-    height: 48px;
+    height: 54px;
     min-width: 120px;
     border-radius: 0px 8px 8px 0px !important;
 
@@ -169,7 +172,7 @@ export const DappSearchPage = () => {
       }}
       ref={ref}
     >
-      <div className="w-[1240px] mx-auto">
+      <div className="w-[1152px] mx-auto">
         <header className="w-[720px] mb-[32px]">
           <SearchWrapper>
             <Search
@@ -194,7 +197,7 @@ export const DappSearchPage = () => {
             />
           </SearchWrapper>
         </header>
-        <div className="flex items-start gap-[52px]">
+        <div className="flex items-start gap-[32px]">
           <main className="w-[720px]">
             <DappSearchResult
               data={data?.list || []}
@@ -204,7 +207,7 @@ export const DappSearchPage = () => {
               onFavoriteChange={handleFavoriteChange}
               leftSlot={
                 debouncedSearchValue ? (
-                  <div className="text-[13px] leading-[16px] text-r-neutral-foot">
+                  <div className="text-[14px] leading-[16px] text-r-neutral-foot">
                     <Trans
                       i18nKey="page.dappSearch.searchResult.foundDapps"
                       values={{ count: data?.page?.total }}
@@ -217,7 +220,7 @@ export const DappSearchPage = () => {
                     </Trans>
                   </div>
                 ) : (
-                  <div className="text-[13px] leading-[16px] text-r-neutral-foot">
+                  <div className="text-[14px] leading-[16px] text-r-neutral-foot">
                     <Trans
                       i18nKey="page.dappSearch.searchResult.totalDapps"
                       values={{ count: data?.page?.total }}

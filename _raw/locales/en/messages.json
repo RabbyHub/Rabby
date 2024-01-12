@@ -889,7 +889,8 @@
         "noDappFound": "No Dapp found",
         "disconnectAll": "Disconnect All",
         "disconnectRecentlyUsed": {
-          "title": "Disconnect recently used <strong>{{count}}</strong> DApps",
+          "title_one": "Disconnect <strong>{{count}}</strong> connected Dapp",
+          "title_other": "Disconnect <strong>{{count}}</strong> connected Dapps",
           "description": "Pinned DApps will remain connected"
         },
         "title": "Connected Dapp",

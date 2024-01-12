@@ -97,7 +97,7 @@ const RecentConnections = ({
       className: 'recent-connections-confirm-modal',
       centered: true,
       closable: true,
-      okText: t('page.dashboard.recentConnection.disconnectAll'),
+      okText: t('global.Confirm'),
       width: 360,
       onOk: removeAll,
       autoFocusButton: null,

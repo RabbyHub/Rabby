@@ -72,12 +72,17 @@
       background: var(--r-neutral-card2, #f2f4f7);
       cursor: pointer;
       .icon-close {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         opacity: 0;
-
         path {
           fill: var(--r-neutral-foot);
+        }
+
+        &:hover {
+          path {
+            fill: var(--r-red-default, #e34935);
+          }
         }
       }
       &.is-dragging {
@@ -93,8 +98,8 @@
       &-content {
         font-weight: 500;
         color: var(--r-neutral-title1, #192945);
-        font-size: 13px;
-        line-height: 15px;
+        font-size: 15px;
+        line-height: 18px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -277,7 +282,7 @@
     }
   }
   .ant-modal-body {
-    padding: 44px 20px 24px;
+    padding: 32px 20px 36px;
     .title {
       font-weight: 500;
       font-size: 15px;
@@ -301,7 +306,7 @@
     min-height: initial;
   }
   .ant-modal-confirm-btns {
-    margin-top: 42px;
+    margin-top: 34px;
     display: flex !important;
     justify-content: center;
 
