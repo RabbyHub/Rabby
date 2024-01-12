@@ -56,3 +56,10 @@ export const getMainDomain = (url: string) => {
 export const resemblesETHAddress = (str: string): boolean => {
   return str.length === 42;
 };
+
+export const getAddressScanLink = (scanLink: string, address: string) => {
+  if (/transaction\/_s_/.test(scanLink)) {
+    return scanLink.replace(/transaction\/_s_/, `address/${address}`);
+  }
+  return scanLink.replace(/tx\/_s_/, `address/${address}`);
+};
