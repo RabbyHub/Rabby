@@ -6,7 +6,13 @@ import { useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
-import { useDebounce, useInfiniteScroll, useRequest } from 'ahooks';
+import {
+  useDebounce,
+  useInfiniteScroll,
+  useRequest,
+  useScroll,
+  useTitle,
+} from 'ahooks';
 import { Input } from 'antd';
 import clsx from 'clsx';
 import { keyBy } from 'lodash';
@@ -24,13 +30,13 @@ const SearchWrapper = styled.div`
   .ant-input {
     height: 24px;
     line-height: 24px !important;
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .ant-input-affix-wrapper {
     border-radius: 8px 0 0 8px !important;
     border: 1px solid var(--r-neutral-line, #d3d8e0);
-    padding: 14px 15px;
+    padding: 13px 15px;
     line-height: 24px !important;
     background: var(--r-neutral-card1, #fff);
 
@@ -58,7 +64,7 @@ const SearchWrapper = styled.div`
   }
 
   .ant-btn-primary {
-    height: 54px;
+    height: 52px;
     min-width: 120px;
     border-radius: 0px 8px 8px 0px !important;
 
@@ -70,6 +76,7 @@ const SearchWrapper = styled.div`
 `;
 
 export const DappSearchPage = () => {
+  useTitle('Dapp Search - Rabby Wallet');
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [chain, setChain] = React.useState<CHAINS_ENUM>();
   const chainInfo = useMemo(() => {
@@ -164,39 +171,50 @@ export const DappSearchPage = () => {
 
   const { t } = useTranslation();
 
+  const scroll = useScroll(ref);
+
   return (
     <div
-      className="pt-[60px] pb-[48px] w-full h-full bg-r-neutral-bg2"
+      className="pb-[48px] w-full h-full bg-r-neutral-bg2"
       style={{
         overflow: 'overlay',
       }}
       ref={ref}
     >
-      <div className="w-[1152px] mx-auto">
-        <header className="w-[720px] mb-[32px]">
-          <SearchWrapper>
-            <Search
-              placeholder="Search Dapp name"
-              allowClear
-              enterButton="Search"
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-              }}
-              autoFocus
-              prefix={
-                <div className="text-r-neutral-foot">
-                  <RcIconSearch />
-                </div>
-              }
-              onSearch={(v) => {
-                if (v === debouncedSearchValue) {
-                  reloadAsync();
+      <div
+        className={clsx('sticky top-0 z-20 mt-[40px] bg-r-neutral-bg-2', {
+          'border-b-[1px] border-solid border-rabby-neutral-line':
+            (scroll?.top || 0) > 30,
+        })}
+      >
+        <div className="w-[1152px] mx-auto">
+          <header className="w-[720px] py-[23px]">
+            <SearchWrapper>
+              <Search
+                placeholder="Search Dapp name"
+                allowClear
+                enterButton="Search"
+                value={searchValue}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                }}
+                autoFocus
+                prefix={
+                  <div className="text-r-neutral-body">
+                    <RcIconSearch />
+                  </div>
                 }
-              }}
-            />
-          </SearchWrapper>
-        </header>
+                onSearch={(v) => {
+                  if (v === debouncedSearchValue) {
+                    reloadAsync();
+                  }
+                }}
+              />
+            </SearchWrapper>
+          </header>
+        </div>
+      </div>
+      <div className="w-[1152px] mx-auto">
         <div className="flex items-start gap-[32px]">
           <main className="w-[720px]">
             <DappSearchResult

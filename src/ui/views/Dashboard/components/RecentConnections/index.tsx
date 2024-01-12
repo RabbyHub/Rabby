@@ -9,6 +9,7 @@ import ConnectionList from './ConnectionList';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import clsx from 'clsx';
+import { SvgIconCross } from '@/ui/assets';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -101,6 +102,9 @@ const RecentConnections = ({
       width: 360,
       onOk: removeAll,
       autoFocusButton: null,
+      closeIcon: (
+        <SvgIconCross className="w-14 fill-current text-r-neutral-body" />
+      ),
       content: (
         <div>
           <div className="title">

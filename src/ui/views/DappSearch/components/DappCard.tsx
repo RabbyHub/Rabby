@@ -88,7 +88,7 @@ export const DappCard = ({
         </div>
       </div>
       {size === 'normal' && data?.description ? (
-        <div className="relative p-[8px] bg-r-neutral-card3 mt-[10px] rounded-[4px] pt-[4px]">
+        <div className="relative p-[8px] bg-r-neutral-card3 mt-[10px] rounded-[4px]">
           <div className="text-r-neutral-card3 absolute top-[-11px] left-[8px]">
             <RcIconArrow />
           </div>

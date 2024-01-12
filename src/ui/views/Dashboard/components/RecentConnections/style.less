@@ -182,7 +182,11 @@
     line-height: 18px;
     height: 48px;
     &:hover::before {
-      opacity: 0.1 !important;
+      display: none !important;
+    }
+    &:hover {
+      border: 1px solid var(--r-red-default, #e34935);
+      background: var(--r-red-light, #ffdfdb) !important;
     }
   }
   .current-connection {
@@ -272,9 +276,6 @@
   .ant-modal-close-x {
     width: 46px;
     height: 46px;
-  }
-  .ant-modal-close-x svg path {
-    fill: @color-comment-2;
   }
   .ant-modal {
     &-content {
