@@ -72,7 +72,7 @@ const ImportGnosisAddress = () => {
 
   return (
     <div className="import-gnosis h-full relative">
-      <header className="header h-[180px] relative">
+      <header className="header h-[180px] relative dark:bg-r-blue-disable">
         <div className="rabby-container pt-[40px]">
           <img
             src={IconBack}
