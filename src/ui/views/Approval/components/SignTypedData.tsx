@@ -193,7 +193,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.error(error);
       }
       if (chainId) {
-        return findChainByID(chainId) || undefined;
+        return findChainByID(Number(chainId)) || undefined;
       }
     }
 
