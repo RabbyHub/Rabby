@@ -174,6 +174,9 @@ import LogoCoboArgus, {
 import IconCoinbase, {
   ReactComponent as RCIconCoinbase,
 } from 'ui/assets/walletlogo/coinbase.svg';
+import IconImKey, {
+  ReactComponent as RCIconImKey,
+} from 'ui/assets/walletlogo/imkey.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import browser from 'webextension-polyfill';
@@ -224,6 +227,7 @@ export const KEYRING_CLASS = {
     ONEKEY: 'Onekey Hardware',
     GRIDPLUS: 'GridPlus Hardware',
     KEYSTONE: 'QR Hardware Wallet Device',
+    IMKEY: 'imKey Hardware',
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
@@ -245,6 +249,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.HARDWARE.KEYSTONE,
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
+  KEYRING_CLASS.HARDWARE.IMKEY,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -258,6 +263,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Safe',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
+  [KEYRING_CLASS.HARDWARE.IMKEY]: 'Imported by imKey',
 };
 
 export const HARDWARE_KEYRING_TYPES = {
@@ -284,6 +290,10 @@ export const HARDWARE_KEYRING_TYPES = {
   Keystone: {
     type: 'QR Hardware Wallet Device',
     brandName: 'Keystone',
+  },
+  ImKey: {
+    type: 'imKey Hardware',
+    brandName: 'imKey',
   },
 } as const;
 
@@ -402,6 +412,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   QRCodeBase = 'QR Hardware Wallet Device',
   CoboArgusConnect = 'CoboArgusConnect',
   CoinbaseConnect = 'CoinbaseConnect',
+  ImKeyConnect = 'ImKeyConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -489,6 +500,7 @@ export enum WALLET_BRAND_TYPES {
   CoboArgus = 'CoboArgus',
   MPCVault = 'MPCVault',
   Coinbase = 'Coinbase',
+  IMKEY = 'IMKEY',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -856,6 +868,18 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
+  [WALLET_BRAND_TYPES.IMKEY]: {
+    id: 29,
+    name: 'imKey',
+    brand: WALLET_BRAND_TYPES.IMKEY,
+    icon: IconImKey,
+    lightIcon: IconImKey,
+    image: IconImKey,
+    rcSvg: RCIconImKey,
+    maybeSvg: IconImKey,
+    connectType: BRAND_WALLET_CONNECT_TYPE.ImKeyConnect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
 };
 
 export const KEYRING_ICONS = {
@@ -867,6 +891,7 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 } as const;
 
@@ -891,6 +916,7 @@ export const KEYRING_ICONS_WHITE: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
@@ -909,6 +935,7 @@ export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
@@ -967,6 +994,12 @@ export const NEXT_KEYRING_ICONS = {
     dataDark: KEYRING_ICONS[HARDWARE_KEYRING_TYPES.GridPlus.type],
     rcLight: RcIconGridPlus,
     rcDark: RcIconGridPlus,
+  } as NextKeyringIconType,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: {
+    dataLight: KEYRING_ICONS_WHITE[HARDWARE_KEYRING_TYPES.ImKey.type],
+    dataDark: KEYRING_ICONS[HARDWARE_KEYRING_TYPES.ImKey.type],
+    rcLight: RCIconImKey,
+    rcDark: RCIconImKey,
   } as NextKeyringIconType,
 };
 
@@ -1056,6 +1089,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
   [KEYRING_CLASS.Coinbase]: KEYRING_CATEGORY.WalletConnect,
   [KEYRING_CLASS.GNOSIS]: KEYRING_CATEGORY.Contract,
+  [KEYRING_CLASS.HARDWARE.IMKEY]: KEYRING_CATEGORY.Hardware,
 };
 
 export const SWAP_FEE_PRECISION = 1e5;
@@ -1275,6 +1309,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [WALLET_BRAND_TYPES.MATHWALLET]: WALLET_BRAND_CONTENT.MATHWALLET.name,
   [WALLET_BRAND_TYPES.TRUSTWALLET]: WALLET_BRAND_CONTENT.TRUSTWALLET.name,
   [KEYRING_CLASS.Coinbase]: WALLET_BRAND_CONTENT.Coinbase.name,
+  [KEYRING_CLASS.HARDWARE.IMKEY]: 'imKey',
 };
 
 export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
@@ -1451,3 +1486,5 @@ export const ThemeModes = [
     name: 'Dark',
   },
 ];
+
+export const imKeyUSBVendorId = 0x096e;

@@ -8,12 +8,120 @@ import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useIsKeystoneUsbAvailable } from '@/utils/keystone';
+import { t } from 'i18next';
 
 const MIN_START_NO = 1;
 const MAX_START_NO = 950 + MIN_START_NO;
 
 export const MAX_ACCOUNT_COUNT = 50;
 
+const HDPathTypeTips = {
+  [KEYRING_CLASS.HARDWARE.LEDGER]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.ledger.hdPathType.ledgerLive'
+    ),
+    [HDPathType.BIP44]: t('page.newAddress.hd.ledger.hdPathType.bip44'),
+    [HDPathType.Legacy]: t('page.newAddress.hd.ledger.hdPathType.legacy'),
+  },
+  [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.trezor.hdPathType.bip44'),
+  },
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathType.bip44'),
+  },
+  [KEYRING_CLASS.MNEMONIC]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+    ),
+    [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
+  },
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.gridplus.hdPathType.ledgerLive'
+    ),
+    [HDPathType.BIP44]: t('page.newAddress.hd.gridplus.hdPathType.bip44'),
+    [HDPathType.Legacy]: t('page.newAddress.hd.gridplus.hdPathType.legacy'),
+  },
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.keystone.hdPathType.bip44'),
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.keystone.hdPathType.ledgerLive'
+    ),
+    [HDPathType.Legacy]: t('page.newAddress.hd.keystone.hdPathType.legacy'),
+  },
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.bitbox02.hdPathType.bip44'),
+  },
+  [KEYRING_CLASS.HARDWARE.IMKEY]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.bitbox02.hdPathType.bip44'),
+  },
+};
+
+const HDPathTypeTipsNoChain = {
+  [KEYRING_CLASS.HARDWARE.LEDGER]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.ledger.hdPathTypeNoChain.ledgerLive'
+    ),
+    [HDPathType.BIP44]: t('page.newAddress.hd.ledger.hdPathTypeNoChain.bip44'),
+    [HDPathType.Legacy]: t(
+      'page.newAddress.hd.ledger.hdPathTypeNoChain.legacy'
+    ),
+  },
+  [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.trezor.hdPathTypeNoChain.bip44'),
+  },
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: {
+    [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathTypeNoChain.bip44'),
+  },
+  [KEYRING_CLASS.MNEMONIC]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
+    ),
+    [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
+    [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
+  },
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.gridplus.hdPathTypeNochain.ledgerLive'
+    ),
+    [HDPathType.BIP44]: t(
+      'page.newAddress.hd.gridplus.hdPathTypeNochain.bip44'
+    ),
+    [HDPathType.Legacy]: t(
+      'page.newAddress.hd.gridplus.hdPathTypeNochain.legacy'
+    ),
+  },
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
+    [HDPathType.BIP44]: t(
+      'page.newAddress.hd.keystone.hdPathTypeNochain.bip44'
+    ),
+    [HDPathType.LedgerLive]: t(
+      'page.newAddress.hd.keystone.hdPathTypeNochain.ledgerLive'
+    ),
+    [HDPathType.Legacy]: t(
+      'page.newAddress.hd.keystone.hdPathTypeNochain.legacy'
+    ),
+  },
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: {
+    [HDPathType.BIP44]: t(
+      'page.newAddress.hd.bitbox02.hdPathTypeNoChain.bip44'
+    ),
+  },
+  [KEYRING_CLASS.HARDWARE.IMKEY]: {
+    [HDPathType.BIP44]: t(
+      'page.newAddress.hd.bitbox02.hdPathTypeNoChain.bip44'
+    ),
+  },
+};
+
+const hardwareKeyringTypes = [
+  KEYRING_CLASS.HARDWARE.TREZOR,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
+  KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.HARDWARE.BITBOX02,
+  KEYRING_CLASS.HARDWARE.IMKEY,
+];
 export interface SettingData {
   type?: HDPathType;
   startNo: number;
@@ -44,6 +152,7 @@ const useHDPathTypeGroup = (brand?: string) => {
     ],
     [KEYRING_CLASS.HARDWARE.KEYSTONE]: [HDPathType.BIP44],
     [KEYRING_CLASS.HARDWARE.BITBOX02]: [HDPathType.BIP44],
+    [KEYRING_CLASS.HARDWARE.IMKEY]: [HDPathType.BIP44],
   });
   const isAvaliable = useIsKeystoneUsbAvailable(brand);
 
@@ -87,103 +196,6 @@ export const AdvancedSettings: React.FC<Props> = ({
   initSettingData,
 }) => {
   const { t } = useTranslation();
-  const HDPathTypeTips = {
-    [KEYRING_CLASS.HARDWARE.LEDGER]: {
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.ledger.hdPathType.ledgerLive'
-      ),
-      [HDPathType.BIP44]: t('page.newAddress.hd.ledger.hdPathType.bip44'),
-      [HDPathType.Legacy]: t('page.newAddress.hd.ledger.hdPathType.legacy'),
-    },
-    [KEYRING_CLASS.HARDWARE.TREZOR]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.trezor.hdPathType.bip44'),
-    },
-    [KEYRING_CLASS.HARDWARE.ONEKEY]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.onekey.hdPathType.bip44'),
-    },
-    [KEYRING_CLASS.MNEMONIC]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
-      ),
-      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
-    },
-    [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.gridplus.hdPathType.ledgerLive'
-      ),
-      [HDPathType.BIP44]: t('page.newAddress.hd.gridplus.hdPathType.bip44'),
-      [HDPathType.Legacy]: t('page.newAddress.hd.gridplus.hdPathType.legacy'),
-    },
-    [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.keystone.hdPathType.bip44'),
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.keystone.hdPathType.ledgerLive'
-      ),
-      [HDPathType.Legacy]: t('page.newAddress.hd.keystone.hdPathType.legacy'),
-    },
-    [KEYRING_CLASS.HARDWARE.BITBOX02]: {
-      [HDPathType.BIP44]: t('page.newAddress.hd.bitbox02.hdPathType.bip44'),
-    },
-  };
-
-  const HDPathTypeTipsNoChain = {
-    [KEYRING_CLASS.HARDWARE.LEDGER]: {
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.ledgerLive'
-      ),
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.bip44'
-      ),
-      [HDPathType.Legacy]: t(
-        'page.newAddress.hd.ledger.hdPathTypeNoChain.legacy'
-      ),
-    },
-    [KEYRING_CLASS.HARDWARE.TREZOR]: {
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.trezor.hdPathTypeNoChain.bip44'
-      ),
-    },
-    [KEYRING_CLASS.HARDWARE.ONEKEY]: {
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.onekey.hdPathTypeNoChain.bip44'
-      ),
-    },
-    [KEYRING_CLASS.MNEMONIC]: {
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.mnemonic.hdPathType.ledgerLive'
-      ),
-      [HDPathType.BIP44]: t('page.newAddress.hd.mnemonic.hdPathType.bip44'),
-      [HDPathType.Legacy]: t('page.newAddress.hd.mnemonic.hdPathType.legacy'),
-    },
-    [KEYRING_CLASS.HARDWARE.GRIDPLUS]: {
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.gridplus.hdPathTypeNochain.ledgerLive'
-      ),
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.gridplus.hdPathTypeNochain.bip44'
-      ),
-      [HDPathType.Legacy]: t(
-        'page.newAddress.hd.gridplus.hdPathTypeNochain.legacy'
-      ),
-    },
-    [KEYRING_CLASS.HARDWARE.KEYSTONE]: {
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.keystone.hdPathTypeNochain.bip44'
-      ),
-      [HDPathType.LedgerLive]: t(
-        'page.newAddress.hd.keystone.hdPathTypeNochain.ledgerLive'
-      ),
-      [HDPathType.Legacy]: t(
-        'page.newAddress.hd.keystone.hdPathTypeNochain.legacy'
-      ),
-    },
-    [KEYRING_CLASS.HARDWARE.BITBOX02]: {
-      [HDPathType.BIP44]: t(
-        'page.newAddress.hd.bitbox02.hdPathTypeNoChain.bip44'
-      ),
-    },
-  };
 
   const [hdPathType, setHDPathType] = React.useState<HDPathType>();
   const [startNo, setStartNo] = React.useState(DEFAULT_SETTING_DATA.startNo);
@@ -221,13 +233,6 @@ export const AdvancedSettings: React.FC<Props> = ({
   const isAvailable = useIsKeystoneUsbAvailable(brand);
 
   const disabledSelectHDPath = React.useMemo(() => {
-    const hardwareKeyringTypes = [
-      KEYRING_CLASS.HARDWARE.TREZOR,
-      KEYRING_CLASS.HARDWARE.ONEKEY,
-      KEYRING_CLASS.HARDWARE.KEYSTONE,
-      KEYRING_CLASS.HARDWARE.BITBOX02,
-    ];
-
     return !isAvailable && hardwareKeyringTypes.includes(keyring as any);
   }, [keyring, isAvailable]);
 

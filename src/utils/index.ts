@@ -2,6 +2,7 @@ import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import browser from 'webextension-polyfill';
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
+import { getImKeyDevices } from '@imkey/web3-provider/dist/hw-transport-webusb/imKeyDevice';
 
 declare global {
   const langLocales: Record<string, Record<'message', string>>;
@@ -28,6 +29,10 @@ export const hasConnectedLedgerDevice = async () => {
   return (
     devices.filter((device) => device.vendorId === ledgerUSBVendorId).length > 0
   );
+};
+
+export const hasConnectedImKeyDevice = async () => {
+  return !!(await getImKeyDevices()).length;
 };
 
 export const getOriginFromUrl = (url: string) => {

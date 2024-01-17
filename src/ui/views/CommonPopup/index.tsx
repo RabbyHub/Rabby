@@ -10,6 +10,7 @@ import { Keystone } from './Keystone';
 import { AssetList } from './AssetList/AssetList';
 import { CancelApproval } from './CancelApproval/CancelApproval';
 import { CancelConnect } from './CancelConnect/CancelConnect';
+import { ImKeyPermission } from './ImKeyPermission';
 
 export type CommonPopupComponentName =
   | 'Approval'
@@ -18,6 +19,7 @@ export type CommonPopupComponentName =
   | 'SwitchChain'
   | 'AssetList'
   | 'Ledger'
+  | 'ImKeyPermission'
   | 'Keystone'
   | 'CancelConnect'
   | 'CancelApproval';
@@ -102,6 +104,7 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'SwitchAddress' && <SwitchAddress />}
       {componentName === 'SwitchChain' && <SwitchChain />}
       {componentName === 'Ledger' && <Ledger />}
+      {componentName === 'ImKeyPermission' && <ImKeyPermission />}
       {componentName === 'Keystone' && <Keystone />}
       {componentName === 'AssetList' && <AssetList visible={visible} />}
       {componentName === 'CancelApproval' && <CancelApproval />}

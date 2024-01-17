@@ -111,6 +111,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
   const isKeystoneLike = keyring === HARDWARE_KEYRING_TYPES.Keystone.type;
   const isBitBox02 = keyring === HARDWARE_KEYRING_TYPES.BitBox02.type;
+  const isImKey = keyring === HARDWARE_KEYRING_TYPES.ImKey.type;
   const [hasError, setHasError] = useState(false);
 
   if (isMnemonic) {
@@ -124,7 +125,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonic ||
     isGrid ||
     isKeystoneLike ||
-    isBitBox02
+    isBitBox02 ||
+    isImKey
   ) {
     return (
       <HDManager

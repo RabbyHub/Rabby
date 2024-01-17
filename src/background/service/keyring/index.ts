@@ -38,6 +38,7 @@ import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { EthImKeyKeyring } from './eth-imkey-keyring';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -53,6 +54,7 @@ export const KEYRING_SDK_TYPES = {
   KeystoneKeyring,
   CoboArgusKeyring,
   CoinbaseKeyring,
+  EthImKeyKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -64,6 +66,7 @@ export const KEYRING_CLASS = {
     LEDGER: LedgerBridgeKeyring.type,
     ONEKEY: OnekeyKeyring.type,
     GRIDPLUS: LatticeKeyring.type,
+    IMKEY: EthImKeyKeyring.type,
   },
   WATCH: WatchKeyring.type,
   WALLETCONNECT: WalletConnectKeyring.type,

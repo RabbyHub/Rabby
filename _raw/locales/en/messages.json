@@ -369,7 +369,9 @@
       "cancelAll": "Cancel all {{count}} requests from Dapp",
       "blockDappFromSendingRequests": "Block Dapp from sending requests for 1 min",
       "cancelConnection": "Cancel connection",
-      "cancelCurrentConnection": "Cancel current connection"
+      "cancelCurrentConnection": "Cancel current connection",
+      "imKeyNotConnected": "imKey is not connected",
+      "imKeyConnected": "imKey is connected"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -1101,7 +1103,12 @@
           "doc3": "Approve connection to computer",
           "reconnect": "If it doesn't work, please try <1>reconnecting from the beginning.</1>"
         },
-        "howToSwitch": "How to switch"
+        "howToSwitch": "How to switch",
+        "imkey": {
+          "doc1": "Plug in a single imKey",
+          "doc2": "Enter pin to unlock"
+        },
+        "howToConnectImKey": "How to Connect imKey"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
@@ -1397,7 +1404,8 @@
             "content": "It's not supported to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
           },
           "switchAnother": "Switch to another {{0}}"
-        }
+        },
+        "manageImKey": "Manage imKey"
       },
       "importYourKeystore": "Import Your KeyStore",
       "incorrectPassword": "incorrect password",
@@ -1415,6 +1423,9 @@
         "addCoboArgusAddress": "Add Cobo Argus address",
         "findTheAssociatedSafeAddress": "Find the associated safe address",
         "import": "Import"
+      },
+      "imkey": {
+        "title": "Connect imKey"
       }
     },
     "unlock": {
@@ -1773,7 +1784,9 @@
       "ledgerNotConnected": "Ledger is not connected",
       "ledgerConnected": "Ledger is connected",
       "keystoneConnected": "Keystone is connected",
-      "keystoneNotConnected": "Keystone is not connected"
+      "keystoneNotConnected": "Keystone is not connected",
+      "imKeyrNotConnected": "imKey is not connected",
+      "imKeyConnected": "imKey is connected"
     },
     "Contact": {
       "AddressItem": {

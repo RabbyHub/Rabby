@@ -14,7 +14,6 @@ import EntryImportAddress from './ImportMnemonics/EntryImportAddress';
 import ConfirmMnemonics from './ImportMnemonics/ConfirmMnemonics';
 
 import ImportWatchAddress from './ImportWatchAddress';
-import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
 import ImportMoreAddress from './ImportMoreAddress';
 import ImportSuccess from './ImportSuccess';
@@ -65,6 +64,7 @@ import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { PendingDetail } from './PendingDetail';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
+import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 
 declare global {
   interface Window {
@@ -163,6 +163,9 @@ const Main = () => {
         <PrivateRoute exact path="/import/hardware/ledger-connect">
           <ConnectLedger />
         </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/imkey-connect">
+          <ImKeyConnect />
+        </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
         </PrivateRoute>
@@ -174,9 +177,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/qrcode">
-          <ImportQRCodeBase />
         </PrivateRoute>
         <PrivateRoute exact path="/import/wallet-connect">
           <WalletConnectTemplate />

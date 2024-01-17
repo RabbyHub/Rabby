@@ -186,7 +186,10 @@ const useTaskQueue = ({ keyring }) => {
         content: t('page.newAddress.hd.tooltip.disconnected'),
         key: 'ledger-error',
       });
-      if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+      if (
+        keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS &&
+        keyring !== KEYRING_CLASS.HARDWARE.IMKEY
+      ) {
         history.goBack();
       }
     });

@@ -37,8 +37,9 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
     const index = start - 1;
     let i = index;
     const oneByOne =
-      typeRef.current === HDPathType.LedgerLive &&
-      keyring === KEYRING_CLASS.HARDWARE.LEDGER;
+      (typeRef.current === HDPathType.LedgerLive &&
+        keyring === KEYRING_CLASS.HARDWARE.LEDGER) ||
+      keyring === KEYRING_CLASS.HARDWARE.IMKEY;
 
     try {
       await createTask(() =>

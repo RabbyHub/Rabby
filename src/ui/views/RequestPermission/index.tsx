@@ -13,6 +13,7 @@ import { LedgerHDPathType as HDPathType } from '@/utils/ledger';
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
 import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
+import ImKeyTransportWebUSB from '@imkey/web3-provider/dist/hw-transport-webusb/TransportWebUSB';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -22,7 +23,7 @@ const RequestPermission = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const needConfirm = ['ledger', 'keystone'].includes(type);
+  const needConfirm = ['ledger', 'keystone', 'imkey'].includes(type);
   const [loading, setLoading] = useState(false);
   const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
@@ -33,6 +34,11 @@ const RequestPermission = () => {
       desc: [t('page.newAddress.ledger.cameraPermission1')],
     },
     ledger: {
+      title: t('page.newAddress.ledger.allowRabbyPermissionsTitle'),
+      desc: [t('page.newAddress.ledger.ledgerPermission1')],
+      tip: t('page.newAddress.ledger.ledgerPermissionTip'),
+    },
+    imkey: {
       title: t('page.newAddress.ledger.allowRabbyPermissionsTitle'),
       desc: [t('page.newAddress.ledger.ledgerPermission1')],
       tip: t('page.newAddress.ledger.ledgerPermissionTip'),
@@ -85,6 +91,31 @@ const RequestPermission = () => {
         if (parent) {
           window.postMessage({ success: false }, '*');
         }
+      }
+    }
+    if (type === 'imkey') {
+      try {
+        const transport = await ImKeyTransportWebUSB.create();
+        await transport.close();
+        await wallet.authorizeImKeyHIDPermission();
+        if (isReconnect) {
+          wallet.activeFirstApproval();
+          window.close();
+          return;
+        }
+
+        if (from && from === 'approval') {
+          setShowSuccess(true);
+          return;
+        }
+        history.push({
+          pathname: '/import/select-address',
+          state: {
+            keyring: HARDWARE_KEYRING_TYPES.ImKey.type,
+          },
+        });
+      } catch (e) {
+        console.error(e);
       }
     }
     if (type === 'keystone') {
