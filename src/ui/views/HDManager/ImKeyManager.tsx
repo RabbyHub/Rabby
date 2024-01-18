@@ -11,7 +11,7 @@ import {
 } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
-import { fetchAccountsInfo, HDManagerStateContext } from './utils';
+import { HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
 
 export type InitAccounts = {

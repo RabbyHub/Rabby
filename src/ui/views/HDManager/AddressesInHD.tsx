@@ -42,6 +42,9 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
       keyring === KEYRING_CLASS.HARDWARE.IMKEY;
 
     try {
+      if (exitRef.current) {
+        return;
+      }
       await createTask(() =>
         wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
       );
@@ -50,10 +53,6 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
           wallet.requestKeyring(keyring, 'getMaxAccountLimit', keyringId, null)
         )) ?? MAX_ACCOUNT_COUNT;
       for (i = index; i < index + maxCountRef.current; ) {
-        if (exitRef.current) {
-          return;
-        }
-
         if (stoppedRef.current) {
           break;
         }
@@ -96,6 +95,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         content: e.message,
         key: 'ledger-error',
       });
+      exitRef.current = true;
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart
