@@ -26,6 +26,7 @@ const StyledModal = styled(Modal)`
   }
   .ant-modal-body {
     padding: 0;
+    max-height: 600px;
   }
 `;
 
@@ -142,28 +143,6 @@ const ClaimPoints = ({
   const snapshotTime = snapshot?.snapshot_at
     ? dayjs.unix(snapshot?.snapshot_at).format('YYYY-MM-DD HH:mm:ss')
     : '';
-  const points = useMemo(() => {
-    if (snapshot) {
-      const {
-        address_balance,
-        metamask_swap,
-        rabby_nadge,
-        rabby_nft,
-        rabby_old_user,
-        extra_bouns,
-      } = snapshot;
-      return formatTokenAmount(
-        address_balance +
-          metamask_swap +
-          rabby_nadge +
-          rabby_nft +
-          rabby_old_user +
-          extra_bouns,
-        0
-      );
-    }
-    return '';
-  }, [snapshot]);
 
   const { codeStatus, codeLoading } = useRabbyPointsInvitedCodeCheck(
     invitedCode
@@ -191,7 +170,7 @@ const ClaimPoints = ({
     );
   }, [codeStatus?.invite_code_exist, invitedCode, codeLoading]);
 
-  const list = React.useMemo(
+  const fixedList = React.useMemo(
     () => [
       {
         key: 'address_balance',
@@ -216,6 +195,42 @@ const ClaimPoints = ({
     ],
     [t]
   );
+
+  const list = useMemo(
+    () =>
+      codeStatus?.invite_code_exist
+        ? [
+            ...fixedList,
+            {
+              key: 'extra_bouns',
+              label: t('page.rabbyPoints.claimModal.referral-code'),
+            },
+          ]
+        : fixedList,
+    [fixedList, codeStatus?.invite_code_exist]
+  );
+  const points = useMemo(() => {
+    if (snapshot) {
+      const {
+        address_balance,
+        metamask_swap,
+        rabby_nadge,
+        rabby_nft,
+        rabby_old_user,
+        extra_bouns,
+      } = snapshot;
+      return formatTokenAmount(
+        address_balance +
+          metamask_swap +
+          rabby_nadge +
+          rabby_nft +
+          rabby_old_user +
+          (codeStatus?.invite_code_exist ? extra_bouns : 0),
+        0
+      );
+    }
+    return '';
+  }, [snapshot, codeStatus?.invite_code_exist]);
 
   const titleLoading = snapshotLoading || loadingNum < list.length;
 
@@ -284,7 +299,7 @@ const ClaimPoints = ({
       <StyledInput
         placeholder={t('page.rabbyPoints.claimModal.placeholder')}
         value={invitedCode}
-        onChange={(e) => setInvitedCode(e.target.value)}
+        onChange={(e) => setInvitedCode(e.target.value?.toUpperCase())}
         className={clsx(
           'w-full mt-[22px] mb-[24px]',
           invitedCode &&

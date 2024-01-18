@@ -1761,7 +1761,8 @@
         "MetaMaskSwap": "MetaMask Swap",
         "rabbyUser": "Rabby Old User",
         "rabbyValuedUserBadge": "Rabby Valued User Badge",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT"
+        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "referral-code": "Referral Code"
       },
       "referralCode": {
         "referral-code-cannot-be-empty": "Referral code cannot be empty",

@@ -1,7 +1,13 @@
 import { PageHeader } from '@/ui/component';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import imgBg from 'ui/assets/rabby-points/rabby-points-bg.png';
@@ -64,10 +70,7 @@ const RabbyPoints = () => {
   const history = useHistory();
   const wallet = useWallet();
   const account = useCurrentAccount();
-  const [snapshotState, setSnapshotState] = useState<{
-    usedCode?: string;
-    claimSnapshot?: boolean;
-  }>({});
+
   const [currentUserCode, setCurrentUserCode] = useState<string | undefined>();
   const [claimedIds, setClaimedIds] = useState<number[]>([]);
   const [claimItemLoading, setClaimItemLoading] = useState<
@@ -113,42 +116,69 @@ const RabbyPoints = () => {
     [userPointsDetail?.total_claimed_points]
   );
   const invitedCode = currentUserCode || userPointsDetail?.invite_code;
-  const hadInvitedCode = !userLoading ? !!userPointsDetail?.invite_code : true;
+  const hadInvitedCode = !userLoading ? currentUserCode : true;
   const initRef = useRef(false);
 
-  const claimSnapshot = React.useCallback(
-    (invite_code?: string) => {
-      if (account?.address && signature) {
-        wallet.openapi.claimRabbyPointsSnapshot({
-          id: account?.address,
-          signature,
-          invite_code,
-        });
+  const calcScore = useCallback(
+    async (code?: string) => {
+      if (!snapshot) throw new Error('no snapshot');
+      let isVaild = false;
+      if (code !== undefined) {
+        const data = await wallet.openapi.checkRabbyPointsInviteCode({ code });
+        isVaild = data.invite_code_exist;
       }
-      if (!signature) {
-        setSnapshotState({
-          usedCode: invite_code,
-          claimSnapshot: true,
-        });
-        setVisible(false);
-        setVerifyVisible(true);
-        return;
-      }
+      const {
+        address_balance,
+        metamask_swap,
+        rabby_nadge,
+        rabby_nft,
+        rabby_old_user,
+        extra_bouns,
+      } = snapshot;
+      const score =
+        address_balance +
+        metamask_swap +
+        rabby_nadge +
+        rabby_nft +
+        rabby_old_user +
+        (isVaild ? extra_bouns : 0);
+      return score;
     },
-    [signature, snapshotState, account?.address, wallet?.openapi]
+    [snapshot, wallet?.openapi?.checkRabbyPointsInviteCode]
+  );
+
+  const lockRef = useRef(false);
+  (window as any).$$clearRabbyPoints = wallet.clearRabbyPointsSignature;
+
+  const claimSnapshot = React.useCallback(
+    async (invite_code?: string) => {
+      if (lockRef.current) return;
+      lockRef.current = true;
+      try {
+        const claimNumber = await calcScore(invite_code);
+        wallet.rabbyPointVerifyAddress({
+          code: invite_code,
+          claimSnapshot: true,
+          claimNumber,
+        });
+        window.close();
+      } catch (error) {
+        console.error(error);
+        message.error(String(error?.message || error));
+      }
+      lockRef.current = false;
+    },
+    [account?.address, wallet?.openapi]
   );
 
   const verifyAddr = React.useCallback(() => {
     try {
-      wallet.rabbyPointVerifyAddress({
-        code: snapshotState.usedCode,
-        claimSnapshot: snapshotState.claimSnapshot,
-      });
+      wallet.rabbyPointVerifyAddress();
       window.close();
     } catch (error) {
       console.error(error);
     }
-  }, [snapshotState, wallet.rabbyPointVerifyAddress]);
+  }, [wallet.rabbyPointVerifyAddress]);
 
   const claimItem = React.useCallback(
     async (campaign_id: number, points: number) => {
@@ -267,7 +297,7 @@ Everyone can get points, and use my referral code ${invitedCode} for an extra bo
 Ready to claim your points?`);
     // openInTab(
     //   `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(
-    //     'https://debank.com'
+    //     'https://rabby.io'
     //   )}`
     // );
 

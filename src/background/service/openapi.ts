@@ -27,6 +27,25 @@ const testnetStore = new (class TestnetStore {
 })();
 
 class EXtendsOpenApiService extends OpenApiService {
+  getRabbyClaimText = async (params: {
+    id: string;
+    invite_code?: string;
+  }): Promise<{ id: string; text: string }> => {
+    const { data } = await this.request.get('/v1/points/user/claim_text', {
+      params,
+    });
+    return data;
+  };
+
+  getRabbySignatureText = async (params: {
+    id: string;
+  }): Promise<{ id: string; text: string }> => {
+    const { data } = await this.request.get('/v1/points/user/sign_text', {
+      params,
+    });
+    return data;
+  };
+
   getRabbyPoints = async (params: {
     id: string;
   }): Promise<{

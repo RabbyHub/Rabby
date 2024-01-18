@@ -37,6 +37,15 @@ class RabbyPoints {
   getSignature = (addr: string) => {
     return this.store.signatures[addr.toLowerCase()];
   };
+  clearSignatureByAddr = (addr: string) => {
+    delete this.store.signatures[addr];
+    this.store.signatures = {
+      ...this.store.signatures,
+    };
+  };
+  clearSignature = () => {
+    this.store.signatures = {};
+  };
 }
 
 export default new RabbyPoints();

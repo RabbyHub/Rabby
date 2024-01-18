@@ -1136,6 +1136,7 @@ export class WalletController extends BaseController {
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
+  clearRabbyPointsSignature = RabbyPointsService.clearSignature;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
@@ -3578,23 +3579,32 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
-  rabbyPointVerifyAddress = async ({
-    code,
-    claimSnapshot,
-  }: {
+  rabbyPointVerifyAddress = async (params?: {
     code?: string;
     claimSnapshot?: boolean;
+    claimNumber?: number;
   }) => {
+    const { code, claimSnapshot, claimNumber } = params || {};
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const claimText = `${account?.address} Claims ${claimNumber} Rabby Points`;
+    const verifyAddr = `Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
     const msg = `0x${Buffer.from(
-      'Verify Address for Rabby Points',
+      claimSnapshot ? claimText : verifyAddr,
       'utf-8'
     ).toString('hex')}`;
 
-    const signature = await this.sendRequest<string>({
-      method: 'personal_sign',
-      params: [msg, account.address],
+    // const signature = await this.sendRequest<string>({
+    //   method: 'personal_sign',
+    //   params: [msg, account.address],
+    // });
+    const signature = await provider<string>({
+      data: {
+        method: 'personal_sign',
+        params: [msg, account.address],
+      },
+      session: { ...INTERNAL_REQUEST_SESSION },
+      origin: 'https://rabby.io',
     });
 
     this.setRabbyPointsSignature(account.address, signature);
@@ -3609,7 +3619,6 @@ export class WalletController extends BaseController {
         console.error(error);
       }
     } else {
-      console.log('signature', signature);
       this.setPageStateCache({
         path: '/rabby-points',
         params: {},
