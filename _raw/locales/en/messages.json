@@ -273,6 +273,14 @@
         "title": "Submit Token Approval Modification",
         "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "Description"
+      },
+      "common": {
+        "description": "Description",
+        "interactContract": "Interact contract",
+        "descTipSafe": "Signature does not verify address ownership or cause asset change",
+        "descTipWarningPrivacy": "Signature may verify address ownership",
+        "descTipWarningAssets": "Signature may cause asset change",
+        "descTipWarningBoth": "Signature does not verify address ownership or cause asset change"
       }
     },
     "signFooterBar": {

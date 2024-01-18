@@ -51,6 +51,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { CommonAction } from '../CommonAction';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -79,6 +80,7 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   background-color: var(--r-neutral-bg-1, #fff);
   border-radius: 8px;
+  overflow: hidden;
   .action-header {
     display: flex;
     justify-content: space-between;
@@ -388,6 +390,14 @@ const Actions = ({
               engineResults={engineResults}
               onChange={onChange}
               raw={raw}
+            />
+          )}
+          {data.common && (
+            <CommonAction
+              data={data.common}
+              requireData={requireData as SwapRequireData}
+              chain={chain}
+              engineResults={engineResults}
             />
           )}
         </div>

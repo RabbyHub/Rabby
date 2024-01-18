@@ -128,6 +128,11 @@ export interface ParsedActionData {
     nonce: string;
   };
   pushMultiSig?: PushMultiSigAction;
+  common?: {
+    desc: string;
+    is_asset_changed: boolean;
+    is_involving_privacy: boolean;
+  };
 }
 
 export const getProtocol = (
@@ -390,6 +395,11 @@ export const parseAction = (
   if (data?.type === 'push_multisig') {
     return {
       pushMultiSig: data.data as PushMultiSigAction,
+    };
+  }
+  if (data.type === null) {
+    return {
+      common: data.data as any,
     };
   }
   return {
@@ -1401,6 +1411,9 @@ export const getActionTypeText = (data: ParsedActionData) => {
   }
   if (data.revokePermit2) {
     return t('page.signTx.revokePermit2.title');
+  }
+  if (data?.common) {
+    return data.common.desc;
   }
   return t('page.signTx.unknownAction');
 };

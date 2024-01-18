@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import { Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { CommonAction } from '../CommonAction';
 
 const { TabPane } = Tabs;
 
@@ -48,6 +49,7 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   border-radius: 8px;
   margin-bottom: 8px;
+  overflow: hidden;
   .action-header {
     display: flex;
     justify-content: space-between;
@@ -263,6 +265,9 @@ const Actions = ({
                 data={data.verifyAddress}
                 engineResults={engineResults}
               />
+            )}
+            {data.common && (
+              <CommonAction data={data.common} engineResults={engineResults} />
             )}
           </div>
         )}

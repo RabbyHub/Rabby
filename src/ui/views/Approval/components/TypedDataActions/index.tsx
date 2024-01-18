@@ -41,6 +41,7 @@ import CoboSafeCreate from './CoboSafeCreate';
 import CoboSafeModificationRule from './CoboSafeModificationRole';
 import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
+import { CommonAction } from '../CommonAction';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -68,6 +69,7 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   border-radius: 8px;
   margin-bottom: 8px;
+  overflow: hidden;
   .action-header {
     display: flex;
     justify-content: space-between;
@@ -236,7 +238,8 @@ const Actions = ({
       <ActionWrapper>
         <div
           className={clsx('action-header', {
-            'is-unknown': !data?.actionType || data.contractCall,
+            'is-unknown':
+              (!data?.actionType && !data?.common) || data.contractCall,
           })}
         >
           <div className="left flex items-center">
@@ -381,6 +384,14 @@ const Actions = ({
             {data.coboSafeModificationTokenApproval && (
               <CoboSafeModificationTokenApproval
                 data={data.coboSafeModificationTokenApproval}
+              />
+            )}
+            {data.common && (
+              <CommonAction
+                data={data.common}
+                requireData={requireData as ContractRequireData}
+                chain={chain}
+                engineResults={engineResults}
               />
             )}
           </div>
