@@ -3,9 +3,9 @@ import * as ethUtil from 'ethereumjs-util';
 import { FeeMarketEIP1559Transaction, Transaction } from '@ethereumjs/tx';
 import { SignHelper } from './helper';
 import { EVENTS } from '@/constant';
-import TransportWebUSB from '@imkey/web3-provider/dist/hw-transport-webusb/TransportWebUSB';
-import ETH from '@imkey/web3-provider/dist/hw-app-eth/Eth';
-import { bytesToHex } from '@imkey/web3-provider/dist/common/utils';
+import { ETHSingleton } from '@imkey/web3-provider';
+import { is1559Tx } from '@/utils/transaction';
+import { bytesToHex } from 'web3-utils';
 
 const keyringType = 'imKey Hardware';
 const MAX_INDEX = 1000;
@@ -31,7 +31,6 @@ export enum LedgerHDPathType {
 }
 
 import HDPathType = LedgerHDPathType;
-import { is1559Tx } from '@/utils/transaction';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -67,7 +66,7 @@ export class EthImKeyKeyring extends EventEmitter {
     errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
   });
 
-  app: ETH | null = null;
+  app: ETHSingleton | null = null;
   hasHIDPermission = false;
 
   constructor(opts = {}) {
@@ -100,8 +99,8 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   private async makeApp() {
-    const transport = await TransportWebUSB.create();
-    const eth = new ETH(transport);
+    const eth = await ETHSingleton.getInstance();
+    await eth.init();
     this.app = eth;
   }
 
@@ -113,8 +112,53 @@ export class EthImKeyKeyring extends EventEmitter {
     return !!this.app;
   }
 
-  cleanUp() {
+  async cleanUp() {
+    try {
+      await this.app?.close();
+    } catch (e) {
+      console.error(e);
+    }
     this.app = null;
+  }
+
+  loopCount = 0;
+
+  private async invokeApp<
+    Method extends Extract<
+      keyof ETHSingleton,
+      'getAddress' | 'signMessage' | 'signTransaction'
+    > &
+      string
+  >(
+    method: Method,
+    params: Parameters<ETHSingleton[Method]>
+  ): Promise<ReturnType<ETHSingleton[Method]>> {
+    if (!this.app) {
+      await this.makeApp();
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const res = await this.app![method](...params);
+      return res as ReturnType<ETHSingleton[Method]>;
+    } catch (e: any) {
+      if (
+        e.message.includes('Cannot read properties of undefined') ||
+        e.message.includes('The device was disconnected')
+      ) {
+        this.loopCount++;
+        // prevent infinite loop
+        if (this.loopCount > 5) {
+          this.loopCount = 0;
+          throw new Error('device disconnected');
+        }
+        await this.cleanUp();
+        return this.invokeApp(method, params);
+      } else {
+        throw e;
+      }
+    }
   }
 
   resend() {
@@ -281,7 +325,9 @@ export class EthImKeyKeyring extends EventEmitter {
         path: accountDetail.hdPath,
       };
 
-      const { signature, txHash } = await this.app!.signTransaction(txData);
+      const { signature, txHash } = await this.invokeApp('signTransaction', [
+        txData,
+      ]);
       const txJSON = transaction.toJSON();
       let decoded;
 
@@ -316,12 +362,13 @@ export class EthImKeyKeyring extends EventEmitter {
       const checksummedAddress = ethUtil.toChecksumAddress(address);
       const accountDetail = this.accountDetails[checksummedAddress];
 
-      return this.app?.signMessage(
+      const res = await this.invokeApp('signMessage', [
         accountDetail.hdPath,
         message,
         checksummedAddress,
-        true
-      );
+        true,
+      ]);
+      return res?.signature;
     });
   }
 
@@ -331,12 +378,13 @@ export class EthImKeyKeyring extends EventEmitter {
       const checksummedAddress = ethUtil.toChecksumAddress(address);
       const accountDetail = this.accountDetails[checksummedAddress];
 
-      return this.app?.signMessage(
+      const res = await this.invokeApp('signMessage', [
         accountDetail.hdPath,
         JSON.stringify(data),
         checksummedAddress,
-        false
-      );
+        false,
+      ]);
+      return res?.signature;
     });
   }
 
@@ -365,7 +413,7 @@ export class EthImKeyKeyring extends EventEmitter {
     } else {
       htPath = `${htPath}/${i}`;
     }
-    const { address } = await this.app!.getAddress(htPath);
+    const { address } = await this.invokeApp('getAddress', [htPath]);
     return address;
   }
 
@@ -426,7 +474,7 @@ export class EthImKeyKeyring extends EventEmitter {
 
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    return (await this.app!.getAddress(pathBase)).pubkey;
+    return (await this.invokeApp('getAddress', [pathBase])).pubkey;
   }
 
   private getHDPathBase(hdPathType: HDPathType) {

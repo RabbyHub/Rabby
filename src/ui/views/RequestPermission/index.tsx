@@ -13,7 +13,7 @@ import { LedgerHDPathType as HDPathType } from '@/utils/ledger';
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
 import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
-import ImKeyTransportWebUSB from '@imkey/web3-provider/dist/hw-transport-webusb/TransportWebUSB';
+import { getImKeyFirstImKeyDevice } from '@/utils/imKey';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -95,8 +95,7 @@ const RequestPermission = () => {
     }
     if (type === 'imkey') {
       try {
-        const transport = await ImKeyTransportWebUSB.create();
-        await transport.close();
+        await getImKeyFirstImKeyDevice();
         await wallet.authorizeImKeyHIDPermission();
         if (isReconnect) {
           wallet.activeFirstApproval();

@@ -3003,10 +3003,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@imkey/web3-provider@^1.3.7":
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/@imkey/web3-provider/-/web3-provider-1.3.7.tgz#9ea64047397b3fd1c4fd7bfcde25ee744e5adadf"
-  integrity sha512-KGQJXN80kvVWRLaC99PsB+xZnjhjvljdNP3uENYgEUrXb7CZ2BSyZP2wTdG/hiD747EzUjCKJo2p/3B2R9KcOg==
+"@imkey/web3-provider@^1.3.9":
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/@imkey/web3-provider/-/web3-provider-1.3.9.tgz#04f755e9b198cde3489d01528d4975a27a227df7"
+  integrity sha512-1wO9zLk4QVoNyN5vrL/ZwTPpy3jbdLOKoorX+x5gQf4gfGHCK14HJ2J/ZwXGHS37eCvXz4t7S04sdDyzqCcFGA==
   dependencies:
     "@types/event-emitter-es6" "^1.1.0"
     "@types/sha.js" "^2.4.0"

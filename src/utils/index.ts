@@ -2,7 +2,7 @@ import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import browser from 'webextension-polyfill';
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
-import { getImKeyDevices } from '@imkey/web3-provider/dist/hw-transport-webusb/imKeyDevice';
+import { getImKeyDevices } from './imKey';
 
 declare global {
   const langLocales: Record<string, Record<'message', string>>;
