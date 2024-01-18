@@ -1,9 +1,12 @@
 import { Popup } from '@/ui/component';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as IconDice } from 'ui/assets/rabby-points/dice-cc.svg';
+import { useRabbyPointsInvitedCodeCheck } from '../hooks';
+import { customAlphabet } from 'nanoid';
+import { useTranslation } from 'react-i18next';
 
 const StyledInput = styled(Input)`
   border-radius: 8px;
@@ -14,20 +17,44 @@ const StyledInput = styled(Input)`
   text-align: left;
 `;
 
-export const SetReferralCode = () => {
+export const SetReferralCode = ({
+  onSetCode,
+}: {
+  onSetCode: (code: string) => Promise<void>;
+}) => {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [input, setInput] = useState('');
+
+  const { codeStatus, codeLoading } = useRabbyPointsInvitedCodeCheck(input);
 
   const isValidCode = useMemo(() => false, [input]);
   const [desc, isError] = useMemo(() => {
     if (!input) {
-      return ['Referral code cannot be empty', true];
+      return [
+        t('page.rabbyPoints.referralCode.referral-code-cannot-be-empty'),
+        true,
+      ];
     }
-    if (isValidCode) {
-      return ['Referral code available', false];
+    if (input.length > 15) {
+      return [
+        t(
+          'page.rabbyPoints.referralCode.referral-code-cannot-exceed-15-characters'
+        ),
+        true,
+      ];
     }
-    return ['Referral code already exists', true];
-  }, [input, isValidCode]);
+    if (codeStatus?.invite_code_exist) {
+      return [
+        t('page.rabbyPoints.referralCode.referral-code-already-exists'),
+        true,
+      ];
+    }
+    if (codeLoading) {
+      return [' ', true];
+    }
+    return [t('page.rabbyPoints.referralCode.referral-code-available'), false];
+  }, [input, codeStatus, codeLoading]);
 
   const disabled = useMemo(() => {
     return !input || isError;
@@ -43,35 +70,55 @@ export const SetReferralCode = () => {
 
   const inputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInput(e.target.value);
+      if (/^[a-zA-Z0-9]+$/.test(e.target.value) || e.target.value === '') {
+        setInput(e.target.value?.toUpperCase());
+      }
     },
     []
   );
 
-  const getCode = () => {
-    //TODO
-    closePopup();
+  const getDiceReferralCode = () => {
+    const nanoId = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 8);
+    const id = nanoId();
+    setInput(id);
   };
 
+  const submitReferralCode = React.useCallback(async () => {
+    try {
+      await onSetCode(input);
+      closePopup();
+    } catch (error) {
+      message.error(String(error?.message || error));
+      console.error(error);
+    }
+  }, [onSetCode, input]);
+
   return (
-    <div className="bg-r-blue-light1 rounded-[8px] px-[16px] py-[12px] flex items-center justify-between">
+    <div className="bg-r-blue-light1 rounded-[8px] px-[16px] py-[12px] flex items-center justify-between ">
       <div className="flex flex-col gap-[4px] text-r-blue-default">
-        <span className="text-[15px] font-medium">My referral code</span>
-        <span className="text-[12px]">推荐一个新用户可获得50积分</span>
+        <span className="text-[15px] font-medium">
+          {t('page.rabbyPoints.referralCode.my-referral-code')}
+        </span>
+        <span className="text-[12px]">
+          {t('page.rabbyPoints.referralCode.refer-a-new-user-to-get-50-points')}
+        </span>
       </div>
       <Button
         type="primary"
         className="w-[130px] h-[34px] text-r-neutral-title2 text-[15] font-medium"
         onClick={openPopup}
       >
-        Set my code
+        {t('page.rabbyPoints.referralCode.set-my-code')}
       </Button>
       <Popup
         visible={visible}
         onCancel={closePopup}
-        title="Set my referral code"
+        title={t('page.rabbyPoints.referralCode.set-my-referral-code')}
         height={336}
         isSupportDarkMode
+        bodyStyle={{
+          overflow: 'hidden',
+        }}
       >
         <StyledInput
           bordered
@@ -88,7 +135,10 @@ export const SetReferralCode = () => {
           )}
           suffix={
             <div className="group w-[32px] h-[32px] flex items-center justify-center bg-transparent hover:bg-r-blue-light-1 cursor-pointer text-r-neutral-foot hover:text-r-blue-default">
-              <IconDice className="w-[24px] h-[24px]" onClick={getCode} />
+              <IconDice
+                className="w-[24px] h-[24px]"
+                onClick={getDiceReferralCode}
+              />
             </div>
           }
         />
@@ -102,17 +152,26 @@ export const SetReferralCode = () => {
             {desc}
           </div>
         )}
-        <ol className="list-inside list-decimal bg-r-neutral-card-3 rounded-[8px] h-[87px] p-[12px] text-[13px] leading-[20px] text-r-neutral-body">
-          <li>Once set, this referral code is permanent and cannot change</li>
-          <li>Max 15 characters, use numbers and letters only.</li>
+        <ol className="mb-[22px] list-inside list-decimal bg-r-neutral-card-3 rounded-[8px] h-[87px] p-[12px] text-[13px] leading-[20px] text-r-neutral-body">
+          <li>
+            {t(
+              'page.rabbyPoints.referralCode.once-set-this-referral-code-is-permanent-and-cannot-change'
+            )}
+          </li>
+          <li>
+            {t(
+              'page.rabbyPoints.referralCode.max-15-characters-use-numbers-and-letters-only'
+            )}
+          </li>
         </ol>
 
         <Button
           disabled={disabled}
           type="primary"
-          className="mt-[22px] w-full h-[52px] text-[15] font-medium text-r-neutral-title2"
+          className=" w-full h-[52px] text-[15] font-medium text-r-neutral-title2"
+          onClick={submitReferralCode}
         >
-          Confirm
+          {t('page.rabbyPoints.referralCode.confirm')}
         </Button>
       </Popup>
     </div>

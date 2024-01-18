@@ -22,9 +22,11 @@ const NoIcon = () => null;
 export const ClaimRabbyVerifyModal = ({
   visible,
   onCancel,
+  onConfirm,
 }: {
   visible: boolean;
   onCancel: () => void;
+  onConfirm: () => void;
 }) => {
   return (
     <StyledModal
@@ -34,29 +36,29 @@ export const ClaimRabbyVerifyModal = ({
       destroyOnClose
       closeIcon={NoIcon}
     >
-      <Inner onCancel={onCancel} />
+      <Inner onCancel={onCancel} onConfirm={onConfirm} />
     </StyledModal>
   );
 };
 
-const Inner = ({ onCancel }: { onCancel: () => void }) => {
+const Inner = ({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => void;
+}) => {
   const { t } = useTranslation();
-
-  const wallet = useWallet();
-
-  const verifyAddress = () => {
-    wallet.rabbyPointVerifyAddress();
-  };
 
   return (
     <div className="w-[360px] bg-r-neutral-bg-1 p-[20px] pb-[24px] rounded-[8px] leading-[normal]">
       <div className="text-r-neutral-title1 text-[20px] font-medium text-center">
-        {/* {t('page.dashboard.rabbyPoints.claimModal.title')} */}
-        Verify Address
+        {t('page.rabbyPoints.referralCode.verifyAddressModal.verify-address')}
       </div>
       <div className="mt-[12px] text-[15px]  text-r-neutral-body">
-        Please sign this text message to verify that you are the owner of this
-        address
+        {t(
+          'page.rabbyPoints.referralCode.verifyAddressModal.please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address'
+        )}
       </div>
       <div className="mt-[48px]  flex justify-center items-center gap-16">
         <Button
@@ -68,16 +70,14 @@ const Inner = ({ onCancel }: { onCancel: () => void }) => {
             'before:content-none'
           )}
         >
-          {/* {t('page.dashboard.rabbyPoints.claimModal.claim')} */}
-          Cancel
+          {t('page.rabbyPoints.referralCode.verifyAddressModal.cancel')}
         </Button>
         <Button
           type="primary"
           className="flex-1 h-[44px] text-[15px] font-medium text-r-neutral-title2"
-          onClick={verifyAddress}
+          onClick={onConfirm}
         >
-          {/* {t('page.dashboard.rabbyPoints.claimModal.claim')} */}
-          Sign
+          {t('page.rabbyPoints.referralCode.verifyAddressModal.sign')}
         </Button>
       </div>
     </div>

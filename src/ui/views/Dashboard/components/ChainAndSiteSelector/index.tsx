@@ -111,6 +111,16 @@ export default ({
     return;
   }, [account?.address]);
 
+  const { value: claimable } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.openapi.checkRabbyPointClaimable({
+        id: account?.address,
+      });
+      return data.claimable;
+    }
+    return false;
+  }, [account?.address]);
+
   useEffect(() => {
     if (approvalState) {
       setApprovalRiskAlert(
@@ -241,7 +251,9 @@ export default ({
       badgeAlert: approvalRiskAlert > 0,
     } as IPanelItem,
     feedback: {
-      icon: RcIconUnclaimableRabbyPoints, //RcIconClaimableRabbyPoints,
+      icon: claimable
+        ? RcIconClaimableRabbyPoints
+        : RcIconUnclaimableRabbyPoints,
       eventKey: 'Rabby Points',
       content: t('page.dashboard.home.panel.rabbyPoints'),
       onClick: () => {

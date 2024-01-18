@@ -24,6 +24,7 @@ import {
   contextMenuService,
   securityEngineService,
   transactionBroadcastWatchService,
+  RabbyPointsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1131,6 +1132,10 @@ export class WalletController extends BaseController {
   setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
   getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
   setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
+
+  setRedirect2Points = RabbyPointsService.setRedirect2Points;
+  setRabbyPointsSignature = RabbyPointsService.setSignature;
+  getRabbyPointsSignature = RabbyPointsService.getSignature;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
@@ -3573,17 +3578,45 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
-  rabbyPointVerifyAddress = async () => {
+  rabbyPointVerifyAddress = async ({
+    code,
+    claimSnapshot,
+  }: {
+    code?: string;
+    claimSnapshot?: boolean;
+  }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const msg = `0x${Buffer.from(
       'Verify Address for Rabby Points',
       'utf-8'
     ).toString('hex')}`;
-    return await this.sendRequest<string>({
+
+    const signature = await this.sendRequest<string>({
       method: 'personal_sign',
       params: [msg, account.address],
     });
+
+    this.setRabbyPointsSignature(account.address, signature);
+    if (claimSnapshot) {
+      try {
+        await wallet.openapi.claimRabbyPointsSnapshot({
+          id: account?.address,
+          invite_code: code,
+          signature,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log('signature', signature);
+      this.setPageStateCache({
+        path: '/rabby-points',
+        params: {},
+        states: {},
+      });
+    }
+    return signature;
   };
 }
 

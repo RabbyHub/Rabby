@@ -1,41 +1,107 @@
 import { Button } from 'antd';
+import SkeletonInput from 'antd/lib/skeleton/Input';
+import clsx from 'clsx';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
 
 const Wrapper = styled.div`
   border: 0.3px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 5px;
   padding: 12px 0;
   padding-top: 14px;
+  .loading-button-wrapper {
+    svg g path {
+      stroke: rgba(255, 255, 255, 0.6);
+    }
+  }
 `;
 
-interface ClaimItem {
+interface ClaimItemProps {
   id: number;
   title: string;
-  desc: string;
-  expired_at: number; // 活动过期时间
-  claimable_points: number; // 当前地址可领取的积分
+  description: string;
+  start_at: number;
+  end_at: number;
+  claimable_points: number;
+  onClaim: (id: number, points: number) => void;
+  claimable?: boolean;
+  claimLoading?: boolean;
 }
-export const ClaimItem = (props: ClaimItem) => {
+export const ClaimItem = (props: ClaimItemProps) => {
+  const { t } = useTranslation();
   const claim = () => {
-    // todo
+    props.onClaim(props.id, props.claimable_points || 0);
   };
   return (
-    <Wrapper className="border ">
+    <Wrapper
+      className={clsx('border', props.claimable && 'bg-light-r-blue-light-1')}
+    >
       <div className="flex items-center justify-between pb-[12px] px-[16px] border-b border-rabby-neutral-line">
         <div>{props.title}</div>
         <Button
           type="primary"
-          className="w-[100px] h-[32px] text-r-neutral-title-2 text-[13px] font-medium"
-          disabled={props.claimable_points <= 0}
+          className={clsx(
+            'min-w-[100px] h-[32px] text-r-neutral-title-2 text-[13px] font-medium'
+          )}
+          style={
+            props.claimable
+              ? {
+                  borderRadius: '4px',
+                  background:
+                    'var(--Linear, linear-gradient(131deg, #5CEBFF 9.53%, #5C42FF 95.9%))',
+                  boxShadow: '0px 2px 8px 0px rgba(95, 124, 254, 0.16)',
+                  border: 'none',
+                }
+              : undefined
+          }
+          disabled={
+            props.claimable_points <= 0 ||
+            !props.claimable ||
+            props.claimLoading
+          }
           onClick={claim}
         >
-          claim
+          <div className="relative flex items-start justify-center gap-4 loading-button-wrapper">
+            <span>
+              {t('page.rabbyPoints.claimItem.claim')}{' '}
+              {props.claimable_points <= 0 || !props.claimable
+                ? ''
+                : props.claimable_points}
+            </span>
+            {props.claimLoading && (
+              <IconInputLoading className="relative top-[2px] animate-spin" />
+            )}
+          </div>
         </Button>
       </div>
       <div className="pt-[12px] text-r-neutral-foot font-[12px] px-[16px]">
-        {props.desc}
+        {props.description}
       </div>
     </Wrapper>
+  );
+};
+
+export const ClaimItemLoading = () => {
+  return (
+    <Wrapper className="border ">
+      <div className="flex items-center justify-between pb-[12px] px-[16px] border-b border-rabby-neutral-line">
+        <SkeletonInput active style={{ width: 146, height: 18 }} />
+      </div>
+      <div className="pt-[12px] text-r-neutral-foot font-[12px] px-[16px]">
+        <SkeletonInput active style={{ width: 300, height: 14 }} />
+      </div>
+    </Wrapper>
+  );
+};
+
+export const ClaimLoading = () => {
+  return (
+    <>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <ClaimItemLoading key={i} />
+      ))}
+    </>
   );
 };
