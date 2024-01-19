@@ -35,7 +35,7 @@ export const TopUserItem = (props: User) => {
         <ClaimUserAvatar src={props.logo_url} className="w-[28px] h-[28px]" />
         <div
           onClick={gotoDebank}
-          className="ml-[12px] mr-[4px] text-[15px] font-medium text-r-neutral-black cursor-pointer"
+          className="ml-[12px] mr-[4px] text-[15px] font-medium text-r-neutral-title1 cursor-pointer"
         >
           {props.web3_id || ellipsisAddress(props.id)}
         </div>

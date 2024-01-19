@@ -11,26 +11,19 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import imgBg from 'ui/assets/rabby-points/rabby-points-bg.png';
-import { ReactComponent as IconCopy } from 'ui/assets/rabby-points/copy.svg';
-import { ReactComponent as IconTwitter } from 'ui/assets/rabby-points/twitter-x.svg';
 import { Tabs, message } from 'antd';
 import { SetReferralCode } from './component/ReferrralCode';
 import { ClaimItem, ClaimLoading } from './component/ClaimItem';
-import { copyTextToClipboard } from '@/ui/utils/clipboard';
-import IconSuccess from 'ui/assets/success.svg';
 import { TopUserItem } from './component/TopBoard';
 import { ClaimRabbyPointsModal } from './component/ClaimRabbyPointsModal';
 import { ClaimRabbyVerifyModal } from './component/VerifyAddressModal';
 import { useHistory } from 'react-router-dom';
-import {
-  formatTokenAmount,
-  isSameAddress,
-  openInTab,
-  useWallet,
-} from '@/ui/utils';
+import { formatTokenAmount, isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyPoints } from './hooks';
 import { ClaimUserAvatar } from './component/ClaimUserAvatar';
 import CountUp from 'react-countup';
+import clsx from 'clsx';
+import { CodeAndShare } from './component/CodeAndShare';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -60,6 +53,8 @@ const Wrapper = styled.div`
       .ant-tabs-tab {
         flex: 1;
         justify-content: center;
+        padding-top: 10px;
+        padding-bottom: 7px;
       }
     }
   }
@@ -116,7 +111,7 @@ const RabbyPoints = () => {
     [userPointsDetail?.total_claimed_points]
   );
   const invitedCode = currentUserCode || userPointsDetail?.invite_code;
-  const hadInvitedCode = !userLoading ? currentUserCode : true;
+  const hadInvitedCode = !userLoading ? !!invitedCode : true;
   const initRef = useRef(false);
 
   const calcScore = useCallback(
@@ -260,49 +255,6 @@ const RabbyPoints = () => {
     return 1000;
   }, [topUsers, account?.address]);
 
-  const copyInvitedCode = React.useCallback(() => {
-    copyTextToClipboard(invitedCode || '');
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('page.rabbyPoints.referral-code-copied'),
-    });
-  }, [invitedCode]);
-
-  const shareTwitter = () => {
-    if (!snapshot) return;
-    const {
-      address_balance,
-      metamask_swap,
-      rabby_nadge,
-      rabby_nft,
-      rabby_old_user,
-      extra_bouns,
-    } = snapshot;
-    const score = formatTokenAmount(
-      address_balance +
-        metamask_swap +
-        rabby_nadge +
-        rabby_nft +
-        rabby_old_user +
-        extra_bouns,
-      0
-    );
-    const text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
-      snapshot.extra_bouns,
-      0
-    )} points for migrating my MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code ${invitedCode} for an extra bonus.   
- 
-Ready to claim your points?`);
-    // openInTab(
-    //   `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(
-    //     'https://rabby.io'
-    //   )}`
-    // );
-
-    openInTab(`https://twitter.com/intent/tweet?text=${text}`);
-  };
   return (
     <Wrapper className="leading-normal flex flex-col">
       <PageHeader closeable={false} className="mx-[20px]">
@@ -310,13 +262,18 @@ Ready to claim your points?`);
           {t('page.rabbyPoints.title')}
         </span>
       </PageHeader>
-      <div className="text-r-neutral-title2 flex flex-col items-center">
-        <div className="flex items-center justify-center gap-[4px]">
+      <div className="text-r-neutral-title2 flex flex-col items-center relative top-[10px]">
+        <div className="flex items-center justify-center gap-[6px]">
           <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
           <span className="text-[15px]">{addr}</span>
         </div>
         <div>
-          <span className="text-[40px] font-extrabold mt-[8px] mb-[12px] relative">
+          <span
+            className={clsx(
+              'text-[40px] font-extrabold mt-[8px] mb-[12px] relative transition-opacity',
+              userLoading && 'opacity-80'
+            )}
+          >
             <CountUp
               start={previousPoints}
               end={currentPoints}
@@ -349,27 +306,16 @@ Ready to claim your points?`);
         </div>
       </div>
 
-      <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[20px] flex flex-col">
+      <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[16px] flex flex-col">
         <div className="px-20">
           {!hadInvitedCode ? (
             <SetReferralCode onSetCode={setReferralCode} />
           ) : (
-            <div className="flex items-center justify-between">
-              <div
-                onClick={copyInvitedCode}
-                className="cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
-              >
-                <span>{invitedCode?.toUpperCase()}</span>
-                <IconCopy className="w-[16px]" />
-              </div>
-              <div
-                onClick={shareTwitter}
-                className="cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
-              >
-                <span>{t('page.rabbyPoints.share-on')}</span>
-                <IconTwitter className="w-[16px]" />
-              </div>
-            </div>
+            <CodeAndShare
+              invitedCode={invitedCode}
+              snapshot={snapshot}
+              loading={userLoading || snapshotLoading}
+            />
           )}
         </div>
 
@@ -379,7 +325,11 @@ Ready to claim your points?`);
           className="rabby-points-tabs flex-1"
         >
           <Tabs.TabPane
-            tab={t('page.rabbyPoints.claim-points')}
+            tab={
+              <div className="w-[192px] pl-[20px] text-r-neutral-body text-[16px] leading-normal font-semibold text-center">
+                {t('page.rabbyPoints.earn-points')}
+              </div>
+            }
             key={'1'}
             className="max-h-full flex-1"
           >
@@ -414,7 +364,14 @@ Ready to claim your points?`);
               )}
             </div>
           </Tabs.TabPane>
-          <Tabs.TabPane tab={t('page.rabbyPoints.top-100')} key={'2'}>
+          <Tabs.TabPane
+            tab={
+              <div className="pr-[42px] text-r-neutral-body text-[16px] leading-normal font-semibold text-center">
+                {t('page.rabbyPoints.top-100')}
+              </div>
+            }
+            key={'2'}
+          >
             <div className="overflow-auto flex flex-col  pt-[16px] pb-[66px] max-h-full">
               {topUsers?.map((item, index) => (
                 <TopUserItem {...item} index={index} />

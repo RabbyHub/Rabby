@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { ClaimUserAvatar } from './ClaimUserAvatar';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 // import Lottie from 'lottie-react';
 // import * as animationData from '../../Dashboard/components/ClaimRabbyBadgeModal/success.json';
 
@@ -101,8 +102,8 @@ const Item = ({
     <div className="flex items-center justify-between">
       <span className="text-r-neutral-body text-[13px]">{label}</span>
       <span className="text-r-neutral-title-1 text-[13px] font-medium">
-        {Number(value) > 0 ? '+' : ''}
-        {value}
+        {Number(value) >= 0 ? '+' : ''}
+        {value || 0}
       </span>
     </div>
   );
@@ -144,8 +145,9 @@ const ClaimPoints = ({
     ? dayjs.unix(snapshot?.snapshot_at).format('YYYY-MM-DD HH:mm:ss')
     : '';
 
+  const debounceInvitedCode = useDebounceValue(invitedCode, 200);
   const { codeStatus, codeLoading } = useRabbyPointsInvitedCodeCheck(
-    invitedCode
+    debounceInvitedCode
   );
 
   const iconStatue = useMemo(() => {
@@ -238,7 +240,7 @@ const ClaimPoints = ({
     () => {
       setLoadingNum((s) => s + 1);
     },
-    !!snapshot && !snapshotLoading && loadingNum < list.length ? 300 : null
+    !!snapshot && !snapshotLoading && loadingNum < list.length ? 900 : null
   );
 
   const onSubmit = React.useCallback(() => {

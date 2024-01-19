@@ -7,8 +7,8 @@ import styled from 'styled-components';
 import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
 
 const Wrapper = styled.div`
-  border: 0.3px solid var(--r-neutral-line, #d3d8e0);
-  border-radius: 5px;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border-radius: 8px;
   padding: 12px 0;
   padding-top: 14px;
   .loading-button-wrapper {
@@ -35,11 +35,11 @@ export const ClaimItem = (props: ClaimItemProps) => {
     props.onClaim(props.id, props.claimable_points || 0);
   };
   return (
-    <Wrapper
-      className={clsx('border', props.claimable && 'bg-light-r-blue-light-1')}
-    >
+    <Wrapper className={clsx(props.claimable && 'bg-light-r-blue-light-1')}>
       <div className="flex items-center justify-between pb-[12px] px-[16px] border-b border-rabby-neutral-line">
-        <div>{props.title}</div>
+        <div className="text-[15px] font-medium text-r-neutral-title1">
+          {props.title}
+        </div>
         <Button
           type="primary"
           className={clsx(
@@ -76,7 +76,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
           </div>
         </Button>
       </div>
-      <div className="pt-[12px] text-r-neutral-foot font-[12px] px-[16px]">
+      <div className="pt-[12px] text-r-neutral-foot text-[12px] font-normal px-[16px]">
         {props.description}
       </div>
     </Wrapper>
@@ -85,11 +85,11 @@ export const ClaimItem = (props: ClaimItemProps) => {
 
 export const ClaimItemLoading = () => {
   return (
-    <Wrapper className="border ">
-      <div className="flex items-center justify-between pb-[12px] px-[16px] border-b border-rabby-neutral-line">
+    <Wrapper className="border-[0.5px] border-rabby-neutral-line">
+      <div className="flex items-center justify-between pb-[12px] px-[16px]  border-b border-rabby-neutral-line">
         <SkeletonInput active style={{ width: 146, height: 18 }} />
       </div>
-      <div className="pt-[12px] text-r-neutral-foot font-[12px] px-[16px]">
+      <div className="pt-[12px] text-r-neutral-foot text-[12px] px-[16px]">
         <SkeletonInput active style={{ width: 300, height: 14 }} />
       </div>
     </Wrapper>

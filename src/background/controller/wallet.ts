@@ -3603,8 +3603,7 @@ export class WalletController extends BaseController {
         method: 'personal_sign',
         params: [msg, account.address],
       },
-      session: { ...INTERNAL_REQUEST_SESSION },
-      origin: 'https://rabby.io',
+      session: { ...INTERNAL_REQUEST_SESSION, origin: 'https://rabby.io' },
     });
 
     this.setRabbyPointsSignature(account.address, signature);
