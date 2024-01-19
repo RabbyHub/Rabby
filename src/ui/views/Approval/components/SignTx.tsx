@@ -1743,6 +1743,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setInited(true);
     } catch (e) {
       Modal.error({
+        className: 'modal-support-darkmode',
         title: 'Error',
         content: e.message || JSON.stringify(e),
       });
