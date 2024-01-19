@@ -82,7 +82,8 @@ export const ImportMyMetaMaskAccount = () => {
 
             <div
               className={clsx(
-                'w-[210px] h-[44px] cursor-pointer',
+                'border border-transparent hover:border-rabby-blue-default',
+                'w-[210px] h-[44px] cursor-pointer mt-4',
                 'flex justify-center items-center gap-[6px]',
                 'text-[13px] font-medium text-r-neutral-body',
                 'rounded-[6px] bg-r-neutral-card-2'
@@ -121,7 +122,8 @@ export const ImportMyMetaMaskAccount = () => {
 
             <div
               className={clsx(
-                'w-[210px] h-[44px] cursor-pointer',
+                'border border-transparent hover:border-rabby-blue-default',
+                'w-[210px] h-[44px] cursor-pointer mt-4',
                 'flex justify-center items-center gap-[6px]',
                 'text-[13px] font-medium text-r-neutral-body',
                 'rounded-[6px] bg-r-neutral-card-2'
@@ -136,7 +138,8 @@ export const ImportMyMetaMaskAccount = () => {
 
             <div
               className={clsx(
-                'w-[210px] h-[44px]  cursor-pointer mt-12',
+                'border border-transparent hover:border-rabby-blue-default',
+                'w-[210px] h-[44px]  cursor-pointer mt-16',
                 'flex justify-center items-center gap-[6px]',
                 'text-[13px] font-medium text-r-neutral-body',
                 'rounded-[6px] bg-r-neutral-card-2'
