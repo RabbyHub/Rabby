@@ -49,7 +49,7 @@ export const ImportMyMetaMaskAccount = () => {
             background:
               'linear-gradient(180deg, rgba(251, 140, 0, 0.12) 0%, rgba(251, 140, 0, 0.00) 30.37%), var(--r-neutral-card1, #FFF)',
           }}
-          className="relative rounded-[6px] px-[12px] py-[16px] mt-20 mb-[12px]"
+          className="relative rounded-[6px] px-[12px] py-[16px] my-20"
         >
           <div className="flex items-center justify-center">
             <img
