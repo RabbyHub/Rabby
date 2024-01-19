@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { useIsKeystoneUsbAvailable } from '@/utils/keystone';
 
 const MIN_START_NO = 1;
-const MAX_START_NO = 950 + MIN_START_NO;
+const HARDENED_OFFSET = 0x80000000 - 50;
+const MAX_START_NO = HARDENED_OFFSET + MIN_START_NO;
 
 export const MAX_ACCOUNT_COUNT = 50;
 
