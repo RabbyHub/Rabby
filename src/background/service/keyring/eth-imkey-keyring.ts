@@ -89,7 +89,7 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   deserialize(opts: any = {}): Promise<void> {
-    this.hdPathType = opts.hdPathType;
+    this.hdPathType = opts.hdPathType ?? HDPathType.BIP44;
     this.accounts = opts.accounts || [];
     this.page = opts.page || 0;
     this.perPage = 5;
@@ -482,7 +482,7 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   async setHDPathType(hdPathType: HDPathType) {
-    this.hdPathType = hdPathType;
+    if (hdPathType) this.hdPathType = hdPathType;
   }
 
   async setCurrentUsedHDPathType() {
