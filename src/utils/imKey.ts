@@ -3,6 +3,8 @@ import { hasConnectedImKeyDevice } from '@/utils';
 import browser from 'webextension-polyfill';
 import { imKeyUSBVendorId } from '@/constant';
 
+const navigator = window.navigator as any;
+
 export const useImKeyDeviceConnected = () => {
   const [connected, setConnected] = useState(false);
 
@@ -26,13 +28,13 @@ export const useImKeyDeviceConnected = () => {
 
   useEffect(() => {
     detectDevice();
-    navigator.hid.addEventListener('connect', onConnect);
-    navigator.hid.addEventListener('disconnect', onDisconnect);
+    navigator.usb.addEventListener('connect', onConnect);
+    navigator.usb.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
 
     return () => {
-      navigator.hid.removeEventListener('connect', onConnect);
-      navigator.hid.removeEventListener('disconnect', onDisconnect);
+      navigator.usb.removeEventListener('connect', onConnect);
+      navigator.usb.removeEventListener('disconnect', onDisconnect);
       browser.windows.onFocusChanged.removeListener(detectDevice);
     };
   }, []);
@@ -47,16 +49,12 @@ const imKeyDevices = [
 ];
 
 async function requestImKeyDevice(): Promise<any> {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   const device = await navigator.usb.requestDevice({
     filters: imKeyDevices,
   });
   return device;
 }
 export async function getImKeyDevices(): Promise<any> {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   const devices = await navigator.usb.getDevices();
   return devices.filter((d) => d.vendorId === imKeyUSBVendorId);
 }
