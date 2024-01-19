@@ -2,15 +2,15 @@
     <g clip-path="url(#clip0_67025_63739)">
         <path
             d="M8.0001 14.3996C11.5347 14.3996 14.4001 11.5342 14.4001 7.99961C14.4001 4.46499 11.5347 1.59961 8.0001 1.59961C4.46548 1.59961 1.6001 4.46499 1.6001 7.99961C1.6001 11.5342 4.46548 14.3996 8.0001 14.3996Z"
-            stroke="#3E495E" stroke-miterlimit="10" />
-        <path d="M8 8.5V5" stroke="#3E495E" stroke-linecap="round" stroke-linejoin="round" />
+            stroke="currentColor" stroke-miterlimit="10" />
+        <path d="M8 8.5V5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
         <path
             d="M8 11.5C8.41421 11.5 8.75 11.1642 8.75 10.75C8.75 10.3358 8.41421 10 8 10C7.58579 10 7.25 10.3358 7.25 10.75C7.25 11.1642 7.58579 11.5 8 11.5Z"
-            fill="#3E495E" />
+            fill="currentColor" />
     </g>
     <defs>
         <clipPath id="clip0_67025_63739">
-            <rect width="16" height="16" fill="white" />
+            <rect width="16" height="16" fill="currentColor" />
         </clipPath>
     </defs>
 </svg>

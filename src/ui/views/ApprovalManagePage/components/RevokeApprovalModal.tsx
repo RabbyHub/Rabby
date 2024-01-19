@@ -6,8 +6,9 @@ import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { ApprovalContractItem } from './ApprovalContractItem';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
-import { IconChecked, IconNotChecked } from '@/ui/assets';
-import { formatNumber, splitNumberByStep } from '@/ui/utils';
+import { ReactComponent as RcIconCheckboxChecked } from '../icons/check-checked.svg';
+import { ReactComponent as RcIconCheckboxUnchecked } from '../icons/check-unchecked.svg';
+import { formatNumber } from '@/ui/utils';
 import clsx from 'clsx';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -30,11 +31,12 @@ import {
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
 
-import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
-import IconExternal from '../icons/icon-share.svg';
-import IconBadgeCollection from '../icons/modal-badge-collection.svg';
-import IconBadgeNFT from '../icons/modal-badge-nft.svg';
+import { ReactComponent as RcIconClose } from 'ui/assets/swap/modal-close.svg';
+import { ReactComponent as RcIconExternal } from '../icons/icon-share-cc.svg';
+import { ReactComponent as RcIconBadgeCollection } from '../icons/modal-badge-collection.svg';
+import { ReactComponent as RcIconBadgeNFT } from '../icons/modal-badge-nft.svg';
 import { ensureSuffix } from '@/utils/string';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
@@ -75,13 +77,13 @@ function NFTItemBadge({
   if (isNFTCollection) {
     return (
       <div className={className}>
-        <img className="w-[54px] h-[13px]" src={IconBadgeCollection} />
+        <ThemeIcon className="w-[54px] h-[13px]" src={RcIconBadgeCollection} />
       </div>
     );
   } else if (isNFTToken) {
     return (
       <div className={className}>
-        <img className="w-[26px] h-[13px]" src={IconBadgeNFT} />
+        <ThemeIcon className="w-[26px] h-[13px]" src={RcIconBadgeNFT} />
       </div>
     );
   }
@@ -232,11 +234,11 @@ export const RevokeApprovalModal = (props: {
           <div
             key={index}
             className={clsx(
-              'relative px-[16px] h-[56px] flex justify-between items-center bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+              'relative px-[16px] h-[56px] flex justify-between items-center bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
               index === item.list.length - 1 && 'rounded-b-[6px]',
               index !== item.list.length - 1 &&
-                'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider',
-              '-mt-1 first:mt-0'
+                'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-r-neutral-line',
+              '-mt-1 first:mt-0 dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -270,13 +272,13 @@ export const RevokeApprovalModal = (props: {
             )}
             {'spender' in e ? (
               <div className="flex flex-col ml-[8px]">
-                <div className="text-13 font-medium leading-[15px] inline-flex items-center justify-start">
+                <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] inline-flex items-center justify-start">
                   <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
                     {itemName}
                   </span>
 
                   {maybeContractForNFT && (
-                    <img
+                    <ThemeIcon
                       onClick={(evt) => {
                         evt.stopPropagation();
                         openScanLinkFromChainItem(
@@ -284,7 +286,7 @@ export const RevokeApprovalModal = (props: {
                           e.spender.id
                         );
                       }}
-                      src={IconExternal}
+                      src={RcIconExternal}
                       className={clsx(
                         'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
                       )}
@@ -298,7 +300,7 @@ export const RevokeApprovalModal = (props: {
                 />
               </div>
             ) : (
-              <div className="ml-[8px] text-13 font-medium leading-[15px]">
+              <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
                 {e.symbol}
               </div>
             )}
@@ -316,9 +318,11 @@ export const RevokeApprovalModal = (props: {
                       balanceValue: '',
                     })}
               />
-              <img
+              <ThemeIcon
                 src={
-                  selectedList.includes(index) ? IconChecked : IconNotChecked
+                  selectedList.includes(index)
+                    ? RcIconCheckboxChecked
+                    : RcIconCheckboxUnchecked
                 }
                 className="icon icon-checked w-[24px] h-[24px]"
               />
@@ -347,10 +351,10 @@ export const RevokeApprovalModal = (props: {
         <div
           key={spender.id}
           className={clsx(
-            'relative px-[16px] flex justify-between bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+            'relative px-[16px] flex justify-between bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
             index === item.list.length - 1 && 'rounded-b-[6px]',
             index !== item.list.length - 1 &&
-              'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider',
+              'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-r-neutral-line',
             !risky ? 'h-[51px] ' : 'flex-col pt-[13px]'
           )}
           onClick={(e) => {
@@ -370,7 +374,7 @@ export const RevokeApprovalModal = (props: {
               chainServerId={item.chain}
             />
             <div className="flex flex-col ml-[12px]">
-              <div className="text-13 font-medium leading-[15px] mb-2">
+              <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] mb-2">
                 {fullName}
               </div>
               <ApprovalsNameAndAddr
@@ -388,9 +392,11 @@ export const RevokeApprovalModal = (props: {
                   balanceValue={spendValues.displayBalanceText}
                 />
               )}
-              <img
+              <ThemeIcon
                 src={
-                  selectedList.includes(index) ? IconChecked : IconNotChecked
+                  selectedList.includes(index)
+                    ? RcIconCheckboxChecked
+                    : RcIconCheckboxUnchecked
                 }
                 className="icon icon-checked"
               />
@@ -444,7 +450,10 @@ export const RevokeApprovalModal = (props: {
       width={400}
       visible={visible}
       onCancel={onClose}
-      className={clsx('revoke-approval-modal', className)}
+      className={clsx(
+        'revoke-approval-modal modal-support-darkmode',
+        className
+      )}
       bodyStyle={{
         height: '640px',
         maxHeight: '640px',
@@ -452,7 +461,7 @@ export const RevokeApprovalModal = (props: {
       destroyOnClose
       footer={null}
       title={t('page.approvals.RevokeApprovalModal.title')}
-      closeIcon={<IconClose />}
+      closeIcon={<RcIconClose />}
     >
       <div>
         <div className="mt-0 mb-18">
@@ -483,7 +492,7 @@ export const RevokeApprovalModal = (props: {
       </div>
       <div
         className={clsx(
-          'absolute flex flex-col items-center justify-center bg-white left-0 bottom-0 w-full z-[99999] border-t border-gray-divider',
+          'absolute flex flex-col items-center justify-center bg-r-neutral-card1 left-0 bottom-0 w-full z-[99999] border-t border-rabby-neutral-line',
           'h-[76px]'
         )}
       >

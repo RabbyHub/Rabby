@@ -6,9 +6,10 @@ import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { useAsync, useAsyncFn } from 'react-use';
-import styled from 'styled-components';
-import imgInfo from 'ui/assets/faucet/info.svg';
-import imgDeBankTestnet from 'ui/assets/faucet/debank-testnet.svg';
+import styled, { css } from 'styled-components';
+import { ReactComponent as RcIconInfo } from 'ui/assets/faucet/info-cc.svg';
+import { ReactComponent as RcImgDeBankTestnetLight } from 'ui/assets/faucet/debank-testnet-light.svg';
+import { ReactComponent as RcImgDeBankTestnetDark } from 'ui/assets/faucet/debank-testnet-dark.svg';
 import imgUsd from 'ui/assets/faucet/usd.svg';
 import imgLoading from 'ui/assets/faucet/loading.svg';
 import imgBg from 'ui/assets/faucet/bg.png';
@@ -18,11 +19,15 @@ import { Button, message } from 'antd';
 import { ClaimRabbyBadgeModal } from '../Dashboard/components/ClaimRabbyBadgeModal';
 import { CurrentAccount } from '@/ui/component/CurrentAccout';
 import { Loading } from './Loading';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{
+  isDarkMode?: boolean;
+}>`
   min-height: 100vh;
   height: 100vh;
-  background: #f0f2f5;
+  background: var(--r-neutral-bg2, #1c1f2b);
   overflow: hidden;
   position: relative;
   z-index: 1;
@@ -32,21 +37,37 @@ const Wrapper = styled.div`
     left: 0;
     width: 400px;
     height: 217px;
-    background: #ff6238;
     z-index: -1;
+    ${(props) => {
+      if (!props.isDarkMode) {
+        return css`
+          background: #ff6238;
+        `;
+      }
+
+      return css`
+        background: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.5) 100%
+          ),
+          #ff6238;
+      `;
+    }}
   }
   .body {
     padding: 0 20px;
   }
   .title {
-    color: #fff;
+    color: var(--r-neutral-title2, #fff);
     text-align: center;
     font-size: 17px;
     font-weight: 500;
   }
 
   .container {
-    background: #fff;
+    background: var(--r-neutral-bg1, #1c1f2b);
+    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.2);
     background-image: url(${imgBg});
     background-repeat: no-repeat;
     background-position: bottom;
@@ -59,7 +80,6 @@ const Wrapper = styled.div`
     border-radius: 8px;
     padding: 24px;
     margin-top: 40px;
-    box-shadow: 0px 24px 40px 0px rgba(0, 0, 0, 0.08);
 
     &.mintedRabbyBadge {
       height: 508px;
@@ -76,7 +96,8 @@ const Wrapper = styled.div`
         pointer-events: none;
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
-        background: rgba(255, 255, 255, 0.4);
+        background: var(--r-neutral-bg1, #1c1f2b);
+        z-index: -1;
       }
     }
     .tip {
@@ -85,7 +106,7 @@ const Wrapper = styled.div`
       display: flex;
       align-items: center;
       gap: 4px;
-      color: #192945;
+      color: var(--r-neutral-body, #d3d8e0);
       font-size: 15px;
       font-weight: 400;
     }
@@ -95,7 +116,7 @@ const Wrapper = styled.div`
       display: flex;
       align-items: center;
       gap: 4px;
-      color: #192945;
+      color: var(--r-neutral-title1, #f7fafc);
       font-size: 13px;
       font-weight: 400;
     }
@@ -116,7 +137,7 @@ const Wrapper = styled.div`
       flex-direction: column;
       align-items: center;
       margin-top: 28px;
-      border-top: 0.5px solid #d3d8e0;
+      border-top: 0.5px solid var(--r-neutral-line);
       padding-top: 24px;
       margin: 0 auto;
 
@@ -140,7 +161,7 @@ const Wrapper = styled.div`
       }
       .time {
         margin-top: 8px;
-        color: #6a7587;
+        color: var(--r-neutral-foot);
         text-align: center;
         font-size: 13px;
         font-style: normal;
@@ -149,7 +170,7 @@ const Wrapper = styled.div`
       }
       .requestedTip {
         margin-top: 48px;
-        color: #3e495e;
+        color: var(--r-neutral-body);
         text-align: center;
         font-size: 15px;
         font-style: normal;
@@ -243,8 +264,10 @@ const RequestDeBankTestnetGasToken = () => {
     }
   }, [value?.is_success]);
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
-    <Wrapper>
+    <Wrapper isDarkMode={isDarkTheme}>
       <div className="header-bg" />
       <div className="body">
         <PageHeader
@@ -275,7 +298,10 @@ const RequestDeBankTestnetGasToken = () => {
           ) : (
             <>
               <div className="badgeTip">
-                <img src={imgInfo} className="w-16" />
+                <ThemeIcon
+                  src={RcIconInfo}
+                  className="w-16 text-r-neutral-title1"
+                />
                 <span>
                   {t('page.requestDebankTestnetGasToken.notMintedTip')}
                 </span>
@@ -291,7 +317,12 @@ const RequestDeBankTestnetGasToken = () => {
             </>
           )}
           <div className="faucetBox">
-            <img src={imgDeBankTestnet} className="title" />
+            <ThemeIcon
+              src={
+                !isDarkTheme ? RcImgDeBankTestnetLight : RcImgDeBankTestnetDark
+              }
+              className="title"
+            />
             <img src={imgUsd} className="usd" />
             <div className="value">0.1 USD</div>
             <div className="time">

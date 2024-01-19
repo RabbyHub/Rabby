@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useWallet } from 'ui/utils';
 import clsx from 'clsx';
-import { ALIAS_ADDRESS, CHAINS_ENUM } from '@/constant';
+import { ALIAS_ADDRESS, CHAINS_ENUM, ThemeIconType } from '@/constant';
 import { openInTab } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { copyAddress } from '@/ui/utils/clipboard';
@@ -17,6 +17,7 @@ import IconExternal from 'ui/assets/icon-share.svg';
 import './index.less';
 import { useTranslation } from 'react-i18next';
 import { getAddressScanLink } from '@/utils';
+import ThemeIcon from '../ThemeMode/ThemeIcon';
 
 interface NameAndAddressProps {
   className?: string;
@@ -24,10 +25,12 @@ interface NameAndAddressProps {
   nameClass?: string;
   addressClass?: string;
   noNameClass?: string;
-  copyIconClass?: string;
   openExternal?: boolean;
+  externalIconProps?: Partial<React.ComponentProps<typeof ThemeIcon>>;
   chainEnum?: CHAINS_ENUM;
-  copyIcon?: boolean | string;
+  copyIcon?: boolean | ThemeIconType;
+  copyIconClass?: string;
+  copyIconProps?: React.ComponentProps<typeof ThemeIcon>;
   addressSuffix?: React.ReactNode;
   /**
    * @description don't know why click event not be stopped when click copy icon,
@@ -44,8 +47,10 @@ const NameAndAddress = ({
   noNameClass = '',
   copyIconClass = '',
   openExternal = false,
+  externalIconProps = { className: copyIconClass },
   chainEnum,
   copyIcon = true,
+  copyIconProps,
   addressSuffix = null,
   __internalRestrainClickEventOnCopyIcon = false,
 }: NameAndAddressProps) => {
@@ -127,27 +132,34 @@ const NameAndAddress = ({
       </div>
       {addressSuffix || null}
       {openExternal && (
-        <img
+        <ThemeIcon
           onClick={handleClickContractId}
           src={IconExternal}
           width={16}
           height={16}
-          className={clsx('ml-6 cursor-pointer', copyIconClass)}
+          {...(externalIconProps as any)}
+          className={clsx('ml-6 cursor-pointer', externalIconProps?.className)}
         />
       )}
       {isShowCopyIcon && (
-        <img
+        <ThemeIcon
+          src={iconCopySrc}
           onClick={
             __internalRestrainClickEventOnCopyIcon
               ? handleClickCopyIcon
               : handleCopyContractAddress
           }
-          src={iconCopySrc}
           width={16}
           height={16}
-          className={clsx('ml-6 cursor-pointer', copyIconClass, {
-            success: true,
-          })}
+          {...(copyIconProps as any)}
+          className={clsx(
+            'ml-6 cursor-pointer',
+            copyIconClass,
+            {
+              success: true,
+            },
+            copyIconProps?.className
+          )}
         />
       )}
     </div>

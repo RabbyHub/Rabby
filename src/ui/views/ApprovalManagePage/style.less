@@ -40,7 +40,7 @@
   height: 100vh;
   padding-top: @page-pt-without-switchnet-tabs;
   padding-bottom: @sticky-footer-height;
-  background: @color-bg;
+  background: var(--r-neutral-bg2, #1C1F2B);
 
   .child-has-chromelike-scrollbar();
 
@@ -56,6 +56,11 @@
   .child-has-chromelike-scrollbar();
   .approval-list {
     .chromelike-scrollbar(0);
+  }
+
+  .ant-modal-header,
+  .ant-modal-content {
+    background: var(--r-neutral-bg2, #F2F4F7);
   }
 }
 
@@ -106,7 +111,7 @@
     height: 100%;
     max-height: @page-header__title-h;
     text-align: center;
-    color: @color-title;
+    color: var(--r-neutral-title1);
     vertical-align: baseline;
     display: inline-block;
   }
@@ -122,11 +127,16 @@
 
   > .search-input-wrapper {
     height: @tools-h;
-    background-color: white;
+    background-color: var(--r-neutral-card1);
     border-radius: @radius-value;
     overflow: hidden;
-    border: 1px solid transparent;
+    border: 0.5px solid var(--r-neutral-line);
     transition: ease-in 0.2s border-color;
+
+    .ant-input-affix-wrapper.search-input, .ant-input {
+      background-color: transparent;
+      color: var(--r-neutral-title1);
+    }
 
     &.is-focusing, &:hover {
       border-color: var(--r-blue-default, #7084ff);
@@ -153,13 +163,29 @@
   max-width: @main-w;
   margin: 0 auto;
 
+  .ant-spin-nested-loading {
+    border-radius: @radius-value;
+    overflow: hidden;
+  }
+
   .ant-table {
     background: transparent;
   }
 
+  &.ant-table-empty .ant-table-container {
+    overflow: hidden;
+    border-radius: @radius-value;
+    background-color: var(--r-neutral-card1);
+  }
+
+  .ant-table-container {
+  // , .ant-table-thead {
+    // background-color: var(--r-neutral-card1);
+  }
+
   .ant-table-header {
     border-radius: @radius-value;
-    background-color: white;
+    // background-color: var(--r-neutral-card1);
   }
 
   .ant-table-header, .ant-table-header > table {
@@ -176,14 +202,17 @@
     font-size: 13px;
     user-select: none;
     border-bottom: transparent;
+    background-color: var(--r-neutral-card1);
+    background: var(--r-neutral-card1);
+    color: var(--r-neutral-title1);
 
     // override default head cell style
-    &.ant-table-column-has-sorters:hover {
-      background-color: transparent;
-    }
+    // &.ant-table-column-has-sorters:hover {
+    //   background-color: transparent;
+    // }
     // ant-table-column-sort means current sorter
     &.ant-table-column-has-sorters.ant-table-column-sort {
-      background: transparent;
+      // background: transparent;
 
       .ant-table-column-sorters {
         color: var(--r-blue-default, #7084ff);
@@ -330,7 +359,8 @@
   .am-virtual-table-cell-inner {
     box-sizing: border-box;
     padding: 16px 0;
-    background: #fff;
+    background: var(--r-neutral-card1);
+    color: var(--r-neutral-title1);
     height: 100%;
     display: flex;
     align-items: center;
@@ -342,11 +372,11 @@
 
   .am-virtual-table-cell-inner .name-and-address {
     &, .address {
-      color: @color-title;
+      color: var(--r-neutral-title1);
     }
 
     .contract-name {
-      color: @color-body;
+      color: var(--r-neutral-body);
       max-width: 10em;
       .ellipsis();
     }
@@ -374,7 +404,7 @@
   border-bottom-left-radius: @radius-value;
   border-bottom-right-radius: @radius-value;
 
-  background: white;
+  background: transparent;
 
   .ant-empty-image {
     height: initial;
@@ -390,7 +420,7 @@
     margin-top: 0;
     border-bottom-left-radius: @mt-offset;
     border-bottom-right-radius: @mt-offset;
-    color: @color-body;
+    color: var(--r-neutral-body);
     text-align: center;
     font-size: 14px;
     font-weight: 400;
@@ -512,11 +542,11 @@
 
 .contract-approval-item .token-approval-item-desc {
   &, .address {
-    color: @color-title;
+    color: var(--r-neutral-title1);
   }
 
   .contract-name {
-    color: @color-body;
+    color: var(--r-neutral-body);
     max-width: 10em;
     .ellipsis();
   }
