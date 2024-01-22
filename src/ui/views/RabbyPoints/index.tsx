@@ -210,13 +210,10 @@ const RabbyPoints = () => {
           invite_code: code,
         });
         setCurrentUserCode(code);
-        message.success({
-          icon: <img src={IconSuccess} className="icon icon-success" />,
-          contnet: t('page.rabbyPoints.code-set-successfully'),
-        });
+        message.success(t('page.rabbyPoints.code-set-successfully'), 2);
       }
     },
-    [wallet.openapi, account?.address]
+    [wallet.openapi, account?.address, signature]
   );
 
   useEffect(() => {
@@ -382,7 +379,7 @@ const RabbyPoints = () => {
               className=" flex flex-col  pt-[16px] pb-[66px]"
             >
               {topUsers?.map((item, index) => (
-                <TopUserItem {...item} index={index} />
+                <TopUserItem {...item} index={index} key={item.id} />
               ))}
               {topUsers &&
                 userPointsDetail &&

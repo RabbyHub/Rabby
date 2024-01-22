@@ -110,7 +110,6 @@ export const SetReferralCode = ({
       closePopup();
     } catch (error) {
       message.error(String(error?.message || error));
-      console.error(error);
     }
   }, [onSetCode, input]);
 
