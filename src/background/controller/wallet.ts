@@ -3594,16 +3594,9 @@ export class WalletController extends BaseController {
       'utf-8'
     ).toString('hex')}`;
 
-    // const signature = await this.sendRequest<string>({
-    //   method: 'personal_sign',
-    //   params: [msg, account.address],
-    // });
-    const signature = await provider<string>({
-      data: {
-        method: 'personal_sign',
-        params: [msg, account.address],
-      },
-      session: { ...INTERNAL_REQUEST_SESSION, origin: 'https://rabby.io' },
+    const signature = await this.sendRequest<string>({
+      method: 'personal_sign',
+      params: [msg, account.address],
     });
 
     this.setRabbyPointsSignature(account.address, signature);

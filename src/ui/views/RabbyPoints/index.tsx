@@ -42,11 +42,28 @@ const Wrapper = styled.div`
     fill: white !important;
   }
   .rabby-points-tabs {
+    &.ant-tabs {
+      overflow: initial;
+    }
     .ant-tabs-nav {
       margin-bottom: 0;
     }
     .ant-tabs-content {
-      max-height: 100%;
+      /* max-height: 100%; */
+    }
+    .ant-tabs-nav {
+      position: sticky;
+      top: -16px;
+      background: var(--r-neutral-bg1, #fff);
+    }
+    .ant-tabs-tab + .ant-tabs-tab {
+      margin: 0;
+    }
+    .ant-tabs-tab-btn {
+      color: var(--r-neutral-body, #3e495e);
+      &:hover {
+        color: var(--r-blue-default, #7084ff);
+      }
     }
     .ant-tabs-nav-list {
       flex: 1;
@@ -56,6 +73,13 @@ const Wrapper = styled.div`
         padding-top: 10px;
         padding-bottom: 7px;
       }
+    }
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: var(--r-blue-default, #7084ff);
+    }
+
+    .ant-tabs-nav::before {
+      border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0) !important;
     }
   }
 `;
@@ -257,7 +281,14 @@ const RabbyPoints = () => {
 
   return (
     <Wrapper className="leading-normal flex flex-col">
-      <PageHeader closeable={false} className="mx-[20px]">
+      <PageHeader
+        closeable={false}
+        className="mx-[20px]"
+        forceShowBack
+        onBack={() => {
+          history.push('/dashboard');
+        }}
+      >
         <span className="text-[20px] font-medium text-r-neutral-title2">
           {t('page.rabbyPoints.title')}
         </span>
@@ -308,7 +339,7 @@ const RabbyPoints = () => {
 
       <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[16px] flex flex-col">
         <div className="px-20">
-          {!hadInvitedCode ? (
+          {hadInvitedCode ? (
             <SetReferralCode onSetCode={setReferralCode} />
           ) : (
             <CodeAndShare
@@ -322,18 +353,22 @@ const RabbyPoints = () => {
         <Tabs
           centered
           defaultActiveKey="1"
-          className="rabby-points-tabs flex-1"
+          // className="rabby-points-tabs flex-1"
+          className="rabby-points-tabs"
         >
           <Tabs.TabPane
             tab={
-              <div className="w-[192px] pl-[20px] text-r-neutral-body text-[16px] leading-normal font-semibold text-center">
+              <div className="w-[192px] pl-[20px]  text-[16px] leading-normal font-medium text-center">
                 {t('page.rabbyPoints.earn-points')}
               </div>
             }
             key={'1'}
-            className="max-h-full flex-1"
+            // className="max-h-full flex-1"
           >
-            <div className="overflow-auto flex flex-col gap-[12px] py-[16px] px-[20px] max-h-full">
+            <div
+              // className="flex flex-col gap-[12px] py-[16px] px-[20px] max-h-full"
+              className="flex flex-col gap-[12px] py-[16px] px-[20px] "
+            >
               {activitiesLoading ? (
                 <ClaimLoading />
               ) : (
@@ -366,13 +401,16 @@ const RabbyPoints = () => {
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={
-              <div className="pr-[42px] text-r-neutral-body text-[16px] leading-normal font-semibold text-center">
+              <div className="pr-[42px]  text-[16px] leading-normal font-medium text-center">
                 {t('page.rabbyPoints.top-100')}
               </div>
             }
             key={'2'}
           >
-            <div className="overflow-auto flex flex-col  pt-[16px] pb-[66px] max-h-full">
+            <div
+              // className="overflow-auto flex flex-col  pt-[16px] pb-[66px] max-h-full"
+              className=" flex flex-col  pt-[16px] pb-[66px]"
+            >
               {topUsers?.map((item, index) => (
                 <TopUserItem {...item} index={index} />
               ))}

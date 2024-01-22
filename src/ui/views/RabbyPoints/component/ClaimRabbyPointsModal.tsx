@@ -32,18 +32,25 @@ const StyledModal = styled(Modal)`
 `;
 
 const StyledInput = styled(Input)`
+  background: var(--r-neutral-bg1, #fff);
   &.ant-input-affix-wrapper {
     border-radius: 8px;
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
     & > input.ant-input {
       height: 44px;
       font-size: 13px;
       text-align: center;
+      background: var(--r-neutral-bg1, #fff);
+      color: var(--r-neutral-title1, #192945);
 
       &:placeholder-shown {
         color: var(--r-neutral-foot, #6a7587);
       }
     }
+  }
+  &:hover,
+  &.ant-input-affix-wrapper-focused {
+    border: 1px solid var(--r-blue-default, #7084ff);
   }
 `;
 
@@ -303,7 +310,7 @@ const ClaimPoints = ({
         value={invitedCode}
         onChange={(e) => setInvitedCode(e.target.value?.toUpperCase())}
         className={clsx(
-          'w-full mt-[22px] mb-[24px]',
+          'w-full mt-[22px]',
           invitedCode &&
             !codeLoading &&
             !codeStatus?.invite_code_exist &&
@@ -314,9 +321,17 @@ const ClaimPoints = ({
         autoCorrect="false"
       />
 
+      {!!debounceInvitedCode &&
+        !codeStatus?.invite_code_exist &&
+        !codeLoading && (
+          <div className="text-13 text-rabby-red-default mt-8 text-center">
+            {t('page.rabbyPoints.claimModal.invalid-code')}
+          </div>
+        )}
+
       <Button
         type="primary"
-        className="w-full h-[48px] text-[17px] font-medium text-r-neutral-title2"
+        className="mt-[24px] w-full h-[48px] text-[17px] font-medium text-r-neutral-title2"
         onClick={onSubmit}
       >
         {t('page.rabbyPoints.claimModal.claim')}

@@ -51,7 +51,7 @@ export const TopUserItem = (props: User) => {
         <div
           className={clsx(
             'w-[78px] text-center text-r-neutral-foot text-[15px]',
-            props.showCurrentUser && 'relative right-[-4px]'
+            props.index < 3 && props.showCurrentUser && 'relative right-[-4px]'
           )}
         >
           {props.index === 0 && (
@@ -74,7 +74,7 @@ export const TopUserItem = (props: User) => {
           )}
           {props.index > 2 && (
             <div className="ml-[23px]">
-              {props.index > 100 ? '100+' : props.index}
+              {props.index > 99 ? '100+' : props.index}
             </div>
           )}
         </div>

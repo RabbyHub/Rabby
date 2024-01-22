@@ -35,8 +35,8 @@ export const ClaimItem = (props: ClaimItemProps) => {
     props.onClaim(props.id, props.claimable_points || 0);
   };
   return (
-    <Wrapper className={clsx(props.claimable && 'bg-light-r-blue-light-1')}>
-      <div className="flex items-center justify-between pb-[12px] px-[16px] border-b border-rabby-neutral-line">
+    <Wrapper className={clsx(props.claimable && 'bg-rabby-blue-light-1')}>
+      <div className="flex items-center justify-between pb-[12px] px-[16px] border-b-[0.5px] border-rabby-neutral-line">
         <div className="text-[15px] font-medium text-r-neutral-title1">
           {props.title}
         </div>
@@ -86,7 +86,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
 export const ClaimItemLoading = () => {
   return (
     <Wrapper className="border-[0.5px] border-rabby-neutral-line">
-      <div className="flex items-center justify-between pb-[12px] px-[16px]  border-b border-rabby-neutral-line">
+      <div className="flex items-center justify-between pb-[12px] px-[16px]  border-b-[0.5px] border-rabby-neutral-line">
         <SkeletonInput active style={{ width: 146, height: 18 }} />
       </div>
       <div className="pt-[12px] text-r-neutral-foot text-[12px] px-[16px]">

@@ -1762,7 +1762,8 @@
         "rabbyUser": "Rabby Old User",
         "rabbyValuedUserBadge": "Rabby Valued User Badge",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "referral-code": "Referral Code"
+        "referral-code": "Referral Code",
+        "invalid-code": "invalid code"
       },
       "referralCode": {
         "referral-code-cannot-be-empty": "Referral code cannot be empty",
@@ -1782,7 +1783,8 @@
           "cancel": "Cancel",
           "sign": "Sign"
         }
-      }
+      },
+      "code-set-successfully": "Referral code set successfully"
     }
   },
   "component": {

@@ -50,7 +50,7 @@ export const CodeAndShare = ({
       0
     )} points for migrating my MetaMask wallet into Rabby!
 
-Everyone can get points, and use my referral code ${invitedCode} for an extra bonus.   
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
  
 Ready to claim your points?
 
@@ -68,14 +68,14 @@ https://test-rabby-io-rabby-points.vercel.app/rabby-points?code=${invitedCode}
     <div className="flex items-center justify-between text-[13px] font-medium text-r-neutral-title1">
       <div
         onClick={copyInvitedCode}
-        className="cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
+        className="border border-transparent hover:bg-rabby-blue-light1 hover:border hover:border-rabby-blue-default cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
       >
         <span>{invitedCode?.toUpperCase()}</span>
         <IconCopy className="w-[16px]" />
       </div>
       <div
         onClick={shareTwitter}
-        className="cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
+        className="border border-transparent hover:bg-rabby-blue-light1 hover:border hover:border-rabby-blue-default cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
       >
         <span>{t('page.rabbyPoints.share-on')}</span>
         <IconTwitter className="w-[16px]" />
