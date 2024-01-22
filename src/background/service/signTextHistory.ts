@@ -2,6 +2,7 @@ import { sign } from './../../ui/models/sign';
 import { createPersistStore } from 'background/utils';
 import permissionService, { ConnectedSite } from './permission';
 import { sortBy } from 'lodash';
+import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 export interface SignTextHistoryItem {
   site: ConnectedSite;
@@ -46,8 +47,23 @@ class PermissionService {
     text: string;
     type: SignTextHistoryItem['type'];
   }) => {
-    const site = permissionService.getConnectedSite(origin);
-    if (!site) return;
+    let site = permissionService.getConnectedSite(origin);
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      site = {
+        origin: INTERNAL_REQUEST_ORIGIN,
+        icon: '',
+        name: 'Rabby Wallet',
+        chain: CHAINS_ENUM.ETH,
+        isSigned: false,
+        isTop: false,
+        isConnected: true,
+      };
+    }
+
+    if (!site) {
+      return;
+    }
+
     const history = this.store.history[address.toLowerCase()] || [];
 
     this.store.history = {

@@ -10,6 +10,7 @@ import IconCopy from 'ui/assets/copy-gray.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 import { Account } from '@/background/service/preference';
+import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
   const { t } = useTranslation();
@@ -67,9 +68,15 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
               borderRadius: '2px',
             }}
           />
-          <div className="link" onClick={() => handleClickLink(item)}>
-            {item.site.origin}
-          </div>
+          {item.site?.origin === INTERNAL_REQUEST_ORIGIN ? (
+            <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-12">
+              Rabby Wallet
+            </span>
+          ) : (
+            <div className="link" onClick={() => handleClickLink(item)}>
+              {item.site.origin}
+            </div>
+          )}
         </div>
         <div className="time">{sinceTime(item.createAt / 1000)}</div>
       </div>
