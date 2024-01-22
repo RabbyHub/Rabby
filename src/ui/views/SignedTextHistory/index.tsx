@@ -59,23 +59,25 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
       </div>
       <div className="text-history__item--footer">
         <div className="site">
-          <FallbackSiteLogo
-            url={item.site.icon}
-            origin={item.site.origin}
-            width="14px"
-            height="14px"
-            style={{
-              borderRadius: '2px',
-            }}
-          />
           {item.site?.origin === INTERNAL_REQUEST_ORIGIN ? (
             <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-12">
               Rabby Wallet
             </span>
           ) : (
-            <div className="link" onClick={() => handleClickLink(item)}>
-              {item.site.origin}
-            </div>
+            <>
+              <FallbackSiteLogo
+                url={item.site.icon}
+                origin={item.site.origin}
+                width="14px"
+                height="14px"
+                style={{
+                  borderRadius: '2px',
+                }}
+              />
+              <div className="link" onClick={() => handleClickLink(item)}>
+                {item.site.origin}
+              </div>
+            </>
           )}
         </div>
         <div className="time">{sinceTime(item.createAt / 1000)}</div>
