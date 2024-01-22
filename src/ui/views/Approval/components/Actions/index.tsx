@@ -80,7 +80,6 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   background-color: var(--r-neutral-bg-1, #fff);
   border-radius: 8px;
-  overflow: hidden;
   .action-header {
     display: flex;
     justify-content: space-between;

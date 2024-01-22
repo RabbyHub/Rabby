@@ -49,7 +49,6 @@ export const SignTitle = styled.div`
 export const ActionWrapper = styled.div`
   border-radius: 8px;
   margin-bottom: 8px;
-  overflow: hidden;
   .action-header {
     display: flex;
     justify-content: space-between;
