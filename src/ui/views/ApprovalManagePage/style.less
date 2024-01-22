@@ -168,6 +168,10 @@
     overflow: hidden;
   }
 
+  .ant-spin-container.ant-spin-blur::after {
+    background-color: var(--r-neutral-bg-1, #fff);
+  }
+
   .ant-table {
     background: transparent;
   }
@@ -176,11 +180,6 @@
     overflow: hidden;
     border-radius: @radius-value;
     background-color: var(--r-neutral-card1);
-  }
-
-  .ant-table-container {
-  // , .ant-table-thead {
-    // background-color: var(--r-neutral-card1);
   }
 
   .ant-table-header {
@@ -405,6 +404,12 @@
   border-bottom-right-radius: @radius-value;
 
   background: transparent;
+
+  &.ant-empty {
+    margin-top: @mt-offset;
+    background-color: var(--r-neutral-card1);
+    border-radius: @radius-value;
+  }
 
   .ant-empty-image {
     height: initial;
