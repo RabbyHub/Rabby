@@ -49,6 +49,8 @@ const StyledInput = styled(Input)`
 
       &:placeholder-shown {
         color: var(--r-neutral-foot, #6a7587);
+        font-size: 13px;
+        font-weight: normal;
       }
     }
   }
@@ -153,7 +155,10 @@ const ClaimPoints = ({
   const avatar = logo || '';
   const name = web3Id || ellipsisAddress(account?.address || '');
   const snapshotTime = snapshot?.snapshot_at
-    ? dayjs.unix(snapshot?.snapshot_at).utc(false).format()
+    ? dayjs
+        .unix(snapshot?.snapshot_at)
+        .utc(false)
+        .format('UTC+0 YYYY-MM-DD HH:mm:ss')
     : '';
 
   const debounceInvitedCode = useDebounceValue(invitedCode, 200);

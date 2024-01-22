@@ -1750,7 +1750,8 @@
       "earn-points": "Earn Points",
       "top-100": "Top 100",
       "claimItem": {
-        "claim": "Claim"
+        "claim": "Claim",
+        "disabledTip": "No points to be claimed now"
       },
       "claimModal": {
         "title": "Claim your initial Points",

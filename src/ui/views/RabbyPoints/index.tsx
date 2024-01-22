@@ -317,12 +317,7 @@ const RabbyPoints = () => {
           )}
         </div>
 
-        <Tabs
-          centered
-          defaultActiveKey="1"
-          // className="rabby-points-tabs flex-1"
-          className="rabby-points-tabs"
-        >
+        <Tabs centered defaultActiveKey="1" className="rabby-points-tabs">
           <Tabs.TabPane
             tab={
               <div className="w-[192px] pl-[20px]  text-[16px] leading-normal font-medium text-center">
@@ -330,12 +325,8 @@ const RabbyPoints = () => {
               </div>
             }
             key={'1'}
-            // className="max-h-full flex-1"
           >
-            <div
-              // className="flex flex-col gap-[12px] py-[16px] px-[20px] max-h-full"
-              className="flex flex-col gap-[12px] py-[16px] px-[20px] "
-            >
+            <div className="flex flex-col gap-[12px] py-[16px] px-[20px] ">
               {activitiesLoading ? (
                 <ClaimLoading />
               ) : (
@@ -368,16 +359,13 @@ const RabbyPoints = () => {
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={
-              <div className="pr-[42px]  text-[16px] leading-normal font-medium text-center">
+              <div className="pr-[10px]  text-[16px] leading-normal font-medium text-center">
                 {t('page.rabbyPoints.top-100')}
               </div>
             }
             key={'2'}
           >
-            <div
-              // className="overflow-auto flex flex-col  pt-[16px] pb-[66px] max-h-full"
-              className=" flex flex-col  pt-[16px] pb-[66px]"
-            >
+            <div className=" flex flex-col  pt-[16px] pb-[66px]">
               {topUsers?.map((item, index) => (
                 <TopUserItem {...item} index={index} key={item.id} />
               ))}
