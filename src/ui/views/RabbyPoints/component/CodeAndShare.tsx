@@ -54,7 +54,7 @@ Everyone can get points, and use my referral code '${invitedCode}' for an extra 
  
 Ready to claim your points?
 
-https://test-rabby-io-rabby-points.vercel.app/rabby-points?code=${invitedCode}
+https://rabby-io-git-feat-points-debanker.vercel.app/rabby-points?code=${invitedCode}
 `);
 
     openInTab(`https://twitter.com/intent/tweet?text=${text}`);
