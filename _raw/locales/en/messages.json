@@ -277,10 +277,10 @@
       "common": {
         "description": "Description",
         "interactContract": "Interact contract",
-        "descTipSafe": "Signature does not verify address ownership or cause asset change",
+        "descTipSafe": "Signature does not cause asset change or verify address ownership",
         "descTipWarningPrivacy": "Signature may verify address ownership",
         "descTipWarningAssets": "Signature may cause asset change",
-        "descTipWarningBoth": "Signature does not verify address ownership or cause asset change"
+        "descTipWarningBoth": "Signature may cause asset change and verify address ownership"
       }
     },
     "signFooterBar": {
