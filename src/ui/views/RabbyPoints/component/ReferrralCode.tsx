@@ -8,7 +8,6 @@ import { useRabbyPointsInvitedCodeCheck } from '../hooks';
 import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'react-i18next';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
-import IconSuccess from 'ui/assets/success.svg';
 
 const StyledInput = styled(Input)`
   border-radius: 8px;
@@ -108,10 +107,6 @@ export const SetReferralCode = ({
   const submitReferralCode = React.useCallback(async () => {
     try {
       await onSetCode(input);
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        contnet: t('page.rabbyPoints.code-set-successfully'),
-      });
       closePopup();
     } catch (error) {
       message.error(String(error?.message || error));

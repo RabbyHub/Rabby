@@ -1,13 +1,7 @@
 import { PageHeader } from '@/ui/component';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import imgBg from 'ui/assets/rabby-points/rabby-points-bg.png';
@@ -24,6 +18,7 @@ import { ClaimUserAvatar } from './component/ClaimUserAvatar';
 import CountUp from 'react-countup';
 import clsx from 'clsx';
 import { CodeAndShare } from './component/CodeAndShare';
+import IconSuccess from 'ui/assets/success.svg';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -112,9 +107,10 @@ const RabbyPoints = () => {
 
   const avatar =
     userPointsDetail?.logo_thumbnail_url || userPointsDetail?.logo_url;
-  const addr = React.useMemo(() => ellipsisAddress(account?.address || ''), [
-    account?.address,
-  ]);
+  const userName = React.useMemo(
+    () => userPointsDetail?.web3_id || ellipsisAddress(account?.address || ''),
+    [userPointsDetail?.web3_id, account?.address]
+  );
   const [visible, setVisible] = useState(false);
   const [verifyVisible, setVerifyVisible] = useState(false);
   const [previousPoints, setPreviousPoints] = useState(0);
@@ -138,34 +134,6 @@ const RabbyPoints = () => {
   const hadInvitedCode = !userLoading ? !!invitedCode : true;
   const initRef = useRef(false);
 
-  const calcScore = useCallback(
-    async (code?: string) => {
-      if (!snapshot) throw new Error('no snapshot');
-      let isVaild = false;
-      if (code !== undefined) {
-        const data = await wallet.openapi.checkRabbyPointsInviteCode({ code });
-        isVaild = data.invite_code_exist;
-      }
-      const {
-        address_balance,
-        metamask_swap,
-        rabby_nadge,
-        rabby_nft,
-        rabby_old_user,
-        extra_bouns,
-      } = snapshot;
-      const score =
-        address_balance +
-        metamask_swap +
-        rabby_nadge +
-        rabby_nft +
-        rabby_old_user +
-        (isVaild ? extra_bouns : 0);
-      return score;
-    },
-    [snapshot, wallet?.openapi?.checkRabbyPointsInviteCode]
-  );
-
   const lockRef = useRef(false);
   (window as any).$$clearRabbyPoints = wallet.clearRabbyPointsSignature;
 
@@ -174,11 +142,9 @@ const RabbyPoints = () => {
       if (lockRef.current) return;
       lockRef.current = true;
       try {
-        const claimNumber = await calcScore(invite_code);
         wallet.rabbyPointVerifyAddress({
           code: invite_code,
           claimSnapshot: true,
-          claimNumber,
         });
         window.close();
       } catch (error) {
@@ -244,6 +210,10 @@ const RabbyPoints = () => {
           invite_code: code,
         });
         setCurrentUserCode(code);
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          contnet: t('page.rabbyPoints.code-set-successfully'),
+        });
       }
     },
     [wallet.openapi, account?.address]
@@ -296,7 +266,7 @@ const RabbyPoints = () => {
       <div className="text-r-neutral-title2 flex flex-col items-center relative top-[10px]">
         <div className="flex items-center justify-center gap-[6px]">
           <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
-          <span className="text-[15px]">{addr}</span>
+          <span className="text-[15px]">{userName}</span>
         </div>
         <div>
           <span
@@ -339,7 +309,7 @@ const RabbyPoints = () => {
 
       <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[16px] flex flex-col">
         <div className="px-20">
-          {hadInvitedCode ? (
+          {!hadInvitedCode ? (
             <SetReferralCode onSetCode={setReferralCode} />
           ) : (
             <CodeAndShare

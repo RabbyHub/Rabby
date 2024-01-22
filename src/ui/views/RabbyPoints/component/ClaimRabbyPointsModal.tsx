@@ -16,6 +16,9 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { ClaimUserAvatar } from './ClaimUserAvatar';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+
 // import Lottie from 'lottie-react';
 // import * as animationData from '../../Dashboard/components/ClaimRabbyBadgeModal/success.json';
 
@@ -38,7 +41,8 @@ const StyledInput = styled(Input)`
     border: 1px solid var(--r-neutral-line, #d3d8e0);
     & > input.ant-input {
       height: 44px;
-      font-size: 13px;
+      font-size: 15px;
+      font-weight: 500;
       text-align: center;
       background: var(--r-neutral-bg1, #fff);
       color: var(--r-neutral-title1, #192945);
@@ -149,7 +153,7 @@ const ClaimPoints = ({
   const avatar = logo || '';
   const name = web3Id || ellipsisAddress(account?.address || '');
   const snapshotTime = snapshot?.snapshot_at
-    ? dayjs.unix(snapshot?.snapshot_at).format('YYYY-MM-DD HH:mm:ss')
+    ? dayjs.unix(snapshot?.snapshot_at).utc(false).format()
     : '';
 
   const debounceInvitedCode = useDebounceValue(invitedCode, 200);
