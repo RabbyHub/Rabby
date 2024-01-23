@@ -60,7 +60,7 @@ export const CurveThumbnail = ({
     }
   }, []);
 
-  const isEmpty = !data || data.isEmptyAssets;
+  const isEmpty = !data;
 
   return (
     <CurveWrapper ref={divRef} className={className}>
