@@ -32,9 +32,9 @@ import IconTransactions, {
 import IconAddresses, {
   ReactComponent as RcIconAddresses,
 } from 'ui/assets/dashboard/addresses.svg';
-import IconFeedback, {
-  ReactComponent as RcIconFeedback,
-} from 'ui/assets/dashboard/feedback.svg';
+import { ReactComponent as RcIconClaimableRabbyPoints } from 'ui/assets/dashboard/claimable-points.svg';
+import { ReactComponent as RcIconUnclaimableRabbyPoints } from 'ui/assets/dashboard/unclaimable-points.svg';
+
 import IconMoreSettings, {
   ReactComponent as RcIconMoreSettings,
 } from 'ui/assets/dashboard/more-settings.svg';
@@ -51,7 +51,6 @@ import './style.less';
 import { CHAINS_ENUM, ThemeIconType } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
-import FeedbackPopup from '../Feedback';
 import { GasPriceBar } from '../GasPriceBar';
 import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
 import { useTranslation } from 'react-i18next';
@@ -83,10 +82,9 @@ export default ({
     CHAINS_ENUM.ETH
   );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
-  const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
+  const [rabbyPointsVisible, setRabbyPointVisible] = useState(false);
 
-  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
@@ -113,6 +111,16 @@ export default ({
     return;
   }, [account?.address]);
 
+  const { value: claimable } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.openapi.checkRabbyPointClaimable({
+        id: account?.address,
+      });
+      return data.claimable;
+    }
+    return false;
+  }, [account?.address]);
+
   useEffect(() => {
     if (approvalState) {
       setApprovalRiskAlert(
@@ -136,13 +144,6 @@ export default ({
     setSettingVisible(!settingVisible);
     setDashboardReload();
   };
-
-  const showFeedbackModal = useCallback(
-    (nextVal = !feedbackVisible) => {
-      setFeedbackVisible(nextVal);
-    },
-    [feedbackVisible]
-  );
 
   useEffect(() => {
     getCurrentSite();
@@ -250,10 +251,14 @@ export default ({
       badgeAlert: approvalRiskAlert > 0,
     } as IPanelItem,
     feedback: {
-      icon: RcIconFeedback,
-      eventKey: 'Feedback',
-      content: t('page.dashboard.home.panel.feedback'),
-      onClick: showFeedbackModal,
+      icon: claimable
+        ? RcIconClaimableRabbyPoints
+        : RcIconUnclaimableRabbyPoints,
+      eventKey: 'Rabby Points',
+      content: t('page.dashboard.home.panel.rabbyPoints'),
+      onClick: () => {
+        history.push('/rabby-points');
+      },
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
@@ -420,11 +425,6 @@ export default ({
         onCancel={() => {
           setBadgeModalVisible(false);
         }}
-      />
-
-      <FeedbackPopup
-        visible={feedbackVisible}
-        onClose={() => showFeedbackModal(false)}
       />
     </div>
   );

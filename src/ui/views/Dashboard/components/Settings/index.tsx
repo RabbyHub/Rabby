@@ -48,6 +48,7 @@ import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
+import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -55,6 +56,7 @@ import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import FeedbackPopup from '../Feedback';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -498,6 +500,8 @@ const SettingsInner = ({
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
   );
@@ -841,6 +845,25 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.aboutUs'),
       items: [
         {
+          leftIcon: RcIconFeedback,
+          content: t('page.dashboard.home.panel.feedback'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'feedback',
+            });
+            setFeedbackVisible(true);
+            reportSettings('feedback');
+          },
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
           leftIcon: RcIconSettingsAboutVersion,
           content: t('page.dashboard.settings.currentVersion'),
           onClick: () => {
@@ -1143,6 +1166,10 @@ const SettingsInner = ({
         onClose={() => {
           setConnectedDappsVisible(false);
         }}
+      />
+      <FeedbackPopup
+        visible={feedbackVisible}
+        onClose={() => setFeedbackVisible(false)}
       />
     </div>
   );
