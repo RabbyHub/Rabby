@@ -17,6 +17,7 @@ import { QRCodeManager } from './QRCodeManager';
 import { ReactComponent as TrezorSVG } from 'ui/assets/walletlogo/trezor.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
+import { ReactComponent as ImKeySVG } from 'ui/assets/walletlogo/imkey.svg';
 import { ReactComponent as RcMnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink-cc.svg';
 import { ReactComponent as GridPlusSVG } from '@/ui/assets/walletlogo/gridplus.svg';
 import KeyStoneSVG from '@/ui/assets/walletlogo/keystone.svg';
@@ -26,6 +27,7 @@ import { ReactComponent as BitBox02SVG } from '@/ui/assets/walletlogo/bitbox02.s
 import { ReactComponent as imtokenOfflineSVG } from '@/ui/assets/walletlogo/imTokenOffline.svg';
 import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
+import { ImKeyManager } from './ImKeyManager';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -38,6 +40,7 @@ const LOGO_MAP = {
   [WALLET_BRAND_TYPES.COOLWALLET]: CoolWalletSVG,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02SVG,
   [WALLET_BRAND_TYPES.IMTOKENOFFLINE]: imtokenOfflineSVG,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: ImKeySVG,
 };
 
 const MANAGER_MAP = {
@@ -48,6 +51,7 @@ const MANAGER_MAP = {
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: GridPlusManager,
   [HARDWARE_KEYRING_TYPES.Keystone.type]: QRCodeManager,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: BitBox02Manager,
+  [HARDWARE_KEYRING_TYPES.ImKey.type]: ImKeyManager,
 };
 
 export const HDManager: React.FC<StateProviderProps> = ({
@@ -85,6 +89,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
     [HARDWARE_KEYRING_TYPES.BitBox02.type]: t(
       'page.newAddress.hd.manageBitbox02'
     ),
+    [HARDWARE_KEYRING_TYPES.ImKey.type]: t('page.newAddress.hd.manageImKey'),
   };
 
   React.useEffect(() => {

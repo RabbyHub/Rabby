@@ -173,6 +173,8 @@ const AddAddressOptions = () => {
           pathname: '/import/coinbase',
           state: params,
         });
+      } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.ImKeyConnect) {
+        openInternalPageInTab('import/hardware/imkey-connect');
       } else {
         history.push({
           pathname: '/import/wallet-connect',

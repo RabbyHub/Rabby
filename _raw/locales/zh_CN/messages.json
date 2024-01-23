@@ -316,7 +316,12 @@
           "doc3": "批准与电脑的连接",
           "reconnect": "如果无法使用，请尝试<1>从头开始重新连接。</1>"
         },
-        "howToSwitch": "如何切换"
+        "howToSwitch": "如何切换",
+        "imkey": {
+          "doc1": "插入 imKey",
+          "doc2": "输入 PIN 码解锁 imKey"
+        },
+        "howToConnectImKey": "如何连接 imKey"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe 地址不支持 {{chain}}"
@@ -612,7 +617,8 @@
             "content": "不支持导入多个 {{0}} 设备。如果你切换到新的 {{0}} 设备，需要在开始导入过程之前，删除当前设备的所有地址。"
           },
           "switchAnother": "切换到另一个{{0}}"
-        }
+        },
+        "manageImKey": "管理 imKey"
       },
       "importYourKeystore": "导入你的 KeyStore",
       "incorrectPassword": "密码错误",
@@ -630,6 +636,9 @@
         "inputSafeModuleAddress": "Input Safe Module address",
         "invalidAddress": "Invalid address",
         "whichChainIsYourCoboAddressOn": "Which chain is your cobo address on"
+      },
+      "imkey": {
+        "title": "连接 imKey"
       }
     },
     "activities": {
@@ -1124,7 +1133,9 @@
       "resend": "重试",
       "submitTx": "提交",
       "testnet": "测试网",
-      "mainnet": "主网"
+      "mainnet": "主网",
+      "imKeyNotConnected": "imKey 未连接",
+      "imKeyConnected": "imKey 已连接"
     },
     "signText": {
       "createKey": {
@@ -1344,6 +1355,13 @@
         "error": {
           "pendingList": "Pending列表获取失败, <1/><2>重试</2>"
         }
+      },
+      "common": {
+        "description": "描述",
+        "descTipSafe": "该签名不涉及资产变动和身份验证权限",
+        "descTipWarningPrivacy": "签名可能涉及身份验证权限",
+        "descTipWarningAssets": "签名可能涉及资产变动",
+        "descTipWarningBoth": "该签名不涉及资产变动和身份验证权限"
       }
     },
     "signTypedData": {
@@ -1647,7 +1665,9 @@
       "ledgerNotConnected": "Ledger 未连接",
       "ledgerConnected": "Ledger 已连接",
       "keystoneConnected": "Keystone 已连接",
-      "keystoneNotConnected": "Keystone 未连接"
+      "keystoneNotConnected": "Keystone 未连接",
+      "imKeyrNotConnected": "imKey 未连接",
+      "imKeyConnected": "imKey 已连接"
     },
     "Contact": {
       "AddressItem": {

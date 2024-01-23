@@ -2454,6 +2454,15 @@ export class WalletController extends BaseController {
     await keyringService.persistAllKeyrings();
   };
 
+  authorizeImKeyHIDPermission = async () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.IMKEY
+    );
+    if (!keyring) return;
+    await keyring.authorizeHIDPermission();
+    await keyringService.persistAllKeyrings();
+  };
+
   checkLedgerHasHIDPermission = () => {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER

@@ -47,6 +47,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'CommonWaiting',
   'PrivatekeyWaiting',
   'CoinbaseWaiting',
+  'ImKeyHardwareWaiting',
 ];
 
 export type StatsData = {
