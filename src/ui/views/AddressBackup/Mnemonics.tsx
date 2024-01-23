@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import QRCode from 'qrcode.react';
 import { Button } from 'antd';
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
+import { ReactComponent as RcIconCopyCC } from 'ui/assets/component/icon-copy-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
@@ -15,6 +13,7 @@ import clsx from 'clsx';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { useHistory, useLocation } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const AddressBackup = () => {
   const wallet = useWallet();
@@ -81,7 +80,7 @@ const AddressBackup = () => {
             style={masked ? { filter: 'blur(3px)' } : {}}
           >
             <WordsMatrix
-              className="w-full"
+              className="w-full bg-r-neutral-card1"
               focusable={false}
               closable={false}
               words={data.split(' ')}
@@ -90,9 +89,15 @@ const AddressBackup = () => {
         </div>
         <div
           onClick={onCopyMnemonics}
-          className={clsx('copy', masked ? 'invisible' : 'visible')}
+          className={clsx(
+            'copy text-r-neutral-foot',
+            masked ? 'invisible' : 'visible'
+          )}
         >
-          <img src={IconCopy} />
+          <ThemeIcon
+            src={RcIconCopyCC}
+            className="text-r-neutral-foot w-[16px] h-[16px]"
+          />
           {t('page.backupSeedPhrase.copySeedPhrase')}
         </div>
       </div>

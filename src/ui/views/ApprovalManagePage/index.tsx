@@ -21,12 +21,12 @@ import PillsSwitch from '@/ui/component/PillsSwitch';
 import IconSearch from 'ui/assets/search.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 
-import IconQuestion from './icons/question.svg';
-import IconRowArrowRight from './icons/row-arrow-right.svg';
-import IconCheckboxChecked from './icons/check-checked.svg';
-import IconCheckboxIndeterminate from './icons/check-indeterminate.svg';
-import IconCheckboxUnchecked from './icons/check-unchecked.svg';
-import IconExternal from './icons/icon-share.svg';
+import { ReactComponent as RcIconQuestionCC } from './icons/question-cc.svg';
+import { ReactComponent as RcIconRowArrowRightCC } from './icons/row-arrow-right-cc.svg';
+import { ReactComponent as RcIconCheckboxChecked } from './icons/check-checked.svg';
+import { ReactComponent as RcIconCheckboxIndeterminate } from './icons/check-indeterminate.svg';
+import { ReactComponent as RcIconCheckboxUnchecked } from './icons/check-unchecked.svg';
+import { ReactComponent as RcIconExternal } from './icons/icon-share-cc.svg';
 
 import { useApprovalsPage, useTableScrollableHeight } from './useApprovalsPage';
 import {
@@ -67,6 +67,7 @@ import NetSwitchTabs, {
 import { useTranslation } from 'react-i18next';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useTitle } from 'ahooks';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -108,7 +109,7 @@ function getColumnsForContract({
 
         return (
           <div
-            className="block h-[100%] w-[100%] flex items-center justify-center"
+            className="h-[100%] w-[100%] flex items-center justify-center"
             onClick={(evt) => {
               evt.stopPropagation();
 
@@ -129,19 +130,19 @@ function getColumnsForContract({
             }}
           >
             {isIndeterminate ? (
-              <img
+              <ThemeIcon
                 className="J_indeterminate w-[20px] h-[20px]"
-                src={IconCheckboxIndeterminate}
+                src={RcIconCheckboxIndeterminate}
               />
             ) : selectedContracts.length ? (
-              <img
+              <ThemeIcon
                 className="J_checked w-[20px] h-[20px]"
-                src={IconCheckboxChecked}
+                src={RcIconCheckboxChecked}
               />
             ) : (
-              <img
+              <ThemeIcon
                 className="J_unchecked w-[20px] h-[20px]"
-                src={IconCheckboxUnchecked}
+                src={RcIconCheckboxUnchecked}
               />
             )}
           </div>
@@ -185,6 +186,7 @@ function getColumnsForContract({
                 addressClass=""
                 address={row.id}
                 chainEnum={chainItem.enum}
+                copyIconClass="text-r-neutral-body"
                 addressSuffix={
                   <>
                     <Tooltip
@@ -195,13 +197,15 @@ function getColumnsForContract({
                         ({row.name || 'Unknown'})
                       </span>
                     </Tooltip>
-                    <img
+                    <ThemeIcon
                       onClick={(evt) => {
                         evt.stopPropagation();
                         openScanLinkFromChainItem(chainItem?.scanLink, row.id);
                       }}
-                      src={IconExternal}
-                      className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+                      src={RcIconExternal}
+                      className={clsx(
+                        'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
+                      )}
                     />
                   </>
                 }
@@ -259,12 +263,13 @@ function getColumnsForContract({
               }
               // visible
             >
-              <img
+              <ThemeIcon
                 className={clsx(
                   'ml-[4px] w-[12px] h-[12px] relative',
-                  IS_WINDOWS && 'top-[1px]'
+                  IS_WINDOWS && 'top-[1px]',
+                  'text-r-neutral-title1'
                 )}
-                src={IconQuestion}
+                src={RcIconQuestionCC}
               />
             </Tooltip>
           </span>
@@ -539,7 +544,10 @@ function getColumnsForContract({
               )}
             </span>
 
-            <img className="ml-[4px]" src={IconRowArrowRight} />
+            <ThemeIcon
+              className="ml-[4px] text-r-neutral-title1"
+              src={RcIconRowArrowRightCC}
+            />
           </div>
         );
       },
@@ -577,14 +585,14 @@ function getColumnsForAsset({
         return (
           <div className="block h-[100%] w-[100%] flex items-center justify-center">
             {isSelected(row) ? (
-              <img
+              <ThemeIcon
                 className="J_checked w-[20px] h-[20px]"
-                src={IconCheckboxChecked}
+                src={RcIconCheckboxChecked}
               />
             ) : (
-              <img
+              <ThemeIcon
                 className="J_unchecked w-[20px] h-[20px]"
-                src={IconCheckboxUnchecked}
+                src={RcIconCheckboxUnchecked}
               />
             )}
           </div>
@@ -672,13 +680,15 @@ function getColumnsForAsset({
           );
 
           const imgNode = (
-            <img
+            <ThemeIcon
               onClick={(evt) => {
                 evt.stopPropagation();
                 openScanLinkFromChainItem(chainItem?.scanLink, asset.id);
               }}
-              src={IconExternal}
-              className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+              src={RcIconExternal}
+              className={clsx(
+                'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
+              )}
             />
           );
 
@@ -798,6 +808,7 @@ function getColumnsForAsset({
               addressClass=""
               address={spender.id || ''}
               chainEnum={chainItem?.enum}
+              copyIconClass="text-r-neutral-body"
               addressSuffix={
                 <>
                   <Tooltip
@@ -808,7 +819,7 @@ function getColumnsForAsset({
                       ({protocolName})
                     </span>
                   </Tooltip>
-                  <img
+                  <ThemeIcon
                     onClick={(evt) => {
                       evt.stopPropagation();
                       openScanLinkFromChainItem(
@@ -816,8 +827,10 @@ function getColumnsForAsset({
                         spender.id
                       );
                     }}
-                    src={IconExternal}
-                    className={clsx('ml-6 w-[16px] h-[16px] cursor-pointer')}
+                    src={RcIconExternal}
+                    className={clsx(
+                      'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
+                    )}
                   />
                 </>
               }
@@ -1151,7 +1164,7 @@ const ApprovalManagePage = () => {
               address: ellipsisAddress(account?.address || ''),
             })}
             {account?.alianName && (
-              <span className="text-[#4b4d59] text-[20px] font-normal">
+              <span className="text-r-neutral-foot text-[20px] font-normal">
                 {' '}
                 ({account?.alianName})
               </span>
@@ -1179,7 +1192,8 @@ const ApprovalManagePage = () => {
               }
               onTabChange={(key) => setFilterType(key)}
               itemClassname="text-[15px] w-[148px] h-[40px]"
-              itemClassnameInActive="text-[#707280]"
+              itemClassnameActive="bg-r-neutral-bg-1"
+              itemClassnameInActive={'text-r-neutral-body'}
             />
 
             <SearchInput

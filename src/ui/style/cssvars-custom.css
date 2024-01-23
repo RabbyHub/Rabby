@@ -1,6 +1,8 @@
 :root {
   --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.4);
   --rabby-custom-ant-modal-mask: rgba(0, 0, 0, 0.4);
+  
+  --rabby-custom-box-shadow__gas-top-up: 0px 8px 20px 0px rgba(0, 0, 0, 0.10);
 }
 
 html.dark,
@@ -10,4 +12,5 @@ body.dark {
   --rabby-custom-ant-drawer-mask: rgba(0, 0, 0, 0.8);
   --rabby-custom-ant-modal-mask: rgba(0, 0, 0, 0.8);
 
+  --rabby-custom-box-shadow__gas-top-up: 0px 16px 20px 0px rgba(0, 0, 0, 0.20);
 }

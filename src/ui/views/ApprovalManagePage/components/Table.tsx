@@ -15,7 +15,7 @@ import ResizeObserver from 'rc-resize-observer';
 import { VariableSizeGrid as VGrid, areEqual } from 'react-window';
 import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
-import IconNoMatch from '../icons/no-match.svg';
+import { ReactComponent as RcIconNoMatchCC } from '../icons/no-match-cc.svg';
 import { SorterResult } from 'antd/lib/table/interface';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +33,9 @@ function TableBodyEmpty({
   return (
     <Empty
       className="am-virtual-table-empty"
-      image={IconNoMatch}
+      image={
+        <RcIconNoMatchCC className="w-[52px] h-[52px] text-r-neutral-body" />
+      }
       description={isLoading ? loadingText : noMatchText}
     />
   );

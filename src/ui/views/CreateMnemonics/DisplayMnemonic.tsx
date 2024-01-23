@@ -133,7 +133,7 @@ const DisplayMnemonic = () => {
                 focusable={false}
                 closable={false}
                 words={mnemonics.split(' ')}
-                className="bg-r-neutral-bg-2 border-[0.5px] border-rabby-neutral-line"
+                className="bg-r-neutral-card-3 border-[0.5px] border-rabby-neutral-line"
               />
             </div>
           </MnemonicsWrapper>
