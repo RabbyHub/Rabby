@@ -74,7 +74,7 @@ export const TopUserItem = (props: User) => {
           )}
           {props.index > 2 && (
             <div className="ml-[23px]">
-              {props.index > 99 ? '100+' : props.index}
+              {props.index > 99 ? '100+' : props.index + 1}
             </div>
           )}
         </div>
