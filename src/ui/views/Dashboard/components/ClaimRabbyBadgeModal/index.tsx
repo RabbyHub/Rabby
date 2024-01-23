@@ -257,8 +257,7 @@ const ClaimRabbyBadge = ({ onClaimed }: { onClaimed?: () => void }) => {
     }
   }, [code, currentAccount?.address, mint]);
 
-  // const noCode = !claimeInfo?.has_claimed;
-  const noCode = false;
+  const noCode = !claimeInfo?.has_claimed;
   const loading = badgeHasClaimedLoading || badgeHasMintedLoading;
 
   const onInputChange = useCallback((e) => {
