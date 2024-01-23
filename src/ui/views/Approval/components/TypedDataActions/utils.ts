@@ -74,6 +74,11 @@ export interface TypedDataActionData {
   coboSafeModificationDelegatedAddress?: SubmitSafeRoleModificationAction;
   coboSafeModificationRole?: SubmitDelegatedAddressModificationAction;
   coboSafeModificationTokenApproval?: SubmitTokenApprovalModificationAction;
+  common?: {
+    desc: string;
+    is_asset_changed: boolean;
+    is_involving_privacy: boolean;
+  };
 }
 
 export const parseAction = (
@@ -191,7 +196,9 @@ export const parseAction = (
       result.coboSafeModificationTokenApproval = data.action
         .data as SubmitTokenApprovalModificationAction;
       return result;
-
+    case null:
+      result.common = data.action as any;
+      return result;
     default:
       break;
   }
@@ -552,6 +559,17 @@ export const fetchRequireData = async (
       apiProvider
     );
   }
+  if (actionData.common) {
+    if (chain && actionData.contractId) {
+      const contractRequireData = await fetchContractRequireData(
+        actionData.contractId,
+        chain.serverId,
+        sender,
+        apiProvider
+      );
+      return contractRequireData;
+    }
+  }
   return null;
 };
 
@@ -593,6 +611,9 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
   }
   if (data?.coboSafeModificationTokenApproval) {
     return t('page.signTx.coboSafeModificationTokenApproval.title');
+  }
+  if (data?.common) {
+    return data.common.desc;
   }
   return t('page.signTx.unknownAction');
 };

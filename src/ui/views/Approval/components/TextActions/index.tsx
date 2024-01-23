@@ -19,6 +19,7 @@ import clsx from 'clsx';
 import { Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { CommonAction } from '../CommonAction';
 
 const { TabPane } = Tabs;
 
@@ -263,6 +264,9 @@ const Actions = ({
                 data={data.verifyAddress}
                 engineResults={engineResults}
               />
+            )}
+            {data.common && (
+              <CommonAction data={data.common} engineResults={engineResults} />
             )}
           </div>
         )}

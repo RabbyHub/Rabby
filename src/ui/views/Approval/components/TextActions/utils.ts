@@ -10,6 +10,11 @@ export interface TextActionData {
   sender: string;
   createKey?: CreateKeyAction;
   verifyAddress?: VerifyAddressAction;
+  common?: {
+    desc: string;
+    is_asset_changed: boolean;
+    is_involving_privacy: boolean;
+  };
 }
 
 export const parseAction = (
@@ -27,8 +32,12 @@ export const parseAction = (
     case 'verify_address':
       result.verifyAddress = data.action.data as VerifyAddressAction;
       return result;
+    case null:
+      result.common = data.action as any;
+      return result;
+    default:
+      return null;
   }
-  return null;
 };
 
 export const formatSecurityEngineCtx = ({
@@ -65,6 +74,9 @@ export const getActionTypeText = (data: TextActionData | null) => {
   }
   if (data?.verifyAddress) {
     return t('page.signTypedData.verifyAddress.title');
+  }
+  if (data?.common) {
+    return data.common.desc;
   }
   return t('page.signTx.unknownAction');
 };
