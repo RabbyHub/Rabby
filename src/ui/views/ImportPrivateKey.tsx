@@ -145,7 +145,7 @@ const ImportPrivateKey = () => {
               ]}
             >
               <Input
-                className={'h-[52px] p-16'}
+                className={'h-[52px] p-16 border-bright-on-active'}
                 placeholder={t('page.newAddress.privateKey.placeholder')}
                 autoFocus
                 spellCheck={false}

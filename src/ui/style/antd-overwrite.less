@@ -306,6 +306,12 @@
 ---------------------*/
 .ant-input {
   line-height: 1;
+
+  &.border-bright-on-active {
+    &:active, &:focus, &:hover {
+      border-color: var(--r-blue-default);
+    }
+  }
 }
 
 textarea {
