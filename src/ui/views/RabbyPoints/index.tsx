@@ -18,7 +18,6 @@ import { ClaimUserAvatar } from './component/ClaimUserAvatar';
 import CountUp from 'react-countup';
 import clsx from 'clsx';
 import { CodeAndShare } from './component/CodeAndShare';
-import IconSuccess from 'ui/assets/success.svg';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -136,7 +135,6 @@ const RabbyPoints = () => {
   const initRef = useRef(false);
 
   const lockRef = useRef(false);
-  (window as any).$$clearRabbyPoints = wallet.clearRabbyPointsSignature;
 
   const claimSnapshot = React.useCallback(
     async (invite_code?: string) => {
