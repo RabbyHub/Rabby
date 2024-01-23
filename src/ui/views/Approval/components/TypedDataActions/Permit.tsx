@@ -88,10 +88,14 @@ const Permit = ({
               logoRadius="100%"
             />
             <ul className="desc-list">
-              <li>
-                {t('page.signTx.tokenApprove.myBalance')}{' '}
-                <span>{formatAmount(tokenBalance)}</span>{' '}
-                {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+              <li className="flex gap-x-4">
+                <span className="whitespace-nowrap">
+                  {t('page.signTx.tokenApprove.myBalance')}
+                </span>
+                <Values.TokenAmount value={tokenBalance} />
+                <span>
+                  {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                </span>
               </li>
             </ul>
           </Row>
