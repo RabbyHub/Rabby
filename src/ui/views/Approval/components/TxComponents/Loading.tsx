@@ -1,7 +1,8 @@
 import React from 'react';
 import { Skeleton } from 'antd';
-import { ActionWrapper, SignTitle } from '../Actions';
+import { SignTitle } from '../Actions';
 import { Col, Row, Table } from '../Actions/components/Table';
+import { ActionWrapper } from '../ActionWrapper';
 
 const RowLoading: React.FC<{
   itemCount?: number;
