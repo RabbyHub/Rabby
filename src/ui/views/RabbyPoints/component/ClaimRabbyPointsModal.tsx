@@ -179,9 +179,7 @@ const ClaimPoints = ({
       );
     }
     if (!codeStatus?.invite_code_exist) {
-      return (
-        <IconInputError viewBox="0 0 16 16" className="w-[16px] h-[16px]" />
-      );
+      return <div className="w-0" />;
     }
     return (
       <IconInputChecked viewBox="0 0 16 16" className="w-[16px] h-[16px]" />
@@ -297,7 +295,7 @@ const ClaimPoints = ({
       >
         {titleLoading ? '' : points}
       </div>
-      <div className="rounded-[8px] bg-r-neutral-card-3 p-[12px] pb-[16px]">
+      <div className="rounded-[8px] bg-r-neutral-card-3 px-[12px] py-[16px]">
         <div className="text-center text-[10px] text-[#7c86c8] mb-[12px]">
           {t('page.rabbyPoints.claimModal.snapshotTime', {
             time: snapshotTime,

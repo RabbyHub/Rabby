@@ -117,6 +117,7 @@ const RabbyPoints = () => {
 
   const [currentPoints, setCurrentPoint] = useState(0);
   const [showDiffPoints, setShowDiffPoints] = useState(false);
+  const [diffPoints, setDiffPoints] = useState(0);
 
   useEffect(() => {
     setPreviousPoints(userPointsDetail?.claimed_points || 0);
@@ -180,6 +181,7 @@ const RabbyPoints = () => {
           });
           setCurrentPoint((e) => {
             setPreviousPoints(e);
+            setDiffPoints(points);
             return e + points;
           });
           refreshUserPoints();
@@ -279,6 +281,7 @@ const RabbyPoints = () => {
               separator=","
               onStart={() => {
                 if (previousPoints !== currentPoints) {
+                  setDiffPoints(currentPoints - previousPoints);
                   setShowDiffPoints(true);
                 }
               }}
@@ -293,7 +296,7 @@ const RabbyPoints = () => {
             />
             {showDiffPoints && (
               <span className="absolute right-0 top-[-12px] text-[14px] font-normal">
-                +{currentPoints - previousPoints}
+                +{diffPoints}
               </span>
             )}
           </span>
@@ -313,6 +316,7 @@ const RabbyPoints = () => {
               invitedCode={invitedCode}
               snapshot={snapshot}
               loading={userLoading || snapshotLoading}
+              usedOtherInvitedCode={!!(userPointsDetail as any)?.inviter_code}
             />
           )}
         </div>

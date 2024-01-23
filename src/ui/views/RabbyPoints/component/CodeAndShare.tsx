@@ -12,10 +12,12 @@ export const CodeAndShare = ({
   invitedCode,
   snapshot,
   loading,
+  usedOtherInvitedCode,
 }: {
   loading?: boolean;
   invitedCode?: string;
   snapshot?: ReturnType<typeof useRabbyPoints>['snapshot'];
+  usedOtherInvitedCode?: boolean;
 }) => {
   const { t } = useTranslation();
   const copyInvitedCode = React.useCallback(() => {
@@ -42,20 +44,31 @@ export const CodeAndShare = ({
         rabby_nadge +
         rabby_nft +
         rabby_old_user +
-        extra_bouns,
+        (usedOtherInvitedCode ? extra_bouns : 0),
       0
     );
-    const text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
-      snapshot.extra_bouns,
-      0
-    )} points for migrating my MetaMask wallet into Rabby!
+
+    let text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
 
 Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
  
 Ready to claim your points?
 
-https://rabby-io-git-feat-points-debanker.vercel.app/rabby-points?code=${invitedCode}
+https://rabby.io/rabby-points?code=${invitedCode}
 `);
+    if (snapshot.metamask_swap) {
+      text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
+        snapshot.metamask_swap,
+        0
+      )} points for migrating my MetaMask wallet into Rabby!
+  
+  Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+   
+  Ready to claim your points?
+  
+  https://rabby.io/rabby-points?code=${invitedCode}
+  `);
+    }
 
     openInTab(`https://twitter.com/intent/tweet?text=${text}`);
   };
