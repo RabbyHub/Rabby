@@ -466,7 +466,7 @@ const RequestDeBankTestnetGasToken = () => {
           onClick={() => {
             history.push('/request-debank-testnet-gas-token');
           }}
-          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#564A46] font-medium hover:border-[#FF6238]"
+          className="text-[#FF6238] bg-[#FFF4F1] dark:bg-[#43332F] font-medium hover:border-[#FF6238]"
         >
           {t('page.dashboard.settings.requestDeBankTestnetGasToken')}
         </Field>

@@ -330,7 +330,7 @@ export const GasTopUp = () => {
         <div
           className="w-[360px] h-[284px] bg-r-neutral-bg-1 rounded-[6px] px-[16px] py-[32px]"
           style={{
-            boxShadow: '0px 16px 20px 0px rgba(0, 0, 0, 0.20)',
+            boxShadow: 'var(--rabby-custom-box-shadow__gas-top-up)',
           }}
         >
           <div className="text-15 font-medium text-r-neutral-title-1 mb-12">

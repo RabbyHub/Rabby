@@ -62,6 +62,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
         '#/import/hardware/qrcode',
 
         '#/dapp-search',
+        '#/approval-manage',
       ].includes(hashValue)
     );
   }

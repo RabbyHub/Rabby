@@ -36,12 +36,12 @@ const CurrentAccountWrapper = styled.div`
     color: #fff;
   }
   &.success {
-    background: #f5f6fa;
+    background: var(--r-neutral-card2, rgba(255, 255, 255, 0.06));
     .name {
-      color: #13141a;
+      color: var(--r-neutral-title1, #f7fafc);
     }
     .addr {
-      color: #4b4d59;
+      color: var(--r-neutral-body, #d3d8e0);
     }
   }
 `;

@@ -81,11 +81,12 @@ NetSwitchTabs.ApprovalsPage = function ApprovalsPage(props: SwitchTabProps) {
     <PillsSwitch
       {...props}
       className={clsx(
-        'flex bg-[#e2e6ec] w-[228px] h-[32px] p-[2px]',
+        'flex bg-r-neutral-line w-[228px] h-[32px] p-[2px]',
         props.className
       )}
       itemClassname={clsx('w-[112px]')}
-      itemClassnameInActive={clsx('text-[#4b4d59]')}
+      itemClassnameActive="bg-r-neutral-bg-1"
+      itemClassnameInActive={clsx('text-r-neutral-body')}
       options={switchOptions}
     />
   );
