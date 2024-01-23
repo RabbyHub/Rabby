@@ -38,6 +38,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const customRPC = useRabbySelector((s) => s.customRPC.customRPC);
 
   const handleClickSearch = () => {
+    matomoRequestEvent({
+      category: 'DappsSearch',
+      action: 'Dapps_Search_Enter',
+    });
     openInternalPageInTab('dapp-search');
   };
 

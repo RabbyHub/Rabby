@@ -1,5 +1,6 @@
 import FallbackImage from '@/ui/component/FallbackSiteLogo';
 import { openInTab } from '@/ui/utils';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import { Divider } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -45,6 +46,13 @@ export const DappCard = ({
       )}
       onClick={() => {
         openInTab(`https://${data.id}`, false);
+        matomoRequestEvent({
+          category: 'DappsSearch',
+          action:
+            size === 'small'
+              ? 'Dapps_Search_Open_Favorite'
+              : 'Dapps_Search_Open',
+        });
       }}
     >
       <div className="flex items-center ">
