@@ -248,7 +248,7 @@ const TokenApprove = ({
                 <span
                   className={clsx(
                     new BigNumber(approveAmount).gt(tokenBalance)
-                      ? 'underline cursor-pointer'
+                      ? 'underline cursor-pointer text-r-blue-default font-medium'
                       : ''
                   )}
                   onClick={handleClickTokenBalance}

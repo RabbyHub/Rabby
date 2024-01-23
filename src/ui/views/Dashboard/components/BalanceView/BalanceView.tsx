@@ -202,7 +202,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             )}
           >
             {currentIsLoss ? '-' : '+'}
-            <span>{currentChangePercent}</span>
+            <span>
+              {currentChangePercent === '0%' ? '0.00%' : currentChangePercent}
+            </span>
             {currentChangeValue ? (
               <span className="ml-4">({currentChangeValue})</span>
             ) : null}
@@ -282,7 +284,16 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>
-            ) : null}
+            ) : (
+              <span
+                className={clsx(
+                  'text-14 text-r-neutral-title-2',
+                  !currentHover && 'opacity-70'
+                )}
+              >
+                {t('page.dashboard.assets.noAssets')}
+              </span>
+            )}
           </div>
           <div className={clsx('h-[80px] w-full relative')}>
             {(!success && !curveData) || hiddenBalance ? null : curveLoading ? (
