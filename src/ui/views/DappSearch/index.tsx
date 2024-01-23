@@ -21,6 +21,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -115,6 +116,13 @@ export const DappSearchPage = () => {
     async (d) => {
       if (!d?.next) {
         ref.current?.scrollTo(0, 0);
+        if (debouncedSearchValue) {
+          matomoRequestEvent({
+            category: 'DappsSearch',
+            action: 'Dapps_Search_Begin',
+            label: debouncedSearchValue,
+          });
+        }
       }
       const limit = d?.page?.limit || 30;
       const start = d?.next || 0;
