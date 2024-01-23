@@ -397,7 +397,7 @@ export const parseAction = (
       pushMultiSig: data.data as PushMultiSigAction,
     };
   }
-  if (data.type === null) {
+  if (data?.type === null) {
     return {
       common: data.data as any,
     };
