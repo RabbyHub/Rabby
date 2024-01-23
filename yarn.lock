@@ -4047,7 +4047,7 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@^0.7.1":
+"@rabby-wallet/rabby-api@0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.1.tgz#fa033e78fd6dd98573f091c13522c43aee8ba1e7"
   integrity sha512-otHud9c0fRqv+TK8GeaeJ2+maGwJTZomF41NZrOGQrx65UuRH84nz3PwJY9rXMWzyYHrYyEhpHywNPcDjAGxWA==
@@ -13891,7 +13891,7 @@ rc-virtual-list@^3.0.1, rc-virtual-list@^3.2.0:
     rc-resize-observer "^1.0.0"
     rc-util "^5.0.7"
 
-react-countup@^6.5.0:
+react-countup@6.5.0:
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/react-countup/-/react-countup-6.5.0.tgz#2671035ec5012ed8db097a79d08fa6f193e139d3"
   integrity sha512-26JFHbUHsHxu8SetkJwWVIUEkaNnrj4P9msxNGC8tS4hGr1bngRzbwtJYOgXD2G/ItjaKJ3JfYKd85sw7qRVeA==
