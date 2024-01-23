@@ -61,12 +61,11 @@ https://rabby.io/rabby-points?code=${invitedCode}
         snapshot.metamask_swap,
         0
       )} points for migrating my MetaMask wallet into Rabby!
-  
-  Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
-   
-  Ready to claim your points?
-  
-  https://rabby.io/rabby-points?code=${invitedCode}
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+
+Ready to claim your points?
+
+https://rabby.io/rabby-points?code=${invitedCode}
   `);
     }
 
