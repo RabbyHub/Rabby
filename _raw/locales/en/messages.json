@@ -1758,7 +1758,8 @@
       "expand": "Expand",
       "emptyFavorite": "No Favorite Dapp",
       "favorite": "Favorites",
-      "emptySearch": "No Dapp Found"
+      "emptySearch": "No Dapp Found",
+      "listBy": "Dapp has been list by"
     }
   },
   "component": {

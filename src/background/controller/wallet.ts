@@ -1226,7 +1226,7 @@ export class WalletController extends BaseController {
 
   updateSiteBasicInfo = async (origin: string | string[]) => {
     if (!origin?.length) {
-      return;
+      return [];
     }
 
     const origins = Array.isArray(origin) ? origin : [origin];
@@ -1234,25 +1234,29 @@ export class WalletController extends BaseController {
       ids: origins.map((item) => item.replace(/^https?:\/\//, '')),
     });
 
-    origins.forEach((origin) => {
-      const local = permissionService.getSite(origin);
-      const id = origin.replace(/^https?:\/\//, '');
-      const info = infoList.find((item) => item.id === id) || {
-        id,
-        name: local?.name || '',
-        logo_url: local?.icon || '',
-        description: '',
-        user_range: '',
-        tags: [],
-        chain_ids: [],
-      };
-      if (local) {
-        wallet.setSite({
-          ...local,
-          info,
-        });
-      }
-    });
+    return origins
+      .map((origin) => {
+        const local = permissionService.getSite(origin);
+        const id = origin.replace(/^https?:\/\//, '');
+        const info = infoList.find((item) => item.id === id) || {
+          id,
+          name: local?.name || '',
+          logo_url: local?.icon || '',
+          description: '',
+          user_range: '',
+          tags: [],
+          chain_ids: [],
+        };
+        if (local) {
+          const item: ConnectedSite = {
+            ...local,
+            info,
+          };
+          wallet.setSite(item);
+          return item;
+        }
+      })
+      .filter((v): v is ConnectedSite => !!v);
   };
   removePreferMetamask = (origin: string) => {
     const site = permissionService.getSite(origin);

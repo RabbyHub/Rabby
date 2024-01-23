@@ -1,22 +1,40 @@
 import FallbackImage from '@/ui/component/FallbackSiteLogo';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { openInTab } from '@/ui/utils';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
-import { Divider } from 'antd';
+import { Divider, Tooltip } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import clsx from 'clsx';
-import React from 'react';
+import { range } from 'lodash';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { ReactComponent as RcIconArrow } from 'ui/assets/dapp-search/cc-arrow.svg';
 import { ReactComponent as RcIconStarFill } from 'ui/assets/dapp-search/cc-star-fill.svg';
 import { ReactComponent as RcIconStar } from 'ui/assets/dapp-search/cc-star.svg';
+import { ReactComponent as RcIconMore } from 'ui/assets/dapp-search/icon-more.svg';
 
 const Wraper = styled.div`
   border: 1px solid transparent;
+  position: relative;
   &:hover {
     border: 1px solid var(--r-blue-default, #7084ff);
     box-shadow: 0px 4px 4px 0px rgba(112, 132, 255, 0.12);
+  }
+`;
+
+const GlobalStyle = createGlobalStyle`
+  .dapp-search-card-tooltip {
+    .ant-tooltip-inner {
+      background-color: var(--r-neutral-black, #000) !important;
+      border-radius: 6px;
+      padding: 12px !important;
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: var(--r-neutral-black, #000) !important;
+    }
   }
 `;
 
@@ -33,8 +51,8 @@ export const DappCard = ({
   className?: string;
   size?: 'small' | 'normal';
 }) => {
-  const [ellispsis, setEllipsis] = React.useState<boolean>(true);
   const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <Wraper
@@ -44,6 +62,7 @@ export const DappCard = ({
         size === 'small' && 'py-[13px] px-[16px]',
         className
       )}
+      ref={ref}
       onClick={() => {
         openInTab(`https://${data.id}`, false);
         matomoRequestEvent({
@@ -56,7 +75,7 @@ export const DappCard = ({
       }}
     >
       <div className="flex items-center ">
-        <div className="flex items-center gap-[12px]">
+        <div className="flex items-center gap-[12px] min-w-0">
           <FallbackImage
             url={data.logo_url || ''}
             origin={`https://${data.id}`}
@@ -64,15 +83,66 @@ export const DappCard = ({
             width="32px"
           />
           <div className="min-w-0">
-            <div className="text-r-neutral-title1 font-medium text-[16px] leading-[19px] mb-[2px]">
+            <div className="text-r-neutral-title1 font-medium text-[16px] leading-[19px] mb-[2px] truncate">
               {data.id}
             </div>
-            <div className="text-r-neutral-foot text-[13px] leading-[16px]">
+            <div className="text-r-neutral-foot text-[13px] leading-[16px] flex items-center">
               {data.name}
-              {data.name && data.user_range ? (
-                <Divider type="vertical" />
+              {data.name && data.collected_list?.length ? (
+                <div className="w-[1px] h-[12px] bg-r-neutral-line mx-[6px]"></div>
               ) : null}
-              {data.user_range}
+              {data.collected_list?.length ? (
+                <Tooltip
+                  getPopupContainer={() => ref.current || document.body}
+                  overlayClassName="rectangle max-w-[360px] dapp-search-card-tooltip"
+                  title={
+                    <div>
+                      <div className="text-[12px] leading-[14px] text-r-neutral-title2 mb-[6px]">
+                        {t('page.dappSearch.listBy')}
+                      </div>
+                      <div className="flex items-center gap-[8px] flex-wrap">
+                        {data.collected_list?.map((item) => {
+                          return (
+                            <div
+                              className="flex items-center gap-[6px]"
+                              key={item.name}
+                            >
+                              <img
+                                src={item.logo_url}
+                                alt={item.name}
+                                className="w-[12px] h-[12px] rounded-full"
+                              />
+
+                              <span className="text-[12px] leading-[14px] text-r-neutral-title2">
+                                {item.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  }
+                >
+                  <div className="flex items-center gap-[6px]">
+                    {data?.collected_list?.slice(0, 6)?.map((item) => {
+                      return (
+                        <img
+                          src={item.logo_url}
+                          alt={item.name}
+                          className="w-[12px] h-[12px] rounded-full opacity-70"
+                          key={item.name}
+                        />
+                      );
+                    })}
+                    {(data?.collected_list?.length || 0) > 6 ? (
+                      <ThemeIcon
+                        src={RcIconMore}
+                        className="w-[12px] h-[12px] rounded-full"
+                      />
+                    ) : null}
+                  </div>
+                </Tooltip>
+              ) : null}
             </div>
           </div>
         </div>
@@ -102,32 +172,17 @@ export const DappCard = ({
           </div>
           <Paragraph
             className="mb-0 text-r-neutral-body text-[14px] leading-[20px]"
-            ellipsis={
-              ellispsis
-                ? {
-                    rows: 2,
-                    expandable: true,
-                    symbol: (
-                      <span
-                        className="text-r-blue-default cursor-pointer underline"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setEllipsis(false);
-                        }}
-                      >
-                        {t('page.dappSearch.expand')}
-                      </span>
-                    ),
-                  }
-                : false
-            }
+            ellipsis={{
+              rows: 3,
+              expandable: false,
+            }}
             title={data.description}
           >
             {data.description}
           </Paragraph>
         </div>
       ) : null}
+      <GlobalStyle />
     </Wraper>
   );
 };

@@ -2,26 +2,28 @@ import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dapp-search/cc-dropdown.svg';
 import { ReactComponent as RcIconSearch } from '@/ui/assets/dapp-search/cc-search.svg';
 import { ChainSelectorLargeModal } from '@/ui/component/ChainSelector/LargeModal';
-import { useWallet } from '@/ui/utils';
+import { splitNumberByStep, useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import {
   useDebounce,
   useInfiniteScroll,
+  useMount,
   useRequest,
   useScroll,
   useTitle,
 } from 'ahooks';
 import { Input } from 'antd';
 import clsx from 'clsx';
-import { keyBy } from 'lodash';
+import { keyBy, range } from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ConnectedSite } from '@/background/service/permission';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -86,6 +88,8 @@ export const DappSearchPage = () => {
   const [isShowChainSelector, setIsShowChainSelector] = React.useState<boolean>(
     false
   );
+  const [isFocus, setIsFocus] = React.useState(false);
+  const [favoriteSites, setFavoriteSites] = React.useState<ConnectedSite[]>([]);
 
   const wallet = useWallet();
   const ref = useRef<HTMLDivElement>(null);
@@ -94,23 +98,39 @@ export const DappSearchPage = () => {
     wait: 500,
   });
 
-  const { data: sites, runAsync: runGetSites } = useRequest(async () => {
-    const list = await wallet.getSites();
-    return {
-      dict: keyBy(list, 'origin'),
-      list,
-    };
-  });
-
-  const favoriteSites = useMemo(() => {
-    return sites?.list?.filter((item) => item.isFavorite) || [];
-  }, [sites?.list]);
+  const { data: sites, runAsync: runGetSites } = useRequest(
+    async () => {
+      const list = await wallet.getSites();
+      return {
+        dict: keyBy(list, 'origin'),
+        list,
+      };
+    },
+    {
+      onSuccess: async (data) => {
+        const list = (data?.list || []).filter((item) => item.isFavorite);
+        setFavoriteSites(list);
+        const res = await wallet.updateSiteBasicInfo(
+          list.map((item) => item.origin)
+        );
+        if (res) {
+          setFavoriteSites(res);
+        }
+      },
+    }
+  );
 
   const favoriteSiteInfos = useMemo(() => {
     return favoriteSites
-      .map((item) => item.info)
+      ?.map((item) => item.info)
       .filter((v): v is BasicDappInfo => !!v);
   }, [favoriteSites]);
+
+  // const { data: hotTags } = useRequest(() => {
+  //   return wallet.openapi.getDappHotTags();
+  // });
+
+  const hotTags = [];
 
   const { data, reloadAsync, loading, loadingMore } = useInfiniteScroll(
     async (d) => {
@@ -172,17 +192,18 @@ export const DappSearchPage = () => {
     runGetSites();
   };
 
-  useRequest(async () => {
-    const list = await wallet.getSites();
-    const favoriteSites = list
-      .filter((item) => item.isFavorite)
-      .map((item) => item.origin);
-    wallet.updateSiteBasicInfo(favoriteSites);
-  });
-
   const { t } = useTranslation();
 
   const scroll = useScroll(ref);
+
+  useMount(() => {
+    matomoRequestEvent({
+      category: 'DappsSearch',
+      action: 'Dapps_Search_Enter',
+    });
+  });
+
+  const total = splitNumberByStep(data?.page?.total || 0);
 
   return (
     <div
@@ -209,6 +230,12 @@ export const DappSearchPage = () => {
                 onChange={(e) => {
                   setSearchValue(e.target.value);
                 }}
+                onFocus={() => {
+                  setIsFocus(true);
+                }}
+                onBlur={() => {
+                  setIsFocus(false);
+                }}
                 autoFocus
                 prefix={
                   <div className="text-r-neutral-body">
@@ -222,6 +249,27 @@ export const DappSearchPage = () => {
                 }}
               />
             </SearchWrapper>
+            {isFocus && !searchValue?.trim() && hotTags?.length ? (
+              <div className="flex items-center gap-[12px] flex-wrap mt-[20px]">
+                {hotTags?.map((item) => {
+                  return (
+                    <div
+                      key={item}
+                      className={clsx(
+                        'px-[15px] py-[7px] bg-r-neutral-card1 rounded-[8px] border-[1px] border-transparent',
+                        'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer',
+                        'text-r-neutral-body text-[13px] leading-[16px]'
+                      )}
+                      onMouseDown={() => {
+                        setSearchValue(item);
+                      }}
+                    >
+                      {item}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
           </header>
         </div>
       </div>
@@ -239,11 +287,13 @@ export const DappSearchPage = () => {
                   <div className="text-[14px] leading-[16px] text-r-neutral-foot">
                     <Trans
                       i18nKey="page.dappSearch.searchResult.foundDapps"
-                      values={{ count: data?.page?.total }}
+                      values={{
+                        count: total,
+                      }}
                     >
                       Found{' '}
                       <span className="text-r-neutral-body font-medium">
-                        {data?.page?.total}
+                        {total}
                       </span>{' '}
                       Dapps
                     </Trans>
@@ -252,11 +302,13 @@ export const DappSearchPage = () => {
                   <div className="text-[14px] leading-[16px] text-r-neutral-foot">
                     <Trans
                       i18nKey="page.dappSearch.searchResult.totalDapps"
-                      values={{ count: data?.page?.total }}
+                      values={{
+                        count: total,
+                      }}
                     >
                       Total{' '}
                       <span className="text-r-neutral-body font-medium">
-                        {data?.page?.total}
+                        {total}
                       </span>{' '}
                       Dapps
                     </Trans>

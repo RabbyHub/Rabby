@@ -1,0 +1,6 @@
+<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="6" cy="6" r="6" fill="var(--r-neutral-card2)"/>
+<circle opacity="0.6" cx="3" cy="6" r="1" fill="var(--r-neutral-foot)"/>
+<circle opacity="0.6" cx="6" cy="6" r="1" fill="var(--r-neutral-foot)"/>
+<circle opacity="0.6" cx="9" cy="6" r="1" fill="var(--r-neutral-foot)"/>
+</svg>
