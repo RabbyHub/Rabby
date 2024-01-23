@@ -399,7 +399,7 @@ export const parseAction = (
   }
   if (data?.type === null) {
     return {
-      common: data.data as any,
+      common: data as any,
     };
   }
   return {
@@ -1035,7 +1035,7 @@ export const fetchActionRequiredData = async ({
     }
     return result;
   }
-  if (actionData.contractCall && contractCall) {
+  if ((actionData.contractCall || actionData.common) && contractCall) {
     const chain = findChainByServerID(chainId);
     const result: ContractCallRequireData = {
       contract: null,
