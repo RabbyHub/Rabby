@@ -50,6 +50,10 @@ export const ClaimItem = (props: ClaimItemProps) => {
         <TooltipWithMagnetArrow
           placement="top"
           arrowPointAtCenter
+          overlayInnerStyle={{
+            position: 'relative',
+            left: '-20px',
+          }}
           overlayClassName="rectangle w-[max-content]"
           title={t('page.rabbyPoints.claimItem.disabledTip')}
           visible={showDisabledTip ? undefined : false}

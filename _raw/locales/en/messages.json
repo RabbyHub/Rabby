@@ -1763,7 +1763,7 @@
     },
     "rabbyPoints": {
       "title": "Rabby Points",
-      "out-of-x-current-total-points": "Out of {{total}} current total points",
+      "out-of-x-current-total-points": "Out of {{total}} Total Distributed Points",
       "share-on": "Share on",
       "referral-code-copied": "Referral code copied",
       "earn-points": "Earn Points",
