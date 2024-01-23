@@ -52,7 +52,7 @@ export const CodeAndShare = ({
 
 Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
  
-Ready to claim your points?
+Ready to claim? @Rabby_io
 
 https://rabby.io/rabby-points?code=${invitedCode}
 `);
@@ -64,10 +64,10 @@ https://rabby.io/rabby-points?code=${invitedCode}
 
 Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
 
-Ready to claim your points?
+Ready to claim? @Rabby_io
 
 https://rabby.io/rabby-points?code=${invitedCode}
-  `);
+`);
     }
 
     openInTab(`https://twitter.com/intent/tweet?text=${text}`);
