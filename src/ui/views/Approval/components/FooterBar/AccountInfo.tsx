@@ -20,6 +20,7 @@ import { GridPlusAccount } from './GridPlusAccount';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { ImKeyAccount } from './ImKeyAccount';
 
 export interface Props {
   account: Account;
@@ -103,6 +104,7 @@ export const AccountInfo: React.FC<Props> = ({
         <WalletConnectAccount chain={chain} account={account} />
       )}
       {account?.type === KEYRING_CLASS.HARDWARE.LEDGER && <LedgerAccount />}
+      {account?.type === KEYRING_CLASS.HARDWARE.IMKEY && <ImKeyAccount />}
       {account?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS && <GridPlusAccount />}
       {account?.type === KEYRING_CLASS.HARDWARE.ONEKEY && (
         <CommonAccount
