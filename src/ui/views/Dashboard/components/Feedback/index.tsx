@@ -1,26 +1,19 @@
-import { DrawerProps } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import { Field, Popup } from 'ui/component';
+import { Field, PageHeader } from 'ui/component';
 import './style.less';
-import IconDirectMessage, {
-  ReactComponent as RcIconDirectMessage,
-} from 'ui/assets/feedback-popup/entry-hi.svg';
-import IconProposal, {
-  ReactComponent as RcIconProposal,
-} from 'ui/assets/feedback-popup/entry-proposal.svg';
-import IconItemLink, {
-  ReactComponent as RcIconItemLink,
-} from 'ui/assets/feedback-popup/item-link.svg';
+import { ReactComponent as RcIconDirectMessage } from 'ui/assets/feedback-popup/entry-hi.svg';
+import { ReactComponent as RcIconProposal } from 'ui/assets/feedback-popup/entry-proposal.svg';
+import { ReactComponent as RcIconItemLink } from 'ui/assets/feedback-popup/item-link.svg';
 import { openInTab } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 interface SettingsProps {
   visible?: boolean;
-  onClose?: DrawerProps['onClose'];
+  onClose?(): void;
 }
 
 const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
@@ -50,43 +43,54 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       },
     },
   ];
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose?.();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(!!visible);
+    }, 100);
+  }, [visible]);
 
   return (
-    <Popup
-      visible={visible}
-      onClose={onClose}
-      height={230}
-      bodyStyle={{ height: '100%', padding: '20px' }}
-      closable={false}
-      className="dashboard-feedback-popup"
-      isSupportDarkMode
+    <div
+      className={clsx('popup-feedback-inner', {
+        show: isVisible,
+        hidden: !visible,
+      })}
     >
-      <div className="popup-feedback-inner">
-        <header className="pb-[20px]">
-          <div className="popup-title">
-            {t('page.dashboard.feedback.title')}
-          </div>
-        </header>
-        <div className="content">
-          {renderData.map((data, index) => (
-            <Field
-              key={index}
-              leftIcon={<ThemeIcon src={data.leftIcon} className="icon" />}
-              rightIcon={
-                data.rightIcon || (
-                  <img src={IconArrowRight} className="icon icon-arrow-right" />
-                )
-              }
-              onClick={data.onClick}
-              className={clsx(data.description ? 'has-desc' : null)}
-            >
-              <span className="title">{data.content}</span>
-              {data.description && <p className="desc">{data.description}</p>}
-            </Field>
-          ))}
-        </div>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="bg-neutral-bg1  popup-title"
+      >
+        {t('page.dashboard.feedback.title')}
+      </PageHeader>
+      <div className="content">
+        {renderData.map((data, index) => (
+          <Field
+            key={index}
+            leftIcon={<ThemeIcon src={data.leftIcon} className="icon" />}
+            rightIcon={
+              data.rightIcon || (
+                <img src={IconArrowRight} className="icon icon-arrow-right" />
+              )
+            }
+            onClick={data.onClick}
+            className={clsx(data.description ? 'has-desc' : null)}
+          >
+            <span className="title">{data.content}</span>
+            {data.description && <p className="desc">{data.description}</p>}
+          </Field>
+        ))}
       </div>
-    </Popup>
+    </div>
   );
 };
 
