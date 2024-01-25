@@ -3,7 +3,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import React from 'react';
 import { ReactComponent as IconLink } from 'ui/assets/rabby-points/link.svg';
 import { ReactComponent as Icon1st } from 'ui/assets/rabby-points/1st.svg';
-import { ReactComponent as Icon2st } from 'ui/assets/rabby-points/2st.svg';
+import { ReactComponent as Icon2nd } from 'ui/assets/rabby-points/2nd.svg';
 import { ReactComponent as Icon3st } from 'ui/assets/rabby-points/3st.svg';
 import clsx from 'clsx';
 import { ClaimUserAvatar } from './ClaimUserAvatar';
@@ -61,7 +61,7 @@ export const TopUserItem = (props: User) => {
             />
           )}
           {props.index === 1 && (
-            <Icon2st
+            <Icon2nd
               viewBox="0 0 75 52"
               className={clsx(props.showCurrentUser && 'h-[56px] w-auto')}
             />
