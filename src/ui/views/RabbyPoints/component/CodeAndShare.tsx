@@ -38,15 +38,15 @@ export const CodeAndShare = ({
       rabby_old_user,
       extra_bouns,
     } = snapshot;
-    const score = formatTokenAmount(
+
+    const sum =
       address_balance +
-        metamask_swap +
-        rabby_nadge +
-        rabby_nft +
-        rabby_old_user +
-        (usedOtherInvitedCode ? extra_bouns : 0),
-      0
-    );
+      metamask_swap +
+      rabby_nadge +
+      rabby_nft +
+      rabby_old_user +
+      (usedOtherInvitedCode ? extra_bouns : 0);
+    const score = formatTokenAmount(sum, 0);
 
     let text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
 
@@ -61,6 +61,17 @@ https://rabby.io/rabby-points?code=${invitedCode}
         snapshot.metamask_swap,
         0
       )} points for migrating my MetaMask wallet into Rabby!
+
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+
+Ready to claim? @Rabby_io
+
+https://rabby.io/rabby-points?code=${invitedCode}
+`);
+    }
+
+    if (sum === 0) {
+      text = encodeURIComponent(`Claim Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
 
 Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
 
