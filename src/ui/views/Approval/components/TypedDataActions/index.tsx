@@ -282,7 +282,7 @@ const Actions = ({
             </TooltipWithMagnetArrow>
           </div>
         </div>
-        {data?.actionType && (
+        {(data?.actionType || data?.actionType === null) && (
           <div className="container">
             {data.permit && chain && (
               <Permit

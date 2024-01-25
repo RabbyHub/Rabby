@@ -862,6 +862,7 @@
           "transactions": "Transactions",
           "approvals": "Approvals",
           "feedback": "Feedback",
+          "rabbyPoints": "Rabby Points",
           "more": "More",
           "manageAddress": "Manage Address",
           "nft": "NFT"
@@ -1760,6 +1761,51 @@
       "favorite": "Favorites",
       "emptySearch": "No Dapp Found",
       "listBy": "Dapp has been list by"
+    },
+    "rabbyPoints": {
+      "title": "Rabby Points",
+      "out-of-x-current-total-points": "Out of {{total}} Total Distributed Points",
+      "share-on": "Share on",
+      "referral-code-copied": "Referral code copied",
+      "earn-points": "Earn Points",
+      "top-100": "Top 100",
+      "claimItem": {
+        "claim": "Claim",
+        "disabledTip": "No points to be claimed now"
+      },
+      "claimModal": {
+        "title": "Claim Initial Points",
+        "snapshotTime": "Snapshot time: {{time}}",
+        "placeholder": "Enter Referral Code for extra points (optional)",
+        "claim": "Claim",
+        "addressBalance": "Wallet balance",
+        "MetaMaskSwap": "MetaMask Swap",
+        "rabbyUser": "Rabby Active User",
+        "rabbyValuedUserBadge": "Rabby Valued User Badge",
+        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "referral-code": "Referral Code",
+        "invalid-code": "invalid code"
+      },
+      "referralCode": {
+        "referral-code-cannot-be-empty": "Referral code cannot be empty",
+        "referral-code-cannot-exceed-15-characters": "Referral code cannot exceed 15 characters",
+        "referral-code-already-exists": "Referral code already exists",
+        "referral-code-available": "Referral code available",
+        "my-referral-code": "My referral code",
+        "refer-a-new-user-to-get-50-points": "Refer a new user to get 50 points",
+        "set-my-code": "Set my code",
+        "set-my-referral-code": "Set my referral code",
+        "once-set-this-referral-code-is-permanent-and-cannot-change": "Once set, this referral code is permanent and cannot be changed.",
+        "max-15-characters-use-numbers-and-letters-only": "Max 15 characters, use numbers and letters only.",
+        "confirm": "Confirm",
+        "verifyAddressModal": {
+          "verify-address": "Verify Address",
+          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Please sign this text message to verify that you are the owner of this address",
+          "cancel": "Cancel",
+          "sign": "Sign"
+        }
+      },
+      "code-set-successfully": "Referral code set successfully"
     }
   },
   "component": {

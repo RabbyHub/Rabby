@@ -17,3 +17,4 @@ export { default as unTriggerTxCounter } from './unTriggerTxCounter';
 export * from './contextMenu';
 export { default as securityEngineService } from './securityEngine';
 export * from './transactionBroadcastWatcher';
+export { default as RabbyPointsService } from './rabbyPoints';

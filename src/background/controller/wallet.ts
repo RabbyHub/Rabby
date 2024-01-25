@@ -24,6 +24,7 @@ import {
   contextMenuService,
   securityEngineService,
   transactionBroadcastWatchService,
+  RabbyPointsService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1131,6 +1132,11 @@ export class WalletController extends BaseController {
   setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
   getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
   setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
+
+  setRedirect2Points = RabbyPointsService.setRedirect2Points;
+  setRabbyPointsSignature = RabbyPointsService.setSignature;
+  getRabbyPointsSignature = RabbyPointsService.getSignature;
+  clearRabbyPointsSignature = RabbyPointsService.clearSignature;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
@@ -3584,6 +3590,47 @@ export class WalletController extends BaseController {
 
     await keyringService.addNewAccount(keyring);
     return this._setCurrentAccountFromKeyring(keyring, -1);
+  };
+
+  rabbyPointVerifyAddress = async (params?: {
+    code?: string;
+    claimSnapshot?: boolean;
+    claimNumber?: number;
+  }) => {
+    const { code, claimSnapshot } = params || {};
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const claimText = `${account?.address} Claims Rabby Points`;
+    const verifyAddr = `Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
+    const msg = `0x${Buffer.from(
+      claimSnapshot ? claimText : verifyAddr,
+      'utf-8'
+    ).toString('hex')}`;
+
+    const signature = await this.sendRequest<string>({
+      method: 'personal_sign',
+      params: [msg, account.address],
+    });
+
+    this.setRabbyPointsSignature(account.address, signature);
+    if (claimSnapshot) {
+      try {
+        await wallet.openapi.claimRabbyPointsSnapshot({
+          id: account?.address,
+          invite_code: code,
+          signature,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      this.setPageStateCache({
+        path: '/rabby-points',
+        params: {},
+        states: {},
+      });
+    }
+    return signature;
   };
 }
 

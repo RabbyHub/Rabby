@@ -20,6 +20,7 @@ import {
   signTextHistoryService,
   whitelistService,
   swapService,
+  RabbyPointsService,
   RPCService,
   securityEngineService,
   transactionBroadcastWatchService,
@@ -98,6 +99,7 @@ async function restoreAppState() {
   await swapService.init();
   await RPCService.init();
   await securityEngineService.init();
+  await RabbyPointsService.init();
 
   rpcCache.start();
 

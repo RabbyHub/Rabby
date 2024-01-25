@@ -4,8 +4,8 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
-import { ReactComponent as Warning2SVG } from '@/ui/assets/sign/tx/warning-2.svg';
-import { ReactComponent as CertifiedSVG } from '@/ui/assets/sign/tx/certified.svg';
+import Warning2SVG from '@/ui/assets/sign/tx/warning-2.svg';
+import CertifiedSVG from '@/ui/assets/sign/tx/certified.svg';
 import { ProtocolListItem } from './Actions/components/ProtocolListItem';
 import { SecurityListItem } from './Actions/components/SecurityListItem';
 import ViewMore from './Actions/components/ViewMore';
@@ -70,7 +70,7 @@ export const CommonAction = ({
   }, []);
 
   return (
-    <div>
+    <div className="relative">
       <Table>
         {requireData && chain ? (
           <Col>
@@ -121,22 +121,20 @@ export const CommonAction = ({
           <Row className="w-[100px]" isTitle>
             {t('page.signTx.common.description')}
           </Row>
-          <Row className="flex flex-row items-center gap-x-4 relative">
+          <Row className="flex flex-row items-center gap-x-4">
             <span>{actionData.desc}</span>
             <TooltipWithMagnetArrow
-              className="rectangle w-[max-content]"
+              overlayClassName="rectangle w-[260px]"
               title={descTip}
             >
-              <div>
-                {actionData.is_asset_changed ||
-                actionData.is_involving_privacy ? (
-                  <Warning2SVG />
-                ) : null}
-                {!actionData.is_asset_changed &&
-                !actionData.is_involving_privacy ? (
-                  <CertifiedSVG />
-                ) : null}
-              </div>
+              {actionData.is_asset_changed ||
+              actionData.is_involving_privacy ? (
+                <img src={Warning2SVG} />
+              ) : null}
+              {!actionData.is_asset_changed &&
+              !actionData.is_involving_privacy ? (
+                <img src={CertifiedSVG} />
+              ) : null}
             </TooltipWithMagnetArrow>
           </Row>
         </Col>
