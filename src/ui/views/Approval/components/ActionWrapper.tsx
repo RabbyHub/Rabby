@@ -25,7 +25,12 @@ export const DIV = styled.div`
       position: relative;
       .decode-tooltip {
         max-width: 358px;
-
+        &:not(.ant-tooltip-hidden) {
+          left: -321px !important;
+          .ant-tooltip-arrow {
+            left: 333px;
+          }
+        }
         .ant-tooltip-arrow-content {
           background-color: var(--r-neutral-bg-1, #fff);
         }
@@ -69,10 +74,12 @@ export const DIV = styled.div`
   }
 `;
 
-export const ActionWrapper: React.FC = ({ children }) => {
+export const ActionWrapper: React.FC<{
+  isEmptyBody?: boolean;
+}> = ({ children, isEmptyBody }) => {
   return (
     <DIV>
-      <div className="overflow-hidden">{children}</div>
+      <div className={isEmptyBody ? '' : 'overflow-hidden'}>{children}</div>
     </DIV>
   );
 };

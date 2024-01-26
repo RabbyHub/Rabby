@@ -134,6 +134,8 @@ const Actions = ({
     });
   };
 
+  const isUnknown = !data;
+
   return (
     <>
       <SignTitle>
@@ -146,10 +148,10 @@ const Actions = ({
           <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
       </SignTitle>
-      <ActionWrapper>
+      <ActionWrapper isEmptyBody={isUnknown}>
         <div
           className={clsx('action-header', {
-            'is-unknown': !data,
+            'is-unknown': isUnknown,
           })}
         >
           <div className="left">{actionName}</div>
@@ -158,7 +160,7 @@ const Actions = ({
               placement="bottom"
               overlayClassName="rectangle w-[max-content] decode-tooltip"
               title={
-                !data ? (
+                isUnknown ? (
                   <NoActionAlert
                     data={{
                       origin,
@@ -173,7 +175,7 @@ const Actions = ({
                 )
               }
             >
-              {!data ? (
+              {isUnknown ? (
                 <img src={IconQuestionMark} className="w-24" />
               ) : (
                 <img

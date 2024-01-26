@@ -109,6 +109,8 @@ const Actions = ({
     });
   };
 
+  const isUnknown = data?.contractCall;
+
   return (
     <>
       <SignTitle>
@@ -134,7 +136,7 @@ const Actions = ({
       <ActionWrapper>
         <div
           className={clsx('action-header', {
-            'is-unknown': data.contractCall,
+            'is-unknown': isUnknown,
           })}
         >
           <div className="left">{actionName}</div>
@@ -143,7 +145,7 @@ const Actions = ({
               placement="bottom"
               overlayClassName="rectangle w-[max-content] decode-tooltip"
               title={
-                data.contractCall ? (
+                isUnknown ? (
                   <NoActionAlert
                     data={{
                       chainId: chain.serverId,
@@ -162,7 +164,7 @@ const Actions = ({
                 )
               }
             >
-              {data.contractCall ? (
+              {isUnknown ? (
                 <img src={IconQuestionMark} className="w-24" />
               ) : (
                 <img
