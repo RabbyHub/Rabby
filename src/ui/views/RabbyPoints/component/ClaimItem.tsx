@@ -112,14 +112,17 @@ export const ClaimItem = (props: ClaimItemProps) => {
         <div className="text-[15px] font-medium text-r-neutral-title1">
           {props.title}
         </div>
-        <Tooltip
+        <TooltipWithMagnetArrow
           placement="top"
           arrowPointAtCenter
           overlayInnerStyle={{
             position: 'relative',
             left: '-20px',
           }}
-          overlayClassName="rectangle max-w-[190px]"
+          align={{
+            targetOffset: [0, -8],
+          }}
+          overlayClassName="rectangle w-[190px]"
           title={
             <div className="mx-auto">
               {t('page.rabbyPoints.claimItem.earnTip')}
@@ -133,6 +136,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
         >
           <div>
             <Button
+              key={`${!canJoin && !props.claimable && !props.claimLoading}`}
               type="primary"
               className={clsx(
                 'min-w-[100px] h-[32px]  text-[13px] font-medium',
@@ -162,7 +166,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
               </div>
             </Button>
           </div>
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       </div>
       <div className="pt-[12px] text-r-neutral-foot text-[12px] font-normal px-[16px]">
         {props.description}

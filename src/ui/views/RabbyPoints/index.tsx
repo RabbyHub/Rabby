@@ -347,40 +347,27 @@ const RabbyPoints = () => {
               {activitiesLoading ? (
                 <ClaimLoading />
               ) : (
-                activities
-                  ?.sort((a, b) => {
-                    let a1 = 0;
-                    let b1 = 0;
-                    if (claimedIds.includes(a.id)) {
-                      a1 = 1;
+                activities?.map((item) => (
+                  <ClaimItem
+                    {...item}
+                    onClaim={claimItem}
+                    claimLoading={claimItemLoading[item.id]}
+                    key={item.id}
+                    claimable={
+                      item.claimable_points > 0 && !claimedIds.includes(item.id)
                     }
-                    if (claimedIds.includes(b.id)) {
-                      b1 = 1;
+                    can_join_today={
+                      (item as any).can_join_today &&
+                      !claimedIds.includes(item.id)
                     }
-                    return b1 - a1;
-                  })
-                  .map((item) => (
-                    <ClaimItem
-                      {...item}
-                      onClaim={claimItem}
-                      claimLoading={claimItemLoading[item.id]}
-                      key={item.id}
-                      claimable={
-                        item.claimable_points > 0 &&
-                        !claimedIds.includes(item.id)
-                      }
-                      can_join_today={
-                        (item as any).can_join_today &&
-                        !claimedIds.includes(item.id)
-                      }
-                      snapshot={snapshot}
-                      usedOtherInvitedCode={
-                        !!(userPointsDetail as any)?.inviter_code
-                      }
-                      invitedCode={invitedCode}
-                      onOpenCodeModal={openSetCodeModal}
-                    />
-                  ))
+                    snapshot={snapshot}
+                    usedOtherInvitedCode={
+                      !!(userPointsDetail as any)?.inviter_code
+                    }
+                    invitedCode={invitedCode}
+                    onOpenCodeModal={openSetCodeModal}
+                  />
+                ))
               )}
             </div>
           </Tabs.TabPane>
