@@ -1309,10 +1309,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@0.3.52":
-  version "0.3.52"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.52.tgz#096d29b263218b922db87dac597d3a9e24494bc3"
-  integrity sha512-KFLqdxto2GcE4CwKunyuiCneUvp8gX7GBNyzbCLvYhJNPKxt4cChyhyVMOD+1Mu+B1B8IYmsPnr64gNUtoE0MA==
+"@debank/common@0.3.53":
+  version "0.3.53"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.3.53.tgz#bb742a7145440a530687903332238e02649a6acb"
+  integrity sha512-7HiW2tGqj9lybc8jdts+Tcl0WWBCJeF+ADOoAYGiYA7ybCtvepIkWdz906kMYt40Uh7AzgV6jhHHwdvVhEf/5w==
 
 "@debank/common@^0.3.0":
   version "0.3.0"
