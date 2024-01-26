@@ -29,11 +29,16 @@ const StyledInput = styled(Input)`
 
 export const SetReferralCode = ({
   onSetCode,
+  onOpen,
+  onClose,
+  visible,
 }: {
   onSetCode: (code: string) => Promise<void>;
+  visible: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }) => {
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
   const [input, setInput] = useState('');
 
   const changedRef = useRef(false);
@@ -80,13 +85,13 @@ export const SetReferralCode = ({
   }, [input, isError, codeLoading]);
 
   const openPopup = React.useCallback(() => {
-    setVisible(true);
+    onOpen();
     changedRef.current = false;
-  }, []);
+  }, [onOpen]);
 
   const closePopup = React.useCallback(() => {
-    setVisible(false);
-  }, []);
+    onClose();
+  }, [onClose]);
 
   const inputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

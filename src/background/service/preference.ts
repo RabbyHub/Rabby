@@ -245,6 +245,11 @@ class PreferenceService {
     if (!this.store.isShowTestnet) {
       this.store.isShowTestnet = false;
     }
+    if (!this.store.addressSortStore) {
+      this.store.addressSortStore = {
+        ...defaultAddressSortStore,
+      };
+    }
   };
 
   getPreference = (key?: string) => {

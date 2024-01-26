@@ -1771,7 +1771,10 @@
       "top-100": "Top 100",
       "claimItem": {
         "claim": "Claim",
-        "disabledTip": "No points to be claimed now"
+        "disabledTip": "No points to be claimed now",
+        "go": "Go",
+        "earnTip": "Once a day limit. Please earn points after 00:00 UTC+0",
+        "claimed": "Claimed"
       },
       "claimModal": {
         "title": "Claim Initial Points",

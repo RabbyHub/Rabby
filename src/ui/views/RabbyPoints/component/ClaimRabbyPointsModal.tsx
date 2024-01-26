@@ -46,6 +46,7 @@ const StyledInput = styled(Input)`
       text-align: center;
       background: var(--r-neutral-bg1, #fff);
       color: var(--r-neutral-title1, #192945);
+      transition: none;
 
       &:placeholder-shown {
         color: var(--r-neutral-foot, #6a7587);

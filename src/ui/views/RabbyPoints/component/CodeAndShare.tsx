@@ -8,6 +8,70 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useRabbyPoints } from '../hooks';
 import { ReactComponent as IconTwitter } from 'ui/assets/rabby-points/twitter-x.svg';
 
+export const shareRabbyPointsTwitter = ({
+  snapshot,
+  usedOtherInvitedCode,
+  invitedCode,
+}: {
+  snapshot?: ReturnType<typeof useRabbyPoints>['snapshot'];
+  usedOtherInvitedCode?: boolean;
+  invitedCode?: string;
+}) => {
+  if (!snapshot) return;
+  const {
+    address_balance,
+    metamask_swap,
+    rabby_nadge,
+    rabby_nft,
+    rabby_old_user,
+    extra_bouns,
+  } = snapshot;
+
+  const sum =
+    address_balance +
+    metamask_swap +
+    rabby_nadge +
+    rabby_nft +
+    rabby_old_user +
+    (usedOtherInvitedCode ? extra_bouns : 0);
+  const score = formatTokenAmount(sum, 0);
+
+  let text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
+
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+
+Ready to claim? @Rabby_io
+
+https://rabby.io/rabby-points?code=${invitedCode}
+`);
+  if (snapshot.metamask_swap) {
+    text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
+      snapshot.metamask_swap,
+      0
+    )} points for migrating my MetaMask wallet into Rabby!
+
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+
+Ready to claim? @Rabby_io
+
+https://rabby.io/rabby-points?code=${invitedCode}
+`);
+  }
+
+  if (sum === 0) {
+    text = encodeURIComponent(`Claim Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
+
+Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+
+Ready to claim? @Rabby_io
+
+https://rabby.io/rabby-points?code=${invitedCode}
+`);
+  }
+
+  openInTab(`https://twitter.com/intent/tweet?text=${text}`);
+};
+
 export const CodeAndShare = ({
   invitedCode,
   snapshot,
@@ -28,61 +92,9 @@ export const CodeAndShare = ({
     });
   }, [invitedCode]);
 
-  const shareTwitter = () => {
-    if (!snapshot) return;
-    const {
-      address_balance,
-      metamask_swap,
-      rabby_nadge,
-      rabby_nft,
-      rabby_old_user,
-      extra_bouns,
-    } = snapshot;
-
-    const sum =
-      address_balance +
-      metamask_swap +
-      rabby_nadge +
-      rabby_nft +
-      rabby_old_user +
-      (usedOtherInvitedCode ? extra_bouns : 0);
-    const score = formatTokenAmount(sum, 0);
-
-    let text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
- 
-Ready to claim? @Rabby_io
-
-https://rabby.io/rabby-points?code=${invitedCode}
-`);
-    if (snapshot.metamask_swap) {
-      text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
-        snapshot.metamask_swap,
-        0
-      )} points for migrating my MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
-
-Ready to claim? @Rabby_io
-
-https://rabby.io/rabby-points?code=${invitedCode}
-`);
-    }
-
-    if (sum === 0) {
-      text = encodeURIComponent(`Claim Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
-
-Ready to claim? @Rabby_io
-
-https://rabby.io/rabby-points?code=${invitedCode}
-`);
-    }
-
-    openInTab(`https://twitter.com/intent/tweet?text=${text}`);
-  };
+  const share = React.useCallback(() => {
+    shareRabbyPointsTwitter({ snapshot, usedOtherInvitedCode, invitedCode });
+  }, [snapshot, usedOtherInvitedCode, invitedCode]);
 
   if (loading) {
     return <CodeAndShareLoading />;
@@ -98,7 +110,7 @@ https://rabby.io/rabby-points?code=${invitedCode}
         <IconCopy className="w-[16px]" />
       </div>
       <div
-        onClick={shareTwitter}
+        onClick={share}
         className="border border-transparent hover:bg-rabby-blue-light1 hover:border hover:border-rabby-blue-default cursor-pointer rounded-[6px] w-[172px] h-[40px] flex items-center justify-center gap-[4px] bg-r-neutral-card2"
       >
         <span>{t('page.rabbyPoints.share-on')}</span>

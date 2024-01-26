@@ -118,6 +118,16 @@ const RabbyPoints = () => {
   const [showDiffPoints, setShowDiffPoints] = useState(false);
   const [diffPoints, setDiffPoints] = useState(0);
 
+  const [codeModalVisible, setCodeModalVisible] = useState(false);
+
+  const openSetCodeModal = React.useCallback(() => {
+    setCodeModalVisible(true);
+  }, []);
+
+  const closeSetCodeModal = React.useCallback(() => {
+    setCodeModalVisible(false);
+  }, []);
+
   useEffect(() => {
     setPreviousPoints(userPointsDetail?.claimed_points || 0);
     setCurrentPoint(userPointsDetail?.claimed_points || 0);
@@ -308,7 +318,12 @@ const RabbyPoints = () => {
       <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[16px] flex flex-col">
         <div className="px-20">
           {!hadInvitedCode ? (
-            <SetReferralCode onSetCode={setReferralCode} />
+            <SetReferralCode
+              onSetCode={setReferralCode}
+              visible={codeModalVisible}
+              onOpen={openSetCodeModal}
+              onClose={closeSetCodeModal}
+            />
           ) : (
             <CodeAndShare
               invitedCode={invitedCode}
@@ -332,30 +347,27 @@ const RabbyPoints = () => {
               {activitiesLoading ? (
                 <ClaimLoading />
               ) : (
-                activities
-                  ?.sort((a, b) => {
-                    let a1 = 0;
-                    let b1 = 0;
-                    if (claimedIds.includes(a.id)) {
-                      a1 = 1;
+                activities?.map((item) => (
+                  <ClaimItem
+                    {...item}
+                    onClaim={claimItem}
+                    claimLoading={claimItemLoading[item.id]}
+                    key={item.id}
+                    claimable={
+                      item.claimable_points > 0 && !claimedIds.includes(item.id)
                     }
-                    if (claimedIds.includes(b.id)) {
-                      b1 = 1;
+                    can_join_today={
+                      (item as any).can_join_today &&
+                      !claimedIds.includes(item.id)
                     }
-                    return b1 - a1;
-                  })
-                  .map((item) => (
-                    <ClaimItem
-                      {...item}
-                      onClaim={claimItem}
-                      claimLoading={claimItemLoading[item.id]}
-                      key={item.id}
-                      claimable={
-                        item.claimable_points > 0 &&
-                        !claimedIds.includes(item.id)
-                      }
-                    />
-                  ))
+                    snapshot={snapshot}
+                    usedOtherInvitedCode={
+                      !!(userPointsDetail as any)?.inviter_code
+                    }
+                    invitedCode={invitedCode}
+                    onOpenCodeModal={openSetCodeModal}
+                  />
+                ))
               )}
             </div>
           </Tabs.TabPane>

@@ -166,6 +166,9 @@ export const GasTopUp = () => {
   );
 
   const handleClickBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    }
     history.replace('/');
   };
 
