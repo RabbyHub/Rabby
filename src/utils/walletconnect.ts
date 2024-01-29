@@ -22,6 +22,7 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       'WalletConnect',
       'FIREBLOCKS',
       'MPCVault',
+      'TRUSTWALLET',
     ],
   };
 };
