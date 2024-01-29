@@ -67,6 +67,9 @@ export interface PreferenceStore {
   testnetBalanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  /**
+   * @deprecated
+   */
   useLedgerLive: boolean;
   locale: string;
   watchAddressPreference: Record<string, number>;
@@ -202,9 +205,6 @@ class PreferenceService {
     }
     if (!this.store.testnetBalanceMap) {
       this.store.testnetBalanceMap = {};
-    }
-    if (!this.store.useLedgerLive) {
-      this.store.useLedgerLive = false;
     }
     if (!this.store.highligtedAddresses) {
       this.store.highligtedAddresses = [];
@@ -493,10 +493,6 @@ class PreferenceService {
 
   setThemeMode = (themeMode: DARK_MODE_TYPE) => {
     this.store.themeMode = themeMode;
-  };
-
-  isUseLedgerLive = () => {
-    return this.store.useLedgerLive;
   };
 
   getHighlightedAddresses = () => {

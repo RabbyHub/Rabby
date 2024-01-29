@@ -51,7 +51,6 @@ class LedgerBridgeKeyring {
   paths: Record<string, number>;
   hdPath: any;
   accounts: any;
-  isWebHID: boolean;
   transport: null | Transport;
   app: null | LedgerEth;
   hasHIDPermission: null | boolean;
@@ -68,7 +67,6 @@ class LedgerBridgeKeyring {
     this.unlockedAccount = 0;
     this.paths = {};
     this.hasHIDPermission = null;
-    this.isWebHID = false;
     this.transport = null;
     this.app = null;
     this.usedHDPathTypeList = {};
@@ -80,7 +78,6 @@ class LedgerBridgeKeyring {
       hdPath: this.hdPath,
       accounts: this.accounts,
       accountDetails: this.accountDetails,
-      isWebHID: this.isWebHID,
       hasHIDPermission: this.hasHIDPermission,
       usedHDPathTypeList: this.usedHDPathTypeList,
     });
@@ -90,14 +87,11 @@ class LedgerBridgeKeyring {
     this.hdPath = opts.hdPath || HD_PATH_BASE['Legacy'];
     this.accounts = opts.accounts || [];
     this.accountDetails = opts.accountDetails || {};
-    this.isWebHID = true;
     if (opts.hasHIDPermission !== undefined) {
       this.hasHIDPermission = opts.hasHIDPermission;
     }
 
-    if (this.isWebHID) {
-      this.makeApp();
-    }
+    this.makeApp();
     if (!opts.accountDetails) {
       this._migrateAccountDetails(opts);
     }
@@ -139,7 +133,7 @@ class LedgerBridgeKeyring {
   }
 
   async makeApp(signing = false) {
-    if (!this.app && this.isWebHID) {
+    if (!this.app) {
       try {
         this.transport = await TransportWebHID.create();
         this.app = new LedgerEth(this.transport);
@@ -321,24 +315,22 @@ class LedgerBridgeKeyring {
 
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
-    if (this.isWebHID) {
-      await this.makeApp(true);
-      try {
-        const res = await this.app!.signTransaction(hdPath, rawTxHex);
-        const newOrMutatedTx = handleSigning(res);
-        const valid = newOrMutatedTx.verifySignature();
-        if (valid) {
-          return newOrMutatedTx;
-        } else {
-          throw new Error('Ledger: The transaction signature is not valid');
-        }
-      } catch (err: any) {
-        throw new Error(
-          err.toString() || 'Ledger: Unknown error while signing transaction'
-        );
-      } finally {
-        this.cleanUp();
+    await this.makeApp(true);
+    try {
+      const res = await this.app!.signTransaction(hdPath, rawTxHex);
+      const newOrMutatedTx = handleSigning(res);
+      const valid = newOrMutatedTx.verifySignature();
+      if (valid) {
+        return newOrMutatedTx;
+      } else {
+        throw new Error('Ledger: The transaction signature is not valid');
       }
+    } catch (err: any) {
+      throw new Error(
+        err.toString() || 'Ledger: Unknown error while signing transaction'
+      );
+    } finally {
+      this.cleanUp();
     }
   }
 
@@ -350,40 +342,38 @@ class LedgerBridgeKeyring {
   async signPersonalMessage(withAccount, message) {
     return this.signHelper.invoke(async () => {
       await this._reconnect();
-      if (this.isWebHID) {
-        try {
-          await this.makeApp(true);
-          const hdPath = await this.unlockAccountByAddress(withAccount);
-          const res = await this.app!.signPersonalMessage(
-            hdPath,
-            ethUtil.stripHexPrefix(message)
-          );
-          // let v: string | number = res.v - 27;
-          let v = res.v.toString(16);
-          if (v.length < 2) {
-            v = `0${v}`;
-          }
-          const signature = `0x${res.r}${res.s}${v}`;
-          const addressSignedWith = sigUtil.recoverPersonalSignature({
-            data: message,
-            sig: signature,
-          });
-          if (
-            ethUtil.toChecksumAddress(addressSignedWith) !==
-            ethUtil.toChecksumAddress(withAccount)
-          ) {
-            throw new Error(
-              "Ledger: The signature doesn't match the right address"
-            );
-          }
-          return signature;
-        } catch (e: any) {
-          throw new Error(
-            e.toString() || 'Ledger: Unknown error while signing message'
-          );
-        } finally {
-          this.cleanUp();
+      try {
+        await this.makeApp(true);
+        const hdPath = await this.unlockAccountByAddress(withAccount);
+        const res = await this.app!.signPersonalMessage(
+          hdPath,
+          ethUtil.stripHexPrefix(message)
+        );
+        // let v: string | number = res.v - 27;
+        let v = res.v.toString(16);
+        if (v.length < 2) {
+          v = `0${v}`;
         }
+        const signature = `0x${res.r}${res.s}${v}`;
+        const addressSignedWith = sigUtil.recoverPersonalSignature({
+          data: message,
+          sig: signature,
+        });
+        if (
+          ethUtil.toChecksumAddress(addressSignedWith) !==
+          ethUtil.toChecksumAddress(withAccount)
+        ) {
+          throw new Error(
+            "Ledger: The signature doesn't match the right address"
+          );
+        }
+        return signature;
+      } catch (e: any) {
+        throw new Error(
+          e.toString() || 'Ledger: Unknown error while signing message'
+        );
+      } finally {
+        this.cleanUp();
       }
     });
   }
@@ -438,60 +428,58 @@ class LedgerBridgeKeyring {
       ).toString('hex');
 
       const hdPath = await this.unlockAccountByAddress(withAccount);
-      if (this.isWebHID) {
+      try {
+        await this.makeApp(true);
+
+        let res: {
+          v: number;
+          s: string;
+          r: string;
+        };
+
+        // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
         try {
-          await this.makeApp(true);
-
-          let res: {
-            v: number;
-            s: string;
-            r: string;
-          };
-
-          // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
-          try {
-            res = await this.app!.signEIP712Message(hdPath, data);
-          } catch (e) {
-            if (
-              e instanceof Error &&
-              'statusText' in e &&
-              (e as any).statusText === 'INS_NOT_SUPPORTED'
-            ) {
-              res = await this.app!.signEIP712HashedMessage(
-                hdPath,
-                domainSeparatorHex,
-                hashStructMessageHex
-              );
-            } else {
-              throw e;
-            }
-          }
-
-          let v = res.v.toString(16);
-          if (v.length < 2) {
-            v = `0${v}`;
-          }
-          const signature = `0x${res.r}${res.s}${v}`;
-          const addressSignedWith = sigUtil.recoverTypedSignature_v4({
-            data,
-            sig: signature,
-          });
+          res = await this.app!.signEIP712Message(hdPath, data);
+        } catch (e) {
           if (
-            ethUtil.toChecksumAddress(addressSignedWith) !==
-            ethUtil.toChecksumAddress(withAccount)
+            e instanceof Error &&
+            'statusText' in e &&
+            (e as any).statusText === 'INS_NOT_SUPPORTED'
           ) {
-            throw new Error(
-              'Ledger: The signature doesnt match the right address'
+            res = await this.app!.signEIP712HashedMessage(
+              hdPath,
+              domainSeparatorHex,
+              hashStructMessageHex
             );
+          } else {
+            throw e;
           }
-          return signature;
-        } catch (e: any) {
-          throw new Error(
-            e.toString() || 'Ledger: Unknown error while signing message'
-          );
-        } finally {
-          this.cleanUp();
         }
+
+        let v = res.v.toString(16);
+        if (v.length < 2) {
+          v = `0${v}`;
+        }
+        const signature = `0x${res.r}${res.s}${v}`;
+        const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+          data,
+          sig: signature,
+        });
+        if (
+          ethUtil.toChecksumAddress(addressSignedWith) !==
+          ethUtil.toChecksumAddress(withAccount)
+        ) {
+          throw new Error(
+            'Ledger: The signature doesnt match the right address'
+          );
+        }
+        return signature;
+      } catch (e: any) {
+        throw new Error(
+          e.toString() || 'Ledger: Unknown error while signing message'
+        );
+      } finally {
+        this.cleanUp();
       }
     });
   }
@@ -506,10 +494,6 @@ class LedgerBridgeKeyring {
     this.unlockedAccount = 0;
     this.paths = {};
     this.accountDetails = {};
-  }
-
-  useWebHID(value: boolean) {
-    this.isWebHID = value;
   }
 
   /* PRIVATE METHODS */

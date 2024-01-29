@@ -2441,14 +2441,6 @@ export class WalletController extends BaseController {
     }
   };
 
-  isUseLedgerLive = () => {
-    const keyring = keyringService.getKeyringByType(
-      KEYRING_CLASS.HARDWARE.LEDGER
-    );
-    if (!keyring) return false;
-    return !keyring.isWebHID;
-  };
-
   authorizeLedgerHIDPermission = async () => {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER
@@ -2518,10 +2510,6 @@ export class WalletController extends BaseController {
 
     if (needUnlock) {
       await keyring.unlock();
-    }
-
-    if (keyring.useWebHID) {
-      keyring.useWebHID(isWebHID);
     }
 
     return stashKeyringId;

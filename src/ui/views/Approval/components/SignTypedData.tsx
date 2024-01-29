@@ -65,7 +65,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
-  const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
@@ -408,7 +407,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       rejectApproval('This address can not sign text message', false, true);
     }
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-    setUseLedgerLive(await wallet.isUseLedgerLive());
   };
 
   const getRequireData = async (data: TypedDataActionData) => {
@@ -555,7 +553,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           tooltipContent={cantProcessReason}
           disabledProcess={
             isLoading ||
-            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+            (isLedger && !hasConnectedLedgerHID) ||
             isWatch ||
             hasUnProcessSecurityResult
           }

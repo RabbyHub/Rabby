@@ -180,12 +180,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: KEYRING_CLASS.HARDWARE.LEDGER,
         });
-        // TODO: Why check permissions after signature completion?
-        // const hasPermission = await wallet.checkLedgerHasHIDPermission();
-        // const isUseLedgerLive = await wallet.isUseLedgerLive();
-        // if (!hasPermission && !isUseLedgerLive) {
-        //   await wallet.authorizeLedgerHIDPermission();
-        // }
+
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
