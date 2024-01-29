@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
@@ -50,8 +48,7 @@ class LedgerBridgeKeyring {
   page: number;
   perPage: number;
   unlockedAccount: number;
-  hdk: any;
-  paths: {};
+  paths: Record<string, number>;
   hdPath: any;
   accounts: any;
   isWebHID: boolean;
@@ -69,7 +66,6 @@ class LedgerBridgeKeyring {
     this.page = 0;
     this.perPage = 5;
     this.unlockedAccount = 0;
-    this.hdk = new HDKey();
     this.paths = {};
     this.hasHIDPermission = null;
     this.isWebHID = false;
@@ -131,7 +127,7 @@ class LedgerBridgeKeyring {
   }
 
   isUnlocked() {
-    return Boolean(this.hdk && this.hdk.publicKey);
+    return !!this.app;
   }
 
   setAccountToUnlock(index) {
@@ -139,10 +135,6 @@ class LedgerBridgeKeyring {
   }
 
   setHdPath(hdPath) {
-    // Reset HDKey if the path changes
-    if (this.hdPath !== hdPath) {
-      this.hdk = new HDKey();
-    }
     this.hdPath = hdPath;
   }
 
@@ -163,7 +155,6 @@ class LedgerBridgeKeyring {
     this.app = null;
     if (this.transport) this.transport.close();
     this.transport = null;
-    this.hdk = new HDKey();
   }
 
   async unlock(hdPath?, force?: boolean): Promise<string> {
@@ -177,9 +168,7 @@ class LedgerBridgeKeyring {
 
     await this.makeApp();
     const res = await this.app!.getAddress(path, false, true);
-    const { address, publicKey, chainCode } = res;
-    this.hdk.publicKey = Buffer.from(publicKey, 'hex');
-    this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
+    const { address } = res;
 
     return address;
   }
@@ -517,7 +506,6 @@ class LedgerBridgeKeyring {
     this.unlockedAccount = 0;
     this.paths = {};
     this.accountDetails = {};
-    this.hdk = new HDKey();
   }
 
   useWebHID(value: boolean) {
