@@ -1031,14 +1031,14 @@ export class WalletController extends BaseController {
     const data = await openapiService.getTotalBalance(address);
     preferenceService.updateAddressBalance(address, data);
     return data;
-    // 3 mins
-  });
+    // 5s
+  }, 5000);
 
   private getTestnetTotalBalanceCached = cached(async (address) => {
     const testnetData = await testnetOpenapiService.getTotalBalance(address);
     preferenceService.updateTestnetAddressBalance(address, testnetData);
     return testnetData;
-  });
+  }, 5000);
 
   getAddressBalance = async (
     address: string,
@@ -1061,7 +1061,7 @@ export class WalletController extends BaseController {
 
   private getNetCurveCached = cached(async (address) => {
     return openapiService.getNetCurve(address);
-  });
+  }, 5000);
 
   getNetCurve = (address, force = false) => {
     return this.getNetCurveCached([address], address, force);
