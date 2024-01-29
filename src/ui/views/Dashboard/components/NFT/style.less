@@ -1,0 +1,146 @@
+.nft-avatar {
+  position: relative;
+  border-radius: 4px;
+  // border: 1px solid #fff;
+  border: none;
+  width: 64px;
+  height: 64px;
+  background-color: var(--r-neutral-bg1);
+
+  &:hover {
+    .nft-avatar-cover {
+      display: flex;
+    }
+  }
+
+  .ant-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    // object-fit: contain;
+    border-radius: 4px;
+    image-rendering: pixelated;
+  }
+
+  &-chain {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 14px;
+    height: 14px;
+    z-index: 1;
+  }
+
+  &-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    display: none;
+    cursor: pointer;
+  }
+
+  &-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 12px;
+    line-height: 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+    padding: 1px 5px;
+    color: #fff;
+  }
+}
+
+.rabby-chain-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.nft-modal {
+  .ant-modal-confirm-content {
+    margin: 0;
+    background: transparent;
+    max-height: unset !important;
+    padding: 0;
+  }
+
+  .ant-modal-content {
+    border-radius: 12px;
+    background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  .ant-modal-body {
+    padding: 12px 12px 16px;
+    max-height: unset !important;
+  }
+
+  .ant-modal-confirm-content {
+    margin: 0 !important;
+    padding: 12px !important;
+  }
+}
+
+.nft-preview-card {
+  .nft-avatar {
+    width: 100%;
+    height: 306px;
+  }
+
+  &-title {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--r-neutral-title-1, #F7FAFC);
+    border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
+    padding-top: 16px;
+    padding-bottom: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-list {
+    padding-top: 12px;
+    margin-bottom: 16px;
+
+    &-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+
+      &:nth-last-child(1) {
+        margin-bottom: 0;
+      }
+
+      &-label {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 14px;
+        color: var(--r-neutral-title-1, #F7FAFC);
+      }
+
+      &-value {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        line-height: 14px;
+        color: var(--r-neutral-foot, #BABEC5);
+      }
+    }
+  }
+}
