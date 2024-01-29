@@ -2475,9 +2475,6 @@ export class WalletController extends BaseController {
     return keyring.hasHIDPermission;
   };
 
-  updateUseLedgerLive = async (value: boolean) =>
-    preferenceService.updateUseLedgerLive(value);
-
   connectHardware = async ({
     type,
     hdPath,
@@ -2525,15 +2522,6 @@ export class WalletController extends BaseController {
 
     if (keyring.useWebHID) {
       keyring.useWebHID(isWebHID);
-    }
-
-    if (
-      type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !isWebHID &&
-      stashKeyringId !== null
-    ) {
-      keyring.updateTransportMethod &&
-        (await keyring.updateTransportMethod(true));
     }
 
     return stashKeyringId;

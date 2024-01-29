@@ -495,19 +495,6 @@ class PreferenceService {
     this.store.themeMode = themeMode;
   };
 
-  updateUseLedgerLive = async (value: boolean) => {
-    this.store.useLedgerLive = value;
-    const keyrings = keyringService.getKeyringsByType(
-      HARDWARE_KEYRING_TYPES.Ledger.type
-    );
-    await Promise.all(
-      keyrings.map(async (keyring) => {
-        await keyring.updateTransportMethod(value);
-        keyring.restart();
-      })
-    );
-  };
-
   isUseLedgerLive = () => {
     return this.store.useLedgerLive;
   };

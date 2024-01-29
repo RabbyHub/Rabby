@@ -193,7 +193,7 @@ export class EthImKeyKeyring extends EventEmitter {
             if (!this.accounts.includes(address)) {
               this.accounts.push(address);
               this.accountDetails[ethUtil.toChecksumAddress(address)] = {
-                hdPath: await this.pathFromAddress(address),
+                hdPath: this.getPathForIndex(i),
                 hdPathType: this.hdPathType,
                 hdPathBasePublicKey: await this.getPathBasePublicKey(
                   this.hdPathType
@@ -300,7 +300,6 @@ export class EthImKeyKeyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address: string, transaction) {
-    console.log(address, transaction);
     return this.signHelper.invoke(async () => {
       await this.unlock();
       const checksummedAddress = ethUtil.toChecksumAddress(address);
@@ -405,21 +404,27 @@ export class EthImKeyKeyring extends EventEmitter {
     return ethUtil.bufferToHex(buf).toString();
   }
 
-  // eslint-disable-next-line no-shadow
-  private async addressFromIndex(i: number) {
+  private getPathForIndex(i: number) {
     let htPath = this.getHDPathBase(this.hdPathType);
     if (this.hdPathType === HDPathType.LedgerLive) {
       htPath = `m/44'/60'/${i}'/0/0`;
     } else {
       htPath = `${htPath}/${i}`;
     }
+    return htPath;
+  }
+
+  private async addressFromIndex(i: number) {
+    const htPath = this.getPathForIndex(i);
     const { address } = await this.invokeApp('getAddress', [htPath]);
     return address;
   }
 
   private async pathFromAddress(address: string) {
-    const htPath = this.getHDPathBase(this.hdPathType);
-    return `${htPath}/${await this.indexFromAddress(address)}`;
+    const i = await this.indexFromAddress(address);
+    const htPath = this.getPathForIndex(i);
+
+    return htPath;
   }
 
   async indexFromAddress(address: string): Promise<number> {
