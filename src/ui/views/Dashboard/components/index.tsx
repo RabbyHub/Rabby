@@ -1,17 +1,7 @@
 export { default as RecentConnections } from './RecentConnections';
 export { default as BalanceView } from './BalanceView/BalanceView';
-export { default as SwitchAddress } from './SwitchAddress';
-export { default as useConfirmExternalModal } from './ConfirmOpenExternalModal';
-export { default as MetaMaskConflictAlertBar } from './MetaMaskConflictAlertBar';
-export { default as DefaultWalletAlertBar } from './DefaultWalletAlertBar';
-export { default as TokenList } from './TokenList';
-export { default as AssetsList } from './AssetsList';
-export { default as NFTListContainer } from './NFT/List';
 export { default as GnosisWrongChainAlertBar } from './GnosisWrongChainAlertBar';
 export { default as ChainAndSiteSelector } from './ChainAndSiteSelector';
 export { default as Settings } from './Settings';
-export { default as ExtraLink } from './ExtraLink';
 export { default as Contacts } from './Contacts';
-export { default as Security } from './Security';
-export { default as Widget } from './Widget';
 export { default as DefaultWalletSetting } from './DefaultWalletSetting';
