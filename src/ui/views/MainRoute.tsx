@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
 
 import Welcome from './Welcome';
@@ -8,17 +8,9 @@ import CreatePassword from './CreatePassword';
 import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
-
-import InputMnemonics from './ImportMnemonics/InputMnemonics';
-import EntryImportAddress from './ImportMnemonics/EntryImportAddress';
-import ConfirmMnemonics from './ImportMnemonics/ConfirmMnemonics';
-
 import ImportWatchAddress from './ImportWatchAddress';
 import SelectAddress from './SelectAddress';
-import ImportMoreAddress from './ImportMoreAddress';
 import ImportSuccess from './ImportSuccess';
-import ImportHardware from './ImportHardware';
-import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
 import Settings from './Settings';
@@ -26,7 +18,6 @@ import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
 import NFTApproval from './NFTApproval';
-import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
 import ChainList from './ChainList';
@@ -35,7 +26,6 @@ import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
 import GnosisTransactionQueue from './GnosisTransactionQueue';
-import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -66,6 +56,9 @@ import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
 import RabbyPoints from './RabbyPoints';
 import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
+import InputMnemonics from './ImportMnemonics/InputMnemonics';
+import CreateMnemonics from './CreateMnemonics';
+import ImportHardware from './ImportHardware';
 
 declare global {
   interface Window {
@@ -118,18 +111,11 @@ const Main = () => {
         <PrivateRoute exact path="/start-chain-management">
           <StartChainManagement />
         </PrivateRoute>
-        <PrivateRoute exact path="/mnemonics/risk-check">
-          <CreateMnemonics />
-        </PrivateRoute>
-        <Redirect exact path="/create-mnemonics" to="/mnemonics/create" />
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
         <PrivateRoute exact path="/import">
           <ImportMode />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/entry-import-address">
-          <EntryImportAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/import/key">
           <ImportPrivateKey />
@@ -139,21 +125,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/mnemonics">
           <InputMnemonics />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/mnemonics-confirm">
-          <ConfirmMnemonics isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics-confirm">
-          <ConfirmMnemonics />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/mnemonics-import-more-address">
-          <ImportMoreAddress isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics-import-more-address">
-          <ImportMoreAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/select-address">
-          <SelectAddress isPopup />
         </PrivateRoute>
         <PrivateRoute exact path="/import/select-address">
           <SelectAddress />
@@ -166,9 +137,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/imkey-connect">
           <ImKeyConnect />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/ledger">
-          <ImportLedgerPathSelect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/keystone">
           <KeystoneConnect />
@@ -250,9 +218,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/advanced">
           <AdvancedSettings />
-        </PrivateRoute>
-        <PrivateRoute exact path="/qrcode-reader">
-          <QRCodeReader />
         </PrivateRoute>
         <PrivateRoute exact path="/request-permission">
           <RequestPermission />

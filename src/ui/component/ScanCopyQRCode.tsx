@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import { Input, message } from 'antd';
-import WalletConnectBridgeModal from './WalletConnectBridgeModal';
 import IconSuccess from 'ui/assets/success.svg';
 import IconBridgeChange from 'ui/assets/bridgechange.svg';
 import IconQRCodeRefresh from 'ui/assets/qrcoderefresh.svg';
