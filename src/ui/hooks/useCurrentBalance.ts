@@ -159,14 +159,14 @@ export default function useCurrentBalance(
       isCanceled = true;
     };
   }, [account, nonce]);
-  return [
+  return {
     balance,
     matteredChainBalances,
     getAddressBalance,
     success,
     balanceLoading,
     balanceFromCache,
-    refresh,
+    refreshBalance: refresh,
     hasValueChainBalances,
     testnetBalance,
     testnetMatteredChainBalances,
@@ -176,5 +176,5 @@ export default function useCurrentBalance(
     testnetBalanceFromCache,
     hasTestnetValueChainBalances,
     missingList,
-  ] as const;
+  };
 }

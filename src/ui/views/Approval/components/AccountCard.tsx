@@ -78,7 +78,7 @@ const AccountCard = ({
     init();
   }, []);
 
-  const [balance] = useCurrentBalance(currentAccount?.address);
+  const { balance } = useCurrentBalance(currentAccount?.address);
 
   if (!currentAccount) return <></>;
 

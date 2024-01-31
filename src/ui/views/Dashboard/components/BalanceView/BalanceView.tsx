@@ -23,10 +23,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
-  const [
+  const {
     balance,
     matteredChainBalances,
-    _,
     success,
     balanceLoading,
     balanceFromCache,
@@ -34,13 +33,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     hasValueChainBalances,
     testnetBalance,
     testnetMatteredChainBalances,
-    _1,
     testnetSuccess,
     testnetBalanceLoading,
-    _2,
     hasTestnetValueChainBalances,
     missingList,
-  ] = useCurrentBalance(
+  } = useCurrentBalance(
     currentAccount?.address,
     true,
     false,
