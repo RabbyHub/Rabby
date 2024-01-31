@@ -356,16 +356,6 @@ const RabbyPoints = () => {
                     claimable={
                       item.claimable_points > 0 && !claimedIds.includes(item.id)
                     }
-                    can_join_today={
-                      (item as any).can_join_today &&
-                      !claimedIds.includes(item.id)
-                    }
-                    snapshot={snapshot}
-                    usedOtherInvitedCode={
-                      !!(userPointsDetail as any)?.inviter_code
-                    }
-                    invitedCode={invitedCode}
-                    onOpenCodeModal={openSetCodeModal}
                   />
                 ))
               )}
