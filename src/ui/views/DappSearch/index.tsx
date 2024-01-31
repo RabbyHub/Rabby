@@ -126,11 +126,9 @@ export const DappSearchPage = () => {
       .filter((v): v is BasicDappInfo => !!v);
   }, [favoriteSites]);
 
-  // const { data: hotTags } = useRequest(() => {
-  //   return wallet.openapi.getDappHotTags();
-  // });
-
-  const hotTags = [];
+  const { data: hotTags } = useRequest(() => {
+    return wallet.openapi.getDappHotTags();
+  });
 
   const { data, reloadAsync, loading, loadingMore } = useInfiniteScroll(
     async (d) => {
