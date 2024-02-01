@@ -197,11 +197,22 @@ const ChainIcon = ({
     );
   } else {
     return (
-      <ChainIconWrapper className="chain-icon-comp">
-        <ChainIconEle
-          className={clsx(size, innerClassName)}
-          src={chainItem?.logo || ''}
-        />
+      <div className="chain-icon-comp">
+        <Tooltip
+          placement="top"
+          overlayClassName={clsx('rectangle')}
+          title={chainItem?.name}
+          align={{
+            offset: [0, 2],
+          }}
+        >
+          <ChainIconWrapper>
+            <ChainIconEle
+              className={clsx(size, innerClassName)}
+              src={chainItem?.logo || ''}
+            />
+          </ChainIconWrapper>
+        </Tooltip>
         <Tooltip
           placement="top"
           overlayClassName={clsx('rectangle')}
@@ -223,7 +234,7 @@ const ChainIcon = ({
               <UnavaliableIcon className={clsx(size)} />
             ))}
         </Tooltip>
-      </ChainIconWrapper>
+      </div>
     );
   }
 };
