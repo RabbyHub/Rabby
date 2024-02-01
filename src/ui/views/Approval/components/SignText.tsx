@@ -57,7 +57,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
-  const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [
     cantProcessReason,
@@ -270,7 +269,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const accountType =
       isGnosis && params.account ? params.account.type : currentAccount?.type;
     setIsLedger(accountType === KEYRING_CLASS.HARDWARE.LEDGER);
-    setUseLedgerLive(await wallet.isUseLedgerLive());
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
@@ -383,7 +381,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
           disabledProcess={
-            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+            (isLedger && !hasConnectedLedgerHID) ||
             isWatch ||
             hasUnProcessSecurityResult
           }

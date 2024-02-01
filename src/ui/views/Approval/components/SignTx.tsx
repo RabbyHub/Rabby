@@ -750,7 +750,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
-  const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
@@ -1639,7 +1638,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         support1559 &&
         SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
       setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-      setUseLedgerLive(await wallet.isUseLedgerLive());
       setIsHardware(
         !!Object.values(HARDWARE_KEYRING_TYPES).find(
           (item) => item.type === currentAccount.type
@@ -2044,7 +2042,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (selectedGas ? selectedGas.price < 0 : true) ||
               (isGnosisAccount ? !safeInfo : false) ||
               (isCoboArugsAccount ? !coboArgusInfo : false) ||
-              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+              (isLedger && !hasConnectedLedgerHID) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
               hasUnProcessSecurityResult ||

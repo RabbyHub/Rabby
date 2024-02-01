@@ -67,6 +67,9 @@ export interface PreferenceStore {
   testnetBalanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  /**
+   * @deprecated
+   */
   useLedgerLive: boolean;
   locale: string;
   watchAddressPreference: Record<string, number>;
@@ -202,9 +205,6 @@ class PreferenceService {
     }
     if (!this.store.testnetBalanceMap) {
       this.store.testnetBalanceMap = {};
-    }
-    if (!this.store.useLedgerLive) {
-      this.store.useLedgerLive = false;
     }
     if (!this.store.highligtedAddresses) {
       this.store.highligtedAddresses = [];
@@ -493,23 +493,6 @@ class PreferenceService {
 
   setThemeMode = (themeMode: DARK_MODE_TYPE) => {
     this.store.themeMode = themeMode;
-  };
-
-  updateUseLedgerLive = async (value: boolean) => {
-    this.store.useLedgerLive = value;
-    const keyrings = keyringService.getKeyringsByType(
-      HARDWARE_KEYRING_TYPES.Ledger.type
-    );
-    await Promise.all(
-      keyrings.map(async (keyring) => {
-        await keyring.updateTransportMethod(value);
-        keyring.restart();
-      })
-    );
-  };
-
-  isUseLedgerLive = () => {
-    return this.store.useLedgerLive;
   };
 
   getHighlightedAddresses = () => {
