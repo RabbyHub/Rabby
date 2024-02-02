@@ -255,7 +255,7 @@ export const HistoryItem = ({
         {isScam && (
           <TooltipWithMagnetArrow
             title={t('page.transactions.txHistory.scamToolTip')}
-            className="rectangle w-[max-content]"
+            className="rectangle w-[max-content] max-w-[340px]"
           >
             <div className="tag-scam opacity-50">{t('global.scamTx')}</div>
           </TooltipWithMagnetArrow>
