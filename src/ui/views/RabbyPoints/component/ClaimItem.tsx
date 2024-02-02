@@ -1,14 +1,11 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
-import { useRabbyPoints } from '../hooks';
-import { shareRabbyPointsTwitter } from './CodeAndShare';
 
 const Wrapper = styled.div`
   position: relative;
@@ -33,79 +30,17 @@ interface ClaimItemProps {
   onClaim: (id: number, points: number) => void;
   claimable?: boolean;
   claimLoading?: boolean;
-  can_join_today?: boolean;
-  snapshot?: ReturnType<typeof useRabbyPoints>['snapshot'];
-  usedOtherInvitedCode?: boolean;
-  invitedCode?: string;
-  onOpenCodeModal: () => void;
 }
 export const ClaimItem = (props: ClaimItemProps) => {
-  const {
-    can_join_today: canJoinToday = false,
-    id,
-    snapshot,
-    usedOtherInvitedCode,
-    invitedCode,
-    onOpenCodeModal,
-  } = props;
   const { t } = useTranslation();
-
-  const history = useHistory();
-
-  const idsEvents = React.useMemo(
-    () => ({
-      1: () => {
-        if (!invitedCode) {
-          onOpenCodeModal();
-          return;
-        }
-        shareRabbyPointsTwitter({
-          snapshot,
-          usedOtherInvitedCode,
-          invitedCode,
-        });
-      },
-      3: () => {
-        history.push('/dex-swap?rbisource=rabbypoints');
-      },
-      4: () => {
-        history.push('/gas-top-up');
-      },
-    }),
-    [snapshot, usedOtherInvitedCode, invitedCode, onOpenCodeModal]
-  );
-
-  const canJoin = useMemo(() => {
-    if (id === 1) {
-      return true;
-    }
-    return canJoinToday;
-  }, [id, canJoinToday]);
-
   const claim = () => {
-    if (props.claimable) {
-      props.onClaim(props.id, props.claimable_points || 0);
-    } else if (canJoin) {
-      idsEvents[props.id]();
-    }
+    props.onClaim(props.id, props.claimable_points || 0);
   };
 
-  const btnText = useMemo(() => {
-    if (props.claimable) {
-      return `${t('page.rabbyPoints.claimItem.claim')} ${
-        !props.claimable ? '' : props.claimable_points
-      }`;
-    }
-    if (canJoin) {
-      return t('page.rabbyPoints.claimItem.go');
-    }
-    if (!props.claimable) {
-      return t('page.rabbyPoints.claimItem.go');
-    }
-  }, [props.claimable_points, props.claimable, canJoin]);
+  const disabled =
+    props.claimable_points <= 0 || !props.claimable || !!props.claimLoading;
 
-  console.log('props', props);
-
+  const showDisabledTip = props.claimable_points <= 0 || !props.claimable;
   return (
     <Wrapper className={clsx(props.claimable && 'bg-rabby-blue-light-1 ')}>
       <div className="flex items-center justify-between pb-[12px] px-[16px] border-b-[0.5px] border-rabby-neutral-line">
@@ -122,25 +57,16 @@ export const ClaimItem = (props: ClaimItemProps) => {
           align={{
             targetOffset: [0, -8],
           }}
-          overlayClassName="rectangle w-[190px]"
-          title={
-            <div className="mx-auto">
-              {t('page.rabbyPoints.claimItem.earnTip')}
-            </div>
-          }
-          visible={
-            !canJoin && !props.claimable && !props.claimLoading
-              ? undefined
-              : false
-          }
+          overlayClassName="rectangle w-[max-content]"
+          title={t('page.rabbyPoints.claimItem.disabledTip')}
+          visible={showDisabledTip ? undefined : false}
         >
           <div>
             <Button
-              key={`${!canJoin && !props.claimable && !props.claimLoading}`}
               type="primary"
               className={clsx(
                 'min-w-[100px] h-[32px]  text-[13px] font-medium',
-                !props.claimable && !canJoinToday
+                disabled
                   ? 'disabled-btn border-rabby-neutral-card-2 bg-r-neutral-card-2 text-r-neutral-foot text-opacity-50'
                   : 'text-r-neutral-title-2'
               )}
@@ -155,11 +81,16 @@ export const ClaimItem = (props: ClaimItemProps) => {
                     }
                   : {}
               }
-              disabled={!props.claimable && !canJoin}
+              disabled={disabled}
               onClick={claim}
             >
               <div className="relative flex items-start justify-center gap-4 loading-button-wrapper">
-                <span>{btnText}</span>
+                <span>
+                  {t('page.rabbyPoints.claimItem.claim')}{' '}
+                  {props.claimable_points <= 0 || !props.claimable
+                    ? ''
+                    : props.claimable_points}
+                </span>
                 {props.claimLoading && (
                   <IconInputLoading className="relative top-[2px] animate-spin" />
                 )}
