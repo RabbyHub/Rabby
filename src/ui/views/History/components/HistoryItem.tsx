@@ -23,6 +23,7 @@ import {
 } from '@/ui/hooks/useParseAddress';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { findChainByServerID } from '@/utils/chain';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export type HistoryItemActionContext = {
   parsedInputData: string;
@@ -249,12 +250,22 @@ export const HistoryItem = ({
   }
 
   return (
-    <div
-      className={clsx('txs-history-card', (isScam || isFailed) && 'is-gray')}
-    >
+    <div className={clsx('txs-history-card')}>
       <div className="txs-history-card-header">
-        {isScam && <div className="tag-scam">{t('global.scamTx')}</div>}
-        <div className="txs-history-card-header-inner text-12">
+        {isScam && (
+          <TooltipWithMagnetArrow
+            title={t('page.transactions.txHistory.scamToolTip')}
+            className="rectangle w-[max-content]"
+          >
+            <div className="tag-scam opacity-50">{t('global.scamTx')}</div>
+          </TooltipWithMagnetArrow>
+        )}
+        <div
+          className={clsx(
+            'txs-history-card-header-inner text-12',
+            (isScam || isFailed) && 'opacity-50'
+          )}
+        >
           <div className="time">{sinceTime(data.time_at)}</div>
           <div className="txs-history-card-header-right flex items-center justify-end flex-shrink-1 w-[100%]">
             <TxId chain={data.chain} id={data.id} />
@@ -279,7 +290,12 @@ export const HistoryItem = ({
           </div>
         </div>
       </div>
-      <div className="txs-history-card-body">
+      <div
+        className={clsx(
+          'txs-history-card-body',
+          (isScam || isFailed) && 'opacity-50'
+        )}
+      >
         <TxInterAddressExplain
           data={data}
           projectDict={projectDict}
@@ -289,7 +305,12 @@ export const HistoryItem = ({
         <TokenChange data={data} tokenDict={tokenDict} />
       </div>
       {(data.tx && data.tx?.eth_gas_fee) || isFailed ? (
-        <div className="txs-history-card-footer text-12">
+        <div
+          className={clsx(
+            'txs-history-card-footer text-12',
+            (isScam || isFailed) && 'opacity-50'
+          )}
+        >
           {data.tx && data.tx?.eth_gas_fee ? (
             <div>
               {t('global.gas')}:{' '}

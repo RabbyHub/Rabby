@@ -13,7 +13,8 @@
       },
       "txHistory": {
         "tipInputData": "The transaction includes a message",
-        "parseInputDataError": "Parse message failed"
+        "parseInputDataError": "Parse message failed",
+        "scamToolTip": "This transaction is initiated by scammers to send scam tokens and NFTs. Please refrain from interacting with it."
       },
       "modalViewMessage": {
         "title": "View Message"
