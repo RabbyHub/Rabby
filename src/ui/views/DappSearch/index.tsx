@@ -43,6 +43,14 @@ const SearchWrapper = styled.div`
     line-height: 24px !important;
     background: var(--r-neutral-card1, #fff);
 
+    input::placeholder {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+
+    .ant-input-clear-icon {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+
     .ant-input-prefix {
       margin-right: 12px;
     }
