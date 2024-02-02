@@ -438,23 +438,30 @@ class LedgerBridgeKeyring {
         };
 
         // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
-        try {
-          res = await this.app!.signEIP712Message(hdPath, data);
-        } catch (e) {
-          if (
-            e instanceof Error &&
-            'statusText' in e &&
-            (e as any).statusText === 'INS_NOT_SUPPORTED'
-          ) {
-            res = await this.app!.signEIP712HashedMessage(
-              hdPath,
-              domainSeparatorHex,
-              hashStructMessageHex
-            );
-          } else {
-            throw e;
-          }
-        }
+        // try {
+        //   res = await this.app!.signEIP712Message(hdPath, data);
+        // } catch (e) {
+        //   if (
+        //     e instanceof Error &&
+        //     'statusText' in e &&
+        //     (e as any).statusText === 'INS_NOT_SUPPORTED'
+        //   ) {
+        //     res = await this.app!.signEIP712HashedMessage(
+        //       hdPath,
+        //       domainSeparatorHex,
+        //       hashStructMessageHex
+        //     );
+        //   } else {
+        //     throw e;
+        //   }
+        // }
+
+        // eslint-disable-next-line prefer-const
+        res = await this.app!.signEIP712HashedMessage(
+          hdPath,
+          domainSeparatorHex,
+          hashStructMessageHex
+        );
 
         let v = res.v.toString(16);
         if (v.length < 2) {
