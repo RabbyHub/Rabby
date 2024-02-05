@@ -679,6 +679,21 @@ export class KeyringService extends EventEmitter {
   }
 
   /**
+   * Sign PLUME Message
+   * (EIP 7524 https://github.com/ethereum/ERCs/pull/37/files?short_path=d698c69#diff-d698c694be4189f928935d8c63c0df0a03e5cca1521c388a97949dc0436dc4ca)
+   *
+   * Attempts to sign the message using the keyring of given address. The
+   * message data should be utf8 encoded.
+   *
+   * @param {Object} msgParams - The message parameters.
+   * @returns {Promise<Object>} The raw signature components.
+   */
+  signPlumeMessage(keyring, msgParams, opts = {}) {
+    const address = normalizeAddress(msgParams.from);
+    return keyring.signPlumeMessage(address, msgParams.data, opts);
+  }
+
+  /**
    * Get encryption public key
    *
    * Get encryption public key for using in encrypt/decrypt process.

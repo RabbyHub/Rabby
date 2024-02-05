@@ -13,7 +13,8 @@ export interface SignTextHistoryItem {
     | 'ethSignTypedData'
     | 'ethSignTypedDataV1'
     | 'ethSignTypedDataV3'
-    | 'ethSignTypedDataV4';
+    | 'ethSignTypedDataV4'
+    | 'ethGetPlumeSignature';
 }
 
 interface SignTextHistoryStore {

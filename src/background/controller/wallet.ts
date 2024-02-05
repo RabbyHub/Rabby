@@ -2665,6 +2665,28 @@ export class WalletController extends BaseController {
     return res;
   };
 
+  signPlumeMessage = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    const res = await keyringService.signPlumeMessage(
+      keyring,
+      { from, data },
+      options
+    );
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.SIGN_FINISHED,
+      params: {
+        success: true,
+        data: res,
+      },
+    });
+    return res;
+  };
+
   signTransaction = async (
     type: string,
     from: string,

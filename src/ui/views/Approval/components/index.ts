@@ -1,6 +1,7 @@
 export { default as SignText } from './SignText';
 export { default as SignTx } from './SignTx';
 export { default as SignTypedData } from './SignTypedData';
+export { default as SignPlume } from './SignPlume';
 export { default as Connect } from './Connect';
 export { default as WatchAddressWaiting } from './WatchAddressWaiting';
 export { default as CoinbaseWaiting } from './CoinbaseWaiting';
