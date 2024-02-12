@@ -517,6 +517,7 @@ export class KeyringService extends EventEmitter {
         const alias = generateAliasName({
           brandName,
           keyringType: keyring.type,
+          keyringName: keyring.getName ? keyring.getName() : undefined,
           addressCount,
         });
         contactBook.addAlias({
