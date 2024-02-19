@@ -120,9 +120,11 @@ export const Quotes = ({
             ).times(other.receiveToken.price);
           }
 
-          return new BigNumber(quote?.data?.receive_token?.amount || 0).times(
-            other.receiveToken.price
-          );
+          return new BigNumber(
+            quote?.data?.receive_token
+              ? quote?.data?.receive_token?.amount
+              : -Number.MAX_SAFE_INTEGER
+          ).times(other.receiveToken.price);
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),

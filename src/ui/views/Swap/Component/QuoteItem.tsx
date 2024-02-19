@@ -273,6 +273,7 @@ export const DexQuoteItem = (
       const percent = receivedUsdBn
         .minus(bestQuoteUsdBn)
         .div(bestQuoteUsdBn)
+        .abs()
         .times(100);
 
       receivedUsd = formatUsdValue(
@@ -298,7 +299,7 @@ export const DexQuoteItem = (
         <span className={clsx('percent', { red: !isBestQuote })}>
           {isBestQuote
             ? t('page.swap.best')
-            : `${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
+            : `-${percent.toFixed(2, BigNumber.ROUND_DOWN)}%`}
         </span>
       );
     }
