@@ -198,13 +198,13 @@
     "signFooterBar": {
       "requestFrom": "Request from",
       "processRiskAlert": "Please process the alert before signing",
-      "ignoreAll": "Ignore all",
+      "ignoreAll": "ข้ามทั้งหมด",
       "gridPlusConnected": "GridPlus is connected",
       "gridPlusNotConnected": "GridPlus is not connected",
-      "connectButton": "Connect",
-      "connecting": "Connecting...",
-      "ledgerNotConnected": "Ledger is not connected",
-      "ledgerConnected": "Ledger is connected",
+      "connectButton": "เชื่อมต่อ",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "ledgerNotConnected": "Ledger ไม่ถูกเชื่อมต่อ",
+      "ledgerConnected": "Ledger ถูกเชื่อมต่อ",
       "signAndSubmitButton": "Sign and Submit",
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -249,7 +249,7 @@
         "afterSignDesc": "After signing, place the QR code on {{brand}} in front of your PC camera"
       },
       "ledger": {
-        "resent": "Resent",
+        "resent": "ส่งซ้ำ",
         "signError": "Ledger sign error:",
         "notConnected": "Your wallet is not connected. Please re-connect.",
         "siging": "Sending signing request...",
@@ -280,13 +280,13 @@
         "approvalExpiretime": "Approval expire time"
       },
       "swapTokenOrder": {
-        "title": "Token Order"
+        "title": "คำสั่ง Token"
       },
       "sellNFT": {
-        "title": "NFT Order",
+        "title": "คำสั่ง NFT",
         "receiveToken": "ได้รับ token",
-        "listNFT": "List NFT",
-        "specificBuyer": "Specific buyer"
+        "listNFT": "วางขาย NFT",
+        "specificBuyer": "เฉพาะผู้ซื้อ"
       },
       "signMultiSig": {
         "title": "ยืนยันแก๊ส"
@@ -308,7 +308,7 @@
       }
     },
     "activities": {
-      "title": "Signature Record",
+      "title": "บันทึก Signature",
       "signedTx": {
         "label": "Transactions",
         "empty": {
@@ -319,7 +319,7 @@
           "unlimited": "ไม่จำกัด",
           "unknownProtocol": "ไม่รู้จัก protocol",
           "unknown": "ไม่รู้จัก",
-          "speedUp": "Speed up",
+          "speedUp": "เร่งความเร็ว",
           "cancel": "ยกเลิก",
           "pendingDetail": "อยู่ระหว่างการพิจารณารายละเอียด"
         },
