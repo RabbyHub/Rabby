@@ -149,16 +149,16 @@
         "multisigAddress": "Multisig address"
       },
       "contractCall": {
-        "title": "Contract Call",
-        "operation": "Operation",
+        "title": "เรียก Contract",
+        "operation": "การดำเนินการ",
         "operationABIDesc": "Operation is decoded from ABI",
         "operationCantDecode": "Operation is not decoded",
-        "payNativeToken": "Pay {{symbol}}"
+        "payNativeToken": "จ่าย {{symbol}}"
       },
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
       },
-      "unknownAction": "Unknown",
+      "unknownAction": "ไม่พบ",
       "interactContract": "Interact contract",
       "markAsTrust": "Marked as trusted",
       "markAsBlock": "Marked as blocked",
@@ -178,12 +178,12 @@
       "unknownActionType": "Unknown action type",
       "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
       "nftCollection": "NFT Collection",
-      "floorPrice": "Floor price",
+      "floorPrice": "ราคา Floor",
       "contractAddress": "Contract address",
       "protocolTitle": "Protocol",
-      "deployTimeTitle": "Deployed time",
+      "deployTimeTitle": "ระยะเวลา Deployed",
       "popularity": "Popularity",
-      "contractPopularity": "No.{{0}} on {{1}}",
+      "contractPopularity": "No.{{0}} บน {{1}}",
       "addressNote": "Address note",
       "myMarkWithContract": "My mark on {{chainName}} contract",
       "myMark": "My mark",
