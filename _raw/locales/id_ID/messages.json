@@ -111,16 +111,16 @@
         "notOnWhitelist": "Tidak ada di daftar putih"
       },
       "tokenApprove": {
-        "title": "Token Approval",
-        "approveToken": "Approve token",
-        "myBalance": "My balance",
-        "approveTo": "Approve to",
-        "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
-        "amountPopupTitle": "Amount",
-        "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "title": "Persetujuan Token",
+        "approveToken": "Setujui token",
+        "myBalance": "Saldo saya",
+        "approveTo": "Setujui ke",
+        "eoaAddress": "Alamat EOA",
+        "trustValueLessThan": "Nilai kepercayaan ≤ {{value}}",
+        "deployTimeLessThan": "Waktu disebar < {{value}} hari",
+        "amountPopupTitle": "Jumlah",
+        "flagByRabby": "Ditandai oleh Rabby",
+        "contractTrustValueTip": "Nilai kepercayaan mengacu pada total token yang disetujui dan terpapar ke kontrak ini. Nilai kepercayaan yang rendah menunjukkan risiko atau ketidakaktifan selama 180 hari."
       },
       "revokeTokenApprove": {
         "title": "Revoke Token Approval",
