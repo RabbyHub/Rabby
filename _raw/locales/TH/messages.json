@@ -109,7 +109,7 @@
         "contractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึงโทเค็นทั้งหมดที่ได้รับการอนุมัติและเปิดเผยตาม Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
       },
       "revokeTokenApprove": {
-        "title": "Revoke โทเคนที่อนุมัติ",
+        "title": "Revoke token ที่อนุมัติ",
         "revokeFrom": "Revoke จาก",
         "revokeToken": "Revoke token"
       },
@@ -182,15 +182,15 @@
       "contractAddress": "Contract address",
       "protocolTitle": "Protocol",
       "deployTimeTitle": "ระยะเวลา Deployed",
-      "popularity": "Popularity",
+      "popularity": "ความโด่งดัง",
       "contractPopularity": "No.{{0}} บน {{1}}",
       "addressNote": "Address note",
-      "myMarkWithContract": "My mark on {{chainName}} contract",
-      "myMark": "My mark",
+      "myMarkWithContract": "เครื่องหมายบน {{chainName}} contract",
+      "myMark": "เครื่องหมายของฉัน",
       "collectionTitle": "Collection",
       "addressTypeTitle": "Address type",
       "firstOnChain": "First on-chain",
-      "trustValue": "Trust value",
+      "trustValue": "มูลค่าความน่าเชื่อถือ",
       "importedDelegatedAddress": "Imported delegated address",
       "noDelegatedAddress": "No imported delegated address",
       "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction"
