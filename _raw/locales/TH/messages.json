@@ -20,8 +20,8 @@
     "signTx": {
       "nftIn": "ได้รับ NFT",
       "gasLimitNotEnough": "ค่าลิมิตของค่าแก๊สต่ำกว่า 21000 จะไม่สามารถส่งแก๊สได้",
-      "gasLimitLessThanExpect": "ค่าลิมิตของค่าแก๊สต่ำเกินไป There is 1% chance that the transaction may fail.",
-      "gasLimitLessThanGasUsed": "ลิมิตของค่าแก๊สต่ำไป There is 95% chance that the transaction may fail.",
+      "gasLimitLessThanExpect": "ค่าลิมิตของค่าแก๊สต่ำเกินไป มีโอกาส 1% ที่ transaction จะล้มเหลว",
+      "gasLimitLessThanGasUsed": "ลิมิตของค่าแก๊สต่ำไป มีโอกาส 95% ที่ transaction จะล้มเหลว",
       "nativeTokenNotEngouthForGas": "คุณมีค่าแก๊สในกระเป๋าไม่เพียงพอ",
       "nonceLowerThanExpect": "Nonce ต่ำเกินไป ขั้นต่ำควรเป็น {{0}}",
       "canOnlyUseImportedAddress": "คุณสามารถนำเข้า Addresses สำหรับ sign เท่านั้น",
@@ -42,7 +42,7 @@
       "recommendGasLimitTip": "ประมาณ {{est}}. ปัจจุบัน {{current}}x, แนะนำ ",
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "แก้ไขเมื่อจำเป็นเท่านั้น",
-      "gasPriceMedian": "ค่ากลางของ 100 Transaction ล่าสุด: ",
+      "gasPriceMedian": "ค่ามัธยฐานของ 100 Transaction ล่าสุด: ",
       "myNativeTokenBalance": "{{symbol}} ที่มีจำนวน: {{amount}} {{symbol}}",
       "gasLimitEmptyAlert": "กรุณาระบุค่าสูงสุดของแก๊ส",
       "gasLimitMinValueAlert": "ค่าแก๊สสูงสุดควรมากกว่า 21000",
@@ -156,14 +156,14 @@
         "payNativeToken": "จ่าย {{symbol}}"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
+        "title": "เพิกถอนการอนุมัติ Permit2 Token"
       },
       "unknownAction": "ไม่พบ",
-      "interactContract": "Interact contract",
-      "markAsTrust": "Marked as trusted",
-      "markAsBlock": "Marked as blocked",
-      "interacted": "Interacted before",
-      "neverInteracted": "Never interacted before",
+      "interactContract": "เชื่อม contract",
+      "markAsTrust": "ทำเครื่องหมายว่าเชื่อถือได้",
+      "markAsBlock": "ทำเครื่องหมายว่าถูกบล็อก",
+      "interacted": "มีการเชื่อมต่อมาก่อน",
+      "neverInteracted": "ไม่เคยมีการเชื่อมต่อ",
       "transacted": "Transacted before",
       "neverTransacted": "Never transacted before",
       "fakeTokenAlert": "This is a scam token marked by Rabby",
@@ -232,12 +232,12 @@
         "coolwallet": "CoolWallet address",
         "privateKey": "Private Key address",
         "seedPhrase": "Seed Phrase address",
-        "watchAddress": "Unable to sign with watch-only address",
+        "watchAddress": "ไม่สามารถ sign ด้วย address สำหรับดูอย่างเดียวได้",
         "safe": "Safe address",
         "coboSafe": "Cobo Argus Address"
       },
       "qrcode": {
-        "signWith": "Sign with {{brand}}",
+        "signWith": "Sign เข้ากับ {{brand}}",
         "failedToGetExplain": "Failed to get explain",
         "txFailed": "Transaction failed",
         "sigReceived": "Signature received",
@@ -295,13 +295,13 @@
         "title": "สร้างรหัส"
       },
       "verifyAddress": {
-        "title": "Verify Address"
+        "title": "ตรวจสอบ Address"
       },
       "buyNFT": {
-        "payToken": "Pay token",
-        "receiveNFT": "Receive NFT",
-        "expireTime": "Expire time",
-        "listOn": "List on"
+        "payToken": "จ่าย token",
+        "receiveNFT": "ได้รับ NFT",
+        "expireTime": "หมดเวลา",
+        "listOn": "List บน"
       },
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
@@ -330,7 +330,7 @@
         "status": {
           "canceled": "ยกเลิก",
           "failed": "ล้มเหลว",
-          "submitFailed": "Failed to submit",
+          "submitFailed": "ไม่สามารถส่งได้",
           "pending": "รอดำเนินการ"
         },
         "txType": {
@@ -358,7 +358,7 @@
       }
     },
     "receive": {
-      "title": "Receive {{token}} on {{chain}}",
+      "title": "ได้รับ {{token}} บน {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
       "watchModeAlert2": "Are you sure to use it to receive assets?"
     },
@@ -404,7 +404,7 @@
         "title": "กรุณาใส่รหัสผ่านเพื่อยืนยัน"
       },
       "sectionBalance": {
-        "title": "Balance"
+        "title": "ยอดเงิน"
       },
       "sectionChain": {
         "title": "Chain"
@@ -545,11 +545,11 @@
       "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
       "No_Tokens": "ไม่มีโทเคน",
       "InsufficientBalanceTips": "ยอดคงเหลือไม่เพียงพอ",
-      "payment": "Gas Top Up Payment",
-      "Loading_Tokens": "Loading Tokens...",
+      "payment": "ชำระค่าแก๊ส",
+      "Loading_Tokens": "กำลังโหลด Tokens...",
       "Including-service-fee": "Including {{fee}} service fee",
       "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
-      "Confirm": "Confirm",
+      "Confirm": "ยืนยัน",
       "Select-from-supported-tokens": "Select from supported tokens",
       "Value": "Value",
       "Payment-Token": "Payment Token",
