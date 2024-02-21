@@ -37,7 +37,7 @@
       "maxPriorityFee": "ค่าแก๊สของความสำคัญสูงสุด (Gwei)",
       "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
       "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
-      "hardwareSupport1559Alert": "Make sure your hardware wallet firmware has been upgraded to the version that supports EIP 1559",
+      "hardwareSupport1559Alert": "ตรวจสอบให้แน่ใจว่าเฟิร์มแวร์ hardware wallet ได้รับการอัปเกรดเป็นเวอร์ชันที่รองรับ EIP 1559",
       "gasLimitTitle": "ลิมิตของค่าแก๊ส",
       "recommendGasLimitTip": "ประมาณ {{est}}. ปัจจุบัน {{current}}x, แนะนำ ",
       "nonceTitle": "Nonce",
@@ -97,8 +97,8 @@
         "notOnWhitelist": "ไม่พบ Whitelist ในระบบ"
       },
       "tokenApprove": {
-        "title": "โทเคนที่อนุมัติ",
-        "approveToken": "อนุมัติโทเคน",
+        "title": "Token ที่อนุมัติ",
+        "approveToken": "อนุมัติ Token",
         "myBalance": "ยอดรวม",
         "approveTo": "อนุมัติให้",
         "eoaAddress": "EOA address",
@@ -110,7 +110,7 @@
       },
       "revokeTokenApprove": {
         "title": "Revoke โทเคนที่อนุมัติ",
-        "revokeFrom": "Revoke from",
+        "revokeFrom": "Revoke จาก",
         "revokeToken": "Revoke token"
       },
       "sendNFT": {
@@ -151,8 +151,8 @@
       "contractCall": {
         "title": "เรียก Contract",
         "operation": "การดำเนินการ",
-        "operationABIDesc": "Operation is decoded from ABI",
-        "operationCantDecode": "Operation is not decoded",
+        "operationABIDesc": "การดำเนินการถูกถอดรหัสจาก ABI",
+        "operationCantDecode": "การดำเนินการไม่ได้รับการถอดรหัส",
         "payNativeToken": "จ่าย {{symbol}}"
       },
       "revokePermit2": {
@@ -165,7 +165,7 @@
       "interacted": "มีการเชื่อมต่อมาก่อน",
       "neverInteracted": "ไม่เคยมีการเชื่อมต่อ",
       "transacted": "Transacted before",
-      "neverTransacted": "Never transacted before",
+      "neverTransacted": "ไม่เคยทำธุรกรรมมาก่อน",
       "fakeTokenAlert": "This is a scam token marked by Rabby",
       "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
       "trusted": "เชื่อถือ",
