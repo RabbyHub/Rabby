@@ -4,7 +4,7 @@
       "title": "แก๊ส",
       "empty": {
         "title": "ไม่พบแก๊ส",
-        "desc": " ไม่พบแก๊สบน <1>supported chains</1>"
+        "desc": " ไม่พบแก๊สบน <1>chains ที่รองรับ</1>"
       },
       "explain": {
         "approve": "อนุมัติ {{amount}} {{symbol}} สำหรับ {{project}}",
@@ -166,7 +166,7 @@
       "neverInteracted": "ไม่เคยมีการเชื่อมต่อ",
       "transacted": "Transacted before",
       "neverTransacted": "ไม่เคยทำธุรกรรมมาก่อน",
-      "fakeTokenAlert": "This is a scam token marked by Rabby",
+      "fakeTokenAlert": "Scam token ที่ Rabby ทำเครื่องหมายไว้",
       "scamTokenAlert": "This is potentially a low-quality and scam token based on Rabby's detection",
       "trusted": "เชื่อถือ",
       "blocked": "บล๊อค",
@@ -174,7 +174,7 @@
       "markRemoved": "ลบเครื่องหมาย",
       "speedUpTooltip": "This accelerated transaction and the original transaction, only one of which will eventually be completed",
       "signTransactionOnChain": "Sign {{chain}} Transaction",
-      "viewRaw": "View Raw",
+      "viewRaw": "ดูข้อมูลดิบ",
       "unknownActionType": "Unknown action type",
       "sigCantDecode": "This signature can't be decoded by Rabby, but it doesn't imply any risk",
       "nftCollection": "NFT Collection",
