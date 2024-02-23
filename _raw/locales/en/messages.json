@@ -1477,6 +1477,14 @@
         "description": "Description"
       }
     },
+    "signPlume": {
+      "title": "Sign PLUME",
+      "message": "Message",
+      "createKey": {
+        "interactDapp": "Interact Dapp",
+        "description": "Description"
+      }
+    },
     "securityEngine": {
       "yes": "Yes",
       "no": "No",

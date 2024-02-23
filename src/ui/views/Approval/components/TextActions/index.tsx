@@ -104,12 +104,14 @@ const Actions = ({
   raw,
   message,
   origin,
+  plume,
 }: {
   data: TextActionData | null;
   engineResults: Result[];
   raw: string;
   message: string;
   origin: string;
+  plume?: boolean;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -139,7 +141,9 @@ const Actions = ({
   return (
     <>
       <SignTitle>
-        <div className="left relative">{t('page.signText.title')}</div>
+        <div className="left relative">
+          {t(plume ? 'page.signPlume.title' : 'page.signText.title')}
+        </div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}

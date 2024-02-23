@@ -933,6 +933,55 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', [
+    'SignPlume',
+    ({
+      data: {
+        params: [_, from],
+      },
+    }) => {
+      const currentAddress = preferenceService
+        .getCurrentAccount()
+        ?.address.toLowerCase();
+      if (from.toLowerCase() !== currentAddress)
+        throw ethErrors.rpc.invalidParams(
+          'from should be same as current address'
+        );
+    },
+  ])
+  ethGetPlumeSignature = async ({ data, approvalRes, session }) => {
+    if (!data.params) return;
+    const currentAccount = preferenceService.getCurrentAccount()!;
+    try {
+      const [msg, from] = data.params;
+      const keyring = await this._checkAddress(from);
+      const result = await keyringService.signPlumeMessage(
+        keyring,
+        { data: msg, from },
+        approvalRes?.extra
+      );
+      signTextHistoryService.createHistory({
+        address: from,
+        text: msg,
+        origin: session.origin,
+        type: 'ethGetPlumeSignature',
+      });
+      reportSignText({
+        account: currentAccount,
+        method: 'ethGetPlumeSignature',
+        success: true,
+      });
+      return result;
+    } catch (e) {
+      reportSignText({
+        account: currentAccount,
+        method: 'ethGetPlumeSignature',
+        success: false,
+      });
+      throw e;
+    }
+  };
+
+  @Reflect.metadata('APPROVAL', [
     'AddChain',
     ({
       data: {

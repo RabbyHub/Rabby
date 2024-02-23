@@ -15,7 +15,7 @@ import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 
 const isSignApproval = (type: string) => {
-  const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
+  const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx', 'SignPlume'];
   return SIGN_APPROVALS.includes(type);
 };
 
