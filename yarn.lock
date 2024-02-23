@@ -4031,10 +4031,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.1.25":
-  version "0.1.25"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.25.tgz#0ae904e66ba1bf345261bf26af61546a865bb788"
-  integrity sha512-5OwaD7awJ59WFyU6rfK+ztAyI9rk1HoMPuc5xT+gz4REP8U7+YOkJpVZgKv/tReYTStp+ng+PxgcHXprFqzA5Q==
+"@rabby-wallet/page-provider@0.1.26":
+  version "0.1.26"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.26.tgz#1895245c3f022e125442c0c26c05531a6619739f"
+  integrity sha512-h+9FySs8jbJL2Nxqo8uhqxtG7v4Tbud7/FRbE5ZrkJm0nZiFWUUdTN68ESakbJ4m05VHLZwgXrqjLcd86KByWg==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
