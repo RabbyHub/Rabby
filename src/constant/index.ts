@@ -177,6 +177,9 @@ import IconCoinbase, {
 import IconImKey, {
   ReactComponent as RCIconImKey,
 } from 'ui/assets/walletlogo/imkey.svg';
+import IconUtila, {
+  ReactComponent as RCIconUtila,
+} from 'ui/assets/walletlogo/utila.svg';
 import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import browser from 'webextension-polyfill';
@@ -501,6 +504,7 @@ export enum WALLET_BRAND_TYPES {
   MPCVault = 'MPCVault',
   Coinbase = 'Coinbase',
   IMKEY = 'IMKEY',
+  Utila = 'Utila',
 }
 
 export enum WALLET_BRAND_CATEGORY {
@@ -879,6 +883,17 @@ export const WALLET_BRAND_CONTENT: {
     maybeSvg: IconImKey,
     connectType: BRAND_WALLET_CONNECT_TYPE.ImKeyConnect,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.Utila]: {
+    id: 30,
+    name: 'Utila',
+    brand: WALLET_BRAND_TYPES.Utila,
+    icon: IconUtila,
+    lightIcon: IconUtila,
+    image: IconUtila,
+    rcSvg: RCIconUtila,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
 };
 
