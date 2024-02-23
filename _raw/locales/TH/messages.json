@@ -25,7 +25,7 @@
       "nativeTokenNotEngouthForGas": "คุณมีค่าแก๊สในกระเป๋าไม่เพียงพอ",
       "nonceLowerThanExpect": "Nonce ต่ำเกินไป ขั้นต่ำควรเป็น {{0}}",
       "canOnlyUseImportedAddress": "คุณสามารถนำเข้า Addresses สำหรับ sign เท่านั้น",
-      "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
+      "multiSigChainNotMatch": "Multi-signature addresses ไม่รองรับ Chain นี้และไม่สามารถทำ transaction ได้",
       "safeAddressNotSupportChain": "ไม่รองรับที่ Address ปลอดภัยในปัจจุบันบน {{0}} เชน",
       "noGasRequired": "ไม่ต้องใช้ค่าแก๊ส",
       "gasSelectorTitle": "ค่าแก๊ส",
