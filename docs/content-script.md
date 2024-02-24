@@ -6,7 +6,7 @@ Although `content-script` share the same dom with `dapp`, but the context is dif
 
 `content-script` will inject the `provider` with a inline script element at `document_start`.
 
-`content-script` also generate a random value as the `broadcastChannel`(_broadcastChannelMessage.ts_) name, to establise channel between `content-script` and `ethereum provider`.
+`content-script` also generate a random value as the `broadcastChannel`(_broadcastChannelMessage.ts_) name, to establish channel between `content-script` and `ethereum provider`.
 
 ## message pass
 
