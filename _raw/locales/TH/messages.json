@@ -310,14 +310,14 @@
     "activities": {
       "title": "บันทึก Signature",
       "signedTx": {
-        "label": "Transactions",
+        "label": "ธุรกรรม",
         "empty": {
-          "title": "No signed transactions yet",
-          "desc": "All transactions signed via Rabby will be listed here."
+          "title": "ยังไม่มีการลงนามในการทำธุรกรรม",
+          "desc": "ธุรกรรมทั้งหมดที่ลงนามผ่าน Rabby จะแสดงอยู่ที่นี่"
         },
         "common": {
           "unlimited": "ไม่จำกัด",
-          "unknownProtocol": "ไม่รู้จัก protocol",
+          "unknownProtocol": "ไม่ทราบ protocol",
           "unknown": "ไม่รู้จัก",
           "speedUp": "เร่งความเร็ว",
           "cancel": "ยกเลิก",
@@ -334,19 +334,19 @@
           "pending": "รอดำเนินการ"
         },
         "txType": {
-          "initial": "Initial tx",
+          "initial": "เริ่ม tx",
           "cancel": "ยกเลิก tx",
           "speedUp": "เพิ่มความเร็ว tx"
         },
         "explain": {
-          "unknown": "Unknown Transaction",
-          "send": "Send {{amount}} {{symbol}}",
-          "cancel": "Cancel {{token}} Approve for {{protocol}}",
-          "approve": "Approve {{count}} {{token}} for {{protocol}}",
-          "cancelNFTCollectionApproval": "Cancel NFT Collection Approval for {{protocol}}",
-          "cancelSingleNFTApproval": "Cancel Single NFT Approval for {{protocol}}",
-          "singleNFTApproval": "Single NFT Approval for {{protocol}}",
-          "nftCollectionApproval": "NFT Collection Approval for {{protocol}}"
+          "unknown": "ไม่ทราบธุรกรรม",
+          "send": "ส่ง {{amount}} {{symbol}}",
+          "cancel": "ยกเลิก {{token}} อนุมัติให้ {{protocol}}",
+          "approve": "อนุมัติ {{count}} {{token}} ให้ {{protocol}}",
+          "cancelNFTCollectionApproval": "ยกเลิกการอนุมัติ NFT Collection ให้กับ {{protocol}}",
+          "cancelSingleNFTApproval": "ยกเลิกการอนุมัติ NFT ให้กับ {{protocol}}",
+          "singleNFTApproval": "การอนุมัติ NFT ให้กับ {{protocol}}",
+          "nftCollectionApproval": "NFT Collection อนุมัติให้ {{protocol}}"
         }
       },
       "signedText": {
@@ -374,10 +374,10 @@
         "error": "Failed to add to contacts"
       },
       "allowTransferModal": {
-        "error": "incorrect password",
-        "placeholder": "Enter the Password to Confirm",
-        "validator__empty": "โปรดใส่ password",
-        "addWhitelist": "Add to whitelist"
+        "error": "รหัสผ่านไม่ถูกต้อง",
+        "placeholder": "ใส่รหัสผ่านเพื่อยืนยัน",
+        "validator__empty": "โปรดใส่รหัสผ่าน",
+        "addWhitelist": "เพิ่มไปยัง whitelist"
       },
       "GasSelector": {
         "confirm": "ยืนยัน",
@@ -388,7 +388,7 @@
           "normal": "ปกติ",
           "slow": "ช้า"
         },
-        "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
+        "popupDesc": "ค่าแก๊สจะสำรองไว้จากยอดธุรกรรมตามค่าแก๊สที่ตั้งไว้",
         "popupTitle": "ตั้งค่า แก๊ส (Gwei)"
       },
       "header": {
