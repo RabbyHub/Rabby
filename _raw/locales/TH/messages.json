@@ -4,11 +4,11 @@
       "title": "แก๊ส",
       "empty": {
         "title": "ไม่พบแก๊ส",
-        "desc": " ไม่พบแก๊สบน <1>chains ที่รองรับ</1>"
+        "desc": " ไม่พบแก๊สบน <1>เชน ที่รองรับ</1>"
       },
       "explain": {
         "approve": "อนุมัติ {{amount}} {{symbol}} สำหรับ {{project}}",
-        "unknown": "Contract Interaction",
+        "unknown": "Contract ที่ใช้งาน",
         "cancel": "ยกเลิกส่งแก๊สที่รอดำเนินการ"
       }
     },
@@ -58,7 +58,7 @@
       },
       "enoughSafeSigCollected": "ได้รับ signature ครบถ้วยแล้ว",
       "moreSafeSigNeeded": "{{0}} ต้องการการยืนยันเพิ่มเติม",
-      "safeAdminSigned": "Signed",
+      "safeAdminSigned": "ลงนาม",
       "swap": {
         "title": "แลกเปลี่ยนโทเคน",
         "payToken": "จ่าย",
@@ -74,10 +74,10 @@
         "notPaymentAddress": "ไม่ใช่ Address สำหรับจ่ายค่าแก๊ส"
       },
       "crossChain": {
-        "title": "Cross Chain"
+        "title": "ข้ามเชน"
       },
       "swapAndCross": {
-        "title": "แลกเปลี่ยนและ Cross Chain"
+        "title": "แลกเปลี่ยนและข้ามเชน"
       },
       "wrapToken": "Wrap Token",
       "unwrap": "Unwrap Token",
@@ -120,7 +120,7 @@
       "nftApprove": {
         "title": "NFT ที่อนุมัติ",
         "approveNFT": "อนุมัติ NFT",
-        "nftContractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึง Top NFT ที่ได้รับอนุมัติและเปิดเผยต่อ Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
+        "nftContractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึง NFT สูงสุดที่ได้รับอนุมัติและเปิดเผยต่อ Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
       },
       "revokeNFTApprove": {
         "title": "Revoke NFT ที่อนุมัติ",
@@ -142,7 +142,7 @@
       "cancelTx": {
         "title": "ยกเลิกธุรกรรมที่กำลังดำเนินการ",
         "txToBeCanceled": "ํธุรกรรมถูกยกเลิก",
-        "gasPriceAlert": "Set current gas price more than {{value}} Gwei to cancel the pending transaction"
+        "gasPriceAlert": "ตั้งราคาแก๊สปัจจุบันให้มากกว่า {{value}} Gwei เพื่อยกเลิกรายการที่รอดำเนินการ"
       },
       "submitMultisig": {
         "title": "ส่ง Multisig Transaction",
@@ -159,15 +159,15 @@
         "title": "เพิกถอนการอนุมัติ Permit2 Token"
       },
       "unknownAction": "ไม่พบ",
-      "interactContract": "เชื่อม contract",
+      "interactContract": "เชื่อม Contract",
       "markAsTrust": "ทำเครื่องหมายว่าเชื่อถือได้",
       "markAsBlock": "ทำเครื่องหมายว่าถูกบล็อก",
       "interacted": "มีการเชื่อมต่อมาก่อน",
       "neverInteracted": "ไม่เคยมีการเชื่อมต่อ",
-      "transacted": "Transacted before",
+      "transacted": "ธุรกรรมก่อน",
       "neverTransacted": "ไม่เคยทำธุรกรรมมาก่อน",
-      "fakeTokenAlert": "Scam token ที่ Rabby ทำเครื่องหมายไว้",
-      "scamTokenAlert": "อาจเป็นโทเค็นไม่น่าเชื่อถือหรือ Scam token จากการพิจารณาของ Rabby",
+      "fakeTokenAlert": "Scam Token ที่ Rabby ทำเครื่องหมายไว้",
+      "scamTokenAlert": "อาจเป็นโทเค็นไม่น่าเชื่อถือหรือ Scam Token จากการพิจารณาของ Rabby",
       "trusted": "เชื่อถือ",
       "blocked": "บล๊อค",
       "noMark": "ไม่มีเครื่องหมาย",
@@ -268,16 +268,16 @@
       "mainnet": "Mainnet"
     },
     "signTypedData": {
-      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
-      "safeCantSignText": "This is a Safe address, and it cannot be used to sign text.",
+      "signTypeDataOnChain": "ลงนาม {{chain}} ข้อมูลชนิดที่กำหนด",
+      "safeCantSignText": "คือ Safe Address และไม่สามารถใช้ในการลงนามข้อความ",
       "permit": {
-        "title": "Permit Token Approval"
+        "title": "การอนุมัติ Token แบบ Permit1"
       },
       "permit2": {
-        "title": "Permit2 Token Approval",
-        "sigExpireTimeTip": "The duration for this signature to be valid on-chain",
-        "sigExpireTime": "Signature expire time",
-        "approvalExpiretime": "Approval expire time"
+        "title": "การอนุมัติ Token แบบ Permit2",
+        "sigExpireTimeTip": "ระยะเวลาที่ลายเซ็นนี้อนุมัติสำหรับการเชื่อมต่อ",
+        "sigExpireTime": "เวลาหมดอายุของลงนาม",
+        "approvalExpiretime": "เวลาหมดอายุของการอนุมัติ"
       },
       "swapTokenOrder": {
         "title": "คำสั่ง Token"
@@ -301,14 +301,14 @@
         "payToken": "จ่าย token",
         "receiveNFT": "ได้รับ NFT",
         "expireTime": "หมดเวลา",
-        "listOn": "List บน"
+        "listOn": "รายการบน"
       },
       "contractCall": {
-        "operationDecoded": "Operation is decoded from message"
+        "operationDecoded": "Decoded ประมวลผลจากข้อความ"
       }
     },
     "activities": {
-      "title": "บันทึก Signature",
+      "title": "บันทึกการลงนาม",
       "signedTx": {
         "label": "ธุรกรรม",
         "empty": {
@@ -407,7 +407,7 @@
         "title": "ยอดเงิน"
       },
       "sectionChain": {
-        "title": "Chain"
+        "title": "เชน"
       },
       "sectionFrom": {
         "title": "จาก"
@@ -826,10 +826,10 @@
           "enableTestnets": "Enable Testnets"
         },
         "aboutUs": "เกี่ยวกับเรา",
-        "currentVersion": "Current Version",
-        "updateAvailable": "Update Available",
-        "supportedChains": "Supported Chains",
-        "followUs": "Follow Us",
+        "currentVersion": "เวอร์ชันล่าสุด",
+        "updateAvailable": "มีการอัปเดตที่พร้อมใช้งาน",
+        "supportedChains": "เชนที่รองรับ",
+        "followUs": "ติดตามเรา",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
