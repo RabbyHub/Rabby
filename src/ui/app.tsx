@@ -29,6 +29,7 @@ Sentry.init({
     'Network Error',
     'Request limit exceeded.',
     'Non-Error promise rejection captured with keys: code, message',
+    'Non-Error promise rejection captured with keys: message, stack',
     'Failed to fetch',
   ],
 });
