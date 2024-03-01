@@ -58,6 +58,7 @@ Sentry.init({
     'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
     'Failed to fetch',
     'TransportOpenUserCancelled',
+    'Non-Error promise rejection captured with keys: message, stack',
   ],
 });
 
