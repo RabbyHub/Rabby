@@ -254,7 +254,7 @@
         "notConnected": "กระเป๋าเงินของคุณไม่ได้เชื่อมต่อ กรุณาเชื่อมต่อใหม่",
         "siging": "กำลังส่งคำขอลงนาม...",
         "txRejected": "การทำธุรกรรมถูกปฏิเสธ",
-        "unlockAlert": "กรุณาเสียบและปลดล็อค Ledger ของคุณ เปิด Ethereum บน Ledger",
+        "unlockAlert": "กรุณาเสียบและปลดล็อค Ledger จากนั้นเปิด Ethereum บน Ledger",
         "updateFirmwareAlert": "กรุณาอัปเดตเฟิร์มแวร์และแอป Ethereum บน Ledger ของคุณ",
         "txRejectedByLedger": "การทำธุรกรรมถูกปฏิเสธบน Ledger ของคุณ",
         "blindSigTutorial": "บทแนะนำเกี่ยวกับการลงนามจาก Ledger"
@@ -359,25 +359,25 @@
     },
     "receive": {
       "title": "ได้รับ {{token}} บน {{chain}}",
-      "watchModeAlert1": "This is a Watch Mode address.",
-      "watchModeAlert2": "Are you sure to use it to receive assets?"
+      "watchModeAlert1": "นี้คือ Watch Mode Address",
+      "watchModeAlert2": "แน่ใจหรือไม่ว่าจะใช้เพื่อรับสินทรัพย์"
     },
     "sendToken": {
-      "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
+      "addressNotInContract": "ไม่อยู่ในรายการ Address <1></1><2>เพิ่มในรายชื่อติดต่อ</2>",
       "AddToContactsModal": {
-        "addedAsContacts": "Added as contacts",
+        "addedAsContacts": "เพิ่มเป็นที่ติดต่อแล้ว",
         "editAddr": {
-          "placeholder": "Enter Address Note",
-          "validator__empty": "Please enter address note"
+          "placeholder": "เข้า Address ที่บันทึก",
+          "validator__empty": "กรุณาเข้า address ที่บันทึก"
         },
-        "editAddressNote": "Edit address note",
-        "error": "Failed to add to contacts"
+        "editAddressNote": "แก้ไข address ที่บันทึก",
+        "error": "ไม่สามารถเพิ่มไปยัง address ที่ติดต่อได้"
       },
       "allowTransferModal": {
         "error": "รหัสผ่านไม่ถูกต้อง",
         "placeholder": "ใส่รหัสผ่านเพื่อยืนยัน",
         "validator__empty": "โปรดใส่รหัสผ่าน",
-        "addWhitelist": "เพิ่มไปยัง whitelist"
+        "addWhitelist": "เพิ่มไปยัง Whitelist"
       },
       "GasSelector": {
         "confirm": "ยืนยัน",
