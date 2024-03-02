@@ -538,7 +538,7 @@
     "gasTopUp": {
       "title": "เติมแก๊สทันที",
       "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
-      "topUpChain": "เติมแก๊สบน Chain",
+      "topUpChain": "เติมแก๊สบนเชน",
       "Amount": "จำนวน",
       "Continue": "ดำเนินการต่อ",
       "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
