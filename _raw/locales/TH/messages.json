@@ -35,8 +35,8 @@
       "gasNotRequireForSafeTransaction": "ไม่จำเป็นต้องเสียค่าแก๊สสำหรับการทำธุรกรรมบน Safe",
       "gasPriceTitle": "ค่าแก๊ส (Gwei)",
       "maxPriorityFee": "ค่าแก๊สของความสำคัญสูงสุด (Gwei)",
-      "eip1559Desc1": "On chains that support EIP-1559, the Priority Fee is the tip for miners to process your transaction. You can save your final gas cost by lowering the Priority Fee, which may cost more time for the transaction to be processed.",
-      "eip1559Desc2": "Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee. After you set up the Max Priority Fee, the Base Fee will be deducted from it and the rest will be tipped to miners.",
+      "eip1559Desc1": "บนเครือข่ายที่รองรับ EIP-1559 ค่าธรรมเนียม Priority Fee เป็นเทคนิคสำหรับนักขุดในการประมวลผลธุรกรรม คุณสามารถประหยัดต้นทุนค่าแก๊สขั้นสุดท้ายได้โดยการลดค่าธรรมเนียมการจัดลำดับความสำคัญ ซึ่งอาจใช้เวลาในการดำเนินการธุรกรรมนานขึ้น",
+      "eip1559Desc2": "ใน Rabby เทคนิค ค่าธรรมเนียมสำคัญ  = ค่าธรรมเนียมสูงสุด - ค่าธรรมเนียมพื้นฐาน หลังจากที่ตั้งค่า Max Priority Fee แล้ว ค่าธรรมเนียมพื้นฐานจะถูกหักออกจากค่าธรรมเนียมดังกล่าว และส่วนที่เหลือจะมอบให้กับนักขุด",
       "hardwareSupport1559Alert": "ตรวจสอบให้แน่ใจว่าเฟิร์มแวร์ hardware wallet ได้รับการอัปเกรดเป็นเวอร์ชันที่รองรับ EIP 1559",
       "gasLimitTitle": "ลิมิตของค่าแก๊ส",
       "recommendGasLimitTip": "ประมาณ {{est}}. ปัจจุบัน {{current}}x, แนะนำ ",
@@ -461,7 +461,7 @@
         "sendAmount": "ส่งจำนวน"
       },
       "sendButton": "ส่ง",
-      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
+      "whitelistAlert__disabled": "Whitelist ปิดการใช้งาน สามารถโอนไปยัง Address ใดก็ได้",
       "whitelistAlert__whitelisted": "Address อยู่ในรายชื่อที่อนุญาต",
       "whitelistAlert__temporaryGranted": "Temporary permission granted",
       "whitelistAlert__notWhitelisted": "Address ไม่ได้อยู่ในรายชื่อ Whitelisted <1 /> อนุญาตชั่วคราวในการโอนโทเคน",
@@ -512,7 +512,7 @@
             "myApprovalTime": "ระยะเวลาการอนุมัติ"
           },
           "columnTip": {
-            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+            "contractTrustValue": "มูลค่าความน่าเชื่อถือหมายถึงมูลค่าทรัพย์สินรวมที่ได้รับอนุมัติและเปิดเผยต่อ Contract นี้ ค่าความน่าเชื่อถือต่ำบ่งชี้ถึงความเสี่ยงหรือการไม่มีการใช้งานเป็นเวลา 180 วัน",
             "contractTrustValueWarning": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $100,000",
             "contractTrustValueDanger": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $10,000"
           }
@@ -550,7 +550,7 @@
       "Including-service-fee": "Including {{fee}} service fee",
       "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
       "Confirm": "ยืนยัน",
-      "Select-from-supported-tokens": "Select from supported tokens",
+      "Select-from-supported-tokens": "เลือกจากโทเค็นที่รองรับ",
       "Value": "Value",
       "Payment-Token": "Payment Token",
       "Select-payment-token": "เลือกโทเคนที่ต้องการชำระเงิน",
@@ -560,14 +560,14 @@
     "swap": {
       "title": "แลกเปลี่ยน",
       "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
-      "Pending": "Pending",
+      "Pending": "รอดำเนินการ",
       "completedTip": "Transaction on chain, decoding data to generate record",
-      "Completed": "Completed",
+      "Completed": "เสร็จสิ้น",
       "slippage_tolerance": "Slippage tolerance:",
       "actual-slippage": "Actual Slippage:",
       "gas-x-price": "Gas price: {{price}} Gwei.",
-      "no-transaction-records": "No transaction records",
-      "swap-history": "Swap history",
+      "no-transaction-records": "ไม่มีบันทึกการทำธุรกรรม",
+      "swap-history": "ประวัติการแลกเปลี่ยน",
       "InSufficientTip": "ยอดคงเหลือไม่เพียงพอ to do ธุรกรรมจำลองล้มเหลว and gas estimation. Original aggregator quotes are displayed",
       "testnet-is-not-supported": "Testnet นี้ไม่รองรับ",
       "not-supported": "ไม่รองรับ",
@@ -576,7 +576,7 @@
       "approve-x-symbol": "Approve {{symbol}}",
       "swap-via-x": "แลกผ่าน {{name}}",
       "get-quotes": "รับข้อเสนอ",
-      "chain": "Chain",
+      "chain": "้เชน",
       "swap-from": "แลกจาก",
       "to": "เป็น",
       "search-by-name-address": "ค้นหาด้วยชื่อ หรือ Address",
@@ -584,7 +584,7 @@
       "unlimited-allowance": "อนมัติไม่จำกัด",
       "insufficient-balance": "ยอดคงเหลือไม่เพียงพอ",
       "rabby-fee": "ค่าธรรมเนียมของ Rabby",
-      "minimum-received": "Minimum received",
+      "minimum-received": "ขั้นต่ำที่จะได้รับ",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
       "approve-tips": "1.อนุมัติ → 2.แลกเปลี่ยน",
       "best": "ดีที่สุด",
@@ -610,7 +610,7 @@
       "rate": "อัตราแลกเปลี่ยน",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Low slippage may cause failed transactions due to high volatility",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaction might be frontrun because of high slippage tolerance",
-      "recommend-slippage": "To prevent front-running, we recommend a slippage of <2>{{ slippage }}</2>%",
+      "recommend-slippage": "เพื่อป้องกัน front-running แนะนำให้ตั้งค่า slippage ของ <2>{{ slippage }}</2>%",
       "slippage-tolerance": "ความดาดเคลื่อนของ Slippage",
       "select-token": "เลือกโทเคน",
       "enable-exchanges": "อนุญาต Exchanges",
@@ -620,10 +620,10 @@
       "dex": "DEX",
       "cex": "CEX",
       "enable-trading": "เปิดใช้งานการซื้อขาย",
-      "i-understand-and-accept-it": "ฉันเข้าใจและยอมรับข้อเสนอ",
+      "i-understand-and-accept-it": "เข้าใจและยอมรับข้อเสนอ",
       "confirm": "ยืนยัน",
       "tradingSettingTip1": "1. เมื่อเปิดใช้งานแล้ว คุณจะสามารถแลกเปลี่ยนกับ Contract ของ Exchange โดยตรง",
-      "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
+      "tradingSettingTip2": "2. Rabby จะไม่รับผิดชอบต่อความเสี่ยงใดๆ ที่เกิดขึ้นจาก Contract ของการแลกเปลี่ยน",
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "ประมาณ:",
       "actual": "ค่าที่แท้จริง:"
@@ -702,7 +702,7 @@
       },
       "recentConnection": {
         "disconnected": "ตัดการเชื่อมต่อแล้ว",
-        "rpcUnavailable": "Custom RPC ไม่พร้อมใช้งาน",
+        "rpcUnavailable": "RPC ที่กำหนดเอง ไม่พร้อมใช้งาน",
         "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
         "connected": "เชื่อมต่อแล้ว",
         "notConnected": "ไม่ได้เชื่อมต่อ",
@@ -806,24 +806,24 @@
         "warning": "คำเตือน",
         "clearWatchAddressContent": "แน่ใจหรือไม่ว่าจะลบ Watch Mode Address ทั้งหมด",
         "updateVersion": {
-          "content": "มีการอัปเดตใหม่สำหรับ Rabby Wallet แล้ว คลิกเพื่อตรวจสอบวิธีการอัพเดตด้วยตนเอง",
+          "content": "มีการอัปเดตใหม่สำหรับกระเป๋า Rabby แล้ว คลิกเพื่อตรวจสอบวิธีการอัพเดตด้วยตนเอง",
           "okText": "ดูคำแนะนำ",
-          "successTip": "คุณกำลังใช้งานเวอร์ชันล่าสุด"
+          "successTip": "กำลังใช้งานเวอร์ชันล่าสุด"
         },
         "features": {
           "label": "Features",
           "lockWallet": "ล็อคกระเป๋า",
-          "signatureRecord": "บันทึก Signature",
+          "signatureRecord": "บันทึกการลงนาม",
           "manageAddress": "จัดการ Address",
           "connectedDapp": "เชื่อมต่อ DApp"
         },
         "settings": {
-          "label": "Settings",
-          "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
-          "customRpc": "Custom RPC",
-          "metamaskPreferredDapps": "MetaMask Preferred Dapps",
-          "currentLanguage": "Current Language",
-          "enableTestnets": "Enable Testnets"
+          "label": "ตั้งค่า",
+          "enableWhitelistForSendingAssets": "เปิดใช้งาน Whitelist สำหรับการส่งทรัพย์สิน",
+          "customRpc": "RPC ที่กำหนดเอง",
+          "metamaskPreferredDapps": "แนะนำ MetaMask สำหรับ Dapps",
+          "currentLanguage": "ภาษาปัจจุบัน",
+          "enableTestnets": "เปิดใช้งาน Testnet"
         },
         "aboutUs": "เกี่ยวกับเรา",
         "currentVersion": "เวอร์ชันล่าสุด",
@@ -836,19 +836,19 @@
       },
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
-        "blocked": "Blocked",
+        "blocked": "บล๊อค",
         "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
         "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
-        "customized": "Customized",
+        "customized": "กำหนดเอง",
         "scamTx": "Scam tx",
-        "txFailed": "Failed",
-        "notSupported": "The token on this chain is ไม่รองรับ",
-        "swap": "Swap",
-        "send": "Send",
-        "receive": "Receive",
-        "noTransactions": "No Transactions",
-        "customizedButton": "customized",
-        "blockedButton": "blocked"
+        "txFailed": "ล้มเหลว",
+        "notSupported": "โทเคนบนเชนนี้ยังไม่ได้รับการรองรับ",
+        "swap": "แลกเปลี่ยน",
+        "send": "ส่ง",
+        "receive": "ได้รับ",
+        "noTransactions": "ไม่มีการทำธุรกรรม",
+        "customizedButton": "กำหนดเอง",
+        "blockedButton": "บล๊อค"
       },
       "assets": {
         "usdValue": "USD VALUE",
@@ -1421,8 +1421,8 @@
     },
     "AccountSelectDrawer": {
       "btn": {
-        "cancel": "Cancel",
-        "proceed": "Proceed"
+        "cancel": "ยกเลิก",
+        "proceed": "กำลังดำเนินการ"
       }
     },
     "AddressList": {
