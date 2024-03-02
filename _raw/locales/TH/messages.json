@@ -324,8 +324,8 @@
           "pendingDetail": "อยู่ระหว่างการพิจารณารายละเอียด"
         },
         "tips": {
-          "pendingDetail": "Only one transaction will be completed, and it is almost always the one with the highest gas price",
-          "canNotCancel": "Cannot speed up or cancel: Not the first pending txn"
+          "pendingDetail": "มีเพียงธุรกรรมเดียวเท่านั้นที่จะเสร็จสมบูรณ์ และมักจะเป็นธุรกรรมที่มีค่าแก๊สสูงสุดเสมอไป",
+          "canNotCancel": "ไม่สามารถเร่งความเร็วหรือยกเลิกได้: ไม่ใช่ txn แรกที่รอดำเนินการ"
         },
         "status": {
           "canceled": "ยกเลิก",
@@ -352,8 +352,8 @@
       "signedText": {
         "label": "ช้อความ",
         "empty": {
-          "title": "No signed texts yet",
-          "desc": "All texts signed via Rabby will be listed here."
+          "title": "ยังไม่มีข้อความลงนามเลย",
+          "desc": "ข้อความทั้งหมดที่ลงนามโดย Rabby จะแสดงไว้ที่นี่"
         }
       }
     },
@@ -420,16 +420,16 @@
       },
       "sendButton": "ส่ง",
       "tokenInfoFieldLabel": {
-        "chain": "Chain",
+        "chain": "้เชน",
         "contract": "Contract Address"
       },
       "tokenInfoPrice": "มูลค่า",
-      "whitelistAlert__disabled": "Whitelist disabled. You can transfer to any address.",
-      "whitelistAlert__notWhitelisted": "The address is not whitelisted. <1 /> I agree to grant temporary permission to transfer.",
-      "whitelistAlert__temporaryGranted": "Temporary permission granted",
-      "whitelistAlert__whitelisted": "The address is whitelisted",
+      "whitelistAlert__disabled": "Whitelist ถูกปิดใช้งาน สามารถโอนไปยัง Address ใดก็ได้",
+      "whitelistAlert__notWhitelisted": "Address ไม่อยู่ในรายการที่อนุญาต <1 /> ฉันยินยอมให้อนุญาตชั่วคราวในการโอน",
+      "whitelistAlert__temporaryGranted": "ได้รับอนุญาตชั่วคราวแล้ว",
+      "whitelistAlert__whitelisted": "Address อยู่ในรายการที่อนุญาต Whitelisted",
       "balanceWarn": {
-        "gasFeeReservation": "Gas fee reservation required"
+        "gasFeeReservation": "ต้องสำรองค่าแก๊สล่วงหน้า"
       },
       "balanceError": {
         "insufficientBalance": "ยอดคงเหลือไม่เพียงพอ"
@@ -444,7 +444,7 @@
         "title": "ส่ง"
       },
       "sectionChain": {
-        "title": "Chain"
+        "title": "เชน"
       },
       "sectionFrom": {
         "title": "จาก"
