@@ -20,6 +20,8 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
+import { getArrayType, isArrayType } from '@metamask/abi-utils/dist/parsers';
+import { BigNumber as EthersBigNumber } from 'ethers';
 import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
@@ -779,3 +781,37 @@ export const formatSecurityEngineCtx = async ({
   }
   return {};
 };
+
+export function normalizeTypeData(data) {
+  try {
+    const { types, primaryType, domain, message } = data;
+    const domainTypes = types.EIP712Domain;
+    const messageTypes = types[primaryType];
+    domainTypes.forEach((item) => {
+      const { name, type } = item;
+      domain[name] = normalizeValue(type, domain[name]);
+    });
+    messageTypes.forEach((item) => {
+      const { name, type } = item;
+      message[name] = normalizeValue(type, message[name]);
+    });
+    return { types, primaryType, domain, message };
+  } catch (e) {
+    return data;
+  }
+}
+
+export function normalizeValue(type: string, value: unknown): any {
+  if (isArrayType(type) && Array.isArray(value)) {
+    const [innerType] = getArrayType(type);
+    return value.map((item) => normalizeValue(innerType, item));
+  }
+
+  if (type === 'address') {
+    if (typeof value === 'string' && !value.startsWith('0x')) {
+      return EthersBigNumber.from(value).toHexString();
+    }
+  }
+
+  return value;
+}
