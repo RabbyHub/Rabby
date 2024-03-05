@@ -25,7 +25,7 @@ export const TxInterAddressExplain = ({
       {project?.name ? (
         project.name
       ) : data.other_addr ? (
-        <NameAndAddress address={data.other_addr} />
+        <NameAndAddress address={data.other_addr} copyIcon={!data.is_scam} />
       ) : (
         ''
       )}
