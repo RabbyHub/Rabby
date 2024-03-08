@@ -73,11 +73,13 @@ export const MnemonicManager: React.FC = () => {
 
   return (
     <>
-      <div className="setting text-r-neutral-body" onClick={openAdvanced}>
-        <RcSettingSVG className="icon" />
-        <span className="title">
-          {t('page.newAddress.hd.advancedSettings')}
-        </span>
+      <div className="toolbar">
+        <div className="toolbar-item" onClick={openAdvanced}>
+          <RcSettingSVG className="icon text-r-neutral-title1" />
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
+        </div>
       </div>
 
       <MainContainer setting={setting} loading={loading} HDName="Seed Phrase" />
