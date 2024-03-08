@@ -74,6 +74,7 @@ import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -907,28 +908,7 @@ const SendToken = () => {
   };
 
   const handleCopyContactAddress = () => {
-    const clipboard = new ClipboardJS('.send-token', {
-      text: function () {
-        return currentToken.id;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{currentToken.id}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+    copyAddress(currentToken.id);
   };
 
   const handleClickBack = () => {

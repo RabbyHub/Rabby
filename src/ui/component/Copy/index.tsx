@@ -38,7 +38,7 @@ const Copy = ({
 
     clipboard.on('success', () => {
       if (variant === 'address') {
-        message.success({
+        const destroy = message.success({
           duration: 1,
           icon: <i />,
           content: (
@@ -51,6 +51,9 @@ const Copy = ({
             </div>
           ),
         });
+        setTimeout(() => {
+          destroy();
+        }, 1000);
       } else {
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,

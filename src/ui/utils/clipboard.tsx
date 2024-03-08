@@ -41,8 +41,9 @@ export async function copyTextToClipboard(text: string) {
 export async function copyAddress(address: string) {
   const checksumAddress = toChecksumAddress(address);
   await copyTextToClipboard(checksumAddress);
-  message.success({
-    duration: 3,
+  const duration = 3;
+  const destroy = message.success({
+    duration,
     icon: <i />,
     content: (
       <div>
@@ -54,6 +55,9 @@ export async function copyAddress(address: string) {
       </div>
     ),
   });
+  setTimeout(() => {
+    destroy();
+  }, duration * 1000);
 }
 
 export const clearClipboard = async () => {

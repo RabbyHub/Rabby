@@ -26,6 +26,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -80,8 +81,6 @@ const Receive = () => {
   const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
 
-  const ref = useRef<HTMLButtonElement>(null);
-
   const account = useAccount();
   const title = useReceiveTitle(history.location.search);
   const qs = useMemo(() => query2obj(history.location.search), [
@@ -91,40 +90,19 @@ const Receive = () => {
 
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const clipboard = new ClipboardJS(ref.current!, {
-      text: function () {
-        return account.address || '';
-      },
+  const handleCopyAddress = () => {
+    matomoRequestEvent({
+      category: 'Receive',
+      action: 'copyAddress',
+      label: [
+        chain,
+        getKRCategoryByType(account?.type),
+        account?.brandName,
+        filterRbiSource('Receive', rbisource) && rbisource,
+      ].join('|'),
     });
-
-    clipboard.on('success', () => {
-      matomoRequestEvent({
-        category: 'Receive',
-        action: 'copyAddress',
-        label: [
-          chain,
-          getKRCategoryByType(account?.type),
-          account?.brandName,
-          filterRbiSource('Receive', rbisource) && rbisource,
-        ].join('|'),
-      });
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{account.address}</div>
-          </div>
-        ),
-      });
-    });
-    return () => clipboard.destroy();
-  }, [account.address]);
+    copyAddress(account.address!);
+  };
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
@@ -255,7 +233,11 @@ const Receive = () => {
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
         <div className="qr-card-address">{account?.address}</div>
-        <button type="button" className="qr-card-btn" ref={ref}>
+        <button
+          type="button"
+          className="qr-card-btn"
+          onClick={handleCopyAddress}
+        >
           <ThemeIcon
             src={RcIconCopy}
             className="icon-copy text-r-neutral-title-1"
