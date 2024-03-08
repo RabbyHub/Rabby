@@ -126,7 +126,7 @@ export const CommonAction = ({
           </Row>
           <Row className="flex flex-row items-center gap-x-4">
             <span>{actionData.desc}</span>
-            {/* <TooltipWithMagnetArrow
+            <TooltipWithMagnetArrow
               overlayClassName="rectangle w-[260px]"
               title={descTip}
             >
@@ -138,7 +138,7 @@ export const CommonAction = ({
               !actionData.is_involving_privacy ? (
                 <img src={CertifiedSVG} />
               ) : null}
-            </TooltipWithMagnetArrow> */}
+            </TooltipWithMagnetArrow>
           </Row>
         </Col>
         {(requireData as ContractCallRequireData)?.payNativeTokenAmount &&
