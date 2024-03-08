@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -10,6 +11,8 @@ import { ProtocolListItem } from './Actions/components/ProtocolListItem';
 import { SecurityListItem } from './Actions/components/SecurityListItem';
 import ViewMore from './Actions/components/ViewMore';
 import { ContractRequireData } from './TypedDataActions/utils';
+import { ContractCallRequireData } from './Actions/utils';
+import { formatTokenAmount } from 'ui/utils/number';
 import { Col, Row, Table } from './Actions/components/Table';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import * as Values from './Actions/components/Values';
@@ -27,7 +30,7 @@ export const CommonAction = ({
   engineResults,
 }: {
   data: CommonActions;
-  requireData?: ContractRequireData;
+  requireData?: ContractRequireData | ContractCallRequireData; // ContractRequireData for signTypedData, ContractCallRequireData for signTransaction
   chain?: Chain;
   engineResults: Result[];
 }) => {
@@ -37,7 +40,7 @@ export const CommonAction = ({
   const { contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
   });
-
+  console.log('requireData', requireData);
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
       (item) =>
@@ -138,6 +141,31 @@ export const CommonAction = ({
             </TooltipWithMagnetArrow>
           </Row>
         </Col>
+        {(requireData as ContractCallRequireData)?.payNativeTokenAmount &&
+          new BigNumber(
+            (requireData as ContractCallRequireData).payNativeTokenAmount
+          ).gt(0) && (
+            <Col>
+              <Row isTitle className="w-[100px]">
+                {t('page.signTx.contractCall.payNativeToken', {
+                  symbol: (requireData as ContractCallRequireData)
+                    .nativeTokenSymbol,
+                })}
+              </Row>
+              {
+                <Row>
+                  {formatTokenAmount(
+                    new BigNumber(
+                      (requireData as ContractCallRequireData).payNativeTokenAmount
+                    )
+                      .div(1e18)
+                      .toFixed()
+                  )}{' '}
+                  {(requireData as ContractCallRequireData).nativeTokenSymbol}
+                </Row>
+              }
+            </Col>
+          )}
       </Table>
     </div>
   );
