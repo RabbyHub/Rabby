@@ -13,6 +13,7 @@ import {
   Transaction,
   JsonTx,
   TransactionFactory,
+  AccessListEIP2930Transaction,
 } from '@ethereumjs/tx';
 import { EVENTS } from '@/constant';
 import { SignHelper } from './helper';
@@ -224,30 +225,52 @@ class BitBox02Keyring extends EventEmitter {
   async signTransaction(address, tx: TypedTransaction) {
     return this.signHelper.invoke(async () => {
       return await this.withDevice(async (bitbox02) => {
+        let result;
         const txData: JsonTx = {
           to: tx.to!.toString(),
           value: `0x${tx.value.toString('hex')}`,
           data: this._normalize(tx.data),
           nonce: `0x${tx.nonce.toString('hex')}`,
           gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-          gasPrice: `0x${
-            (tx as Transaction).gasPrice
-              ? (tx as Transaction).gasPrice.toString('hex')
-              : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
-          }`,
         };
-        const result = await bitbox02.ethSignTransaction(
-          tx.common.chainIdBN(),
-          this._pathFromAddress(address),
-          {
-            nonce: tx.nonce.toArrayLike(Buffer),
-            gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
-            gasLimit: tx.gasLimit.toArrayLike(Buffer),
-            recipient: tx.to?.toBuffer(),
-            value: tx.value.toArrayLike(Buffer),
-            data: tx.data,
-          }
-        );
+
+        if (tx instanceof FeeMarketEIP1559Transaction) {
+          result = await bitbox02.ethSign1559Transaction(
+            this._pathFromAddress(address),
+            {
+              chainId: tx.chainId.toNumber(),
+              nonce: tx.nonce.toArrayLike(Buffer),
+              maxPriorityFeePerGas: tx.maxPriorityFeePerGas.toArrayLike(Buffer),
+              maxFeePerGas: tx.maxFeePerGas.toArrayLike(Buffer),
+              gasLimit: tx.gasLimit.toArrayLike(Buffer),
+              recipient: tx.to?.toBuffer(),
+              value: tx.value.toArrayLike(Buffer),
+              data: tx.data,
+            }
+          );
+          txData.type = '0x02';
+          txData.maxPriorityFeePerGas = `0x${tx.maxPriorityFeePerGas.toString(
+            'hex'
+          )}`;
+          txData.maxFeePerGas = `0x${tx.maxFeePerGas.toString('hex')}`;
+        } else if (
+          tx instanceof Transaction ||
+          tx instanceof AccessListEIP2930Transaction
+        ) {
+          result = await bitbox02.ethSignTransaction(
+            tx.common.chainIdBN(),
+            this._pathFromAddress(address),
+            {
+              nonce: tx.nonce.toArrayLike(Buffer),
+              gasPrice: tx.gasPrice.toArrayLike(Buffer),
+              gasLimit: tx.gasLimit.toArrayLike(Buffer),
+              recipient: tx.to?.toBuffer(),
+              value: tx.value.toArrayLike(Buffer),
+              data: tx.data,
+            }
+          );
+          txData.gasPrice = `0x${tx.gasPrice.toString('hex')}`;
+        }
         txData.r = result.r;
         txData.s = result.s;
         txData.v = result.v;
