@@ -22,6 +22,7 @@ import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
+import { ReactComponent as RcIconCustomTestnet } from 'ui/assets/dashboard/icon-custom-testnet.svg';
 import { ReactComponent as RcIconPreferMetamask } from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { ReactComponent as RcIconAutoLock } from 'ui/assets/dashboard/settings/icon-auto-lock.svg';
 import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings/lock.svg';
@@ -711,6 +712,19 @@ const SettingsInner = ({
               onChange={handleSwitchIsShowTestnet}
             />
           ),
+        },
+        {
+          leftIcon: RcIconCustomTestnet,
+          content: t('page.dashboard.settings.settings.customTestnet'),
+          onClick: () => {
+            history.push('/custom-testnet');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Custom Testnet',
+            });
+            reportSettings('Custom Testnet');
+          },
         },
         {
           leftIcon: RcIconCustomRPC,

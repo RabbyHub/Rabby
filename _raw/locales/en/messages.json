@@ -1020,7 +1020,8 @@
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
-          "themeMode": "Theme Mode"
+          "themeMode": "Theme Mode",
+          "customTestnet": "Custom Testnet"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1577,6 +1578,9 @@
         "title": "Edit RPC",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "Enter the RPC URL"
+      },
+      "EditCustomTestnetModal": {
+        "title": "Add Testnet"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -1810,6 +1814,12 @@
         }
       },
       "code-set-successfully": "Referral code set successfully"
+    },
+    "customTestnet": {
+      "title": "Custom Testnet",
+      "desc": "Rabby cannot verify the security of custom testnets. Please add trusted networks only.",
+      "add": "Add Testnet",
+      "empty": "No Custom Testnet"
     }
   },
   "component": {
