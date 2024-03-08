@@ -27,7 +27,8 @@
     align-items: center;
     margin: 0 auto 24px;
     .icon {
-      max-width: 32px;
+      width: 32px;
+      height: 32px;
       margin-right: 12px;
     }
     .title {
@@ -42,11 +43,12 @@
     align-items: center;
     position: absolute;
     right: 0;
-    top: 0;
+    top: 106px;
     column-gap: 20px;
     font-size: 12px;
     line-height: 1;
     color: var(--r-neutral-body);
+    z-index: 1;
   }
 
   .toolbar-item {
@@ -56,28 +58,10 @@
     cursor: pointer;
   }
 
-  .setting {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    right: 0;
-    top: 0;
-    cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-    .icon {
-      width: 16px;
-      margin-right: 4px;
-    }
-    .title {
-      color: var(--r-neutral-body);
-      font-size: 12px;
-      line-height: 1;
-    }
-  }
-
   .tabs {
+    .ant-tabs-nav {
+      margin-bottom: 24px;
+    }
     .ant-tabs-nav::before {
       display: none;
     }
@@ -174,7 +158,7 @@
     }
   }
   .ant-table-tbody > tr.ant-table-row:hover > td {
-    background-color: var(--r-neutral-line);
+    background-color: var(--r-blue-light-1);
   }
   .ant-table-cell-scrollbar {
     box-shadow: none;

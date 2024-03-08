@@ -89,11 +89,13 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
 
   return (
     <>
-      <div className="setting" onClick={openAdvanced}>
-        <RcSettingSVG className="icon text-r-neutral-title1" />
-        <span className="title">
-          {t('page.newAddress.hd.advancedSettings')}
-        </span>
+      <div className="toolbar">
+        <div className="toolbar-item" onClick={openAdvanced}>
+          <RcSettingSVG className="icon text-r-neutral-title1" />
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
+        </div>
       </div>
 
       <MainContainer
