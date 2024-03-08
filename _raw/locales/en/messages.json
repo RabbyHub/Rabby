@@ -1034,7 +1034,7 @@
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
         "blocked": "Blocked",
-        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
+        "selectedCustom": "The token is not listed by Rabby. You've added it to the token list manually.",
         "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
         "customized": "Customized",
         "scamTx": "Scam tx",
