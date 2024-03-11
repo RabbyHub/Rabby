@@ -22,6 +22,10 @@ import './style.less';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { CustomTestnetItem } from './components/CustomTestnetItem';
+import { useWallet } from '@/ui/utils';
+import { TestnetChain } from '@/background/service/customTestnet';
 
 const RPCItemWrapper = styled.div`
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
@@ -100,13 +104,13 @@ const RPCListContainer = styled.div`
 const Footer = styled.div`
   height: 76px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+  background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
   padding: 16px 0;
   display: flex;
   justify-content: center;
 `;
 
-const CustomTestnetItem = ({
+const CustomTestnetItem1 = ({
   item,
   onEdit,
 }: {
@@ -199,9 +203,11 @@ export const CustomTestnet = () => {
   const { customRPC } = useRabbySelector((s) => ({
     ...s.customRPC,
   }));
+
+  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
-  const [rpcModalVisible, setRPCModalVisible] = useState(true);
+  const [rpcModalVisible, setRPCModalVisible] = useState(false);
   const [selectedChain, setSelectedChain] = useState<CHAINS_ENUM>(
     CHAINS_ENUM.ETH
   );
@@ -274,6 +280,23 @@ export const CustomTestnet = () => {
     }
   }, [rpcModalVisible, chainSelectorVisible]);
 
+  const { data: list, runAsync: runGetCustomTestnetList } = useRequest(() => {
+    return wallet.getCustomTestnetList();
+  });
+
+  const handleConfirm = useMemoizedFn(() => {
+    setRPCModalVisible(false);
+    runGetCustomTestnetList();
+  });
+
+  const handleRemove = useMemoizedFn(async (item: TestnetChain) => {
+    runGetCustomTestnetList();
+  });
+
+  const handleEdit = useMemoizedFn(async (item: TestnetChain) => {
+    setRPCModalVisible(true);
+  });
+
   return (
     <div className="custom-rpc">
       <PageHeader
@@ -286,14 +309,21 @@ export const CustomTestnet = () => {
       <p className="text-r-neutral-body text-[13px] text-center leading-[16px] mb-20 px-20">
         {t('page.customTestnet.desc')}
       </p>
-      {rpcList.length <= 0 ? (
+      {!list?.length ? (
         <Emtpy />
       ) : (
-        <RPCListContainer>
-          {rpcList.map((rpc) => (
-            <CustomTestnetItem item={rpc} onEdit={handleEditRPC} />
+        <div className="flex flex-col gap-[12px] px-[20px] flex-1">
+          {list?.map((item) => (
+            <CustomTestnetItem
+              item={item as any}
+              key={item.id}
+              className="bg-r-neutral-card1"
+              onEdit={handleEdit}
+              onRemove={handleRemove}
+              editable
+            />
           ))}
-        </RPCListContainer>
+        </div>
       )}
       <Footer>
         <Button
@@ -316,7 +346,7 @@ export const CustomTestnet = () => {
         rpcInfo={editRPC}
         chain={selectedChain}
         onCancel={handleCancelEditCustomRPC}
-        onConfirm={handleConfirmCustomRPC}
+        onConfirm={handleConfirm}
       />
     </div>
   );

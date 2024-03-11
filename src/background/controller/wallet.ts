@@ -98,6 +98,7 @@ import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
+import { customTestnetService } from '../service/customTestnet';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3608,6 +3609,15 @@ export class WalletController extends BaseController {
     }
     return signature;
   };
+
+  addCustomTestnet = customTestnetService.add;
+
+  getCustomTestnetList = customTestnetService.getList;
+
+  findChain = ({}: Pick<
+    Chain,
+    'id' | 'serverId' | 'hex' | 'network' | 'enum'
+  >) => {};
 }
 
 const wallet = new WalletController();

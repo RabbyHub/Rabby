@@ -1,3 +1,4 @@
+import { customTestnetService } from '@/background/service/customTestnet';
 import { Chain } from '@debank/common';
 import {
   ChainWithBalance,
@@ -17,6 +18,26 @@ const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
 export const CHAINS_BY_NET = {
   mainnet: ALL_CHAINS_MAINNET,
   testnet: ALL_CHAINS_TESTNET,
+};
+
+export const findChain = (params: {
+  enum?: CHAINS_ENUM | string;
+  id?: number;
+  serverId?: string;
+}) => {
+  const { enum: chainEnum, id, serverId } = params;
+  const chain = ALL_CHAINS_MAINNET.find(
+    (item) =>
+      item.enum === chainEnum || item.id === id || item.serverId === serverId
+  );
+  if (chain) {
+    return chain;
+  }
+  return customTestnetService.getList().find((item) => {
+    return (
+      item.enum === chainEnum || item.id === id || item.serverId === serverId
+    );
+  });
 };
 
 /**

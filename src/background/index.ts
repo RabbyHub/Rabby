@@ -40,6 +40,7 @@ import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
+import { customTestnetService } from './service/customTestnet';
 
 dayjs.extend(utc);
 
@@ -101,6 +102,7 @@ async function restoreAppState() {
   await RPCService.init();
   await securityEngineService.init();
   await RabbyPointsService.init();
+  await customTestnetService.init();
 
   rpcCache.start();
 

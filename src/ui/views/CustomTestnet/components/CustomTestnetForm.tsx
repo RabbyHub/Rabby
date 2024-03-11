@@ -1,5 +1,6 @@
+import { TestnetChainBase } from '@/background/service/customTestnet';
 import { Chain } from '@debank/common';
-import { Form, Input } from 'antd';
+import { Form, FormInstance, Input } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -31,21 +32,61 @@ const Wraper = styled.div`
   }
 `;
 
-export const CustomTestnetForm = () => {
-  const [form] = Form.useForm();
+export const CustomTestnetForm = ({
+  form,
+}: {
+  form: FormInstance<TestnetChainBase>;
+}) => {
   return (
     <Wraper>
-      <Form layout="vertical" form={form}>
-        <Form.Item label="Chain ID" name="id">
+      <Form layout="vertical" form={form} requiredMark={false}>
+        <Form.Item
+          label="Chain ID"
+          name="id"
+          rules={[
+            {
+              required: true,
+              message: 'Please input chain id',
+            },
+          ]}
+        >
           <Input autoComplete="off" />
         </Form.Item>
-        <Form.Item label="Network name" name="name">
+        <Form.Item
+          label="Network name"
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: 'Please input network name',
+            },
+          ]}
+        >
           <Input autoComplete="off" />
         </Form.Item>
-        <Form.Item label="RPC URL" name="rpcUrl">
-          <Input autoComplete="off" />
+        <Form.Item
+          label="RPC URL"
+          name="rpcUrl"
+          rules={[
+            {
+              required: true,
+              type: 'url',
+              message: 'Please input RPC URL',
+            },
+          ]}
+        >
+          <Input autoComplete="off" type="url" />
         </Form.Item>
-        <Form.Item label="Currency symbol" name="nativeTokenSymbol">
+        <Form.Item
+          label="Currency symbol"
+          name="nativeTokenSymbol"
+          rules={[
+            {
+              required: true,
+              message: 'Please input currency symbol',
+            },
+          ]}
+        >
           <Input autoComplete="off" />
         </Form.Item>
         <Form.Item label="Block explorer URL (Optional)" name="scanLink">

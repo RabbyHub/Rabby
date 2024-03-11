@@ -66,6 +66,8 @@
     "@types/react-window": "1.8.5",
     "@types/styled-components": "5.1.25",
     "@types/w3c-web-hid": "1.0.3",
+    "@wagmi/connectors": "^4.1.14",
+    "@wagmi/core": "^2.6.5",
     "@zxing/browser": "0.0.10",
     "@zxing/library": "0.8.0",
     "ahooks": "3.7.8",
@@ -129,6 +131,7 @@
     "ts-toolbelt": "9.6.0",
     "url": "0.11.3",
     "uuid": "9.0.0",
+    "viem": "2.x",
     "web3-eth-abi": "1.7.0",
     "web3-utils": "1.7.0",
     "webextension-polyfill": "0.7.0"

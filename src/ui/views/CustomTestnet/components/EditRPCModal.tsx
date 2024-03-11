@@ -14,6 +14,8 @@ import { CustomTestnetForm } from './CustomTestnetForm';
 import { ReactComponent as RcIconFlash } from 'ui/assets/custom-testnet/icon-flash.svg';
 import { ReactComponent as RcIconRight } from 'ui/assets/custom-testnet/icon-right.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { AddFromChainList } from './AddFromChainList';
+import { useRequest } from 'ahooks';
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -24,7 +26,7 @@ const ErrorMsg = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding-bottom: 76px;
+  padding: 20px 20px 76px 20px;
   .rpc-input {
     height: 52px;
     width: 360px;
@@ -65,16 +67,34 @@ export const EditCustomTestnetModal = ({
   rpcInfo: { id: CHAINS_ENUM; rpc: RPCItem } | null;
   visible: boolean;
   onCancel(): void;
-  onConfirm(url: string): void;
+  onConfirm(url?: string): void;
 }) => {
   const wallet = useWallet();
+  const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
+  const [form] = Form.useForm();
+
+  // const {data} = use
+
+  const { loading, runAsync: runAddTestnet } = useRequest(
+    wallet.addCustomTestnet,
+    {
+      manual: true,
+    }
+  );
+
+  const handleSubmit = async () => {
+    await form.validateFields();
+    const values = form.getFieldsValue();
+    await runAddTestnet(values);
+    onConfirm?.();
+  };
+
   const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const [rpcUrl, setRpcUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-  const canSubmit = useMemo(() => {
-    return rpcUrl && !rpcErrorMsg && !isValidating;
-  }, [rpcUrl, rpcErrorMsg, isValidating]);
+  // const canSubmit = useMemo(() => {
+  //   return rpcUrl && !rpcErrorMsg && !isValidating;
+  // }, [rpcUrl, rpcErrorMsg, isValidating]);
   const { t } = useTranslation();
 
   const inputRef = useRef<Input>(null);
@@ -86,28 +106,28 @@ export const EditCustomTestnetModal = ({
     }
   };
 
-  const rpcValidation = async () => {
-    if (!chainItem) return;
+  // const rpcValidation = async () => {
+  //   if (!chainItem) return;
 
-    if (!isValidateUrl(rpcUrl)) {
-      return;
-    }
-    try {
-      setIsValidating(true);
-      const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
-      setIsValidating(false);
-      if (!isValid) {
-        setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidChainId'));
-      } else {
-        setRpcErrorMsg('');
-      }
-    } catch (e) {
-      setIsValidating(false);
-      setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
-    }
-  };
+  //   if (!isValidateUrl(rpcUrl)) {
+  //     return;
+  //   }
+  //   try {
+  //     setIsValidating(true);
+  //     const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
+  //     setIsValidating(false);
+  //     if (!isValid) {
+  //       setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidChainId'));
+  //     } else {
+  //       setRpcErrorMsg('');
+  //     }
+  //   } catch (e) {
+  //     setIsValidating(false);
+  //     setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
+  //   }
+  // };
 
-  useDebounce(rpcValidation, 200, [rpcUrl]);
+  // useDebounce(rpcValidation, 200, [rpcUrl]);
 
   useEffect(() => {
     if (rpcInfo) {
@@ -127,13 +147,17 @@ export const EditCustomTestnetModal = ({
     });
   }, [visible]);
 
+  console.log({
+    isShowAddFromChainList,
+  });
+
   return (
     <Popup
       height={520}
       visible={visible}
       onCancel={onCancel}
       bodyStyle={{
-        paddingBottom: 0,
+        padding: 0,
       }}
       style={{
         zIndex: 1001,
@@ -150,6 +174,9 @@ export const EditCustomTestnetModal = ({
             'bg-r-blue-light1 p-[16px] cursor-pointer rounded-[6px]',
             'mb-[20px]'
           )}
+          onClick={() => {
+            setIsShowAddFromChainList(true);
+          }}
         >
           <ThemeIcon src={RcIconFlash}></ThemeIcon>
           <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
@@ -157,7 +184,7 @@ export const EditCustomTestnetModal = ({
           </div>
           <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
         </div>
-        <CustomTestnetForm />
+        <CustomTestnetForm form={form} />
         <Footer>
           <Button
             type="primary"
@@ -170,15 +197,21 @@ export const EditCustomTestnetModal = ({
           </Button>
           <Button
             type="primary"
-            loading={isValidating}
+            loading={loading}
             size="large"
             className="w-[172px]"
-            onClick={() => onConfirm(rpcUrl)}
+            onClick={handleSubmit}
           >
-            {isValidating ? t('global.Loading') : t('global.Confirm')}
+            {loading ? t('global.Loading') : t('global.Confirm')}
           </Button>
         </Footer>
       </Wrapper>
+      <AddFromChainList
+        visible={isShowAddFromChainList}
+        onClose={() => {
+          setIsShowAddFromChainList(false);
+        }}
+      />
     </Popup>
   );
 };

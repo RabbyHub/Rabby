@@ -51,9 +51,10 @@ import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
+import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
   method: string;
@@ -167,7 +168,11 @@ class ProviderController extends BaseController {
     const site = permissionService.getSite(origin);
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
-      chainServerId = CHAINS[site.chain].serverId;
+      // chainServerId = CHAINS[site.chain].serverId;
+      chainServerId =
+        findChain({
+          enum: site.chain,
+        })?.serverId || CHAINS[CHAINS_ENUM.ETH].serverId;
     }
     if (forceChainServerId) {
       chainServerId = forceChainServerId;
@@ -181,12 +186,12 @@ class ProviderController extends BaseController {
       chainId: chainServerId,
     });
     if (cache) return cache;
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === chainServerId
-    )!;
-    if (RPCService.hasCustomRPC(chain.enum)) {
+    const chain = findChain({
+      serverId: chainServerId,
+    })!;
+    if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
       const promise = RPCService.requestCustomRPC(
-        chain.enum,
+        chain.enum as CHAINS_ENUM,
         method,
         params
       ).then((result) => {
@@ -205,7 +210,7 @@ class ProviderController extends BaseController {
         chainId: chainServerId,
       });
       return promise;
-    } else {
+    } else if (!chain.isTestnet) {
       const promise = openapiService
         .ethRpc(chainServerId, {
           origin: encodeURIComponent(origin),
@@ -228,6 +233,12 @@ class ProviderController extends BaseController {
         chainId: chainServerId,
       });
       return promise;
+    } else {
+      const client = customTestnetService.getClient(chain.id);
+      return client.transport.request({
+        method,
+        params,
+      });
     }
   };
 
