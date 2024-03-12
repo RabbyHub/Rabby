@@ -3614,6 +3614,7 @@ export class WalletController extends BaseController {
 
   getCustomTestnetList = customTestnetService.getList;
 
+  // eslint-disable-next-line no-empty-pattern
   findChain = ({}: Pick<
     Chain,
     'id' | 'serverId' | 'hex' | 'network' | 'enum'

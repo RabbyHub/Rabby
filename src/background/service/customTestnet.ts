@@ -78,6 +78,7 @@ class CustomTestnetService {
         }
       );
       console.log({ chainId });
+      // eslint-disable-next-line no-empty
     } catch (error) {}
 
     this.store.customTestnet = {

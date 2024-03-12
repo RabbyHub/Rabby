@@ -10,7 +10,7 @@ declare module 'i18next' {
     defaultNS: 'translations';
     // custom resources type
     resources: {
-      translations: typeof translations;
+      translations: typeof translations & Record<string, string>;
     };
     // other
   }

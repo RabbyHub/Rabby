@@ -171,7 +171,7 @@ export const account = createModel<RootModel>()({
     init() {
       return this.getCurrentAccountAsync();
     },
-    async getCurrentAccountAsync(_?: any, store?) {
+    async getCurrentAccountAsync(_: void, store) {
       const account: Account = await store.app.wallet.getCurrentAccount<Account>();
       if (account) {
         dispatch.account.setCurrentAccount({ currentAccount: account });
@@ -198,7 +198,7 @@ export const account = createModel<RootModel>()({
       dispatch.account.setTestnetCustomizeTokenList([]);
     },
 
-    async fetchCurrentAccountAliasNameAsync(_?: any, store?) {
+    async fetchCurrentAccountAliasNameAsync(_: void, store) {
       const currentAccount = store.account.currentAccount;
       if (!currentAccount?.address) return '';
 
@@ -215,7 +215,7 @@ export const account = createModel<RootModel>()({
       return alianName;
     },
 
-    async getAllClassAccountsAsync(_?, store?) {
+    async getAllClassAccountsAsync(_: void, store) {
       const keyrings = await store.app.wallet.getAllClassAccounts<
         DisplayedKeryring[]
       >();
@@ -237,14 +237,14 @@ export const account = createModel<RootModel>()({
       return hiddenAccounts;
     },
 
-    async getTypedMnemonicAccountsAsync(_?, store?) {
+    async getTypedMnemonicAccountsAsync(_: void, store) {
       const mnemonicAccounts = await store.app.wallet.getTypedAccounts(
         KEYRING_CLASS.MNEMONIC
       );
       dispatch.account.setField({ mnemonicAccounts });
     },
 
-    async addCustomizeToken(token: AbstractPortfolioToken, store?) {
+    async addCustomizeToken(token: AbstractPortfolioToken, store) {
       await store.app.wallet.addCustomizedToken({
         address: token._tokenId,
         chain: token.chain,
@@ -268,7 +268,7 @@ export const account = createModel<RootModel>()({
       }
     },
 
-    async removeCustomizeToken(token: AbstractPortfolioToken, store?) {
+    async removeCustomizeToken(token: AbstractPortfolioToken, store) {
       await store.app.wallet.removeCustomizedToken({
         address: token._tokenId,
         chain: token.chain,
@@ -294,7 +294,7 @@ export const account = createModel<RootModel>()({
       setTokenList(tokenList.filter((item) => item.id !== token.id));
     },
 
-    async addBlockedToken(token: AbstractPortfolioToken, store?) {
+    async addBlockedToken(token: AbstractPortfolioToken, store) {
       await store.app.wallet.addBlockedToken({
         address: token._tokenId,
         chain: token.chain,
@@ -316,7 +316,7 @@ export const account = createModel<RootModel>()({
       setTokenList(tokenList.filter((item) => item.id !== token.id));
     },
 
-    async removeBlockedToken(token: AbstractPortfolioToken, store?) {
+    async removeBlockedToken(token: AbstractPortfolioToken, store) {
       await store.app.wallet.removeBlockedToken({
         address: token._tokenId,
         chain: token.chain,
@@ -345,10 +345,10 @@ export const account = createModel<RootModel>()({
     },
 
     async triggerFetchBalanceOnBackground(
-      options?: {
+      options: {
         forceUpdate?: boolean;
-      },
-      store?
+      } | void,
+      store
     ) {
       const currentAccount = store.account.currentAccount;
 
@@ -378,8 +378,8 @@ export const account = createModel<RootModel>()({
     },
 
     async getMatteredChainBalance(
-      options?: { isTestnet?: boolean },
-      store?
+      options: { isTestnet?: boolean } | void,
+      store
     ): Promise<{
       matteredChainBalances: AccountState['matteredChainBalances'];
       testnetMatteredChainBalances: AccountState['testnetMatteredChainBalances'];

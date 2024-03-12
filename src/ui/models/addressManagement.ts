@@ -25,7 +25,7 @@ export const addressManagement = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async getHilightedAddressesAsync(_?, store?) {
+    async getHilightedAddressesAsync(_: void, store) {
       const addrs = await store.app.wallet.getHighlightedAddresses();
 
       dispatch.addressManagement.setField({
@@ -39,7 +39,7 @@ export const addressManagement = createModel<RootModel>()({
         address: Account['address'];
         nextPinned?: boolean;
       },
-      store?
+      store
     ) {
       const { highlightedAddresses } = store.addressManagement;
       const {

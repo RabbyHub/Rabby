@@ -537,7 +537,11 @@ class TxHistory {
         (result) => result.code === 0 && result.status !== 0
       );
       if (!completed) {
-        if (duration !== false && duration < 1000 * 15) {
+        if (
+          duration !== false &&
+          typeof duration === 'number' &&
+          duration < 1000 * 15
+        ) {
           // maximum retry 15 times;
           setTimeout(() => {
             this.reloadTx({ address, chainId, nonce });
@@ -566,7 +570,11 @@ class TxHistory {
         },
       });
     } catch (e) {
-      if (duration !== false && duration < 1000 * 15) {
+      if (
+        duration !== false &&
+        typeof duration === 'number' &&
+        duration < 1000 * 15
+      ) {
         // maximum retry 15 times;
         setTimeout(() => {
           this.reloadTx({ address, chainId, nonce });

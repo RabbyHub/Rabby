@@ -3,7 +3,7 @@
     "baseUrl": "./",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "ESNext",
+    "module": "esnext",
     "target": "ES2020",
     "moduleResolution": "node",
     "noImplicitAny": false,
@@ -37,8 +37,7 @@
     ],
     "outDir": "./dist",
     "sourceMap": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true
+    "resolveJsonModule": true
   },
   "exclude": ["./node_modules"],
   "include": ["src", "__tests__"]
