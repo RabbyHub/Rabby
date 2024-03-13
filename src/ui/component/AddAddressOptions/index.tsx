@@ -30,6 +30,8 @@ import IconPrivatekey, {
   ReactComponent as RcIconPrivatekey,
 } from 'ui/assets/import/privatekey-light.svg';
 
+import IconAddFromCurrentSeedPhrase from 'ui/assets/address/add-from-current-seed-phrase.svg';
+
 import './style.less';
 
 import {
@@ -49,6 +51,7 @@ import { Item } from '../Item';
 import { useWallet } from '@/ui/utils';
 import { Modal } from 'antd';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { useHadSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 
 const getSortNum = (s: string) => WALLET_SORT_SCORE[s] || 999999;
 
@@ -243,18 +246,42 @@ const AddAddressOptions = () => {
     [wallets]
   );
 
+  const hadSeedPhrase = useHadSeedPhrase();
+
   const createImportAddrList = React.useMemo(
-    () => [
-      {
-        leftIcon: IconCreatenewaddr,
-        content: t('page.newAddress.createNewSeedPhrase'),
-        brand: 'createAddress',
-        onClick: () => {
-          handleRouter(() => openInternalPageInTab('mnemonics/create'));
-        },
-      },
-    ],
-    [t]
+    () =>
+      hadSeedPhrase
+        ? [
+            {
+              leftIcon: IconAddFromCurrentSeedPhrase,
+              content: t('page.newAddress.addFromCurrentSeedPhrase'),
+              brand: 'AddAddressFromCurrentSeedPhrase',
+              onClick: () => {
+                handleRouter((history) => {
+                  history.push('/import/add-from-current-seed-phrase');
+                });
+              },
+            },
+            {
+              leftIcon: IconCreatenewaddr,
+              content: t('page.newAddress.createNewSeedPhrase'),
+              brand: 'createAddress',
+              onClick: () => {
+                handleRouter(() => openInternalPageInTab('mnemonics/create'));
+              },
+            },
+          ]
+        : [
+            {
+              leftIcon: IconCreatenewaddr,
+              content: t('page.newAddress.createNewSeedPhrase'),
+              brand: 'createAddress',
+              onClick: () => {
+                handleRouter(() => openInternalPageInTab('mnemonics/create'));
+              },
+            },
+          ],
+    [t, hadSeedPhrase]
   );
 
   const centerList = React.useMemo(

@@ -1436,7 +1436,8 @@
       },
       "imkey": {
         "title": "Connect imKey"
-      }
+      },
+      "addFromCurrentSeedPhrase": "Add from Current Seed Phrase"
     },
     "unlock": {
       "btn": {
