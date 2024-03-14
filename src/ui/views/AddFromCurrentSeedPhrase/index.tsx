@@ -20,7 +20,7 @@ export const AddFromCurrentSeedPhrase = () => {
   return (
     <div className="flex flex-col min-h-full bg-r-neutral-bg-2 px-20 ">
       <PageHeader className="pt-[20px]" fixed>
-        {t('page.manageAddress.manage-address')}
+        {t('page.newAddress.addFromCurrentSeedPhrase')}
       </PageHeader>
       <div className="flex-1 flex flex-col space-y-[20px] pb-[20px]">
         {seedPhraseList?.map((item, index) => (
