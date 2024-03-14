@@ -12,6 +12,7 @@ export interface TextActionData {
   verifyAddress?: VerifyAddressAction;
   common?: {
     desc: string;
+    title: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
   };
@@ -76,7 +77,7 @@ export const getActionTypeText = (data: TextActionData | null) => {
     return t('page.signTypedData.verifyAddress.title');
   }
   if (data?.common) {
-    return data.common.desc;
+    return data.common.title;
   }
   return t('page.signTx.unknownAction');
 };
