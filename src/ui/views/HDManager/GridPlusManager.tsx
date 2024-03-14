@@ -14,6 +14,7 @@ import { Account } from './AccountList';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -169,7 +170,7 @@ export const GridPlusManager: React.FC = () => {
 
       <MainContainer setting={setting} loading={loading} HDName={'GridPlus'} />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -184,7 +185,7 @@ export const GridPlusManager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

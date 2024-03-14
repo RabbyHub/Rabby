@@ -1,6 +1,5 @@
 import React from 'react';
 import { MainContainer } from './MainContainer';
-import { Modal } from 'antd';
 import { ReactComponent as RcSettingSVG } from 'ui/assets/setting-outline-cc.svg';
 import {
   AdvancedSettings,
@@ -13,6 +12,7 @@ import { HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from '@/constant';
 import { useWallet } from '@/ui/utils';
+import { Modal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
