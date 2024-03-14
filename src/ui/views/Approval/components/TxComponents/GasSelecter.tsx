@@ -670,7 +670,7 @@ const GasSelector = ({
                     <span className="text-r-blue-default font-medium text-15">
                       {formatTokenAmount(
                         new BigNumber(gas.gasCostAmount).toString(10),
-                        6
+                        8
                       )}{' '}
                       {chain.nativeTokenSymbol}
                     </span>
