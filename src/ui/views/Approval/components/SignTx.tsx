@@ -1098,6 +1098,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
               value: tx.value || '0x0',
             },
+            origin,
           });
           const ctx = formatSecurityEngineCtx({
             actionData: parsed,

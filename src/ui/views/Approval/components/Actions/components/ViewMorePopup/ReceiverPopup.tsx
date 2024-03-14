@@ -7,7 +7,7 @@ import * as Values from '../Values';
 import LogoWithText from '../LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 
-interface ReceiverData {
+export interface ReceiverData {
   address: string;
   chain: Chain;
   eoa: {
