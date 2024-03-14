@@ -109,26 +109,70 @@ export const useTokenPair = (userAddress: string) => {
     dispatch.swap.setSelectedChain(c);
     // resetSwapTokens(c);
   };
-  useAsyncInitializeChainList({
-    // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
-    supportChains: SWAP_SUPPORT_CHAINS,
-    onChainInitializedAsync: (firstEnum) => {
-      // only init chain if it's not cached before
-      if (!initialSelectedChain) {
-        handleChain(firstEnum);
-      }
-    },
-  });
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedFromToken || getChainDefaultToken(chain),
   });
+
   const [receiveToken, setReceiveToken] = useTokenInfo({
     userAddress,
     chain,
     defaultToken: defaultSelectedToToken,
+  });
+
+  const setActiveProvider: React.Dispatch<
+    React.SetStateAction<QuoteProvider | undefined>
+  > = useCallback((p) => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+    }
+    setSlippageChanged(false);
+    setExpired(false);
+    expiredTimer.current = setTimeout(() => {
+      setExpired(true);
+    }, 1000 * 30);
+    setOriActiveProvider(p);
+  }, []);
+
+  const switchChain = useCallback(
+    (c: CHAINS_ENUM, opts?: { payTokenId?: string; changeTo?: boolean }) => {
+      handleChain(c);
+      if (!opts?.changeTo) {
+        setPayToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
+        setReceiveToken(undefined);
+      } else {
+        setReceiveToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
+        // setPayToken(undefined);
+      }
+      setPayAmount('');
+      setActiveProvider(undefined);
+    },
+    [setPayToken, setReceiveToken]
+  );
+
+  const { search } = useLocation();
+  const [searchObj] = useState<{
+    payTokenId?: string;
+    chain?: string;
+  }>(query2obj(search));
+
+  useAsyncInitializeChainList({
+    // NOTICE: now `useTokenPair` is only used for swap page, so we can use `SWAP_SUPPORT_CHAINS` here
+    supportChains: SWAP_SUPPORT_CHAINS,
+    onChainInitializedAsync: (firstEnum) => {
+      // only init chain if it's not cached before
+      if (!searchObj?.chain && !searchObj.payTokenId && !initialSelectedChain) {
+        switchChain(firstEnum);
+      }
+    },
   });
 
   useEffect(() => {
@@ -157,20 +201,6 @@ export const useTokenPair = (userAddress: string) => {
 
   const expiredTimer = useRef<NodeJS.Timeout>();
   const [expired, setExpired] = useState(false);
-
-  const setActiveProvider: React.Dispatch<
-    React.SetStateAction<QuoteProvider | undefined>
-  > = useCallback((p) => {
-    if (expiredTimer.current) {
-      clearTimeout(expiredTimer.current);
-    }
-    setSlippageChanged(false);
-    setExpired(false);
-    expiredTimer.current = setTimeout(() => {
-      setExpired(true);
-    }, 1000 * 30);
-    setOriActiveProvider(p);
-  }, []);
 
   const exchangeToken = useCallback(() => {
     setPayToken(receiveToken);
@@ -237,28 +267,6 @@ export const useTokenPair = (userAddress: string) => {
         ? tokenAmountBn(payToken).lt(payAmount)
         : new BigNumber(0).lt(payAmount),
     [payToken, payAmount]
-  );
-
-  const switchChain = useCallback(
-    (c: CHAINS_ENUM, opts?: { payTokenId?: string; changeTo?: boolean }) => {
-      handleChain(c);
-      if (!opts?.changeTo) {
-        setPayToken({
-          ...getChainDefaultToken(c),
-          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
-        });
-        setReceiveToken(undefined);
-      } else {
-        setReceiveToken({
-          ...getChainDefaultToken(c),
-          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
-        });
-        // setPayToken(undefined);
-      }
-      setPayAmount('');
-      setActiveProvider(undefined);
-    },
-    [setPayToken, setReceiveToken]
   );
 
   useEffect(() => {
@@ -398,12 +406,6 @@ export const useTokenPair = (userAddress: string) => {
     setActiveProvider(undefined);
     setSlippageChanged(false);
   }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
-
-  const { search } = useLocation();
-  const [searchObj] = useState<{
-    payTokenId?: string;
-    chain?: string;
-  }>(query2obj(search));
 
   useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
