@@ -45,7 +45,7 @@ const Group = ({
       <div className="h-[48px] flex items-center mb-14 text-r-neutral-title1 text-[15px] font-medium">
         Seed Phrase {index + 1}
       </div>
-      <div className="absolute left-0 top-[48px] w-full h-0 border-b-[0.5px] border-rabby-neutral-foot" />
+      <div className="absolute left-0 top-[48px] w-full h-0 border-b-[0.5px] border-rabby-neutral-line" />
 
       <div className="space-y-[20px]">
         {data.list.map((e) => (
