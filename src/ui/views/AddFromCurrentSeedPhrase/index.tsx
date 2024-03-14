@@ -45,7 +45,7 @@ const Group = ({
       <div className="h-[48px] flex items-center mb-14 text-r-neutral-title1 text-[15px] font-medium">
         Seed Phrase {index + 1}
       </div>
-      <div className="absolute left-0 top-[48px] w-full h-0 border-b-[0.5px] border-rabby-neutral-card2" />
+      <div className="absolute left-0 top-[48px] w-full h-0 border-b-[0.5px] border-rabby-neutral-foot" />
 
       <div className="space-y-[20px]">
         {data.list.map((e) => (
@@ -57,7 +57,7 @@ const Group = ({
         onClick={() => onAdd(data.publicKey!)}
         type="primary"
         className={clsx(
-          'bg-rabby-blue-light1 w-full shadow-none h-[40px] border-transparent',
+          'bg-rabby-blue-light1 w-full shadow-none h-[40px] border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light-2 hover:before:hidden',
           data.list.length ? 'mt-[20px]' : 'mt-[6px]'
         )}
       >
@@ -105,7 +105,12 @@ const Item = ({ item }: { item: DisplayedAccount }) => {
 
   return (
     <div className="flex items-center">
-      <ThemeIcon src={addressTypeIcon} />
+      <ThemeIcon
+        src={addressTypeIcon}
+        width={20}
+        height={20}
+        viewBox="0 0 20 20"
+      />
       <div className="flex flex-col ml-[8px]">
         <div className="text-r-neutral-title1 text-[13px] font-medium">
           {alianName}
@@ -114,7 +119,7 @@ const Item = ({ item }: { item: DisplayedAccount }) => {
           <AddressViewer
             address={address}
             showArrow={false}
-            className="text-[12px] "
+            className="text-[12px] text-r-neutral-body"
           />
           <Copy variant="address" data={address} className="w-14 h-14 ml-4" />
         </div>
