@@ -640,7 +640,8 @@
       },
       "imkey": {
         "title": "连接 imKey"
-      }
+      },
+      "addFromCurrentSeedPhrase": "从当前助记词添加"
     },
     "activities": {
       "signedText": {
