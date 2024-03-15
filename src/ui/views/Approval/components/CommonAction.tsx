@@ -153,6 +153,71 @@ export const CommonAction = ({
               }
             </Col>
           )}
+        {(requireData as ContractCallRequireData)?.unexpectedAddr && (
+          <Col>
+            <Row isTitle className="w-[100px]">
+              {t('page.signTx.contractCall.suspectedReceiver')}
+            </Row>
+            <Row>
+              <div>
+                <Values.Address
+                  address={
+                    (requireData as ContractCallRequireData).unexpectedAddr!
+                      .address
+                  }
+                  chain={chain}
+                />
+                <ul className="desc-list">
+                  <li>
+                    <Values.AddressMemo
+                      address={
+                        (requireData as ContractCallRequireData).unexpectedAddr!
+                          .address
+                      }
+                    />
+                  </li>
+                  {(requireData as ContractCallRequireData).unexpectedAddr!
+                    .name && (
+                    <li>
+                      {
+                        (requireData as ContractCallRequireData).unexpectedAddr!
+                          .name
+                      }
+                    </li>
+                  )}
+                  <li>
+                    <ViewMore
+                      type="receiver"
+                      data={{
+                        title: t('page.signTx.contractCall.suspectedReceiver'),
+                        address: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.address,
+                        chain: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.chain,
+                        eoa: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.eoa,
+                        cex: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.cex,
+                        contract: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.contract,
+                        usd_value: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.usd_value,
+                        hasTransfer: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.hasTransfer,
+                        isTokenContract: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.isTokenContract,
+                        name: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.name,
+                        onTransferWhitelist: (requireData as ContractCallRequireData)
+                          .unexpectedAddr!.onTransferWhitelist,
+                      }}
+                    />
+                  </li>
+                </ul>
+              </div>
+            </Row>
+          </Col>
+        )}
       </Table>
     </div>
   );

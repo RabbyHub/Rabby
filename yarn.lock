@@ -4223,10 +4223,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.2.tgz#2f23f2d7585d1c4f4dc36bac33bad023e7cea6b8"
-  integrity sha512-FIr08Zfm4Wn4cfZHfLDAy4cDsZ2feRIt19FvuCcFc2xXkFygVGEYi7q2I0S3+hzzvdWdEXiFhwQL5PSzSkmWCw==
+"@rabby-wallet/rabby-api@0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.5.tgz#eb5174375481a7d048ebcdaf1e0b0d8a6ed2110d"
+  integrity sha512-Uro/YyHuY0paJs1+ulUeHrg9cnh474E8DM3lrA2lxtV/q8J1rnFmSiaKGIFS6cM38LAQzxss8IYIrmkPiRMaWw==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
