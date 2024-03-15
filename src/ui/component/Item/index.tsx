@@ -197,7 +197,10 @@ export const BlueHeader = ({
     <>
       <BlueHeaderWrapper {...rest}>
         {showBackIcon && (
-          <div className={clsx('back', leftIconClassName)} onClick={goBack}>
+          <div
+            className={clsx('back top-1/2 -translate-y-2/4', leftIconClassName)}
+            onClick={goBack}
+          >
             <img src={ArrowLeftWhiteBack} />
           </div>
         )}
