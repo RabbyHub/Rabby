@@ -45,7 +45,12 @@ export const HistoryList = ({
 
   const fetchData = async (startTime = 0) => {
     const { address } = account!;
-
+    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
+    if (apiLevel >= 1) {
+      return {
+        list: [],
+      };
+    }
     const getHistory = isMainnet
       ? wallet.openapi.listTxHisotry
       : wallet.testnetOpenapi.listTxHisotry;
