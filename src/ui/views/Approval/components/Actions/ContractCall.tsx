@@ -138,7 +138,12 @@ const ContractCall = ({
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
           <Row>
             <div className="relative flex items-center">
-              {requireData.call.func || '-'}
+              <span
+                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
+                title={requireData.call.func}
+              >
+                {requireData.call.func || '-'}
+              </span>
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
                 title={
