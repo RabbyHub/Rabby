@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Props as TokenItemProps } from './TokenItem';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import BigNumber from 'bignumber.js';
-import { TokenLowValueItem } from './TokenLowValueItem';
 import { TokenTable } from './components/TokenTable';
 import { BlockedButton } from './BlockedButton';
 import { CustomizedButton } from './CustomizedButton';
@@ -29,15 +28,6 @@ export const TokenList: React.FC<Props> = ({
   customizeTokens,
   isTestnet,
 }) => {
-  const totalValue = React.useMemo(() => {
-    return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
-      .toNumber();
-  }, [list]);
-  const { result: currentList } = useExpandList(list, totalValue);
-  const lowValueList = React.useMemo(() => {
-    return list?.filter((item) => currentList?.indexOf(item) === -1);
-  }, [currentList, list, isSearch]);
   const { t } = useTranslation();
 
   if (isNoResults) {
@@ -51,7 +41,6 @@ export const TokenList: React.FC<Props> = ({
 
   const hasList = !!(
     list?.length ||
-    currentList?.length ||
     blockedTokens?.length ||
     customizeTokens?.length
   );
@@ -59,10 +48,7 @@ export const TokenList: React.FC<Props> = ({
   return (
     <div>
       <div>
-        <TokenTable
-          list={isSearch ? list : currentList}
-          EmptyComponent={<div></div>}
-        />
+        <TokenTable list={list} EmptyComponent={<div></div>} />
       </div>
     </div>
   );

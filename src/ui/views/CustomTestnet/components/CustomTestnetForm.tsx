@@ -56,9 +56,6 @@ export const CustomTestnetForm = ({
   isEdit?: boolean;
   disabled?: boolean;
 }) => {
-  console.log({
-    isEdit,
-  });
   return (
     <Wraper>
       <Form layout="vertical" form={form} requiredMark={false}>

@@ -17,6 +17,7 @@ import {
   http,
   toHex,
   formatEther,
+  erc20Abi,
 } from 'viem';
 import { omit } from 'lodash';
 import { intToHex } from 'ethereumjs-util';
@@ -26,6 +27,8 @@ import {
   getGasPrice,
   getTransaction,
   getTransactionCount,
+  multicall,
+  readContract,
 } from 'viem/actions';
 import { satisfies } from 'semver';
 
@@ -58,8 +61,13 @@ export interface RPCItem {
 }
 
 export interface CustomTestnetTokenBase {
-  address: string;
+  id: string;
   chainId: number;
+}
+
+export interface CustomTestnetToken extends CustomTestnetTokenBase {
+  amount: number;
+  symbol: string;
 }
 
 export type CutsomTestnetServiceStore = {
@@ -331,15 +339,53 @@ class CustomTestnetService {
     tokenId?: string;
   }) => {
     const client = this.getClient(+chainId);
-    if (!client) {
+    const chain = findChain({
+      id: +chainId,
+    });
+    if (!client || !chain) {
       throw new Error(`Invalid chainId: ${chainId}`);
     }
-    if (!tokenId) {
+
+    if (!tokenId || tokenId === chain.nativeTokenAddress) {
       const balance = await getBalance(client, {
         address: address as any,
       });
-      return formatEther(balance);
+      const ethers = formatEther(balance);
+
+      return {
+        id: chain.nativeTokenAddress,
+        symbol: chain.nativeTokenSymbol,
+        amount: +ethers,
+        chainId,
+      };
     }
+
+    // multicall
+    const [balance, symbol, decimals] = await Promise.all([
+      readContract(client, {
+        address: tokenId as any,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as any],
+      }),
+      readContract(client, {
+        address: tokenId as any,
+        abi: erc20Abi,
+        functionName: 'symbol',
+      }),
+      readContract(client, {
+        address: tokenId as any,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      }),
+    ]);
+
+    return {
+      id: tokenId,
+      symbol: symbol,
+      amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
+      chainId,
+    };
   };
 }
 

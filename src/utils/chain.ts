@@ -31,10 +31,10 @@ export const CHAINS_BY_NET = {
 };
 
 export const findChain = (params: {
-  enum?: CHAINS_ENUM | string;
-  id?: number;
-  serverId?: string;
-  hex?: string;
+  enum?: CHAINS_ENUM | string | null;
+  id?: number | null;
+  serverId?: string | null;
+  hex?: string | null;
 }) => {
   const { enum: chainEnum, id, serverId, hex } = params;
   const chain = [...store.mainnetList, ...store.testnetList].find(
