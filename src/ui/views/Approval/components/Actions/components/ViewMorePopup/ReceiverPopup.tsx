@@ -8,6 +8,7 @@ import LogoWithText from '../LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 
 export interface ReceiverData {
+  title?: string;
   address: string;
   chain: Chain;
   eoa: {
@@ -74,7 +75,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        {t('page.signTx.send.sendTo')}{' '}
+        {data.title || t('page.signTx.send.sendTo')}{' '}
         <Values.Address
           address={data.address}
           chain={data.chain}

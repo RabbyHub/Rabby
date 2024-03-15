@@ -193,6 +193,7 @@ const ContractCall = ({
                     <ViewMore
                       type="receiver"
                       data={{
+                        title: t('page.signTx.contractCall.suspectedReceiver'),
                         address: requireData.unexpectedAddr!.address,
                         chain: requireData.unexpectedAddr!.chain,
                         eoa: requireData.unexpectedAddr!.eoa,

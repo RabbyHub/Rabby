@@ -202,6 +202,7 @@ export const CommonAction = ({
                     <ViewMore
                       type="receiver"
                       data={{
+                        title: t('page.signTx.contractCall.suspectedReceiver'),
                         address: (requireData as ContractCallRequireData)
                           .unexpectedAddr!.address,
                         chain: (requireData as ContractCallRequireData)
