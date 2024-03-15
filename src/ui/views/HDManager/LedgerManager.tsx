@@ -13,6 +13,7 @@ import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -136,7 +137,7 @@ export const LedgerManager: React.FC = () => {
 
       <MainContainer setting={setting} loading={loading} HDName="Ledger" />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -151,7 +152,7 @@ export const LedgerManager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

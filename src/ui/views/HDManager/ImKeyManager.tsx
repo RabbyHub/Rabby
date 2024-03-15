@@ -13,6 +13,7 @@ import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
 import { HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -78,7 +79,7 @@ export const ImKeyManager: React.FC = () => {
 
       <MainContainer setting={setting} loading={loading} HDName="imKey" />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -92,7 +93,7 @@ export const ImKeyManager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

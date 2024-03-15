@@ -13,6 +13,7 @@ import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
 import * as Sentry from '@sentry/browser';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 interface Props {
   HDName?: string;
@@ -106,7 +107,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
         preventLoading={preventLoading}
       />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -120,7 +121,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
       {contextHolder}
     </>
   );
