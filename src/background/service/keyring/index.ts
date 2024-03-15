@@ -414,7 +414,7 @@ export class KeyringService extends EventEmitter {
   }
 
   /**
-   * Checks for duplicate keypairs, using the the first account in the given
+   * Checks for duplicate keypairs, using the first account in the given
    * array. Rejects if a duplicate is found.
    *
    * Only supports 'Simple Key Pair'.
