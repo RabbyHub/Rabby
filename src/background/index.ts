@@ -24,6 +24,7 @@ import {
   RPCService,
   securityEngineService,
   transactionBroadcastWatchService,
+  HDKeyRingLastAddAddrTimeService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -101,6 +102,7 @@ async function restoreAppState() {
   await RPCService.init();
   await securityEngineService.init();
   await RabbyPointsService.init();
+  await HDKeyRingLastAddAddrTimeService.init();
 
   rpcCache.start();
 

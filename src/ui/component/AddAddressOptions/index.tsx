@@ -30,7 +30,7 @@ import IconPrivatekey, {
   ReactComponent as RcIconPrivatekey,
 } from 'ui/assets/import/privatekey-light.svg';
 
-import IconAddFromCurrentSeedPhrase from 'ui/assets/address/add-from-current-seed-phrase.svg';
+import { ReactComponent as IconAddFromCurrentSeedPhrase } from 'ui/assets/address/add-from-current-seed-phrase.svg';
 
 import './style.less';
 
@@ -263,7 +263,7 @@ const AddAddressOptions = () => {
               },
             },
             {
-              leftIcon: IconCreatenewaddr,
+              leftIcon: RcIconCreatenewaddr,
               content: t('page.newAddress.createNewSeedPhrase'),
               brand: 'createAddress',
               onClick: () => {
@@ -273,7 +273,7 @@ const AddAddressOptions = () => {
           ]
         : [
             {
-              leftIcon: IconCreatenewaddr,
+              leftIcon: RcIconCreatenewaddr,
               content: t('page.newAddress.createNewSeedPhrase'),
               brand: 'createAddress',
               onClick: () => {
@@ -287,14 +287,14 @@ const AddAddressOptions = () => {
   const centerList = React.useMemo(
     () => [
       {
-        leftIcon: IconMnemonics,
+        leftIcon: RcIconMnemonics,
         brand: 'importSeedPhrase',
         content: t('page.newAddress.importSeedPhrase'),
         onClick: () =>
           handleRouter(() => openInternalPageInTab('import/mnemonics')),
       },
       {
-        leftIcon: IconPrivatekey,
+        leftIcon: RcIconPrivatekey,
         brand: 'importPrivatekey',
         content: t('page.newAddress.importPrivateKey'),
         onClick: () => handleRouter((history) => history.push('/import/key')),
@@ -313,7 +313,7 @@ const AddAddressOptions = () => {
   const bottomList = React.useMemo(
     () => [
       {
-        leftIcon: IconAddwatchmodo,
+        leftIcon: RcIconAddwatchmodo,
         brand: 'addWatchMode',
         content: t('page.newAddress.addContacts.content'),
         subText: t('page.newAddress.addContacts.description'),

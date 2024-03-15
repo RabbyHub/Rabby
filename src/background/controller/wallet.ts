@@ -25,6 +25,7 @@ import {
   securityEngineService,
   transactionBroadcastWatchService,
   RabbyPointsService,
+  HDKeyRingLastAddAddrTimeService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -1137,6 +1138,9 @@ export class WalletController extends BaseController {
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
+
+  addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
+  getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;
