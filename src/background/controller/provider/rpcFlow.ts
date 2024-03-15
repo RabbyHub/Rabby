@@ -13,8 +13,12 @@ import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
+import { findChain } from '@/utils/chain';
 
 const isSignApproval = (type: string) => {
+  console.log({
+    type,
+  });
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
   return SIGN_APPROVALS.includes(type);
 };
@@ -188,9 +192,9 @@ const flowContext = flow
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
         const site = permissionService.getConnectedSite(origin);
         if (site) {
-          const chain = Object.values(CHAINS).find(
-            (item) => item.enum === site.chain
-          );
+          const chain = findChain({
+            enum: site.chain,
+          });
           if (chain) {
             params[0].chainId = chain.id;
           }
@@ -237,6 +241,7 @@ const flowContext = flow
         )
           .then((result) => {
             if (isSignApproval(approvalType)) {
+              console.log('sign finished');
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.SIGN_FINISHED,
                 params: {
@@ -251,6 +256,7 @@ const flowContext = flow
           .catch((e: any) => {
             Sentry.captureException(e);
             if (isSignApproval(approvalType)) {
+              console.log('sign error');
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.SIGN_FINISHED,
                 params: {

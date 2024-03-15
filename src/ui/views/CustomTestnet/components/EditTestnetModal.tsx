@@ -16,6 +16,7 @@ import { ReactComponent as RcIconRight } from 'ui/assets/custom-testnet/icon-rig
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { AddFromChainList } from './AddFromChainList';
 import { useRequest } from 'ahooks';
+import { TestnetChainBase } from '@/background/service/customTestnet';
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -57,14 +58,14 @@ const Footer = styled.div`
 `;
 
 export const EditCustomTestnetModal = ({
-  chain,
-  rpcInfo,
+  data,
   visible,
   onCancel,
   onConfirm,
+  isEdit,
 }: {
-  chain: CHAINS_ENUM;
-  rpcInfo: { id: CHAINS_ENUM; rpc: RPCItem } | null;
+  isEdit?: boolean;
+  data?: TestnetChainBase | null;
   visible: boolean;
   onCancel(): void;
   onConfirm(url?: string): void;
@@ -73,10 +74,12 @@ export const EditCustomTestnetModal = ({
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
   const [form] = Form.useForm();
 
-  // const {data} = use
-
   const { loading, runAsync: runAddTestnet } = useRequest(
-    wallet.addCustomTestnet,
+    (data: TestnetChainBase) => {
+      return isEdit
+        ? wallet.updateCustomTestnet(data)
+        : wallet.addCustomTestnet(data);
+    },
     {
       manual: true,
     }
@@ -85,71 +88,32 @@ export const EditCustomTestnetModal = ({
   const handleSubmit = async () => {
     await form.validateFields();
     const values = form.getFieldsValue();
-    await runAddTestnet(values);
-    onConfirm?.();
+    const res = await runAddTestnet(values);
+    if ('error' in res) {
+      form.setFields([
+        {
+          name: [res.error.key],
+          errors: [res.error.message],
+        },
+      ]);
+    } else {
+      onConfirm?.();
+    }
   };
 
-  const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
-  const [rpcUrl, setRpcUrl] = useState('');
-  const [rpcErrorMsg, setRpcErrorMsg] = useState('');
-  // const canSubmit = useMemo(() => {
-  //   return rpcUrl && !rpcErrorMsg && !isValidating;
-  // }, [rpcUrl, rpcErrorMsg, isValidating]);
   const { t } = useTranslation();
 
-  const inputRef = useRef<Input>(null);
-
-  const handleRPCChanged = (url: string) => {
-    setRpcUrl(url);
-    if (!isValidateUrl(url)) {
-      setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidRPCUrl'));
-    }
-  };
-
-  // const rpcValidation = async () => {
-  //   if (!chainItem) return;
-
-  //   if (!isValidateUrl(rpcUrl)) {
-  //     return;
-  //   }
-  //   try {
-  //     setIsValidating(true);
-  //     const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
-  //     setIsValidating(false);
-  //     if (!isValid) {
-  //       setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidChainId'));
-  //     } else {
-  //       setRpcErrorMsg('');
-  //     }
-  //   } catch (e) {
-  //     setIsValidating(false);
-  //     setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
-  //   }
-  // };
-
-  // useDebounce(rpcValidation, 200, [rpcUrl]);
-
   useEffect(() => {
-    if (rpcInfo) {
-      setRpcUrl(rpcInfo.rpc.url);
-    } else {
-      setRpcUrl('');
+    if (data && visible) {
+      form.setFieldsValue(data);
     }
-  }, [rpcInfo]);
+  }, [data, visible]);
 
   useEffect(() => {
     if (!visible) {
-      setRpcUrl('');
-      setRpcErrorMsg('');
+      form.resetFields();
     }
-    setTimeout(() => {
-      inputRef.current?.input?.focus();
-    });
   }, [visible]);
-
-  console.log({
-    isShowAddFromChainList,
-  });
 
   return (
     <Popup
@@ -184,7 +148,7 @@ export const EditCustomTestnetModal = ({
           </div>
           <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
         </div>
-        <CustomTestnetForm form={form} />
+        <CustomTestnetForm form={form} isEdit={isEdit} />
         <Footer>
           <Button
             type="primary"
@@ -209,6 +173,10 @@ export const EditCustomTestnetModal = ({
       <AddFromChainList
         visible={isShowAddFromChainList}
         onClose={() => {
+          setIsShowAddFromChainList(false);
+        }}
+        onSelect={(item) => {
+          form.setFieldsValue(item);
           setIsShowAddFromChainList(false);
         }}
       />

@@ -13,30 +13,52 @@ const Wraper = styled.div`
     font-size: 13px;
     line-height: 16px;
   }
+
   .ant-input {
     height: 52px;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    background: transparent !important;
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: transparent;
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
 
     color: var(--r-neutral-title1, #192945);
     font-size: 15px;
     font-weight: 500;
-
-    &.has-error {
-      border-color: #ec5151;
+  }
+  .ant-input[disabled] {
+    background: var(--r-neutral-card2, #f2f4f7);
+    border-color: transparent;
+    &:hover {
+      border-color: transparent;
     }
+  }
+  .ant-form-item-has-error .ant-input,
+  .ant-form-item-has-error .ant-input:hover {
+    border: 1px solid var(--r-red-default, #e34935);
+  }
+
+  .ant-form-item-explain.ant-form-item-explain-error {
+    color: var(--r-red-default, #e34935);
+    font-size: 13px;
+    line-height: 16px;
+    min-height: 16px;
   }
 `;
 
 export const CustomTestnetForm = ({
   form,
+  isEdit,
+  disabled,
 }: {
   form: FormInstance<TestnetChainBase>;
+  isEdit?: boolean;
+  disabled?: boolean;
 }) => {
+  console.log({
+    isEdit,
+  });
   return (
     <Wraper>
       <Form layout="vertical" form={form} requiredMark={false}>
@@ -50,7 +72,7 @@ export const CustomTestnetForm = ({
             },
           ]}
         >
-          <Input autoComplete="off" />
+          <Input autoComplete="off" disabled={disabled || isEdit} />
         </Form.Item>
         <Form.Item
           label="Network name"
@@ -62,7 +84,7 @@ export const CustomTestnetForm = ({
             },
           ]}
         >
-          <Input autoComplete="off" />
+          <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
         <Form.Item
           label="RPC URL"
@@ -75,7 +97,7 @@ export const CustomTestnetForm = ({
             },
           ]}
         >
-          <Input autoComplete="off" type="url" />
+          <Input autoComplete="off" type="url" disabled={disabled} />
         </Form.Item>
         <Form.Item
           label="Currency symbol"
@@ -87,10 +109,10 @@ export const CustomTestnetForm = ({
             },
           ]}
         >
-          <Input autoComplete="off" />
+          <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
         <Form.Item label="Block explorer URL (Optional)" name="scanLink">
-          <Input autoComplete="off" />
+          <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
       </Form>
     </Wraper>

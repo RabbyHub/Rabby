@@ -55,6 +55,8 @@ import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import { customTestnetService } from '@/background/service/customTestnet';
+import { sendTransaction } from 'viem/actions';
+// import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
   method: string;
@@ -168,7 +170,6 @@ class ProviderController extends BaseController {
     const site = permissionService.getSite(origin);
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
-      // chainServerId = CHAINS[site.chain].serverId;
       chainServerId =
         findChain({
           enum: site.chain,
@@ -234,11 +235,15 @@ class ProviderController extends BaseController {
       });
       return promise;
     } else {
-      const client = customTestnetService.getClient(chain.id);
-      return client.transport.request({
+      console.log('custom', {
         method,
         params,
       });
+      const chainData = findChain({
+        serverId: chainServerId,
+      })!;
+      const client = customTestnetService.getClient(chainData.id);
+      return client.request({ method, params });
     }
   };
 
@@ -252,17 +257,19 @@ class ProviderController extends BaseController {
     sessionService.broadcastEvent('accountsChanged', account);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
-      const chain = CHAINS[connectSite.chain];
-      // rabby:chainChanged event must be sent before chainChanged event
-      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
-      sessionService.broadcastEvent(
-        'chainChanged',
-        {
-          chain: chain.hex,
-          networkVersion: chain.network,
-        },
-        origin
-      );
+      const chain = findChain({ enum: connectSite.chain });
+      if (chain) {
+        // rabby:chainChanged event must be sent before chainChanged event
+        sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
+        sessionService.broadcastEvent(
+          'chainChanged',
+          {
+            chain: chain.hex,
+            networkVersion: chain.network,
+          },
+          origin
+        );
+      }
     }
 
     return account;
@@ -307,7 +314,7 @@ class ProviderController extends BaseController {
         .getCurrentAccount()
         ?.address.toLowerCase();
       const currentChain = permissionService.isInternalOrigin(session.origin)
-        ? Object.values(CHAINS).find((chain) => chain.id === tx.chainId)!.enum
+        ? findChain({ id: tx.chainId })!.enum
         : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
@@ -316,7 +323,8 @@ class ProviderController extends BaseController {
       }
       if (
         'chainId' in tx &&
-        (!currentChain || Number(tx.chainId) !== CHAINS[currentChain].id)
+        (!currentChain ||
+          Number(tx.chainId) !== findChain({ enum: currentChain })?.id)
       ) {
         throw ethErrors.rpc.invalidParams(
           'chainId should be same as current chainId'
@@ -417,7 +425,14 @@ class ProviderController extends BaseController {
       : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
-    if (!approvingTx?.rawTx || !approvingTx?.explain) {
+    console.log({
+      approvingTx,
+    });
+    // if (!approvingTx?.rawTx || !approvingTx?.explain) {
+    //   throw new Error(`approvingTx not found: ${signingTxId}`);
+    // }
+    if (!approvingTx?.rawTx) {
+      console.log('errrorrrrrrr?');
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
     transactionHistoryService.updateSigningTx(signingTxId!, {
@@ -497,28 +512,30 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
-        transactionHistoryService.addTx({
-          tx: {
-            rawTx: {
-              ...rawTx,
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-            },
-            createdAt: Date.now(),
-            isCompleted: false,
-            hash,
-            failed: false,
-            reqId,
-            pushType,
-          },
-          explain: cacheExplain,
-          actionData: action,
-          origin,
-          $ctx: options?.data?.$ctx,
-          isDropFailed: true,
-        });
+        // todooo
+        // transactionHistoryService.addTx({
+        //   tx: {
+        //     rawTx: {
+        //       ...rawTx,
+        //       ...approvalRes,
+        //       r: bufferToHex(signedTx.r),
+        //       s: bufferToHex(signedTx.s),
+        //       v: bufferToHex(signedTx.v),
+        //     },
+        //     createdAt: Date.now(),
+        //     isCompleted: false,
+        //     hash,
+        //     failed: false,
+        //     reqId,
+        //     pushType,
+        //   },
+        //   explain: cacheExplain,
+        //   actionData: action,
+        //   origin,
+        //   $ctx: options?.data?.$ctx,
+        //   isDropFailed: true,
+        // });
+        console.log('created');
         transactionHistoryService.removeSigningTx(signingTxId!);
         if (hash) {
           transactionWatchService.addTx(
@@ -534,7 +551,7 @@ class ProviderController extends BaseController {
           transactionBroadcastWatchService.addTx(reqId, {
             reqId,
             address: txParams.from,
-            chainId: CHAINS[chain].id,
+            chainId: findChain({ enum: chain })!.id,
             nonce: approvalRes.nonce,
           });
         }
@@ -568,18 +585,19 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
-          transactionHistoryService.addSubmitFailedTransaction(
-            {
-              rawTx: approvalRes,
-              createdAt: Date.now(),
-              isCompleted: true,
-              hash: '',
-              failed: false,
-              isSubmitFailed: true,
-            },
-            cacheExplain,
-            origin
-          );
+          // todoo
+          // transactionHistoryService.addSubmitFailedTransaction({
+          //   tx: {
+          //     rawTx: approvalRes,
+          //     createdAt: Date.now(),
+          //     isCompleted: true,
+          //     hash: '',
+          //     failed: false,
+          //     isSubmitFailed: true,
+          //   },
+          //   explain: cacheExplain,
+          //   origin,
+          // });
         }
         const errMsg = e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
@@ -660,7 +678,9 @@ class ProviderController extends BaseController {
           );
 
           onTransactionCreated({ hash, reqId, pushType });
-        } else {
+          console.log('custom rpc');
+        } else if (!findChain({ enum: chain })?.isTestnet) {
+          console.log('normal');
           const res = await openapiService.submitTx({
             tx: {
               ...approvalRes,
@@ -685,6 +705,36 @@ class ProviderController extends BaseController {
             }
             notificationService.setStatsData(statsData);
           }
+        } else {
+          console.log('custom testnet');
+          const chainData = findChain({
+            enum: chain,
+          })!;
+          const txData: any = {
+            ...approvalRes,
+            gasLimit: approvalRes.gas,
+            r: addHexPrefix(signedTx.r),
+            s: addHexPrefix(signedTx.s),
+            v: addHexPrefix(signedTx.v),
+          };
+          if (is1559) {
+            txData.type = '0x2';
+          }
+          const tx = TransactionFactory.fromTxData(txData);
+          const rawTx = bufferToHex(tx.serialize());
+          const client = customTestnetService.getClient(chainData.id);
+          console.log({
+            client,
+            sendRaw: 'sendRaw',
+          });
+          hash = await client.request({
+            method: 'eth_sendRawTransaction',
+            params: [rawTx as any],
+          });
+          console.log({
+            hash,
+          });
+          onTransactionCreated({ hash, reqId, pushType });
         }
 
         return hash;
@@ -958,8 +1008,15 @@ class ProviderController extends BaseController {
         throw ethErrors.rpc.invalidParams('chainId is required');
       }
       const connected = permissionService.getConnectedSite(session.origin);
+
+      console.log({
+        connected,
+      });
       if (connected) {
-        if (Number(chainParams.chainId) === CHAINS[connected.chain].id) {
+        if (
+          Number(chainParams.chainId) ===
+          findChain({ enum: connected.chain })?.id
+        ) {
           return true;
         }
       }
@@ -990,9 +1047,10 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) =>
-      new BigNumber(value.hex).isEqualTo(chainId)
-    );
+
+    const chain = findChain({
+      hex: chainId,
+    });
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
@@ -1003,7 +1061,9 @@ class ProviderController extends BaseController {
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
 
     permissionService.updateConnectSite(
       origin,
@@ -1034,7 +1094,7 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', [
-    'AddChain',
+    'SwitchChain',
     ({ data, session }) => {
       if (!data.params[0]) {
         throw ethErrors.rpc.invalidParams('params is required but got []');
@@ -1045,7 +1105,12 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
-        if (Number(chainId) === CHAINS[connected.chain].id) {
+        if (
+          Number(chainId) ===
+          findChain({
+            enum: connected.chain,
+          })?.id
+        ) {
           return true;
         }
       }
@@ -1064,16 +1129,17 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) =>
-      new BigNumber(value.hex).isEqualTo(chainId)
-    );
+
+    const chain = findChain({ hex: chainId });
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
 
     permissionService.updateConnectSite(
       origin,

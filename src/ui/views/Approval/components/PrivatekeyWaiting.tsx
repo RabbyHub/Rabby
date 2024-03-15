@@ -140,6 +140,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      console.log('EVENTS.SIGN_FINISHED', data);
       if (data.success) {
         let sig = data.data;
         setResult(sig);

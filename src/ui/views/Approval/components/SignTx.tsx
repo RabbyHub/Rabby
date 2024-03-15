@@ -76,6 +76,8 @@ import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { findChain } from '@/utils/chain';
+import { SignTestnetTx } from './SignTestnetTx';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -97,7 +99,7 @@ const normalizeHex = (value: string | number) => {
   return value;
 };
 
-const normalizeTxParams = (tx) => {
+export const normalizeTxParams = (tx) => {
   const copy = tx;
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
@@ -2064,4 +2066,21 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   );
 };
 
-export default SignTx;
+const SignTxWrap = (props: SignTxProps) => {
+  const { params, origin } = props;
+  const chainId = params?.data?.[0]?.chainId;
+  const chain = chainId ? findChain({ id: +chainId }) : undefined;
+
+  console.log({
+    params,
+    chain,
+  });
+
+  return chain?.isTestnet ? (
+    <SignTestnetTx {...props} />
+  ) : (
+    <SignTx {...props} />
+  );
+};
+
+export default SignTxWrap;

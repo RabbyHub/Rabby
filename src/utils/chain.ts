@@ -1,10 +1,20 @@
-import { customTestnetService } from '@/background/service/customTestnet';
-import { Chain } from '@debank/common';
+// import { customTestnetService } from '@/background/service/customTestnet';
+import { TestnetChain } from '@/background/service/customTestnet';
+import { Chain, MAINNET_CHAINS_LIST } from '@debank/common';
 import {
   ChainWithBalance,
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS, CHAINS_ENUM } from 'consts';
+
+const store = {
+  mainnetList: MAINNET_CHAINS_LIST,
+  testnetList: [] as TestnetChain[],
+};
+
+export const updateChainStore = (params: Partial<typeof store>) => {
+  Object.assign(store, params);
+};
 
 const ALL_CHAINS = Object.values(CHAINS);
 const ALL_CHAINS_TESTNET = [] as Chain[];
@@ -24,20 +34,17 @@ export const findChain = (params: {
   enum?: CHAINS_ENUM | string;
   id?: number;
   serverId?: string;
+  hex?: string;
 }) => {
-  const { enum: chainEnum, id, serverId } = params;
-  const chain = ALL_CHAINS_MAINNET.find(
+  const { enum: chainEnum, id, serverId, hex } = params;
+  const chain = [...store.mainnetList, ...store.testnetList].find(
     (item) =>
-      item.enum === chainEnum || item.id === id || item.serverId === serverId
+      item.enum === chainEnum ||
+      item.id === id ||
+      item.serverId === serverId ||
+      item.hex === hex
   );
-  if (chain) {
-    return chain;
-  }
-  return customTestnetService.getList().find((item) => {
-    return (
-      item.enum === chainEnum || item.id === id || item.serverId === serverId
-    );
-  });
+  return chain;
 };
 
 /**
@@ -61,7 +68,7 @@ export function findChainByEnum(
 
   if (!chainEnum) return toFallbackChain;
 
-  return CHAINS[chainEnum] || toFallbackChain;
+  return findChain({ enum: chainEnum }) || toFallbackChain;
 }
 
 export function filterChainEnum(chainEnum: CHAINS_ENUM) {
@@ -225,8 +232,7 @@ export function varyAndSortChainItems(deps: {
   };
 
   const _all = (
-    (netTabKey ? CHAINS_BY_NET[netTabKey] : CHAINS_BY_NET.mainnet) ||
-    CHAINS_BY_NET.mainnet
+    (netTabKey === 'testnet' ? store.testnetList : store.mainnetList) || []
   ).sort((a, b) => a.name.localeCompare(b.name));
 
   _all.forEach((item) => {

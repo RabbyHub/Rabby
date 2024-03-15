@@ -16,6 +16,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { findChain } from '@/utils/chain';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -191,7 +192,9 @@ export const FooterBar: React.FC<Props> = ({
       return props.chain || CHAINS.ETH;
     } else {
       if (!connectedSite) return CHAINS.ETH;
-      return CHAINS[connectedSite.chain];
+      return findChain({
+        enum: connectedSite.chain,
+      })!;
     }
   }, [props.chain, origin, connectedSite]);
 

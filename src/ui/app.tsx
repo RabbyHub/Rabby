@@ -17,6 +17,7 @@ import store from './store';
 
 import '../i18n';
 import { getSentryEnv } from '@/utils/env';
+import { updateChainStore } from '@/utils/chain';
 
 Sentry.init({
   dsn:
@@ -124,6 +125,14 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 
 store.dispatch.app.initWallet({ wallet });
 store.dispatch.app.initBizStore();
+wallet.getCustomTestnetList().then((list) => {
+  updateChainStore({
+    testnetList: list,
+  });
+  console.log({
+    list,
+  });
+});
 
 wallet.getLocale().then((locale) => {
   addResourceBundle(locale).then(() => {

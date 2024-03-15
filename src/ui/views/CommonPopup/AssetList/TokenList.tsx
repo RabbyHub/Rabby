@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Props as TokenItemProps } from './TokenItem';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import BigNumber from 'bignumber.js';
@@ -8,6 +8,7 @@ import { BlockedButton } from './BlockedButton';
 import { CustomizedButton } from './CustomizedButton';
 import { TokenListEmpty } from './TokenListEmpty';
 import { useTranslation } from 'react-i18next';
+import { useWallet } from '@/ui/utils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -55,9 +56,25 @@ export const TokenList: React.FC<Props> = ({
     customizeTokens?.length
   );
 
+  const wallet = useWallet();
+
+  useEffect(() => {
+    wallet
+      .getCustomTestnetToken({
+        chainId: 17000,
+        address: '0x5853eD4f26A3fceA565b3FBC698bb19cdF6DEB85',
+      })
+      .then((res) => {
+        console.log({
+          res,
+        });
+      });
+  }, []);
+
   return (
     <div>
       <div>
+        ????
         <TokenTable
           list={isSearch ? list : currentList}
           EmptyComponent={<div></div>}

@@ -1,3 +1,4 @@
+import { updateChainStore } from './../utils/chain';
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
@@ -5,7 +6,7 @@ import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from '@/utils/message';
-import { CHAINS, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -41,6 +42,7 @@ import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
 import { customTestnetService } from './service/customTestnet';
+import { findChain } from '@/utils/chain';
 
 dayjs.extend(utc);
 
@@ -89,6 +91,8 @@ async function restoreAppState() {
   // Init keyring and openapi first since this two service will not be migrated
   await migrateData();
 
+  await customTestnetService.init();
+
   await permissionService.init();
   await preferenceService.init();
   await transactionWatchService.init();
@@ -102,7 +106,6 @@ async function restoreAppState() {
   await RPCService.init();
   await securityEngineService.init();
   await RabbyPointsService.init();
-  await customTestnetService.init();
 
   rpcCache.start();
 
@@ -287,7 +290,8 @@ browser.runtime.onConnect.addListener((port) => {
     if (subscriptionManager.methods[data?.method]) {
       const connectSite = permissionService.getConnectedSite(session!.origin);
       if (connectSite) {
-        const chain = CHAINS[connectSite.chain];
+        const chain =
+          findChain({ enum: connectSite.chain }) || CHAINS[CHAINS_ENUM.ETH];
         provider.chainId = chain.network;
       }
       return subscriptionManager.methods[data.method].call(null, req);

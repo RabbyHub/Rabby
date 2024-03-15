@@ -85,7 +85,7 @@ import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
@@ -629,7 +629,9 @@ export class WalletController extends BaseController {
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = CHAINS[chain].network;
+    buildinProvider.currentProvider.chainId = findChain({
+      enum: chain,
+    })!.network;
 
     const provider = new ethers.providers.Web3Provider(
       buildinProvider.currentProvider
@@ -1202,15 +1204,22 @@ export class WalletController extends BaseController {
     }
   };
   setSite = (data: ConnectedSite) => {
-    const chainItem = findChainByEnum(data.chain);
+    const chainItem = findChain({ enum: data.chain });
+    console.log('setSite', data, chainItem);
     if (!chainItem) {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
+
+    console.log({ prev, connectSite });
+
     permissionService.setSite(data);
     if (data.isConnected) {
+      console.log('data', JSON.stringify(data));
       // rabby:chainChanged event must be sent before chainChanged event
       sessionService.broadcastEvent(
         'rabby:chainChanged',
@@ -1287,7 +1296,8 @@ export class WalletController extends BaseController {
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
-    const chainItem = findChainByEnum(data.chain);
+    console.log('update connectedsite');
+    const chainItem = findChain({ enum: data.chain });
 
     if (!chainItem) {
       throw new Error(
@@ -1296,7 +1306,11 @@ export class WalletController extends BaseController {
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
+
+    console.log('updateConnectedSite', origin, data);
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
     sessionService.broadcastEvent(
@@ -1379,11 +1393,11 @@ export class WalletController extends BaseController {
     }
     return Promise.all(
       GNOSIS_SUPPORT_CHAINS.map(async (chainEnum) => {
-        const chain = CHAINS[chainEnum];
+        const chain = findChain({ enum: chainEnum });
         try {
           const safe = await createSafeService({
             address,
-            networkId: chain.network,
+            networkId: chain!.network,
           });
           const owners = await safe.getOwners();
           if (owners) {
@@ -3611,14 +3625,33 @@ export class WalletController extends BaseController {
   };
 
   addCustomTestnet = customTestnetService.add;
-
+  updateCustomTestnet = customTestnetService.update;
+  removeCustomTestnet = customTestnetService.remove;
   getCustomTestnetList = customTestnetService.getList;
 
-  // eslint-disable-next-line no-empty-pattern
-  findChain = ({}: Pick<
-    Chain,
-    'id' | 'serverId' | 'hex' | 'network' | 'enum'
-  >) => {};
+  getCustomTestnetNonce = async ({
+    address,
+    chainId,
+  }: {
+    address: string;
+    chainId: number;
+  }) => {
+    const count = await customTestnetService.getTransactionCount({
+      address,
+      chainId,
+      blockTag: 'latest',
+    });
+    const localNonce = (await wallet.getNonceByChain(address, chainId)) || 0;
+    return BigNumber.max(count, localNonce).toNumber();
+  };
+
+  estimateCustomTestnetGas = customTestnetService.estimateGas;
+
+  getCustomTestnetGasPrice = customTestnetService.getGasPrice;
+
+  getCustomTestnetGasMarket = customTestnetService.getGasMarket;
+
+  getCustomTestnetToken = customTestnetService.getToken;
 }
 
 const wallet = new WalletController();

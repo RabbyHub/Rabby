@@ -18,7 +18,11 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
-import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import {
+  findChain,
+  findChainByEnum,
+  varyAndSortChainItems,
+} from '@/utils/chain';
 import NetSwitchTabs, {
   NetSwitchTabsKey,
   useSwitchNetTab,
@@ -52,12 +56,10 @@ const useChainSeletorList = ({
   const { pinned, chainBalances } = useRabbySelector((state) => {
     return {
       pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChainByEnum(item)
+        findChain({ enum: item })
       ) || []) as CHAINS_ENUM[],
       chainBalances:
-        netTabKey === 'testnet'
-          ? state.account.testnetMatteredChainBalances
-          : state.account.matteredChainBalances,
+        netTabKey === 'testnet' ? {} : state.account.matteredChainBalances,
       isShowTestnet: state.preference.isShowTestnet,
     };
   });

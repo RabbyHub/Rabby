@@ -28,6 +28,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { findChain } from '@/utils/chain';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -276,7 +277,9 @@ const GasSelector = ({
       message: null,
     },
   });
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+  const chain = findChain({
+    id: chainId,
+  })!;
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,

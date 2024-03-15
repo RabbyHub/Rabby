@@ -17,6 +17,7 @@ import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { findChain } from '@/utils/chain';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -249,6 +250,8 @@ class NotificationService extends Events {
         : null;
       const explain = signingTx?.explain;
 
+      console.log({ explain });
+
       if (explain && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,
@@ -328,9 +331,8 @@ class NotificationService extends Events {
         )
       ) {
         const chainId = data.params?.data?.[0]?.chainId;
-        const chain = Object.values(CHAINS).find((chain) =>
-          new BigNumber(chain.hex).isEqualTo(chainId)
-        );
+
+        const chain = findChain({ id: +chainId });
 
         if (chain) {
           this.resolveApproval(null);

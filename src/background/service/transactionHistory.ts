@@ -130,10 +130,12 @@ class TxHistory {
         ...target.rawTx,
         ...data.rawTx,
       };
-      target.explain = {
-        ...target.explain,
-        ...data.explain,
-      } as TransactionSigningItem['explain'];
+      if (target.explain || data.explain) {
+        target.explain = {
+          ...target.explain,
+          ...data.explain,
+        } as TransactionSigningItem['explain'];
+      }
       if (data.action) {
         target.action = data.action;
       }
@@ -226,11 +228,15 @@ class TxHistory {
     );
   }
 
-  addSubmitFailedTransaction(
-    tx: TransactionHistoryItem,
-    explain: TransactionGroup['explain'],
-    origin: string
-  ) {
+  addSubmitFailedTransaction({
+    tx,
+    explain,
+    origin,
+  }: {
+    tx: TransactionHistoryItem;
+    explain: TransactionGroup['explain'];
+    origin: string;
+  }) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;

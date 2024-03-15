@@ -29,6 +29,7 @@ import { Token } from 'background/service/preference';
 import IconExternalLink from 'ui/assets/open-external-gray.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
+import { findChain } from '@/utils/chain';
 
 interface AddAssetProps {
   data: {
@@ -235,7 +236,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   }, [tokens]);
 
   const handleChainChanged = (id: CHAINS_ENUM) => {
-    const chain = CHAINS[id];
+    const chain = findChain({ enum: id });
     if (chain) {
       const t = tokens.find((token) => token.chain === chain.serverId);
       if (t) {

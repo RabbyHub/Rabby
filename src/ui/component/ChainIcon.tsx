@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { TooltipWithMagnetArrow } from './Tooltip/TooltipWithMagnetArrow';
 import { t } from 'i18next';
 
@@ -158,7 +158,7 @@ const ChainIcon = ({
   }, [chain, _customRPC, nonce]);
 
   const { chainItem, customRPC } = React.useMemo(() => {
-    const item = findChainByEnum(chain);
+    const item = findChain({ enum: chain });
     return {
       chainItem: item,
       customRPC: item ? _customRPC : undefined,

@@ -6,7 +6,10 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconEdit } from '@/ui/assets/custom-testnet/icon-edit.svg';
 import { ReactComponent as RcIconDelete } from '@/ui/assets/custom-testnet/icon-delete.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { TestnetChain } from '@/background/service/customTestnet';
+import {
+  TestnetChain,
+  TestnetChainBase,
+} from '@/background/service/customTestnet';
 import { TestnetChainLogo } from '@/ui/component/TestnetChainLogo';
 
 export const CustomTestnetItem = ({
@@ -14,12 +17,14 @@ export const CustomTestnetItem = ({
   item,
   onEdit,
   onRemove,
+  onClick,
   editable,
 }: {
   className?: string;
   item: TestnetChain;
   onEdit?: (item: TestnetChain) => void;
   onRemove?: (item: TestnetChain) => void;
+  onClick?: (item: TestnetChain) => void;
   editable?: boolean;
 }) => {
   return (
@@ -27,10 +32,13 @@ export const CustomTestnetItem = ({
       className={clsx(
         'flex items-center gap-[12px] px-[15px] py-[10px]',
         'border-[1px] border-transparent rounded-[6px]',
-        'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+        'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer',
         'group',
         className
       )}
+      onClick={() => {
+        onClick?.(item);
+      }}
     >
       <TestnetChainLogo name={item.name} className="flex-shrink-0" />
       <div className="min-w-0">
