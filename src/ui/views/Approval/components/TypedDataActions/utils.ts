@@ -77,6 +77,7 @@ export interface TypedDataActionData {
   coboSafeModificationRole?: SubmitDelegatedAddressModificationAction;
   coboSafeModificationTokenApproval?: SubmitTokenApprovalModificationAction;
   common?: {
+    title: string;
     desc: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
@@ -615,7 +616,7 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
     return t('page.signTx.coboSafeModificationTokenApproval.title');
   }
   if (data?.common) {
-    return data.common.desc;
+    return data.common.title;
   }
   return t('page.signTx.unknownAction');
 };

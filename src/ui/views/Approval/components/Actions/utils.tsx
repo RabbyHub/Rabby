@@ -129,6 +129,7 @@ export interface ParsedActionData {
   };
   pushMultiSig?: PushMultiSigAction;
   common?: {
+    title: string;
     desc: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
@@ -1413,7 +1414,7 @@ export const getActionTypeText = (data: ParsedActionData) => {
     return t('page.signTx.revokePermit2.title');
   }
   if (data?.common) {
-    return data.common.desc;
+    return data.common.title;
   }
   return t('page.signTx.unknownAction');
 };

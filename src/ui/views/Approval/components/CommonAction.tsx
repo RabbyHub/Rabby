@@ -5,8 +5,6 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
-import Warning2SVG from '@/ui/assets/sign/tx/warning-2.svg';
-import CertifiedSVG from '@/ui/assets/sign/tx/certified.svg';
 import { ProtocolListItem } from './Actions/components/ProtocolListItem';
 import { SecurityListItem } from './Actions/components/SecurityListItem';
 import ViewMore from './Actions/components/ViewMore';
@@ -14,10 +12,10 @@ import { ContractRequireData } from './TypedDataActions/utils';
 import { ContractCallRequireData } from './Actions/utils';
 import { formatTokenAmount } from 'ui/utils/number';
 import { Col, Row, Table } from './Actions/components/Table';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import * as Values from './Actions/components/Values';
 
 type CommonActions = {
+  title: string;
   desc: string;
   is_asset_changed: boolean;
   is_involving_privacy: boolean;
@@ -40,7 +38,7 @@ export const CommonAction = ({
   const { contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
   });
-  console.log('requireData', requireData);
+
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
       (item) =>
@@ -59,17 +57,6 @@ export const CommonAction = ({
 
   React.useEffect(() => {
     dispatch.securityEngine.init();
-  }, []);
-
-  const descTip = React.useMemo(() => {
-    if (actionData.is_asset_changed && actionData.is_involving_privacy) {
-      return t('page.signTx.common.descTipWarningBoth');
-    } else if (actionData.is_asset_changed) {
-      return t('page.signTx.common.descTipWarningAssets');
-    } else if (actionData.is_involving_privacy) {
-      return t('page.signTx.common.descTipWarningPrivacy');
-    }
-    return t('page.signTx.common.descTipSafe');
   }, []);
 
   return (
