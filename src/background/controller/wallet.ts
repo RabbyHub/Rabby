@@ -3568,6 +3568,35 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
+  /**
+   * disable some functions when Rabby server is busy
+   * disable approval management and transaction history when level is 1
+   * disable total balance refresh and level 1 content when level is 2
+   */
+  getAPIConfig = cached(async () => {
+    interface IConfig {
+      data: {
+        level: number;
+        authorized: {
+          enable: boolean;
+        };
+        balance: {
+          enable: boolean;
+        };
+        history: {
+          enable: boolean;
+        };
+      };
+    }
+    try {
+      const config = await fetch('https://static.debank.com/rabby/config.json');
+      const { data } = (await config.json()) as IConfig;
+      return data.level;
+    } catch (e) {
+      return 0;
+    }
+  }, 10000);
+
   rabbyPointVerifyAddress = async (params?: {
     code?: string;
     claimSnapshot?: boolean;

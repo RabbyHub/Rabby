@@ -112,6 +112,7 @@ export default function useCurrentBalance(
     if (!account || noNeedBalance) return;
     setBalanceLoading(true);
     const cacheData = await wallet.getAddressCacheBalance(account);
+    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
@@ -120,21 +121,29 @@ export default function useCurrentBalance(
         .map(formatChain);
       setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
       if (update) {
-        setBalanceLoading(true);
-        getAddressBalance(account.toLowerCase(), force);
-        if (includeTestnet) {
-          getTestnetBalance(account.toLowerCase(), force, true);
+        if (apiLevel < 2) {
+          setBalanceLoading(true);
+          getAddressBalance(account.toLowerCase(), force);
+          if (includeTestnet) {
+            getTestnetBalance(account.toLowerCase(), force, true);
+          }
+        } else {
+          setBalanceLoading(false);
         }
       } else {
         setBalanceLoading(false);
       }
     } else {
-      getAddressBalance(account.toLowerCase(), force);
-      if (includeTestnet) {
-        getTestnetBalance(account.toLowerCase(), force, true);
+      if (apiLevel < 2) {
+        getAddressBalance(account.toLowerCase(), force);
+        if (includeTestnet) {
+          getTestnetBalance(account.toLowerCase(), force, true);
+        }
+        setBalanceLoading(false);
+        setBalanceFromCache(false);
+      } else {
+        setBalanceLoading(false);
       }
-      setBalanceLoading(false);
-      setBalanceFromCache(false);
     }
   };
 

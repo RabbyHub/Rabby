@@ -84,146 +84,91 @@ const ApprovalManage = () => {
   const { value: allData, loading, error } = useAsync(async () => {
     const userAddress = account!.address;
     const usedChainList = await wallet.openapi.usedChainList(userAddress);
+    const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
 
     const contractMap: Record<string, ContractApprovalItem> = {};
     const tokenMap: Record<string, TokenApprovalItem> = {};
     const nftMap: Record<string, NftApprovalItem> = {};
     await queueRef.current.clear();
-    const nftAuthorizedQueryList = usedChainList.map((e) => async () => {
-      try {
-        const data = await wallet.openapi.userNFTAuthorizedList(
-          userAddress,
-          e.id
-        );
-        if (data.total) {
-          data.contracts.forEach((contract) => {
-            const chainName = contract.chain;
-            const contractId = contract.spender.id;
-            const spender = contract.spender;
-
-            if (!contractMap[`${chainName}:${contractId}`]) {
-              const $riskAboutValues = makeComputedRiskAboutValues(
-                'nft-contract',
-                spender
-              );
-              contractMap[`${chainName}:${contractId}`] = {
-                list: [],
-                chain: e.id,
-                type: 'contract',
-                contractFor: 'nft-contract',
-                $riskAboutValues,
-                $contractRiskEvaluation: getContractRiskEvaluation(
-                  spender.risk_level,
-                  $riskAboutValues
-                ),
-                risk_level: spender.risk_level,
-                risk_alert: spender.risk_alert,
-                id: spender.id,
-                name: spender?.protocol?.name || 'Unknown Contract',
-                logo_url: spender.protocol?.logo_url,
-              };
-            }
-            contractMap[`${chainName}:${contractId}`].list.push(contract);
-
-            if (!nftMap[`${chainName}:${contract.contract_id}`]) {
+    console.log('apiLevel', apiLevel);
+    if (apiLevel < 1) {
+      const nftAuthorizedQueryList = usedChainList.map((e) => async () => {
+        try {
+          const data = await wallet.openapi.userNFTAuthorizedList(
+            userAddress,
+            e.id
+          );
+          if (data.total) {
+            data.contracts.forEach((contract) => {
+              const chainName = contract.chain;
+              const contractId = contract.spender.id;
               const spender = contract.spender;
-              nftMap[`${chainName}:${contract.contract_id}`] = {
-                nftContract: contract,
-                list: [],
-                type: 'nft',
-                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
-                risk_level: 'safe',
-                id: contract.contract_id,
-                name: contract.contract_name,
-                logo_url:
-                  (contract as any)?.collection?.logo_url || IconUnknownNFT,
-                amount: contract.amount,
-                chain: e.id,
-              };
-            }
-            nftMap[`${chainName}:${contract.contract_id}`].list.push(
-              contract.spender
-            );
-          });
 
-          data.tokens.forEach((token) => {
-            const chainName = token.chain;
-            const contractId = token.spender.id;
-            const spender = token.spender;
-
-            if (!contractMap[`${token.chain}:${contractId}`]) {
-              const $riskAboutValues = makeComputedRiskAboutValues(
-                'nft',
-                spender
-              );
-              contractMap[`${token.chain}:${contractId}`] = {
-                list: [],
-                chain: e.id,
-                risk_level: spender.risk_level,
-                risk_alert: spender.risk_alert,
-                id: spender.id,
-                name: spender?.protocol?.name || 'Unknown Contract',
-                logo_url: spender.protocol?.logo_url || IconUnknownNFT,
-                type: 'contract',
-                contractFor: 'nft',
-                $riskAboutValues,
-                $contractRiskEvaluation: getContractRiskEvaluation(
-                  spender.risk_level,
-                  $riskAboutValues
-                ),
-              };
-            }
-            contractMap[`${chainName}:${contractId}`].list.push(token);
-
-            const nftTokenKey = `${chainName}:${token.contract_id}:${token.inner_id}`;
-            if (!nftMap[nftTokenKey]) {
-              nftMap[nftTokenKey] = {
-                nftToken: token,
-                list: [],
-                chain: e.id,
-                risk_level: 'safe',
-                id: token.contract_id,
-                name: token.contract_name,
-                logo_url: token?.content || (token as any).collection?.logo_url,
-                type: 'nft',
-                $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
-                amount: token.amount,
-              };
-            }
-            nftMap[nftTokenKey].list.push(token.spender);
-          });
-        }
-      } catch (error) {
-        console.error('fetch userNFTAuthorizedList error', error);
-      }
-    });
-
-    const tokenAuthorizedQueryList = usedChainList.map((e) => async () => {
-      try {
-        const data = await wallet.openapi.tokenAuthorizedList(
-          userAddress,
-          e.id
-        );
-        if (data.length) {
-          data.forEach((token) => {
-            token.spenders.forEach((spender) => {
-              const $riskAboutValues = makeComputedRiskAboutValues(
-                'token',
-                spender
-              );
-              const chainName = token.chain;
-              const contractId = spender.id;
               if (!contractMap[`${chainName}:${contractId}`]) {
+                const $riskAboutValues = makeComputedRiskAboutValues(
+                  'nft-contract',
+                  spender
+                );
                 contractMap[`${chainName}:${contractId}`] = {
                   list: [],
-                  chain: token.chain,
+                  chain: e.id,
+                  type: 'contract',
+                  contractFor: 'nft-contract',
+                  $riskAboutValues,
+                  $contractRiskEvaluation: getContractRiskEvaluation(
+                    spender.risk_level,
+                    $riskAboutValues
+                  ),
                   risk_level: spender.risk_level,
                   risk_alert: spender.risk_alert,
                   id: spender.id,
                   name: spender?.protocol?.name || 'Unknown Contract',
                   logo_url: spender.protocol?.logo_url,
+                };
+              }
+              contractMap[`${chainName}:${contractId}`].list.push(contract);
+
+              if (!nftMap[`${chainName}:${contract.contract_id}`]) {
+                const spender = contract.spender;
+                nftMap[`${chainName}:${contract.contract_id}`] = {
+                  nftContract: contract,
+                  list: [],
+                  type: 'nft',
+                  $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
+                  risk_level: 'safe',
+                  id: contract.contract_id,
+                  name: contract.contract_name,
+                  logo_url:
+                    (contract as any)?.collection?.logo_url || IconUnknownNFT,
+                  amount: contract.amount,
+                  chain: e.id,
+                };
+              }
+              nftMap[`${chainName}:${contract.contract_id}`].list.push(
+                contract.spender
+              );
+            });
+
+            data.tokens.forEach((token) => {
+              const chainName = token.chain;
+              const contractId = token.spender.id;
+              const spender = token.spender;
+
+              if (!contractMap[`${token.chain}:${contractId}`]) {
+                const $riskAboutValues = makeComputedRiskAboutValues(
+                  'nft',
+                  spender
+                );
+                contractMap[`${token.chain}:${contractId}`] = {
+                  list: [],
+                  chain: e.id,
+                  risk_level: spender.risk_level,
+                  risk_alert: spender.risk_alert,
+                  id: spender.id,
+                  name: spender?.protocol?.name || 'Unknown Contract',
+                  logo_url: spender.protocol?.logo_url || IconUnknownNFT,
                   type: 'contract',
-                  contractFor: 'token',
+                  contractFor: 'nft',
                   $riskAboutValues,
                   $contractRiskEvaluation: getContractRiskEvaluation(
                     spender.risk_level,
@@ -233,39 +178,99 @@ const ApprovalManage = () => {
               }
               contractMap[`${chainName}:${contractId}`].list.push(token);
 
-              const tokenId = token.id;
-
-              if (!tokenMap[`${chainName}:${tokenId}`]) {
-                tokenMap[`${chainName}:${tokenId}`] = {
+              const nftTokenKey = `${chainName}:${token.contract_id}:${token.inner_id}`;
+              if (!nftMap[nftTokenKey]) {
+                nftMap[nftTokenKey] = {
+                  nftToken: token,
                   list: [],
                   chain: e.id,
                   risk_level: 'safe',
-                  id: token.id,
-                  name: token.symbol,
-                  logo_url: token.logo_url || IconUnknownToken,
-                  type: 'token',
-                  $riskAboutValues: makeComputedRiskAboutValues(
-                    'token',
-                    spender
-                  ),
-                  balance: token.balance,
+                  id: token.contract_id,
+                  name: token.contract_name,
+                  logo_url:
+                    token?.content || (token as any).collection?.logo_url,
+                  type: 'nft',
+                  $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
+                  amount: token.amount,
                 };
               }
-              tokenMap[`${chainName}:${tokenId}`].list.push(spender);
+              nftMap[nftTokenKey].list.push(token.spender);
             });
-          });
+          }
+        } catch (error) {
+          console.error('fetch userNFTAuthorizedList error', error);
         }
-      } catch (error) {
-        console.error('fetch tokenAuthorizedList error:', error);
-      }
-    });
-    await queueRef.current.addAll([
-      ...nftAuthorizedQueryList,
-      ...tokenAuthorizedQueryList,
-    ]);
+      });
 
-    sortTokenOrNFTApprovalsSpenderList(tokenMap);
-    sortTokenOrNFTApprovalsSpenderList(nftMap);
+      const tokenAuthorizedQueryList = usedChainList.map((e) => async () => {
+        try {
+          const data = await wallet.openapi.tokenAuthorizedList(
+            userAddress,
+            e.id
+          );
+          if (data.length) {
+            data.forEach((token) => {
+              token.spenders.forEach((spender) => {
+                const $riskAboutValues = makeComputedRiskAboutValues(
+                  'token',
+                  spender
+                );
+                const chainName = token.chain;
+                const contractId = spender.id;
+                if (!contractMap[`${chainName}:${contractId}`]) {
+                  contractMap[`${chainName}:${contractId}`] = {
+                    list: [],
+                    chain: token.chain,
+                    risk_level: spender.risk_level,
+                    risk_alert: spender.risk_alert,
+                    id: spender.id,
+                    name: spender?.protocol?.name || 'Unknown Contract',
+                    logo_url: spender.protocol?.logo_url,
+                    type: 'contract',
+                    contractFor: 'token',
+                    $riskAboutValues,
+                    $contractRiskEvaluation: getContractRiskEvaluation(
+                      spender.risk_level,
+                      $riskAboutValues
+                    ),
+                  };
+                }
+                contractMap[`${chainName}:${contractId}`].list.push(token);
+
+                const tokenId = token.id;
+
+                if (!tokenMap[`${chainName}:${tokenId}`]) {
+                  tokenMap[`${chainName}:${tokenId}`] = {
+                    list: [],
+                    chain: e.id,
+                    risk_level: 'safe',
+                    id: token.id,
+                    name: token.symbol,
+                    logo_url: token.logo_url || IconUnknownToken,
+                    type: 'token',
+                    $riskAboutValues: makeComputedRiskAboutValues(
+                      'token',
+                      spender
+                    ),
+                    balance: token.balance,
+                  };
+                }
+                tokenMap[`${chainName}:${tokenId}`].list.push(spender);
+              });
+            });
+          }
+        } catch (error) {
+          console.error('fetch tokenAuthorizedList error:', error);
+        }
+      });
+      await queueRef.current.addAll([
+        ...nftAuthorizedQueryList,
+        ...tokenAuthorizedQueryList,
+      ]);
+
+      sortTokenOrNFTApprovalsSpenderList(tokenMap);
+      sortTokenOrNFTApprovalsSpenderList(nftMap);
+    }
 
     return [contractMap, tokenMap, nftMap];
   });
