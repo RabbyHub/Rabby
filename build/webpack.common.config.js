@@ -231,6 +231,18 @@ const config = {
             : paths.rootResolve('src/manifest/mv2/manifest.json'),
           to: paths.dist,
         },
+        {
+          from: require.resolve(
+            '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
+          ),
+          to: paths.rootResolve('dist/vendor/trezor/trezor-usb-permissions.js'),
+        },
+        {
+          from: require.resolve(
+            '@trezor/connect-web/lib/webextension/trezor-content-script.js'
+          ),
+          to: paths.rootResolve('dist/vendor/trezor/trezor-content-script.js'),
+        },
       ],
     }),
   ],

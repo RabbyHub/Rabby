@@ -4,8 +4,9 @@ import {
   OffscreenCommunicationTarget,
   OffscreenCommunicationEvents,
 } from '@/constant/offscreen-communication';
-import TrezorConnect from '@trezor/connect-web';
 import browser from 'webextension-polyfill';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const TrezorConnect = require('@trezor/connect-web').default;
 
 export function initTrezor() {
   const bridge = new TrezorBridge();
