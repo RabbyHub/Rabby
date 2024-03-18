@@ -32,7 +32,7 @@ import buildinProvider, {
 } from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import { DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -46,6 +46,7 @@ import {
   GNOSIS_SUPPORT_CHAINS,
   INTERNAL_REQUEST_SESSION,
   DARK_MODE_TYPE,
+  KEYRING_CLASS,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -99,6 +100,7 @@ import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
+import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1758,8 +1760,8 @@ export class WalletController extends BaseController {
 
   getWalletConnectSessionStatus = (address: string, brandName: string) => {
     const keyringType =
-      brandName === KEYRING_CLASS.COINBASE
-        ? KEYRING_CLASS.COINBASE
+      brandName === KEYRING_CLASS.Coinbase
+        ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
       const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
@@ -1786,8 +1788,8 @@ export class WalletController extends BaseController {
 
   getWalletConnectSessionAccount = (address: string, brandName: string) => {
     const keyringType =
-      brandName === KEYRING_CLASS.COINBASE
-        ? KEYRING_CLASS.COINBASE
+      brandName === KEYRING_CLASS.Coinbase
+        ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
       const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
@@ -1802,8 +1804,8 @@ export class WalletController extends BaseController {
 
   walletConnectSwitchChain = async (account: Account, chainId: number) => {
     const keyringType =
-      account.brandName === KEYRING_CLASS.COINBASE
-        ? KEYRING_CLASS.COINBASE
+      account.brandName === KEYRING_CLASS.Coinbase
+        ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
       const keyring = this._getKeyringByType(keyringType);
@@ -1919,8 +1921,8 @@ export class WalletController extends BaseController {
     silent?: boolean
   ) => {
     const keyringType =
-      brandName === KEYRING_CLASS.COINBASE
-        ? KEYRING_CLASS.COINBASE
+      brandName === KEYRING_CLASS.Coinbase
+        ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
@@ -2489,7 +2491,13 @@ export class WalletController extends BaseController {
       keyring = this._getKeyringByType(type);
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
-      keyring = new Keyring();
+      keyring = new Keyring(
+        hasBridge(type)
+          ? {
+              bridge: getKeyringBridge(type),
+            }
+          : undefined
+      );
       isNew = true;
     }
 
@@ -2520,7 +2528,7 @@ export class WalletController extends BaseController {
   };
 
   acquireKeystoneMemStoreData = async () => {
-    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     const keyring: KeystoneKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
       keyring.getInteraction().on(MemStoreDataReady, (request) => {
@@ -2541,7 +2549,7 @@ export class WalletController extends BaseController {
   ) => {
     let keyring;
     let stashKeyringId: number | null = null;
-    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
     } else {
@@ -2551,7 +2559,9 @@ export class WalletController extends BaseController {
         const keystoneKeyring = keyringService.getKeyringClassForType(
           keyringType
         );
-        keyring = new keystoneKeyring();
+        keyring = new keystoneKeyring({
+          bridge: getKeyringBridge(keyringType),
+        });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
       }
@@ -2568,7 +2578,7 @@ export class WalletController extends BaseController {
   ) => {
     let keyring;
     let stashKeyringId: number | null = null;
-    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
     } else {
@@ -2578,7 +2588,9 @@ export class WalletController extends BaseController {
         const keystoneKeyring = keyringService.getKeyringClassForType(
           keyringType
         );
-        keyring = new keystoneKeyring();
+        keyring = new keystoneKeyring({
+          bridge: getKeyringBridge(keyringType),
+        });
         stashKeyringId = Object.values(stashKeyrings).length + 1;
         stashKeyrings[stashKeyringId] = keyring;
       }
@@ -2596,7 +2608,7 @@ export class WalletController extends BaseController {
     const account = await preferenceService.getCurrentAccount();
     const keyring = await keyringService.getKeyringForAccount(
       address ? address : account!.address,
-      KEYRING_CLASS.QRCODE
+      KEYRING_CLASS.HARDWARE.KEYSTONE
     );
     return await keyring.submitSignature(requestId, cbor);
   };
@@ -2704,7 +2716,9 @@ export class WalletController extends BaseController {
         keyring = this._getKeyringByType(type);
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
-        keyring = new Keyring();
+        keyring = new Keyring(
+          hasBridge(type) ? { bridge: getKeyringBridge(type) } : undefined
+        );
       }
     }
     if (keyring[methodName]) {
@@ -3280,14 +3294,16 @@ export class WalletController extends BaseController {
   initQRHardware = async (brand: string) => {
     let keyring;
     let stashKeyringId: number | null = null;
-    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
       const keystoneKeyring = keyringService.getKeyringClassForType(
         keyringType
       );
-      keyring = new keystoneKeyring();
+      keyring = new keystoneKeyring({
+        bridge: getKeyringBridge(keyringType),
+      });
       stashKeyringId = this.addKeyringToStash(keyring);
     }
 
@@ -3297,7 +3313,7 @@ export class WalletController extends BaseController {
 
   checkQRHardwareAllowImport = async (brand: string) => {
     try {
-      const keyring = this._getKeyringByType(KEYRING_CLASS.QRCODE);
+      const keyring = this._getKeyringByType(KEYRING_CLASS.HARDWARE.KEYSTONE);
 
       if (!keyring) {
         return {
@@ -3381,7 +3397,7 @@ export class WalletController extends BaseController {
     safeModuleAddress: string;
   }) => {
     let keyring: CoboArgusKeyring, isNewKey;
-    const keyringType = KEYRING_CLASS.COBO_ARGUS;
+    const keyringType = KEYRING_CLASS.CoboArgus;
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
@@ -3412,7 +3428,7 @@ export class WalletController extends BaseController {
 
   coboSafeGetAccountDetail = async (address: string) => {
     const keyring = this._getKeyringByType(
-      KEYRING_CLASS.COBO_ARGUS
+      KEYRING_CLASS.CoboArgus
     ) as CoboArgusKeyring;
     if (!keyring) {
       return;
@@ -3484,7 +3500,7 @@ export class WalletController extends BaseController {
 
   connectCoinbase = async () => {
     let keyring: CoinbaseKeyring, isNewKey;
-    const keyringType = KEYRING_CLASS.COINBASE;
+    const keyringType = KEYRING_CLASS.Coinbase;
     const curStashId = this._currentCoinbaseStashId;
     try {
       if (curStashId !== null && curStashId !== undefined) {
@@ -3546,7 +3562,7 @@ export class WalletController extends BaseController {
 
   importCoinbase = async (address: string) => {
     let keyring: CoinbaseKeyring, isNewKey;
-    const keyringType = KEYRING_CLASS.COINBASE;
+    const keyringType = KEYRING_CLASS.Coinbase;
     const stashId = this._currentCoinbaseStashId;
     try {
       keyring = this._getKeyringByType(keyringType);

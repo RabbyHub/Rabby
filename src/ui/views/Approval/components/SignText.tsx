@@ -16,7 +16,7 @@ import {
 import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { FooterBar } from './FooterBar/FooterBar';
 import {
   parseAction,

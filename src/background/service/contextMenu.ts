@@ -15,7 +15,7 @@ const getTabsOriginList = () => {
   return res;
 };
 
-const getContextMenuTitle = (origin: string) => {
+const getContextMenuTitle = (origin: string | number) => {
   const site = permissionService.getSite(origin);
   const title = site?.preferMetamask
     ? 'Do not prefer to use MetaMask on this dapp'
@@ -53,8 +53,9 @@ export class ContextMenu {
       this.create(origin);
     }
   }
-  update(origin: string) {
-    if (!this.store.has(origin)) {
+  update(origin: string | number) {
+    const _origin = origin.toString();
+    if (!this.store.has(_origin)) {
       return;
     }
 
@@ -108,7 +109,7 @@ export class ContextMenu {
     let site = permissionService.getSite(info.menuItemId);
     if (!site && tab) {
       site = {
-        origin: info.menuItemId,
+        origin: info.menuItemId.toString(),
         icon: tab.favIconUrl || '',
         name: tab.title || '',
         isSigned: false,

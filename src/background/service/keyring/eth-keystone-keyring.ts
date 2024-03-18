@@ -2,7 +2,7 @@ import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
 import Eth, { HDPathType as KeystoneHDPathType } from '@keystonehq/hw-app-eth';
-import { LedgerHDPathType as HDPathType } from '@/utils/ledger';
+import { LedgerHDPathType as HDPathType } from './helper';
 
 const pathBase = 'm';
 

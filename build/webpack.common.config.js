@@ -5,7 +5,6 @@ const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { version } = require('../_raw/manifest.json');
 const path = require('path');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
@@ -23,6 +22,7 @@ const config = {
       'node_modules/@rabby-wallet/page-provider/dist/index.js'
     ),
     ui: paths.rootResolve('src/ui/index.tsx'),
+    offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
   output: {
     path: paths.dist,
@@ -207,21 +207,30 @@ const config = {
       chunks: ['background'],
       filename: 'background.html',
     }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.offscreenHtml,
+      chunks: ['offscreen'],
+      filename: 'offscreen.html',
+    }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
       dayjs: 'dayjs',
     }),
-    new AssetReplacePlugin({
-      '#PAGEPROVIDER#': 'pageProvider',
-    }),
     new webpack.DefinePlugin({
-      'process.env.version': JSON.stringify(`version: ${version}`),
-      'process.env.release': JSON.stringify(version),
+      'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
+      'process.env.release': JSON.stringify(process.env.VERSION),
     }),
     new CopyPlugin({
       patterns: [
         { from: paths.rootResolve('_raw'), to: paths.rootResolve('dist') },
+        {
+          from: process.env.ENABLE_MV3
+            ? paths.rootResolve('src/manifest/mv3/manifest.json')
+            : paths.rootResolve('src/manifest/mv2/manifest.json'),
+          to: paths.dist,
+        },
       ],
     }),
   ],
@@ -237,7 +246,7 @@ const config = {
       url: require.resolve('url'),
       zlib: require.resolve('browserify-zlib'),
       https: require.resolve('https-browserify'),
-      http: require.resolve('stream-http')
+      http: require.resolve('stream-http'),
     },
     extensions: ['.js', 'jsx', '.ts', '.tsx'],
   },

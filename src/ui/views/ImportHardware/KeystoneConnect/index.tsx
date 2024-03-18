@@ -18,11 +18,6 @@ import clsx from 'clsx';
 import Progress from '@/ui/component/Progress';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { Button } from 'antd';
-import {
-  TransportWebUSB,
-  isSupported,
-  getKeystoneDevices,
-} from '@keystonehq/hw-transport-webusb';
 import { query2obj } from '@/ui/utils/url';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;

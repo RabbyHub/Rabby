@@ -1,11 +1,11 @@
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
 import { FeeMarketEIP1559Transaction, Transaction } from '@ethereumjs/tx';
-import { SignHelper } from './helper';
+import { SignHelper } from '../helper';
 import { EVENTS } from '@/constant';
-import { ETHSingleton } from '@imkey/web3-provider';
 import { is1559Tx } from '@/utils/transaction';
 import { bytesToHex } from 'web3-utils';
+import { ImKeyBridgeInterface } from './imkey-bridge-interface';
 
 const keyringType = 'imKey Hardware';
 const MAX_INDEX = 1000;
@@ -31,7 +31,6 @@ export enum LedgerHDPathType {
 }
 
 import HDPathType = LedgerHDPathType;
-
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
   [HDPathType.Legacy]: "m/44'/60'/0'",
@@ -62,15 +61,25 @@ export class EthImKeyKeyring extends EventEmitter {
   accountDetails: Record<string, AccountDetail>;
   usedHDPathTypeList: Record<string, HDPathType> = {};
 
+  bridge!: ImKeyBridgeInterface;
+
   signHelper = new SignHelper({
     errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
   });
 
-  app: ETHSingleton | null = null;
   hasHIDPermission = false;
 
-  constructor(opts = {}) {
+  constructor(
+    opts: any & {
+      bridge: ImKeyBridgeInterface;
+    } = {}
+  ) {
     super();
+    if (!opts.bridge) {
+      throw new Error('Bridge is required');
+    }
+
+    this.bridge = opts.bridge;
     this.accountDetails = {};
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
@@ -98,68 +107,17 @@ export class EthImKeyKeyring extends EventEmitter {
     return Promise.resolve();
   }
 
-  private async makeApp() {
-    const eth = await ETHSingleton.getInstance();
-    await eth.init();
-    this.app = eth;
-  }
-
   authorizeHIDPermission() {
     this.hasHIDPermission = true;
   }
 
-  isUnlocked(): boolean {
-    return !!this.app;
-  }
-
   async cleanUp() {
-    try {
-      await this.app?.close();
-    } catch (e) {
-      console.error(e);
-    }
-    this.app = null;
+    return await this.bridge.cleanUp();
   }
 
-  loopCount = 0;
-
-  private async invokeApp<
-    Method extends Extract<
-      keyof ETHSingleton,
-      'getAddress' | 'signMessage' | 'signTransaction'
-    > &
-      string
-  >(
-    method: Method,
-    params: Parameters<ETHSingleton[Method]>
-  ): Promise<ReturnType<ETHSingleton[Method]>> {
-    if (!this.app) {
-      await this.makeApp();
-    }
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      const res = await this.app![method](...params);
-      return res as ReturnType<ETHSingleton[Method]>;
-    } catch (e: any) {
-      if (
-        e.message.includes('Cannot read properties of undefined') ||
-        e.message.includes('The device was disconnected')
-      ) {
-        this.loopCount++;
-        // prevent infinite loop
-        if (this.loopCount > 5) {
-          this.loopCount = 0;
-          throw new Error('device disconnected');
-        }
-        await this.cleanUp();
-        return this.invokeApp(method, params);
-      } else {
-        throw e;
-      }
-    }
-  }
+  invokeApp: ImKeyBridgeInterface['invokeApp'] = (method, params) => {
+    return this.bridge.invokeApp(method, params);
+  };
 
   resend() {
     this.signHelper.resend();
@@ -170,11 +128,7 @@ export class EthImKeyKeyring extends EventEmitter {
   }
 
   async unlock() {
-    if (this.isUnlocked()) {
-      return Promise.resolve('already unlocked');
-    }
-
-    return await this.makeApp();
+    return await this.bridge.unlock();
   }
 
   setAccountToUnlock(index: string): void {

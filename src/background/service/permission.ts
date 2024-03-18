@@ -83,8 +83,9 @@ class PermissionService {
     return chainItem ? siteItem : undefined;
   };
 
-  getSite = (origin: string) => {
-    return this._getSite(origin);
+  getSite = (origin: string | number) => {
+    const _origin = origin.toString();
+    return this._getSite(_origin);
   };
 
   setSite = (site: ConnectedSite) => {

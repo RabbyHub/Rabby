@@ -1,4 +1,8 @@
+import { isManifestV3 } from '@/utils/env';
 import { CHAINS } from 'consts';
+import browser from 'webextension-polyfill';
+import { ALARMS_RPC_CACHE } from './alarms';
+import { uniqueId } from 'lodash';
 
 type CacheState = Map<
   string,
@@ -44,10 +48,29 @@ class RpcCache {
     const cache = this.getIfExist(key);
     if (cache) {
       const { timeoutId } = this.state.get(key)!;
-      window.clearTimeout(timeoutId);
-      const id = window.setTimeout(() => {
-        this.state.delete(key);
-      }, expireTime);
+      if (isManifestV3) {
+        browser.alarms.clear(`${ALARMS_RPC_CACHE}_${timeoutId}`);
+      } else {
+        window.clearTimeout(timeoutId);
+      }
+      let id;
+
+      if (isManifestV3) {
+        id = uniqueId();
+        browser.alarms.create(`${ALARMS_RPC_CACHE}_${id}`, {
+          delayInMinutes: expireTime / 60000,
+        });
+        browser.alarms.onAlarm.addListener((alarm) => {
+          if (alarm.name === `${ALARMS_RPC_CACHE}_${id}`) {
+            this.state.delete(key);
+          }
+        });
+      } else {
+        id = window.setTimeout(() => {
+          this.state.delete(key);
+        }, expireTime);
+      }
+
       this.state.set(key, {
         result: data.result,
         timeoutId: id,
@@ -55,9 +78,24 @@ class RpcCache {
       });
     } else {
       const methodState: CacheState = new Map();
-      const timeoutId = window.setTimeout(() => {
-        methodState.delete(key);
-      }, expireTime);
+      let timeoutId;
+
+      if (isManifestV3) {
+        timeoutId = uniqueId();
+        browser.alarms.create(`${ALARMS_RPC_CACHE}_${timeoutId}`, {
+          delayInMinutes: expireTime / 60000,
+        });
+        browser.alarms.onAlarm.addListener((alarm) => {
+          if (alarm.name === `${ALARMS_RPC_CACHE}_${timeoutId}`) {
+            methodState.delete(key);
+          }
+        });
+      } else {
+        timeoutId = window.setTimeout(() => {
+          methodState.delete(key);
+        }, expireTime);
+      }
+
       this.state.set(key, { result: data.result, timeoutId, expireTime });
     }
   }

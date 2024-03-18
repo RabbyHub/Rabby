@@ -1,5 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import pageStateCache from '../service/pageStateCache';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
 export { default as createPersistStore } from './persistStore';
 
 // {a:{b: string}} => {1: 'a.b'}
@@ -98,7 +100,8 @@ export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
     }
     return res;
   }, {});
-  return chrome.browserAction.setIcon({
+  const action = isManifestV3 ? browser.action : browser.browserAction;
+  return action.setIcon({
     path: icons,
   });
 };

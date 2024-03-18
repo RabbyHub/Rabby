@@ -19,7 +19,7 @@ import { GroupItem } from './GroupItem';
 import { useBackUp, useWalletTypeData } from './hooks';
 import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
-import { LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';

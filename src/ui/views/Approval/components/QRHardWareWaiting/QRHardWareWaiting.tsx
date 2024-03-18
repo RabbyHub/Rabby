@@ -14,7 +14,6 @@ import eventBus from '@/eventBus';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChainByEnum } from '@/utils/chain';
@@ -33,6 +32,14 @@ enum QRHARDWARE_STATUS {
   RECEIVED,
   DONE,
 }
+
+export type RequestSignPayload = {
+  requestId: string;
+  payload: {
+    type: string;
+    cbor: string;
+  };
+};
 
 const QRHardWareWaiting = ({ params }) => {
   const { setTitle, closePopup } = useCommonPopupView();

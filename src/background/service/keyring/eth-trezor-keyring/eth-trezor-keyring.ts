@@ -1,4 +1,4 @@
-import { SignHelper } from './helper';
+import { SignHelper } from '../helper';
 import { EVENTS } from '@/constant';
 import OldTrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 
@@ -30,7 +30,7 @@ class TrezorKeyring extends OldTrezorKeyring {
     });
   }
 
-  async signTypedData(address, data, { version }) {
+  async signTypedData(address, data, { version }): Promise<any> {
     return this.signHelper.invoke(async () => {
       return super.signTypedData(address, data, { version });
     });

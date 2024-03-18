@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCommonPopupView } from '@/ui/utils';
-import { useKeystoneDeviceConnected } from '@/utils/keystone';
+import { useKeystoneDeviceConnected } from '@/ui/utils/keystone';
 import { useTranslation } from 'react-i18next';
 
 export const useKeystoneStatus = () => {

@@ -63,22 +63,6 @@ Sentry.init({
   ],
 });
 
-function initAppMeta() {
-  const head = document.querySelector('head');
-  const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
-  icon.rel = 'icon';
-  head?.appendChild(icon);
-  const name = document.createElement('meta');
-  name.name = 'name';
-  name.content = 'Rabby';
-  head?.appendChild(name);
-  const description = document.createElement('meta');
-  description.name = 'description';
-  description.content = i18n.t('global.appDescription');
-  head?.appendChild(description);
-}
-
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
@@ -110,7 +94,6 @@ async function restoreAppState() {
 
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
-  initAppMeta();
   startEnableUser();
 }
 
