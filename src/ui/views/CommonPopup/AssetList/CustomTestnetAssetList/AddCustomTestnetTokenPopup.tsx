@@ -6,7 +6,7 @@ import { findChain } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   visible?: boolean;
   onClose?(): void;
+  onConfirm?(): void;
 }
 
 const Wraper = styled.div`
@@ -75,7 +76,11 @@ const Footer = styled.div`
   bottom: 0;
 `;
 
-export const AddCustomTestnetTokenPopup = ({ visible, onClose }: Props) => {
+export const AddCustomTestnetTokenPopup = ({
+  visible,
+  onClose,
+  onConfirm,
+}: Props) => {
   const wallet = useWallet();
   const [chainSelectorState, setChainSelectorState] = useSetState({
     visible: false,
@@ -103,10 +108,35 @@ export const AddCustomTestnetTokenPopup = ({ visible, onClose }: Props) => {
     }
   );
 
-  const handleConfirm = () => {
-    // todo
-    return;
+  const { runAsync: runAddToken, loading: isSubmitting } = useRequest(
+    async () => {
+      if (!chain?.id || !tokenId) {
+        return null;
+      }
+      return wallet.addCustomTestnetToken({
+        chainId: chain.id,
+        id: tokenId,
+      });
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const handleConfirm = async () => {
+    runAddToken();
+    onConfirm?.();
   };
+
+  useEffect(() => {
+    if (!visible) {
+      setChainSelectorState({
+        visible: false,
+        chain: null,
+      });
+      setTokenId('');
+    }
+  }, [visible]);
 
   return (
     <>
@@ -198,6 +228,7 @@ export const AddCustomTestnetTokenPopup = ({ visible, onClose }: Props) => {
               size="large"
               className="w-[172px]"
               disabled={!token}
+              loading={isSubmitting}
               onClick={handleConfirm}
             >
               {t('global.Confirm')}
@@ -207,6 +238,7 @@ export const AddCustomTestnetTokenPopup = ({ visible, onClose }: Props) => {
       </Popup>
       <ChainSelectorModal
         hideTestnetTab={false}
+        hideMainnetTab={true}
         visible={chainSelectorState.visible}
         onCancel={() => {
           setChainSelectorState({

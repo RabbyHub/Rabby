@@ -1,36 +1,26 @@
-import { useInfiniteScroll } from 'ahooks';
+import { CustomTestnetToken } from '@/background/service/customTestnet';
+import IconUnknown from '@/ui/assets/token-default.svg';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useRabbySelector } from '@/ui/store';
+import { findChain } from '@/utils/chain';
 import { Button, Tooltip } from 'antd';
-import { TokenItem, TxHistoryResult } from 'background/service/openapi';
 import clsx from 'clsx';
-import { last } from 'lodash';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import { Copy, TokenWithChain } from 'ui/component';
+import { Copy } from 'ui/component';
 import {
-  splitNumberByStep,
-  useWallet,
-  openInTab,
-  useCommonPopupView,
+  ellipsisOverflowedText,
   getUITypeName,
+  openInTab,
+  splitNumberByStep,
+  useCommonPopupView,
+  useWallet,
 } from 'ui/utils';
-import { getChain } from '@/utils';
-import { HistoryItem } from './HistoryItem';
-import { Loading } from './Loading';
-import './style.less';
-import { CHAINS } from 'consts';
-import { ellipsisOverflowedText } from 'ui/utils';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { CustomizedButton } from './CustomizedButton';
-import { BlockedButton } from './BlockedButton';
-import { useRabbySelector } from '@/ui/store';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import IconUnknown from '@/ui/assets/token-default.svg';
-import { CustomTestnetToken } from '@/background/service/customTestnet';
-import { findChain } from '@/utils/chain';
+import './style.less';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -48,7 +38,7 @@ interface TokenDetailProps {
   hideOperationButtons?: boolean;
 }
 
-const TokenDetail = ({
+export const CustomTestnetTokenDetail = ({
   token,
   addToken,
   removeToken,
@@ -74,7 +64,7 @@ const TokenDetail = ({
     openInTab(`${prefix}/address/${token.id}`, needClose);
   };
 
-  const isShowAddress = /^0x.{40}$/.test(token.id);
+  const isNativeToken = !/^0x.{40}$/.test(token.id);
   const { setVisible } = useCommonPopupView();
 
   const history = useHistory();
@@ -99,7 +89,7 @@ const TokenDetail = ({
   }, [history, token]);
 
   return (
-    <div className="token-detail" ref={ref}>
+    <div className="custom-testnet-token-detail" ref={ref}>
       <div className={clsx('token-detail-header', 'border-b-0 pb-24')}>
         <div className={clsx('flex items-center', 'mb-20')}>
           <div className="flex items-center mr-8">
@@ -118,7 +108,7 @@ const TokenDetail = ({
               className="w-[14px] h-[14px]"
               alt=""
             />
-            {isShowAddress ? (
+            {!isNativeToken ? (
               <>
                 {ellipsis(token.id)}
                 <ThemeIcon
@@ -139,11 +129,13 @@ const TokenDetail = ({
             )}
           </div>
         </div>
-        {/* <CustomizedButton
-              selected={isAdded}
-              onOpen={() => addToken(tokenWithAmount)}
-              onClose={() => removeToken(tokenWithAmount)}
-            /> */}
+        {isNativeToken ? null : (
+          <CustomizedButton
+            selected={isAdded}
+            onOpen={() => addToken(token)}
+            onClose={() => removeToken(token)}
+          />
+        )}
         <div className="balance">
           <div className="balance-title">
             {token.symbol} {t('page.newAddress.hd.balance')}
@@ -202,5 +194,3 @@ const TokenDetail = ({
     </div>
   );
 };
-
-export default TokenDetail;

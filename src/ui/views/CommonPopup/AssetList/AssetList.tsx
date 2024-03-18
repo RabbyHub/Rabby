@@ -8,7 +8,7 @@ import NetSwitchTabs, {
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { CustomTestnetAssetList } from '../CustomTestnetAssetList/AssetList';
+import { CustomTestnetAssetList } from './CustomTestnetAssetList';
 
 export const AssetList = ({ visible }: { visible: boolean }) => {
   const { t } = useTranslation();
@@ -64,7 +64,6 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        ???
         <CustomTestnetAssetList visible={visible} />
       </div>
     </>

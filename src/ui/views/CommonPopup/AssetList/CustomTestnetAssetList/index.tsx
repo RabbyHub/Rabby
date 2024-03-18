@@ -1,13 +1,8 @@
-import { useCommonPopupView } from '@/ui/utils';
-import React, { useState } from 'react';
-import { ChainList } from './ChainList';
-import { AssetListContainer } from './AssetListContainer';
-import NetSwitchTabs, {
-  useSwitchNetTab,
-} from 'ui/component/PillsSwitch/NetSwitchTabs';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CustomTestnetAssetListContainer } from './CustomTestnetAssetListContainer';
 
 export const CustomTestnetAssetList = ({ visible }: { visible: boolean }) => {
   const { t } = useTranslation();
@@ -28,7 +23,7 @@ export const CustomTestnetAssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(isTestnetEmptyAssets ? 'hidden' : 'block')}>
-        <AssetListContainer
+        <CustomTestnetAssetListContainer
           className="mt-12"
           visible={visible}
           onEmptyAssets={setIsTestnetEmptyAssets}

@@ -3652,6 +3652,9 @@ export class WalletController extends BaseController {
   getCustomTestnetGasMarket = customTestnetService.getGasMarket;
 
   getCustomTestnetToken = customTestnetService.getToken;
+  removeCustomTestnetToken = customTestnetService.removeToken;
+  addCustomTestnetToken = customTestnetService.addToken;
+  getCustomTestnetTokenList = customTestnetService.getTokenList;
 }
 
 const wallet = new WalletController();

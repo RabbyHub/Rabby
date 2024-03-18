@@ -1,14 +1,16 @@
 import React from 'react';
-import { TBody, THeadCell, THeader, Table } from './Table';
-import { TokenItem, Props as TokenItemProps } from '../TokenItem';
-import { FixedSizeList } from 'react-window';
-import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
-import { TokenItem as TokenItemType } from '@/background/service/openapi';
 import { useTranslation } from 'react-i18next';
 import { CustomTestnetTokenDetailPopup } from '../CustomTestnetTokenDetailPopup';
+import {
+  CustomTestnetTokenItem,
+  Props as TokenItemProps,
+} from '../CustomTestnetAssetList/CustomTestnetTokenItem';
+import { TBody, THeadCell, THeader, Table } from './Table';
 
 export interface Props {
   list?: TokenItemProps['item'][];
+  onAdd?: (item: TokenItemProps['item']) => void;
+  onRemove?: (item: TokenItemProps['item']) => void;
   virtual?: {
     height: number;
     itemSize: number;
@@ -16,10 +18,12 @@ export interface Props {
   EmptyComponent?: React.ReactNode;
 }
 
-export const TokenTable: React.FC<Props> = ({
+export const CustomTestnetTokenTable: React.FC<Props> = ({
   list,
   virtual,
   EmptyComponent,
+  onAdd,
+  onRemove,
 }) => {
   const [selected, setSelected] = React.useState<TokenItemProps['item']>();
   const [visible, setVisible] = React.useState(false);
@@ -76,7 +80,7 @@ export const TokenTable: React.FC<Props> = ({
             ) : (
               list?.map((item) => {
                 return (
-                  <TokenItem
+                  <CustomTestnetTokenItem
                     onClick={() => setSelected(item)}
                     key={`${item.chainId}-${item.id}`}
                     item={item}
@@ -89,6 +93,13 @@ export const TokenTable: React.FC<Props> = ({
       )}
       <CustomTestnetTokenDetailPopup
         token={token}
+        isAdded={
+          !!list?.find(
+            (item) => item.id === token?.id && item.chainId === token?.chainId
+          )
+        }
+        onAdd={onAdd}
+        onRemove={onRemove}
         visible={visible}
         onClose={() => setSelected(undefined)}
       />

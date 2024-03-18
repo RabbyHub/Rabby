@@ -40,6 +40,7 @@ interface ChainSelectorModalProps {
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
   hideTestnetTab?: boolean;
+  hideMainnetTab?: boolean;
   showRPCStatus?: boolean;
   height?: number;
   zIndex?: number;
@@ -120,6 +121,7 @@ const ChainSelectorModal = ({
   supportChains,
   disabledTips,
   hideTestnetTab = false,
+  hideMainnetTab = false,
   showRPCStatus = false,
   height = 494,
   zIndex,
@@ -148,7 +150,7 @@ const ChainSelectorModal = ({
     pinned,
   } = useChainSeletorList({
     supportChains,
-    netTabKey: selectedTab,
+    netTabKey: !hideMainnetTab ? selectedTab : 'testnet',
   });
 
   useEffect(() => {
@@ -191,7 +193,7 @@ const ChainSelectorModal = ({
       destroyOnClose
     >
       <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
-        {isShowTestnet && (
+        {isShowTestnet && !hideMainnetTab && (
           <NetSwitchTabs
             value={selectedTab}
             onTabChange={onTabChange}

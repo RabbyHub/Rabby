@@ -329,6 +329,29 @@ class CustomTestnetService {
       ]) as GasLevel[];
   };
 
+  addToken = (params: CustomTestnetTokenBase) => {
+    if (
+      this.store.customTokenList.find(
+        (item) => item.id === params.id && item.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+    this.store.customTokenList = [...this.store.customTokenList, params];
+  };
+
+  removeToken = (params: CustomTestnetTokenBase) => {
+    this.store.customTokenList = this.store.customTokenList.filter((item) => {
+      return !(item.id === params.id && item.chainId === params.chainId);
+    });
+  };
+
+  hasToken = (params: CustomTestnetTokenBase) => {
+    return !!this.store.customTokenList.find((item) => {
+      return item.id === params.id && item.chainId === params.chainId;
+    });
+  };
+
   getToken = async ({
     chainId,
     address,
@@ -336,7 +359,7 @@ class CustomTestnetService {
   }: {
     chainId: number;
     address: string;
-    tokenId?: string;
+    tokenId?: string | null;
   }) => {
     const client = this.getClient(+chainId);
     const chain = findChain({
@@ -387,6 +410,58 @@ class CustomTestnetService {
       chainId,
     };
   };
+
+  getTokenList = async ({
+    address,
+    chainId,
+    tokenId,
+  }: {
+    address: string;
+    chainId?: number;
+    tokenId?: string;
+  }) => {
+    const nativeTokenList = Object.values(this.store.customTestnet).map(
+      (item) => {
+        return {
+          id: null,
+          chainId: item.id,
+        };
+      }
+    );
+    const list = this.store.customTokenList || [];
+    let tokenList = [...nativeTokenList, ...list];
+    if (chainId) {
+      tokenList = tokenList.filter((item) => {
+        return item.chainId === chainId;
+      });
+    }
+    // todo, on chain search or search local
+    if (tokenId) {
+      tokenList = tokenList.filter((item) => {
+        return item.id === tokenId;
+      });
+    }
+
+    console.log({
+      tokenList,
+    });
+    const res = await Promise.all(
+      tokenList.map((item) =>
+        this.getToken({
+          tokenId: item.id,
+          chainId: item.chainId,
+          address,
+        }).catch((e) => {
+          console.error(e);
+          return null;
+        })
+      )
+    );
+    return res.filter((item): item is CustomTestnetToken => !!item);
+  };
+
+  // todo
+  getTokenWithBalance = this.getTokenList;
 }
 
 export const customTestnetService = new CustomTestnetService();

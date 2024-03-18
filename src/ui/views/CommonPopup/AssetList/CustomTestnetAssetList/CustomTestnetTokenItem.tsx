@@ -1,15 +1,12 @@
-import React from 'react';
-import { TCell, TRow } from './components/Table';
-import { CHAINS_LIST } from '@debank/common';
-import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
-import clsx from 'clsx';
-import IconUnknown from '@/ui/assets/token-default.svg';
-import { Image } from 'antd';
-import { isNil } from 'lodash';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { findChain } from '@/utils/chain';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
+import IconUnknown from '@/ui/assets/token-default.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount } from '@/ui/utils';
+import { findChain } from '@/utils/chain';
+import { Image } from 'antd';
+import clsx from 'clsx';
+import React from 'react';
+import { TCell, TRow } from '../components/Table';
 
 export interface Props {
   item: CustomTestnetToken;
@@ -59,7 +56,11 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
   );
 };
 
-export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
+export const CustomTestnetTokenItem: React.FC<Props> = ({
+  item,
+  style,
+  onClick,
+}) => {
   return (
     <TRow
       onClick={onClick}
