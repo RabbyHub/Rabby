@@ -4119,7 +4119,7 @@
     eth-sig-util "^3.0.1"
     ethereum-cryptography "^2.1.2"
 
-"@rabby-wallet/eth-lattice-keyring@^1.1.0":
+"@rabby-wallet/eth-lattice-keyring@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-1.1.0.tgz#fbdb89dcced9451e8bcf61cab0386ce108cdca89"
   integrity sha512-PQN2+hYDSGQ6p8hTAiUu/xJ0mmO10AmXz39h7OMeXytEWXfPxSAqLJMJMdPS+/Gqz6WDT1DQsuH+vSN+2Bj+ug==
