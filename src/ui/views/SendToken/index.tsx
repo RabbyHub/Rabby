@@ -54,6 +54,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
 import {
+  findChain,
   findChainByEnum,
   findChainByID,
   findChainByServerID,
@@ -74,6 +75,7 @@ import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -270,6 +272,12 @@ const SendTokenMessageForContract = React.forwardRef<
   );
 });
 
+// interface CustomTestnetTokenItem extends CustomTestnetToken {
+//   chain: string;
+//   raw_amount: string;
+//   raw_amount_hex_str?: string;
+// }
+
 type FormSendToken = {
   to: string;
   amount: string;
@@ -282,7 +290,7 @@ const SendToken = () => {
 
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
 
-  const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
+  const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
   const { t } = useTranslation();
   const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
@@ -464,9 +472,9 @@ const SendToken = () => {
   );
 
   const calcGasCost = async () => {
-    const targetChain = Object.values(CHAINS).find(
-      (item) => item.enum === chain
-    )!;
+    const targetChain = findChain({
+      enum: chain,
+    })!;
     const gasList = gasPriceMap[targetChain.enum]?.list;
 
     if (!gasList) return new BigNumber(0);
@@ -523,9 +531,9 @@ const SendToken = () => {
     messageDataForContractCall,
   }: FormSendToken) => {
     setIsSubmitLoading(true);
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === currentToken.chain
-    )!;
+    const chain = findChain({
+      serverId: currentToken.chain,
+    })!;
     const sendValue = new BigNumber(amount)
       .multipliedBy(10 ** currentToken.decimals)
       .decimalPlaces(0, BigNumber.ROUND_DOWN);
@@ -768,7 +776,7 @@ const SendToken = () => {
         amount: '',
       });
     }
-    const chainItem = findChainByServerID(token.chain);
+    const chainItem = findChain({ serverId: token.chain });
     setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
     await persistPageStateCache({ currentToken: token });
@@ -810,7 +818,7 @@ const SendToken = () => {
               },
             ],
           },
-          CHAINS[chain].serverId
+          chainItem.serverId
         );
         setEstimateGas(Number(gasUsed));
         let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
@@ -818,7 +826,7 @@ const SendToken = () => {
           const l1GasFee = await wallet.fetchEstimatedL1Fee(
             {
               txParams: {
-                chainId: CHAINS[chain].id,
+                chainId: chainItem.id,
                 from: currentAccount.address,
                 to: to && isValidAddress(to) ? to : zeroAddress(),
                 value: currentToken.raw_amount_hex_str,
@@ -858,7 +866,12 @@ const SendToken = () => {
 
   const handleChainChanged = async (val: CHAINS_ENUM) => {
     const account = (await wallet.syncGetCurrentAccount())!;
-    const chain = CHAINS[val];
+    const chain = findChain({
+      enum: val,
+    });
+    if (!chain) {
+      return;
+    }
     setChain(val);
     setCurrentToken({
       id: chain.nativeTokenAddress,
@@ -945,11 +958,32 @@ const SendToken = () => {
     chainId: string,
     address: string
   ) => {
-    const t = await wallet.openapi.getToken(address, chainId, id);
-    if (t) setCurrentToken(t);
+    const chain = findChain({
+      serverId: chainId,
+    });
+    let result: TokenItem | null = null;
+    if (chain?.isTestnet) {
+      const res = await wallet.getCustomTestnetToken({
+        address,
+        chainId: chain.id,
+        tokenId: id,
+      });
+      if (res) {
+        result = customTestnetTokenToTokenItem(res);
+      }
+    } else {
+      result = await wallet.openapi.getToken(address, chainId, id);
+    }
+    if (result) {
+      setCurrentToken(result);
+    }
     setIsLoading(false);
 
-    return t;
+    console.log({
+      result,
+    });
+
+    return result;
   };
 
   const initByCache = async () => {
@@ -1189,7 +1223,7 @@ const SendToken = () => {
                 watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
               }}
               alianName={sendAlianName}
-              isHideAmount={CHAINS[chain]?.isTestnet}
+              isHideAmount={chainItem?.isTestnet}
             />
             <div className="section-title">
               <span className="section-title__to">

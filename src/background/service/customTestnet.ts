@@ -68,6 +68,8 @@ export interface CustomTestnetTokenBase {
 export interface CustomTestnetToken extends CustomTestnetTokenBase {
   amount: number;
   symbol: string;
+  decimals: number;
+  rawAmount: string;
 }
 
 export type CutsomTestnetServiceStore = {
@@ -380,6 +382,8 @@ class CustomTestnetService {
         symbol: chain.nativeTokenSymbol,
         amount: +ethers,
         chainId,
+        rawAmount: balance.toString(),
+        decimals: chain.nativeTokenDecimals,
       };
     }
 
@@ -408,6 +412,8 @@ class CustomTestnetService {
       symbol: symbol,
       amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
       chainId,
+      decimals,
+      rawAmount: balance.toString(),
     };
   };
 

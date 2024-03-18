@@ -3655,6 +3655,7 @@ export class WalletController extends BaseController {
   removeCustomTestnetToken = customTestnetService.removeToken;
   addCustomTestnetToken = customTestnetService.addToken;
   getCustomTestnetTokenList = customTestnetService.getTokenList;
+  // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
 }
 
 const wallet = new WalletController();
