@@ -1,3 +1,11 @@
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
+import { useRabbySelector } from '@/ui/store';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { findChain } from '@/utils/chain';
+import { Input } from 'antd';
+import { TokenItem } from 'background/service/openapi';
+import clsx from 'clsx';
+import uniqBy from 'lodash/uniqBy';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -5,24 +13,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Input } from 'antd';
-import uniqBy from 'lodash/uniqBy';
-import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep } from 'ui/utils';
-import { getTokenSymbol, abstractTokenToTokenItem } from 'ui/utils/token';
-import TokenWithChain from '../TokenWithChain';
-import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
-import './style.less';
-import clsx from 'clsx';
-import { useTokens } from '@/ui/utils/portfolio/token';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { useRabbySelector } from '@/ui/store';
-import { CustomTestnetTokenSelector } from '../TokenSelector/CustomTestnetTokenSelector';
-import { useRequest } from 'ahooks';
-import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
-import { findChain, isTestnet } from '@/utils/chain';
+import { splitNumberByStep } from 'ui/utils';
+import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
+import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
+import TokenWithChain from '../TokenWithChain';
+import './style.less';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -118,7 +116,7 @@ const TokenAmountInput = ({
     loading: isSearchTestnetLoading,
     testnetTokenList,
   } = useSearchTestnetToken({
-    address: currentAccount!.address!,
+    address: currentAccount?.address,
     withBalance: keyword ? false : true,
     chainId: chainItem?.id,
     enabled: isTestnet,

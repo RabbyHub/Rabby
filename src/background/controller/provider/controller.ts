@@ -420,8 +420,9 @@ class ProviderController extends BaseController {
       }
     }
     const chain = permissionService.isInternalOrigin(origin)
-      ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
-          .enum
+      ? (findChain({
+          id: approvalRes.chainId,
+        })?.enum as CHAINS_ENUM)
       : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
@@ -654,6 +655,7 @@ class ProviderController extends BaseController {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
+      console.log('??????', 'submit');
       try {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
@@ -681,6 +683,12 @@ class ProviderController extends BaseController {
           console.log('custom rpc');
         } else if (!findChain({ enum: chain })?.isTestnet) {
           console.log('normal');
+          console.log(
+            findChain({
+              enum: chain,
+            }),
+            chain
+          );
           const res = await openapiService.submitTx({
             tx: {
               ...approvalRes,

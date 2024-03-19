@@ -15,7 +15,6 @@ import useSearchToken from '@/ui/hooks/useSearchToken';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useAsync } from 'react-use';
 import { useWallet } from '@/ui/utils';
-import { CustomTestnetTokenSelector } from '../TokenSelector/CustomTestnetTokenSelector';
 
 const Wrapper = styled.div`
   background-color: transparent;

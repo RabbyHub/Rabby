@@ -138,7 +138,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     },
     {
       onSuccess: (data) => {
-        setRealNonce('' + data);
+        setRealNonce(intToHex(data));
       },
     }
   );
@@ -147,14 +147,15 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
-        return wallet.estimateCustomTestnetGas({
+        const res = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
           chainId: chainId,
           tx: tx,
         });
+        return `0x${new BigNumber(res).toString(16)}`;
       } catch (e) {
         console.log(e);
-        return '21000';
+        return intToHex(21000);
       }
     },
     {
@@ -209,7 +210,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     });
 
     setGasLimit(intToHex(gas.gasLimit));
-    setRealNonce(afterNonce);
+    setRealNonce(`0x${new BigNumber(afterNonce).toString(16)}`);
   };
 
   const handleCancel = () => {
@@ -343,7 +344,15 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   return (
     <>
       <div className="approval-tx">
-        <TestnetActions chain={chain} raw={raw} isSpeedUp={isSpeedUp} />
+        <TestnetActions
+          chain={chain}
+          raw={{
+            ...tx,
+            nonce: realNonce || tx.nonce,
+            gas: gasLimit!,
+          }}
+          isSpeedUp={isSpeedUp}
+        />
         <GasSelector
           disabled={false}
           isReady={isReady}

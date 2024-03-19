@@ -96,10 +96,15 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [type, isDarkTheme]);
 
   const init = async () => {
+    console.log('privatte', params);
     const account = params.isGnosis
       ? params.account!
       : (await wallet.syncGetCurrentAccount())!;
+
+    console.log('account');
     const approval = await getApproval();
+
+    console.log('approval', approval);
 
     const isSignText = params.isGnosis
       ? true
@@ -109,24 +114,26 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        if (!signingTx?.explain) {
-          setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
-          return;
+        // if (!signingTx?.explain) {
+        //   setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
+        //   return;
+        // }
+
+        if (signingTx?.explain) {
+          const explain = signingTx.explain;
+
+          stats.report('signTransaction', {
+            type: account.brandName,
+            chainId: chain.serverId,
+            category: KEYRING_CATEGORY_MAP[account.type],
+            preExecSuccess: explain
+              ? explain?.calcSuccess && explain?.pre_exec.success
+              : true,
+            createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            source: params?.$ctx?.ga?.source || '',
+            trigger: params?.$ctx?.ga?.trigger || '',
+          });
         }
-
-        const explain = signingTx.explain;
-
-        stats.report('signTransaction', {
-          type: account.brandName,
-          chainId: chain.serverId,
-          category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain
-            ? explain?.calcSuccess && explain?.pre_exec.success
-            : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: params?.$ctx?.ga?.source || '',
-          trigger: params?.$ctx?.ga?.trigger || '',
-        });
       }
     } else {
       stats.report('startSignText', {
@@ -135,6 +142,8 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         method: params?.extra?.signTextMethod,
       });
     }
+
+    console.log('add event');
 
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);

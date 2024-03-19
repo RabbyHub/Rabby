@@ -9,7 +9,7 @@ export const useSearchTestnetToken = ({
   withBalance = false,
   enabled = false,
 }: {
-  address: string;
+  address?: string;
   q?: string;
   chainId?: number;
   withBalance: boolean;
@@ -19,7 +19,7 @@ export const useSearchTestnetToken = ({
 
   const { data = [], loading } = useRequest(
     async () => {
-      if (!enabled) {
+      if (!enabled || !address) {
         return [];
       }
       let res = await wallet.getCustomTestnetTokenList({
