@@ -19,6 +19,10 @@ import { useTokens } from '@/ui/utils/portfolio/token';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
 import { useRabbySelector } from '@/ui/store';
+import { CustomTestnetTokenSelector } from '../TokenSelector/CustomTestnetTokenSelector';
+import { useRequest } from 'ahooks';
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
+import { findChain, isTestnet } from '@/utils/chain';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -55,6 +59,16 @@ const TokenAmountInput = ({
   );
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
+
+  const chainItem = useMemo(
+    () =>
+      findChain({
+        serverId: chainServerId,
+      }),
+    [chainServerId]
+  );
+
+  const isTestnet = chainItem?.isTestnet;
 
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
@@ -100,6 +114,16 @@ const TokenAmountInput = ({
     list: searchedTokenByQuery,
   } = useSearchToken(currentAccount?.address, keyword, chainServerId);
 
+  const {
+    loading: isSearchTestnetLoading,
+    testnetTokenList,
+  } = useSearchTestnetToken({
+    address: currentAccount!.address!,
+    withBalance: keyword ? false : true,
+    chainId: chainItem?.id,
+    enabled: isTestnet,
+  });
+
   const availableToken = useMemo(() => {
     const allTokens = chainServerId
       ? allDisplayTokens.filter((token) => token.chain === chainServerId)
@@ -118,7 +142,19 @@ const TokenAmountInput = ({
     chainServerId,
   ]);
   const displayTokenList = useSortToken(availableToken);
-  const isListLoading = keyword ? isSearchLoading : isLoadingAllTokens;
+
+  const isListLoading = useMemo(() => {
+    if (isTestnet) {
+      return isSearchTestnetLoading;
+    }
+    return keyword ? isSearchLoading : isLoadingAllTokens;
+  }, [
+    keyword,
+    isSearchLoading,
+    isLoadingAllTokens,
+    isSearchTestnetLoading,
+    isTestnet,
+  ]);
 
   const handleSearchTokens = React.useCallback(async (ctx) => {
     setKeyword(ctx.keyword);
@@ -173,7 +209,7 @@ const TokenAmountInput = ({
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={displayTokenList}
+        list={isTestnet ? testnetTokenList : displayTokenList}
         onConfirm={handleCurrentTokenChange}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}

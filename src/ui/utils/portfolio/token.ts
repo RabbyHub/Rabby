@@ -8,6 +8,7 @@ import {
   findChainByEnum,
   isTestnet as checkIsTestnet,
   findChainByServerID,
+  findChain,
 } from '@/utils/chain';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
@@ -58,7 +59,7 @@ export const useTokens = (
   updateNonce = 0,
   chainServerId?: string,
   isTestnet: boolean = chainServerId
-    ? !!findChainByServerID(chainServerId)?.isTestnet
+    ? !!findChain({ serverId: chainServerId })?.isTestnet
     : false
 ) => {
   const abortProcess = useRef<AbortController>();
@@ -126,7 +127,7 @@ export const useTokens = (
   }, [timeAt, isLoading]);
 
   const loadProcess = async () => {
-    if (!userAddr) {
+    if (!userAddr || isTestnet) {
       return;
     }
 
@@ -313,7 +314,7 @@ export const useTokens = (
     pre?: DisplayedProject,
     currentAbort = new AbortController()
   ) => {
-    if (!historyTime.current || !userAddr || historyLoad.current) {
+    if (!historyTime.current || !userAddr || historyLoad.current || isTestnet) {
       log('middle-tokens-end');
       return;
     }

@@ -441,9 +441,9 @@ const SendToken = () => {
     !!chainItem && currentToken?.id === chainItem.nativeTokenAddress;
 
   const fetchGasList = async () => {
-    const list: GasLevel[] = await wallet.openapi.gasMarket(
-      chainItem?.serverId || ''
-    );
+    const list: GasLevel[] = chainItem?.isTestnet
+      ? await wallet.getCustomTestnetGasMarket(chainItem.id)
+      : await wallet.openapi.gasMarket(chainItem?.serverId || '');
     return list;
   };
 
@@ -989,12 +989,17 @@ const SendToken = () => {
   const initByCache = async () => {
     const account = (await wallet.syncGetCurrentAccount())!;
     const qs = query2obj(history.location.search);
+    console.log({
+      qs,
+    });
+    // todo chainId
     if (qs.token) {
       const [tokenChain, id] = qs.token.split(':');
       if (!tokenChain || !id) return;
-      const target = Object.values(CHAINS).find(
-        (item) => item.serverId === tokenChain
-      );
+
+      const target = findChain({
+        serverId: tokenChain,
+      });
       if (!target) {
         loadCurrentToken(currentToken.id, currentToken.chain, account.address);
         return;
@@ -1059,8 +1064,10 @@ const SendToken = () => {
       }
 
       if (chainItem && needLoadToken.chain !== chainItem.serverId) {
-        const target = findChainByServerID(needLoadToken.chain);
-        if (target?.enum) setChain(target.enum);
+        const target = findChain({ serverId: needLoadToken.chain });
+        if (target?.enum) {
+          setChain(target.enum);
+        }
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
@@ -1402,18 +1409,20 @@ const SendToken = () => {
                 <span>{t('page.sendToken.tokenInfoFieldLabel.chain')}</span>
                 <span>
                   {
-                    Object.values(CHAINS).find(
-                      (chain) => chain.serverId === currentToken.chain
-                    )?.name
+                    findChain({
+                      serverId: currentToken?.chain,
+                    })?.name
                   }
                 </span>
               </div>
-              <div className="section-field">
-                <span>{t('page.sendToken.tokenInfoPrice')}</span>
-                <span>
-                  ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
-                </span>
-              </div>
+              {!chainItem?.isTestnet ? (
+                <div className="section-field">
+                  <span>{t('page.sendToken.tokenInfoPrice')}</span>
+                  <span>
+                    ${splitNumberByStep((currentToken.price || 0).toFixed(2))}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
           <SendTokenMessageForEoa

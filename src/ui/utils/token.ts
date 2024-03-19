@@ -181,7 +181,7 @@ export const customTestnetTokenToTokenItem = (
   });
   return {
     id: token.id,
-    chain: chain!.serverId,
+    chain: chain?.serverId || '',
     amount: token.amount,
     raw_amount: token.rawAmount,
     raw_amount_hex_str: `0x${new BigNumber(token.rawAmount || 0).toString(16)}`,
