@@ -36,10 +36,6 @@ async function bundle() {
     message: '[Rabby] Please input the release version:',
   });
 
-  shell.env['sourcemap'] = true;
-  shell.exec('yarn build:pro');
-  shell.rm('-rf', './dist/*.js.map');
-
   const isMV3 = await new BooleanPrompt({
     message: '[Rabby] Do you want to release to MV3? (y/N)',
   }).run();
@@ -56,12 +52,13 @@ async function bundle() {
 
   updateManifestVersion(version, 'mv3');
   updateManifestVersion(version, 'mv2');
-
+  shell.env['sourcemap'] = true;
   if (isMV3) {
     shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv3`);
   } else {
     shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
   }
+  shell.rm('-rf', './dist/*.js.map');
   return [version, isDebug, isRelease];
 }
 
