@@ -3,7 +3,7 @@ import {
   useApproval,
   useCommonPopupView,
 } from '@/ui/utils';
-import { useKeystoneDeviceConnected } from '@/utils/keystone';
+import { useKeystoneDeviceConnected } from '@/ui/utils/keystone';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 

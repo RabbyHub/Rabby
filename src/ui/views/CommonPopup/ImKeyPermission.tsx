@@ -5,7 +5,7 @@ import {
 } from '@/ui/utils';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useImKeyDeviceConnected } from '@/utils/imKey';
+import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
 
 export const ImKeyPermission: React.FC = () => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();

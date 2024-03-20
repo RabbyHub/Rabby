@@ -1,12 +1,16 @@
 /* eslint-disable */
 import OldLatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
-import { SignHelper } from './helper';
+import { SignHelper, LedgerHDPathType } from '../helper';
 import { EVENTS } from '@/constant';
-import { LedgerHDPathType } from '@/utils/ledger';
 import { isSameAddress } from '@/background/utils';
 
 const keyringType = 'GridPlus Hardware';
 import HDPathType = LedgerHDPathType;
+import { isManifestV3 } from '@/utils/env';
+import {
+  KnownOrigins,
+  OffscreenCommunicationTarget,
+} from '@/constant/offscreen-communication';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0/x",
@@ -26,6 +30,48 @@ class LatticeKeyring extends OldLatticeKeyring {
   signHelper = new SignHelper({
     errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
   });
+
+  async _getCreds() {
+    if (!isManifestV3) {
+      return super._getCreds();
+    }
+
+    try {
+      // If we are not aware of what Lattice we should be talking to,
+      // we need to open a window that lets the user go through the
+      // pairing or connection process.
+      const name = this.appName ? this.appName : 'Unknown';
+      const url = `${KnownOrigins.lattice}?keyring=${name}&forceLogin=true`;
+
+      // send a msg to the render process to open lattice connector
+      // and collect the credentials
+      const creds = await new Promise<{
+        deviceID: string;
+        password: string;
+        endpoint: string;
+      }>((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          {
+            target: OffscreenCommunicationTarget.latticeOffscreen,
+            params: {
+              url,
+            },
+          },
+          (response) => {
+            if (response.error) {
+              reject(response.error);
+            }
+
+            resolve(response.result);
+          }
+        );
+      });
+
+      return creds;
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  }
 
   resend() {
     this.signHelper.resend();

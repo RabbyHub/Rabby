@@ -1,0 +1,13 @@
+diff --git a/node_modules/@keystonehq/hw-transport-webusb/lib/constants.js b/node_modules/@keystonehq/hw-transport-webusb/lib/constants.js
+index 9b183ed..cf3ec58 100644
+--- a/node_modules/@keystonehq/hw-transport-webusb/lib/constants.js
++++ b/node_modules/@keystonehq/hw-transport-webusb/lib/constants.js
+@@ -2,7 +2,7 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.OFFSET_CDATA = exports.OFFSET_LC = exports.OFFSET_P2 = exports.OFFSET_P1 = exports.OFFSET_INS = exports.OFFSET_CLA = exports.USBTimeout = exports.MAXUSBPackets = exports.USBPackageSize = exports.USBInterfaceNumber = exports.USBConfigurationValue = void 0;
+ exports.USBConfigurationValue = 1;
+-exports.USBInterfaceNumber = process.env.NODE_ENV === 'production' ? 0 : 1;
++exports.USBInterfaceNumber = 0;
+ exports.USBPackageSize = 64;
+ exports.MAXUSBPackets = 200;
+ exports.USBTimeout = 15000;

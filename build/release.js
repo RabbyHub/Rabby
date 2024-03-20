@@ -1,37 +1,75 @@
 const path = require('path');
-const { prompt } = require('enquirer');
+const { prompt, BooleanPrompt } = require('enquirer');
 const fs = require('fs-extra');
 const shell = require('shelljs');
 const zipdir = require('zip-dir');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
-async function release() {
-  const input = await prompt({
+function updateManifestVersion(version, p) {
+  const manifestPath = path.resolve(
+    PROJECT_ROOT,
+    'src/manifest',
+    p,
+    'manifest.json'
+  );
+  const manifest = fs.readJSONSync(manifestPath);
+  manifest.version = version;
+  fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
+}
+
+async function release([version, isDebug, isRelease]) {
+  if (isRelease) {
+    shell.exec(`npm version ${version} --force`);
+    shell.exec('git add -A');
+    shell.exec(`git commit -m "[release] ${version}"`);
+    shell.exec(`git push origin refs/tags/v${version}`);
+    shell.exec('git push origin master');
+  }
+  return [version, isDebug, isRelease];
+}
+
+async function bundle() {
+  const { version } = await prompt({
     type: 'input',
     name: 'version',
     message: '[Rabby] Please input the release version:',
   });
-  const manifestPath = path.resolve(PROJECT_ROOT, '_raw', 'manifest.json');
-  const manifest = fs.readJSONSync(manifestPath);
-  manifest.version = input.version;
-  fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
-  shell.exec(`npm version ${input.version} --force`);
-  shell.exec('git add -A');
-  shell.exec(`git commit -m "[release] ${input.version}"`);
-  shell.exec(`git push origin refs/tags/v${input.version}`);
-  shell.exec('git push origin master');
 
-  return input.version;
-}
-
-function bundle(version) {
   shell.env['sourcemap'] = true;
   shell.exec('yarn build:pro');
   shell.rm('-rf', './dist/*.js.map');
 
-  const distPath = path.resolve(PROJECT_ROOT, 'dist');
-  zipdir(distPath, { saveTo: `Rabby_v${version}.zip` });
+  const isMV3 = await new BooleanPrompt({
+    message: '[Rabby] Do you want to release to MV3? (y/N)',
+  }).run();
+
+  const isDebug = await new BooleanPrompt({
+    message: '[Rabby] Do you want to build a debug version? (y/N)',
+  }).run();
+
+  const isRelease = await new BooleanPrompt({
+    message: '[Rabby] Do you want to release? (y/N)',
+  }).run();
+
+  const buildStr = isDebug ? 'build:debug' : 'build:pro';
+
+  updateManifestVersion(version, 'mv3');
+  updateManifestVersion(version, 'mv2');
+
+  if (isMV3) {
+    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv3`);
+  } else {
+    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
+  }
+  return [version, isDebug, isRelease];
 }
 
-release().then(bundle);
+async function packed([version, isDebug]) {
+  const distPath = path.resolve(PROJECT_ROOT, 'dist');
+  return zipdir(distPath, {
+    saveTo: `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`,
+  });
+}
+
+bundle().then(release).then(packed);

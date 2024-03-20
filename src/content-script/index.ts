@@ -14,14 +14,11 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
   // seperate content assignment to two line
   // use AssetReplacePlugin to replace pageprovider content
-  let content = ';(function () {';
-  content += `var __rabby__channelName = '${channelName}';`;
-  content += `var __rabby__isDefaultWallet = ${isDefaultWallet};`;
-  content += `var __rabby__uuid = '${uuid()}';`;
-  content += `var __rabby__isOpera = ${isOpera};`;
-  content += '#PAGEPROVIDER#';
-  content += '\n})();';
-  ele.textContent = content;
+  localStorage.setItem('rabby:channelName', channelName);
+  localStorage.setItem('rabby:isDefaultWallet', isDefaultWallet.toString());
+  localStorage.setItem('rabby:uuid', uuid());
+  localStorage.setItem('rabby:isOpera', isOpera.toString());
+  ele.setAttribute('src', chrome.runtime.getURL('pageProvider.js'));
   container.insertBefore(ele, container.children[0]);
   container.removeChild(ele);
 };

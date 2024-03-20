@@ -1,4 +1,4 @@
-import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import clsx from 'clsx';
 import React from 'react';
 import './index.less';
