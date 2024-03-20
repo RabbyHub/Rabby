@@ -27,12 +27,10 @@ import {
   HDKeyRingLastAddAddrTimeService,
 } from './service';
 import { providerController, walletController } from './controller';
-import i18n from './service/i18n';
 import { getOriginFromUrl } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
-import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
@@ -41,6 +39,10 @@ import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import Safe from '@rabby-wallet/gnosis-sdk';
+
+Safe.adapter = fetchAdapter as any;
 
 dayjs.extend(utc);
 
