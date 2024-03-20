@@ -1,0 +1,1620 @@
+{
+  "page": {
+    "transactions": {
+      "title": "แก๊ส",
+      "empty": {
+        "title": "ไม่พบแก๊ส",
+        "desc": " ไม่พบแก๊สบน <1>เชน ที่รองรับ</1>"
+      },
+      "explain": {
+        "approve": "อนุมัติ {{amount}} {{symbol}} สำหรับ {{project}}",
+        "unknown": "Contract ที่ใช้งาน",
+        "cancel": "ยกเลิกส่งแก๊สที่รอดำเนินการ"
+      }
+    },
+    "chainList": {
+      "title": "{{count}} เชนที่รองรับ",
+      "mainnet": "Mainnets",
+      "testnet": "Testnets"
+    },
+    "signTx": {
+      "nftIn": "ได้รับ NFT",
+      "gasLimitNotEnough": "ค่าลิมิตของค่าแก๊สต่ำกว่า 21000 จะไม่สามารถส่งแก๊สได้",
+      "gasLimitLessThanExpect": "ค่าลิมิตของค่าแก๊สต่ำเกินไป มีโอกาส 1% ที่ธุรกรรมจะล้มเหลว",
+      "gasLimitLessThanGasUsed": "ลิมิตของค่าแก๊สต่ำไป มีโอกาส 95% ที่ธุรกรรมจะล้มเหลว",
+      "nativeTokenNotEngouthForGas": "คุณมีค่าแก๊สในกระเป๋าไม่เพียงพอ",
+      "nonceLowerThanExpect": "Nonce ต่ำเกินไป ขั้นต่ำควรเป็น {{0}}",
+      "canOnlyUseImportedAddress": "คุณสามารถนำเข้า Addresses สำหรับ sign เท่านั้น",
+      "multiSigChainNotMatch": "Multi-signature addresses ไม่รองรับ Chain นี้และไม่สามารถทำธุรกรรมได้",
+      "safeAddressNotSupportChain": "ไม่รองรับที่ Address ปลอดภัยในปัจจุบันบน {{0}} เชน",
+      "noGasRequired": "ไม่ต้องใช้ค่าแก๊ส",
+      "gasSelectorTitle": "ค่าแก๊ส",
+      "failToFetchGasCost": "ไม่สามารถประเมินค่าแก๊สหรือค่าธุรกรรมได้",
+      "gasMoreButton": "เพิ่ม",
+      "manuallySetGasLimitAlert": "ตั้งค่าลิมิตของค่าแก๊สหรือค่าธุรกรรม",
+      "gasNotRequireForSafeTransaction": "ไม่จำเป็นต้องเสียค่าแก๊สสำหรับการทำธุรกรรมบน Safe",
+      "gasPriceTitle": "ค่าแก๊ส (Gwei)",
+      "maxPriorityFee": "ค่าแก๊สของความสำคัญสูงสุด (Gwei)",
+      "eip1559Desc1": "บนเครือข่ายที่รองรับ EIP-1559 ค่าธรรมเนียม Priority Fee เป็นเทคนิคสำหรับนักขุดในการประมวลผลธุรกรรม คุณสามารถประหยัดต้นทุนค่าแก๊สขั้นสุดท้ายได้โดยการลดค่าธรรมเนียมการจัดลำดับความสำคัญ ซึ่งอาจใช้เวลาในการดำเนินการธุรกรรมนานขึ้น",
+      "eip1559Desc2": "ใน Rabby เทคนิค ค่าธรรมเนียมสำคัญ  = ค่าธรรมเนียมสูงสุด - ค่าธรรมเนียมพื้นฐาน หลังจากที่ตั้งค่า Max Priority Fee แล้ว ค่าธรรมเนียมพื้นฐานจะถูกหักออกจากค่าธรรมเนียมดังกล่าว และส่วนที่เหลือจะมอบให้กับนักขุด",
+      "hardwareSupport1559Alert": "ตรวจสอบให้แน่ใจว่าเฟิร์มแวร์ hardware wallet ได้รับการอัปเกรดเป็นเวอร์ชันที่รองรับ EIP 1559",
+      "gasLimitTitle": "ลิมิตของค่าแก๊ส",
+      "recommendGasLimitTip": "ประมาณ {{est}}. ปัจจุบัน {{current}}x, แนะนำ ",
+      "nonceTitle": "Nonce",
+      "gasLimitModifyOnlyNecessaryAlert": "แก้ไขเมื่อจำเป็นเท่านั้น",
+      "gasPriceMedian": "ค่ามัธยฐานของ 100 ธุรกรรมล่าสุด: ",
+      "myNativeTokenBalance": "{{symbol}} ที่มีจำนวน: {{amount}} {{symbol}}",
+      "gasLimitEmptyAlert": "กรุณาระบุค่าสูงสุดของแก๊ส",
+      "gasLimitMinValueAlert": "ค่าแก๊สสูงสุดควรมากกว่า 21000",
+      "balanceChange": {
+        "successTitle": "ผลลัพธ์ของธุรกรรมจำลอง",
+        "failedTitle": "คาดว่าธุรกรรมจะล้มเหลว",
+        "noBalanceChange": "ไม่มีพบการเปลี่ยนแปลงของยอดเงิน", 
+        "tokenOut": "ส่งไป",
+        "tokenIn": "ได้รับ",
+        "errorTitle": "ไม่สามารถดึงข้อมูลการเปลี่ยนแปลงยอดคงเหลือ",
+        "notSupport": "ไม่รองรับการจำลองธุรกรรม",
+        "nftOut": "NFT ส่งไป"
+      },
+      "enoughSafeSigCollected": "ได้รับ signature ครบถ้วยแล้ว",
+      "moreSafeSigNeeded": "{{0}} ต้องการการยืนยันเพิ่มเติม",
+      "safeAdminSigned": "ลงนาม",
+      "swap": {
+        "title": "แลกเปลี่ยนโทเคน",
+        "payToken": "จ่าย",
+        "receiveToken": "ได้รับ",
+        "failLoadReceiveToken": "โหลดไม่สำเร็จ",
+        "valueDiff": "มูลค่าที่ต่าง",
+        "simulationFailed": "ธุรกรรมจำลองล้มเหลว",
+        "simulationNotSupport": "ธุรกรรมจำลอง ไม่รองรับการใช้งานบนเชนนี้",
+        "minReceive": "ขั้นต่ำที่จะได้รับ",
+        "slippageFailToLoad": "ไม่สามารถประมาณความคลาดเคลื่อนของ Slippage ได้",
+        "slippageTolerance": "ความคลาดเคลื่อนของ Slippage",
+        "receiver": "ปลายทาง",
+        "notPaymentAddress": "ไม่ใช่ Address สำหรับจ่ายค่าแก๊ส"
+      },
+      "crossChain": {
+        "title": "ข้ามเชน"
+      },
+      "swapAndCross": {
+        "title": "แลกเปลี่ยนและข้ามเชน"
+      },
+      "wrapToken": "Wrap Token",
+      "unwrap": "Unwrap Token",
+      "send": {
+        "title": "ส่ง",
+        "sendToken": "ส่ง",
+        "sendTo": "ส่งถึง",
+        "receiverIsTokenAddress": "Token address",
+        "contractNotOnThisChain": "ไม่พบ Contract Address บนเชน",
+        "notTopupAddress": "ไม่ใช่ Address สำหรับเติมเงิน",
+        "tokenNotSupport": "{{0}} ไม่รองรับ",
+        "onMyWhitelist": "Whitelist ในระบบ",
+        "notOnThisChain": "ไม่พบบนเชน",
+        "cexAddress": "CEX Address",
+        "addressBalanceTitle": "ยอดรวมของ Address",
+        "whitelistTitle": "Whitelist",
+        "notOnWhitelist": "ไม่พบ Whitelist ในระบบ"
+      },
+      "tokenApprove": {
+        "title": "Token ที่อนุมัติ",
+        "approveToken": "อนุมัติ Token",
+        "myBalance": "ยอดรวม",
+        "approveTo": "อนุมัติให้",
+        "eoaAddress": "EOA address",
+        "trustValueLessThan": "มูลค่าความน่าเชื่อถือ ≤ {{value}}",
+        "deployTimeLessThan": "ระยะเวลา Deployed < {{value}} วัน",
+        "amountPopupTitle": "จำนวน",
+        "flagByRabby": "ตั้งค่าสถานะโดย Rabby",
+        "contractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึงโทเค็นทั้งหมดที่ได้รับการอนุมัติและเปิดเผยตาม Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
+      },
+      "revokeTokenApprove": {
+        "title": "Revoke token ที่อนุมัติ",
+        "revokeFrom": "Revoke จาก",
+        "revokeToken": "Revoke token"
+      },
+      "sendNFT": {
+        "title": "ส่ง NFT",
+        "nftNotSupport": "ไม่รองรับ NFT"
+      },
+      "nftApprove": {
+        "title": "NFT ที่อนุมัติ",
+        "approveNFT": "อนุมัติ NFT",
+        "nftContractTrustValueTip": "มูลค่าความน่าเชื่อถือหมายถึง NFT สูงสุดที่ได้รับอนุมัติและเปิดเผยต่อ Contract นี้ ค่าความน่าเชื่อถือต่ำแสดงถึงความเสี่ยงสำหรับการใช้งาน หรือ การไม่มีการใช้งานเป็นเวลา 180 วัน"
+      },
+      "revokeNFTApprove": {
+        "title": "Revoke NFT ที่อนุมัติ",
+        "revokeNFT": "Revoke NFT"
+      },
+      "nftCollectionApprove": {
+        "title": "NFT Collection ที่อนุมัติ",
+        "approveCollection": "อนุมัติ Collection"
+      },
+      "revokeNFTCollectionApprove": {
+        "title": "Revoke NFT Collection ที่อนุมัติ",
+        "revokeCollection": "Revoke collection"
+      },
+      "deployContract": {
+        "title": "สร้าง Contract",
+        "descriptionTitle": "คำอธิบาย",
+        "description": "กำลังสร้าง Smart Contract"
+      },
+      "cancelTx": {
+        "title": "ยกเลิกธุรกรรมที่กำลังดำเนินการ",
+        "txToBeCanceled": "ํธุรกรรมถูกยกเลิก",
+        "gasPriceAlert": "ตั้งราคาแก๊สปัจจุบันให้มากกว่า {{value}} Gwei เพื่อยกเลิกรายการที่รอดำเนินการ"
+      },
+      "submitMultisig": {
+        "title": "ส่ง Multisig Transaction",
+        "multisigAddress": "Multisig address"
+      },
+      "contractCall": {
+        "title": "เรียก Contract",
+        "operation": "การดำเนินการ",
+        "operationABIDesc": "การดำเนินการถูกถอดรหัสจาก ABI",
+        "operationCantDecode": "การดำเนินการไม่ได้รับการถอดรหัส",
+        "payNativeToken": "จ่าย {{symbol}}"
+      },
+      "revokePermit2": {
+        "title": "เพิกถอนการอนุมัติ Permit2 Token"
+      },
+      "unknownAction": "ไม่พบ",
+      "interactContract": "เชื่อม Contract",
+      "markAsTrust": "ทำเครื่องหมายว่าเชื่อถือได้",
+      "markAsBlock": "ทำเครื่องหมายว่าถูกบล็อก",
+      "interacted": "มีการเชื่อมต่อมาก่อน",
+      "neverInteracted": "ไม่เคยมีการเชื่อมต่อ",
+      "transacted": "ธุรกรรมก่อน",
+      "neverTransacted": "ไม่เคยทำธุรกรรมมาก่อน",
+      "fakeTokenAlert": "Scam Token ที่ Rabby ทำเครื่องหมายไว้",
+      "scamTokenAlert": "อาจเป็นโทเค็นไม่น่าเชื่อถือหรือ Scam Token จากการพิจารณาของ Rabby",
+      "trusted": "เชื่อถือ",
+      "blocked": "บล๊อค",
+      "noMark": "ไม่มีเครื่องหมาย",
+      "markRemoved": "ลบเครื่องหมาย",
+      "speedUpTooltip": "การทำธุรกรรมเร่งด่วนและการทำธุรกรรมเดิม ซึ่งเพียงแค่หนึ่งในนั้นเท่านั้นที่จะถูกดำเนินการจนเสร็จสิ้นในท้ายที่สุด",
+      "signTransactionOnChain": "ลงนาม {{chain}} ธุรกรรม",
+      "viewRaw": "ดูข้อมูลดิบ",
+      "unknownActionType": "ไม่ทราบประเภทของการกระทำ",
+      "sigCantDecode": "ลงนามนี้ไม่สามารถถอดรหัสโดย Rabby ได้ แต่ไม่ได้หมายความว่ามีความเสี่ยงใดๆ",
+      "nftCollection": "NFT Collection",
+      "floorPrice": "ราคา Floor",
+      "contractAddress": "Contract address",
+      "protocolTitle": "Protocol",
+      "deployTimeTitle": "ระยะเวลา Deployed",
+      "popularity": "ความโด่งดัง",
+      "contractPopularity": "No.{{0}} บน {{1}}",
+      "addressNote": "Address ที่บันทึก",
+      "myMarkWithContract": "เครื่องหมายบน {{chainName}} contract",
+      "myMark": "เครื่องหมายของฉัน",
+      "collectionTitle": "Collection",
+      "addressTypeTitle": "ประเภท Address",
+      "firstOnChain": "ครั้งแรก on-chain",
+      "trustValue": "มูลค่าความน่าเชื่อถือ",
+      "importedDelegatedAddress": "นำเข้า delegated address",
+      "noDelegatedAddress": "ไม่นำเข้า delegated address",
+      "coboSafeNotPermission": "Delegate address ไม่มีสิทธิ์ในการเริ่มต้นธุรกรรมนี้"
+    },
+    "signFooterBar": {
+      "requestFrom": "ขอจาก",
+      "processRiskAlert": "โปรดดำเนินการแจ้งเตือนก่อนลงนาม",
+      "ignoreAll": "ข้ามทั้งหมด",
+      "gridPlusConnected": "GridPlus ถูกเชื่อมต่อ",
+      "gridPlusNotConnected": "GridPlus ไม่ถูกเชื่อมต่อ",
+      "connectButton": "เชื่อมต่อ",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "ledgerNotConnected": "Ledger ไม่ถูกเชื่อมต่อ",
+      "ledgerConnected": "Ledger ถูกเชื่อมต่อ",
+      "signAndSubmitButton": "ลงนามและส่ง",
+      "walletConnect": {
+        "connectedButCantSign": "เชื่อมต่อแล้วแต่ไม่สามารถลงนามได้",
+        "switchToCorrectAddress": "กรุณาเปลี่ยนไปยัง address ที่ถูกต้องในกระเป๋าเงินบนมือถือ",
+        "switchChainAlert": "กรุณาเปลี่ยนไปยัง {{chain}} ในกระเป๋าเงินบนมือถือ",
+        "notConnectToMobile": "ไม่ได้เชื่อมต่อกับ {{brand}}",
+        "connected": "เชื่อมต่อแล้วและพร้อมที่จะลงนาม",
+        "howToSwitch": "วิธีการเปลี่ยน",
+        "wrongAddressAlert": "คุณได้เปลี่ยนไปยัง address อื่นในกระเป๋าเงินบนมือถือแล้ว กรุณาเปลี่ยนกลับไปยัง address ที่ถูกต้องในกระเป๋าเงินบนมือถือ",
+        "connectBeforeSign": "{{0}} ไม่ได้เชื่อมต่อกับ Rabby, กรุณาเชื่อมต่อก่อนที่จะลงนาม",
+        "chainSwitched": "คุณได้เปลี่ยนไปยังเครือข่ายอื่นในกระเป๋าเงินบนมือถือแล้ว กรุณาเปลี่ยนกลับไปยัง {{0}} ในกระเป๋าเงินบนมือถือ",
+        "latency": "ความหน่วง",
+        "requestSuccessToast": "ส่งคำขอเรียบร้อยแล้ว",
+        "sendingRequest": "กำลังส่งคำขอลงนาม",
+        "signOnYourMobileWallet": "กรุณาลงนามในกระเป๋าเงินบนมือถือ",
+        "requestFailedToSend": "การส่งคำขอลงนามล้มเหลว"
+      },
+      "beginSigning": "เริ่มขั้นตอนการลงนาม",
+      "addressTip": {
+        "onekey": "OneKey address",
+        "trezor": "Trezor address",
+        "bitbox": "BitBox02 address",
+        "keystone": "Keystone address",
+        "airgap": "AirGap address",
+        "coolwallet": "CoolWallet address",
+        "privateKey": "Private Key address",
+        "seedPhrase": "Seed Phrase address",
+        "watchAddress": "ไม่สามารถลงนามด้วย address สำหรับดูอย่างเดียวได้",
+        "safe": "Safe address",
+        "coboSafe": "Cobo Argus Address"
+      },
+      "qrcode": {
+        "signWith": "ลงนามเข้ากับ {{brand}}",
+        "failedToGetExplain": "ไม่สามารถรับคำอธิบายได้",
+        "txFailed": "การทำธุรกรรมล้มเหลว",
+        "sigReceived": "ได้รับการลงนามแล้ว",
+        "sigCompleted": "การลงนามเสร็จสิ้น",
+        "getSig": "รับลายเซ็น",
+        "qrcodeDesc": "สแกนด้วย {{brand}} ของคุณเพื่อลงนาม<br></br>หลังจากลงนามแล้ว คลิกปุ่มด้านล่างเพื่อรับลายเซ็น",
+        "misMatchSignId": "ข้อมูลธุรกรรมไม่สอดคล้องกัน กรุณาตรวจสอบรายละเอียดของธุรกรรม",
+        "unknownQRCode": "ข้อผิดพลาด: เราไม่สามารถระบุ QR code นั้นได้",
+        "afterSignDesc": "หลังจากลงนามแล้ว วาง QR code บน {{brand}} ไว้ตรงหน้ากล้องของคอมพิวเตอร์ของคุณ"
+      },
+      "ledger": {
+        "resent": "ส่งซ้ำ",
+        "signError": "ข้อผิดพลาดในการลงนาม Ledger:",
+        "notConnected": "กระเป๋าเงินของคุณไม่ได้เชื่อมต่อ กรุณาเชื่อมต่อใหม่",
+        "siging": "กำลังส่งคำขอลงนาม...",
+        "txRejected": "การทำธุรกรรมถูกปฏิเสธ",
+        "unlockAlert": "กรุณาเสียบและปลดล็อค Ledger จากนั้นเปิด Ethereum บน Ledger",
+        "updateFirmwareAlert": "กรุณาอัปเดตเฟิร์มแวร์และแอป Ethereum บน Ledger ของคุณ",
+        "txRejectedByLedger": "การทำธุรกรรมถูกปฏิเสธบน Ledger ของคุณ",
+        "blindSigTutorial": "บทแนะนำเกี่ยวกับการลงนามจาก Ledger"
+      },
+      "common": {
+        "notSupport": "{{0}} ไม่รองรับ"
+      },
+      "resend": "ส่งอีกครั้ง",
+      "submitTx": "ส่งธุรกรรม",
+      "testnet": "Testnet",
+      "mainnet": "Mainnet"
+    },
+    "signTypedData": {
+      "signTypeDataOnChain": "ลงนาม {{chain}} ข้อมูลชนิดที่กำหนด",
+      "safeCantSignText": "คือ Safe Address และไม่สามารถใช้ในการลงนามข้อความ",
+      "permit": {
+        "title": "การอนุมัติ Token แบบ Permit1"
+      },
+      "permit2": {
+        "title": "การอนุมัติ Token แบบ Permit2",
+        "sigExpireTimeTip": "ระยะเวลาที่ลายเซ็นนี้อนุมัติสำหรับการเชื่อมต่อ",
+        "sigExpireTime": "เวลาหมดอายุของลงนาม",
+        "approvalExpiretime": "เวลาหมดอายุของการอนุมัติ"
+      },
+      "swapTokenOrder": {
+        "title": "คำสั่ง Token"
+      },
+      "sellNFT": {
+        "title": "คำสั่ง NFT",
+        "receiveToken": "ได้รับ token",
+        "listNFT": "วางขาย NFT",
+        "specificBuyer": "เฉพาะผู้ซื้อ"
+      },
+      "signMultiSig": {
+        "title": "ยืนยันแก๊ส"
+      },
+      "createKey": {
+        "title": "สร้างรหัส"
+      },
+      "verifyAddress": {
+        "title": "ตรวจสอบ Address"
+      },
+      "buyNFT": {
+        "payToken": "จ่าย token",
+        "receiveNFT": "ได้รับ NFT",
+        "expireTime": "หมดเวลา",
+        "listOn": "รายการบน"
+      },
+      "contractCall": {
+        "operationDecoded": "Decoded ประมวลผลจากข้อความ"
+      }
+    },
+    "activities": {
+      "title": "บันทึกการลงนาม",
+      "signedTx": {
+        "label": "ธุรกรรม",
+        "empty": {
+          "title": "ยังไม่มีการลงนามในการทำธุรกรรม",
+          "desc": "ธุรกรรมทั้งหมดที่ลงนามผ่าน Rabby จะแสดงอยู่ที่นี่"
+        },
+        "common": {
+          "unlimited": "ไม่จำกัด",
+          "unknownProtocol": "ไม่ทราบ protocol",
+          "unknown": "ไม่รู้จัก",
+          "speedUp": "เร่งความเร็ว",
+          "cancel": "ยกเลิก",
+          "pendingDetail": "อยู่ระหว่างการพิจารณารายละเอียด"
+        },
+        "tips": {
+          "pendingDetail": "มีเพียงธุรกรรมเดียวเท่านั้นที่จะเสร็จสมบูรณ์ และมักจะเป็นธุรกรรมที่มีค่าแก๊สสูงสุดเสมอไป",
+          "canNotCancel": "ไม่สามารถเร่งความเร็วหรือยกเลิกได้: ไม่ใช่ txn แรกที่รอดำเนินการ"
+        },
+        "status": {
+          "canceled": "ยกเลิก",
+          "failed": "ล้มเหลว",
+          "submitFailed": "ไม่สามารถส่งได้",
+          "pending": "รอดำเนินการ"
+        },
+        "txType": {
+          "initial": "เริ่ม tx",
+          "cancel": "ยกเลิก tx",
+          "speedUp": "เพิ่มความเร็ว tx"
+        },
+        "explain": {
+          "unknown": "ไม่ทราบธุรกรรม",
+          "send": "ส่ง {{amount}} {{symbol}}",
+          "cancel": "ยกเลิก {{token}} อนุมัติให้ {{protocol}}",
+          "approve": "อนุมัติ {{count}} {{token}} ให้ {{protocol}}",
+          "cancelNFTCollectionApproval": "ยกเลิกการอนุมัติ NFT Collection ให้กับ {{protocol}}",
+          "cancelSingleNFTApproval": "ยกเลิกการอนุมัติ NFT ให้กับ {{protocol}}",
+          "singleNFTApproval": "การอนุมัติ NFT ให้กับ {{protocol}}",
+          "nftCollectionApproval": "NFT Collection อนุมัติให้ {{protocol}}"
+        }
+      },
+      "signedText": {
+        "label": "ช้อความ",
+        "empty": {
+          "title": "ยังไม่มีข้อความลงนามเลย",
+          "desc": "ข้อความทั้งหมดที่ลงนามโดย Rabby จะแสดงไว้ที่นี่"
+        }
+      }
+    },
+    "receive": {
+      "title": "ได้รับ {{token}} บน {{chain}}",
+      "watchModeAlert1": "นี้คือ Watch Mode Address",
+      "watchModeAlert2": "แน่ใจหรือไม่ว่าจะใช้เพื่อรับสินทรัพย์"
+    },
+    "sendToken": {
+      "addressNotInContract": "ไม่อยู่ในรายการ Address <1></1><2>เพิ่มในรายชื่อติดต่อ</2>",
+      "AddToContactsModal": {
+        "addedAsContacts": "เพิ่มเป็นที่ติดต่อแล้ว",
+        "editAddr": {
+          "placeholder": "เข้า Address ที่บันทึก",
+          "validator__empty": "กรุณาเข้า address ที่บันทึก"
+        },
+        "editAddressNote": "แก้ไข address ที่บันทึก",
+        "error": "ไม่สามารถเพิ่มไปยัง address ที่ติดต่อได้"
+      },
+      "allowTransferModal": {
+        "error": "รหัสผ่านไม่ถูกต้อง",
+        "placeholder": "ใส่รหัสผ่านเพื่อยืนยัน",
+        "validator__empty": "โปรดใส่รหัสผ่าน",
+        "addWhitelist": "เพิ่มไปยัง Whitelist"
+      },
+      "GasSelector": {
+        "confirm": "ยืนยัน",
+        "level": {
+          "$unknown": "ผิดพลาด",
+          "custom": "กำหนดเอง",
+          "fast": "ทันที",
+          "normal": "ปกติ",
+          "slow": "ช้า"
+        },
+        "popupDesc": "ค่าแก๊สจะสำรองไว้จากยอดธุรกรรมตามค่าแก๊สที่ตั้งไว้",
+        "popupTitle": "ตั้งค่า แก๊ส (Gwei)"
+      },
+      "header": {
+        "title": "ส่ง"
+      },
+      "modalConfirmAddToContacts": {
+        "confirmText": "ยืนยัน",
+        "title": "เพิ่มในรายชื่อติดต่อ"
+      },
+      "modalConfirmAllowTransferTo": {
+        "cancelText": "ยกเลิก",
+        "confirmText": "ยืนยัน",
+        "title": "กรุณาใส่รหัสผ่านเพื่อยืนยัน"
+      },
+      "sectionBalance": {
+        "title": "ยอดเงิน"
+      },
+      "sectionChain": {
+        "title": "เชน"
+      },
+      "sectionFrom": {
+        "title": "จาก"
+      },
+      "sectionTo": {
+        "addrValidator__empty": "กรุณาใส่ Address",
+        "addrValidator__invalid": "Address ที่ใส่ไม่ถูกต้อง",
+        "searchInputPlaceholder": "ใส่ Address หรือค้นหา",
+        "title": "ถึง"
+      },
+      "sendButton": "ส่ง",
+      "tokenInfoFieldLabel": {
+        "chain": "้เชน",
+        "contract": "Contract Address"
+      },
+      "tokenInfoPrice": "มูลค่า",
+      "whitelistAlert__disabled": "Whitelist ถูกปิดใช้งาน สามารถโอนไปยัง Address ใดก็ได้",
+      "whitelistAlert__notWhitelisted": "Address ไม่อยู่ในรายการที่อนุญาต <1 /> ฉันยินยอมให้อนุญาตชั่วคราวในการโอน",
+      "whitelistAlert__temporaryGranted": "ได้รับอนุญาตชั่วคราวแล้ว",
+      "whitelistAlert__whitelisted": "Address อยู่ในรายการที่อนุญาต Whitelisted",
+      "balanceWarn": {
+        "gasFeeReservation": "ต้องสำรองค่าแก๊สล่วงหน้า"
+      },
+      "balanceError": {
+        "insufficientBalance": "ยอดคงเหลือไม่เพียงพอ"
+      },
+      "max": "สูงสุด"
+    },
+    "sendTokenComponents": {
+      "GasReserved": "สำรอง <1>0</1> {{ tokenName }} สำหรับจ่ายค่าแก๊ส"
+    },
+    "sendNFT": {
+      "header": {
+        "title": "ส่ง"
+      },
+      "sectionChain": {
+        "title": "เชน"
+      },
+      "sectionFrom": {
+        "title": "จาก"
+      },
+      "sectionTo": {
+        "title": "ถึง",
+        "addrValidator__empty": "กรุณาใส่ Address",
+        "addrValidator__invalid": "Address ที่ใส่ไม่ถูกต้อง",
+        "searchInputPlaceholder": "ใส่ Address หรือค้นหา"
+      },
+      "nftInfoFieldLabel": {
+        "Collection": "คอลเลกชัน",
+        "Contract": "Contract",
+        "sendAmount": "ส่งจำนวน"
+      },
+      "sendButton": "ส่ง",
+      "whitelistAlert__disabled": "Whitelist ปิดการใช้งาน สามารถโอนไปยัง Address ใดก็ได้",
+      "whitelistAlert__whitelisted": "Address อยู่ในรายชื่อที่อนุญาต",
+      "whitelistAlert__temporaryGranted": "Temporary permission granted",
+      "whitelistAlert__notWhitelisted": "Address ไม่ได้อยู่ในรายชื่อ Whitelisted <1 /> อนุญาตชั่วคราวในการโอนโทเคน",
+      "tipNotOnAddressList": "ไม่พบในรายชื่อติดต่อ",
+      "tipAddToContacts": "เพิ่มในรายชื่อติดต่อ",
+      "confirmModal": {
+        "title": "ใส่รหัสผ่านเพื่อยืนยัน"
+      }
+    },
+    "approvals": {
+      "header": {
+        "title": "อนุมัติ {{ address }}"
+      },
+      "tab-switch": {
+        "contract": "เรียงจาก Contracts",
+        "assets": "เรียงจาก Assets"
+      },
+      "component": {
+        "table": {
+          "bodyEmpty": {
+            "loadingText": "กำลังค้นหา...",
+            "noMatchText": "ไม่พบ"
+          }
+        },
+        "ApprovalContractItem": {
+          "ApprovalCount_one": "อนุมัติสำหรับ 1 ครั้ง",
+          "ApprovalCount_other": "อนุมัติ"
+        },
+        "RevokeButton": {
+          "btnText_zero": "Revoke",
+          "btnText_one": "Revoke ({{count}})",
+          "btnText_other": "Revoke ({{count}})"
+        },
+        "ViewMore": {
+          "text": "เพิ่มเติม"
+        }
+      },
+      "search": {
+        "placeholder": "ค้นหา {{ type }} ด้วยชื่อ หรือ Address"
+      },
+      "tableConfig": {
+        "byContracts": {
+          "columnTitle": {
+            "contract": "Contract",
+            "contractTrustValue": "มูลค่าความน่าเชื่อถือของ Contract",
+            "revokeTrends": "แนวโน้มการ Revoke ในช่วงเวลา 24 ชั่วโมง",
+            "myApprovedAssets": "อนุมัติ Assets",
+            "myApprovalTime": "ระยะเวลาการอนุมัติ"
+          },
+          "columnTip": {
+            "contractTrustValue": "มูลค่าความน่าเชื่อถือหมายถึงมูลค่าทรัพย์สินรวมที่ได้รับอนุมัติและเปิดเผยต่อ Contract นี้ ค่าความน่าเชื่อถือต่ำบ่งชี้ถึงความเสี่ยงหรือการไม่มีการใช้งานเป็นเวลา 180 วัน",
+            "contractTrustValueWarning": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $100,000",
+            "contractTrustValueDanger": "มูลค่าความน่าเชื่อถือของ Contract น้อยกว่า $10,000"
+          }
+        },
+        "byAssets": {
+          "columnTitle": {
+            "asset": "Asset",
+            "type": "ประเภท",
+            "approvedAmount": "จำนวนที่อนุมัติ",
+            "approvedSpender": "ผู้รับที่อนุมัติ",
+            "myApprovalTime": "ระยะเวลาการอนุมัติ"
+          }
+        }
+      },
+      "RevokeApprovalModal": {
+        "subTitleTokenAndNFT": "อนุมัติและ NFT",
+        "subTitleContract": "อนุมัติ Contracts ดังต่อไปนี้",
+        "selectAll": "เลือกทั้งหมด",
+        "confirm": "ยืนยัน {{ selectedCount }}",
+        "title": "อนุมัติ"
+      }
+    },
+    "gasTopUp": {
+      "title": "เติมแก๊สทันที",
+      "description": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible.",
+      "topUpChain": "เติมแก๊สบนเชน",
+      "Amount": "จำนวน",
+      "Continue": "ดำเนินการต่อ",
+      "InsufficientBalance": "There is not enough balance in Rabby's contract address for the current chain. Please try again later.",
+      "hightGasFees": "This top up amount is too small because the target network requires high gas fees.",
+      "No_Tokens": "ไม่มีโทเคน",
+      "InsufficientBalanceTips": "ยอดคงเหลือไม่เพียงพอ",
+      "payment": "ชำระค่าแก๊ส",
+      "Loading_Tokens": "กำลังโหลด Tokens...",
+      "Including-service-fee": "Including {{fee}} service fee",
+      "service-fee-tip": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged.",
+      "Confirm": "ยืนยัน",
+      "Select-from-supported-tokens": "เลือกจากโทเค็นที่รองรับ",
+      "Value": "Value",
+      "Payment-Token": "Payment Token",
+      "Select-payment-token": "เลือกโทเคนที่ต้องการชำระเงิน",
+      "Token": "โทเคน",
+      "Balance": "ยอดคงเหลือ"
+    },
+    "swap": {
+      "title": "แลกเปลี่ยน",
+      "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
+      "Pending": "รอดำเนินการ",
+      "completedTip": "Transaction on chain, decoding data to generate record",
+      "Completed": "เสร็จสิ้น",
+      "slippage_tolerance": "Slippage tolerance:",
+      "actual-slippage": "Actual Slippage:",
+      "gas-x-price": "Gas price: {{price}} Gwei.",
+      "no-transaction-records": "ไม่มีบันทึกการทำธุรกรรม",
+      "swap-history": "ประวัติการแลกเปลี่ยน",
+      "InSufficientTip": "ยอดคงเหลือไม่เพียงพอ to do ธุรกรรมจำลองล้มเหลว and gas estimation. Original aggregator quotes are displayed",
+      "testnet-is-not-supported": "Testnet นี้ไม่รองรับ",
+      "not-supported": "ไม่รองรับ",
+      "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
+      "price-expired-refresh-quote": "Price expired. Refresh quote.",
+      "approve-x-symbol": "Approve {{symbol}}",
+      "swap-via-x": "แลกผ่าน {{name}}",
+      "get-quotes": "รับข้อเสนอ",
+      "chain": "้เชน",
+      "swap-from": "แลกจาก",
+      "to": "เป็น",
+      "search-by-name-address": "ค้นหาด้วยชื่อ หรือ Address",
+      "amount-in": "จำนวนเงินเข้า {{symbol}}",
+      "unlimited-allowance": "อนมัติไม่จำกัด",
+      "insufficient-balance": "ยอดคงเหลือไม่เพียงพอ",
+      "rabby-fee": "ค่าธรรมเนียมของ Rabby",
+      "minimum-received": "ขั้นต่ำที่จะได้รับ",
+      "there-is-no-fee-and-slippage-for-this-trade": "There is no fee and slippage for this trade",
+      "approve-tips": "1.อนุมัติ → 2.แลกเปลี่ยน",
+      "best": "ดีที่สุด",
+      "unable-to-fetch-the-price": "Unable to fetch the price",
+      "fail-to-simulate-transaction": "Fail to simulate transaction",
+      "security-verification-failed": "Security verification failed",
+      "need-to-approve-token-before-swap": "Need to approve token before swap",
+      "this-exchange-is-not-enabled-to-trade-by-you": "This exchange is not enabled to trade by you.",
+      "enable-it": "เปิดใช้งานมัน",
+      "this-token-pair-is-not-supported": "ไม่รองรับคู่โทเคนนี้",
+      "QuoteLessWarning": "The receiving amount is estimated from Rabby ธุรกรรมจำลอง. The offer provided by dex is {{receive}}. You'll receive {{diff}}  less than the expected offer.",
+      "by-transaction-simulation-the-quote-is-valid": "By ธุรกรรมจำลอง, the quote is valid",
+      "wrap-contract": "Wrap Contract",
+      "directlySwap": "Wrapping {{symbol}} tokens directly with the smart contract",
+      "rates-from-cex": "อัตราแลกเปลี่ยนของ CEX",
+      "edit": "แก้ไข",
+      "tradingSettingTips": "{{viewCount}} ราคาที่ Exchange เสนอ และ {{tradeCount}} อนุญาตการซื้อขาย",
+      "the-following-swap-rates-are-found": "The following swap rates are found",
+      "est-payment": "Est. Payment:",
+      "est-receiving": "Est. Receiving:",
+      "est-difference": "Est. Difference:",
+      "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Selected offer differs greatly from current rate, may cause big losses",
+      "rate": "อัตราแลกเปลี่ยน",
+      "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Low slippage may cause failed transactions due to high volatility",
+      "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaction might be frontrun because of high slippage tolerance",
+      "recommend-slippage": "เพื่อป้องกัน front-running แนะนำให้ตั้งค่า slippage ของ <2>{{ slippage }}</2>%",
+      "slippage-tolerance": "ความดาดเคลื่อนของ Slippage",
+      "select-token": "เลือกโทเคน",
+      "enable-exchanges": "อนุญาต Exchanges",
+      "exchanges": "Exchanges",
+      "view-quotes": "ดูข้อเสนอ",
+      "trade": "การซื้อขาย",
+      "dex": "DEX",
+      "cex": "CEX",
+      "enable-trading": "เปิดใช้งานการซื้อขาย",
+      "i-understand-and-accept-it": "เข้าใจและยอมรับข้อเสนอ",
+      "confirm": "ยืนยัน",
+      "tradingSettingTip1": "1. เมื่อเปิดใช้งานแล้ว คุณจะสามารถแลกเปลี่ยนกับ Contract ของ Exchange โดยตรง",
+      "tradingSettingTip2": "2. Rabby จะไม่รับผิดชอบต่อความเสี่ยงใดๆ ที่เกิดขึ้นจาก Contract ของการแลกเปลี่ยน",
+      "gas-fee": "GasFee: {{gasUsed}}",
+      "estimate": "ประมาณ:",
+      "actual": "ค่าที่แท้จริง:"
+    },
+    "manageAddress": {
+      "no-address": "ไม่พบ Address",
+      "no-match": "ไม่พบ",
+      "current-address": "Address ปัจจุบัน",
+      "address-management": "การจัดการ Address",
+      "update-balance-data": "อัพเดทยอดคงเหลือ",
+      "search": "ค้นหา",
+      "manage-address": "จัดการ Address",
+      "deleted": "ลบ",
+      "whitelisted-address": "Whitelisted address",
+      "addressTypeTip": "นำเข้าโดย {{type}}",
+      "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
+      "delete-checklist-1": "I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.",
+      "delete-checklist-2": "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now.",
+      "confirm": "ยืนยัน",
+      "cancel": "ยกเลิก",
+      "delete-private-key-modal-title_one": "Delete {{count}} private key address",
+      "delete-private-key-modal-title_other": "Delete {{count}} private key addresses",
+      "delete-seed-phrase-title_one": "Delete seed phrase and its {{count}} address",
+      "delete-seed-phrase-title_other": "Delete seed phrase and its {{count}} addresses",
+      "delete-title_one": "Delete {{count}} {{brand}} address",
+      "delete-title_other": "Delete {{count}} {{brand}} addresses",
+      "delete-empty-seed-phrase": "Delete seed phrase and its 0 address",
+      "hd-path": "HD path:",
+      "no-address-under-seed-phrase": "You haven't imported any addresses under this seed phrase.",
+      "add-address": "เพิ่ม address",
+      "delete-seed-phrase": "ลบ seed phrase",
+      "confirm-delete": "ยืนยันที่จะลบ",
+      "private-key": "Private Key",
+      "seed-phrase": "Seed Phrase",
+      "watch-address": "Watch Address",
+      "backup-seed-phrase": "Backup Seed Phrase",
+      "delete-all-addresses-but-keep-the-seed-phrase": "ลบ Address ทั้งหมด แต่เก็บ Seed Phase ไว้",
+      "delete-all-addresses-and-the-seed-phrase": "ลบ Address และ Seed Phase ทั้งหมด",
+      "seed-phrase-delete-title": "ลบ seed phrase หรือไม่"
+    },
+    "dashboard": {
+      "home": {
+        "offline": "เครือข่ายถูกตัดการเชื่อมต่อและไม่ได้รับข้อมูล",
+        "panel": {
+          "swap": "แลกเปลี่ยน",
+          "send": "ส่ง",
+          "receive": "ได้รับ",
+          "gasTopUp": "เติมแก๊ส",
+          "queue": "คิว",
+          "transactions": "ธุรกรรม",
+          "approvals": "การอนุมัติ",
+          "feedback": "ความคิดเห็น",
+          "more": "เพิ่มเติม",
+          "manageAddress": "การจัดการ Address",
+          "nft": "NFT"
+        },
+        "comingSoon": "แล้วพบกันเร็วๆ นี้",
+        "soon": "เร็วๆ นี้",
+        "refreshTheWebPageToTakeEffect": "รีเฟรชหน้าเว็บเพื่อให้สามารถใช้งานได้",
+        "rabbyIsInUseAndMetamaskIsBanned": "Rabby ถูกใช้งานและ MetaMask ถูกปิด",
+        "flip": "Flip",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask ถูกใช้งานและ Rabby ถูกปิด",
+        "transactionNeedsToSign": "มีรายการธุรกรรมที่ต้องทำการลงนาม",
+        "transactionsNeedToSign": "มีรายการธุรกรรมที่ต้องทำการลงนาม",
+        "view": "ดู",
+        "viewFirstOne": "ดูอันดับแรก",
+        "rejectAll": "ปฎิเสธทั้งหมด",
+        "pendingCount": "รอดำเนินการ 1 รายการ",
+        "pendingCountPlural": "{{countStr}} รอดำเนินการ",
+        "queue": {
+          "title": "คิว",
+          "count": "ภายใน {{count}}"
+        },
+        "whatsNew": "มีอะไรใหม่",
+        "importType": "เชื่อมต่อด้วย {{type}}"
+      },
+      "recentConnection": {
+        "disconnected": "ตัดการเชื่อมต่อแล้ว",
+        "rpcUnavailable": "RPC ที่กำหนดเอง ไม่พร้อมใช้งาน",
+        "metamaskTooltip": "You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps",
+        "connected": "เชื่อมต่อแล้ว",
+        "notConnected": "ไม่ได้เชื่อมต่อ",
+        "connectedDapp": "Rabby ไม่ได้เชื่อมต่อกับ Dapp ปัจจุบัน หากต้องการเชื่อมต่อ ให้ค้นหาและคลิกปุ่มเชื่อมต่อบนหน้าเว็บของ Dapp",
+        "noDappFound": "ไม่พบ DApp",
+        "disconnectAll": "ตัดการเชื่อมต่อทั้งหมด",
+        "disconnectRecentlyUsed": {
+          "title": "ยกเลิกการเชื่อมต่อที่ใช้ล่าสุด <strong>{{count}}</strong> DApps",
+          "description": "DApps ที่ปักหมุดจะยังคงเชื่อมต่ออยู่"
+        },
+        "title": "เชื่อมต่อ DApp",
+        "pinned": "ปักหมุด",
+        "noPinnedDapps": "ไม่พบ DApps ที่ปักหมุด",
+        "dragToSort": "ลากเพื่อจัดเรียง",
+        "recentlyConnected": "เพิ่งเชื่อมต่อ",
+        "noRecentlyConnectedDapps": "ไม่พบ DApps ที่เพิ่งเชื่อมต่อ"
+      },
+      "feedback": {
+        "directMessage": {
+          "content": "ข้อความโดยตรง (DM)",
+          "description": "แชทกับ Rabby Wallet Official บน DeBank"
+        },
+        "proposal": {
+          "content": "ข้อเสนอ",
+          "description": "ส่งข้อเสนอสำหรับ Rabby Wallet บน DeBank"
+        },
+        "title": "ข้อเสนอแนะ"
+      },
+      "nft": {
+        "empty": "ไม่พบ NFT ในคอลเลกชันที่รองรับ",
+        "collectionList": {
+          "collections": {
+            "label": "คอลเลกชัน"
+          },
+          "all_nfts": {
+            "label": "NFTs ทั้งหมด"
+          }
+        },
+        "listEmpty": "ยังไม่ได้รับ NFT",
+        "modal": {
+          "collection": "คอลเลกชัน",
+          "chain": "Chain",
+          "lastPrice": "ราคาล่าสุด",
+          "purchaseDate": "วันที่ซื้อ",
+          "sendTooltip": "เฉพาะ ERC 721 และ ERC 1155 NFT เท่านั้นที่รองรับในขณะนี้",
+          "send": "ส่ง"
+        }
+      },
+      "rabbyBadge": {
+        "imageLabel": "Rabby Badge",
+        "title": "ขอเคลม Rabby Badge สำหรับ",
+        "enterClaimCode": "กรอกรหัสสำหรับเคลม",
+        "swapTip": "ต้องทำการแลกเปลี่ยนบน DEX บน Rabby Wallet ก่อน",
+        "goToSwap": "ไปที่แลกเปลี่ยน",
+        "claim": "รับ",
+        "viewYourClaimCode": "ดู Claim Code ของคุณ",
+        "noCode": "คุณยังไม่ได้เปิดใช้ Claim Code สำหรับ Address",
+        "learnMoreOnDebank": "เรียนรู้เพิ่มเติมเกี่ยวกับ DeBank",
+        "rabbyValuedUserNo": "หมายเลขผู้ใช้งาน Rabby No.{{num}}",
+        "claimSuccess": "รับเรียบร้อย",
+        "viewOnDebank": "ดูได้ที่ DeBank"
+      },
+      "contacts": {
+        "noDataLabel": "ไม่พบข้อมูล",
+        "noData": "ไม่พบข้อมูล",
+        "oldContactList": "รายชื่อ Contract ที่ผ่านมา",
+        "oldContactListDescription": "Because of the merging of contacts and watch model addresses, the old contacts will be backed up for you here and after some time we will delete the list.Please add in time if you continue to use."
+      },
+      "security": {
+        "tokenApproval": "การอนุมัติ Token",
+        "nftApproval": "การอนุมัติ NFT",
+        "comingSoon": "features อื่นเร็วๆ นี้",
+        "title": "ความปลอดภัย"
+      },
+      "settings": {
+        "lock": {
+          "never": "ไม่เคย"
+        },
+        "7Days": "7 วัน",
+        "1Day": "1 วัน",
+        "4Hours": "4 ชั่วโมง",
+        "1Hour": "1 ชั่วโมง",
+        "10Minutes": "10 นาที",
+        "backendServiceUrl": "Backend Service URL",
+        "inputOpenapiHost": "โปรดใส่ Openapi Host",
+        "pleaseCheckYourHost": "กรุณาตรวจสอบความเป็นเจ้าของของคุณ",
+        "host": "เจ้าของ",
+        "reset": "คืนค่าเริ่มต้น",
+        "save": "บันทึก",
+        "pendingTransactionCleared": "Pending transaction cleared",
+        "clearPending": "Clear Pending",
+        "clearPendingTip1": "This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.",
+        "clearPendingTip2": "This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.",
+        "autoLockTime": "เวลาล็อคอัตโนมัติ",
+        "claimRabbyBadge": "รับ Rabby Badge!",
+        "cancel": "ยกเลิก",
+        "enableWhitelist": "Enable Whitelist",
+        "disableWhitelist": "Disable Whitelist",
+        "enableWhitelistTip": "Once enabled, you can only send assets to the addresses in the whitelist using Rabby.",
+        "disableWhitelistTip": "You can send assets to any address once disabled",
+        "warning": "คำเตือน",
+        "clearWatchAddressContent": "แน่ใจหรือไม่ว่าจะลบ Watch Mode Address ทั้งหมด",
+        "updateVersion": {
+          "content": "มีการอัปเดตใหม่สำหรับกระเป๋า Rabby แล้ว คลิกเพื่อตรวจสอบวิธีการอัพเดตด้วยตนเอง",
+          "okText": "ดูคำแนะนำ",
+          "successTip": "กำลังใช้งานเวอร์ชันล่าสุด"
+        },
+        "features": {
+          "label": "Features",
+          "lockWallet": "ล็อคกระเป๋า",
+          "signatureRecord": "บันทึกการลงนาม",
+          "manageAddress": "จัดการ Address",
+          "connectedDapp": "เชื่อมต่อ DApp"
+        },
+        "settings": {
+          "label": "ตั้งค่า",
+          "enableWhitelistForSendingAssets": "เปิดใช้งาน Whitelist สำหรับการส่งทรัพย์สิน",
+          "customRpc": "RPC ที่กำหนดเอง",
+          "metamaskPreferredDapps": "แนะนำ MetaMask สำหรับ Dapps",
+          "currentLanguage": "ภาษาปัจจุบัน",
+          "enableTestnets": "เปิดใช้งาน Testnet"
+        },
+        "aboutUs": "เกี่ยวกับเรา",
+        "currentVersion": "เวอร์ชันล่าสุด",
+        "updateAvailable": "มีการอัปเดตที่พร้อมใช้งาน",
+        "supportedChains": "เชนที่รองรับ",
+        "followUs": "ติดตามเรา",
+        "testnetBackendServiceUrl": "Testnet Backend Service URL",
+        "clearWatchMode": "Clear Watch Mode",
+        "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token"
+      },
+      "tokenDetail": {
+        "blockedTip": "Blocked token will not be shown in token list",
+        "blocked": "บล๊อค",
+        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
+        "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
+        "customized": "กำหนดเอง",
+        "scamTx": "Scam tx",
+        "txFailed": "ล้มเหลว",
+        "notSupported": "โทเคนบนเชนนี้ยังไม่ได้รับการรองรับ",
+        "swap": "แลกเปลี่ยน",
+        "send": "ส่ง",
+        "receive": "ได้รับ",
+        "noTransactions": "ไม่มีการทำธุรกรรม",
+        "customizedButton": "กำหนดเอง",
+        "blockedButton": "บล๊อค"
+      },
+      "assets": {
+        "usdValue": "USD VALUE",
+        "amount": "AMOUNT",
+        "portfolio": {
+          "nftTips": "Calculated based on the floor price recognized by this protocol.",
+          "fractionTips": "Calculate based on the price of the linked ERC20 token."
+        },
+        "tokenButton": {
+          "subTitle": "The token in this list will not be added to total balance"
+        },
+        "table": {
+          "assetAmount": "Asset / Amount",
+          "price": "PRICE",
+          "useValue": "USD Value",
+          "healthRate": "Health rate",
+          "debtRatio": "Debt Ratio",
+          "unlockAt": "Unlock at",
+          "lentAgainst": "LENT AGAINST",
+          "type": "Type",
+          "strikePrice": "Strike price",
+          "exerciseEnd": "Exercise end",
+          "tradePair": "คู่เทรด",
+          "side": "Side",
+          "leverage": "Leverage",
+          "PL": "P&L",
+          "unsupportedPoolType": "Unsupported pool type",
+          "claimable": "Claimable",
+          "endAt": "End at",
+          "dailyUnlock": "Daily unlock",
+          "pool": "POOL",
+          "token": "Token",
+          "balanceValue": "Balance / Value",
+          "percent": "Percent",
+          "summaryTips": "Asset value divided by total net worth",
+          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
+          "noMatch": "ไม่พบ",
+          "lowValueDescription": "Low value assets will be shown here",
+          "lowValueAssets": "{{count}} low value assets"
+        },
+        "noAssets": "No assets",
+        "blockLinkText": "Search address to block token",
+        "blockDescription": "Token blocked by you will be shown here",
+        "unfoldChain": "Unfold 1 chain",
+        "unfoldChainPlural": "Unfold {{moreLen}} chains",
+        "customLinkText": "Search address to add custom token",
+        "customDescription": "Custom token added by you will be shown here",
+        "comingSoon": "Coming Soon...",
+        "searchPlaceholder": "Tokens"
+      },
+      "hd": {
+        "howToConnectLedger": "วิธีการเชื่อมต่อ Ledger",
+        "userRejectedTheRequest": "ปฏิเสธการเชื่อมต่อ",
+        "ledger": {
+          "doc1": "เชื่อมต่อกับ Ledger เท่านั้น",
+          "doc2": "ใส่ รหัส PIN เพื่อปลดล็อค",
+          "doc3": "เปิด Ethereum App",
+          "reconnect": "หากไม่ได้ผล โปรดลอง <1>เชื่อมต่อใหม่ตั้งแต่ต้น</1>"
+        },
+        "howToSwitch": "วิธีการเปลี่ยน"
+      }
+    },
+    "nft": {
+      "floorPrice": "/ ราคา Floor:",
+      "title": "NFT",
+      "all": "ทั้งหมด",
+      "starred": "Starred ({{count}})",
+      "empty": {
+        "title": "No Starred NFT",
+        "description": "You can select NFT from \"All\" and add to \"Starred\""
+      },
+      "noNft": "No NFT"
+    },
+    "newAddress": {
+      "title": "Add an Address",
+      "importSeedPhrase": "Import Seed Phrase",
+      "importPrivateKey": "Import Private Key",
+      "importMyMetamaskAccount": "Import My MetaMask Account",
+      "addContacts": {
+        "content": "Add Contacts",
+        "description": "You can also use it as a watch-only address",
+        "required": "โปรดใส่ address",
+        "notAValidAddress": "Not a valid address",
+        "scanViaMobileWallet": "Scan via mobile wallet",
+        "scanViaPcCamera": "Scan via PC camera",
+        "scanQRCode": "Scan QR codes with WalletConnect-compatible wallets",
+        "walletConnect": "Wallet connect",
+        "walletConnectVPN": "WalletConnect will be unstable if you use VPN.",
+        "cameraTitle": "Please scan the QR code with your camera",
+        "addressEns": "Address / ENS"
+      },
+      "unableToImport": {
+        "title": "Unable to import",
+        "description": "Importing multiple QR-based hardware wallets is ไม่รองรับ. Please delete all addresses from {{0}} before importing another device."
+      },
+      "connectHardwareWallets": "Connect Hardware Wallets",
+      "connectMobileWalletApps": "Connect Mobile Wallet Apps",
+      "connectInstitutionalWallets": "Connect Institutional Wallets",
+      "createNewSeedPhrase": "Create New Seed Phrase",
+      "importKeystore": "Import KeyStore",
+      "selectImportMethod": "Select Import Method",
+      "theSeedPhraseIsInvalidPleaseCheck": "The seed phrase is invalid, please check!",
+      "seedPhrase": {
+        "importTips": "You can paste your entire secret recovery phrase in 1st field",
+        "whatIsASeedPhrase": {
+          "question": "What is a Seed Phrase?",
+          "answer": "A 12, 18, or 24-word phrase used to control your assets."
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "importError": "[CreateMnemonics] unexpected step {{0}}",
+        "importQuestion1": "If I lose my seed phrase, my assets will be lost forever.",
+        "importQuestion2": "If I share my seed phrase with others, my assets will be stolen.",
+        "importQuestion3": "The seed phrase is only stored on my computer, and Rabby has no access to it.",
+        "importQuestion4": "If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.",
+        "riskTips": "Before you start, please read and keep the following security tips in mind.",
+        "showSeedPhrase": "Show Seed Phrase",
+        "backup": "Backup Seed Phrase",
+        "backupTips": "Make sure no one else is watching your screen when you back up the seed phrase",
+        "copy": "Copy seed phrase",
+        "saved": "I've Saved the Phrase",
+        "pleaseSelectWords": "Please select words",
+        "verificationFailed": "Verification failed",
+        "createdSuccessfully": "Created Successfully",
+        "verifySeedPhrase": "Verify Seed Phrase",
+        "fillInTheBackupSeedPhraseInOrder": "Fill in the backup seed phrase in order",
+        "wordPhrase": "I have a <1>{{count}}</1>-word phrase",
+        "clearAll": "Clear All"
+      },
+      "metamask": {
+        "step1": " Export seed phrase or private key from MetaMask <1>Guidance <2/></1>",
+        "step2": "Import the seed phrase or private key in Rabby",
+        "step3": "Import is completed and all your assets will <br /> appear automatically",
+        "how": "How to import my MetaMask Account?",
+        "step": "ขั้นตอน",
+        "importSeedPhrase": "Import the seed phrase or private key",
+        "importSeedPhraseTips": "It will only be stored locally on the browser. Rabby will never have access to your private information."
+      },
+      "privateKey": {
+        "required": "กรุณาใส่ Private Key",
+        "placeholder": "ใส่ Private Key",
+        "whatIsAPrivateKey": {
+          "question": "อะไรคือ Private Key",
+          "answer": "รหัสผ่านในการเข้าถึงเงินภายในกระเป๋า"
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "Is it safe to import it in Rabby?",
+          "answer": "Yes, it will be stored locally on your browser and only accessible to you."
+        },
+        "isItPossibleToImportKeystore": {
+          "question": "Is it possible to import KeyStore?",
+          "answer": "Yes, you can <1> import KeyStore </1> here."
+        },
+        "notAValidPrivateKey": "Not a valid private key"
+      },
+      "importedSuccessfully": "Imported Successfully",
+      "ledger": {
+        "title": "Connect Ledger",
+        "cameraPermissionTitle": "Allow Rabby to access the camera",
+        "cameraPermission1": "Allow Rabby to access the camera in the browser pop-up",
+        "allowRabbyPermissionsTitle": "Allow Rabby permissions to:",
+        "ledgerPermission1": "Connect to an HID device",
+        "ledgerPermissionTip": "Please click \\\"Allow\\\" below and authorize access to your Ledger in the following pop-up window.",
+        "permissionsAuthorized": "Permissions Authorized",
+        "nowYouCanReInitiateYourTransaction": "Now you can re-initiate your transaction.",
+        "allow": "Allow"
+      },
+      "walletConnect": {
+        "connectYour": "Connect your",
+        "viaWalletConnect": "via Wallet Connect",
+        "connectedSuccessfully": "Connected successfully",
+        "qrCodeError": "Please check your network or refresh the QR code",
+        "qrCode": "QR code",
+        "url": "URL",
+        "changeBridgeServer": "Change bridge server",
+        "status": {
+          "received": "Scan successful. Waiting to be confirmed",
+          "rejected": "Connection canceled. Please scan the QR code to retry.",
+          "brandError": "Wrong wallet app.",
+          "brandErrorDesc": "Please use {{brandName}} to connect",
+          "accountError": "Address not match.",
+          "accountErrorDesc": "Please switch address in your mobile wallet",
+          "connected": "Connected",
+          "duplicate": "The address you're are trying to import is duplicate",
+          "default": "Scan with your {{brand}}"
+        },
+        "title": "Connect with {{brandName}}",
+        "disconnected": "Disconnected",
+        "accountError": {},
+        "tip": {
+          "accountError": {
+            "tip1": "Connected but unable to sign.",
+            "tip2": "Please switch to the correct address in mobile wallet"
+          },
+          "disconnected": {
+            "tip": "Not connected to {{brandName}}"
+          },
+          "connected": {
+            "tip": "Connected to {{brandName}}"
+          }
+        },
+        "button": {
+          "disconnect": "Disconnect",
+          "connect": "Connect",
+          "howToSwitch": "วิธีการเปลี่ยน"
+        }
+      },
+      "hd": {
+        "tooltip": {
+          "removed": "The address is removed from Rabby",
+          "added": "The address is added to Rabby",
+          "connectError": "Connect has stopped. Please refresh the page to connect again.",
+          "disconnected": "Unable to connect to Hardware wallet. Please try to re-connect."
+        },
+        "waiting": "Waiting",
+        "clickToGetInfo": "Click to get the information on-chain",
+        "addToRabby": "Add to Rabby",
+        "basicInformation": "Basic information",
+        "addresses": "Addresses",
+        "loadingAddress": "Loading {{0}}/{{1}} addresses",
+        "notes": "Notes",
+        "getOnChainInformation": "Get on-chain information",
+        "hideOnChainInformation": "Hide on-chain information",
+        "usedChains": "Used chains",
+        "firstTransactionTime": "First transaction time",
+        "balance": "Balance",
+        "ledger": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNoChain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          }
+        },
+        "trezor": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "message": {
+            "disconnected": "{{0}}Connect has stopped. Please refresh the page to connect again."
+          }
+        },
+        "onekey": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "mnemonic": {
+          "hdPathType": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          },
+          "hdPathTypeNoChain": {
+            "default": "Default: The Default HD path for importing a seed phrase is used."
+          }
+        },
+        "gridplus": {
+          "hdPathType": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.",
+            "bip44": "BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain."
+          },
+          "hdPathTypeNochain": {
+            "ledgerLive": "Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.",
+            "bip44": "BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.",
+            "legacy": "Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain."
+          },
+          "switch": {
+            "title": "Switch to a new GridPlus device",
+            "content": "It's ไม่รองรับ to import multiple GridPlus devices If you switch to a new GridPlus device, the current device's address list will be removed before starting the import process."
+          },
+          "switchToAnotherGridplus": "Switch to another GridPlus"
+        },
+        "keystone": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNochain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          }
+        },
+        "bitbox02": {
+          "hdPathType": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "hdPathTypeNoChain": {
+            "bip44": "BIP44: HDpath defined by the BIP44 protocol."
+          },
+          "disconnected": "Cannot connect to BitBox02. Please refresh the page to connect again. Reason: {{0}}"
+        },
+        "selectHdPath": "Select HD path:",
+        "selectIndexTip": "Select the serial number of addresses to start from:",
+        "manageAddressFrom": "Manage address from {{0}} to {{1}}",
+        "advancedSettings": "Advanced Settings",
+        "customAddressHdPath": "Custom Address HD path",
+        "connectedToLedger": "Connected to Ledger",
+        "connectedToTrezor": "Connected to Trezor",
+        "connectedToOnekey": "Connected to OneKey",
+        "manageSeedPhrase": "Manage Seed Phrase",
+        "manageGridplus": "Manage GridPlus",
+        "manageKeystone": "Manage Keystone",
+        "manageAirgap": "Manage AirGap",
+        "manageCoolwallet": "Manage CoolWallet",
+        "manageBitbox02": "Manage BitBox02",
+        "done": "Done",
+        "addressesIn": "Addresses in {{0}}",
+        "addressesInRabby": "Addresses in Rabby{{0}}",
+        "qrCode": {
+          "switch": {
+            "title": "Switch to a new {{0}} device",
+            "content": "It's ไม่รองรับ to import multiple {{0}} devices If you switch to a new {{0}} device, the current device's address list will be removed before starting the import process."
+          },
+          "switchAnother": "Switch to another {{0}}"
+        }
+      },
+      "importYourKeystore": "Import Your KeyStore",
+      "incorrectPassword": "incorrect password",
+      "keystore": {
+        "description": "Select the keystore file you want to import and enter the corresponding password",
+        "password": {
+          "required": "โปรดใส่ Password",
+          "placeholder": "Password"
+        }
+      },
+      "coboSafe": {
+        "inputSafeModuleAddress": "Input Safe Module address",
+        "invalidAddress": "Invalid address",
+        "whichChainIsYourCoboAddressOn": "Which chain is your cobo address on",
+        "addCoboArgusAddress": "Add Cobo Argus address",
+        "findTheAssociatedSafeAddress": "Find the associated safe address",
+        "import": "Import"
+      }
+    },
+    "unlock": {
+      "btn": {
+        "unlock": "Unlock"
+      },
+      "password": {
+        "required": "Enter the Password to Unlock",
+        "placeholder": "Enter the Password to Unlock",
+        "error": "incorrect password"
+      }
+    },
+    "addToken": {
+      "noTokenFound": "No token found",
+      "tokenSupported": "Token has been supported on Rabby",
+      "tokenCustomized": "Current token has already been added to customized",
+      "tokenNotFound": "Token not found from this contract address",
+      "title": "Add custom token to Rabby",
+      "balance": "Balance",
+      "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
+      "noTokenFoundOnThisChain": "No token found on this chain"
+    },
+    "switchChain": {
+      "title": "Switching to {{chain}}",
+      "chainNotSupport": "The requested chain is ไม่รองรับ by Rabby yet",
+      "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets"
+    },
+    "signText": {
+      "title": "Sign Text",
+      "message": "Message",
+      "createKey": {
+        "interactDapp": "Interact Dapp",
+        "description": "Description"
+      }
+    },
+    "securityEngine": {
+      "yes": "Yes",
+      "no": "No",
+      "whenTheValueIs": "when the value is {{value}}",
+      "currentValueIs": "Current value is {{value}}",
+      "viewRules": "View security rules",
+      "undo": "Undo",
+      "riskProcessed": "Risk Processed",
+      "ignoreAlert": "Ignore the alert",
+      "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
+      "unknownResult": "Unknown result because security rule is unavailable",
+      "alertTriggerReason": "Alert triggered reason:",
+      "understandRisk": "I understand and accept responsibility for any loss",
+      "forbiddenCantIgnore": "Found forbidden risk that can't be ignored.",
+      "ruleDetailTitle": "Rule Detail",
+      "enableRule": "Enable the rule",
+      "viewRiskLevel": "View risk level"
+    },
+    "connect": {
+      "listedBy": "Listed by",
+      "sitePopularity": "Site popularity",
+      "myMark": "My Mark",
+      "flagByRabby": "Flagged by Rabby",
+      "flagByMM": "Flagged by MetaMask",
+      "flagByScamSniffer": "Flagged by ScamSniffer",
+      "verifiedByRabby": "Verified by Rabby",
+      "foundForbiddenRisk": "Found forbidden risks. Connection is blocked.",
+      "markAsTrustToast": "Mark as \"Trusted\"",
+      "markAsBlockToast": "Mark as \"Blocked\"",
+      "markRemovedToast": "Mark removed",
+      "title": "Connect to Dapp",
+      "selectChainToConnect": "Select a chain to connect for",
+      "markRuleText": "My mark",
+      "connectBtn": "Connect",
+      "noWebsite": "None",
+      "popularLevelHigh": "High",
+      "popularLevelMedium": "Medium",
+      "popularLevelLow": "Low",
+      "popularLevelVeryLow": "Very Low",
+      "noMark": "No mark",
+      "blocked": "Blocked",
+      "trusted": "Trusted",
+      "addedToWhitelist": "Added to your whitelist",
+      "addedToBlacklist": "Added to your blacklist",
+      "removedFromAll": "Removed from all lists",
+      "notOnAnyList": "Not on any list",
+      "onYourBlacklist": "On your blacklist",
+      "onYourWhitelist": "On your whitelist",
+      "manageWhiteBlackList": "Manage whitelist/blacklist",
+      "SignTestnetPermission": {
+        "title": "Signing permission"
+      },
+      "ignoreAll": "Ignore all"
+    },
+    "addressDetail": {
+      "add-to-whitelist": "Add to Whitelist",
+      "remove-from-whitelist": "Remove from Whitelist",
+      "address-detail": "Address Detail",
+      "backup-private-key": "Backup Private Key",
+      "backup-seed-phrase": "Backup Seed Phrase",
+      "delete-address": "Delete address",
+      "delete-desc": "Before you delete, keep the following points in mind to understand how to protect your assets.",
+      "direct-delete-desc": "This address is a {{renderBrand}} address, Rabby does not store the private key or seed phrase for this address, you can just delete it",
+      "admins": "Admins",
+      "tx-requires": "Any transaction requires <2>{{num}}</2> confirmations",
+      "edit-memo-title": "Edit address note",
+      "please-input-address-note": "โปรดใส่ address note",
+      "address": "Address",
+      "address-note": "Address Note",
+      "assets": "Assets",
+      "qr-code": "QR Code",
+      "source": "Source",
+      "hd-path": "HD Path",
+      "manage-seed-phrase": "Manage Seed Phrase",
+      "manage-addresses-under-this-seed-phrase": "Manage addresses under this Seed Phrase",
+      "safeModuleAddress": "Safe Module Address",
+      "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
+      "importedDelegatedAddress": "Imported Delegated address"
+    },
+    "preferMetamaskDapps": {
+      "title": "MetaMask Preferred Dapps",
+      "desc": "The following dapps จะยังคงเชื่อมต่ออยู่ through MetaMask, regardless           of the wallet you've flipped to",
+      "howToAdd": "How to Add",
+      "howToAddDesc": "Right click on the website and find this option",
+      "empty": "No dapps"
+    },
+    "customRpc": {
+      "opened": "Opened",
+      "closed": "Closed",
+      "empty": "No custom RPC",
+      "title": "Custom RPC",
+      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
+      "add": "Add RPC",
+      "EditRPCModal": {
+        "invalidRPCUrl": "Invalid RPC URL",
+        "invalidChainId": "Invalid Chain ID",
+        "rpcAuthFailed": "RPC authentication failed",
+        "title": "Edit RPC",
+        "rpcUrl": "RPC URL",
+        "rpcUrlPlaceholder": "Enter the RPC URL"
+      }
+    },
+    "requestDebankTestnetGasToken": {
+      "title": "Request DeBank Testnet Gas Token",
+      "mintedTip": "Rabby Badge holders can request once a day",
+      "notMintedTip": "Request available for Rabby Badge holders only",
+      "claimBadgeBtn": "Claim Rabby Badge",
+      "time": "Per day",
+      "requested": "You have requested today",
+      "requestBtn": "Request"
+    },
+    "safeQueue": {
+      "title": "Queue",
+      "sameNonceWarning": "These transactions conflict as they use the same nonce.                   Executing one will automatically replace the other(s).",
+      "loading": "Loading pending transactions",
+      "noData": "No pending transactions",
+      "loadingFaild": "Due to the instability of Safe server, the data is not available, please check again after 5 minutes",
+      "accountSelectTitle": "You can submit this transaction using any address",
+      "LowerNonceError": "Transaction with nonce {{nonce}} needs to be executed first",
+      "submitBtn": "Submit transaction",
+      "unknownTx": "Unknown Transaction",
+      "cancelExplain": "Cancel {{token}} Approve for {{protocol}}",
+      "unknownProtocol": "Unknown protocol",
+      "approvalExplain": "Approve {{count}} {{token}} for {{protocol}}",
+      "unlimited": "unlimited",
+      "action": {
+        "send": "Send"
+      },
+      "viewBtn": "View"
+    },
+    "importSuccess": {
+      "title": "Imported Successfully",
+      "addressCount": "{{count}} addresses",
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+    },
+    "backupSeedPhrase": {
+      "title": "Backup Seed Phrase",
+      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShow": "Click to show Seed Phrase",
+      "copySeedPhrase": "Copy seed phrase"
+    },
+    "backupPrivateKey": {
+      "title": "Backup Private Key",
+      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "clickToShow": "Click to show private key",
+      "clickToShowQr": "Click to show private key QR Code"
+    },
+    "ethSign": {
+      "alert": "Signing with 'eth_sign' can lead to asset loss. For your safety,             Rabby does not support this method."
+    },
+    "createPassword": {
+      "title": "Set Password",
+      "passwordRequired": "โปรดใส่ Password",
+      "passwordMin": "Password must be at least 8 characters long",
+      "passwordPlaceholder": "Password must be at least 8 characters long",
+      "confirmRequired": "Please Confirm Password",
+      "confirmError": "Passwords do not match",
+      "confirmPlaceholder": "Confirm password",
+      "agree": "I have read and agree to the<1/> <2>Terms of Use</2>"
+    },
+    "welcome": {
+      "step1": {
+        "title": "Access All Dapps",
+        "desc": "Rabby connects to all Dapps that MetaMask supports"
+      },
+      "step2": {
+        "title": "Self-custodial",
+        "desc": "Private keys are stored locally with sole access to you",
+        "btnText": "Get Started"
+      }
+    },
+    "importSafe": {
+      "title": "Add Safe address",
+      "placeholder": "โปรดใส่ address",
+      "error": {
+        "invalid": "Not a valid address",
+        "required": "โปรดใส่ address"
+      },
+      "loading": "Searching the deployed chain of this address",
+      "gnosisChainDesc": "This address was found deployed on  {{count}} chains"
+    },
+    "importQrBase": {
+      "desc": "Scan the QR code on the {{brandName}} hardware wallet",
+      "btnText": "Try Again"
+    }
+  },
+  "component": {
+    "AccountSearchInput": {
+      "noMatchAddress": "No match address",
+      "AddressItem": {
+        "whitelistedAddressTip": "Whitelisted address"
+      }
+    },
+    "AccountSelectDrawer": {
+      "btn": {
+        "cancel": "ยกเลิก",
+        "proceed": "กำลังดำเนินการ"
+      }
+    },
+    "AddressList": {
+      "AddressItem": {
+        "addressTypeTip": "นำเข้าด้วย {{type}}"
+      }
+    },
+    "AuthenticationModal": {
+      "passwordError": "รหัสผ่านไม่ถูกต้อง",
+      "passwordRequired": "โปรดใส่รหัสผ่าน",
+      "passwordPlaceholder": "ใส่รหัสผ่านเพื่อยืนยัน"
+    },
+    "ConnectStatus": {
+      "connecting": "กำลังเชื่อมต่อ...",
+      "connect": "เชื่อมต่อ",
+      "gridPlusConnected": "GridPlus is connected",
+      "gridPlusNotConnected": "GridPlus is not connected",
+      "ledgerNotConnected": "Ledger is not connected",
+      "ledgerConnected": "Ledger is connected"
+    },
+    "Contact": {
+      "AddressItem": {
+        "notWhitelisted": "This address is not whitelisted",
+        "whitelistedTip": "Whitelisted Address"
+      },
+      "EditModal": {
+        "title": "แก้ไขบันทีกของ Address"
+      },
+      "EditWhitelist": {
+        "backModalTitle": "ยกเลิกการเปลี่ยนแปลง",
+        "backModalContent": "Changes you made will not be saved",
+        "title": "Edit Whitelist",
+        "tip": "Select the address you want to whitelist and save.",
+        "save": "บันทึกลงใน Whitelist ({{count}})"
+      },
+      "ListModal": {
+        "title": "Select Address",
+        "whitelistEnabled": "Whitelist is enabled. You can only send assets to a whitelisted address or you can disable it in \"Settings\"",
+        "whitelistDisabled": "Whitelist is disabled. You can send assets to any address",
+        "editWhitelist": "Edit Whitelist",
+        "whitelistUpdated": "Whitelist Updated",
+        "authModal": {
+          "title": "บันทึกลงใน Whitelist"
+        }
+      }
+    },
+    "LoadingOverlay": {
+      "loadingData": "กำลังโหลดข้อมูล..."
+    },
+    "MultiSelectAddressList": {
+      "imported": "เขื่อมต่อ"
+    },
+    "NFTNumberInput": {
+      "erc1155Tips": "Your balance is {{amount}}",
+      "erc721Tips": "Only one NFT of ERC 721 can be sent at a time"
+    },
+    "TiledSelect": {
+      "errMsg": "The seed phrase order is wrong, please check"
+    },
+    "Uploader": {
+      "placeholder": "Select a JSON file"
+    },
+    "WalletConnectBridgeModal": {
+      "title": "Bridge server URL",
+      "requiredMsg": "โปรดใส่ bridge server host",
+      "invalidMsg": "Please check your host",
+      "restore": "Restore initial setting"
+    },
+    "PillsSwitch": {
+      "NetSwitchTabs": {
+        "mainnet": "Mainnets",
+        "testnet": "Testnets"
+      }
+    },
+    "ChainSelectorModal": {
+      "searchPlaceholder": "ค้นหา chain",
+      "noChains": "ไม่พบเชนที่ค้นหา"
+    },
+    "TokenSelector": {
+      "listTableHead": {
+        "assetAmount": {
+          "title": "ASSET / AMOUNT"
+        },
+        "price": {
+          "title": "PRICE"
+        },
+        "usdValue": {
+          "title": "USD VALUE"
+        }
+      },
+      "searchInput": {
+        "placeholder": "ค้นหาด้วย ชื่อ หรือ Address"
+      },
+      "header": {
+        "title": "เลือกโทเคน"
+      },
+      "noTokens": "ไม่มีโทเคน",
+      "noMatch": "ไม่พบ",
+      "noMatchSuggestion": "Try to search contract address on {{ chainName }}"
+    },
+    "ModalPreviewNFTItem": {
+      "FieldLabel": {
+        "Collection": "Collection",
+        "Chain": "Chain",
+        "PurschaseDate": "วันที่ซื้อ",
+        "LastPrice": "Last Price"
+      }
+    },
+    "signPermissionCheckModal": {
+      "title": "You only allow this Dapp to sign on testnets",
+      "reconnect": "เชื่อมต่อ DApp อีกครั้ง"
+    },
+    "testnetCheckModal": {
+      "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
+    }
+  },
+  "global": {
+    "appName": "Rabby Wallet",
+    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "copied": "ตักลอก",
+    "confirm": "ยืนยัน",
+    "next": "ไปต่อ",
+    "back": "ย้อนกลับ",
+    "ok": "OK",
+    "refresh": "รีเฟรช",
+    "failed": "ล้มเหลว",
+    "scamTx": "Scam tx",
+    "gas": "Gas",
+    "unknownNFT": "NFT ที่ไม่รู้จัก",
+    "copyAddress": "คัดลอง Address",
+    "watchModeAddress": "Watch Mode address",
+    "assets": "assets",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+    "Clear": "ล้าง",
+    "Save": "บันทึก",
+    "confirmButton": "ยืนยัน",
+    "cancelButton": "ยกเลิก",
+    "backButton": "ย้อนกลับ",
+    "proceedButton": "ดำเนินการ",
+    "editButton": "แก้ไข",
+    "addButton": "เพิ่ม",
+    "closeButton": "ปิด",
+    "Deleted": "ลบ",
+    "Loading": "กำลังโหลด",
+    "nonce": "nonce",
+    "Balance": "Balance",
+    "Done": "Done"
+  },
+  "background": {
+    "error": {
+      "noCurrentAccount": "No current account",
+      "invalidChainId": "Invalid chain id",
+      "notFindChain": "Can not find chain {{chain}}",
+      "unknownAbi": "unknown contract abi",
+      "invalidAddress": "Not a valid address",
+      "notFoundGnosisKeyring": "No Gnosis keyring found",
+      "notFoundTxGnosisKeyring": "No transaction in Gnosis keyring found",
+      "addKeyring404": "failed to addKeyring, keyring is undefined",
+      "emptyAccount": "the current account is empty",
+      "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",
+      "invalidPrivateKey": "the private key is invalid",
+      "invalidJson": "the input file is invalid",
+      "invalidMnemonic": "The seed phrase is invalid, please check!",
+      "notFoundKeyringByAddress": "Can't find keyring by address",
+      "txPushFailed": "Transaction push failed",
+      "unlock": "you need to unlock wallet first",
+      "duplicateAccount": "The account you're are trying to import is duplicate",
+      "canNotUnlock": "Cannot unlock without a previous vault"
+    },
+    "transactionWatcher": {
+      "submitted": "Transaction submitted",
+      "more": "click to view more information",
+      "completed": "Transaction completed",
+      "failed": "Transaction failed"
+    },
+    "alias": {
+      "HdKeyring": "Seed Phrase",
+      "simpleKeyring": "Private Key",
+      "watchAddressKeyring": "Contact"
+    }
+  },
+  "constant": {
+    "KEYRING_TYPE_TEXT": {
+      "HdKeyring": "สร้างด้วย Seed Phrase",
+      "SimpleKeyring": "นำเข้าด้วย Private Key",
+      "WatchAddressKeyring": "Contact"
+    },
+    "IMPORTED_HD_KEYRING": "นำเข้าด้วย Seed Phrase",
+    "SIGN_PERMISSION_OPTIONS": {
+      "MAINNET_AND_TESTNET": "สำหรับ Mainnet และ Testnet",
+      "TESTNET": "สำหรับ Testnets เท่านั้น"
+    }
+  }
+}
