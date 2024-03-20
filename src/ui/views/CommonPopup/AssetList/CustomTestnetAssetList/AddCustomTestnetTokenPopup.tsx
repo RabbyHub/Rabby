@@ -1,16 +1,21 @@
+import IconUnknown from '@/ui/assets/token-default.svg';
 import { Popup } from '@/ui/component';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, useWallet } from '@/ui/utils';
-import { findChain } from '@/utils/chain';
+import { findChain, getTestnetChainList } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Spin, message } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import IconUnknown from '@/ui/assets/token-default.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { Loading3QuartersOutlined } from '@ant-design/icons';
+import { ReactComponent as RcIconDown } from '@/ui/assets/dashboard/portfolio/cc-down.svg';
+import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/cc-check.svg';
+import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
+import clsx from 'clsx';
 
 interface Props {
   visible?: boolean;
@@ -82,21 +87,33 @@ export const AddCustomTestnetTokenPopup = ({
   onConfirm,
 }: Props) => {
   const wallet = useWallet();
-  const [chainSelectorState, setChainSelectorState] = useSetState({
+  const [chainSelectorState, setChainSelectorState] = useSetState<{
+    visible: boolean;
+    chain: CHAINS_ENUM | null;
+  }>({
     visible: false,
-    chain: null as CHAINS_ENUM | null,
+    chain: getTestnetChainList()?.[0]?.enum || null,
   });
 
   const chain = findChain({ enum: chainSelectorState.chain });
   const [tokenId, setTokenId] = useState('');
+  const [checked, setChecked] = useState(false);
   const { t } = useTranslation();
+  const [form] = useForm();
 
-  const { data: token, runAsync: runGetToken } = useRequest(
+  const { data: token, runAsync: runGetToken, loading, error } = useRequest(
     async () => {
       const currentAccount = await wallet.getCurrentAccount();
       if (!chain?.id || !tokenId) {
         return null;
       }
+      setChecked(false);
+      form.setFields([
+        {
+          name: 'address',
+          errors: [],
+        },
+      ]);
       return wallet.getCustomTestnetToken({
         address: currentAccount!.address,
         chainId: chain.id,
@@ -105,6 +122,15 @@ export const AddCustomTestnetTokenPopup = ({
     },
     {
       refreshDeps: [chain?.id, tokenId],
+
+      onError: (e) => {
+        form.setFields([
+          {
+            name: 'address',
+            errors: ['Token not found'],
+          },
+        ]);
+      },
     }
   );
 
@@ -116,6 +142,8 @@ export const AddCustomTestnetTokenPopup = ({
       return wallet.addCustomTestnetToken({
         chainId: chain.id,
         id: tokenId,
+        symbol: token!.symbol,
+        decimals: token!.decimals,
       });
     },
     {
@@ -124,17 +152,23 @@ export const AddCustomTestnetTokenPopup = ({
   );
 
   const handleConfirm = async () => {
-    runAddToken();
-    onConfirm?.();
+    try {
+      await runAddToken();
+      onConfirm?.();
+    } catch (e) {
+      message.error(e?.message);
+    }
   };
 
   useEffect(() => {
     if (!visible) {
       setChainSelectorState({
         visible: false,
-        chain: null,
+        chain: getTestnetChainList()?.[0]?.enum || null,
       });
       setTokenId('');
+      setChecked(false);
+      form.resetFields();
     }
   }, [visible]);
 
@@ -150,7 +184,7 @@ export const AddCustomTestnetTokenPopup = ({
         title="Add Testnet Token"
       >
         <Wraper>
-          <Form layout="vertical">
+          <Form layout="vertical" form={form}>
             <Form.Item label="Chain">
               <div
                 onClick={() => {
@@ -160,13 +194,16 @@ export const AddCustomTestnetTokenPopup = ({
                 }}
               >
                 {!chain ? (
-                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] px-[16px] py-[12px] min-h-[52px]">
+                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] px-[16px] py-[12px] min-h-[52px] cursor-pointer">
                     <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
                       Select chain
                     </div>
+                    <div className="ml-auto text-r-neutral-body">
+                      <RcIconDown />
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] gap-[8px] px-[16px] py-[12px] min-h-[52px]">
+                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] gap-[8px] px-[16px] py-[12px] min-h-[52px] cursor-pointer">
                     <img
                       src={chain?.logo}
                       alt=""
@@ -175,43 +212,73 @@ export const AddCustomTestnetTokenPopup = ({
                     <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
                       {chain?.name}
                     </div>
+                    <div className="ml-auto text-r-neutral-body">
+                      <RcIconDown />
+                    </div>
                   </div>
                 )}
               </div>
             </Form.Item>
-            <Form.Item label="Token Address">
+            <Form.Item label="Token Address" name="address">
               <Input
                 onChange={(e) => {
                   setTokenId(e.target.value);
                 }}
+                autoComplete="off"
               />
             </Form.Item>
-            {token ? (
-              <Form.Item label="Found Token">
-                <div className="flex items-center gap-[12px] rounded-[6px] bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]">
-                  <div className="relative h-[24px]">
-                    <img
-                      src={IconUnknown}
-                      alt=""
-                      className="w-[24px] h-[24px] rounded-full"
-                    />
-                    <TooltipWithMagnetArrow
-                      title={chain?.name}
-                      className="rectangle w-[max-content]"
+            {loading ? (
+              <div className="flex items-center text-r-neutral-body text-[13px] gap-[4px]">
+                <Loading3QuartersOutlined className="animate-spin" /> Searching
+                Token
+              </div>
+            ) : (
+              <>
+                {token && !error ? (
+                  <Form.Item label="Found Token">
+                    <div
+                      onClick={() => {
+                        setChecked((v) => !v);
+                      }}
+                      className={clsx(
+                        'flex items-center gap-[12px] rounded-[6px] cursor-pointer',
+                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
+                      )}
                     >
-                      <img
-                        className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
-                        src={chain?.logo || IconUnknown}
-                        alt={chain?.name}
-                      />
-                    </TooltipWithMagnetArrow>
-                  </div>
-                  <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
-                    {formatAmount(token.amount)} {token.symbol}
-                  </div>
-                </div>
-              </Form.Item>
-            ) : null}
+                      <div className="relative h-[24px]">
+                        <img
+                          src={IconUnknown}
+                          alt=""
+                          className="w-[24px] h-[24px] rounded-full"
+                        />
+                        <TooltipWithMagnetArrow
+                          title={chain?.name}
+                          className="rectangle w-[max-content]"
+                        >
+                          <img
+                            className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                            src={chain?.logo || IconUnknown}
+                            alt={chain?.name}
+                          />
+                        </TooltipWithMagnetArrow>
+                      </div>
+                      <div className="text-r-neutral-title1 text-[13px] leading-[16px] font-medium">
+                        {formatAmount(token.amount || 0)} {token.symbol}
+                      </div>
+                      {checked ? (
+                        <div className="ml-auto text-r-blue-default">
+                          <RcIconChecked />
+                        </div>
+                      ) : (
+                        <div className="ml-auto text-r-neutral-body">
+                          <RcIconCheck />
+                        </div>
+                      )}
+                    </div>
+                  </Form.Item>
+                ) : null}
+              </>
+            )}
           </Form>
           <Footer>
             <Button
@@ -227,7 +294,7 @@ export const AddCustomTestnetTokenPopup = ({
               type="primary"
               size="large"
               className="w-[172px]"
-              disabled={!token}
+              disabled={Boolean(!token || error || loading || !checked)}
               loading={isSubmitting}
               onClick={handleConfirm}
             >

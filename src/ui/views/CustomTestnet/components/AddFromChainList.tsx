@@ -122,7 +122,7 @@ export const AddFromChainList = ({
         />
       </div>
       <div ref={ref} className="flex-1 overflow-auto px-[20px] ">
-        <div className="rounded-[6px] bg-r-neutral-card2">
+        <div className="rounded-[6px] bg-r-neutral-card2 h-full">
           {loading ? null : !data?.list?.length ? (
             <Emtpy description="No chains found" />
           ) : (

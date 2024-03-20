@@ -18,7 +18,7 @@ export const CustomTestnetAssetList = ({ visible }: { visible: boolean }) => {
         )}
       >
         <AssetEmptySVG className="m-auto" />
-        <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
+        <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
           {t('page.dashboard.assets.noAssets')}
         </div>
       </div>

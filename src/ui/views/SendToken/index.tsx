@@ -442,7 +442,7 @@ const SendToken = () => {
 
   const fetchGasList = async () => {
     const list: GasLevel[] = chainItem?.isTestnet
-      ? await wallet.getCustomTestnetGasMarket(chainItem.id)
+      ? await wallet.getCustomTestnetGasMarket({ chainId: chainItem.id })
       : await wallet.openapi.gasMarket(chainItem?.serverId || '');
     return list;
   };

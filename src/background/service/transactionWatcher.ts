@@ -6,11 +6,12 @@ import {
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import { format } from '@/utils';
+import { format, getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
+import { customTestnetService } from './customTestnet';
 
 class Transaction {
   createdTime = 0;
@@ -55,7 +56,7 @@ class TransactionWatcher {
       throw new Error(`[transactionWatcher::addTx] chain ${chain} not found`);
     }
 
-    const url = format(chainItem.scanLink, hash);
+    const url = getTxScanLink(chainItem.scanLink, hash);
     // notification.create(
     //   url,
     //   i18n.t('background.transactionWatcher.submitted'),
@@ -68,9 +69,18 @@ class TransactionWatcher {
       return;
     }
     const { hash, chain } = this.store.pendingTx[id];
-    const chainItem = findChainByEnum(chain);
+    const chainItem = findChain({ enum: chain });
     if (!chainItem) {
       return;
+    }
+
+    if (chainItem.isTestnet) {
+      return customTestnetService
+        .getTransactionReceipt({
+          chainId: chainItem.id,
+          hash,
+        })
+        .catch(() => null);
     }
 
     return openapiService
@@ -87,12 +97,12 @@ class TransactionWatcher {
     }
     const { hash, chain, nonce } = this.store.pendingTx[id];
 
-    const chainItem = findChainByEnum(chain);
+    const chainItem = findChain({ enum: chain });
     if (!chainItem) {
       throw new Error(`[transactionWatcher::notify] chain ${chain} not found`);
     }
 
-    const url = format(chainItem.scanLink, hash);
+    const url = getTxScanLink(chainItem.scanLink, hash);
     const [address] = id.split('_');
 
     if (txReceipt) {
@@ -108,6 +118,7 @@ class TransactionWatcher {
         ? i18n.t('background.transactionWatcher.completed')
         : i18n.t('background.transactionWatcher.failed');
 
+    console.log(txReceipt);
     const content =
       txReceipt.status === '0x1'
         ? i18n.t('background.transactionWatcher.txCompleteMoreContent', {

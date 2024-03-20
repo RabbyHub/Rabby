@@ -10,6 +10,8 @@ import {
 import { TokenSearchInput } from '../TokenSearchInput';
 import { AddCustomTestnetTokenPopup } from './AddCustomTestnetTokenPopup';
 import { CustomTestnetTokenList } from './CustomTestTokenList';
+import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-add.svg';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -56,12 +58,15 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
     async () => {
       return wallet.getCustomTestnetTokenList({
         address: currentAccount!.address,
-        tokenId: search,
+        q: search,
       });
     },
     {
       refreshDeps: [currentAccount, search],
-      onSuccess() {
+      onSuccess(data) {
+        if (!search) {
+          onEmptyAssets(!data?.length);
+        }
         setIsFetched(true);
       },
     }
@@ -79,11 +84,17 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
         <div className="rounded-[6px] bg-r-neutral-card2 px-[10px] py-[8px] cursor-pointer">
           <div
-            className="text-r-neutral-body text-[13px] leading-[16px]"
+            className={clsx(
+              'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
+              'flex items-center gap-x-[4px]'
+            )}
             onClick={() => {
               setIsShowAddModal(true);
             }}
           >
+            <span className="text-r-neutral-body">
+              <RcIconAdd />
+            </span>
             add token
           </div>
         </div>

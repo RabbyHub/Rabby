@@ -514,28 +514,28 @@ class ProviderController extends BaseController {
           pageStateCacheService.clear();
         }
         // todooo
-        // transactionHistoryService.addTx({
-        //   tx: {
-        //     rawTx: {
-        //       ...rawTx,
-        //       ...approvalRes,
-        //       r: bufferToHex(signedTx.r),
-        //       s: bufferToHex(signedTx.s),
-        //       v: bufferToHex(signedTx.v),
-        //     },
-        //     createdAt: Date.now(),
-        //     isCompleted: false,
-        //     hash,
-        //     failed: false,
-        //     reqId,
-        //     pushType,
-        //   },
-        //   explain: cacheExplain,
-        //   actionData: action,
-        //   origin,
-        //   $ctx: options?.data?.$ctx,
-        //   isDropFailed: true,
-        // });
+        transactionHistoryService.addTx({
+          tx: {
+            rawTx: {
+              ...rawTx,
+              ...approvalRes,
+              r: bufferToHex(signedTx.r),
+              s: bufferToHex(signedTx.s),
+              v: bufferToHex(signedTx.v),
+            },
+            createdAt: Date.now(),
+            isCompleted: false,
+            hash,
+            failed: false,
+            reqId,
+            pushType,
+          },
+          explain: cacheExplain,
+          actionData: action,
+          origin,
+          $ctx: options?.data?.$ctx,
+          isDropFailed: true,
+        });
         console.log('created');
         transactionHistoryService.removeSigningTx(signingTxId!);
         if (hash) {
@@ -586,19 +586,18 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
-          // todoo
-          // transactionHistoryService.addSubmitFailedTransaction({
-          //   tx: {
-          //     rawTx: approvalRes,
-          //     createdAt: Date.now(),
-          //     isCompleted: true,
-          //     hash: '',
-          //     failed: false,
-          //     isSubmitFailed: true,
-          //   },
-          //   explain: cacheExplain,
-          //   origin,
-          // });
+          transactionHistoryService.addSubmitFailedTransaction({
+            tx: {
+              rawTx: approvalRes,
+              createdAt: Date.now(),
+              isCompleted: true,
+              hash: '',
+              failed: false,
+              isSubmitFailed: true,
+            },
+            explain: cacheExplain,
+            origin,
+          });
         }
         const errMsg = e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {

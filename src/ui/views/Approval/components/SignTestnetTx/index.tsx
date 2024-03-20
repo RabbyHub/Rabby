@@ -22,12 +22,18 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
-import { KEYRING_CATEGORY_MAP, KEYRING_TYPE } from '@/constant';
+import {
+  HARDWARE_KEYRING_TYPES,
+  KEYRING_CATEGORY_MAP,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+} from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { normalizeTxParams } from '../SignTx';
 import { isHexString } from 'ethereumjs-util';
 import { WaitingSignComponent } from '../map';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 
 const { TabPane } = Tabs;
 
@@ -100,6 +106,15 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
+  const [nonceChanged, setNonceChanged] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [isLedger, setIsLedger] = useState(false);
+  const hasConnectedLedgerHID = useLedgerDeviceConnected();
+  const [isHardware, setIsHardware] = useState(false);
+  const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  let updateNonce = true;
+  if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
+    updateNonce = false;
 
   const getGasPrice = () => {
     let result = '';
@@ -128,7 +143,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     value,
   });
 
-  const { data: recommendNonce } = useRequest(
+  const { data: recommendNonce, runAsync: runGetNonce } = useRequest(
     async () => {
       const currentAccount = (await wallet.getCurrentAccount())!;
       return wallet.getCustomTestnetNonce({
@@ -137,13 +152,11 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       });
     },
     {
-      onSuccess: (data) => {
-        setRealNonce(intToHex(data));
-      },
+      manual: true,
     }
   );
 
-  const { data: recommedGasLimit } = useRequest(
+  const { data: gasUsed, runAsync: runGetGasUsed } = useRequest(
     async () => {
       try {
         const currentAccount = (await wallet.getCurrentAccount())!;
@@ -164,6 +177,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           setGasLimit(data);
         }
       },
+      manual: true,
     }
   );
 
@@ -171,14 +185,100 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     loading: isLoadingGasMarket,
     data: gasList,
     mutate: setGasList,
-  } = useRequest(async () => {
-    return wallet.getCustomTestnetGasMarket(chainId);
+    runAsync: runGetGasMarket,
+  } = useRequest(
+    async (custom: number) => {
+      return wallet.getCustomTestnetGasMarket({
+        chainId,
+        custom,
+      });
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const {
+    data: lastTimeGas,
+    runAsync: runGetLastTimeGasSelection,
+  } = useRequest(
+    () => {
+      return wallet.getLastTimeGasSelection(chainId);
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const init = async () => {
+    const currentAccount = (await wallet.getCurrentAccount())!;
+    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    setIsHardware(
+      !!Object.values(HARDWARE_KEYRING_TYPES).find(
+        (item) => item.type === currentAccount.type
+      )
+    );
+    const balance = await wallet.getCustomTestnetToken({
+      chainId,
+      address: currentAccount.address,
+    });
+
+    setNativeTokenBalance(balance.rawAmount);
+    let customGasPrice = 0;
+    const lastTimeGas = await runGetLastTimeGasSelection();
+    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+      // use cached gasPrice if exist
+      customGasPrice = lastTimeGas.gasPrice;
+    }
+    if (isSpeedUp || isCancel || ((isSend || isSwap) && tx.gasPrice)) {
+      // use gasPrice set by dapp when it's a speedup or cancel tx
+      customGasPrice = parseInt(tx.gasPrice!);
+    }
+    await runGetGasUsed();
+    const recommendNonce = await runGetNonce();
+    if (updateNonce) {
+      setRealNonce(intToHex(recommendNonce));
+    }
+    const gasList = await runGetGasMarket(customGasPrice);
+    // const median = gasList.find((item) => item.level === 'normal');
+    let gas: GasLevel | null = null;
+
+    if (
+      ((isSend || isSwap) && customGasPrice) ||
+      isSpeedUp ||
+      isCancel ||
+      lastTimeGas?.lastTimeSelect === 'gasPrice'
+    ) {
+      gas = gasList.find((item) => item.level === 'custom')!;
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasLevel'
+    ) {
+      const target = gasList.find(
+        (item) => item.level === lastTimeGas?.gasLevel
+      )!;
+      if (target) {
+        gas = target;
+      } else {
+        gas = gasList.find((item) => item.level === 'normal')!;
+      }
+    } else {
+      // no cache, use the fast level in gasMarket
+      gas = gasList.find((item) => item.level === 'normal')!;
+    }
+    setSelectedGas(gas);
+    setTx({
+      ...tx,
+      gasPrice: intToHex(gas.price),
+    });
+    setIsReady(true);
+  };
+
+  useMount(() => {
+    init();
   });
 
   const { t } = useTranslation();
-  const raw = params.data?.[0];
-  const isReady = !isLoadingGasMarket;
-  const isHardware = false;
 
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
 
@@ -211,6 +311,9 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
     setGasLimit(intToHex(gas.gasLimit));
     setRealNonce(`0x${new BigNumber(afterNonce).toString(16)}`);
+    if (beforeNonce !== afterNonce) {
+      setNonceChanged(true);
+    }
   };
 
   const handleCancel = () => {
@@ -331,10 +434,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
-  console.log({
-    recommedGasLimit,
-  });
-
   useMount(() => {});
 
   if (!chain) {
@@ -345,6 +444,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     <>
       <div className="approval-tx">
         <TestnetActions
+          isReady={isReady}
           chain={chain}
           raw={{
             ...tx,
@@ -366,18 +466,18 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             success: true,
             gasCostUsd: 0,
             gasCostAmount: new BigNumber(selectedGas?.price || 0)
-              .multipliedBy(gasLimit || 0)
+              .multipliedBy(gasUsed || 0)
               .div(1e18),
           }}
           gasCalcMethod={async (price) => {
             return {
               gasCostAmount: new BigNumber(price || 0)
-                .multipliedBy(gasLimit || 0)
+                .multipliedBy(gasUsed || 0)
                 .div(1e18),
               gasCostUsd: new BigNumber(0),
             };
           }}
-          recommendGasLimit={recommedGasLimit || ''}
+          recommendGasLimit={gasUsed || ''}
           recommendNonce={recommendNonce || ''}
           chainId={chainId}
           onChange={handleGasChange}
@@ -390,7 +490,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           manuallyChangeGasLimit={false}
           errors={[]}
           engineResults={[]}
-          nativeTokenBalance={'0'}
+          nativeTokenBalance={nativeTokenBalance}
           gasPriceMedian={null}
         />
       </div>

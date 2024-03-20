@@ -30,6 +30,10 @@ export const CHAINS_BY_NET = {
   testnet: ALL_CHAINS_TESTNET,
 };
 
+export const getTestnetChainList = () => {
+  return store.testnetList;
+};
+
 export const findChain = (params: {
   enum?: CHAINS_ENUM | string | null;
   id?: number | null;

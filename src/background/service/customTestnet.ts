@@ -1,3 +1,4 @@
+import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { BigNumber } from 'bignumber.js';
 import { GasLevel, Tx } from 'background/service/openapi';
 import { CHAINS_ENUM } from '@debank/common';
@@ -18,6 +19,7 @@ import {
   toHex,
   formatEther,
   erc20Abi,
+  isAddress,
 } from 'viem';
 import { omit } from 'lodash';
 import { intToHex } from 'ethereumjs-util';
@@ -27,6 +29,7 @@ import {
   getGasPrice,
   getTransaction,
   getTransactionCount,
+  getTransactionReceipt,
   multicall,
   readContract,
 } from 'viem/actions';
@@ -63,12 +66,12 @@ export interface RPCItem {
 export interface CustomTestnetTokenBase {
   id: string;
   chainId: number;
+  symbol: string;
+  decimals: number;
 }
 
 export interface CustomTestnetToken extends CustomTestnetTokenBase {
   amount: number;
-  symbol: string;
-  decimals: number;
   rawAmount: string;
 }
 
@@ -184,6 +187,9 @@ class CustomTestnetService {
 
   remove = (chainId: number) => {
     this.store.customTestnet = omit(this.store.customTestnet, chainId);
+    this.store.customTokenList = this.store.customTokenList.filter((item) => {
+      return item.chainId !== chainId;
+    });
     delete this.chains[chainId];
     updateChainStore({
       testnetList: Object.values(this.store.customTestnet),
@@ -200,6 +206,71 @@ class CustomTestnetService {
     });
 
     return list;
+  };
+
+  getTransactionReceipt = async ({
+    chainId,
+    hash,
+  }: {
+    chainId: number;
+    hash: string;
+  }) => {
+    const client = this.getClient(+chainId);
+    if (!client) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+    const res = await getTransactionReceipt(client, {
+      hash: hash as any,
+    });
+    return {
+      ...res,
+      status: res.status === 'success' ? '0x1' : '0x0',
+    };
+  };
+
+  getTx = ({ hash, chainId }: { chainId: number; hash: string }) => {
+    const chain = findChain({ id: chainId });
+    if (!chain) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+    return customTestnetService
+      .getTransactionReceipt({
+        chainId: chain!.id,
+        hash: hash,
+      })
+      .then((res) => {
+        return {
+          ...res,
+          hash: res.transactionHash,
+          code: 0,
+          status: 1,
+          gas_used: Number(res.gasUsed),
+          token: customTestnetTokenToTokenItem({
+            amount: 0,
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals,
+            id: chain.nativeTokenAddress,
+            chainId: chain.id,
+            rawAmount: '0',
+          }),
+        };
+      })
+      .catch((e) => {
+        return {
+          hash: hash,
+          code: -1,
+          status: 0,
+          gas_used: 0,
+          token: customTestnetTokenToTokenItem({
+            amount: 0,
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals,
+            id: chain.nativeTokenAddress,
+            chainId: chain.id,
+            rawAmount: '0',
+          }),
+        };
+      });
   };
 
   getTransactionCount = ({
@@ -250,7 +321,13 @@ class CustomTestnetService {
     return res.toString();
   };
 
-  getGasMarket = async (chainId: number) => {
+  getGasMarket = async ({
+    chainId,
+    custom,
+  }: {
+    chainId: number;
+    custom?: number;
+  }) => {
     // const SETTINGS_BY_PRIORITY_LEVEL = {
     //   low: {
     //     percentile: 10 as Percentile,
@@ -311,11 +388,15 @@ class CustomTestnetService {
           price: new BigNumber(gasPrice)
             .multipliedBy(item.baseFeePercentageMultiplier)
             .div(100)
+            .integerValue()
             .toNumber(),
-          priority_price: new BigNumber(gasPrice)
-            .multipliedBy(item.priorityFeePercentageMultiplier)
-            .div(100)
-            .toNumber(),
+          priority_price: Math.round(
+            new BigNumber(gasPrice)
+              .multipliedBy(item.priorityFeePercentageMultiplier)
+              .div(100)
+              .integerValue()
+              .toNumber()
+          ),
           front_tx_count: 0,
           estimated_seconds: 0,
         };
@@ -323,10 +404,10 @@ class CustomTestnetService {
       .concat([
         {
           level: 'custom',
-          price: 0,
+          price: custom || 0,
+          priority_price: custom || 0,
           front_tx_count: 0,
           estimated_seconds: 0,
-          priority_price: 0,
         },
       ]) as GasLevel[];
   };
@@ -337,7 +418,7 @@ class CustomTestnetService {
         (item) => item.id === params.id && item.chainId === item.chainId
       )
     ) {
-      return;
+      throw new Error('Token already added');
     }
     this.store.customTokenList = [...this.store.customTokenList, params];
   };
@@ -363,6 +444,36 @@ class CustomTestnetService {
     address: string;
     tokenId?: string | null;
   }) => {
+    const [balance, tokenInfo] = await Promise.all([
+      this.getBalance({
+        chainId,
+        address,
+        tokenId,
+      }),
+      this.getTokenInfo({
+        chainId,
+        tokenId,
+      }),
+    ]);
+
+    const { decimals } = tokenInfo;
+
+    return {
+      ...tokenInfo,
+      amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
+      rawAmount: balance.toString(),
+    };
+  };
+
+  getBalance = async ({
+    chainId,
+    address,
+    tokenId,
+  }: {
+    chainId: number;
+    address: string;
+    tokenId?: string | null;
+  }) => {
     const client = this.getClient(+chainId);
     const chain = findChain({
       id: +chainId,
@@ -375,26 +486,52 @@ class CustomTestnetService {
       const balance = await getBalance(client, {
         address: address as any,
       });
-      const ethers = formatEther(balance);
+      return balance;
+    }
 
+    const balance = await readContract(client, {
+      address: tokenId as any,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [address as any],
+    });
+
+    return balance;
+  };
+
+  getTokenInfo = async ({
+    chainId,
+    tokenId,
+  }: {
+    chainId: number;
+    tokenId?: string | null;
+  }) => {
+    const client = this.getClient(+chainId);
+    const chain = findChain({
+      id: +chainId,
+    });
+    if (!client || !chain) {
+      throw new Error(`Invalid chainId: ${chainId}`);
+    }
+
+    if (!tokenId || tokenId === chain.nativeTokenAddress) {
       return {
         id: chain.nativeTokenAddress,
         symbol: chain.nativeTokenSymbol,
-        amount: +ethers,
         chainId,
-        rawAmount: balance.toString(),
         decimals: chain.nativeTokenDecimals,
       };
     }
 
-    // multicall
-    const [balance, symbol, decimals] = await Promise.all([
-      readContract(client, {
-        address: tokenId as any,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: [address as any],
-      }),
+    const local = this.store.customTokenList?.find((item) => {
+      return +item.chainId === +chainId && item.id === tokenId;
+    });
+    if (local) {
+      return local;
+    }
+
+    // todo: multicall
+    const [symbol, decimals] = await Promise.all([
       readContract(client, {
         address: tokenId as any,
         abi: erc20Abi,
@@ -410,27 +547,26 @@ class CustomTestnetService {
     return {
       id: tokenId,
       symbol: symbol,
-      amount: new BigNumber(balance.toString()).div(10 ** decimals).toNumber(),
       chainId,
       decimals,
-      rawAmount: balance.toString(),
     };
   };
 
   getTokenList = async ({
     address,
     chainId,
-    tokenId,
+    q,
   }: {
     address: string;
     chainId?: number;
-    tokenId?: string;
+    q?: string;
   }) => {
     const nativeTokenList = Object.values(this.store.customTestnet).map(
       (item) => {
         return {
           id: null,
           chainId: item.id,
+          symbol: item.nativeTokenSymbol,
         };
       }
     );
@@ -442,9 +578,11 @@ class CustomTestnetService {
       });
     }
     // todo, on chain search or search local
-    if (tokenId) {
+    if (q) {
       tokenList = tokenList.filter((item) => {
-        return item.id === tokenId;
+        return (
+          item.id === q || item.symbol.toLowerCase().includes(q.toLowerCase())
+        );
       });
     }
 

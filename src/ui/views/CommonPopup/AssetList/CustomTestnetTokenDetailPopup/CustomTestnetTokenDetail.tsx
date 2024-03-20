@@ -21,6 +21,7 @@ import {
 } from 'ui/utils';
 import { CustomizedButton } from './CustomizedButton';
 import './style.less';
+import { getAddressScanLink } from '@/utils';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -59,9 +60,8 @@ export const CustomTestnetTokenDetail = ({
 
   const handleClickLink = (token: CustomTestnetToken) => {
     if (!chain) return;
-    const prefix = chain.scanLink?.replace('/tx/_s_', '');
     const needClose = getUITypeName() !== 'notification';
-    openInTab(`${prefix}/address/${token.id}`, needClose);
+    openInTab(getAddressScanLink(chain.scanLink, token.id), needClose);
   };
 
   const isNativeToken = !/^0x.{40}$/.test(token.id);
@@ -72,7 +72,7 @@ export const CustomTestnetTokenDetail = ({
     setVisible(false);
     onClose?.();
     history.push(
-      `/send-token?rbisource=tokendetail&token=${token.chainId}:${token?.id}`
+      `/send-token?rbisource=tokendetail&token=${chain?.serverId}:${token?.id}`
     );
   }, [history, token]);
 
@@ -80,11 +80,7 @@ export const CustomTestnetTokenDetail = ({
     setVisible(false);
     onClose?.();
     history.push(
-      `/receive?rbisource=tokendetail&chain=${
-        findChain({
-          id: token.chainId,
-        })?.enum
-      }&token=${token?.symbol}`
+      `/receive?rbisource=tokendetail&chain=${chain?.enum}&token=${token?.symbol}`
     );
   }, [history, token]);
 
@@ -99,7 +95,7 @@ export const CustomTestnetTokenDetail = ({
               className="rounded-full w-[24px] h-[24px]"
             />
             <div className="token-symbol ml-8" title={token.symbol}>
-              {ellipsisOverflowedText(token.symbol, 8)}
+              {ellipsisOverflowedText(token.symbol || '', 8)}
             </div>
           </div>
           <div className="address">

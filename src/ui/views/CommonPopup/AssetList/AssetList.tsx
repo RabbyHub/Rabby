@@ -49,7 +49,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
       <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
         <div className={clsx('mt-[160px]', isEmptyAssets ? 'block' : 'hidden')}>
           <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
+          <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>

@@ -15,6 +15,7 @@ import IconArrowRight, {
 import { ActionWrapper } from '../../ActionWrapper';
 import clsx from 'clsx';
 import { Table, Col, Row } from '../../Actions/components/Table';
+import Loading from '../../TxComponents/Loading';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -45,11 +46,13 @@ export const TestnetActions = ({
   raw,
   onChange,
   isSpeedUp,
+  isReady,
 }: {
   chain: Chain;
   raw: Record<string, string | number>;
   onChange?(tx: Record<string, any>): void;
   isSpeedUp: boolean;
+  isReady?: boolean;
 }) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -60,8 +63,12 @@ export const TestnetActions = ({
   const isUnknown = true;
   const actionName = t('page.signTx.unknownActionType');
 
+  if (!isReady) {
+    return <Loading />;
+  }
+
   return (
-    <div>
+    <div className="relative">
       <SignTitle>
         <div className="left relative">
           {isSpeedUp && (
@@ -149,6 +156,17 @@ export const TestnetActions = ({
             </Col>
           </Table>
         </div>
+      </div>
+      <div
+        className={clsx(
+          'absolute bottom-[36px] right-0',
+          'px-[16px] py-[12px] rotate-[-23deg]',
+          'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
+          'text-r-neutral-title1 text-[28px] leading-[28px]',
+          'opacity-30'
+        )}
+      >
+        Testnet
       </div>
     </div>
   );

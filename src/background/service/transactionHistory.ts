@@ -22,6 +22,7 @@ import {
 import { sortBy, max, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import eventBus from '@/eventBus';
+import { customTestnetService } from './customTestnet';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -60,7 +61,7 @@ export interface TransactionGroup {
   txs: TransactionHistoryItem[];
   isPending: boolean;
   createdAt: number;
-  explain: ObjectType.Merge<
+  explain?: ObjectType.Merge<
     ExplainTxResponse,
     { approvalId: string; calcSuccess: boolean }
   >;
@@ -531,13 +532,20 @@ class TxHistory {
 
     try {
       const results = await Promise.all(
-        broadcastedTxs.map((tx) =>
-          openapiService.getTx(
-            chain.serverId,
-            tx.hash!,
-            Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
-          )
-        )
+        broadcastedTxs.map((tx) => {
+          if (chain.isTestnet) {
+            return customTestnetService.getTx({
+              chainId: chain.id,
+              hash: tx.hash!,
+            });
+          } else {
+            return openapiService.getTx(
+              chain.serverId,
+              tx.hash!,
+              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
+            );
+          }
+        })
       );
       const completed = results.find(
         (result) => result.code === 0 && result.status !== 0
@@ -722,8 +730,9 @@ class TxHistory {
       stats.report('completeTransaction', {
         chainId: chain.serverId,
         success,
-        preExecSuccess:
-          target.explain.pre_exec.success && target.explain.calcSuccess,
+        preExecSuccess: Boolean(
+          target.explain?.pre_exec.success && target.explain?.calcSuccess
+        ),
         createBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
         source: target?.$ctx?.ga?.source || '',
         trigger: target?.$ctx?.ga?.trigger || '',
