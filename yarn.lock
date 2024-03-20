@@ -4148,10 +4148,10 @@
     ethereumjs-wallet "^1.0.2"
     randombytes "^2.1.0"
 
-"@rabby-wallet/eth-trezor-keyring@2.5.0-beta.3":
-  version "2.5.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.5.0-beta.3.tgz#cecefca598de786be2bf3d65c3d9e7095c58babf"
-  integrity sha512-EyHQIBezcW1hNIjL+2id8I0deRHAgXi42V6xc3SehxD/LrSCRQpG+SzUeKBlNbQLXai6ZACwpnp1v6xwYsUpvw==
+"@rabby-wallet/eth-trezor-keyring@2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.5.0.tgz#fbcbf54747c26f5187e95debb8716cc47efcec73"
+  integrity sha512-3FTdp2UUM8bEYGaJquVTkRFNIZRCqqRiBpqETzfoPXjhhvflX0WFRpjI6/Fj7M2f1149I5mFH4Ie5nHW/PfUwA==
   dependencies:
     "@ethereumjs/tx" "3"
     "@metamask/eth-sig-util" "5"
@@ -4222,10 +4222,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.2.0-beta.2":
-  version "0.2.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.2.0-beta.2.tgz#02a82d825733f5567395afa9f636bd9d0ef3d19e"
-  integrity sha512-7aM/nzryzeIo1AeVoBnOosHMZrAcFd88Bx+Y3KroPG3MclZafJIwhhIrmYNT715EOfO1dUoBl4v6Kc9GNJazXw==
+"@rabby-wallet/page-provider@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.2.0.tgz#9f9e073aff115f0b9a4375b24d150d3f5c4eac30"
+  integrity sha512-Y6pID4kkkbgox7b1eAmdBeTTcfIwxDrTIls8/oPDx3CJz/yFX+Q6ogB7NwtvFOc01qf6TtUvE3cj69eS7kgbkw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
