@@ -4,7 +4,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
-import { groupBy, uniq } from 'lodash';
+import { groupBy, set, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -85,7 +85,7 @@ import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum, updateChainStore } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
@@ -3658,6 +3658,19 @@ export class WalletController extends BaseController {
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
+
+  syncChainList = () => {
+    const testnetList = customTestnetService.getList();
+    updateChainStore({
+      testnetList: testnetList,
+    });
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: 'syncChainList',
+      params: {
+        testnetList: testnetList,
+      },
+    });
+  };
 }
 
 const wallet = new WalletController();

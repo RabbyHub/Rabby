@@ -1,4 +1,4 @@
-import { Drawer, Input } from 'antd';
+import { Button, Drawer, Input } from 'antd';
 import React, {
   ReactNode,
   useCallback,
@@ -28,6 +28,8 @@ import NetSwitchTabs, {
   useSwitchNetTab,
 } from '../PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
+import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
+import { useWallet } from '@/ui/utils';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -77,6 +79,12 @@ const useChainSeletorList = ({
   const handleSort = (chains: Chain[]) => {
     dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
   };
+  const { mainnetList, testnetList } = useRabbySelector((state) => {
+    return {
+      mainnetList: state.chains.mainnetList,
+      testnetList: state.chains.testnetList,
+    };
+  });
   const { allSearched, matteredList, unmatteredList } = useMemo(() => {
     const searchKw = search?.trim().toLowerCase();
     const result = varyAndSortChainItems({
@@ -85,6 +93,8 @@ const useChainSeletorList = ({
       matteredChainBalances: chainBalances,
       pinned,
       netTabKey,
+      mainnetList,
+      testnetList,
     });
 
     return {
@@ -138,6 +148,8 @@ const ChainSelectorModal = ({
     hideTestnetTab,
   });
 
+  const [isShowAddTestnetModal, setIsShowAddTestnetModal] = useState(false);
+
   const { t } = useTranslation();
 
   const {
@@ -161,6 +173,7 @@ const ChainSelectorModal = ({
   }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
+  const wallet = useWallet();
 
   useEffect(() => {
     if (!visible) {
@@ -175,73 +188,101 @@ const ChainSelectorModal = ({
   }, [visible, rDispatch]);
 
   return (
-    <Drawer
-      title={title}
-      width="400px"
-      height={height}
-      closable={false}
-      placement={'bottom'}
-      visible={visible}
-      onClose={handleCancel}
-      className={clsx(
-        'custom-popup is-support-darkmode',
-        'chain-selector__modal',
-        connection && 'connection',
-        className
-      )}
-      zIndex={zIndex}
-      destroyOnClose
-    >
-      <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
-        {isShowTestnet && !hideMainnetTab && (
-          <NetSwitchTabs
-            value={selectedTab}
-            onTabChange={onTabChange}
-            className="h-[28px] box-content mt-[20px] mb-[20px]"
-          />
+    <>
+      <Drawer
+        title={title}
+        width="400px"
+        height={height}
+        closable={false}
+        placement={'bottom'}
+        visible={visible}
+        onClose={handleCancel}
+        className={clsx(
+          'custom-popup is-support-darkmode',
+          'chain-selector__modal',
+          connection && 'connection',
+          className
         )}
-        <Input
-          prefix={<img src={IconSearch} />}
-          // Search chain
-          placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
-          onChange={(e) => setSearch(e.target.value)}
-          value={search}
-          allowClear
-        />
-      </header>
-      <div className="chain-selector__modal-content">
-        <SelectChainList
-          supportChains={supportChains}
-          data={matteredList}
-          sortable={false /* !supportChains */}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onSort={handleSort}
-          onChange={handleChange}
-          value={value}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        <SelectChainList
-          supportChains={supportChains}
-          data={unmatteredList}
-          value={value}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onChange={handleChange}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        {matteredList.length === 0 && unmatteredList.length === 0 ? (
-          <div className="select-chain-list pt-[70px] pb-[120px]">
-            <Empty>
-              {/* No chains */}
-              {t('component.ChainSelectorModal.noChains')}
-            </Empty>
-          </div>
-        ) : null}
-      </div>
-    </Drawer>
+        zIndex={zIndex}
+        destroyOnClose
+      >
+        <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+          {isShowTestnet && !hideMainnetTab && (
+            <NetSwitchTabs
+              value={selectedTab}
+              onTabChange={onTabChange}
+              className="h-[28px] box-content mt-[20px] mb-[20px]"
+            />
+          )}
+          {matteredList.length === 0 && unmatteredList.length === 0 ? null : (
+            <Input
+              prefix={<img src={IconSearch} />}
+              // Search chain
+              placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+              allowClear
+            />
+          )}
+        </header>
+        <div className="chain-selector__modal-content">
+          <SelectChainList
+            supportChains={supportChains}
+            data={matteredList}
+            sortable={false /* !supportChains */}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onSort={handleSort}
+            onChange={handleChange}
+            value={value}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          <SelectChainList
+            supportChains={supportChains}
+            data={unmatteredList}
+            value={value}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onChange={handleChange}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          {matteredList.length === 0 && unmatteredList.length === 0 ? (
+            <div className="select-chain-list pt-[70px] pb-[120px] bg-transparent">
+              <Empty>
+                {/* No chains */}
+                {t('component.ChainSelectorModal.noChains')}
+              </Empty>
+              {selectedTab === 'testnet' ? (
+                <div className="text-center mt-[92px]">
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setIsShowAddTestnetModal(true);
+                    }}
+                    className="w-[200px] h-[44px]"
+                  >
+                    Add Testnet
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </Drawer>
+      <EditCustomTestnetModal
+        zIndex={zIndex ? zIndex + 1 : 10000}
+        visible={isShowAddTestnetModal}
+        onCancel={() => {
+          setIsShowAddTestnetModal(false);
+        }}
+        onConfirm={() => {
+          setIsShowAddTestnetModal(false);
+          wallet.syncChainList();
+        }}
+      />
+    </>
   );
 };
 

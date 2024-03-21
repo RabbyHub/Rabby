@@ -125,13 +125,17 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 
 store.dispatch.app.initWallet({ wallet });
 store.dispatch.app.initBizStore();
-wallet.getCustomTestnetList().then((list) => {
+wallet.getCustomTestnetList().then((testnetList) => {
   updateChainStore({
-    testnetList: list,
+    testnetList: testnetList,
   });
-  console.log({
-    list,
-  });
+  store.dispatch.chains.setField({ testnetList });
+});
+
+eventBus.addEventListener('syncChainList', (params) => {
+  console.log('??', params);
+  store.dispatch.chains.setField(params);
+  updateChainStore(params);
 });
 
 wallet.getLocale().then((locale) => {

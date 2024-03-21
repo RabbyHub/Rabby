@@ -58,6 +58,7 @@ import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
+import { getMainnetChainList } from '@/utils/chain';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -942,7 +943,7 @@ const SettingsInner = ({
                 className="text-14 mr-[8px] text-r-neutral-title-1"
                 role="button"
               >
-                {Object.values(CHAINS).length}
+                {getMainnetChainList().length}
               </span>
               <ThemeIcon
                 src={RcIconArrowRight}

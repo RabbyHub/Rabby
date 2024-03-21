@@ -63,12 +63,14 @@ export const EditCustomTestnetModal = ({
   onCancel,
   onConfirm,
   isEdit,
+  zIndex,
 }: {
   isEdit?: boolean;
   data?: TestnetChainBase | null;
   visible: boolean;
   onCancel(): void;
   onConfirm(url?: string): void;
+  zIndex?: number;
 }) => {
   const wallet = useWallet();
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
@@ -123,8 +125,9 @@ export const EditCustomTestnetModal = ({
       bodyStyle={{
         padding: 0,
       }}
+      zIndex={zIndex || 1001}
       style={{
-        zIndex: 1001,
+        zIndex: zIndex || 1001,
       }}
       // isSupportDarkMode
     >

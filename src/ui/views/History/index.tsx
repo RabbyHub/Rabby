@@ -7,7 +7,7 @@ import { ReactComponent as RcIconArrowRight } from '@/ui/assets/history/icon-arr
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
-import { PageHeader } from 'ui/component';
+import { Empty, PageHeader } from 'ui/component';
 import { HistoryList } from './components/HistoryList';
 import './style.less';
 import qs from 'qs';
@@ -33,15 +33,17 @@ const History = () => {
           className="h-[28px] box-content mt-[20px] mb-[20px]"
         />
       )}
-      <div
-        className="filter-scam-nav hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10"
-        onClick={() => {
-          history.push(`/history/filter-scam?net=${selectedTab}`);
-        }}
-      >
-        {t('page.transactions.filterScam.btn')}
-        <ThemeIcon src={RcIconArrowRight} />
-      </div>
+      {selectedTab === 'mainnet' ? (
+        <div
+          className="filter-scam-nav hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10"
+          onClick={() => {
+            history.push(`/history/filter-scam?net=${selectedTab}`);
+          }}
+        >
+          {t('page.transactions.filterScam.btn')}
+          <ThemeIcon src={RcIconArrowRight} />
+        </div>
+      ) : null}
       <Tabs
         className="h-full"
         renderTabBar={renderTabBar}
@@ -51,7 +53,14 @@ const History = () => {
           <HistoryList isMainnet />
         </Tabs.TabPane>
         <Tabs.TabPane key="testnet">
-          <HistoryList isMainnet={false} />
+          <Empty
+            desc={
+              <div className="mt-[-12px] text-r-neutral-foot leading-[20px]">
+                Not supported on Testnets
+              </div>
+            }
+            className="pt-[108px]"
+          ></Empty>
         </Tabs.TabPane>
       </Tabs>
     </div>

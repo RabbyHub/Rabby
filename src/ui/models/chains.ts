@@ -5,8 +5,15 @@ import { ConnectedSite } from '@/background/service/permission';
 import { RootModel } from '.';
 import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import { RabbyRootState } from '../store';
-import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import {
+  findChainByEnum,
+  getMainnetChainList,
+  getTestnetChainList,
+  varyAndSortChainItems,
+} from '@/utils/chain';
 import type { AccountState } from './account';
+import { Chain } from '@debank/common';
+import { TestnetChain } from '@/background/service/customTestnet';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
@@ -14,6 +21,8 @@ type IState = {
   gnosisPendingCount: number;
 
   gnosisNetworkIds: string[];
+  mainnetList: Chain[];
+  testnetList: TestnetChain[];
 };
 
 export const chains = createModel<RootModel>()({
@@ -21,6 +30,8 @@ export const chains = createModel<RootModel>()({
   state: <IState>{
     currentConnection: null,
     gnosisNetworkIds: [] as string[],
+    mainnetList: getMainnetChainList(),
+    testnetList: getTestnetChainList(),
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {

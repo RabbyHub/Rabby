@@ -34,6 +34,10 @@ export const getTestnetChainList = () => {
   return store.testnetList;
 };
 
+export const getMainnetChainList = () => {
+  return store.mainnetList;
+};
+
 export const findChain = (params: {
   enum?: CHAINS_ENUM | string | null;
   id?: number | null;
@@ -215,6 +219,8 @@ export function varyAndSortChainItems(deps: {
     [x: string]: DisplayChainWithWhiteLogo | undefined;
   };
   netTabKey?: import('@/ui/component/PillsSwitch/NetSwitchTabs').NetSwitchTabsKey;
+  mainnetList?: Chain[];
+  testnetList?: Chain[];
 }) {
   const {
     supportChains,
@@ -222,6 +228,8 @@ export function varyAndSortChainItems(deps: {
     pinned,
     matteredChainBalances,
     netTabKey,
+    mainnetList = store.mainnetList,
+    testnetList = store.testnetList,
   } = deps;
 
   const unpinnedListGroup = {
@@ -236,7 +244,7 @@ export function varyAndSortChainItems(deps: {
   };
 
   const _all = (
-    (netTabKey === 'testnet' ? store.testnetList : store.mainnetList) || []
+    (netTabKey === 'testnet' ? testnetList : mainnetList) || []
   ).sort((a, b) => a.name.localeCompare(b.name));
 
   _all.forEach((item) => {
