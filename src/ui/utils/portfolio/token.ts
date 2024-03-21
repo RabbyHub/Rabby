@@ -37,9 +37,10 @@ const filterDisplayToken = (
   tokens: AbstractPortfolioToken[],
   blocked: Token[]
 ) => {
-  const ChainValues = Object.values(CHAINS);
   return tokens.filter((token) => {
-    const chain = ChainValues.find((chain) => chain.serverId === token.chain);
+    const chain = findChain({
+      serverId: token.chain,
+    });
     return (
       token.is_core &&
       !blocked.find(

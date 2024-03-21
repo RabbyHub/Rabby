@@ -4,7 +4,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import type { ChainWithBalance } from 'background/service/openapi';
 
 import { CHAINS } from 'consts';
-import { findChainByServerID } from '@/utils/chain';
+import { findChain, findChainByServerID } from '@/utils/chain';
 
 export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
@@ -12,8 +12,9 @@ export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
-  const chainsArray = Object.values(CHAINS);
-  const chain = chainsArray.find((chain) => chain.id === item.community_id);
+  const chain = findChain({
+    id: item.community_id,
+  });
 
   return {
     ...item,

@@ -249,7 +249,9 @@ const getRecommendNonce = async ({
   tx: Tx;
   chainId: number;
 }) => {
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) {
     throw new Error('chain not found');
   }
@@ -273,7 +275,9 @@ const getNativeTokenBalance = async ({
   address: string;
   chainId: number;
 }): Promise<string> => {
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) {
     throw new Error('chain not found');
   }
@@ -306,7 +310,9 @@ const explainGas = async ({
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
   if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
     const res = await wallet.fetchEstimatedL1Fee(
@@ -700,7 +706,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     params.data[0].chainId && Number(params.data[0].chainId)
   );
   const [chain, setChain] = useState(
-    Object.values(CHAINS).find((item) => item.id === chainId)
+    findChain({
+      id: chainId,
+    })
   );
   const [inited, setInited] = useState(false);
   const [isHardware, setIsHardware] = useState(false);

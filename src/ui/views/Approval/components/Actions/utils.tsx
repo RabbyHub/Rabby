@@ -37,7 +37,7 @@ import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
-import { isTestnet } from '@/utils/chain';
+import { findChain, isTestnet } from '@/utils/chain';
 import { findChainByServerID } from '@/utils/chain';
 
 export interface ReceiveTokenItem extends TokenItem {
@@ -898,9 +898,9 @@ export const fetchActionRequiredData = async ({
     });
   }
   if (actionData.cancelTx) {
-    const chain = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainId
-    );
+    const chain = findChain({
+      serverId: chainId,
+    });
     if (chain) {
       const pendingTxs = await wallet.getPendingTxsByNonce(
         address,

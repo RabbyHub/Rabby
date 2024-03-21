@@ -21,6 +21,8 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
+import { id } from 'ethers/lib/utils';
+import { findChain } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -40,9 +42,9 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!;
+  const chain = findChain({
+    id: params.chainId || 1,
+  });
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.SUBMITTING
   );
@@ -124,7 +126,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
 
           stats.report('signTransaction', {
             type: account.brandName,
-            chainId: chain.serverId,
+            chainId: chain?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
             preExecSuccess: explain
               ? explain?.calcSuccess && explain?.pre_exec.success

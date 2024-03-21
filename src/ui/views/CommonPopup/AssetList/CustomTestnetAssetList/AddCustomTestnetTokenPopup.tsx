@@ -3,7 +3,7 @@ import { Popup } from '@/ui/component';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, useWallet } from '@/ui/utils';
-import { findChain, getTestnetChainList } from '@/utils/chain';
+import { findChain, getChainList, getTestnetChainList } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
@@ -92,7 +92,7 @@ export const AddCustomTestnetTokenPopup = ({
     chain: CHAINS_ENUM | null;
   }>({
     visible: false,
-    chain: getTestnetChainList()?.[0]?.enum || null,
+    chain: getChainList('testnet')?.[0]?.enum || null,
   });
 
   const chain = findChain({ enum: chainSelectorState.chain });
@@ -164,7 +164,7 @@ export const AddCustomTestnetTokenPopup = ({
     if (!visible) {
       setChainSelectorState({
         visible: false,
-        chain: getTestnetChainList()?.[0]?.enum || null,
+        chain: getChainList('testnet')?.[0]?.enum || null,
       });
       setTokenId('');
       setChecked(false);

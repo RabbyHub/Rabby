@@ -185,9 +185,9 @@ export class WalletController extends BaseController {
   ): Promise<string> => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainId = Object.values(CHAINS)
-      .find((chain) => chain.serverId === chainServerId)
-      ?.id.toString();
+    const chainId = findChain({
+      serverId: chainServerId,
+    })?.id.toString();
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
 
     buildinProvider.currentProvider.currentAccount = account.address;
@@ -219,9 +219,9 @@ export class WalletController extends BaseController {
   }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chain = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainServerId
-    );
+    const chain = findChain({
+      serverId: chainServerId,
+    });
     const chainId = chain?.id;
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     const params: Record<string, any> = {
@@ -567,9 +567,9 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainId = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainServerId
-    )?.id;
+    const chainId = findChain({
+      serverId: chainServerId,
+    })?.id;
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     let tx: any = {
       from: account.address,
@@ -666,9 +666,9 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainId = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainServerId
-    )?.id;
+    const chainId = findChain({
+      serverId: chainServerId,
+    })?.id;
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       await this.sendRequest({
@@ -775,9 +775,9 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainId = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainServerId
-    )?.id;
+    const chainId = findChain({
+      serverId: chainServerId,
+    })?.id;
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       if (isApprovedForAll) {
@@ -1148,7 +1148,9 @@ export class WalletController extends BaseController {
   pingCustomRPC = RPCService.ping;
   setRPCEnable = RPCService.setRPCEnable;
   validateRPC = async (url: string, chainId: number) => {
-    const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+    const chain = findChain({
+      id: chainId,
+    });
     if (!chain) throw new Error(`ChainId ${chainId} is not supported`);
     const [_, rpcChainId] = await Promise.all([
       RPCService.ping(chain.enum),
@@ -3195,7 +3197,9 @@ export class WalletController extends BaseController {
     from: string;
     chainId: number;
   }) => {
-    const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+    const chain = findChain({
+      id: chainId,
+    });
     if (!chain) {
       throw new Error(t('background.error.invalidChainId'));
     }

@@ -75,9 +75,9 @@ export const IconWithChain = ({
   hideChainIcon?: boolean;
   isShowChainTooltip?: boolean;
 }) => {
-  const chain = Object.values(CHAINS).find(
-    (item) => item.serverId === chainServerId
-  );
+  const chain = findChain({
+    serverId: chainServerId,
+  });
   return (
     <div
       className={clsx('token-with-chain', noRound && 'no-round')}

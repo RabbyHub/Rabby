@@ -8,6 +8,7 @@ import { ellipsis } from 'ui/utils/address';
 import { CHAINS } from 'consts';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -35,9 +36,9 @@ export const HistoryItem = ({
   const isScam = data.is_scam;
 
   const handleClickTxHash = () => {
-    const chain = Object.values(CHAINS).find(
-      (item) => data.chain === item.serverId
-    );
+    const chain = findChain({
+      serverId: data.chain,
+    });
     if (!chain) return;
     const needClose = getUITypeName() !== 'notification';
     openInTab(chain.scanLink.replace(/_s_/, data.id), needClose);

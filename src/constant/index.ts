@@ -180,7 +180,12 @@ import IconImKey, {
 import IconUtila, {
   ReactComponent as RCIconUtila,
 } from 'ui/assets/walletlogo/utila.svg';
-import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
+import {
+  ensureChainHashValid,
+  ensureChainListValid,
+  getChainList,
+  getMainnetChainList,
+} from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import browser from 'webextension-polyfill';
 
@@ -204,7 +209,7 @@ interface PortfolioChain extends Chain {
 }
 
 export const CHAIN_ID_LIST = new Map<string, PortfolioChain>(
-  Object.values(CHAINS).map((chain) => {
+  getChainList('mainnet').map((chain) => {
     return [chain.serverId, { ...chain, isSupportHistory: false }];
   })
 );

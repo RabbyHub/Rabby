@@ -43,7 +43,7 @@ import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-2-currentcolor.svg';
 
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
 import AccountSearchInput from '@/ui/component/AccountSearchInput';
 import { confirmAllowTransferToPromise } from '../SendToken/components/ModalConfirmAllowTransfer';
@@ -68,9 +68,9 @@ const SendNFT = () => {
   );
   const [chain, setChain] = useState<CHAINS_ENUM | undefined>(
     state?.nftItem
-      ? Object.values(CHAINS).find(
-          (item) => item.serverId === state.nftItem.chain
-        )?.enum
+      ? findChain({
+          serverId: state.nftItem.chain,
+        })?.enum
       : undefined
   );
 
@@ -382,9 +382,9 @@ const SendNFT = () => {
   useEffect(() => {
     if (nftItem) {
       if (!chain) {
-        const nftChain = Object.values(CHAINS).find(
-          (item) => item.serverId === nftItem.chain
-        )?.enum;
+        const nftChain = findChain({
+          serverId: nftItem.chain,
+        })?.enum;
         if (!nftChain) {
           history.replace('/');
         } else {

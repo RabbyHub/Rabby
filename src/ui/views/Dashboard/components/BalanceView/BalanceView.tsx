@@ -17,6 +17,7 @@ import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const { t } = useTranslation();
@@ -73,9 +74,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
     const chains = networkIds
       .map((networkId) => {
-        return Object.values(CHAINS).find(
-          (chain) => chain.id === Number(networkId)
-        );
+        return findChain({
+          id: Number(networkId),
+        });
       })
       .filter((v) => !!v);
     setGnosisNetworks(chains as Chain[]);

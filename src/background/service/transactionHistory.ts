@@ -13,7 +13,7 @@ import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
-import { findChainByID } from '@/utils/chain';
+import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
 import {
   ActionRequireData,
@@ -475,7 +475,9 @@ class TxHistory {
     const key = `${chainId}-${nonce}`;
     const from = address.toLowerCase();
     const target = this.store.transactions[from][key];
-    const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
+    const chain = findChain({
+      id: chainId,
+    });
     console.log('reloadTxRequest', target);
     if (!target) {
       return;
@@ -522,7 +524,12 @@ class TxHistory {
     const key = `${chainId}-${nonce}`;
     const from = address.toLowerCase();
     const target = this.store.transactions[from]?.[key];
-    const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
+    const chain = findChain({
+      id: chainId,
+    });
+    if (!chain) {
+      return;
+    }
     if (!target) return;
     const { txs } = target;
 
@@ -723,9 +730,9 @@ class TxHistory {
         [key]: target,
       },
     });
-    const chain = Object.values(CHAINS).find(
-      (item) => item.id === Number(target.chainId)
-    );
+    const chain = findChain({
+      id: +target.chainId,
+    });
     if (chain) {
       stats.report('completeTransaction', {
         chainId: chain.serverId,

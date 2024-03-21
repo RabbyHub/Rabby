@@ -4,6 +4,7 @@ import Player from './Player';
 import Reader from './Reader';
 import {
   CHAINS,
+  CHAINS_ENUM,
   EVENTS,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
@@ -17,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import {
   UnderlineButton as SwitchButton,
   SIGNATURE_METHOD,
@@ -62,9 +63,10 @@ const QRHardWareWaiting = ({ params }) => {
     approvalId: string;
   }>();
 
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
+  const chain =
+    findChain({
+      id: params.chainId || 1,
+    })?.enum || CHAINS_ENUM.ETH;
   const init = useCallback(async () => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;

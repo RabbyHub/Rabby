@@ -16,19 +16,19 @@ export const updateChainStore = (params: Partial<typeof store>) => {
   Object.assign(store, params);
 };
 
-const ALL_CHAINS = Object.values(CHAINS);
-const ALL_CHAINS_TESTNET = [] as Chain[];
-const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
-  if (chain.isTestnet) {
-    ALL_CHAINS_TESTNET.push(chain);
-  }
-  return !chain.isTestnet;
-});
+// const ALL_CHAINS = Object.values(CHAINS);
+// const ALL_CHAINS_TESTNET = [] as Chain[];
+// const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
+//   if (chain.isTestnet) {
+//     ALL_CHAINS_TESTNET.push(chain);
+//   }
+//   return !chain.isTestnet;
+// });
 
-export const CHAINS_BY_NET = {
-  mainnet: ALL_CHAINS_MAINNET,
-  testnet: ALL_CHAINS_TESTNET,
-};
+// export const CHAINS_BY_NET = {
+//   mainnet: ALL_CHAINS_MAINNET,
+//   testnet: ALL_CHAINS_TESTNET,
+// };
 
 export const getTestnetChainList = () => {
   return store.testnetList;
@@ -38,19 +38,31 @@ export const getMainnetChainList = () => {
   return store.mainnetList;
 };
 
+export const getChainList = (net?: 'mainnet' | 'testnet') => {
+  if (net === 'mainnet') {
+    return store.mainnetList;
+  }
+  if (net === 'testnet') {
+    return store.testnetList;
+  }
+  return [...store.mainnetList, ...store.testnetList];
+};
+
 export const findChain = (params: {
   enum?: CHAINS_ENUM | string | null;
   id?: number | null;
   serverId?: string | null;
   hex?: string | null;
+  networkId?: string | null;
 }) => {
-  const { enum: chainEnum, id, serverId, hex } = params;
+  const { enum: chainEnum, id, serverId, hex, networkId } = params;
   const chain = [...store.mainnetList, ...store.testnetList].find(
     (item) =>
       item.enum === chainEnum ||
       item.id === id ||
       item.serverId === serverId ||
-      item.hex === hex
+      item.hex === hex ||
+      item.network === networkId
   );
   return chain;
 };
@@ -105,19 +117,19 @@ export function ensureChainListValid<T extends CHAINS_ENUM[]>(list: T) {
 /**
  * @description safe find chain
  */
-export function findChainByID(chainId: Chain['id']): Chain | null {
-  return !chainId
-    ? null
-    : ALL_CHAINS.find((chain) => chain.id === Number(chainId)) || null;
+export function findChainByID(chainId: Chain['id']) {
+  return findChain({
+    id: chainId,
+  });
 }
 
 /**
  * @description safe find chain by serverId
  */
-export function findChainByServerID(chainId: Chain['serverId']): Chain | null {
-  return !chainId
-    ? null
-    : ALL_CHAINS.find((chain) => chain.serverId === chainId) || null;
+export function findChainByServerID(chainId: Chain['serverId']) {
+  return findChain({
+    serverId: chainId,
+  });
 }
 
 export function isTestnet(chainServerId?: string) {
@@ -142,9 +154,9 @@ export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 export function formatChainToDisplay(
   item: ChainWithBalance
 ): DisplayChainWithWhiteLogo {
-  const chainsArray = Object.values(CHAINS);
-  const chain = chainsArray.find((chain) => chain.id === item.community_id);
-
+  const chain = findChain({
+    id: item.community_id,
+  });
   return {
     ...item,
     logo: chain?.logo || item.logo_url,

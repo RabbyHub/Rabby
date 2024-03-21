@@ -7,6 +7,7 @@ import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import { RabbyRootState } from '../store';
 import {
   findChainByEnum,
+  getChainList,
   getMainnetChainList,
   getTestnetChainList,
   varyAndSortChainItems,
@@ -30,8 +31,8 @@ export const chains = createModel<RootModel>()({
   state: <IState>{
     currentConnection: null,
     gnosisNetworkIds: [] as string[],
-    mainnetList: getMainnetChainList(),
-    testnetList: getTestnetChainList(),
+    mainnetList: getChainList('mainnet'),
+    testnetList: getChainList('testnet'),
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {

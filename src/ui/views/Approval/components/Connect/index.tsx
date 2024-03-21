@@ -28,6 +28,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import PQueue from 'p-queue';
 import { SignTestnetPermission } from './SignTestnetPermission';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/approval/arrow-down-blue.svg';
+import { findChain } from '@/utils/chain';
 
 interface ConnectProps {
   params: any;
@@ -500,9 +501,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         );
         let targetChain: Chain | undefined;
         for (let i = 0; i < recommendChains.length; i++) {
-          targetChain = Object.values(CHAINS).find(
-            (c) => c.serverId === recommendChains[i].id
-          );
+          targetChain = findChain({
+            serverId: recommendChains[i].id,
+          });
           if (targetChain) break;
         }
         defaultChain = targetChain ? targetChain.enum : CHAINS_ENUM.ETH;

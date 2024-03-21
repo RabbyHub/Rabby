@@ -12,7 +12,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import moment from 'moment';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 
 const getTabs = (
   networks: string[],
@@ -20,9 +20,9 @@ const getTabs = (
 ) => {
   const res = networks
     ?.map((networkId) => {
-      const chain = Object.values(CHAINS).find(
-        (chain) => chain.network === networkId
-      );
+      const chain = findChain({
+        networkId: networkId,
+      });
       if (!chain) {
         return;
       }

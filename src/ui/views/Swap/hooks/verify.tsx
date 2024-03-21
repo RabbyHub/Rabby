@@ -9,6 +9,7 @@ import {
 import { useMemo } from 'react';
 import { getRouter, getSpender, isSwapWrapToken } from './quote';
 import BigNumber from 'bignumber.js';
+import { findChain } from '@/utils/chain';
 
 type ValidateTokenParam = {
   id: string;
@@ -76,9 +77,9 @@ export const useVerifyCalldata = <
       const estimateMinReceive = new BigNumber(data.toTokenAmount).times(
         new BigNumber(1).minus(slippage)
       );
-      const chain = Object.values(CHAINS).find(
-        (item) => item.id === tx.chainId
-      );
+      const chain = findChain({
+        id: tx.chainId,
+      });
 
       if (!chain) return true;
 

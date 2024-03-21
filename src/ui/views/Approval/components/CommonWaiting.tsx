@@ -20,6 +20,7 @@ import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
+import { findChain } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -42,9 +43,9 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     .map((key) => HARDWARE_KEYRING_TYPES[key])
     .find((item) => item.type === type);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!;
+  const chain = findChain({
+    id: params.chainId || 1,
+  });
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
@@ -115,7 +116,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
         stats.report('signTransaction', {
           type: account.brandName,
-          chainId: chain.serverId,
+          chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success

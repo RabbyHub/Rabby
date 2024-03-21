@@ -1,5 +1,5 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { getMainnetChainList } from '@/utils/chain';
+import { getChainList, getMainnetChainList } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,7 @@ const List = ({ list }: { list: Chain[] }) => {
 const ChainList = () => {
   const { t } = useTranslation();
 
-  const list = getMainnetChainList();
+  const list = getChainList('mainnet');
 
   return (
     <div className="page-chain-list">

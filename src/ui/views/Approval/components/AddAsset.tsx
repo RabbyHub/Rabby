@@ -218,16 +218,18 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
 
   const currentChain = useMemo(() => {
     if (!token) return CHAINS[CHAINS_ENUM.ETH];
-    const list = Object.values(CHAINS);
-    const target = list.find((item) => item.serverId === token.chain);
+    const target = findChain({
+      serverId: token.chain,
+    });
     return target || CHAINS[CHAINS_ENUM.ETH];
   }, [token]);
 
   const supportChains = useMemo(() => {
-    const list = Object.values(CHAINS);
     const chains: CHAINS_ENUM[] = [];
     tokens.forEach((token) => {
-      const targetChain = list.find((chain) => chain.serverId === token.chain);
+      const targetChain = findChain({
+        serverId: token.chain,
+      });
       if (targetChain) {
         chains.push(targetChain.enum);
       }
