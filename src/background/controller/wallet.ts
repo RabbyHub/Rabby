@@ -3664,16 +3664,7 @@ export class WalletController extends BaseController {
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
 
   syncChainList = () => {
-    const testnetList = customTestnetService.getList();
-    updateChainStore({
-      testnetList: testnetList,
-    });
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: 'syncChainList',
-      params: {
-        testnetList: testnetList,
-      },
-    });
+    customTestnetService.syncChainList();
   };
 }
 

@@ -135,22 +135,24 @@ export const EditCustomTestnetModal = ({
         <PageHeader className="pt-0" forceShowBack={false} canBack={false}>
           {t('page.customRpc.EditCustomTestnetModal.title')}
         </PageHeader>
-        <div
-          className={clsx(
-            'flex items-center gap-[8px]',
-            'bg-r-blue-light1 p-[16px] cursor-pointer rounded-[6px]',
-            'mb-[20px]'
-          )}
-          onClick={() => {
-            setIsShowAddFromChainList(true);
-          }}
-        >
-          <ThemeIcon src={RcIconFlash}></ThemeIcon>
-          <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
-            Quick add from Chainlist
+        {isEdit ? null : (
+          <div
+            className={clsx(
+              'flex items-center gap-[8px]',
+              'bg-r-blue-light1 p-[16px] cursor-pointer rounded-[6px]',
+              'mb-[20px]'
+            )}
+            onClick={() => {
+              setIsShowAddFromChainList(true);
+            }}
+          >
+            <ThemeIcon src={RcIconFlash}></ThemeIcon>
+            <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
+              Quick add from Chainlist
+            </div>
+            <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
           </div>
-          <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
-        </div>
+        )}
         <CustomTestnetForm form={form} isEdit={isEdit} />
         <Footer>
           <Button

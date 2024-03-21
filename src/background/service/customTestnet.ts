@@ -34,6 +34,8 @@ import {
   readContract,
 } from 'viem/actions';
 import { satisfies } from 'semver';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 export interface TestnetChainBase {
   id: number;
@@ -178,10 +180,7 @@ class CustomTestnetService {
       [chain.id]: createTestnetChain(chain),
     };
     this.chains[chain.id] = createClientByChain(chain);
-    updateChainStore({
-      testnetList: Object.values(this.store.customTestnet),
-    });
-    console.log('update chain store');
+    this.syncChainList();
     return this.store.customTestnet[chain.id];
   };
 
@@ -191,9 +190,7 @@ class CustomTestnetService {
       return item.chainId !== chainId;
     });
     delete this.chains[chainId];
-    updateChainStore({
-      testnetList: Object.values(this.store.customTestnet),
-    });
+    this.syncChainList();
   };
 
   getClient = (chainId: number) => {
@@ -606,6 +603,19 @@ class CustomTestnetService {
 
   // todo
   getTokenWithBalance = this.getTokenList;
+
+  syncChainList = () => {
+    const testnetList = this.getList();
+    updateChainStore({
+      testnetList: testnetList,
+    });
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: 'syncChainList',
+      params: {
+        testnetList: testnetList,
+      },
+    });
+  };
 }
 
 export const customTestnetService = new CustomTestnetService();
