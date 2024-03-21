@@ -7,7 +7,7 @@ const channelName = nanoid();
 const isOpera = /Opera|OPR\//i.test(navigator.userAgent);
 
 localStorage.setItem('rabby:channelName', channelName);
-localStorage.setItem('rabby:isDefaultWallet', 'false');
+localStorage.setItem('rabby:isDefaultWallet', 'true');
 localStorage.setItem('rabby:uuid', uuid());
 localStorage.setItem('rabby:isOpera', isOpera.toString());
 
