@@ -543,20 +543,9 @@ class TxHistory {
         if (duration !== false && duration < 1000 * 15) {
           const timeout = Number(duration) + 1000;
           // maximum retry 15 times;
-          if (isManifestV3) {
-            browser.alarms.create(ALARMS_RELOAD_TX, {
-              delayInMinutes: timeout / 60000,
-            });
-            browser.alarms.onAlarm.addListener((alarm) => {
-              if (alarm.name === ALARMS_RELOAD_TX) {
-                this.reloadTx({ address, chainId, nonce });
-              }
-            });
-          } else {
-            setTimeout(() => {
-              this.reloadTx({ address, chainId, nonce });
-            }, timeout);
-          }
+          setTimeout(() => {
+            this.reloadTx({ address, chainId, nonce });
+          }, timeout);
         }
         return;
       }
@@ -584,20 +573,9 @@ class TxHistory {
       if (duration !== false && duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;
         // maximum retry 15 times;
-        if (isManifestV3) {
-          browser.alarms.create(ALARMS_RELOAD_TX, {
-            delayInMinutes: timeout / 60000,
-          });
-          browser.alarms.onAlarm.addListener((alarm) => {
-            if (alarm.name === ALARMS_RELOAD_TX) {
-              this.reloadTx({ address, chainId, nonce });
-            }
-          });
-        } else {
-          setTimeout(() => {
-            this.reloadTx({ address, chainId, nonce });
-          }, timeout);
-        }
+        setTimeout(() => {
+          this.reloadTx({ address, chainId, nonce });
+        }, timeout);
       }
     }
   }

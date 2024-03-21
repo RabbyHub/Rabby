@@ -5,6 +5,11 @@ try {
 }
 
 async function createOffscreen() {
+  if (!chrome.offscreen) {
+    console.debug('Offscreen not available');
+    return;
+  }
+
   if (await chrome.offscreen.hasDocument()) {
     return;
   }

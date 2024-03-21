@@ -48,28 +48,11 @@ class RpcCache {
     const cache = this.getIfExist(key);
     if (cache) {
       const { timeoutId } = this.state.get(key)!;
-      if (isManifestV3) {
-        browser.alarms.clear(`${ALARMS_RPC_CACHE}_${timeoutId}`);
-      } else {
-        window.clearTimeout(timeoutId);
-      }
-      let id;
+      clearTimeout(timeoutId);
 
-      if (isManifestV3) {
-        id = uniqueId();
-        browser.alarms.create(`${ALARMS_RPC_CACHE}_${id}`, {
-          delayInMinutes: expireTime / 60000,
-        });
-        browser.alarms.onAlarm.addListener((alarm) => {
-          if (alarm.name === `${ALARMS_RPC_CACHE}_${id}`) {
-            this.state.delete(key);
-          }
-        });
-      } else {
-        id = window.setTimeout(() => {
-          this.state.delete(key);
-        }, expireTime);
-      }
+      const id = (setTimeout(() => {
+        this.state.delete(key);
+      }, expireTime) as unknown) as number;
 
       this.state.set(key, {
         result: data.result,
@@ -78,23 +61,9 @@ class RpcCache {
       });
     } else {
       const methodState: CacheState = new Map();
-      let timeoutId;
-
-      if (isManifestV3) {
-        timeoutId = uniqueId();
-        browser.alarms.create(`${ALARMS_RPC_CACHE}_${timeoutId}`, {
-          delayInMinutes: expireTime / 60000,
-        });
-        browser.alarms.onAlarm.addListener((alarm) => {
-          if (alarm.name === `${ALARMS_RPC_CACHE}_${timeoutId}`) {
-            methodState.delete(key);
-          }
-        });
-      } else {
-        timeoutId = window.setTimeout(() => {
-          methodState.delete(key);
-        }, expireTime);
-      }
+      const timeoutId = (setTimeout(() => {
+        methodState.delete(key);
+      }, expireTime) as unknown) as number;
 
       this.state.set(key, { result: data.result, timeoutId, expireTime });
     }
@@ -133,9 +102,9 @@ class RpcCache {
     }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
     if (cache) {
-      const timeoutId = window.setTimeout(() => {
+      const timeoutId = (setTimeout(() => {
         this.state.delete(key);
-      }, expireTime);
+      }, expireTime) as unknown) as number;
       this.state.set(key, {
         timeoutId,
         result: cache.result,
