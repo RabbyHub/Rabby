@@ -115,6 +115,7 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   initAppMeta();
   startEnableUser();
+  walletController.syncMainnetChainList();
 }
 
 restoreAppState();

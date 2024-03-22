@@ -609,12 +609,6 @@ class CustomTestnetService {
     updateChainStore({
       testnetList: testnetList,
     });
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: 'syncChainList',
-      params: {
-        testnetList: testnetList,
-      },
-    });
   };
 }
 

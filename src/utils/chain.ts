@@ -1,34 +1,40 @@
 // import { customTestnetService } from '@/background/service/customTestnet';
 import { TestnetChain } from '@/background/service/customTestnet';
-import { Chain, MAINNET_CHAINS_LIST } from '@debank/common';
+import defaultSuppordChain from '@/constant/default-support-chains.json';
+import eventBus from '@/eventBus';
+import { Chain } from '@debank/common';
 import {
   ChainWithBalance,
+  SupportedChain,
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
+import { toHex } from 'viem';
+
+chrome.storage.local.get('rabbyMainnetChainList', (res) => {
+  if (res?.rabbyMainnetChainList) {
+    updateChainStore({
+      mainnetList: res.rabbyMainnetChainList,
+    });
+  }
+});
 
 const store = {
-  mainnetList: MAINNET_CHAINS_LIST,
+  mainnetList: defaultSuppordChain
+    .filter((item) => !item.is_disabled)
+    .map((item) => {
+      return supportedChainToChain(item);
+    }),
   testnetList: [] as TestnetChain[],
 };
 
 export const updateChainStore = (params: Partial<typeof store>) => {
   Object.assign(store, params);
+  eventBus.emit(EVENTS.broadcastToUI, {
+    method: 'syncChainList',
+    params,
+  });
 };
-
-// const ALL_CHAINS = Object.values(CHAINS);
-// const ALL_CHAINS_TESTNET = [] as Chain[];
-// const ALL_CHAINS_MAINNET = ALL_CHAINS.filter((chain) => {
-//   if (chain.isTestnet) {
-//     ALL_CHAINS_TESTNET.push(chain);
-//   }
-//   return !chain.isTestnet;
-// });
-
-// export const CHAINS_BY_NET = {
-//   mainnet: ALL_CHAINS_MAINNET,
-//   testnet: ALL_CHAINS_TESTNET,
-// };
 
 export const getTestnetChainList = () => {
   return store.testnetList;
@@ -338,5 +344,118 @@ export function makeTokenFromChain(chain: Chain): TokenItem {
     name: chain.nativeTokenSymbol,
     chain: chain.serverId,
     time_at: 0,
+  };
+}
+
+export function supportedChainToChain(item: SupportedChain): Chain {
+  const chainServerIdEnumDict = {
+    eth: 'ETH',
+    bsc: 'BSC',
+    xdai: 'GNOSIS',
+    matic: 'POLYGON',
+    ftm: 'FTM',
+    okt: 'OKT',
+    heco: 'HECO',
+    avax: 'AVAX',
+    arb: 'ARBITRUM',
+    op: 'OP',
+    celo: 'CELO',
+    movr: 'MOVR',
+    cro: 'CRO',
+    boba: 'BOBA',
+    metis: 'METIS',
+    btt: 'BTT',
+    aurora: 'AURORA',
+    mobm: 'MOBM',
+    sbch: 'SBCH',
+    hmy: 'HMY',
+    fuse: 'FUSE',
+    astar: 'ASTAR',
+    klay: 'KLAY',
+    rsk: 'RSK',
+    iotx: 'IOTX',
+    kcc: 'KCC',
+    wan: 'WAN',
+    sgb: 'SGB',
+    evmos: 'EVMOS',
+    dfk: 'DFK',
+    tlos: 'TLOS',
+    nova: 'NOVA',
+    canto: 'CANTO',
+    doge: 'DOGE',
+    step: 'STEP',
+    kava: 'KAVA',
+    mada: 'MADA',
+    cfx: 'CFX',
+    brise: 'BRISE',
+    ckb: 'CKB',
+    tomb: 'TOMB',
+    pze: 'PZE',
+    era: 'ERA',
+    eos: 'EOS',
+    core: 'CORE',
+    flr: 'FLR',
+    wemix: 'WEMIX',
+    mtr: 'METER',
+    etc: 'ETC',
+    fsn: 'FSN',
+    pls: 'PULSE',
+    rose: 'ROSE',
+    ron: 'RONIN',
+    oas: 'OAS',
+    zora: 'ZORA',
+    linea: 'LINEA',
+    base: 'BASE',
+    mnt: 'MANTLE',
+    tenet: 'TENET',
+    lyx: 'LYX',
+    opbnb: 'OPBNB',
+    loot: 'LOOT',
+    shib: 'SHIB',
+    manta: 'MANTA',
+    scrl: 'SCRL',
+    fx: 'FX',
+    beam: 'BEAM',
+    pego: 'PEGO',
+    zkfair: 'ZKFAIR',
+    fon: 'FON',
+    bfc: 'BFC',
+    alot: 'ALOT',
+    xai: 'XAI',
+    zeta: 'ZETA',
+    rari: 'RARI',
+    hubble: 'HUBBLE',
+    mode: 'MODE',
+    merlin: 'MERLIN',
+    dym: 'DYM',
+    eon: 'EON',
+    blast: 'BLAST',
+    sx: 'SX',
+    platon: 'PLATON',
+    map: 'MAP',
+    frax: 'FRAX',
+    aze: 'AZE',
+    karak: 'KARAK',
+  };
+  return {
+    id: item.community_id,
+    enum: chainServerIdEnumDict[item.id] || item.id.toUpperCase(),
+    name: item.name,
+    serverId: item.id,
+    hex: toHex(+item.community_id),
+    network: item.community_id + '',
+    nativeTokenSymbol: item.native_token?.symbol,
+    nativeTokenLogo: item.native_token?.logo,
+    nativeTokenDecimals: item.native_token?.decimals,
+    nativeTokenAddress: item.native_token?.id,
+    // needEstimateGas: item.need_estimate_gas,
+    scanLink: `${item.explorer_host}/${
+      item.id === 'heco' ? 'transaction' : 'tx'
+    }/_s_`,
+    logo: item.logo_url,
+    whiteLogo: item.white_logo_url,
+    eip: {
+      '1559': item.eip_1559,
+    },
   };
 }

@@ -279,7 +279,6 @@ const ChainSelectorModal = ({
         }}
         onConfirm={() => {
           setIsShowAddTestnetModal(false);
-          wallet.syncChainList();
         }}
       />
     </>
