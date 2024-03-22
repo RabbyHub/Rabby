@@ -8,7 +8,6 @@ import {
 } from '@gnosis.pm/safe-core-sdk-types';
 import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';

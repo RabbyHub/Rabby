@@ -51,7 +51,7 @@ import { WaitingSignComponent } from './map';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';

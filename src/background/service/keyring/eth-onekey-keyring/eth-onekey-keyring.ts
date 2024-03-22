@@ -1,26 +1,13 @@
 import EventEmitter from 'events';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
-import {
-  TransactionFactory,
-  TypedTransaction,
-  Transaction,
-  FeeMarketEIP1559Transaction,
-} from '@ethereumjs/tx';
+import { TransactionFactory } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
-import { SignHelper } from './helper';
+import { SignHelper } from '../helper';
 import { EVENTS } from '@/constant';
-import HardwareSDK from '@onekeyfe/hd-web-sdk';
-import {
-  UI_RESPONSE,
-  UI_EVENT,
-  UI_REQUEST,
-  EVMTransaction,
-  EVMTransactionEIP1559,
-} from '@onekeyfe/hd-core';
-
-const { HardwareWebSdk } = HardwareSDK;
+import type { EVMTransaction, EVMTransactionEIP1559 } from '@onekeyfe/hd-core';
+import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -80,42 +67,29 @@ class OneKeyKeyring extends EventEmitter {
   passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
 
+  bridge!: OneKeyBridgeInterface;
+
   signHelper = new SignHelper({
     errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
   });
 
-  constructor(opts = {}) {
+  constructor(
+    opts: any & {
+      bridge: OneKeyBridgeInterface;
+    } = {}
+  ) {
     super();
+    if (!opts.bridge) {
+      throw new Error('Bridge is required');
+    }
+    this.bridge = opts.bridge;
     this.accountDetails = {};
     this.deserialize(opts);
-    HardwareWebSdk.init({
-      debug: false,
-      // The official iframe page deployed by OneKey
-      // of course you can also deploy it yourself
-      connectSrc: 'https://jssdk.onekey.so/0.3.27/',
-    });
-    HardwareWebSdk.on(UI_EVENT, (e) => {
-      switch (e.type) {
-        case UI_REQUEST.REQUEST_PIN:
-          HardwareWebSdk.uiResponse({
-            type: UI_RESPONSE.RECEIVE_PIN,
-            payload: '@@ONEKEY_INPUT_PIN_IN_DEVICE',
-          });
-          break;
-        case UI_REQUEST.REQUEST_PASSPHRASE:
-          HardwareWebSdk.uiResponse({
-            type: UI_RESPONSE.RECEIVE_PASSPHRASE,
-            payload: {
-              value: '',
-              passphraseOnDevice: true,
-              save: true,
-            },
-          });
-          break;
-        default:
-        // NOTHING
-      }
-    });
+    this.init();
+  }
+
+  init() {
+    this.bridge.init();
   }
 
   serialize(): Promise<any> {
@@ -161,7 +135,8 @@ class OneKeyKeyring extends EventEmitter {
     //   return Promise.resolve('already unlocked');
     // }
     return new Promise((resolve, reject) => {
-      HardwareWebSdk.searchDevices()
+      this.bridge
+        .searchDevices()
         .then(async (result) => {
           if (!result.success) {
             reject('searchDevices failed');
@@ -188,7 +163,7 @@ class OneKeyKeyring extends EventEmitter {
             }
             this.deviceId = deviceId;
             this.connectId = connectId;
-            const passphraseState = await HardwareWebSdk.getPassphraseState(
+            const passphraseState = await this.bridge.getPassphraseState(
               connectId
             );
             if (!passphraseState.success) {
@@ -196,23 +171,28 @@ class OneKeyKeyring extends EventEmitter {
               return;
             }
             this.passphraseState = passphraseState.payload;
-            HardwareWebSdk.evmGetPublicKey(connectId, deviceId, {
-              showOnOneKey: false,
-              chainId: 1,
-              path: hdPathString,
-              passphraseState: passphraseState.payload,
-            }).then((res) => {
-              if (res.success) {
-                this.hdk.publicKey = Buffer.from(res.payload.publicKey, 'hex');
-                this.hdk.chainCode = Buffer.from(
-                  res.payload.node.chain_code,
-                  'hex'
-                );
-                resolve('just unlocked');
-              } else {
-                reject('getPublicKey failed');
-              }
-            });
+            this.bridge
+              .evmGetPublicKey(connectId, deviceId, {
+                showOnOneKey: false,
+                chainId: 1,
+                path: hdPathString,
+                passphraseState: passphraseState.payload,
+              })
+              .then((res) => {
+                if (res.success) {
+                  this.hdk.publicKey = Buffer.from(
+                    res.payload.publicKey,
+                    'hex'
+                  );
+                  this.hdk.chainCode = Buffer.from(
+                    res.payload.node.chain_code,
+                    'hex'
+                  );
+                  resolve('just unlocked');
+                } else {
+                  reject('getPublicKey failed');
+                }
+              });
           }
         })
         .catch((e) => {
@@ -426,28 +406,32 @@ class OneKeyKeyring extends EventEmitter {
         to: this._normalize(tx.to),
       };
     }
-    return HardwareWebSdk.evmSignTransaction(this.connectId!, this.deviceId!, {
-      path: this._pathFromAddress(address),
-      passphraseState: this.passphraseState,
-      transaction,
-    }).then((res) => {
-      if (res.success) {
-        const newOrMutatedTx = handleSigning(res.payload);
-        const addressSignedWith = ethUtil.toChecksumAddress(
-          ethUtil.addHexPrefix(
-            newOrMutatedTx.getSenderAddress().toString('hex')
-          )
-        );
-        const correctAddress = ethUtil.toChecksumAddress(address);
-        if (addressSignedWith !== correctAddress) {
-          throw new Error('signature doesnt match the right address');
-        }
+    return this.bridge
+      .evmSignTransaction(this.connectId!, this.deviceId!, {
+        path: this._pathFromAddress(address),
+        passphraseState: this.passphraseState,
+        transaction,
+      })
+      .then((res) => {
+        if (res.success) {
+          const newOrMutatedTx = handleSigning(res.payload);
+          const addressSignedWith = ethUtil.toChecksumAddress(
+            ethUtil.addHexPrefix(
+              newOrMutatedTx.getSenderAddress().toString('hex')
+            )
+          );
+          const correctAddress = ethUtil.toChecksumAddress(address);
+          if (addressSignedWith !== correctAddress) {
+            throw new Error('signature doesnt match the right address');
+          }
 
-        return newOrMutatedTx;
-      } else {
-        throw new Error((res.payload && res.payload.error) || 'Unknown error');
-      }
-    });
+          return newOrMutatedTx;
+        } else {
+          throw new Error(
+            (res.payload && res.payload.error) || 'Unknown error'
+          );
+        }
+      });
   }
 
   signMessage(withAccount: string, data: string): Promise<any> {
@@ -462,11 +446,12 @@ class OneKeyKeyring extends EventEmitter {
           .then((status) => {
             setTimeout(
               (_) => {
-                HardwareWebSdk.evmSignMessage(this.connectId!, this.deviceId!, {
-                  path: this._pathFromAddress(withAccount),
-                  messageHex: ethUtil.stripHexPrefix(message),
-                  passphraseState: this.passphraseState,
-                })
+                this.bridge
+                  .evmSignMessage(this.connectId!, this.deviceId!, {
+                    path: this._pathFromAddress(withAccount),
+                    messageHex: ethUtil.stripHexPrefix(message),
+                    passphraseState: this.passphraseState,
+                  })
                   .then((response) => {
                     if (response.success) {
                       if (
@@ -558,10 +543,8 @@ class OneKeyKeyring extends EventEmitter {
             setTimeout(
               (_) => {
                 try {
-                  HardwareWebSdk.evmSignTypedData(
-                    this.connectId!,
-                    this.deviceId!,
-                    {
+                  this.bridge
+                    .evmSignTypedData(this.connectId!, this.deviceId!, {
                       path: this._pathFromAddress(address),
                       data: typedData,
                       passphraseState: this.passphraseState,
@@ -571,8 +554,7 @@ class OneKeyKeyring extends EventEmitter {
                       chainId: domain.chainId
                         ? Number(domain.chainId)
                         : undefined,
-                    }
-                  )
+                    })
                     .then((response) => {
                       if (response.success) {
                         if (

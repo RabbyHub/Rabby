@@ -12,7 +12,8 @@ module.exports = {
   notificationHtml: rootResolve('src/ui/notification.html'),
   indexHtml: rootResolve('src/ui/index.html'),
   backgroundHtml: rootResolve('src/background/background.html'),
+  offscreenHtml: rootResolve('src/offscreen/offscreen.html'),
   dist: rootResolve('dist'),
 
   rootResolve,
-}
+};

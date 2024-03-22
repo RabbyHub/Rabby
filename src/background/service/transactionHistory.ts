@@ -22,6 +22,9 @@ import {
 import { sortBy, max, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import eventBus from '@/eventBus';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
+import { ALARMS_RELOAD_TX } from '../utils/alarms';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -538,10 +541,22 @@ class TxHistory {
       );
       if (!completed) {
         if (duration !== false && duration < 1000 * 15) {
+          const timeout = Number(duration) + 1000;
           // maximum retry 15 times;
-          setTimeout(() => {
-            this.reloadTx({ address, chainId, nonce });
-          }, Number(duration) + 1000);
+          if (isManifestV3) {
+            browser.alarms.create(ALARMS_RELOAD_TX, {
+              delayInMinutes: timeout / 60000,
+            });
+            browser.alarms.onAlarm.addListener((alarm) => {
+              if (alarm.name === ALARMS_RELOAD_TX) {
+                this.reloadTx({ address, chainId, nonce });
+              }
+            });
+          } else {
+            setTimeout(() => {
+              this.reloadTx({ address, chainId, nonce });
+            }, timeout);
+          }
         }
         return;
       }
@@ -567,10 +582,22 @@ class TxHistory {
       });
     } catch (e) {
       if (duration !== false && duration < 1000 * 15) {
+        const timeout = Number(duration) + 1000;
         // maximum retry 15 times;
-        setTimeout(() => {
-          this.reloadTx({ address, chainId, nonce });
-        }, Number(duration) + 1000);
+        if (isManifestV3) {
+          browser.alarms.create(ALARMS_RELOAD_TX, {
+            delayInMinutes: timeout / 60000,
+          });
+          browser.alarms.onAlarm.addListener((alarm) => {
+            if (alarm.name === ALARMS_RELOAD_TX) {
+              this.reloadTx({ address, chainId, nonce });
+            }
+          });
+        } else {
+          setTimeout(() => {
+            this.reloadTx({ address, chainId, nonce });
+          }, timeout);
+        }
       }
     }
   }

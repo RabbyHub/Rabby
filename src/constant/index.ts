@@ -1308,7 +1308,8 @@ declare global {
     __is_rd__?: boolean;
   }
 }
-export const IS_RD = window.__is_rd__;
+
+export const IS_RD = typeof window === 'undefined' ? false : window.__is_rd__;
 
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',

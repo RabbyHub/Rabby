@@ -27,12 +27,10 @@ import {
   HDKeyRingLastAddAddrTimeService,
 } from './service';
 import { providerController, walletController } from './controller';
-import i18n from './service/i18n';
 import { getOriginFromUrl } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
-import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
@@ -41,6 +39,10 @@ import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import Safe from '@rabby-wallet/gnosis-sdk';
+
+Safe.adapter = fetchAdapter as any;
 
 dayjs.extend(utc);
 
@@ -62,22 +64,6 @@ Sentry.init({
     'Non-Error promise rejection captured with keys: message, stack',
   ],
 });
-
-function initAppMeta() {
-  const head = document.querySelector('head');
-  const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
-  icon.rel = 'icon';
-  head?.appendChild(icon);
-  const name = document.createElement('meta');
-  name.name = 'name';
-  name.content = 'Rabby';
-  head?.appendChild(name);
-  const description = document.createElement('meta');
-  description.name = 'description';
-  description.content = i18n.t('global.appDescription');
-  head?.appendChild(description);
-}
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
@@ -110,7 +96,6 @@ async function restoreAppState() {
 
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
-  initAppMeta();
   startEnableUser();
 }
 

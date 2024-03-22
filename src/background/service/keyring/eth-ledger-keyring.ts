@@ -10,12 +10,11 @@ import {
 } from '@ethereumjs/tx';
 import { EVENTS } from 'consts';
 import { isSameAddress, wait } from '@/background/utils';
-import { LedgerHDPathType } from '@/utils/ledger';
+import { SignHelper, LedgerHDPathType } from './helper';
 
 const type = 'Ledger Hardware';
 
 import HDPathType = LedgerHDPathType;
-import { SignHelper } from './helper';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -91,7 +90,6 @@ class LedgerBridgeKeyring {
       this.hasHIDPermission = opts.hasHIDPermission;
     }
 
-    this.makeApp();
     if (!opts.accountDetails) {
       this._migrateAccountDetails(opts);
     }

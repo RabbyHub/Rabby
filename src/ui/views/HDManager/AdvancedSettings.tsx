@@ -7,7 +7,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useIsKeystoneUsbAvailable } from '@/utils/keystone';
+import { useIsKeystoneUsbAvailable } from '@/ui/utils/keystone';
 import { t } from 'i18next';
 
 const MIN_START_NO = 1;

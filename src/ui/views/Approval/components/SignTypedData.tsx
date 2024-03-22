@@ -7,7 +7,7 @@ import { Skeleton, message } from 'antd';
 import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {

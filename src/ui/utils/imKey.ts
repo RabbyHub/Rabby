@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { hasConnectedImKeyDevice } from '@/utils';
+import { hasConnectedImKeyDevice } from '@/ui/utils';
 import browser from 'webextension-polyfill';
 import { imKeyUSBVendorId } from '@/constant';
 
