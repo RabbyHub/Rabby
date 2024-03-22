@@ -96,7 +96,7 @@ class NotificationService extends Events {
 
     if (val.length <= 0) {
       action.setBadgeText({
-        text: null,
+        text: isManifestV3 ? '' : null,
       });
     } else {
       action.setBadgeText({

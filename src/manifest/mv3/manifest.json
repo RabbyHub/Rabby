@@ -33,15 +33,8 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -49,9 +42,7 @@
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"
       ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": {
@@ -67,9 +58,7 @@
     "offscreen",
     "contextMenus"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
       "resources": [
@@ -78,9 +67,7 @@
         "vendor/matomo.js",
         "/vendor/matomo.client.js"
       ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "matches": ["<all_urls>"]
     }
   ]
 }
