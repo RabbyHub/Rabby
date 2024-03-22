@@ -28,6 +28,7 @@ import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
 import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
+import Send from '../Actions/Send';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
@@ -43,6 +44,7 @@ import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegate
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
+import { SendRequireData } from '../Actions/utils';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -277,6 +279,14 @@ const Actions = ({
               <SignMultisig
                 data={data.signMultiSig}
                 requireData={requireData as MultiSigRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.send && chain && (
+              <Send
+                data={data.send}
+                requireData={requireData as SendRequireData}
                 chain={chain}
                 engineResults={engineResults}
               />
