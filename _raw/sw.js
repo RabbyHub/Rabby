@@ -77,4 +77,3 @@ clearAlarms();
 importAllScripts();
 createOffscreen();
 keepAlive();
-registerInPageContentScript();
