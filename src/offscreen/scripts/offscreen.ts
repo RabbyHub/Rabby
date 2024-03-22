@@ -9,3 +9,7 @@ initOneKey();
 initTrezor();
 initBitBox02();
 initLattice();
+
+setInterval(() => {
+  chrome.runtime.sendMessage({ type: 'ping' });
+}, 20000);

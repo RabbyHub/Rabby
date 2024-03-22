@@ -38,13 +38,6 @@
       "run_at": "document_start"
     },
     {
-      "all_frames": true,
-      "js": ["pageProvider.js"],
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "run_at": "document_start",
-      "world": "MAIN"
-    },
-    {
       "matches": [
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"

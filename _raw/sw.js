@@ -1,3 +1,5 @@
+let scriptsLoadInitiated = false;
+
 const clearAlarms = async () => {
   const alarms = await chrome.alarms.getAll();
   alarms.forEach((alarm) => {
@@ -7,16 +9,20 @@ const clearAlarms = async () => {
   });
 };
 
-// clear all remaining alarms
-clearAlarms();
+const importAllScripts = () => {
+  if (scriptsLoadInitiated) {
+    return;
+  }
 
-try {
-  importScripts('/webextension-polyfill.js', '/background.js');
-} catch (e) {
-  console.error(e);
-}
+  try {
+    importScripts('/webextension-polyfill.js', '/background.js');
+    scriptsLoadInitiated = true;
+  } catch (e) {
+    console.error(e);
+  }
+};
 
-async function createOffscreen() {
+const createOffscreen = async () => {
   if (!chrome.offscreen) {
     console.debug('Offscreen not available');
     return;
@@ -34,15 +40,41 @@ async function createOffscreen() {
   });
 
   console.debug('Offscreen iframe loaded');
-}
-
-createOffscreen();
+};
 
 // keep the service worker alive
 const keepAlive = () => {
-  setInterval(() => {
-    chrome.runtime.getPlatformInfo();
-  }, 25000);
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    importAllScripts();
+    return false;
+  });
 };
 
+/*
+ * This content script is injected programmatically because
+ * MAIN world injection does not work properly via manifest
+ * https://bugs.chromium.org/p/chromium/issues/detail?id=634381
+ */
+const registerInPageContentScript = async () => {
+  try {
+    await chrome.scripting.registerContentScripts([
+      {
+        id: 'pageProvider',
+        matches: ['file://*/*', 'http://*/*', 'https://*/*'],
+        js: ['pageProvider.js'],
+        runAt: 'document_start',
+        world: 'MAIN',
+      },
+    ]);
+  } catch (err) {
+    console.warn(
+      `Dropped attempt to register pageProvider content script. ${err}`
+    );
+  }
+};
+
+clearAlarms();
+importAllScripts();
+createOffscreen();
 keepAlive();
+registerInPageContentScript();
