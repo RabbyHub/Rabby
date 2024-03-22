@@ -29,7 +29,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import Actions from './TextActions';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
-import { isTestnetChainId } from '@/utils/chain';
+import { findChain, isTestnetChainId } from '@/utils/chain';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { WaitingSignMessageComponent } from './map';
@@ -121,7 +121,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       const site = await wallet.getConnectedSite(params.session.origin);
       if (site) {
-        chainId = CHAINS[site.chain].id;
+        chainId =
+          findChain({
+            enum: site.chain,
+          })?.id || chainId;
       }
     }
     setChainId(chainId);

@@ -535,7 +535,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     setEngineResults(results);
     if (site) {
       setIsLoading(false);
-      if (!isShowTestnet && CHAINS[site.chain]?.isTestnet) {
+      if (!isShowTestnet && findChain({ enum: site.chain })?.isTestnet) {
         return;
       }
       setDefaultChain(site.chain);

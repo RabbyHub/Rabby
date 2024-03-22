@@ -36,7 +36,7 @@ import {
   formatSecurityEngineCtx,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { isTestnetChainId, findChainByID } from '@/utils/chain';
+import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
@@ -203,7 +203,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       const site = await wallet.getConnectedSite(params.session.origin);
       if (site) {
-        return CHAINS[site.chain].id;
+        return findChain({
+          enum: site.chain,
+        })?.id;
       }
     } else {
       return chain?.id;
@@ -416,7 +418,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       const site = await wallet.getConnectedSite(params.session.origin);
       if (site) {
-        data.chainId = CHAINS[site.chain].id.toString();
+        data.chainId = findChain({ enum: site.chain })?.id.toString();
       }
     }
     if (currentAccount) {
