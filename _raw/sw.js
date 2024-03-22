@@ -1,3 +1,16 @@
+const clearAlarms = async () => {
+  const alarms = await chrome.alarms.getAll();
+  alarms.forEach((alarm) => {
+    if (/^ALARMS/.test(alarm.name)) {
+      console.log(alarm.name);
+      chrome.alarms.clear(alarm.name);
+    }
+  });
+};
+
+// clear all remaining alarms
+clearAlarms();
+
 try {
   importScripts('/webextension-polyfill.js', '/background.js');
 } catch (e) {
