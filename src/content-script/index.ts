@@ -39,18 +39,5 @@ document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
 });
-const getIsDefaultWallet = () => {
-  return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
-};
 
-if (isOpera) {
-  injectProviderScript(false);
-} else {
-  getIsDefaultWallet()
-    .then((isDefaultWallet) => {
-      injectProviderScript(!!isDefaultWallet);
-    })
-    .catch((err) => {
-      injectProviderScript(true);
-    });
-}
+injectProviderScript(false);
