@@ -335,7 +335,7 @@ class GnosisKeyring extends EventEmitter {
       transaction = this.currentTransaction!;
       isCurrent = true;
     }
-    if (!transaction) throw new Error('No avaliable transaction');
+    if (!transaction) throw new Error('No available transaction');
     const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
@@ -410,7 +410,7 @@ class GnosisKeyring extends EventEmitter {
       transaction = this.currentTransaction!;
       isCurrent = true;
     }
-    if (!transaction) throw new Error('No avaliable transaction');
+    if (!transaction) throw new Error('No available transaction');
     const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
