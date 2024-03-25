@@ -96,7 +96,7 @@ import { t } from 'i18next';
 import { getWeb3Provider } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
-import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
@@ -1848,7 +1848,7 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    keyring.initConnector(brandName);
+    keyring.initConnector(brandName, allChainIds);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
@@ -1858,7 +1858,7 @@ export class WalletController extends BaseController {
           (keyring as WalletConnectKeyring).init(
             address,
             brandName,
-            !chainId ? 1 : chainId
+            allChainIds
           );
         }
       );

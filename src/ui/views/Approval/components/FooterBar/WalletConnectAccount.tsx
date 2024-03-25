@@ -51,9 +51,9 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   });
 
   const tipStatus = React.useMemo(() => {
-    if (chain && chain.id !== sessionChainId && status === 'CONNECTED') {
-      return 'CHAIN_ERROR';
-    }
+    // if (chain && chain.id !== sessionChainId && status === 'CONNECTED') {
+    //   return 'CHAIN_ERROR';
+    // }
     switch (status) {
       case 'ACCOUNT_ERROR':
         return 'ACCOUNT_ERROR';
@@ -69,12 +69,12 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
     }
   }, [status, sessionChainId, chain]);
 
-  const wallet = useWallet();
-  React.useEffect(() => {
-    if (chain && sessionChainId && chain.id !== sessionChainId) {
-      wallet.walletConnectSwitchChain(account, chain.id);
-    }
-  }, [sessionChainId, chain]);
+  // const wallet = useWallet();
+  // React.useEffect(() => {
+  //   if (chain && sessionChainId && chain.id !== sessionChainId) {
+  //     wallet.walletConnectSwitchChain(account, chain.id);
+  //   }
+  // }, [sessionChainId, chain]);
 
   const TipContent = () => {
     switch (tipStatus) {
@@ -89,19 +89,19 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
             </div>
           </div>
         );
-      case 'CHAIN_ERROR':
-        return (
-          <div className="text-orange">
-            <div>
-              {t('page.signFooterBar.walletConnect.connectedButCantSign')}
-            </div>
-            <div className="mt-8">
-              {t('page.signFooterBar.walletConnect.switchChainAlert', {
-                chain: chain?.name,
-              })}
-            </div>
-          </div>
-        );
+      // case 'CHAIN_ERROR':
+      //   return (
+      //     <div className="text-orange">
+      //       <div>
+      //         {t('page.signFooterBar.walletConnect.connectedButCantSign')}
+      //       </div>
+      //       <div className="mt-8">
+      //         {t('page.signFooterBar.walletConnect.switchChainAlert', {
+      //           chain: chain?.name,
+      //         })}
+      //       </div>
+      //     </div>
+      //   );
       case 'DISCONNECTED':
         return (
           <div className="text-red-forbidden">
@@ -131,13 +131,17 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       activePopup('WalletConnect');
     } else if (tipStatus === 'ACCOUNT_ERROR') {
       activePopup('SwitchAddress');
-    } else if (tipStatus === 'CHAIN_ERROR') {
-      activePopup('SwitchChain');
     }
+    // else if (tipStatus === 'CHAIN_ERROR') {
+    //   activePopup('SwitchChain');
+    // }
   };
 
   React.useEffect(() => {
-    if (tipStatus === 'ACCOUNT_ERROR' || tipStatus === 'CHAIN_ERROR') {
+    if (
+      tipStatus === 'ACCOUNT_ERROR'
+      // || tipStatus === 'CHAIN_ERROR'
+    ) {
       setVisible(false);
     }
   }, [tipStatus]);
@@ -177,8 +181,8 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       >
         {tipStatus === 'ACCOUNT_ERROR' &&
           t('page.signFooterBar.walletConnect.howToSwitch')}
-        {tipStatus === 'CHAIN_ERROR' &&
-          t('page.signFooterBar.walletConnect.howToSwitch')}
+        {/* {tipStatus === 'CHAIN_ERROR' &&
+          t('page.signFooterBar.walletConnect.howToSwitch')} */}
       </div>
     </CommonAccount>
   );

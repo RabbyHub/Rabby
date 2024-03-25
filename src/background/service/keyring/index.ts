@@ -37,7 +37,7 @@ import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
-import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
 import { getKeyringBridge, hasBridge } from './bridge';
 
@@ -842,7 +842,7 @@ export class KeyringService extends EventEmitter {
           (keyring as WalletConnectKeyring).init(
             address,
             brandName,
-            !chainId ? 1 : chainId
+            allChainIds
           );
         }
       );

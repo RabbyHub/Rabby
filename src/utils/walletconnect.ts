@@ -1,4 +1,5 @@
 import { t } from 'i18next';
+import { CHAINS_LIST } from '@debank/common';
 
 export const GET_WALLETCONNECT_CONFIG = () => {
   return {
@@ -22,8 +23,16 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       'WalletConnect',
       'FIREBLOCKS',
       'MPCVault',
+      'MetaMask',
+      'Rainbow',
+      'imToken',
+      'MATHWALLET',
       'TRUSTWALLET',
       'Utila',
     ],
   };
 };
+
+export const allChainIds = CHAINS_LIST.map(
+  (chain) => !chain.isTestnet && chain.id
+).filter(Boolean) as number[];
