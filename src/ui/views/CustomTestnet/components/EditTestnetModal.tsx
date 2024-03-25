@@ -150,7 +150,7 @@ export const EditCustomTestnetModal = ({
           >
             <ThemeIcon src={RcIconFlash}></ThemeIcon>
             <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
-              Quick add from Chainlist
+              {t('page.customRpc.EditCustomTestnetModal.quickAdd')}
             </div>
             <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
           </div>

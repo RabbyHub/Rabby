@@ -715,23 +715,19 @@ const SettingsInner = ({
           ),
         },
 
-        ...(isShowTestnet
-          ? [
-              {
-                leftIcon: RcIconCustomTestnet,
-                content: t('page.dashboard.settings.settings.customTestnet'),
-                onClick: () => {
-                  history.push('/custom-testnet');
-                  matomoRequestEvent({
-                    category: 'Setting',
-                    action: 'clickToUse',
-                    label: 'Custom Testnet',
-                  });
-                  reportSettings('Custom Testnet');
-                },
-              },
-            ]
-          : []),
+        {
+          leftIcon: RcIconCustomTestnet,
+          content: t('page.dashboard.settings.settings.customTestnet'),
+          onClick: () => {
+            history.push('/custom-testnet');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Custom Testnet',
+            });
+            reportSettings('Custom Testnet');
+          },
+        },
         {
           leftIcon: RcIconCustomRPC,
           content: t('page.dashboard.settings.settings.customRpc'),

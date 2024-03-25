@@ -1,7 +1,7 @@
 import { TestnetChainBase } from '@/background/service/customTestnet';
-import { Chain } from '@debank/common';
 import { Form, FormInstance, Input } from 'antd';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 const Wraper = styled.div`
@@ -58,6 +58,7 @@ export const CustomTestnetForm = ({
   disabled?: boolean;
   onFieldsChange?(changedFields: any, allFields: any): void;
 }) => {
+  const { t } = useTranslation();
   return (
     <Wraper>
       <Form
@@ -67,55 +68,60 @@ export const CustomTestnetForm = ({
         onFieldsChange={onFieldsChange}
       >
         <Form.Item
-          label="Chain ID"
+          label={t('page.customTestnet.CustomTestnetForm.id')}
           name="id"
           rules={[
             {
               required: true,
-              message: 'Please input chain id',
+              message: t('page.customTestnet.CustomTestnetForm.idRequired'),
             },
           ]}
         >
           <Input autoComplete="off" disabled={disabled || isEdit} />
         </Form.Item>
         <Form.Item
-          label="Network name"
+          label={t('page.customTestnet.CustomTestnetForm.name')}
           name="name"
           rules={[
             {
               required: true,
-              message: 'Please input network name',
+              message: t('page.customTestnet.CustomTestnetForm.nameRequired'),
             },
           ]}
         >
           <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
         <Form.Item
-          label="RPC URL"
+          label={t('page.customTestnet.CustomTestnetForm.rpcUrl')}
           name="rpcUrl"
           rules={[
             {
               required: true,
               type: 'url',
-              message: 'Please input RPC URL',
+              message: t('page.customTestnet.CustomTestnetForm.rpcUrlRequired'),
             },
           ]}
         >
           <Input autoComplete="off" type="url" disabled={disabled} />
         </Form.Item>
         <Form.Item
-          label="Currency symbol"
+          label={t('page.customTestnet.CustomTestnetForm.nativeTokenSymbol')}
           name="nativeTokenSymbol"
           rules={[
             {
               required: true,
-              message: 'Please input currency symbol',
+              message: t(
+                'page.customTestnet.CustomTestnetForm.nativeTokenSymbolRequired'
+              ),
             },
           ]}
         >
           <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
-        <Form.Item label="Block explorer URL (Optional)" name="scanLink">
+        <Form.Item
+          label={t('page.customTestnet.CustomTestnetForm.blockExplorerUrl')}
+          name="scanLink"
+        >
           <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
       </Form>

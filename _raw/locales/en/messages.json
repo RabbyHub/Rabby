@@ -1580,7 +1580,8 @@
         "rpcUrlPlaceholder": "Enter the RPC URL"
       },
       "EditCustomTestnetModal": {
-        "title": "Add Testnet"
+        "title": "Add Testnet",
+        "quickAdd": "Quick add from Chainlist"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -1819,7 +1820,29 @@
       "title": "Custom Testnet",
       "desc": "Rabby cannot verify the security of custom testnets. Please add trusted networks only.",
       "add": "Add Testnet",
-      "empty": "No Custom Testnet"
+      "empty": "No Custom Testnet",
+      "currency": "Currency",
+      "id": "ID",
+      "CustomTestnetForm": {
+        "id": "Chain ID",
+        "name": "Network name",
+        "rpcUrl": "RPC URL",
+        "idRequired": "Please input chain id",
+        "nameRequired": "Please input network name",
+        "rpcUrlRequired": "Please input RPC URL",
+        "nativeTokenSymbol": "Currency symbol",
+        "nativeTokenSymbolRequired": "Please input currency symbol",
+        "blockExplorerUrl": "Block explorer URL (Optional)"
+      },
+      "AddFromChainList": {
+        "title": "Quick add from Chainlist",
+        "search": "Search Testnet name or ID",
+        "empty": "No chains found",
+        "tips": {
+          "added": "You've already added this chain",
+          "supported": "Chain already supported by Rabby Wallet"
+        }
+      }
     }
   },
   "component": {

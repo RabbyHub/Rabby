@@ -111,11 +111,11 @@ export const AddFromChainList = ({
     <Wraper className={clsx({ 'translate-x-0': visible }, className)}>
       <div className="px-[20px]">
         <PageHeader className="pt-0" forceShowBack onBack={onClose}>
-          Quick add from Chainlist
+          {t('page.customTestnet.AddFromChainList.title')}
         </PageHeader>
         <Input
           prefix={<img src={IconSearch} />}
-          placeholder={t('component.ChainSelectorModal.searchPlaceholder')}
+          placeholder={t('page.customTestnet.AddFromChainList.search')}
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           allowClear
@@ -124,7 +124,9 @@ export const AddFromChainList = ({
       <div ref={ref} className="flex-1 overflow-auto px-[20px] ">
         <div className="rounded-[6px] bg-r-neutral-card2 h-full">
           {loading ? null : !data?.list?.length ? (
-            <Emtpy description="No chains found" />
+            <Emtpy
+              description={t('page.customTestnet.AddFromChainList.empty')}
+            />
           ) : (
             <>
               {data?.list?.map((item) => {
@@ -140,14 +142,15 @@ export const AddFromChainList = ({
                     placement="top"
                     title={
                       chain?.isTestnet
-                        ? "You've already added this chain"
-                        : 'Chain already supported by Rabby Wallet'
+                        ? t('page.customTestnet.AddFromChainList.tips.added')
+                        : t(
+                            'page.customTestnet.AddFromChainList.tips.supported'
+                          )
                     }
                   >
                     <div>
                       <CustomTestnetItem
                         item={item}
-                        // onClick={onSelect}
                         className="relative chain-list-item opacity-50"
                       />
                     </div>

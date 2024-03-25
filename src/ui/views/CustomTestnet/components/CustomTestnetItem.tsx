@@ -11,6 +11,7 @@ import {
   TestnetChainBase,
 } from '@/background/service/customTestnet';
 import { TestnetChainLogo } from '@/ui/component/TestnetChainLogo';
+import { useTranslation } from 'react-i18next';
 
 export const CustomTestnetItem = ({
   className,
@@ -27,6 +28,7 @@ export const CustomTestnetItem = ({
   onClick?: (item: TestnetChain) => void;
   editable?: boolean;
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={clsx(
@@ -47,13 +49,14 @@ export const CustomTestnetItem = ({
         </div>
         <div className="flex items-center gap-[16px]">
           <div className="text-[12px] leading-[14px] text-r-neutral-foot">
-            Currency:{' '}
+            {t('page.customTestnet.currency')}:{' '}
             <span className="text-r-neutral-body">
               {item.nativeTokenSymbol}
             </span>
           </div>
           <div className="text-[12px] leading-[14px] text-r-neutral-foot">
-            ID: <span className="text-r-neutral-body">{item.id}</span>
+            {t('page.customTestnet.id')}:{' '}
+            <span className="text-r-neutral-body">{item.id}</span>
           </div>
         </div>
       </div>
