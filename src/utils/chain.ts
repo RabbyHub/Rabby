@@ -65,7 +65,7 @@ export const findChain = (params: {
   const chain = [...store.mainnetList, ...store.testnetList].find(
     (item) =>
       item.enum === chainEnum ||
-      item.id === id ||
+      (id && +item.id === +id) ||
       item.serverId === serverId ||
       item.hex === hex ||
       item.network === networkId

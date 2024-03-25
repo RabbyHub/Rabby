@@ -51,14 +51,21 @@ export const CustomTestnetForm = ({
   form,
   isEdit,
   disabled,
+  onFieldsChange,
 }: {
   form: FormInstance<TestnetChainBase>;
   isEdit?: boolean;
   disabled?: boolean;
+  onFieldsChange?(changedFields: any, allFields: any): void;
 }) => {
   return (
     <Wraper>
-      <Form layout="vertical" form={form} requiredMark={false}>
+      <Form
+        layout="vertical"
+        form={form}
+        requiredMark={false}
+        onFieldsChange={onFieldsChange}
+      >
         <Form.Item
           label="Chain ID"
           name="id"

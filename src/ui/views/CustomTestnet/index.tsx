@@ -4,7 +4,13 @@ import {
 } from '@/background/service/customTestnet';
 import { useWallet } from '@/ui/utils';
 import { updateChainStore } from '@/utils/chain';
-import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
+import {
+  useMemoizedFn,
+  useMount,
+  useRequest,
+  useSetState,
+  useUnmount,
+} from 'ahooks';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +21,7 @@ import { CustomTestnetItem } from './components/CustomTestnetItem';
 import { EditCustomTestnetModal } from './components/EditTestnetModal';
 import './style.less';
 import { Emtpy } from './components/Empty';
+import { useHistory } from 'react-router-dom';
 
 const Footer = styled.div`
   height: 76px;
@@ -28,6 +35,7 @@ const Footer = styled.div`
 export const CustomTestnet = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const history = useHistory();
 
   const [state, setState] = useSetState<{
     isShowModal: boolean;
@@ -37,13 +45,21 @@ export const CustomTestnet = () => {
     isShowModal: false,
     current: null,
     isEdit: false,
+    ...(history.location?.state as any),
   });
 
   const handleAddClick = () => {
-    setState({
+    const next = {
       isShowModal: true,
       current: null,
       isEdit: false,
+    };
+    setState(next);
+    wallet.setPageStateCache({
+      path: history.location.pathname,
+      states: {
+        ...next,
+      },
     });
   };
 
@@ -61,6 +77,7 @@ export const CustomTestnet = () => {
     updateChainStore({
       testnetList: list,
     });
+    wallet.clearPageStateCache();
   });
 
   const handleRemoveClick = useMemoizedFn(async (item: TestnetChain) => {
@@ -84,11 +101,27 @@ export const CustomTestnet = () => {
   });
 
   const handleEditClick = useMemoizedFn(async (item: TestnetChain) => {
-    setState({
+    const next = {
       isShowModal: true,
       current: item,
       isEdit: true,
+    };
+    setState(next);
+    wallet.setPageStateCache({
+      path: history.location.pathname,
+      states: {
+        ...next,
+      },
     });
+  });
+
+  useMount(async () => {
+    const cache = await wallet.getPageStateCache();
+    if (cache?.path === history.location.pathname) {
+      setState({
+        ...(cache.states as any),
+      });
+    }
   });
 
   return (
@@ -97,6 +130,13 @@ export const CustomTestnet = () => {
         className="pt-[24px] mx-[20px] mb-16"
         canBack={false}
         closeable
+        onClose={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
       >
         {t('page.customTestnet.title')}
       </PageHeader>
@@ -138,6 +178,16 @@ export const CustomTestnet = () => {
             isShowModal: false,
             current: null,
             isEdit: false,
+          });
+          wallet.clearPageStateCache();
+        }}
+        onChange={(values) => {
+          wallet.setPageStateCache({
+            path: history.location.pathname,
+            states: {
+              ...state,
+              current: values,
+            },
           });
         }}
         onConfirm={handleConfirm}

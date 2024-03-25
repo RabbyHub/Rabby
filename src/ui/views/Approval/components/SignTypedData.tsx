@@ -41,6 +41,7 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import clsx from 'clsx';
 
 interface SignTypedDataProps {
   method: string;
@@ -192,7 +193,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.error(error);
       }
       if (chainId) {
-        return findChainByID(chainId) || undefined;
+        return findChain({ id: chainId }) || undefined;
       }
     }
 
@@ -223,10 +224,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         ? account
         : await wallet.getCurrentAccount();
       const chainId = signTypedData?.domain?.chainId;
-      const apiProvider = isTestnetChainId(chainId)
-        ? wallet.testnetOpenapi
-        : wallet.openapi;
-      return await apiProvider.parseTypedData({
+      if (isTestnetChainId(chainId)) {
+        return null;
+      }
+      return wallet.openapi.parseTypedData({
         typedData: signTypedData,
         address: currentAccount!.address,
         origin: session.origin,
@@ -517,7 +518,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   return (
     <>
-      <div className="approval-text">
+      <div className="approval-text relative">
         {isLoading && (
           <Skeleton.Input
             active
@@ -538,6 +539,19 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             origin={params.session.origin}
           />
         )}
+        {!isLoading && chain?.isTestnet ? (
+          <div
+            className={clsx(
+              'absolute top-[350px] right-[10px]',
+              'px-[16px] py-[12px] rotate-[-23deg]',
+              'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
+              'text-r-neutral-title1 text-[28px] leading-[28px]',
+              'opacity-30'
+            )}
+          >
+            Testnet
+          </div>
+        ) : null}
       </div>
 
       <footer className="approval-text__footer">

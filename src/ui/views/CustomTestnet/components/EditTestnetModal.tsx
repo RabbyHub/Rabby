@@ -64,12 +64,14 @@ export const EditCustomTestnetModal = ({
   onConfirm,
   isEdit,
   zIndex,
+  onChange,
 }: {
   isEdit?: boolean;
   data?: TestnetChainBase | null;
   visible: boolean;
   onCancel(): void;
   onConfirm(url?: string): void;
+  onChange?: (values: Partial<TestnetChainBase>) => void;
   zIndex?: number;
 }) => {
   const wallet = useWallet();
@@ -153,7 +155,13 @@ export const EditCustomTestnetModal = ({
             <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
           </div>
         )}
-        <CustomTestnetForm form={form} isEdit={isEdit} />
+        <CustomTestnetForm
+          form={form}
+          isEdit={isEdit}
+          onFieldsChange={() => {
+            onChange?.(form.getFieldsValue());
+          }}
+        />
         <Footer>
           <Button
             type="primary"
