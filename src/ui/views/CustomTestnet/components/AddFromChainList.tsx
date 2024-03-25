@@ -80,7 +80,7 @@ export const AddFromChainList = ({
     async (data) => {
       const res = await wallet.openapi.searchChainList({
         start: data?.start || 0,
-        limit: 10,
+        limit: 50,
         q: search,
       });
 
@@ -104,9 +104,9 @@ export const AddFromChainList = ({
       },
       reloadDeps: [search],
       target: ref,
+      threshold: 150,
     }
   );
-  console.log(data, loading);
   return (
     <Wraper className={clsx({ 'translate-x-0': visible }, className)}>
       <div className="px-[20px]">
@@ -121,52 +121,47 @@ export const AddFromChainList = ({
           allowClear
         />
       </div>
-      <div ref={ref} className="flex-1 overflow-auto px-[20px] ">
-        <div className="rounded-[6px] bg-r-neutral-card2 h-full">
-          {loading ? null : !data?.list?.length ? (
+      <div ref={ref} className="flex-1 overflow-auto px-[20px]">
+        {loading ? null : !data?.list?.length ? (
+          <div className="h-full rounded-[6px] bg-r-neutral-card2">
             <Emtpy
               description={t('page.customTestnet.AddFromChainList.empty')}
             />
-          ) : (
-            <>
-              {data?.list?.map((item) => {
-                const chain = findChain({ id: item.id });
+          </div>
+        ) : (
+          <div className="rounded-[6px] bg-r-neutral-card2">
+            {data?.list?.map((item) => {
+              const chain = findChain({ id: item.id });
 
-                return chain ? (
-                  <TooltipWithMagnetArrow
-                    className="rectangle w-[max-content]"
-                    key={item.id + 'tooltip'}
-                    align={{
-                      offset: [0, 30],
-                    }}
-                    placement="top"
-                    title={
-                      chain?.isTestnet
-                        ? t('page.customTestnet.AddFromChainList.tips.added')
-                        : t(
-                            'page.customTestnet.AddFromChainList.tips.supported'
-                          )
-                    }
-                  >
-                    <div>
-                      <CustomTestnetItem
-                        item={item}
-                        className="relative chain-list-item opacity-50"
-                      />
-                    </div>
-                  </TooltipWithMagnetArrow>
-                ) : (
-                  <CustomTestnetItem
-                    item={item}
-                    key={item.id}
-                    onClick={onSelect}
-                    className="relative chain-list-item"
-                  />
-                );
-              })}
-            </>
-          )}
-        </div>
+              return chain ? (
+                <TooltipWithMagnetArrow
+                  className="rectangle w-[max-content]"
+                  key={item.id + 'tooltip'}
+                  align={{
+                    offset: [0, 30],
+                  }}
+                  placement="top"
+                  title={
+                    chain?.isTestnet
+                      ? t('page.customTestnet.AddFromChainList.tips.added')
+                      : t('page.customTestnet.AddFromChainList.tips.supported')
+                  }
+                >
+                  <div className="chain-list-item relative">
+                    <CustomTestnetItem item={item} disabled />
+                  </div>
+                </TooltipWithMagnetArrow>
+              ) : (
+                <CustomTestnetItem
+                  item={item}
+                  key={item.id}
+                  onClick={onSelect}
+                  className="relative chain-list-item"
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </Wraper>
   );

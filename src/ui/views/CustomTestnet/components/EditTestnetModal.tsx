@@ -18,28 +18,9 @@ import { AddFromChainList } from './AddFromChainList';
 import { useRequest } from 'ahooks';
 import { TestnetChainBase } from '@/background/service/customTestnet';
 
-const ErrorMsg = styled.div`
-  color: #ec5151;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  margin-top: 8px;
-`;
-
 const Wrapper = styled.div`
-  padding: 20px 20px 76px 20px;
-  .rpc-input {
-    height: 52px;
-    width: 360px;
-    margin-left: auto;
-    margin-right: auto;
-    background: #f5f6fa;
-    border: 1px solid #e5e9ef;
-    border-radius: 6px;
-    &.has-error {
-      border-color: #ec5151;
-    }
-  }
+  height: 100%;
+  padding: 20px 0 76px 0;
 `;
 
 const Footer = styled.div`
@@ -137,31 +118,35 @@ export const EditCustomTestnetModal = ({
         <PageHeader className="pt-0" forceShowBack={false} canBack={false}>
           {t('page.customRpc.EditCustomTestnetModal.title')}
         </PageHeader>
-        {isEdit ? null : (
-          <div
-            className={clsx(
-              'flex items-center gap-[8px]',
-              'bg-r-blue-light1 p-[16px] cursor-pointer rounded-[6px]',
-              'mb-[20px]'
-            )}
-            onClick={() => {
-              setIsShowAddFromChainList(true);
-            }}
-          >
-            <ThemeIcon src={RcIconFlash}></ThemeIcon>
-            <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
-              {t('page.customRpc.EditCustomTestnetModal.quickAdd')}
+        <div className="h-[calc(100%-48px)] overflow-auto px-[20px]">
+          {isEdit ? null : (
+            <div
+              className={clsx(
+                'flex items-center gap-[8px]',
+                'bg-r-blue-light1 p-[15px] cursor-pointer rounded-[6px]',
+                'mb-[20px] border-[1px] border-transparent',
+                'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              )}
+              onClick={() => {
+                setIsShowAddFromChainList(true);
+              }}
+            >
+              <ThemeIcon src={RcIconFlash}></ThemeIcon>
+              <div className="text-r-neutral-title1 text-[15px] leading-[18px] font-medium">
+                {t('page.customRpc.EditCustomTestnetModal.quickAdd')}
+              </div>
+              <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
             </div>
-            <ThemeIcon src={RcIconRight} className="ml-auto"></ThemeIcon>
-          </div>
-        )}
-        <CustomTestnetForm
-          form={form}
-          isEdit={isEdit}
-          onFieldsChange={() => {
-            onChange?.(form.getFieldsValue());
-          }}
-        />
+          )}
+
+          <CustomTestnetForm
+            form={form}
+            isEdit={isEdit}
+            onFieldsChange={() => {
+              onChange?.(form.getFieldsValue());
+            }}
+          />
+        </div>
         <Footer>
           <Button
             type="primary"

@@ -6,6 +6,8 @@ import {
   Props as TokenItemProps,
 } from '../CustomTestnetAssetList/CustomTestnetTokenItem';
 import { TBody, THeadCell, THeader, Table } from './Table';
+import { useWallet } from '@/ui/utils';
+import { useRequest } from 'ahooks';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -29,6 +31,15 @@ export const CustomTestnetTokenTable: React.FC<Props> = ({
   const [visible, setVisible] = React.useState(false);
   const [token, setToken] = React.useState<TokenItemProps['item']>();
   const { t } = useTranslation();
+  const wallet = useWallet();
+  const { data: isAdded, runAsync: runCheckIsAdded } = useRequest(
+    async () => {
+      return selected ? wallet.isAddedCustomTestnetToken(selected) : null;
+    },
+    {
+      refreshDeps: [selected],
+    }
+  );
 
   React.useEffect(() => {
     setVisible(!!selected);
@@ -53,53 +64,29 @@ export const CustomTestnetTokenTable: React.FC<Props> = ({
             <THeadCell className="ml-auto text-right">Amount</THeadCell>
           </THeader>
           <TBody className="mt-8">
-            {virtual ? (
-              <>
-                {
-                  // <FixedSizeList
-                  //   height={virtual.height}
-                  //   width="100%"
-                  //   itemData={list}
-                  //   itemCount={list?.length || 0}
-                  //   itemSize={virtual.itemSize}
-                  // >
-                  //   {({ data, index, style }) => {
-                  //     const item = data[index];
-                  //     return (
-                  //       <TokenItem
-                  //         onClick={() => setSelected(item)}
-                  //         style={style}
-                  //         key={`${item.chain}-${item.id}`}
-                  //         item={item}
-                  //       />
-                  //     );
-                  //   }}
-                  // </FixedSizeList>
-                }
-              </>
-            ) : (
-              list?.map((item) => {
-                return (
-                  <CustomTestnetTokenItem
-                    onClick={() => setSelected(item)}
-                    key={`${item.chainId}-${item.id}`}
-                    item={item}
-                  />
-                );
-              })
-            )}
+            {list?.map((item) => {
+              return (
+                <CustomTestnetTokenItem
+                  onClick={() => setSelected(item)}
+                  key={`${item.chainId}-${item.id}`}
+                  item={item}
+                />
+              );
+            })}
           </TBody>
         </Table>
       )}
       <CustomTestnetTokenDetailPopup
         token={token}
-        isAdded={
-          !!list?.find(
-            (item) => item.id === token?.id && item.chainId === token?.chainId
-          )
-        }
-        onAdd={onAdd}
-        onRemove={onRemove}
+        isAdded={!!isAdded}
+        onAdd={(item) => {
+          onAdd?.(item);
+          runCheckIsAdded();
+        }}
+        onRemove={(item) => {
+          onRemove?.(item);
+          runCheckIsAdded();
+        }}
         visible={visible}
         onClose={() => setSelected(undefined)}
       />

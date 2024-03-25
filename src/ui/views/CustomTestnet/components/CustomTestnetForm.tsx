@@ -2,6 +2,7 @@ import { TestnetChainBase } from '@/background/service/customTestnet';
 import { Form, FormInstance, Input } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'ahooks';
 import styled from 'styled-components';
 
 const Wraper = styled.div`
@@ -20,12 +21,16 @@ const Wraper = styled.div`
     margin-left: auto;
     margin-right: auto;
     background: transparent;
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
 
     color: var(--r-neutral-title1, #192945);
     font-size: 15px;
     font-weight: 500;
+
+    &:focus {
+      border-color: var(--r-blue-default, #7084ff);
+    }
   }
   .ant-input[disabled] {
     background: var(--r-neutral-card2, #f2f4f7);
@@ -59,6 +64,14 @@ export const CustomTestnetForm = ({
   onFieldsChange?(changedFields: any, allFields: any): void;
 }) => {
   const { t } = useTranslation();
+  const inputRef = React.useRef<Input>(null);
+
+  useMount(() => {
+    setTimeout(() => {
+      inputRef?.current?.focus();
+    });
+  });
+
   return (
     <Wraper>
       <Form
@@ -77,7 +90,11 @@ export const CustomTestnetForm = ({
             },
           ]}
         >
-          <Input autoComplete="off" disabled={disabled || isEdit} />
+          <Input
+            ref={inputRef}
+            autoComplete="off"
+            disabled={disabled || isEdit}
+          />
         </Form.Item>
         <Form.Item
           label={t('page.customTestnet.CustomTestnetForm.name')}

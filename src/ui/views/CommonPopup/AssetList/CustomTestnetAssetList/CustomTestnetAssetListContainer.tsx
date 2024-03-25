@@ -12,6 +12,7 @@ import { AddCustomTestnetTokenPopup } from './AddCustomTestnetTokenPopup';
 import { CustomTestnetTokenList } from './CustomTestTokenList';
 import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-add.svg';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
@@ -28,6 +29,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   isTestnet = false,
   onRefresh,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
@@ -59,6 +61,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
       return wallet.getCustomTestnetTokenList({
         address: currentAccount!.address,
         q: search,
+        isRemote: true,
       });
     },
     {
@@ -82,7 +85,13 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
         <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
-        <div className="rounded-[6px] bg-r-neutral-card2 px-[10px] py-[8px] cursor-pointer">
+        <div
+          className={clsx(
+            'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
+            'border-[1px] border-transparent',
+            'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+          )}
+        >
           <div
             className={clsx(
               'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
@@ -95,7 +104,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
             <span className="text-r-neutral-body">
               <RcIconAdd />
             </span>
-            add token
+            {t('page.dashboard.assets.TestnetAssetListContainer.add')}
           </div>
         </div>
       </div>
@@ -109,14 +118,15 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
             isSearch={!!search}
             isNoResults={isNoResults}
             onAdd={(item) => {
-              mutate((prev) => [...(prev || []), item]);
+              refreshAsync();
             }}
             onRemove={(item) => {
-              mutate((prev) => {
-                return prev?.filter(
-                  (i) => !(i.id === item.id && i.chainId === item.chainId)
-                );
-              });
+              refreshAsync();
+              // mutate((prev) => {
+              //   return prev?.filter(
+              //     (i) => !(i.id === item.id && i.chainId === item.chainId)
+              //   );
+              // });
             }}
           />
         </div>

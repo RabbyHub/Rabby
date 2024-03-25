@@ -45,6 +45,10 @@ const Wraper = styled.div`
     color: var(--r-neutral-title1, #192945);
     font-size: 15px;
     font-weight: 500;
+
+    &:focus {
+      border-color: var(--r-blue-default, #7084ff);
+    }
   }
   .ant-input[disabled] {
     background: var(--r-neutral-card2, #f2f4f7);
@@ -127,7 +131,7 @@ export const AddCustomTestnetTokenPopup = ({
         form.setFields([
           {
             name: 'address',
-            errors: ['Token not found'],
+            errors: [t('page.dashboard.assets.AddTestnetToken.notFound')],
           },
         ]);
       },
@@ -181,7 +185,7 @@ export const AddCustomTestnetTokenPopup = ({
         onClose={onClose}
         className="add-custom-token-popup"
         push={false}
-        title="Add Testnet Token"
+        title={t('page.dashboard.assets.AddTestnetToken.title')}
       >
         <Wraper>
           <Form layout="vertical" form={form}>
@@ -196,7 +200,7 @@ export const AddCustomTestnetTokenPopup = ({
                 {!chain ? (
                   <div className="flex items-center bg-r-neutral-card2 rounded-[6px] px-[16px] py-[12px] min-h-[52px] cursor-pointer">
                     <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
-                      Select chain
+                      {t('page.dashboard.assets.AddTestnetToken.selectChain')}
                     </div>
                     <div className="ml-auto text-r-neutral-body">
                       <RcIconDown />
@@ -219,7 +223,10 @@ export const AddCustomTestnetTokenPopup = ({
                 )}
               </div>
             </Form.Item>
-            <Form.Item label="Token Address" name="address">
+            <Form.Item
+              label={t('page.dashboard.assets.AddTestnetToken.tokenAddress')}
+              name="address"
+            >
               <Input
                 onChange={(e) => {
                   setTokenId(e.target.value);
@@ -229,8 +236,8 @@ export const AddCustomTestnetTokenPopup = ({
             </Form.Item>
             {loading ? (
               <div className="flex items-center text-r-neutral-body text-[13px] gap-[4px]">
-                <Loading3QuartersOutlined className="animate-spin" /> Searching
-                Token
+                <Loading3QuartersOutlined className="animate-spin" />{' '}
+                {t('page.dashboard.assets.AddTestnetToken.searching')}
               </div>
             ) : (
               <>
@@ -242,7 +249,9 @@ export const AddCustomTestnetTokenPopup = ({
                       }}
                       className={clsx(
                         'flex items-center gap-[12px] rounded-[6px] cursor-pointer',
-                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]'
+                        'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]',
+                        'border-[1px] border-transparent',
+                        checked && 'border-rabby-blue-default'
                       )}
                     >
                       <div className="relative h-[24px]">

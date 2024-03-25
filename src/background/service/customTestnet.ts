@@ -21,7 +21,7 @@ import {
   erc20Abi,
   isAddress,
 } from 'viem';
-import { omit } from 'lodash';
+import { omit, sortBy } from 'lodash';
 import { intToHex } from 'ethereumjs-util';
 import {
   estimateGas,
@@ -426,7 +426,7 @@ class CustomTestnetService {
     });
   };
 
-  hasToken = (params: CustomTestnetTokenBase) => {
+  hasToken = (params: Pick<CustomTestnetTokenBase, 'id' | 'chainId'>) => {
     return !!this.store.customTokenList.find((item) => {
       return item.id === params.id && item.chainId === params.chainId;
     });
@@ -553,10 +553,12 @@ class CustomTestnetService {
     address,
     chainId,
     q,
+    isRemote,
   }: {
     address: string;
     chainId?: number;
     q?: string;
+    isRemote?: boolean;
   }) => {
     const nativeTokenList = Object.values(this.store.customTestnet).map(
       (item) => {
@@ -574,7 +576,7 @@ class CustomTestnetService {
         return item.chainId === chainId;
       });
     }
-    // todo, on chain search or search local
+
     if (q) {
       tokenList = tokenList.filter((item) => {
         return (
@@ -582,23 +584,45 @@ class CustomTestnetService {
         );
       });
     }
-
-    console.log({
-      tokenList,
+    let queryList = tokenList.map((item) => {
+      return {
+        tokenId: item.id,
+        chainId: item.chainId,
+        address,
+      };
     });
-    const res = await Promise.all(
-      tokenList.map((item) =>
-        this.getToken({
-          tokenId: item.id,
-          chainId: item.chainId,
+
+    if (q && isAddress(q) && isRemote) {
+      const chainList = chainId
+        ? [chainId]
+        : Object.values(this.store.customTestnet).map((item) => item.id);
+
+      queryList = chainList.map((chainId) => {
+        return {
+          tokenId: q,
+          chainId,
           address,
-        }).catch((e) => {
+        };
+      });
+    }
+
+    const res = await Promise.all(
+      queryList.map((item) =>
+        this.getToken(item).catch((e) => {
           console.error(e);
           return null;
         })
       )
     );
-    return res.filter((item): item is CustomTestnetToken => !!item);
+    return sortBy(
+      res.filter((item): item is CustomTestnetToken => !!item),
+      (item) => {
+        return !item.id;
+      },
+      (item) => {
+        return -item.amount;
+      }
+    );
   };
 
   // todo

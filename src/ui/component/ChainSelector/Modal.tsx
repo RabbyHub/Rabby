@@ -214,7 +214,9 @@ const ChainSelectorModal = ({
               className="h-[28px] box-content mt-[20px] mb-[20px]"
             />
           )}
-          {matteredList.length === 0 && unmatteredList.length === 0 ? null : (
+          {matteredList.length === 0 &&
+          unmatteredList.length === 0 &&
+          !search ? null : (
             <Input
               prefix={<img src={IconSearch} />}
               // Search chain
@@ -248,25 +250,26 @@ const ChainSelectorModal = ({
             disabledTips={disabledTips}
             showRPCStatus={showRPCStatus}
           ></SelectChainList>
+
           {matteredList.length === 0 && unmatteredList.length === 0 ? (
-            <div className="select-chain-list pt-[70px] pb-[120px] bg-transparent">
+            <div className="select-chain-list pt-[70px] bg-transparent">
               <Empty>
                 {/* No chains */}
                 {t('component.ChainSelectorModal.noChains')}
               </Empty>
-              {selectedTab === 'testnet' ? (
-                <div className="text-center mt-[92px]">
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      setIsShowAddTestnetModal(true);
-                    }}
-                    className="w-[200px] h-[44px]"
-                  >
-                    Add Testnet
-                  </Button>
-                </div>
-              ) : null}
+            </div>
+          ) : null}
+          {selectedTab === 'testnet' ? (
+            <div className="text-center mt-[32px]">
+              <Button
+                type="primary"
+                onClick={() => {
+                  setIsShowAddTestnetModal(true);
+                }}
+                className="w-[200px] h-[44px]"
+              >
+                {t('component.ChainSelectorModal.addTestnet')}
+              </Button>
             </div>
           ) : null}
         </div>

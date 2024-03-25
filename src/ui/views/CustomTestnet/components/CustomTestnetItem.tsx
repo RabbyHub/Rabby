@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as RcIconEdit } from '@/ui/assets/custom-testnet/icon-edit.svg';
-import { ReactComponent as RcIconDelete } from '@/ui/assets/custom-testnet/icon-delete.svg';
+import { ReactComponent as RcIconDelete } from '@/ui/assets/custom-testnet/cc-delete.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import {
   TestnetChain,
@@ -20,6 +20,7 @@ export const CustomTestnetItem = ({
   onRemove,
   onClick,
   editable,
+  disabled,
 }: {
   className?: string;
   item: TestnetChain;
@@ -27,6 +28,7 @@ export const CustomTestnetItem = ({
   onRemove?: (item: TestnetChain) => void;
   onClick?: (item: TestnetChain) => void;
   editable?: boolean;
+  disabled?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
@@ -34,7 +36,9 @@ export const CustomTestnetItem = ({
       className={clsx(
         'flex items-center gap-[12px] px-[15px] py-[10px]',
         'border-[1px] border-transparent rounded-[6px]',
-        'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer',
+        disabled
+          ? 'opacity-50'
+          : 'hover:border-rabby-blue-default hover:bg-r-blue-light1 cursor-pointer',
         'group',
         className
       )}
@@ -69,13 +73,13 @@ export const CustomTestnetItem = ({
               onEdit?.(item);
             }}
           ></ThemeIcon>
-          <ThemeIcon
-            src={RcIconDelete}
-            className="cursor-pointer"
-            onClick={() => {
-              onRemove?.(item);
-            }}
-          ></ThemeIcon>
+          <div className="cursor-pointer text-r-red-default">
+            <RcIconDelete
+              onClick={() => {
+                onRemove?.(item);
+              }}
+            />
+          </div>
         </div>
       ) : null}
     </div>
