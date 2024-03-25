@@ -1,5 +1,4 @@
 export enum OffscreenCommunicationTarget {
-  trezorOffscreen = 'trezor-offscreen',
   latticeOffscreen = 'lattice-offscreen',
   imkeyOffscreen = 'imkey-offscreen',
   onekeyOffscreen = 'onekey-offscreen',
@@ -8,20 +7,10 @@ export enum OffscreenCommunicationTarget {
 }
 
 export enum OffscreenCommunicationEvents {
-  trezorDeviceConnect = 'trezor-device-connect',
   imKeyDeviceConnect = 'imkey-device-connect',
   oneKeyDeviceConnect = 'onekey-device-connect',
   bitbox02DeviceConnect = 'bitbox02-device-connect',
   latticeDeviceConnect = 'lattice-device-connect',
-}
-
-export enum TrezorAction {
-  init = 'trezor-init',
-  dispose = 'trezor-dispose',
-  getPublicKey = 'trezor-get-public-key',
-  ethereumSignTransaction = 'trezor-sign-transaction',
-  ethereumSignMessage = 'trezor-sign-message',
-  ethereumSignTypedData = 'trezor-sign-typed-data',
 }
 
 export enum ImKeyAction {

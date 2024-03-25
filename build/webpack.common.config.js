@@ -233,15 +233,17 @@ const config = {
         },
         {
           from: require.resolve(
-            '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
+            '@trezor/connect-webextension/build/content-script.js'
           ),
-          to: paths.rootResolve('dist/vendor/trezor/trezor-usb-permissions.js'),
+          to: paths.rootResolve('dist/vendor/trezor/trezor-content-script.js'),
         },
         {
           from: require.resolve(
-            '@trezor/connect-web/lib/webextension/trezor-content-script.js'
+            '@trezor/connect-webextension/build/trezor-connect-webextension.js'
           ),
-          to: paths.rootResolve('dist/vendor/trezor/trezor-content-script.js'),
+          to: paths.rootResolve(
+            'dist/vendor/trezor/trezor-connect-webextension.js'
+          ),
         },
       ],
     }),
