@@ -1,6 +1,6 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Account, ChainGas } from 'background/service/preference';
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
@@ -31,9 +31,11 @@ import {
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { normalizeTxParams } from '../SignTx';
-import { isHexString } from 'ethereumjs-util';
+import { isHexString, toChecksumAddress } from 'ethereumjs-util';
 import { WaitingSignComponent } from '../map';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { getAddress } from 'viem';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
 const { TabPane } = Tabs;
 
@@ -76,9 +78,7 @@ interface SignTxProps<TData extends any[] = any[]> {
 }
 
 export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
-  console.log({
-    params,
-  });
+  const { isGnosis, account } = params;
 
   const {
     data = '0x',
@@ -106,12 +106,19 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
+  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [isHardware, setIsHardware] = useState(false);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  const [canProcess, setCanProcess] = useState(true);
+  const [
+    cantProcessReason,
+    setCantProcessReason,
+  ] = useState<ReactNode | null>();
   let updateNonce = true;
   if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
     updateNonce = false;
@@ -139,7 +146,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     gas: gas || params.data[0].gasLimit,
     gasPrice: getGasPrice(),
     nonce,
-    to,
+    to: to ? toChecksumAddress(to) : to,
     value,
   });
 
@@ -167,7 +174,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         });
         return `0x${new BigNumber(res).toString(16)}`;
       } catch (e) {
-        console.log(e);
+        console.error(e);
         return intToHex(21000);
       }
     },
@@ -218,6 +225,13 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         (item) => item.type === currentAccount.type
       )
     );
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setIsGnosisAccount(true);
+    }
+    if (currentAccount.type === KEYRING_TYPE.CoboArgusKeyring) {
+      setIsCoboArugsAccount(true);
+    }
+    checkCanProcess();
     const balance = await wallet.getCustomTestnetToken({
       chainId,
       address: currentAccount.address,
@@ -281,6 +295,29 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   const { t } = useTranslation();
 
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
+
+  const checkCanProcess = async () => {
+    const session = params.session;
+    const currentAccount =
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+    const site = await wallet.getConnectedSite(session.origin);
+
+    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      setCanProcess(false);
+      setCantProcessReason(
+        <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
+      );
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
+      setCanProcess(false);
+      setCantProcessReason(
+        <div className="flex items-center gap-6">
+          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
+          {t('page.signTx.multiSigChainNotMatch')}
+        </div>
+      );
+    }
+  };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
     setSelectedGas({
@@ -506,16 +543,16 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         onCancel={handleCancel}
         onSubmit={handleAllow}
         onIgnoreAllRules={() => {}}
-        // enableTooltip={
-        //   !canProcess ||
-        //   !!checkErrors.find((item) => item.level === 'forbidden')
-        // }
-        // tooltipContent={
-        //   checkErrors.find((item) => item.level === 'forbidden')
-        //     ? checkErrors.find((item) => item.level === 'forbidden')!.msg
-        //     : cantProcessReason
-        // }
-        disabledProcess={false}
+        enableTooltip={!canProcess}
+        tooltipContent={cantProcessReason}
+        disabledProcess={
+          !isReady ||
+          (selectedGas ? selectedGas.price < 0 : true) ||
+          isGnosisAccount ||
+          isCoboArugsAccount ||
+          (isLedger && !hasConnectedLedgerHID) ||
+          !canProcess
+        }
       />
     </>
   );
