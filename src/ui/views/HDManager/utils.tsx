@@ -28,6 +28,7 @@ export const fetchAccountsInfo = async (
     let balance;
     const address = account.address?.toLowerCase();
     if (!address) {
+      newAccounts.push(account);
       continue;
     }
 
