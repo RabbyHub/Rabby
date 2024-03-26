@@ -1,11 +1,12 @@
-import { formatUsdValue, useWallet } from '@/ui/utils';
+import { formatUsdValue, isMeaningfulNumber, useWallet } from '@/ui/utils';
 import { useEffect, useMemo, useState } from 'react';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
 
 const formChartData = (
   data: CurveList,
-  realtimeNetWorth = 0,
+  /** @notice if realtimeNetWorth is not number, it means 'unknown' due to not-loaded or load-failure */
+  realtimeNetWorth?: number | null,
   realtimeTimestamp?: number
 ) => {
   const startData = data[0] || { value: 0, timestamp: 0 };
@@ -27,8 +28,8 @@ const formChartData = (
       };
     }) || [];
 
-  // patch realtime newworth
-  if (realtimeTimestamp) {
+  // ONLY patch realtime newworth on realtimeNetWorth is LOADED
+  if (isMeaningfulNumber(realtimeNetWorth) && realtimeTimestamp) {
     const realtimeChange = realtimeNetWorth - startData.usd_value;
 
     list.push({
@@ -78,7 +79,7 @@ export const useCurve = (
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const select = useMemo(() => {
-    return formChartData(data, realtimeNetWorth ?? 0, new Date().getTime());
+    return formChartData(data, realtimeNetWorth, new Date().getTime());
   }, [data, realtimeNetWorth]);
   const wallet = useWallet();
 
