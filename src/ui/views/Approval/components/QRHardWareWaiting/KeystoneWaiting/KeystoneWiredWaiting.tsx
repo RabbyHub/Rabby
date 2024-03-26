@@ -12,7 +12,7 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from '../../Popup/ApprovalPopupContainer';
-import { useKeystoneUSBErrorMessage } from '@/utils/keystone';
+import { useKeystoneUSBErrorMessage } from '@/ui/utils/keystone';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 

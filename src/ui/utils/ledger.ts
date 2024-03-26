@@ -1,7 +1,7 @@
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { useEffect, useState } from 'react';
-import { hasConnectedLedgerDevice } from '@/utils';
 import browser from 'webextension-polyfill';
+import { hasConnectedLedgerDevice } from '@/ui/utils';
 
 export enum LedgerHDPathType {
   LedgerLive = 'LedgerLive',

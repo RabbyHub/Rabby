@@ -138,7 +138,12 @@ const ContractCall = ({
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
           <Row>
             <div className="relative flex items-center">
-              {requireData.call.func || '-'}
+              <span
+                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
+                title={requireData.call.func}
+              >
+                {requireData.call.func || '-'}
+              </span>
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
                 title={
@@ -169,6 +174,49 @@ const ContractCall = ({
                 {requireData.nativeTokenSymbol}
               </Row>
             }
+          </Col>
+        )}
+        {requireData.unexpectedAddr && (
+          <Col>
+            <Row isTitle>{t('page.signTx.contractCall.suspectedReceiver')}</Row>
+            <Row>
+              <div>
+                <Values.Address
+                  address={requireData.unexpectedAddr!.address}
+                  chain={chain}
+                />
+                <ul className="desc-list">
+                  <li>
+                    <Values.AddressMemo
+                      address={requireData.unexpectedAddr!.address}
+                    />
+                  </li>
+                  {requireData.unexpectedAddr!.name && (
+                    <li>{requireData.unexpectedAddr!.name}</li>
+                  )}
+                  <li>
+                    <ViewMore
+                      type="receiver"
+                      data={{
+                        title: t('page.signTx.contractCall.suspectedReceiver'),
+                        address: requireData.unexpectedAddr!.address,
+                        chain: requireData.unexpectedAddr!.chain,
+                        eoa: requireData.unexpectedAddr!.eoa,
+                        cex: requireData.unexpectedAddr!.cex,
+                        contract: requireData.unexpectedAddr!.contract,
+                        usd_value: requireData.unexpectedAddr!.usd_value,
+                        hasTransfer: requireData.unexpectedAddr!.hasTransfer,
+                        isTokenContract: requireData.unexpectedAddr!
+                          .isTokenContract,
+                        name: requireData.unexpectedAddr!.name,
+                        onTransferWhitelist: requireData.unexpectedAddr!
+                          .onTransferWhitelist,
+                      }}
+                    />
+                  </li>
+                </ul>
+              </div>
+            </Row>
           </Col>
         )}
       </Table>

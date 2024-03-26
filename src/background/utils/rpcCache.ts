@@ -1,5 +1,9 @@
 import { getChainList, getMainnetChainList } from '@/utils/chain';
+import { isManifestV3 } from '@/utils/env';
 import { CHAINS } from 'consts';
+import browser from 'webextension-polyfill';
+import { ALARMS_RPC_CACHE } from './alarms';
+import { uniqueId } from 'lodash';
 
 type CacheState = Map<
   string,
@@ -45,10 +49,12 @@ class RpcCache {
     const cache = this.getIfExist(key);
     if (cache) {
       const { timeoutId } = this.state.get(key)!;
-      window.clearTimeout(timeoutId);
-      const id = window.setTimeout(() => {
+      clearTimeout(timeoutId);
+
+      const id = (setTimeout(() => {
         this.state.delete(key);
-      }, expireTime);
+      }, expireTime) as unknown) as number;
+
       this.state.set(key, {
         result: data.result,
         timeoutId: id,
@@ -56,9 +62,10 @@ class RpcCache {
       });
     } else {
       const methodState: CacheState = new Map();
-      const timeoutId = window.setTimeout(() => {
+      const timeoutId = (setTimeout(() => {
         methodState.delete(key);
-      }, expireTime);
+      }, expireTime) as unknown) as number;
+
       this.state.set(key, { result: data.result, timeoutId, expireTime });
     }
   }
@@ -96,9 +103,9 @@ class RpcCache {
     }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
     if (cache) {
-      const timeoutId = window.setTimeout(() => {
+      const timeoutId = (setTimeout(() => {
         this.state.delete(key);
-      }, expireTime);
+      }, expireTime) as unknown) as number;
       this.state.set(key, {
         timeoutId,
         result: cache.result,

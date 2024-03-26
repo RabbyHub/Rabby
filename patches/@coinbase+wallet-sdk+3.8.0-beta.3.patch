@@ -112,3 +112,38 @@ index e4f5fa5..086b153 100644
          const newAddresses = addresses.map(address => (0, util_1.ensureAddressString)(address));
          if (JSON.stringify(newAddresses) === JSON.stringify(this._addresses)) {
              return;
+diff --git a/node_modules/@coinbase/wallet-sdk/dist/relay/WalletLinkRelay.js b/node_modules/@coinbase/wallet-sdk/dist/relay/WalletLinkRelay.js
+index d7b18c4..abe4cbf 100644
+--- a/node_modules/@coinbase/wallet-sdk/dist/relay/WalletLinkRelay.js
++++ b/node_modules/@coinbase/wallet-sdk/dist/relay/WalletLinkRelay.js
+@@ -513,7 +513,7 @@ class WalletLinkRelay extends WalletSDKRelayAbstract_1.WalletSDKRelayAbstract {
+         const secret = this.session.secret;
+         return new rxjs_1.Observable(subscriber => {
+             void aes256gcm
+-                .encrypt(JSON.stringify(Object.assign(Object.assign({}, message), { origin: location.origin, relaySource: !!window.coinbaseWalletExtension
++                .encrypt(JSON.stringify(Object.assign(Object.assign({}, message), { origin: location.origin, relaySource: false
+                     ? "injected_sdk"
+                     : "sdk" })), secret)
+                 .then((encrypted) => {
+diff --git a/node_modules/@coinbase/wallet-sdk/dist/relay/aes256gcm.js b/node_modules/@coinbase/wallet-sdk/dist/relay/aes256gcm.js
+index eb7cec2..9f23abe 100644
+--- a/node_modules/@coinbase/wallet-sdk/dist/relay/aes256gcm.js
++++ b/node_modules/@coinbase/wallet-sdk/dist/relay/aes256gcm.js
+@@ -19,7 +19,7 @@ async function encrypt(plainText, secret) {
+     const secretKey = await crypto.subtle.importKey("raw", (0, util_1.hexStringToUint8Array)(secret), { name: "aes-gcm" }, false, ["encrypt", "decrypt"]);
+     const enc = new TextEncoder();
+     // Will return encrypted plainText with auth tag (ie MAC or checksum) appended at the end
+-    const encryptedResult = await window.crypto.subtle.encrypt({
++    const encryptedResult = await crypto.subtle.encrypt({
+         name: "AES-GCM",
+         iv: ivBytes,
+     }, secretKey, enc.encode(plainText));
+@@ -61,7 +61,7 @@ function decrypt(cipherText, secret) {
+                 iv: new Uint8Array(ivBytes),
+             };
+             try {
+-                const decrypted = await window.crypto.subtle.decrypt(algo, secretKey, concattedBytes);
++                const decrypted = await crypto.subtle.decrypt(algo, secretKey, concattedBytes);
+                 const decoder = new TextDecoder();
+                 resolve(decoder.decode(decrypted));
+             }

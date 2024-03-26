@@ -258,6 +258,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.HARDWARE.TREZOR,
   KEYRING_CLASS.HARDWARE.ONEKEY,
   KEYRING_CLASS.HARDWARE.IMKEY,
+  KEYRING_CLASS.HARDWARE.BITBOX02,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -1236,6 +1237,7 @@ export const L2_ENUMS = [
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
   CHAINS_ENUM.OPBNB,
+  CHAINS_ENUM.BLAST,
 ];
 
 // opstack L2 chains
@@ -1244,6 +1246,7 @@ export const OP_STACK_ENUMS = [
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ZORA,
   CHAINS_ENUM.OPBNB,
+  CHAINS_ENUM.BLAST,
 ];
 
 export const ARB_LIKE_L2_CHAINS = [CHAINS_ENUM.ARBITRUM, CHAINS_ENUM.AURORA];
@@ -1310,7 +1313,8 @@ declare global {
     __is_rd__?: boolean;
   }
 }
-export const IS_RD = window.__is_rd__;
+
+export const IS_RD = typeof window === 'undefined' ? false : window.__is_rd__;
 
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',

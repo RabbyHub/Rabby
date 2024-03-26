@@ -3,7 +3,7 @@ import {
   useApproval,
   useCommonPopupView,
 } from '@/ui/utils';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 

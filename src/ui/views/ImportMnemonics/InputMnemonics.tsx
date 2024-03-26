@@ -170,6 +170,7 @@ const ImportMnemonics = () => {
             <ThemeIcon
               className="w-[24px] text-r-neutral-body"
               src={RcIconMnemonicInkCC}
+              viewBox="0 0 32 32"
             />
             <span>{t('page.newAddress.importSeedPhrase')}</span>
           </h1>

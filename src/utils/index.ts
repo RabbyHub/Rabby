@@ -1,8 +1,6 @@
 import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import browser from 'webextension-polyfill';
-import { ledgerUSBVendorId } from '@ledgerhq/devices';
-import { getImKeyDevices } from './imKey';
 
 declare global {
   const langLocales: Record<string, Record<'message', string>>;
@@ -22,17 +20,6 @@ export const getChain = (chainId?: string) => {
     return null;
   }
   return chainsDict[chainId];
-};
-
-export const hasConnectedLedgerDevice = async () => {
-  const devices = await navigator.hid.getDevices();
-  return (
-    devices.filter((device) => device.vendorId === ledgerUSBVendorId).length > 0
-  );
-};
-
-export const hasConnectedImKeyDevice = async () => {
-  return !!(await getImKeyDevices()).length;
 };
 
 export const getOriginFromUrl = (url: string) => {

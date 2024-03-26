@@ -389,6 +389,17 @@ export const importMnemonics = createModel<RootModel>()({
         );
       }
 
+      if (accountsToImport?.length) {
+        const { basePublicKey } = await store.app.wallet.requestKeyring(
+          KEYRING_TYPE.HdKeyring,
+          'getInfoByAddress',
+          stashKeyringId ?? null,
+          accountsToImport[0].address
+        );
+
+        await store.app.wallet.addHDKeyRingLastAddAddrTime(basePublicKey);
+      }
+
       await Promise.all(
         accountsToImport.map((account) => {
           return store.app.wallet.updateAlianName(

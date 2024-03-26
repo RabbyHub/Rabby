@@ -243,6 +243,7 @@ const ImportWatchAddress = () => {
               placeholder={t('page.newAddress.addContacts.addressEns')}
               size="large"
               maxLength={44}
+              className="border-bright-on-active"
               autoFocus
               spellCheck={false}
             />

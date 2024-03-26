@@ -91,7 +91,7 @@ when dapp use `window.ethereum` to request, it will send message to `content-scr
 
 then the `content-script` will send message to `background` with `runtime.connect`.
 
-after `background` receive the message, it will use `providerController` to handle the request. and keep the message channel in `sessionSevice` for later communicate.
+after `background` receive the message, it will use `providerController` to handle the request. and keep the message channel in `sessionService` for later communicate.
 
 ### **- `ui`**
 
@@ -114,4 +114,4 @@ it's used by 3 pages which share the same js code, but the template html is diff
 Thanks for contributions from MetaMask team to browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
 
 ## Other Docs
-- [How to add a new translation to Rabby](https://github.com/RabbyHub/Rabby/blob/develop/docs/translation.md)
+- [How to add a new translation to Rabby](/docs/translation.md)

@@ -51,7 +51,7 @@ import { WaitingSignComponent } from './map';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
@@ -1108,6 +1108,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
               value: tx.value || '0x0',
             },
+            origin,
           });
           const ctx = formatSecurityEngineCtx({
             actionData: parsed,

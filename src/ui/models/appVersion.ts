@@ -6,6 +6,7 @@ import { getUpdateContent } from 'changeLogs/index';
 type IState = {
   firstNotice: boolean;
   updateContent: string;
+  version: string;
 };
 
 /**
@@ -16,6 +17,7 @@ export const appVersion = createModel<RootModel>()({
   state: <IState>{
     firstNotice: false,
     updateContent: '',
+    version: '',
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -56,6 +58,7 @@ export const appVersion = createModel<RootModel>()({
       }
 
       dispatch.appVersion.setField({
+        version,
         updateContent,
         ...(firstOpen &&
           updateContent && {

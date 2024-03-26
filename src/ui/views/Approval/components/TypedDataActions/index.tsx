@@ -27,6 +27,7 @@ import CreateKey from '../TextActions/CreateKey';
 import VerifyAddress from '../TextActions/VerifyAddress';
 import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
+import Send from '../Actions/Send';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
@@ -42,6 +43,7 @@ import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegate
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
+import { SendRequireData } from '../Actions/utils';
 import { Chain } from '@debank/common';
 
 export const SignTitle = styled.div`
@@ -289,6 +291,14 @@ const Actions = ({
                     engineResults={engineResults}
                   />
                 )}
+                {data.send && chain && (
+                  <Send
+                    data={data.send}
+                    requireData={requireData as SendRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
                 {data.createKey && (
                   <CreateKey
                     data={data.createKey}
@@ -341,21 +351,13 @@ const Actions = ({
           </>
         )}
       </ActionWrapper>
-
       <MessageWrapper
         className={clsx({
           'no-action': !data,
         })}
       >
         <div className="title">Message</div>
-        <div
-          className={clsx(
-            'content',
-            chain?.isTestnet && 'border-0 bg-r-neutral-title2'
-          )}
-        >
-          {message}
-        </div>
+        <div className="content">{message}</div>
       </MessageWrapper>
     </>
   );

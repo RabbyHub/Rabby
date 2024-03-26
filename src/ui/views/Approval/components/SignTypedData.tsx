@@ -7,7 +7,7 @@ import { Skeleton, message } from 'antd';
 import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import {
@@ -34,6 +34,7 @@ import {
   TypedDataRequireData,
   TypedDataActionData,
   formatSecurityEngineCtx,
+  normalizeTypeData,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
@@ -175,7 +176,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
-        return v;
+        const normalized = normalizeTypeData(v);
+        return normalized;
       } catch (error) {
         console.error('parse signTypedData error: ', error);
         return null;

@@ -167,7 +167,8 @@
         "operation": "Operation",
         "operationABIDesc": "Operation is decoded from ABI",
         "operationCantDecode": "Operation is not decoded",
-        "payNativeToken": "Pay {{symbol}}"
+        "payNativeToken": "Pay {{symbol}}",
+        "suspectedReceiver": "Exception Address"
       },
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
@@ -1035,7 +1036,7 @@
       "tokenDetail": {
         "blockedTip": "Blocked token will not be shown in token list",
         "blocked": "Blocked",
-        "selectedCustom": "Token is not listed by Rabby. You've added it to the token list by custom.",
+        "selectedCustom": "The token is not listed by Rabby. You've added it to the token list manually.",
         "notSelectedCustom": "Token is not listed by Rabby. It will be added to the token list if you switch on.",
         "customized": "Customized",
         "scamTx": "Scam tx",
@@ -1448,7 +1449,8 @@
       },
       "imkey": {
         "title": "Connect imKey"
-      }
+      },
+      "addFromCurrentSeedPhrase": "Add from Current Seed Phrase"
     },
     "unlock": {
       "btn": {

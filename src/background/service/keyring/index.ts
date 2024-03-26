@@ -12,25 +12,25 @@ import {
   setPageStateCacheWhenPopupClose,
   hasWalletConnectPageStateCache,
 } from 'background/utils';
-import BitBox02Keyring from './eth-bitbox02-keyring';
-import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
-import TrezorKeyring from './eth-trezor-keyring';
-import OnekeyKeyring from './eth-onekey-keyring';
-import LatticeKeyring from './eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
-import KeystoneKeyring from './eth-keystone-keyring';
-import CoboArgusKeyring from './eth-cobo-argus-keyring';
+import BitBox02Keyring from './eth-bitbox02-keyring/eth-bitbox02-keyring';
+import LedgerBridgeKeyring from './eth-ledger-keyring';
 import { WalletConnectKeyring } from '@rabby-wallet/eth-walletconnect-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring';
+import TrezorKeyring from './eth-trezor-keyring/eth-trezor-keyring';
+import OnekeyKeyring from './eth-onekey-keyring/eth-onekey-keyring';
+import LatticeKeyring from './eth-lattice-keyring/eth-lattice-keyring';
+import KeystoneKeyring from './eth-keystone-keyring';
+import CoboArgusKeyring from './eth-cobo-argus-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from './eth-gnosis-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
+import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
@@ -38,7 +38,8 @@ import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
-import { EthImKeyKeyring } from './eth-imkey-keyring';
+import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
+import { getKeyringBridge, hasBridge } from './bridge';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -55,25 +56,6 @@ export const KEYRING_SDK_TYPES = {
   CoboArgusKeyring,
   CoinbaseKeyring,
   EthImKeyKeyring,
-};
-
-export const KEYRING_CLASS = {
-  PRIVATE_KEY: SimpleKeyring.type,
-  MNEMONIC: HdKeyring.type,
-  HARDWARE: {
-    BITBOX02: BitBox02Keyring.type,
-    TREZOR: TrezorKeyring.type,
-    LEDGER: LedgerBridgeKeyring.type,
-    ONEKEY: OnekeyKeyring.type,
-    GRIDPLUS: LatticeKeyring.type,
-    IMKEY: EthImKeyKeyring.type,
-  },
-  WATCH: WatchKeyring.type,
-  WALLETCONNECT: WalletConnectKeyring.type,
-  GNOSIS: GnosisKeyring.type,
-  QRCODE: KeystoneKeyring.type,
-  COBO_ARGUS: CoboArgusKeyring.type,
-  COINBASE: CoinbaseKeyring.type,
 };
 
 interface MemStoreState {
@@ -381,9 +363,16 @@ export class KeyringService extends EventEmitter {
    * @param {Object} opts - The constructor options for the keyring.
    * @returns {Promise<Keyring>} The new keyring.
    */
-  addNewKeyring(type: string, opts?: unknown): Promise<any> {
+  addNewKeyring(type: string, opts?: any): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
-    const keyring = new Keyring(opts);
+    const keyring = new Keyring(
+      hasBridge(type)
+        ? {
+            bridge: getKeyringBridge(type),
+            ...(opts ?? {}),
+          }
+        : opts
+    );
     this.updateHdKeyringIndex(keyring);
     return this.addKeyring(keyring);
   }
@@ -414,7 +403,7 @@ export class KeyringService extends EventEmitter {
   }
 
   /**
-   * Checks for duplicate keypairs, using the the first account in the given
+   * Checks for duplicate keypairs, using the first account in the given
    * array. Rejects if a duplicate is found.
    *
    * Only supports 'Simple Key Pair'.
@@ -838,7 +827,13 @@ export class KeyringService extends EventEmitter {
     const keyring =
       Keyring?.type === KEYRING_CLASS.WALLETCONNECT
         ? new Keyring(GET_WALLETCONNECT_CONFIG())
-        : new Keyring();
+        : new Keyring(
+            hasBridge(type)
+              ? {
+                  bridge: getKeyringBridge(type),
+                }
+              : undefined
+          );
     await keyring.deserialize(data);
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
       eventBus.addEventListener(
@@ -902,7 +897,7 @@ export class KeyringService extends EventEmitter {
       });
     }
 
-    if (keyring.type === KEYRING_CLASS.COINBASE) {
+    if (keyring.type === KEYRING_CLASS.Coinbase) {
       const coinbaseKeyring = keyring as CoinbaseKeyring;
       eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
         const uri = coinbaseKeyring.connect({

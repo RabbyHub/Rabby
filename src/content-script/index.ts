@@ -6,6 +6,11 @@ import { v4 as uuid } from 'uuid';
 const channelName = nanoid();
 const isOpera = /Opera|OPR\//i.test(navigator.userAgent);
 
+localStorage.setItem('rabby:channelName', channelName);
+localStorage.setItem('rabby:isDefaultWallet', 'true');
+localStorage.setItem('rabby:uuid', uuid());
+localStorage.setItem('rabby:isOpera', isOpera.toString());
+
 const injectProviderScript = (isDefaultWallet: boolean) => {
   // the script element with src won't execute immediately
   // use inline script element instead!
@@ -14,14 +19,7 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
   // seperate content assignment to two line
   // use AssetReplacePlugin to replace pageprovider content
-  let content = ';(function () {';
-  content += `var __rabby__channelName = '${channelName}';`;
-  content += `var __rabby__isDefaultWallet = ${isDefaultWallet};`;
-  content += `var __rabby__uuid = '${uuid()}';`;
-  content += `var __rabby__isOpera = ${isOpera};`;
-  content += '#PAGEPROVIDER#';
-  content += '\n})();';
-  ele.textContent = content;
+  ele.setAttribute('src', chrome.runtime.getURL('pageProvider.js'));
   container.insertBefore(ele, container.children[0]);
   container.removeChild(ele);
 };
@@ -41,18 +39,5 @@ document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
 });
-const getIsDefaultWallet = () => {
-  return pm.request({ method: 'isDefaultWallet' }) as Promise<boolean>;
-};
 
-if (isOpera) {
-  injectProviderScript(false);
-} else {
-  getIsDefaultWallet()
-    .then((isDefaultWallet) => {
-      injectProviderScript(!!isDefaultWallet);
-    })
-    .catch((err) => {
-      injectProviderScript(true);
-    });
-}
+injectProviderScript(false);

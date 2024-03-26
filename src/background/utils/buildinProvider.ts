@@ -208,7 +208,7 @@ export class EthereumProvider extends EventEmitter {
 
 const provider = new EthereumProvider();
 
-window.dispatchEvent(new Event('ethereum#initialized'));
+// window.dispatchEvent(new Event('ethereum#initialized'));
 
 export default {
   currentProvider: new Proxy(provider, {

@@ -17,17 +17,21 @@ import {
   SubmitSafeRoleModificationAction,
   SubmitDelegatedAddressModificationAction,
   SubmitTokenApprovalModificationAction,
+  SendAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
+import { getArrayType, isArrayType } from '@metamask/abi-utils/dist/parsers';
+import { BigNumber as EthersBigNumber } from 'ethers';
 import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
   waitQueueFinished,
   getProtocol,
   calcUSDValueChange,
+  SendRequireData,
 } from '../Actions/utils';
-import { CHAINS } from 'consts';
+import { CHAINS, ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
 import { findChain, isTestnetChainId } from '@/utils/chain';
 
@@ -69,12 +73,14 @@ export interface TypedDataActionData {
   };
   createKey?: CreateKeyAction;
   verifyAddress?: VerifyAddressAction;
+  send?: SendAction;
   contractCall?: object;
   coboSafeCreate?: CreateCoboSafeAction;
   coboSafeModificationDelegatedAddress?: SubmitSafeRoleModificationAction;
   coboSafeModificationRole?: SubmitDelegatedAddressModificationAction;
   coboSafeModificationTokenApproval?: SubmitTokenApprovalModificationAction;
   common?: {
+    title: string;
     desc: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
@@ -195,6 +201,9 @@ export const parseAction = (
     case 'submit_token_approval_modification':
       result.coboSafeModificationTokenApproval = data.action
         .data as SubmitTokenApprovalModificationAction;
+      return result;
+    case 'send_token':
+      result.send = data.action.data as SendAction;
       return result;
     case null:
       result.common = data.action as any;
@@ -437,6 +446,91 @@ const fetchBatchTokenApproveRequireData = async ({
   return result;
 };
 
+const fetchReceiverRequireData = async ({
+  apiProvider,
+  from,
+  to,
+  chainId,
+  wallet,
+  token,
+}: {
+  apiProvider:
+    | WalletControllerType['openapi']
+    | WalletControllerType['testnetOpenapi'];
+  from: string;
+  to: string;
+  chainId: string;
+  wallet: WalletControllerType;
+  token: TokenItem;
+}) => {
+  const queue = new PQueue();
+  const result: SendRequireData = {
+    eoa: null,
+    cex: null,
+    contract: null,
+    usd_value: 0,
+    protocol: null,
+    hasTransfer: false,
+    usedChains: [],
+    isTokenContract: false,
+    name: null,
+    onTransferWhitelist: false,
+    whitelistEnable: false,
+  };
+  queue.add(async () => {
+    const { has_transfer } = await apiProvider.hasTransfer(chainId, from, to);
+    result.hasTransfer = has_transfer;
+  });
+  queue.add(async () => {
+    const { desc } = await apiProvider.addrDesc(to);
+    if (desc.cex?.id) {
+      result.cex = {
+        id: desc.cex.id,
+        logo: desc.cex.logo_url,
+        name: desc.cex.name,
+        bornAt: desc.born_at,
+        isDeposit: desc.cex.is_deposit,
+      };
+    }
+    if (desc.contract && Object.keys(desc.contract).length > 0) {
+      result.contract = desc.contract;
+    }
+    if (!result.cex && !result.contract) {
+      result.eoa = {
+        id: to,
+        bornAt: desc.born_at,
+      };
+    }
+    result.usd_value = desc.usd_value;
+    if (result.cex) {
+      const { support } = await apiProvider.depositCexSupport(
+        token.id,
+        token.chain,
+        result.cex.id
+      );
+      result.cex.supportToken = support;
+    }
+    if (result.contract) {
+      const { is_token } = await apiProvider.isTokenContract(chainId, to);
+      result.isTokenContract = is_token;
+    }
+    result.name = desc.name;
+    if (ALIAS_ADDRESS[to.toLowerCase()]) {
+      result.name = ALIAS_ADDRESS[to.toLowerCase()];
+    }
+  });
+  queue.add(async () => {
+    const usedChainList = await apiProvider.addrUsedChainList(to);
+    result.usedChains = usedChainList;
+  });
+  const whitelist = await wallet.getWhitelist();
+  const whitelistEnable = await wallet.isWhitelistEnabled();
+  result.whitelistEnable = whitelistEnable;
+  result.onTransferWhitelist = whitelist.includes(to.toLowerCase());
+  await waitQueueFinished(queue);
+  return result;
+};
+
 export interface MultiSigRequireData {
   id: string;
   contract: Record<string, ContractDesc> | null;
@@ -452,6 +546,7 @@ export type TypedDataRequireData =
   | MultiSigRequireData
   | ApproveTokenRequireData
   | BatchApproveTokenRequireData
+  | SendRequireData
   | null;
 
 export const fetchRequireData = async (
@@ -551,6 +646,20 @@ export const fetchRequireData = async (
       return tokenApproveRequireData;
     }
   }
+  if (actionData.send) {
+    const data = actionData.send;
+    if (chain && actionData.contractId) {
+      const receiverRequireData = await fetchReceiverRequireData({
+        from: sender,
+        to: data.to,
+        token: data.token,
+        apiProvider,
+        wallet,
+        chainId: chain.serverId,
+      });
+      return receiverRequireData;
+    }
+  }
   if (chain && actionData.contractId) {
     return await fetchContractRequireData(
       actionData.contractId,
@@ -612,8 +721,11 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
   if (data?.coboSafeModificationTokenApproval) {
     return t('page.signTx.coboSafeModificationTokenApproval.title');
   }
+  if (data?.send) {
+    return t('page.signTx.send.title');
+  }
   if (data?.common) {
-    return data.common.desc;
+    return data.common.title;
   }
   return t('page.signTx.unknownAction');
 };
@@ -769,6 +881,34 @@ export const formatSecurityEngineCtx = async ({
       },
     };
   }
+  if (actionData?.send) {
+    const data = requireData as SendRequireData;
+    const { to } = actionData.send;
+    return {
+      send: {
+        to,
+        contract: data.contract
+          ? {
+              chains: Object.keys(data.contract),
+            }
+          : null,
+        cex: data.cex
+          ? {
+              id: data.cex.id,
+              isDeposit: data.cex.isDeposit,
+              supportToken: data.cex.supportToken,
+            }
+          : null,
+        hasTransfer: data.hasTransfer,
+        chainId: chain!.serverId,
+        usedChainList: data.usedChains.map((item) => item.id),
+        isTokenContract: data.isTokenContract,
+        onTransferWhitelist: data.whitelistEnable
+          ? data.onTransferWhitelist
+          : false,
+      },
+    };
+  }
   if (actionData?.contractCall && actionData?.contractId && chain) {
     return {
       contractCall: {
@@ -779,3 +919,37 @@ export const formatSecurityEngineCtx = async ({
   }
   return {};
 };
+
+export function normalizeTypeData(data) {
+  try {
+    const { types, primaryType, domain, message } = data;
+    const domainTypes = types.EIP712Domain;
+    const messageTypes = types[primaryType];
+    domainTypes.forEach((item) => {
+      const { name, type } = item;
+      domain[name] = normalizeValue(type, domain[name]);
+    });
+    messageTypes.forEach((item) => {
+      const { name, type } = item;
+      message[name] = normalizeValue(type, message[name]);
+    });
+    return { types, primaryType, domain, message };
+  } catch (e) {
+    return data;
+  }
+}
+
+export function normalizeValue(type: string, value: unknown): any {
+  if (isArrayType(type) && Array.isArray(value)) {
+    const [innerType] = getArrayType(type);
+    return value.map((item) => normalizeValue(innerType, item));
+  }
+
+  if (type === 'address') {
+    if (typeof value === 'string' && !value.startsWith('0x')) {
+      return EthersBigNumber.from(value).toHexString();
+    }
+  }
+
+  return value;
+}

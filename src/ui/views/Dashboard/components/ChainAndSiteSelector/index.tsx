@@ -105,8 +105,13 @@ export default ({
 
   const { value: approvalState } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.approvalStatus(account.address);
-      return data;
+      const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
+      if (apiLevel < 1) {
+        const data = await wallet.openapi.approvalStatus(account.address);
+        return data;
+      } else {
+        return [];
+      }
     }
     return;
   }, [account?.address]);

@@ -23,6 +23,9 @@ import { sortBy, max, groupBy } from 'lodash';
 import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
+import { ALARMS_RELOAD_TX } from '../utils/alarms';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -558,15 +561,12 @@ class TxHistory {
         (result) => result.code === 0 && result.status !== 0
       );
       if (!completed) {
-        if (
-          duration !== false &&
-          typeof duration === 'number' &&
-          duration < 1000 * 15
-        ) {
+        if (duration !== false && +duration < 1000 * 15) {
+          const timeout = Number(duration) + 1000;
           // maximum retry 15 times;
           setTimeout(() => {
             this.reloadTx({ address, chainId, nonce });
-          }, Number(duration) + 1000);
+          }, timeout);
         }
         return;
       }
@@ -591,15 +591,12 @@ class TxHistory {
         },
       });
     } catch (e) {
-      if (
-        duration !== false &&
-        typeof duration === 'number' &&
-        duration < 1000 * 15
-      ) {
+      if (duration !== false && +duration < 1000 * 15) {
+        const timeout = Number(duration) + 1000;
         // maximum retry 15 times;
         setTimeout(() => {
           this.reloadTx({ address, chainId, nonce });
-        }, Number(duration) + 1000);
+        }, timeout);
       }
     }
   }

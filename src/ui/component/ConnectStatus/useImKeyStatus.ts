@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
-import { useImKeyDeviceConnected } from '@/utils/imKey';
+import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
 
 export const useImKeyStatus = () => {
   const { activePopup } = useCommonPopupView();

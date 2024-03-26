@@ -69,7 +69,7 @@ const Dashboard = () => {
     ...s.transactions,
   }));
 
-  const { firstNotice, updateContent } = useRabbySelector((s) => ({
+  const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
 
@@ -452,7 +452,10 @@ const Dashboard = () => {
         }}
         maxHeight="420px"
       >
-        <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+        <div>
+          <p className="mb-12">{version}</p>
+          <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+        </div>
       </Modal>
       <Modal
         visible={hovered}

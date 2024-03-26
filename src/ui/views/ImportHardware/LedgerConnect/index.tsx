@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton } from 'ui/component';
-import { hasConnectedLedgerDevice } from '@/utils';
+import { hasConnectedLedgerDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
 import { query2obj } from '@/ui/utils/url';

@@ -15,7 +15,8 @@ import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
+import { Modal as CustomModal } from '@/ui/component';
+import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
 
 interface Props {
   brand?: string;
@@ -194,7 +195,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
         HDName={brand ?? ''}
       />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -209,7 +210,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
           initSettingData={setting}
           brand={brand}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

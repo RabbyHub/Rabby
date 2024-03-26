@@ -5,7 +5,7 @@ import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
-import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';

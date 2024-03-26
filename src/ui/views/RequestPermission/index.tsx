@@ -9,11 +9,11 @@ import { query2obj } from 'ui/utils/url';
 import { useWallet } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from 'consts';
 import IconSuccess from 'ui/assets/success-large.svg';
-import { LedgerHDPathType as HDPathType } from '@/utils/ledger';
+import { LedgerHDPathType as HDPathType } from '@/ui/utils/ledger';
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 import './style.less';
-import { useKeystoneUSBErrorCatcher } from '@/utils/keystone';
-import { getImKeyFirstImKeyDevice } from '@/utils/imKey';
+import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
+import { getImKeyFirstImKeyDevice } from '@/ui/utils/imKey';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);

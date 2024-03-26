@@ -60,6 +60,7 @@ import InputMnemonics from './ImportMnemonics/InputMnemonics';
 import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
+import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 
 declare global {
   interface Window {
@@ -157,6 +158,11 @@ const Main = () => {
         <PrivateRoute exact path="/import/success">
           <ImportSuccess />
         </PrivateRoute>
+
+        <PrivateRoute exact path="/import/add-from-current-seed-phrase">
+          <AddFromCurrentSeedPhrase />
+        </PrivateRoute>
+
         <PrivateRoute exact path="/history">
           <HistoryPage />
         </PrivateRoute>

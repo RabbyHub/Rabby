@@ -13,6 +13,7 @@ import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
+import { Modal as CustomModal } from '@/ui/component';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -125,16 +126,18 @@ export const LedgerManager: React.FC = () => {
 
   return (
     <>
-      <div className="setting" onClick={openAdvanced}>
-        <RcSettingSVG className="icon text-r-neutral-title1" />
-        <span className="title">
-          {t('page.newAddress.hd.advancedSettings')}
-        </span>
+      <div className="toolbar">
+        <div className="toolbar-item" onClick={openAdvanced}>
+          <RcSettingSVG className="icon text-r-neutral-title1" />
+          <span className="title">
+            {t('page.newAddress.hd.advancedSettings')}
+          </span>
+        </div>
       </div>
 
       <MainContainer setting={setting} loading={loading} HDName="Ledger" />
 
-      <Modal
+      <CustomModal
         destroyOnClose
         className="AdvancedModal modal-support-darkmode"
         title={t('page.newAddress.hd.customAddressHdPath')}
@@ -149,7 +152,7 @@ export const LedgerManager: React.FC = () => {
           onConfirm={onConfirmAdvanced}
           initSettingData={setting}
         />
-      </Modal>
+      </CustomModal>
     </>
   );
 };

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.92.53",
+  "version": "0.92.58",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -62,5 +62,8 @@
     "activeTab",
     "notifications",
     "contextMenus"
+  ],
+  "web_accessible_resources": [
+    "pageProvider.js"
   ]
 }

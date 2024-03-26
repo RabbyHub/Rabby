@@ -14,6 +14,7 @@ import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
+import browser from 'webextension-polyfill';
 
 const isSignApproval = (type: string) => {
   console.log({
@@ -25,6 +26,10 @@ const isSignApproval = (type: string) => {
 
 const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
+
+const getScreenAvailHeight = async () => {
+  return (await browser.windows.getCurrent()).height || 1000;
+};
 
 const flow = new PromiseFlow<{
   request: ProviderRequest & {
@@ -157,11 +162,9 @@ const flowContext = flow
       windowHeight = options.height;
     } else {
       const minHeight = 500;
-      // if (screen.availHeight > windowHeight) {
-      //   windowHeight = screen.availHeight;
-      // }
-      if (screen.availHeight < 880) {
-        windowHeight = screen.availHeight;
+      const screenAvailHeight = await getScreenAvailHeight();
+      if (screenAvailHeight < 880) {
+        windowHeight = screenAvailHeight;
       }
       if (windowHeight < minHeight) {
         windowHeight = minHeight;
