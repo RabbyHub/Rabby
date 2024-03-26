@@ -18,6 +18,9 @@ import {
   SubmitDelegatedAddressModificationAction,
   SubmitTokenApprovalModificationAction,
   SendAction,
+  RevokeTokenApproveAction,
+  NFTItem,
+  SwapOrderAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
@@ -30,6 +33,7 @@ import {
   getProtocol,
   calcUSDValueChange,
   SendRequireData,
+  AssetOrderRequireData,
 } from '../Actions/utils';
 import { CHAINS, ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
@@ -79,6 +83,16 @@ export interface TypedDataActionData {
   coboSafeModificationDelegatedAddress?: SubmitSafeRoleModificationAction;
   coboSafeModificationRole?: SubmitDelegatedAddressModificationAction;
   coboSafeModificationTokenApproval?: SubmitTokenApprovalModificationAction;
+  revokePermit?: RevokeTokenApproveAction;
+  assetOrder?: {
+    payTokenList: TokenItem[];
+    payNFTList: NFTItem[];
+    receiveTokenList: TokenItem[];
+    receiveNFTList: NFTItem[];
+    takers: string[];
+    receiver: string | null;
+    expireAt: string | null;
+  };
   common?: {
     title: string;
     desc: string;
@@ -110,6 +124,27 @@ export const parseAction = (
     case 'sell_nft_order': {
       const actionData = data.action.data as SellNFTOrderAction;
       result.sellNFT = actionData;
+      return result;
+    }
+    case 'swap_order': {
+      const {
+        pay_token_list,
+        pay_nft_list,
+        receive_nft_list,
+        receive_token_list,
+        receiver,
+        takers,
+        expire_at,
+      } = data.action.data as SwapOrderAction;
+      result.assetOrder = {
+        payTokenList: pay_token_list,
+        payNFTList: pay_nft_list,
+        receiveNFTList: receive_nft_list,
+        receiveTokenList: receive_token_list,
+        receiver,
+        takers,
+        expireAt: expire_at,
+      };
       return result;
     }
     case 'sell_nft_list_order': {
@@ -205,6 +240,10 @@ export const parseAction = (
     case 'send_token':
       result.send = data.action.data as SendAction;
       return result;
+    case 'permit1_revoke_token':
+      console.log('permit1_revoke_token');
+      result.revokePermit = data.action.data as RevokeTokenApproveAction;
+      return result;
     case null:
       result.common = data.action as any;
       return result;
@@ -231,7 +270,7 @@ export interface ContractRequireData {
   rank: number | null;
 }
 
-const fetchContractRequireData = async (
+export const fetchContractRequireData = async (
   id: string,
   chainId: string,
   sender: string,
@@ -633,7 +672,19 @@ export const fetchRequireData = async (
       return tokenApproveRequireData;
     }
   }
-  if (actionData.batchPermit2) {
+  if (actionData?.revokePermit) {
+    const { token, spender } = actionData.revokePermit;
+    if (chain && actionData.contractId) {
+      return await fetchTokenApproveRequireData({
+        apiProvider,
+        chainId: chain?.serverId,
+        address: sender,
+        token,
+        spender,
+      });
+    }
+  }
+  if (actionData?.batchPermit2) {
     const data = actionData.batchPermit2;
     if (chain && actionData.contractId) {
       const tokenApproveRequireData = await fetchBatchTokenApproveRequireData({
@@ -646,7 +697,17 @@ export const fetchRequireData = async (
       return tokenApproveRequireData;
     }
   }
-  if (actionData.send) {
+  if (actionData?.assetOrder) {
+    if (chain && actionData.contractId) {
+      return await fetchContractRequireData(
+        actionData.contractId,
+        chain.serverId,
+        sender,
+        apiProvider
+      );
+    }
+  }
+  if (actionData?.send) {
     const data = actionData.send;
     if (chain && actionData.contractId) {
       const receiverRequireData = await fetchReceiverRequireData({
@@ -723,6 +784,12 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
   }
   if (data?.send) {
     return t('page.signTx.send.title');
+  }
+  if (data?.revokePermit) {
+    return t('page.signTx.revokePermit.title');
+  }
+  if (data?.assetOrder) {
+    return t('page.signTx.assetOrder.title');
   }
   if (data?.common) {
     return data.common.title;
@@ -906,6 +973,19 @@ export const formatSecurityEngineCtx = async ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+      },
+    };
+  }
+  if (actionData?.assetOrder) {
+    const { takers, receiver } = actionData.assetOrder;
+    const data = requireData as AssetOrderRequireData;
+    return {
+      assetOrder: {
+        specificBuyer: takers[0],
+        from: data.sender,
+        receiver: receiver || '',
+        chainId: chain?.serverId,
+        id: data.id,
       },
     };
   }
