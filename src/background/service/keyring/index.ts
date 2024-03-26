@@ -836,16 +836,13 @@ export class KeyringService extends EventEmitter {
           );
     await keyring.deserialize(data);
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
-      eventBus.addEventListener(
-        EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName, chainId }) => {
-          (keyring as WalletConnectKeyring).init(
-            address,
-            brandName,
-            allChainIds
-          );
+      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, (props) => {
+        const { address, brandName, type } = props;
+        if (type !== KEYRING_CLASS.WALLETCONNECT) {
+          return;
         }
-      );
+        (keyring as WalletConnectKeyring).init(address, brandName, allChainIds);
+      });
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
@@ -899,16 +896,22 @@ export class KeyringService extends EventEmitter {
 
     if (keyring.type === KEYRING_CLASS.Coinbase) {
       const coinbaseKeyring = keyring as CoinbaseKeyring;
-      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
-        const uri = coinbaseKeyring.connect({
-          address,
-        });
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INIT,
+        ({ address, type }) => {
+          if (type !== KEYRING_CLASS.Coinbase) {
+            return;
+          }
+          const uri = coinbaseKeyring.connect({
+            address,
+          });
 
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
-        });
-      });
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.INITED,
+            params: { uri },
+          });
+        }
+      );
 
       coinbaseKeyring.on('message', (data) => {
         if (data.status === 'CHAIN_CHANGED') {

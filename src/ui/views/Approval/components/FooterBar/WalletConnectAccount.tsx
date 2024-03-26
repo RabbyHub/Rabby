@@ -69,12 +69,12 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
     }
   }, [status, sessionChainId, chain]);
 
-  // const wallet = useWallet();
-  // React.useEffect(() => {
-  //   if (chain && sessionChainId && chain.id !== sessionChainId) {
-  //     wallet.walletConnectSwitchChain(account, chain.id);
-  //   }
-  // }, [sessionChainId, chain]);
+  const wallet = useWallet();
+  React.useEffect(() => {
+    if (chain && sessionChainId && chain.id !== sessionChainId) {
+      wallet.walletConnectSwitchChain(account, chain.id);
+    }
+  }, [sessionChainId, chain]);
 
   const TipContent = () => {
     switch (tipStatus) {
@@ -126,6 +126,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       brandName,
       realBrandName,
       chainId: chain?.id,
+      type,
     });
     if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');

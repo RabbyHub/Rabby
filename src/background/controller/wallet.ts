@@ -1854,7 +1854,10 @@ export class WalletController extends BaseController {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName, chainId }) => {
+        ({ address, brandName, type }) => {
+          if (type !== KEYRING_CLASS.WALLETCONNECT) {
+            return;
+          }
           (keyring as WalletConnectKeyring).init(
             address,
             brandName,
@@ -3521,16 +3524,22 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
 
-      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
-        const uri = keyring.connect({
-          address,
-        });
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INIT,
+        ({ address, type }) => {
+          if (type !== KEYRING_CLASS.Coinbase) {
+            return;
+          }
+          const uri = keyring.connect({
+            address,
+          });
 
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
-        });
-      });
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.INITED,
+            params: { uri },
+          });
+        }
+      );
 
       keyring.on('message', (data) => {
         if (data.status === 'CHAIN_CHANGED') {

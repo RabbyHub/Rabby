@@ -73,6 +73,8 @@ export const ReconnectView: React.FC = () => {
   React.useEffect(() => {
     if (visible) {
       initWalletConnect();
+    } else {
+      setQRcodeContent('');
     }
   }, [visible]);
 
