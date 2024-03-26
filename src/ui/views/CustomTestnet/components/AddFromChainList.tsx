@@ -1,6 +1,6 @@
 import { PageHeader } from '@/ui/component';
 import { Chain } from '@debank/common';
-import { Form, Input } from 'antd';
+import { Form, Input, Skeleton } from 'antd';
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -42,11 +42,20 @@ const Wraper = styled.div`
 
     border-radius: 6px;
     background: var(--r-neutral-card1, #fff);
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
 
-    &-focused {
-      border: 0.5px solid var(--r-blue-default, #7084ff);
+    .ant-input {
+      background-color: transparent;
+      color: var(--r-neutral-title1, #192945);
     }
+
+    .anticon {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+  }
+  .ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-focused {
+    border-color: var(--r-blue-default, #7084ff);
   }
 
   .chain-list-item:not(:last-child)::after {
@@ -76,7 +85,7 @@ export const AddFromChainList = ({
   const [search, setSearch] = React.useState('');
   const ref = useRef<HTMLDivElement>(null);
 
-  const { loading, data } = useInfiniteScroll(
+  const { loading, data, loadingMore } = useInfiniteScroll(
     async (data) => {
       const res = await wallet.openapi.searchChainList({
         start: data?.start || 0,
@@ -160,6 +169,24 @@ export const AddFromChainList = ({
                 />
               );
             })}
+            {loadingMore ? (
+              <>
+                <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+                  <Skeleton.Avatar active />
+                  <div className="flex flex-col gap-[4px]">
+                    <Skeleton.Input active className="w-[80px] h-[16px]" />
+                    <Skeleton.Input active className="w-[145px] h-[14px]" />
+                  </div>
+                </div>
+                <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+                  <Skeleton.Avatar active />
+                  <div className="flex flex-col gap-[4px]">
+                    <Skeleton.Input active className="w-[80px] h-[16px]" />
+                    <Skeleton.Input active className="w-[145px] h-[14px]" />
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
         )}
       </div>

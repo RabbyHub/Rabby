@@ -1105,7 +1105,8 @@
         },
         "TestnetAssetListContainer": {
           "add": "add token"
-        }
+        },
+        "noTestnetAssets": "No Testnet Assets"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -1947,7 +1948,7 @@
     "ChainSelectorModal": {
       "searchPlaceholder": "Search chain",
       "noChains": "No chains",
-      "addTestnet": "Add Testnet"
+      "addTestnet": "Custom Testnet"
     },
     "TokenSelector": {
       "listTableHead": {

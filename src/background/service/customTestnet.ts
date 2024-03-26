@@ -155,14 +155,14 @@ class CustomTestnetService {
           method: 'eth_chainId',
         },
         {
-          timeout: 5000,
+          timeout: 6000,
         }
       );
       if (+data.result !== +chain.id) {
         return {
           error: {
             key: 'rpcUrl',
-            message: 'Invalid RPC',
+            message: 'RPC does not match the chainID',
           },
         };
       }
@@ -170,7 +170,7 @@ class CustomTestnetService {
       return {
         error: {
           key: 'rpcUrl',
-          message: 'Invalid RPC',
+          message: 'RPC invalid or currently unavailable',
         },
       };
     }

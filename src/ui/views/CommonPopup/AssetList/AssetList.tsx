@@ -10,7 +10,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { CustomTestnetAssetList } from './CustomTestnetAssetList';
 
-export const AssetList = ({ visible }: { visible: boolean }) => {
+export const AssetList = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose?(): void;
+}) => {
   const { t } = useTranslation();
   const { setHeight, data } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
@@ -64,7 +70,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        <CustomTestnetAssetList visible={visible} />
+        <CustomTestnetAssetList visible={visible} onClose={onClose} />
       </div>
     </>
   );

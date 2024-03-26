@@ -1,11 +1,5 @@
 import { Button, Drawer, Input } from 'antd';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
@@ -13,23 +7,23 @@ import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
 
-import Empty from '../Empty';
-import {
-  SelectChainList,
-  SelectChainListProps,
-} from './components/SelectChainList';
+import { useWallet } from '@/ui/utils';
 import {
   findChain,
   findChainByEnum,
   varyAndSortChainItems,
 } from '@/utils/chain';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import Empty from '../Empty';
 import NetSwitchTabs, {
   NetSwitchTabsKey,
   useSwitchNetTab,
 } from '../PillsSwitch/NetSwitchTabs';
-import { useTranslation } from 'react-i18next';
-import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
-import { useWallet } from '@/ui/utils';
+import {
+  SelectChainList,
+  SelectChainListProps,
+} from './components/SelectChainList';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -148,9 +142,9 @@ const ChainSelectorModal = ({
     hideTestnetTab,
   });
 
-  const [isShowAddTestnetModal, setIsShowAddTestnetModal] = useState(false);
-
   const { t } = useTranslation();
+
+  const history = useHistory();
 
   const {
     matteredList,
@@ -257,33 +251,23 @@ const ChainSelectorModal = ({
                 {/* No chains */}
                 {t('component.ChainSelectorModal.noChains')}
               </Empty>
-            </div>
-          ) : null}
-          {selectedTab === 'testnet' ? (
-            <div className="text-center mt-[32px]">
-              <Button
-                type="primary"
-                onClick={() => {
-                  setIsShowAddTestnetModal(true);
-                }}
-                className="w-[200px] h-[44px]"
-              >
-                {t('component.ChainSelectorModal.addTestnet')}
-              </Button>
+              {selectedTab === 'testnet' ? (
+                <div className="text-center mt-[50px]">
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      history.push('/custom-testnet');
+                    }}
+                    className="w-[200px] h-[44px]"
+                  >
+                    {t('component.ChainSelectorModal.addTestnet')}
+                  </Button>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>
       </Drawer>
-      <EditCustomTestnetModal
-        zIndex={zIndex ? zIndex + 1 : 10000}
-        visible={isShowAddTestnetModal}
-        onCancel={() => {
-          setIsShowAddTestnetModal(false);
-        }}
-        onConfirm={() => {
-          setIsShowAddTestnetModal(false);
-        }}
-      />
     </>
   );
 };

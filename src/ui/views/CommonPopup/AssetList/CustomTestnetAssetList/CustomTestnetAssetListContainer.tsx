@@ -122,11 +122,6 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
             }}
             onRemove={(item) => {
               refreshAsync();
-              // mutate((prev) => {
-              //   return prev?.filter(
-              //     (i) => !(i.id === item.id && i.chainId === item.chainId)
-              //   );
-              // });
             }}
           />
         </div>

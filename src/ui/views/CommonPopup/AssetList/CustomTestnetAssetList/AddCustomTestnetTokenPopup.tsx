@@ -16,6 +16,7 @@ import { ReactComponent as RcIconDown } from '@/ui/assets/dashboard/portfolio/cc
 import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/cc-check.svg';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface Props {
   visible?: boolean;
@@ -39,7 +40,7 @@ const Wraper = styled.div`
     margin-left: auto;
     margin-right: auto;
     background: transparent;
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
 
     color: var(--r-neutral-title1, #192945);
@@ -176,6 +177,8 @@ export const AddCustomTestnetTokenPopup = ({
     }
   }, [visible]);
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
     <>
       <Popup
@@ -185,7 +188,18 @@ export const AddCustomTestnetTokenPopup = ({
         onClose={onClose}
         className="add-custom-token-popup"
         push={false}
-        title={t('page.dashboard.assets.AddTestnetToken.title')}
+        title={
+          <div className="text-r-neutral-title1">
+            {t('page.dashboard.assets.AddTestnetToken.title')}
+          </div>
+        }
+        maskStyle={
+          isDarkTheme
+            ? {
+                backgroundColor: 'transparent',
+              }
+            : undefined
+        }
       >
         <Wraper>
           <Form layout="vertical" form={form}>

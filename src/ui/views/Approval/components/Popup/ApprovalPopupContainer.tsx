@@ -152,7 +152,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
           contentColor,
           'mt-[12px]',
           'text-15 font-normal text-center',
-          'overflow-auto h-[36px]'
+          'overflow-auto h-[36px] px-[20px]'
         )}
       >
         {description}

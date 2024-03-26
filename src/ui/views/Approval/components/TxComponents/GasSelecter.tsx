@@ -1066,10 +1066,11 @@ const GasSelectPanel = ({
           >
             <div className="gas-level">{t(getGasLevelI18nKey(item.level))}</div>
             <div
-              className={clsx('cardTitle', {
+              className={clsx('cardTitle w-full truncate', {
                 'custom-input': item.level === 'custom',
                 active: selectedGas?.level === item.level,
               })}
+              title={new BigNumber(item.price / 1e9).toFixed()}
             >
               {item.level === 'custom' ? (
                 <Input

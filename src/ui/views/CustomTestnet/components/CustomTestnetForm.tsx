@@ -35,6 +35,7 @@ const Wraper = styled.div`
   .ant-input[disabled] {
     background: var(--r-neutral-card2, #f2f4f7);
     border-color: transparent;
+    /* color: var(--r-neutral-foot, #6a7587); */
     &:hover {
       border-color: transparent;
     }
