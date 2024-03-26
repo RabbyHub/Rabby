@@ -240,16 +240,6 @@ const AssetOrder = ({
           </Col>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
-          <Row>
-            {actionData.expireAt ? (
-              <Values.TimeSpanFuture to={Number(actionData.expireAt)} />
-            ) : (
-              '-'
-            )}
-          </Row>
-        </Col>
-        <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
           <Row>
             <div>
@@ -283,6 +273,16 @@ const AssetOrder = ({
                 />
               </li>
             </ul>
+          </Row>
+        </Col>
+        <Col>
+          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
+          <Row>
+            {actionData.expireAt ? (
+              <Values.TimeSpanFuture to={Number(actionData.expireAt)} />
+            ) : (
+              '-'
+            )}
           </Row>
         </Col>
       </Table>
