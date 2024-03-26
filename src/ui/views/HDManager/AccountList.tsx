@@ -93,7 +93,11 @@ export const AccountList: React.FC<Props> = ({
   React.useEffect(() => {
     if (!hiddenInfo) {
       const realList = data?.filter((item) => !!item.address);
-      if (realList && realList.length >= MAX_ACCOUNT_COUNT) {
+      if (
+        realList &&
+        realList.length >= MAX_ACCOUNT_COUNT &&
+        loadedExtraInfoIndex.current === 0
+      ) {
         fetchAccountsInfo(wallet, data ?? [], async (account) => {
           await setList((prev) => {
             return prev.map((item) => {
@@ -109,6 +113,7 @@ export const AccountList: React.FC<Props> = ({
         });
       } else {
         fetchAccountsInfo(wallet, data ?? []).then(setList);
+        loadedExtraInfoIndex.current = -1;
       }
     } else {
       setList(data ?? []);
