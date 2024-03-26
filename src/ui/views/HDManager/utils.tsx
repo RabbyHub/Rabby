@@ -27,19 +27,17 @@ export const fetchAccountsInfo = async (
     let firstTxTime;
     let balance;
     const address = account.address?.toLowerCase();
-    if (!address) return account;
+    if (!address) {
+      continue;
+    }
 
     let needCache = true;
 
     if (cachedAccountInfo.has(address)) {
       const cached = cachedAccountInfo.get(address);
       if (cached) {
-        return {
-          ...account,
-          chains: cached.chains,
-          balance: cached.balance,
-          firstTxTime: cached.firstTxTime,
-        };
+        newAccounts.push(cached);
+        continue;
       }
     }
 
