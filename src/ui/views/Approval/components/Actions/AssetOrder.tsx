@@ -205,16 +205,6 @@ const AssetOrder = ({
               actionData.receiveNFTList.length <= 0 && <Row>-</Row>}
           </div>
         </Col>
-        <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
-          <Row>
-            {actionData.expireAt ? (
-              <Values.TimeSpanFuture to={Number(actionData.expireAt)} />
-            ) : (
-              '-'
-            )}
-          </Row>
-        </Col>
         {actionData.takers.length > 0 && (
           <Col>
             <Row isTitle>{t('page.signTypedData.sellNFT.specificBuyer')}</Row>
@@ -249,6 +239,16 @@ const AssetOrder = ({
             </Row>
           </Col>
         )}
+        <Col>
+          <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
+          <Row>
+            {actionData.expireAt ? (
+              <Values.TimeSpanFuture to={Number(actionData.expireAt)} />
+            ) : (
+              '-'
+            )}
+          </Row>
+        </Col>
         <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
           <Row>
