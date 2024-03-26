@@ -12,11 +12,13 @@ import { t } from 'i18next';
 export function generateAliasName({
   keyringType,
   brandName,
+  keyringName,
   keyringCount = 0,
   addressCount = 0,
 }: {
   keyringType: string;
   brandName?: string;
+  keyringName?: string;
   keyringCount?: number;
   addressCount?: number;
 }) {
@@ -33,6 +35,12 @@ export function generateAliasName({
     ) {
       return `${t('background.alias.watchAddressKeyring')} ${addressCount + 1}`;
     }
+
+    // The name the keyring itself suggests should be used
+    if (keyringName) {
+      return `${keyringName} ${addressCount + 1}`;
+    }
+
     if (brandName) {
       return `${BRAND_ALIAN_TYPE_TEXT[brandName] || brandName} ${
         addressCount + 1
