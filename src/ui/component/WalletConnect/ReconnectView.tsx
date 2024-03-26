@@ -29,9 +29,6 @@ export const ReconnectView: React.FC = () => {
   );
 
   const initWalletConnect = async () => {
-    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
-      setQRcodeContent(uri);
-    });
     if (account && ['CONNECTED', 'DISCONNECTED'].includes(status as string)) {
       await wallet.killWalletConnectConnector(
         account.address,
@@ -51,7 +48,7 @@ export const ReconnectView: React.FC = () => {
   };
   const { t } = useTranslation();
 
-  const init = async () => {
+  const init = React.useCallback(async () => {
     if (!account) return;
     setCurrentAccount({
       ...account,
@@ -63,18 +60,30 @@ export const ReconnectView: React.FC = () => {
     );
     setHeight(420);
     setClassName('isConnectView');
-    initWalletConnect();
-  };
+  }, [account, displayBrandName]);
 
   React.useEffect(() => {
     init();
-  }, []);
+  }, [init]);
 
   React.useEffect(() => {
     if (visible) {
       initWalletConnect();
+    } else {
+      setQRcodeContent('');
     }
   }, [visible]);
+
+  React.useEffect(() => {
+    const handleInit = ({ uri }) => {
+      setQRcodeContent(uri);
+    };
+    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, handleInit);
+
+    return () => {
+      eventBus.removeEventListener(EVENTS.WALLETCONNECT.INITED, handleInit);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (status === 'CONNECTED') {

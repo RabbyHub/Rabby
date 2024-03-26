@@ -41,6 +41,7 @@ const useCommonPopupViewState = () => {
     brandName: string;
     realBrandName?: string;
     chainId?: number;
+    type: string;
   }>();
   const [data, setData] = useState<any>();
 
