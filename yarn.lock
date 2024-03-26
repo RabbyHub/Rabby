@@ -5077,13 +5077,24 @@
   resolved "https://registry.yarnpkg.com/@trezor/connect-plugin-ethereum/-/connect-plugin-ethereum-9.0.3.tgz#141791925c241ada9f2f5959dfdfe7c674d6ed70"
   integrity sha512-xwsrebfuJ6vq7dFUNEEaLMHgktTKR1UtbP8jIo52dYVy7Nk0YIo7GueMFzKJTpeXE5AUPKUKB71sU0DP0/OGgQ==
 
-"@trezor/connect-web@^9.2.1":
+"@trezor/connect-web@9.2.1", "@trezor/connect-web@^9.2.1":
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/@trezor/connect-web/-/connect-web-9.2.1.tgz#6e6fa95e93a7c8ea927d0324b60046ce1618844a"
   integrity sha512-PjZQTJsEP9TVZ9gimN1j16CxdLcZoj2kLzXokli+bsgz9IxzuHSAwNYAGIjUWetGydAApQYHTcI+enPXHVi0rg==
   dependencies:
     "@trezor/connect" "9.2.1"
     "@trezor/connect-common" "0.0.30"
+    "@trezor/utils" "9.0.22"
+    events "^3.3.0"
+
+"@trezor/connect-webextension@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@trezor/connect-webextension/-/connect-webextension-9.2.1.tgz#957842db612ff26ae2cd2ed3c3956eaa13ceeab9"
+  integrity sha512-W+M6ay9KpwHJQ7OZlGL1qU/1wYzjgXRsSvzGeTK+MGJkuO4Z655sexVGkJqtWwGz4Tz/SkGiPPFURnBrK9SiZA==
+  dependencies:
+    "@trezor/connect" "9.2.1"
+    "@trezor/connect-common" "0.0.30"
+    "@trezor/connect-web" "9.2.1"
     "@trezor/utils" "9.0.22"
     events "^3.3.0"
 
