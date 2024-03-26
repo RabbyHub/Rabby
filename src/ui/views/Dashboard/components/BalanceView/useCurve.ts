@@ -1,4 +1,9 @@
-import { formatUsdValue, isMeaningfulNumber, useWallet } from '@/ui/utils';
+import {
+  coerceFloat,
+  formatUsdValue,
+  isMeaningfulNumber,
+  useWallet,
+} from '@/ui/utils';
 import { useEffect, useMemo, useState } from 'react';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
@@ -10,10 +15,11 @@ const formChartData = (
   realtimeTimestamp?: number
 ) => {
   const startData = data[0] || { value: 0, timestamp: 0 };
+  const startUsdValue = coerceFloat(startData.usd_value, 0);
 
   const list =
     data?.map((x) => {
-      const change = x.usd_value - startData.usd_value;
+      const change = coerceFloat(x.usd_value) - startUsdValue;
 
       return {
         value: x.usd_value || 0,
@@ -21,16 +27,16 @@ const formChartData = (
         change: `${formatUsdValue(Math.abs(change))}`,
         isLoss: change < 0,
         changePercent:
-          startData.usd_value === 0
+          startUsdValue === 0
             ? `${x.usd_value === 0 ? '0' : '100.00'}%`
-            : `${(Math.abs(change * 100) / startData.usd_value).toFixed(2)}%`,
+            : `${(Math.abs(change * 100) / startUsdValue).toFixed(2)}%`,
         timestamp: x.timestamp,
       };
     }) || [];
 
   // ONLY patch realtime newworth on realtimeNetWorth is LOADED
   if (isMeaningfulNumber(realtimeNetWorth) && realtimeTimestamp) {
-    const realtimeChange = realtimeNetWorth - startData.usd_value;
+    const realtimeChange = realtimeNetWorth - startUsdValue;
 
     list.push({
       value: realtimeNetWorth || 0,
@@ -40,26 +46,26 @@ const formChartData = (
       change: `${formatUsdValue(Math.abs(realtimeChange))}`,
       isLoss: realtimeChange < 0,
       changePercent:
-        startData.usd_value === 0
+        startUsdValue === 0
           ? `${realtimeNetWorth === 0 ? '0' : '100.00'}%`
-          : `${(Math.abs(realtimeChange * 100) / startData.usd_value).toFixed(
-              2
-            )}%`,
+          : `${(Math.abs(realtimeChange * 100) / startUsdValue).toFixed(2)}%`,
       timestamp: Math.floor(realtimeTimestamp / 1000),
     });
   }
 
-  const endNetWorth = list?.length ? list[list.length - 1]?.value : 0;
-  const assetsChange = endNetWorth - startData.usd_value;
-  const isEmptyAssets = endNetWorth === 0 && startData.usd_value === 0;
+  const endNetWorth = list?.length
+    ? coerceFloat(list[list.length - 1]?.value)
+    : 0;
+  const assetsChange = endNetWorth - startUsdValue;
+  const isEmptyAssets = endNetWorth === 0 && startUsdValue === 0;
 
   return {
     list,
     netWorth: endNetWorth === 0 ? '$0' : `${formatUsdValue(endNetWorth)}`,
     change: `${formatUsdValue(Math.abs(assetsChange))}`,
     changePercent:
-      startData.usd_value !== 0
-        ? `${Math.abs((assetsChange * 100) / startData.usd_value).toFixed(2)}%`
+      startUsdValue !== 0
+        ? `${Math.abs((assetsChange * 100) / startUsdValue).toFixed(2)}%`
         : `${endNetWorth === 0 ? '0' : '100.00'}%`,
     isLoss: assetsChange < 0,
     isEmptyAssets,
