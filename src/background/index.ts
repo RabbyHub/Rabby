@@ -1,4 +1,3 @@
-import { updateChainStore } from './../utils/chain';
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
@@ -42,6 +41,8 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
 import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 import Safe from '@rabby-wallet/gnosis-sdk';
+import { customTestnetService } from './service/customTestnet';
+import { findChain } from '@/utils/chain';
 
 Safe.adapter = fetchAdapter as any;
 

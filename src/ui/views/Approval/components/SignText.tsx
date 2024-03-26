@@ -1,7 +1,7 @@
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { findChain } from '@/utils/chain';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';

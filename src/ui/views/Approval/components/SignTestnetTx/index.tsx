@@ -33,7 +33,7 @@ import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { normalizeTxParams } from '../SignTx';
 import { isHexString, toChecksumAddress } from 'ethereumjs-util';
 import { WaitingSignComponent } from '../map';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { getAddress } from 'viem';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 

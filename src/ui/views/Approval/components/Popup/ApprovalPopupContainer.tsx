@@ -15,7 +15,7 @@ import { noop, useCommonPopupView } from '@/ui/utils';
 import { FooterDoneButton } from './FooterDoneButton';
 import { Dots } from './Dots';
 
-const PRIVATE_KEY_ERROR_HEIGHT = 217;
+const PRIVATE_KEY_ERROR_HEIGHT = 247;
 const OTHER_ERROR_HEIGHT = 392;
 
 export interface Props {
@@ -152,7 +152,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
           contentColor,
           'mt-[12px]',
           'text-15 font-normal text-center',
-          'overflow-auto h-[36px] px-[20px]'
+          'overflow-auto h-[36px] w-full'
         )}
       >
         {description}

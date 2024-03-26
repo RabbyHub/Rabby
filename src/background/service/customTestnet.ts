@@ -1,41 +1,28 @@
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
-import { BigNumber } from 'bignumber.js';
-import { GasLevel, Tx } from 'background/service/openapi';
+import { findChain, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
+import { GasLevel, Tx } from 'background/service/openapi';
 import { createPersistStore } from 'background/utils';
-import axios from 'axios';
+import { BigNumber } from 'bignumber.js';
+import { intToHex } from 'ethereumjs-util';
+import { omit, sortBy } from 'lodash';
 import {
-  findChain,
-  findChainByEnum,
-  findChainByID,
-  isTestnet,
-  updateChainStore,
-} from '@/utils/chain';
-import {
-  defineChain,
-  createClient,
   Client,
-  http,
-  toHex,
-  formatEther,
+  createClient,
+  defineChain,
   erc20Abi,
+  http,
   isAddress,
 } from 'viem';
-import { omit, sortBy } from 'lodash';
-import { intToHex } from 'ethereumjs-util';
 import {
   estimateGas,
   getBalance,
   getGasPrice,
-  getTransaction,
   getTransactionCount,
   getTransactionReceipt,
-  multicall,
   readContract,
 } from 'viem/actions';
-import { satisfies } from 'semver';
-import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
+import { http as axios } from '../utils/http';
 
 export interface TestnetChainBase {
   id: number;

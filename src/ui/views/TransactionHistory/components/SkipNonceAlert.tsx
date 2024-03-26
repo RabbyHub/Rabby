@@ -113,13 +113,17 @@ export const SkipNonceAlert = ({
     const maxGasPrice = Number(
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
     );
-    const chainServerId = findChain({
+    const chain = findChain({
       id: item.chainId,
-    })?.serverId;
-    if (!chainServerId) {
+    });
+    if (!chain) {
       throw new Error('chainServerId not found');
     }
-    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
+    const gasLevels: GasLevel[] = chain.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({
+          chainId: chain.id,
+        })
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
