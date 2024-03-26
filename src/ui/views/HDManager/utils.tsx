@@ -36,6 +36,9 @@ export const fetchAccountsInfo = async (
     if (cachedAccountInfo.has(address)) {
       const cached = cachedAccountInfo.get(address);
       if (cached) {
+        if (onFetchAccountInfo) {
+          await onFetchAccountInfo(cached);
+        }
         newAccounts.push(cached);
         continue;
       }
