@@ -16,6 +16,10 @@ import { ActionWrapper } from '../../ActionWrapper';
 import clsx from 'clsx';
 import { Table, Col, Row } from '../../Actions/components/Table';
 import Loading from '../../TxComponents/Loading';
+import IconCheck, {
+  ReactComponent as RcIconCheck,
+} from 'src/ui/assets/approval/icon-check.svg';
+import { NoActionAlert } from '../../NoActionAlert/NoActionAlert';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -101,26 +105,21 @@ export const TestnetActions = ({
             <TooltipWithMagnetArrow
               placement="bottom"
               overlayClassName="rectangle w-[max-content] decode-tooltip"
-              title=""
-              // title={
-              //   isUnknown ? (
-              //     <NoActionAlert
-              //       data={{
-              //         chainId: chain.serverId,
-              //         contractAddress:
-              //           requireData && 'id' in requireData
-              //             ? requireData.id
-              //             : txDetail.type_call?.contract,
-              //         selector: raw.data.toString(),
-              //       }}
-              //     />
-              //   ) : (
-              //     <span className="flex w-[358px] p-12 items-center">
-              //       <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
-              //       {t('page.signTx.decodedTooltip')}
-              //     </span>
-              //   )
-              // }
+              title={
+                isUnknown ? (
+                  <NoActionAlert
+                    data={{
+                      origin,
+                      text: '',
+                    }}
+                  />
+                ) : (
+                  <span className="flex w-[358px] p-12 items-center">
+                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
+                    {t('page.signTx.decodedTooltip')}
+                  </span>
+                )
+              }
             >
               {isUnknown ? (
                 <img src={IconQuestionMark} className="w-24" />
