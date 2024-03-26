@@ -29,6 +29,7 @@ export const GET_WALLETCONNECT_CONFIG = () => {
       'MATHWALLET',
       'TRUSTWALLET',
       'Utila',
+      'IMTOKEN',
     ],
   };
 };
