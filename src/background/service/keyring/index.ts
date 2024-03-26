@@ -644,7 +644,7 @@ export class KeyringService extends EventEmitter {
   /**
    * Sign Personal Message
    *
-   * Attempts to sign the provided message paramaters.
+   * Attempts to sign the provided message parameters.
    * Prefixes the hash before signing per the personal sign expectation.
    *
    * @param {Object} msgParams - The message parameters to sign.
