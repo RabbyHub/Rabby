@@ -38,9 +38,9 @@ const RevokePermit2 = ({
   data: ParsedActionData['approveToken'];
   requireData: ApproveTokenRequireData;
   chain: Chain;
-  raw: Record<string, string | number>;
+  raw?: Record<string, string | number>;
   engineResults: Result[];
-  onChange(tx: Record<string, any>): void;
+  onChange?(tx: Record<string, any>): void;
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();

@@ -23,6 +23,7 @@ import PushMultiSig from './PushMultiSig';
 import CrossToken from './CrossToken';
 import CrossSwapToken from './CrossSwapToken';
 import RevokePermit2 from './RevokePermit2';
+import AssetOrder from './AssetOrder';
 import {
   ActionRequireData,
   ApproveNFTRequireData,
@@ -37,6 +38,7 @@ import {
   SwapRequireData,
   WrapTokenRequireData,
   getActionTypeText,
+  AssetOrderRequireData,
 } from './utils';
 import IconArrowRight, {
   ReactComponent as RcIconArrowRight,
@@ -53,6 +55,7 @@ import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
+import { ContractRequireData } from '../TypedDataActions/utils';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -310,6 +313,15 @@ const Actions = ({
               data={data.pushMultiSig}
               requireData={requireData as PushMultiSigRequireData}
               chain={chain}
+            />
+          )}
+          {data?.assetOrder && (
+            <AssetOrder
+              data={data.assetOrder}
+              requireData={requireData as ContractRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              sender={(requireData as AssetOrderRequireData).sender}
             />
           )}
           {data.contractCall && (
