@@ -96,7 +96,7 @@ import { t } from 'i18next';
 import { getWeb3Provider } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
-import { GET_WALLETCONNECT_CONFIG } from '@/utils/walletconnect';
+import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { estimateL1Fee } from '@/utils/l2';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
@@ -1848,17 +1848,20 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    keyring.initConnector(brandName);
+    keyring.initConnector(brandName, allChainIds);
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName, chainId }) => {
+        ({ address, brandName, type }) => {
+          if (type !== KEYRING_CLASS.WALLETCONNECT) {
+            return;
+          }
           (keyring as WalletConnectKeyring).init(
             address,
             brandName,
-            !chainId ? 1 : chainId
+            allChainIds
           );
         }
       );
@@ -3521,16 +3524,22 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
 
-      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, ({ address }) => {
-        const uri = keyring.connect({
-          address,
-        });
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INIT,
+        ({ address, type }) => {
+          if (type !== KEYRING_CLASS.Coinbase) {
+            return;
+          }
+          const uri = keyring.connect({
+            address,
+          });
 
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
-        });
-      });
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.INITED,
+            params: { uri },
+          });
+        }
+      );
 
       keyring.on('message', (data) => {
         if (data.status === 'CHAIN_CHANGED') {

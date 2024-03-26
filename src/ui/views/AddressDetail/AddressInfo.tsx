@@ -212,6 +212,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
               className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
               address={address}
               brandName={brandName}
+              type={type}
             />
           </div>
         )}
@@ -241,6 +242,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
               className="text-r-neutral-body bg-r-neutral-bg2 connect-status"
               address={address}
               brandName={KEYRING_CLASS.Coinbase}
+              type={KEYRING_CLASS.Coinbase}
             />
           </div>
         )}

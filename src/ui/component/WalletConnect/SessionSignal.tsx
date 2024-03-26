@@ -35,9 +35,9 @@ export const SessionSignal: React.FC<Props> = ({
   });
 
   const bgColor = React.useMemo(() => {
-    if (chainId && chainId !== sessionChainId && status === 'CONNECTED') {
-      return 'orange';
-    }
+    // if (chainId && chainId !== sessionChainId && status === 'CONNECTED') {
+    //   return 'orange';
+    // }
 
     switch (status) {
       case 'ACCOUNT_ERROR':

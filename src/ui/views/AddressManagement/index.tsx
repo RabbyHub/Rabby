@@ -556,6 +556,7 @@ const AddressManagement = () => {
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={accountList[currentAccountIndex].brandName || ''}
                   className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  type={accountList[currentAccountIndex].type}
                 />
               )}
               {isLedger && (
@@ -572,6 +573,7 @@ const AddressManagement = () => {
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={KEYRING_CLASS.Coinbase}
                   className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  type={KEYRING_CLASS.Coinbase}
                 />
               )}
             </AddressItem>
