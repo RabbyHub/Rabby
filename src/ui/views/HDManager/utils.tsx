@@ -18,77 +18,70 @@ const cachedAccountInfo = new Map<string, Account>();
 
 export const fetchAccountsInfo = async (
   wallet: WalletControllerType,
-  accounts: Account[],
-  onFetchAccountInfo?: (account: Account) => Promise<void>
+  accounts: Account[]
 ) => {
-  const newAccounts: Account[] = [];
+  return await Promise.all(
+    accounts.map(async (account) => {
+      let firstTxTime;
+      let balance;
+      const address = account.address?.toLowerCase();
+      if (!address) return account;
 
-  for (const account of accounts) {
-    let firstTxTime;
-    let balance;
-    const address = account.address?.toLowerCase();
-    if (!address) return account;
+      let needCache = true;
 
-    let needCache = true;
-
-    if (cachedAccountInfo.has(address)) {
-      const cached = cachedAccountInfo.get(address);
-      if (cached) {
-        return {
-          ...account,
-          chains: cached.chains,
-          balance: cached.balance,
-          firstTxTime: cached.firstTxTime,
-        };
-      }
-    }
-
-    let chains: Account['chains'] = [];
-    try {
-      chains = await wallet.openapi.usedChainList(account.address);
-    } catch (e) {
-      console.error('ignore usedChainList error', e);
-      needCache = false;
-    }
-    try {
-      // if has chains, get balance from api
-      if (chains?.length) {
-        const res = await wallet.openapi.getTotalBalance(account.address);
-        balance = res.total_usd_value;
-      }
-    } catch (e) {
-      console.error('ignore getTotalBalance error', e);
-      needCache = false;
-    }
-
-    // find firstTxTime
-    if (isFunction(chains?.forEach)) {
-      chains?.forEach((chain: any) => {
-        if (chain.born_at) {
-          firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
+      if (cachedAccountInfo.has(address)) {
+        const cached = cachedAccountInfo.get(address);
+        if (cached) {
+          return {
+            ...account,
+            chains: cached.chains,
+            balance: cached.balance,
+            firstTxTime: cached.firstTxTime,
+          };
         }
-      });
-    }
+      }
 
-    const accountInfo: Account = {
-      ...account,
-      chains,
-      balance,
-      firstTxTime,
-    };
+      let chains: Account['chains'] = [];
+      try {
+        chains = await wallet.openapi.usedChainList(account.address);
+      } catch (e) {
+        console.error('ignore usedChainList error', e);
+        needCache = false;
+      }
+      try {
+        // if has chains, get balance from api
+        if (chains?.length) {
+          const res = await wallet.openapi.getTotalBalance(account.address);
+          balance = res.total_usd_value;
+        }
+      } catch (e) {
+        console.error('ignore getTotalBalance error', e);
+        needCache = false;
+      }
 
-    if (needCache) {
-      cachedAccountInfo.set(address, accountInfo);
-    }
+      // find firstTxTime
+      if (isFunction(chains?.forEach)) {
+        chains?.forEach((chain: any) => {
+          if (chain.born_at) {
+            firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
+          }
+        });
+      }
 
-    if (onFetchAccountInfo) {
-      await onFetchAccountInfo(accountInfo);
-    }
+      const accountInfo: Account = {
+        ...account,
+        chains,
+        balance,
+        firstTxTime,
+      };
 
-    newAccounts.push(accountInfo);
-  }
+      if (needCache) {
+        cachedAccountInfo.set(address, accountInfo);
+      }
 
-  return newAccounts;
+      return accountInfo;
+    })
+  );
 };
 
 const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
