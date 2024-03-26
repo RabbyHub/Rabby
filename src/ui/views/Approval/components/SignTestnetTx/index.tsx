@@ -363,12 +363,10 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   const handleAllow = async () => {
     if (!selectedGas) {
-      console.log('no gas');
       return;
     }
 
     if (activeApprovalPopup()) {
-      console.log('??');
       return;
     }
 
@@ -401,15 +399,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
     (transaction as Tx).gasPrice = tx.gasPrice;
     const approval = await getApproval();
-
-    console.log({
-      ...transaction,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      signingTxId: approval.signingTxId,
-      reqId,
-    });
 
     approval.signingTxId &&
       (await wallet.updateSigningTx(approval.signingTxId, {

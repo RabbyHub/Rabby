@@ -72,8 +72,6 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     message.success(t('page.signFooterBar.ledger.resent'));
   };
 
-  console.log('common wating');
-
   const handleCancel = () => {
     rejectApproval('user cancel');
   };

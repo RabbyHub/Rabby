@@ -2080,11 +2080,6 @@ const SignTxWrap = (props: SignTxProps) => {
   const chainId = params?.data?.[0]?.chainId;
   const chain = chainId ? findChain({ id: +chainId }) : undefined;
 
-  console.log({
-    params,
-    chain,
-  });
-
   return chain?.isTestnet ? (
     <SignTestnetTx {...props} />
   ) : (

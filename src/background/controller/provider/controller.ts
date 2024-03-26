@@ -235,10 +235,6 @@ class ProviderController extends BaseController {
       });
       return promise;
     } else {
-      console.log('custom', {
-        method,
-        params,
-      });
       const chainData = findChain({
         serverId: chainServerId,
       })!;
@@ -426,14 +422,11 @@ class ProviderController extends BaseController {
       : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
-    console.log({
-      approvingTx,
-    });
+
     // if (!approvingTx?.rawTx || !approvingTx?.explain) {
     //   throw new Error(`approvingTx not found: ${signingTxId}`);
     // }
     if (!approvingTx?.rawTx) {
-      console.log('errrorrrrrrr?');
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
     transactionHistoryService.updateSigningTx(signingTxId!, {
@@ -536,7 +529,6 @@ class ProviderController extends BaseController {
           $ctx: options?.data?.$ctx,
           isDropFailed: true,
         });
-        console.log('created');
         transactionHistoryService.removeSigningTx(signingTxId!);
         if (hash) {
           transactionWatchService.addTx(
@@ -654,7 +646,6 @@ class ProviderController extends BaseController {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
-      console.log('??????', 'submit');
       try {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
@@ -679,15 +670,7 @@ class ProviderController extends BaseController {
           );
 
           onTransactionCreated({ hash, reqId, pushType });
-          console.log('custom rpc');
         } else if (!findChain({ enum: chain })?.isTestnet) {
-          console.log('normal');
-          console.log(
-            findChain({
-              enum: chain,
-            }),
-            chain
-          );
           const res = await openapiService.submitTx({
             tx: {
               ...approvalRes,
@@ -713,7 +696,6 @@ class ProviderController extends BaseController {
             notificationService.setStatsData(statsData);
           }
         } else {
-          console.log('custom testnet');
           const chainData = findChain({
             enum: chain,
           })!;
@@ -730,16 +712,10 @@ class ProviderController extends BaseController {
           const tx = TransactionFactory.fromTxData(txData);
           const rawTx = bufferToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
-          console.log({
-            client,
-            sendRaw: 'sendRaw',
-          });
+
           hash = await client.request({
             method: 'eth_sendRawTransaction',
             params: [rawTx as any],
-          });
-          console.log({
-            hash,
           });
           onTransactionCreated({ hash, reqId, pushType });
         }
@@ -1016,9 +992,6 @@ class ProviderController extends BaseController {
       }
       const connected = permissionService.getConnectedSite(session.origin);
 
-      console.log({
-        connected,
-      });
       if (connected) {
         if (
           Number(chainParams.chainId) ===

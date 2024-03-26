@@ -237,8 +237,6 @@ const HistoryList = () => {
     );
   }
 
-  console.log('txList?.list', txList?.list);
-
   return (
     <div className="overflow-y-auto max-h-[434px] space-y-[12px] pb-20">
       {txList?.list?.map((swap, idx) => (

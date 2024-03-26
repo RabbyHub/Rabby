@@ -253,8 +253,6 @@ class NotificationService extends Events {
         : null;
       const explain = signingTx?.explain;
 
-      console.log({ explain });
-
       if (explain && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,

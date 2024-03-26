@@ -133,7 +133,6 @@ wallet.getCustomTestnetList().then((testnetList) => {
 });
 
 eventBus.addEventListener('syncChainList', (params) => {
-  console.log('??', params);
   store.dispatch.chains.setField(params);
   updateChainStore(params);
 });

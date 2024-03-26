@@ -17,9 +17,6 @@ import { findChain } from '@/utils/chain';
 import browser from 'webextension-polyfill';
 
 const isSignApproval = (type: string) => {
-  console.log({
-    type,
-  });
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
   return SIGN_APPROVALS.includes(type);
 };
@@ -244,7 +241,6 @@ const flowContext = flow
         )
           .then((result) => {
             if (isSignApproval(approvalType)) {
-              console.log('sign finished');
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.SIGN_FINISHED,
                 params: {
@@ -259,7 +255,6 @@ const flowContext = flow
           .catch((e: any) => {
             Sentry.captureException(e);
             if (isSignApproval(approvalType)) {
-              console.log('sign error');
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.SIGN_FINISHED,
                 params: {

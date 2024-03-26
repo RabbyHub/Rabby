@@ -118,7 +118,6 @@ class TransactionWatcher {
         ? i18n.t('background.transactionWatcher.completed')
         : i18n.t('background.transactionWatcher.failed');
 
-    console.log(txReceipt);
     const content =
       txReceipt.status === '0x1'
         ? i18n.t('background.transactionWatcher.txCompleteMoreContent', {

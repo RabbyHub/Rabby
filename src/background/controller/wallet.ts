@@ -1222,7 +1222,6 @@ export class WalletController extends BaseController {
   };
   setSite = (data: ConnectedSite) => {
     const chainItem = findChain({ enum: data.chain });
-    console.log('setSite', data, chainItem);
     if (!chainItem) {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
@@ -1232,11 +1231,8 @@ export class WalletController extends BaseController {
       ? findChain({ enum: connectSite?.chain })
       : undefined;
 
-    console.log({ prev, connectSite });
-
     permissionService.setSite(data);
     if (data.isConnected) {
-      console.log('data', JSON.stringify(data));
       // rabby:chainChanged event must be sent before chainChanged event
       sessionService.broadcastEvent(
         'rabby:chainChanged',
@@ -1313,7 +1309,6 @@ export class WalletController extends BaseController {
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
-    console.log('update connectedsite');
     const chainItem = findChain({ enum: data.chain });
 
     if (!chainItem) {
@@ -1327,7 +1322,6 @@ export class WalletController extends BaseController {
       ? findChain({ enum: connectSite?.chain })
       : undefined;
 
-    console.log('updateConnectedSite', origin, data);
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
     sessionService.broadcastEvent(

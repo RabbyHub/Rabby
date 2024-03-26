@@ -43,7 +43,6 @@ class PermissionService {
 
     this.lruCache = new LRU();
 
-    console.log('init');
     let filtered = false;
     const cache: ReadonlyArray<LRU.Entry<string, ConnectedSite>> = (
       this.store.dumpCache || []
@@ -96,7 +95,6 @@ class PermissionService {
   };
 
   setSite = (site: ConnectedSite) => {
-    console.log('setSite', site);
     if (!this.lruCache) return;
     this.lruCache.set(site.origin, site);
     this.sync();
@@ -178,7 +176,6 @@ class PermissionService {
     value: Partial<ConnectedSite>,
     partialUpdate?: boolean
   ) => {
-    console.log('update c');
     if (!this.lruCache || !this.lruCache.has(origin)) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return;
 
@@ -201,7 +198,6 @@ class PermissionService {
     if (origin === INTERNAL_REQUEST_ORIGIN) return true;
 
     const site = this._getSite(origin);
-    console.log({ site });
     return site && site.isConnected;
   };
 
@@ -303,7 +299,6 @@ class PermissionService {
   };
 
   removeConnectedSite = (origin: string) => {
-    console.log('remove');
     if (!this.lruCache) return;
     const site = this.getConnectedSite(origin);
     if (!site) {

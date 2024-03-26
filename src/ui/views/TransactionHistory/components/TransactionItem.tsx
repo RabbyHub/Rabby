@@ -89,7 +89,6 @@ export const TransactionItem = ({
     setIsShowCancelPopup(false);
   };
   const handleQuickCancel = async () => {
-    console.log('todo quick cancel');
     const maxGasTx = findMaxGasTx(item.txs);
     if (maxGasTx?.reqId) {
       try {

@@ -98,15 +98,11 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [type, isDarkTheme]);
 
   const init = async () => {
-    console.log('privatte', params);
     const account = params.isGnosis
       ? params.account!
       : (await wallet.syncGetCurrentAccount())!;
 
-    console.log('account');
     const approval = await getApproval();
-
-    console.log('approval', approval);
 
     const isSignText = params.isGnosis
       ? true
@@ -145,13 +141,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
       });
     }
 
-    console.log('add event');
-
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
-      console.log('EVENTS.SIGN_FINISHED', data);
       if (data.success) {
         let sig = data.data;
         setResult(sig);

@@ -37,7 +37,6 @@ const TransactionHistory = () => {
     );
     setPendingList(pendings);
     setCompleteList(completeds);
-    console.log('loadList', pendings, completeds);
   };
 
   const loadPendingListQueue = async () => {

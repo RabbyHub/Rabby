@@ -959,20 +959,13 @@ const SendToken = () => {
     }
     setIsLoading(false);
 
-    console.log({
-      result,
-    });
-
     return result;
   };
 
   const initByCache = async () => {
     const account = (await wallet.syncGetCurrentAccount())!;
     const qs = query2obj(history.location.search);
-    console.log({
-      qs,
-    });
-    // todo chainId
+
     if (qs.token) {
       const [tokenChain, id] = qs.token.split(':');
       if (!tokenChain || !id) return;

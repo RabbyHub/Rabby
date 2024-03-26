@@ -426,9 +426,7 @@ class TxHistory {
     const key = `${chainId}-${nonce}`;
     const address = from.toLowerCase();
 
-    console.log('TxRequest', txRequest);
     const group = this.store.transactions[address][key];
-    console.log('group', group);
     if (!this.store.transactions[address] || !group) {
       return;
     }
@@ -436,7 +434,6 @@ class TxHistory {
     const tx = group.txs.find(
       (item) => item.reqId && item.reqId === txRequest.id
     );
-    console.log(tx);
     if (!tx) {
       return;
     }
@@ -481,7 +478,6 @@ class TxHistory {
     const chain = findChain({
       id: chainId,
     });
-    console.log('reloadTxRequest', target);
     if (!target) {
       return;
     }
@@ -491,7 +487,6 @@ class TxHistory {
         tx && tx.reqId && !tx.hash && !tx.isSubmitFailed && !tx.isWithdrawed
     ) as (TransactionHistoryItem & { reqId: string })[];
 
-    console.log('reloadTxRequest', unbroadcastedTxs);
     if (unbroadcastedTxs.length) {
       const openapi = chain?.isTestnet ? testnetOpenapiService : openapiService;
       await openapi
