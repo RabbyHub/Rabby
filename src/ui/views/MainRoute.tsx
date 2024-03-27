@@ -38,7 +38,6 @@ import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
 import GasTopUp from './GasTopUp';
-import ApprovalManage from './ApprovalManage';
 import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -242,9 +241,6 @@ const Main = () => {
           <GasTopUp />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/popup/approval-manage">
-          <ApprovalManage />
-        </PrivateRoute>
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManagePage />
         </PrivateRoute>
