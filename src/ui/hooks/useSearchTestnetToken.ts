@@ -33,7 +33,7 @@ export const useSearchTestnetToken = ({
       return res.map((item) => customTestnetTokenToTokenItem(item));
     },
     {
-      refreshDeps: [address, chainId, enabled, withBalance],
+      refreshDeps: [address, chainId, enabled, withBalance, q],
     }
   );
 

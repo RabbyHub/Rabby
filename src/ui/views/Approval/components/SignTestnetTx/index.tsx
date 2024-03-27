@@ -181,7 +181,12 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     {
       onSuccess(data) {
         if (!gasLimit) {
-          setGasLimit(data);
+          setGasLimit(
+            `0x${new BigNumber(data)
+              .multipliedBy(1.5)
+              .integerValue()
+              .toString(16)}`
+          );
         }
       },
       manual: true,

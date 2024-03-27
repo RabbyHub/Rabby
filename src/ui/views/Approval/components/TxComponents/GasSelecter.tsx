@@ -1066,7 +1066,7 @@ const GasSelectPanel = ({
           >
             <div className="gas-level">{t(getGasLevelI18nKey(item.level))}</div>
             <div
-              className={clsx('cardTitle w-full truncate', {
+              className={clsx('cardTitle w-full', {
                 'custom-input': item.level === 'custom',
                 active: selectedGas?.level === item.level,
               })}
@@ -1087,7 +1087,16 @@ const GasSelectPanel = ({
                   placeholder="0"
                 />
               ) : (
-                new BigNumber(item.price / 1e9).toFixed()
+                <Tooltip
+                  title={new BigNumber(item.price / 1e9).toFixed()}
+                  overlayClassName={clsx('rectangle')}
+                >
+                  <div>
+                    {selectedGas?.level === item.level
+                      ? new BigNumber(item.price / 1e9).toFixed()
+                      : new BigNumber(item.price / 1e9).toFixed().slice(0, 8)}
+                  </div>
+                </Tooltip>
               )}
             </div>
           </div>

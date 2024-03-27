@@ -1,13 +1,13 @@
 import { PageHeader } from '@/ui/component';
 import { Chain } from '@debank/common';
 import { Form, Input, Skeleton } from 'antd';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import { CustomTestnetItem } from './CustomTestnetItem';
 import clsx from 'clsx';
-import { useInfiniteScroll } from 'ahooks';
+import { useInfiniteScroll, useRequest } from 'ahooks';
 import { intToHex, useWallet } from '@/ui/utils';
 import {
   TestnetChain,
@@ -79,7 +79,6 @@ export const AddFromChainList = ({
   onClose?: () => void;
   onSelect?: (chain: TestnetChain) => void;
 }) => {
-  const [form] = Form.useForm();
   const { t } = useTranslation();
   const wallet = useWallet();
   const [search, setSearch] = React.useState('');
@@ -116,6 +115,41 @@ export const AddFromChainList = ({
       threshold: 150,
     }
   );
+
+  const { data: usedList, loading: isLoadingUsed } = useRequest(() => {
+    return wallet.getUsedCustomTestnetChainList().then((list) => {
+      return list.map((item) => {
+        return createTestnetChain({
+          name: item.name,
+          id: item.chain_id,
+          nativeTokenSymbol: item.native_currency.symbol,
+          rpcUrl: item.rpc || '',
+          scanLink: item.explorer || '',
+        });
+      });
+    });
+  });
+
+  const isLoading = loading || isLoadingUsed;
+  const list = useMemo(() => {
+    if (search) {
+      return data?.list || [];
+    }
+    return (data?.list || []).filter((item) => {
+      return !usedList?.find((used) => used.id === item.id);
+    });
+  }, [data?.list, usedList, search]);
+
+  const isEmpty = useMemo(() => {
+    if (isLoading) {
+      return false;
+    }
+    if (search) {
+      return !list?.length;
+    }
+    return !usedList?.length && !list?.length;
+  }, [isLoading, search, list, usedList]);
+
   return (
     <Wraper className={clsx({ 'translate-x-0': visible }, className)}>
       <div className="px-[20px]">
@@ -130,66 +164,104 @@ export const AddFromChainList = ({
           allowClear
         />
       </div>
-      <div ref={ref} className="flex-1 overflow-auto px-[20px]">
-        {loading ? null : !data?.list?.length ? (
-          <div className="h-full rounded-[6px] bg-r-neutral-card2">
-            <Emtpy
-              description={t('page.customTestnet.AddFromChainList.empty')}
-            />
-          </div>
-        ) : (
-          <div className="rounded-[6px] bg-r-neutral-card2">
-            {data?.list?.map((item) => {
-              const chain = findChain({ id: item.id });
-
-              return chain ? (
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
-                  key={item.id + 'tooltip'}
-                  align={{
-                    offset: [0, 30],
-                  }}
-                  placement="top"
-                  title={
-                    chain?.isTestnet
-                      ? t('page.customTestnet.AddFromChainList.tips.added')
-                      : t('page.customTestnet.AddFromChainList.tips.supported')
-                  }
-                >
-                  <div className="chain-list-item relative">
-                    <CustomTestnetItem item={item} disabled />
-                  </div>
-                </TooltipWithMagnetArrow>
-              ) : (
-                <CustomTestnetItem
-                  item={item}
-                  key={item.id}
-                  onClick={onSelect}
-                  className="relative chain-list-item"
-                />
-              );
-            })}
-            {loadingMore ? (
-              <>
-                <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
-                  <Skeleton.Avatar active />
-                  <div className="flex flex-col gap-[4px]">
-                    <Skeleton.Input active className="w-[80px] h-[16px]" />
-                    <Skeleton.Input active className="w-[145px] h-[14px]" />
-                  </div>
-                </div>
-                <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
-                  <Skeleton.Avatar active />
-                  <div className="flex flex-col gap-[4px]">
-                    <Skeleton.Input active className="w-[80px] h-[16px]" />
-                    <Skeleton.Input active className="w-[145px] h-[14px]" />
-                  </div>
-                </div>
-              </>
-            ) : null}
-          </div>
-        )}
-      </div>
+      {isLoading ? (
+        <div className="px-[20px] rounded-[6px]">
+          <Loading />
+        </div>
+      ) : isEmpty ? (
+        <div className="h-full rounded-[6px] bg-r-neutral-card2 px-[20px]">
+          <Emtpy description={t('page.customTestnet.AddFromChainList.empty')} />
+        </div>
+      ) : (
+        <div ref={ref} className="flex-1 overflow-auto px-[20px]">
+          {usedList?.length && !search ? (
+            <div className="mb-[20px]">
+              <CustomTestnetList list={usedList || []} onSelect={onSelect} />
+            </div>
+          ) : null}
+          <CustomTestnetList
+            list={list}
+            loading={loading}
+            loadingMore={loadingMore}
+            onSelect={onSelect}
+          />
+        </div>
+      )}
     </Wraper>
+  );
+};
+
+const CustomTestnetList = ({
+  loadingMore,
+  list,
+  onSelect,
+  className,
+}: {
+  loading?: boolean;
+  loadingMore?: boolean;
+  list: TestnetChain[];
+  onSelect?: (chain: TestnetChain) => void;
+  className?: string;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className={className}>
+      {
+        <div className="rounded-[6px] bg-r-neutral-card2">
+          {list?.map((item) => {
+            const chain = findChain({ id: item.id });
+
+            return chain ? (
+              <TooltipWithMagnetArrow
+                className="rectangle w-[max-content]"
+                key={item.id + 'tooltip'}
+                align={{
+                  offset: [0, 30],
+                }}
+                placement="top"
+                title={
+                  chain?.isTestnet
+                    ? t('page.customTestnet.AddFromChainList.tips.added')
+                    : t('page.customTestnet.AddFromChainList.tips.supported')
+                }
+              >
+                <div className="chain-list-item relative">
+                  <CustomTestnetItem item={item} disabled />
+                </div>
+              </TooltipWithMagnetArrow>
+            ) : (
+              <CustomTestnetItem
+                item={item}
+                key={item.id}
+                onClick={onSelect}
+                className="relative chain-list-item"
+              />
+            );
+          })}
+          {loadingMore ? <Loading /> : null}
+        </div>
+      }
+    </div>
+  );
+};
+
+const Loading = () => {
+  return (
+    <>
+      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+        <Skeleton.Avatar active />
+        <div className="flex flex-col gap-[4px]">
+          <Skeleton.Input active className="w-[80px] h-[16px]" />
+          <Skeleton.Input active className="w-[145px] h-[14px]" />
+        </div>
+      </div>
+      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+        <Skeleton.Avatar active />
+        <div className="flex flex-col gap-[4px]">
+          <Skeleton.Input active className="w-[80px] h-[16px]" />
+          <Skeleton.Input active className="w-[145px] h-[14px]" />
+        </div>
+      </div>
+    </>
   );
 };

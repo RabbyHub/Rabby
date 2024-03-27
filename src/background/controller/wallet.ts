@@ -4,7 +4,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
-import { groupBy, keyBy, set, uniq } from 'lodash';
+import { flatten, groupBy, keyBy, set, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -3715,6 +3715,37 @@ export class WalletController extends BaseController {
   getCustomTestnetTx = customTestnetService.getTx;
   getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
+
+  getUsedCustomTestnetChainList = async () => {
+    const ids = new Set<number>();
+    Object.values(transactionHistoryService.store.transactions).forEach(
+      (item) => {
+        Object.values(item).forEach((txGroup) => {
+          ids.add(txGroup.chainId);
+        });
+      }
+    );
+    const chainList = Array.from(ids).filter(
+      (id) =>
+        !findChain({
+          id,
+        })
+    );
+
+    const res = await Promise.all(
+      chainList.map((id) =>
+        openapiService
+          .searchChainList({
+            q: String(id),
+          })
+          .then((res) => {
+            return res.chain_list;
+          })
+          .catch(() => [])
+      )
+    );
+    return flatten(res);
+  };
 
   syncMainnetChainList = async () => {
     try {
