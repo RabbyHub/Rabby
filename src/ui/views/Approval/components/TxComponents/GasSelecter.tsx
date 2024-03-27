@@ -193,7 +193,7 @@ const ManuallySetGasLimitAlert = styled.div`
 `;
 
 const ErrorsWrapper = styled.div`
-  border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   padding-top: 14px;
   margin-top: 14px;
   .item {

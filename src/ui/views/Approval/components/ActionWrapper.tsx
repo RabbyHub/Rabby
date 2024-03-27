@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 export const DIV = styled.div`
   background-color: var(--r-neutral-bg-1, #fff);
-  margin-bottom: 8px;
   border-radius: 8px;
   .action-header {
     display: flex;
