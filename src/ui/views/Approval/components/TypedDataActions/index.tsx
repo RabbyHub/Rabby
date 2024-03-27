@@ -81,6 +81,7 @@ const MessageWrapper = styled.div`
     line-height: 16px;
     color: var(--r-neutral-title-1, #f7fafc);
     text-align: center;
+    margin-top: 10px;
     margin-bottom: 10px;
     margin-left: -20px;
     margin-right: -20px;
