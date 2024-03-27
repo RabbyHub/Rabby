@@ -112,15 +112,11 @@ export const HDManager: React.FC<StateProviderProps> = ({
         })
         .catch((e) => {
           console.error(e);
-          if (keyring === KEYRING_CLASS.HARDWARE.GRIDPLUS) {
-            setInitialed(true);
-          } else {
-            setInitialed(false);
-            message.error({
-              content: t('page.newAddress.hd.tooltip.connectError'),
-              key: 'ledger-error',
-            });
-          }
+          setInitialed(false);
+          message.error({
+            content: t('page.newAddress.hd.tooltip.connectError'),
+            key: 'ledger-error',
+          });
         });
     }
 
