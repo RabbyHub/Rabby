@@ -32,18 +32,12 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     balanceFromCache,
     refreshBalance,
     hasValueChainBalances,
-    testnetBalance,
-    testnetMatteredChainBalances,
-    testnetSuccess,
-    testnetBalanceLoading,
-    hasTestnetValueChainBalances,
     missingList,
   } = useCurrentBalance(
     currentAccount?.address,
     true,
     false,
-    accountBalanceUpdateNonce,
-    isShowTestnet
+    accountBalanceUpdateNonce
   );
   const {
     result: curveData,
@@ -99,20 +93,10 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
         isOffline: !success,
-        testnetBalance,
-        testnetBalanceLoading,
-        testnetIsEmptyAssets: !testnetMatteredChainBalances.length,
-        isTestnetOffline: !testnetSuccess,
-        matteredTestnetChainBalances: hasTestnetValueChainBalances,
       });
     }
   }, [
     matteredChainBalances,
-    testnetMatteredChainBalances,
-    hasTestnetValueChainBalances,
-    testnetBalance,
-    testnetSuccess,
-    testnetBalanceLoading,
     balance,
     balanceLoading,
     componentName,

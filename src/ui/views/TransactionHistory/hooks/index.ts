@@ -102,11 +102,7 @@ export const useLoadTxRequests = (
         return {};
       }
       const res = await Promise.all([
-        testnetTxs?.length
-          ? wallet.testnetOpenapi
-              .getTxRequests(testnetTxs.map((tx) => tx.reqId) as string[])
-              .catch(() => [])
-          : [],
+        [],
         mainnetTxs?.length
           ? wallet.openapi
               .getTxRequests(mainnetTxs.map((tx) => tx.reqId) as string[])

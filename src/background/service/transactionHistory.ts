@@ -488,8 +488,7 @@ class TxHistory {
     ) as (TransactionHistoryItem & { reqId: string })[];
 
     if (unbroadcastedTxs.length) {
-      const openapi = chain?.isTestnet ? testnetOpenapiService : openapiService;
-      await openapi
+      await openapiService
         .getTxRequests(unbroadcastedTxs.map((tx) => tx.reqId))
         .then((res) => {
           res.forEach((item, index) => {

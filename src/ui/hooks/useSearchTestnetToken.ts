@@ -25,6 +25,7 @@ export const useSearchTestnetToken = ({
       let res = await wallet.getCustomTestnetTokenList({
         address,
         chainId,
+        q,
       });
       if (withBalance) {
         res = res.filter((item) => item.amount > 0);

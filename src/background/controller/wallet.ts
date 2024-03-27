@@ -1069,7 +1069,7 @@ export class WalletController extends BaseController {
   getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
     if (!address) return null;
     if (isTestnet) {
-      return preferenceService.getTestnetAddressBalance(address);
+      return null;
     }
     return preferenceService.getAddressBalance(address);
   };

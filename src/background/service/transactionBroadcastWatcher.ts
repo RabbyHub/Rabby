@@ -77,11 +77,7 @@ class TransactionBroadcastWatcher {
     );
 
     const res = await Promise.all([
-      testnetList?.length
-        ? testnetOpenapiService
-            .getTxRequests(testnetList.map((item) => item.reqId))
-            .catch(() => [] as TxRequest[])
-        : ([] as TxRequest[]),
+      [] as TxRequest[],
       mainnetList?.length
         ? openapiService
             .getTxRequests(mainnetList.map((item) => item.reqId))

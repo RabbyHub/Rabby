@@ -43,6 +43,7 @@ const Wraper = styled.div`
   .ant-form-item-has-error .ant-input,
   .ant-form-item-has-error .ant-input:hover {
     border: 1px solid var(--r-red-default, #e34935);
+    background-color: transparent;
   }
 
   .ant-form-item-explain.ant-form-item-explain-error {

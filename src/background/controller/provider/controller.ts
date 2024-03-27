@@ -506,7 +506,6 @@ class ProviderController extends BaseController {
         if (isSend) {
           pageStateCacheService.clear();
         }
-        // todooo
         transactionHistoryService.addTx({
           tx: {
             rawTx: {

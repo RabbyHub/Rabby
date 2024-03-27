@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -7,11 +7,10 @@ import { ReactComponent as RcIconArrowRight } from '@/ui/assets/history/icon-arr
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Empty, PageHeader } from 'ui/component';
 import { HistoryList } from './components/HistoryList';
 import './style.less';
-import qs from 'qs';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
 const Null = () => null;
 
@@ -50,7 +49,7 @@ const History = () => {
         activeKey={selectedTab}
       >
         <Tabs.TabPane key="mainnet" destroyInactiveTabPane={false}>
-          <HistoryList isMainnet />
+          <HistoryList />
         </Tabs.TabPane>
         <Tabs.TabPane key="testnet">
           <Empty
@@ -69,20 +68,13 @@ const History = () => {
 
 const HistoryFilterScam = () => {
   const { t } = useTranslation();
-  const location = useLocation();
-
-  const query = useMemo(() => {
-    return qs.parse(location.search, {
-      ignoreQueryPrefix: true,
-    });
-  }, [location.search]);
 
   return (
     <div className="txs-history">
       <PageHeader className="transparent-wrap" fixed>
         {t('page.transactions.filterScam.title')}
       </PageHeader>
-      <HistoryList isMainnet={query.net !== 'testnet'} isFilterScam={true} />
+      <HistoryList isFilterScam={true} />
     </div>
   );
 };

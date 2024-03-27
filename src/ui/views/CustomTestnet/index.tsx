@@ -146,7 +146,7 @@ export const CustomTestnet = () => {
       {!list?.length ? (
         <Emtpy description={t('page.customTestnet.empty')} />
       ) : (
-        <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto mb-[12px]">
+        <div className="flex flex-col gap-[12px] px-[20px] flex-1 overflow-auto pb-[12px]">
           {list?.map((item) => (
             <CustomTestnetItem
               item={item as any}

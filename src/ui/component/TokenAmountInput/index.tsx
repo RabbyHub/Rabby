@@ -119,6 +119,7 @@ const TokenAmountInput = ({
     address: currentAccount?.address,
     withBalance: keyword ? false : true,
     chainId: chainItem?.id,
+    q: keyword,
     enabled: isTestnet,
   });
 

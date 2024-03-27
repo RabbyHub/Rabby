@@ -397,7 +397,9 @@ export const account = createModel<RootModel>()({
         }
       >(
         (ctx) => {
-          if (!isShowTestnet && ctx.isTestnetTask) return null;
+          if (ctx.isTestnetTask) {
+            return null;
+          }
 
           return wallet.getAddressCacheBalance(
             currentAccountAddr,
