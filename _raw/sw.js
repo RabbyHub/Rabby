@@ -15,7 +15,11 @@ const importAllScripts = () => {
   }
 
   try {
-    importScripts('/webextension-polyfill.js', '/background.js');
+    importScripts(
+      '/webextension-polyfill.js',
+      '/vendor/trezor/trezor-connect-webextension.js',
+      '/background.js'
+    );
     scriptsLoadInitiated = true;
   } catch (e) {
     console.error(e);

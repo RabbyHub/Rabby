@@ -33,9 +33,9 @@ export const WalletConnectProcessActions: React.FC<Props> = (props) => {
       ]);
     }
 
-    if (chainError) {
-      return t('page.signFooterBar.walletConnect.chainSwitched', [chain.name]);
-    }
+    // if (chainError) {
+    //   return t('page.signFooterBar.walletConnect.chainSwitched', [chain.name]);
+    // }
 
     return enableTooltip ? tooltipContent : undefined;
   }, [enableTooltip, tooltipContent, status, chainError, displayBrandName]);
@@ -46,7 +46,7 @@ export const WalletConnectProcessActions: React.FC<Props> = (props) => {
       tooltipContent={content}
       disabledProcess={
         (status !== 'CONNECTED' && status !== 'CHAIN_CHANGED') ||
-        chainError ||
+        // chainError ||
         disabledProcess
       }
     />

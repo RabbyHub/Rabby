@@ -4370,10 +4370,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@0.7.8":
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.8.tgz#d634d5641734726829ee7fd35badc858347461cb"
-  integrity sha512-x/YWmmzLqUdt5p/7tCEYH6p+PZfGFZ2/KddlB1/ocBAaOqNdD/yuJiRi5a1oAYcmf8JayGvzh78N57+IjzemEw==
+"@rabby-wallet/rabby-api@0.7.9":
+  version "0.7.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.9.tgz#ae03934bf00132d8b24fa6e4217e65c2153993a7"
+  integrity sha512-uTNrZ2z46mvNOcp35lOEcR2IF4ydSn652EByoXDL0Gzprf9iJ71KNPvlSm1h9tBBvmpVYVUpOiEyUqRqAckLDw==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -4382,10 +4382,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@1.1.17":
-  version "1.1.17"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.17.tgz#0a42b35bf0399574aa942233e97692e74c29236e"
-  integrity sha512-ccgc9I71nm7psm/0jj+4l8Wex5+1FgeyFHDzl9yew3laXRKSh7l7PbkO7qY0W4Gi+cBcuH8UGU2+GJpV6miFdg==
+"@rabby-wallet/rabby-security-engine@1.1.18":
+  version "1.1.18"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.18.tgz#10f78ea16ed8054506a9a160d57b67c9ec26c1e4"
+  integrity sha512-WiRRrGloKv0x1G7peN6gVSH0rhDLUmSWual2Akme3Ancb+3OKLSLUOU/TAvRmxc7B6UcvjhZIibKOpHGyoMPxA==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
@@ -5126,13 +5126,24 @@
   resolved "https://registry.yarnpkg.com/@trezor/connect-plugin-ethereum/-/connect-plugin-ethereum-9.0.3.tgz#141791925c241ada9f2f5959dfdfe7c674d6ed70"
   integrity sha512-xwsrebfuJ6vq7dFUNEEaLMHgktTKR1UtbP8jIo52dYVy7Nk0YIo7GueMFzKJTpeXE5AUPKUKB71sU0DP0/OGgQ==
 
-"@trezor/connect-web@^9.2.1":
+"@trezor/connect-web@9.2.1", "@trezor/connect-web@^9.2.1":
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/@trezor/connect-web/-/connect-web-9.2.1.tgz#6e6fa95e93a7c8ea927d0324b60046ce1618844a"
   integrity sha512-PjZQTJsEP9TVZ9gimN1j16CxdLcZoj2kLzXokli+bsgz9IxzuHSAwNYAGIjUWetGydAApQYHTcI+enPXHVi0rg==
   dependencies:
     "@trezor/connect" "9.2.1"
     "@trezor/connect-common" "0.0.30"
+    "@trezor/utils" "9.0.22"
+    events "^3.3.0"
+
+"@trezor/connect-webextension@^9.2.1":
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/@trezor/connect-webextension/-/connect-webextension-9.2.1.tgz#957842db612ff26ae2cd2ed3c3956eaa13ceeab9"
+  integrity sha512-W+M6ay9KpwHJQ7OZlGL1qU/1wYzjgXRsSvzGeTK+MGJkuO4Z655sexVGkJqtWwGz4Tz/SkGiPPFURnBrK9SiZA==
+  dependencies:
+    "@trezor/connect" "9.2.1"
+    "@trezor/connect-common" "0.0.30"
+    "@trezor/connect-web" "9.2.1"
     "@trezor/utils" "9.0.22"
     events "^3.3.0"
 

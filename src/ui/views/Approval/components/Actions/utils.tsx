@@ -26,6 +26,7 @@ import {
   CrossTokenAction,
   CrossSwapAction,
   RevokePermit2Action,
+  SwapOrderAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -40,6 +41,10 @@ import { TransactionGroup } from '@/background/service/transactionHistory';
 import { findChain, isTestnet } from '@/utils/chain';
 import { findChainByServerID } from '@/utils/chain';
 import { ReceiverData } from './components/ViewMorePopup/ReceiverPopup';
+import {
+  ContractRequireData,
+  fetchContractRequireData,
+} from '../TypedDataActions/utils';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -129,6 +134,15 @@ export interface ParsedActionData {
     nonce: string;
   };
   pushMultiSig?: PushMultiSigAction;
+  assetOrder?: {
+    payTokenList: TokenItem[];
+    payNFTList: NFTItem[];
+    receiveTokenList: TokenItem[];
+    receiveNFTList: NFTItem[];
+    takers: string[];
+    receiver: string | null;
+    expireAt: string | null;
+  };
   common?: {
     title: string;
     desc: string;
@@ -404,6 +418,28 @@ export const parseAction = (
       common: data as any,
     };
   }
+  if (data?.type === 'swap_order') {
+    const {
+      pay_token_list,
+      pay_nft_list,
+      receive_nft_list,
+      receive_token_list,
+      receiver,
+      takers,
+      expire_at,
+    } = data.data as SwapOrderAction;
+    return {
+      assetOrder: {
+        payTokenList: pay_token_list,
+        payNFTList: pay_nft_list,
+        receiveNFTList: receive_nft_list,
+        receiveTokenList: receive_token_list,
+        receiver,
+        takers,
+        expireAt: expire_at,
+      },
+    };
+  }
   return {
     contractCall: {},
   };
@@ -541,6 +577,10 @@ export interface PushMultiSigRequireData {
   id: string;
 }
 
+export interface AssetOrderRequireData extends ContractRequireData {
+  sender: string;
+}
+
 export type ActionRequireData =
   | SwapRequireData
   | ApproveTokenRequireData
@@ -553,6 +593,7 @@ export type ActionRequireData =
   | CancelTxRequireData
   | WrapTokenRequireData
   | PushMultiSigRequireData
+  | AssetOrderRequireData
   | null;
 
 export const waitQueueFinished = (q: PQueue) => {
@@ -1040,6 +1081,19 @@ export const fetchActionRequiredData = async ({
     }
     return result;
   }
+
+  if (actionData.assetOrder) {
+    const requireData = await fetchContractRequireData(
+      tx.to,
+      chainId,
+      address,
+      apiProvider
+    );
+    return {
+      ...requireData,
+      sender: address,
+    };
+  }
   if ((actionData.contractCall || actionData.common) && contractCall) {
     const chain = findChainByServerID(chainId);
     const result: ContractCallRequireData = {
@@ -1388,6 +1442,19 @@ export const formatSecurityEngineCtx = ({
       },
     };
   }
+  if (actionData.assetOrder) {
+    const { takers, receiver } = actionData.assetOrder;
+    const data = requireData as AssetOrderRequireData;
+    return {
+      assetOrder: {
+        specificBuyer: takers[0],
+        from: data.sender,
+        receiver: receiver || '',
+        chainId,
+        id: data.id,
+      },
+    };
+  }
   if (actionData.contractCall) {
     const data = requireData as ContractCallRequireData;
     return {
@@ -1483,6 +1550,9 @@ export const getActionTypeText = (data: ParsedActionData) => {
   if (data.revokePermit2) {
     return t('page.signTx.revokePermit2.title');
   }
+  if (data.assetOrder) {
+    return t('page.signTx.assetOrder.title');
+  }
   if (data?.common) {
     return data.common.title;
   }
@@ -1511,6 +1581,7 @@ export const getActionTypeTextByType = (type: string) => {
     cancel_tx: t('page.signTx.cancelTx.title'),
     push_multisig: t('page.signTx.submitMultisig.title'),
     contract_call: t('page.signTx.contractCall.title'),
+    swap_order: t('page.signTx.assetOrder.title'),
   };
 
   return dict[type] || t('page.signTx.unknownAction');

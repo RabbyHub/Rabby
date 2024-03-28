@@ -41,9 +41,14 @@ import CoboSafeCreate from './CoboSafeCreate';
 import CoboSafeModificationRule from './CoboSafeModificationRole';
 import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegatedAddress';
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
+import RevokePermit2 from '../Actions/RevokePermit2';
+import AssetOrder from '../Actions/AssetOrder';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
-import { SendRequireData } from '../Actions/utils';
+import {
+  RevokeTokenApproveRequireData,
+  SendRequireData,
+} from '../Actions/utils';
 import { Chain } from '@debank/common';
 
 export const SignTitle = styled.div`
@@ -232,6 +237,14 @@ const Actions = ({
                     engineResults={engineResults}
                   />
                 )}
+                {data.revokePermit && chain && (
+                  <RevokePermit2
+                    data={data.revokePermit}
+                    requireData={requireData as RevokeTokenApproveRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
                 {data.permit2 && chain && (
                   <Permit2
                     data={data.permit2}
@@ -277,6 +290,15 @@ const Actions = ({
                 {data.sellNFT && chain && (
                   <SellNFT
                     data={data.sellNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.assetOrder && chain && (
+                  <AssetOrder
+                    data={data.assetOrder}
                     requireData={requireData as ContractRequireData}
                     chain={chain}
                     engineResults={engineResults}

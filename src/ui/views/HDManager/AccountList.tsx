@@ -88,23 +88,9 @@ export const AccountList: React.FC<Props> = ({
     });
   }, []);
 
-  const loadedExtraInfoIndex = React.useRef<number>(0);
-
   React.useEffect(() => {
     if (!hiddenInfo) {
-      fetchAccountsInfo(wallet, data ?? [], async (account) => {
-        await setList((prev) => {
-          return prev.map((item) => {
-            if (account.address === item.address) {
-              loadedExtraInfoIndex.current = item.index + 1;
-              return account;
-            }
-            return item;
-          });
-        });
-
-        return;
-      });
+      fetchAccountsInfo(wallet, data ?? []).then(setList);
     } else {
       setList(data ?? []);
     }
@@ -350,7 +336,7 @@ export const AccountList: React.FC<Props> = ({
           key="usedChains"
           width={140}
           render={(value, record) =>
-            hiddenInfo || record.index === loadedExtraInfoIndex.current ? (
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
             ) : (
               <ChainList account={record} />
@@ -362,8 +348,8 @@ export const AccountList: React.FC<Props> = ({
           dataIndex="firstTxTime"
           key="firstTxTime"
           width={160}
-          render={(value, record) =>
-            hiddenInfo || record.index === loadedExtraInfoIndex.current ? (
+          render={(value) =>
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
             ) : !isNaN(value) ? (
               dayjs.unix(value).format('YYYY-MM-DD')
@@ -377,7 +363,7 @@ export const AccountList: React.FC<Props> = ({
           width={200}
           ellipsis
           render={(balance, record) =>
-            hiddenInfo || record.index === loadedExtraInfoIndex.current ? (
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
             ) : record.chains?.length && balance ? (
               `$${splitNumberByStep(balance.toFixed(2))}`

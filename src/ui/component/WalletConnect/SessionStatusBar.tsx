@@ -11,12 +11,14 @@ interface Props {
   address: string;
   brandName: string;
   className?: string;
+  type: string;
 }
 
 export const SessionStatusBar: React.FC<Props> = ({
   address,
   brandName,
   className,
+  type,
 }) => {
   const { status } = useSessionStatus(
     {
@@ -54,6 +56,7 @@ export const SessionStatusBar: React.FC<Props> = ({
       address,
       brandName,
       realBrandName,
+      type,
     });
     if (tipStatus === 'CONNECTED') {
       wallet.killWalletConnectConnector(address, brandName, true);
