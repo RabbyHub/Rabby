@@ -224,6 +224,7 @@ const CustomTestnetList = ({
           <TooltipWithMagnetArrow
             className="rectangle w-[max-content]"
             key={item.id + 'tooltip'}
+            trigger={['click']}
             align={{
               offset: [0, 30],
             }}
