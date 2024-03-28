@@ -172,23 +172,25 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           chainId: chainId,
           tx: tx,
         });
-        return `0x${new BigNumber(res).toString(16)}`;
-      } catch (e) {
-        console.error(e);
-        return intToHex(21000);
-      }
-    },
-    {
-      onSuccess(data) {
         if (!gasLimit) {
           setGasLimit(
-            `0x${new BigNumber(data)
+            `0x${new BigNumber(res)
               .multipliedBy(1.5)
               .integerValue()
               .toString(16)}`
           );
         }
-      },
+        return `0x${new BigNumber(res).integerValue().toString(16)}`;
+      } catch (e) {
+        console.error(e);
+        const fallback = intToHex(2000000);
+        if (!gasLimit) {
+          setGasLimit(fallback);
+        }
+        return fallback;
+      }
+    },
+    {
       manual: true,
     }
   );
