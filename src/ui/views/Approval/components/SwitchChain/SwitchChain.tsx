@@ -1,7 +1,7 @@
 import IconArrowDown from '@/ui/assets/approval/icon-arrow-down.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useRabbySelector } from '@/ui/store';
-import { CHAINS_LIST, Chain } from '@debank/common';
+import { Chain } from '@debank/common';
 import { useSetState } from 'ahooks';
 import { Button } from 'antd';
 import BigNumber from 'bignumber.js';

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Props as TokenItemProps } from './TokenItem';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import BigNumber from 'bignumber.js';
@@ -8,7 +8,6 @@ import { BlockedButton } from './BlockedButton';
 import { CustomizedButton } from './CustomizedButton';
 import { TokenListEmpty } from './TokenListEmpty';
 import { useTranslation } from 'react-i18next';
-import { useWallet } from '@/ui/utils';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -63,7 +62,16 @@ export const TokenList: React.FC<Props> = ({
           list={isSearch ? list : currentList}
           EmptyComponent={<div></div>}
         />
+        {!isSearch && hasList && (
+          <TokenLowValueItem list={lowValueList} className="h-[40px]" />
+        )}
       </div>
+      {!isSearch && hasList && (
+        <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line">
+          <CustomizedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+          <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+        </div>
+      )}
     </div>
   );
 };

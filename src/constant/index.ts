@@ -214,6 +214,18 @@ export const CHAIN_ID_LIST = new Map<string, PortfolioChain>(
   })
 );
 
+export const syncChainIdList = () => {
+  const chainList = getChainList('mainnet');
+  for (const chain of chainList) {
+    if (!CHAIN_ID_LIST.has(chain.serverId)) {
+      CHAIN_ID_LIST.set(chain.serverId, {
+        ...chain,
+        isSupportHistory: false,
+      });
+    }
+  }
+};
+
 export const KEYRING_TYPE = {
   HdKeyring: 'HD Key Tree',
   SimpleKeyring: 'Simple Key Pair',

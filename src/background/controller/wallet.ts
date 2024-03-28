@@ -90,11 +90,12 @@ import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
-import { CHAINS_LIST, Chain } from '@debank/common';
+import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
 import {
   findChain,
   findChainByEnum,
+  getChainList,
   supportedChainToChain,
   updateChainStore,
 } from '@/utils/chain';
@@ -1871,7 +1872,10 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
       isNewKey = true;
     }
-    keyring.initConnector(brandName, allChainIds);
+    keyring.initConnector(
+      brandName,
+      getChainList('mainnet').map((item) => item.id)
+    );
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);

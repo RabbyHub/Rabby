@@ -10,7 +10,7 @@ import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
-import { CHAINS_ENUM, CHAINS_LIST, Chain } from '@debank/common';
+import { CHAINS_ENUM, Chain } from '@debank/common';
 import { findChain, findChainByServerID } from '@/utils/chain';
 
 import MatchImage from 'ui/assets/match.svg';
@@ -187,8 +187,9 @@ const TokenSelector = ({
                 {/* Try to search contract address on {{ chainName }} */}
                 {t('component.TokenSelector.noMatchSuggestion', {
                   chainName:
-                    CHAINS_LIST.find((e) => e.serverId === chainServerId)
-                      ?.name || 'chain',
+                    findChain({
+                      serverId: chainServerId,
+                    })?.name || 'chain',
                 })}
               </p>
             </>
