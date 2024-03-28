@@ -43,6 +43,7 @@ import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
+import { syncChainService } from './service/syncChain';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -97,6 +98,7 @@ async function restoreAppState() {
 
   appStoreLoaded = true;
 
+  syncChainService.roll();
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
   startEnableUser();

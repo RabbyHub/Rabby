@@ -52,6 +52,7 @@ import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import openapi, {
+  SupportedChain,
   TokenItem,
   Tx,
   testnetOpenapiService,
@@ -111,6 +112,8 @@ import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
 import { customTestnetService } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
+import { http } from '../utils/http';
+import { syncChainService } from '../service/syncChain';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3746,25 +3749,7 @@ export class WalletController extends BaseController {
     return res;
   };
 
-  syncMainnetChainList = async () => {
-    try {
-      const chains = await openapi.getSupportedChains();
-      const list: Chain[] = chains
-        .filter((item) => !item.is_disabled)
-        .map((item) => {
-          const chain: Chain = supportedChainToChain(item);
-          return chain;
-        });
-      updateChainStore({
-        mainnetList: list,
-      });
-      chrome.storage.local.set({
-        rabbyMainnetChainList: list,
-      });
-    } catch (e) {
-      console.error('fetch chain list error: ', e);
-    }
-  };
+  syncMainnetChainList = syncChainService.syncMainnetChainList;
 }
 
 const wallet = new WalletController();
