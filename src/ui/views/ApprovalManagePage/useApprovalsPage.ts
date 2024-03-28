@@ -97,12 +97,6 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
   const dispatch = useRabbyDispatch();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
-  const chain = useRabbySelector(
-    (state) =>
-      state.preference.tokenApprovalChain[
-        account?.address?.toLowerCase() || ''
-      ] || CHAINS_ENUM.ETH
-  );
 
   useEffect(() => {
     dispatch.account.fetchCurrentAccountAliasNameAsync();
@@ -517,7 +511,6 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
     vGridRefAsset,
 
     account,
-    chain,
     displaySortedContractList,
     displaySortedAssetsList,
   };
