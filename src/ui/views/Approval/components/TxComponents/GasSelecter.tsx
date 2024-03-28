@@ -1092,9 +1092,7 @@ const GasSelectPanel = ({
                   overlayClassName={clsx('rectangle')}
                 >
                   <div>
-                    {selectedGas?.level === item.level
-                      ? new BigNumber(item.price / 1e9).toFixed()
-                      : new BigNumber(item.price / 1e9).toFixed().slice(0, 8)}
+                    {new BigNumber(item.price / 1e9).toFixed().slice(0, 8)}
                   </div>
                 </Tooltip>
               )}
