@@ -62,8 +62,8 @@ export const getAddressScanLink = (scanLink: string, address: string) => {
 };
 
 export const getTxScanLink = (scankLink: string, hash: string) => {
-  if (scankLink.includes('/_s_')) {
-    return scankLink.replace('/_s_', hash);
+  if (scankLink.includes('_s_')) {
+    return scankLink.replace('_s_', hash);
   }
   return scankLink.endsWith('/')
     ? `${scankLink}tx/${hash}`

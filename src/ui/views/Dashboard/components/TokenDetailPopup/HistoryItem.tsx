@@ -9,6 +9,7 @@ import { CHAINS } from 'consts';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { getTxScanLink } from '@/utils';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -41,7 +42,7 @@ export const HistoryItem = ({
     });
     if (!chain) return;
     const needClose = getUITypeName() !== 'notification';
-    openInTab(chain.scanLink.replace(/_s_/, data.id), needClose);
+    openInTab(getTxScanLink(chain.scanLink, data.id), needClose);
   };
   const { t } = useTranslation();
   return (

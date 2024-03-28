@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { openInTab } from 'ui/utils/webapi';
-import { getChain } from '@/utils';
+import { getChain, getTxScanLink } from '@/utils';
 
 interface TxIdProps {
   id: string;
@@ -14,8 +14,10 @@ const ellipsis = (text: string) => {
 export const TxId = React.memo(({ chain, id }: TxIdProps) => {
   const info = useMemo(() => getChain(chain), [chain]);
   const handleScanClick = useCallback(() => {
-    const link = info?.scanLink.replace(/_s_/, id);
-    openInTab(link);
+    if (info) {
+      const link = getTxScanLink(info?.scanLink, id);
+      openInTab(link);
+    }
   }, [info]);
   return (
     <div className="ui tx-id-container">
