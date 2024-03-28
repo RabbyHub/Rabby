@@ -54,9 +54,9 @@ async function bundle() {
   updateManifestVersion(version, 'mv2');
   shell.env['sourcemap'] = true;
   if (isMV3) {
-    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv3`);
-  } else {
     shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
+  } else {
+    shell.exec(`cross-env VERSION=${version} yarn ${buildStr}:mv2`);
   }
   shell.rm('-rf', './dist/*.js.map');
   return [version, isDebug, isRelease];
