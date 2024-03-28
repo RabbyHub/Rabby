@@ -117,21 +117,19 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         //   return;
         // }
 
-        if (signingTx?.explain) {
-          const explain = signingTx.explain;
+        const explain = signingTx?.explain;
 
-          stats.report('signTransaction', {
-            type: account.brandName,
-            chainId: chain?.serverId || '',
-            category: KEYRING_CATEGORY_MAP[account.type],
-            preExecSuccess: explain
-              ? explain?.calcSuccess && explain?.pre_exec.success
-              : true,
-            createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-            source: params?.$ctx?.ga?.source || '',
-            trigger: params?.$ctx?.ga?.trigger || '',
-          });
-        }
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: chain?.serverId || '',
+          category: KEYRING_CATEGORY_MAP[account.type],
+          preExecSuccess: explain
+            ? explain?.calcSuccess && explain?.pre_exec.success
+            : true,
+          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: params?.$ctx?.ga?.source || '',
+          trigger: params?.$ctx?.ga?.trigger || '',
+        });
       }
     } else {
       stats.report('startSignText', {

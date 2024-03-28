@@ -119,12 +119,12 @@ export const ImKeyHardwareWaiting = ({
 
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        if (!signingTx?.explain) {
-          setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
-          return;
-        }
+        // if (!signingTx?.explain) {
+        //   setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
+        //   return;
+        // }
 
-        const explain = signingTx.explain;
+        const explain = signingTx?.explain;
 
         stats.report('signTransaction', {
           type: account.brandName,
