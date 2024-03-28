@@ -28,6 +28,8 @@ import { checkIsPendingTxGroup, findMaxGasTx } from '@/utils/tx';
 import { useGetTx, useLoadTxData } from '../hooks';
 import { PredictTime } from './PredictTime';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { findChain } from '@/utils/chain';
+import { getTxScanLink } from '@/utils';
 
 const ChildrenWrapper = styled.div`
   padding: 2px;
@@ -52,7 +54,9 @@ export const TransactionItem = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [isShowCancelPopup, setIsShowCancelPopup] = useState(false);
-  const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
+  const chain = findChain({
+    id: item.chainId,
+  });
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const maxGasTx = findMaxGasTx(item.txs);
   const completedTx = item.txs.find(
@@ -85,7 +89,6 @@ export const TransactionItem = ({
     setIsShowCancelPopup(false);
   };
   const handleQuickCancel = async () => {
-    console.log('todo quick cancel');
     const maxGasTx = findMaxGasTx(item.txs);
     if (maxGasTx?.reqId) {
       try {
@@ -140,10 +143,18 @@ export const TransactionItem = ({
     const maxGasPrice = Number(
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
     );
-    const chainServerId = Object.values(CHAINS).find(
-      (chain) => chain.id === item.chainId
-    )!.serverId;
-    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
+
+    const chain = findChain({
+      id: item.chainId,
+    });
+    if (!chain) {
+      throw new Error('chainServerId not found');
+    }
+    const gasLevels: GasLevel[] = chain.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({
+          chainId: chain.id,
+        })
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -169,10 +180,18 @@ export const TransactionItem = ({
     const maxGasPrice = Number(
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
     );
-    const chainServerId = Object.values(CHAINS).find(
-      (chain) => chain.id === item.chainId
-    )!.serverId;
-    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
+
+    const chain = findChain({
+      id: item.chainId,
+    });
+    if (!chain) {
+      throw new Error('chainServerId not found');
+    }
+    const gasLevels: GasLevel[] = chain.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({
+          chainId: chain.id,
+        })
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -207,7 +226,9 @@ export const TransactionItem = ({
     if (!hash) {
       return;
     }
-    openInTab(chain.scanLink.replace(/_s_/, hash));
+    if (chain) {
+      openInTab(getTxScanLink(chain.scanLink, hash));
+    }
   };
 
   const isPending = checkIsPendingTxGroup(item);

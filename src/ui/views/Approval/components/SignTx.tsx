@@ -76,6 +76,8 @@ import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { findChain } from '@/utils/chain';
+import { SignTestnetTx } from './SignTestnetTx';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -97,7 +99,7 @@ const normalizeHex = (value: string | number) => {
   return value;
 };
 
-const normalizeTxParams = (tx) => {
+export const normalizeTxParams = (tx) => {
   const copy = tx;
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
@@ -247,7 +249,9 @@ const getRecommendNonce = async ({
   tx: Tx;
   chainId: number;
 }) => {
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) {
     throw new Error('chain not found');
   }
@@ -271,7 +275,9 @@ const getNativeTokenBalance = async ({
   address: string;
   chainId: number;
 }): Promise<string> => {
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) {
     throw new Error('chain not found');
   }
@@ -304,7 +310,9 @@ const explainGas = async ({
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const chain = findChain({
+    id: chainId,
+  });
   if (!chain) throw new Error(`${chainId} is not found in supported chains`);
   if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
     const res = await wallet.fetchEstimatedL1Fee(
@@ -698,7 +706,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     params.data[0].chainId && Number(params.data[0].chainId)
   );
   const [chain, setChain] = useState(
-    Object.values(CHAINS).find((item) => item.id === chainId)
+    findChain({
+      id: chainId,
+    })
   );
   const [inited, setInited] = useState(false);
   const [isHardware, setIsHardware] = useState(false);
@@ -2065,4 +2075,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   );
 };
 
-export default SignTx;
+const SignTxWrap = (props: SignTxProps) => {
+  const { params, origin } = props;
+  const chainId = params?.data?.[0]?.chainId;
+  const chain = chainId ? findChain({ id: +chainId }) : undefined;
+
+  return chain?.isTestnet ? (
+    <SignTestnetTx {...props} />
+  ) : (
+    <SignTx {...props} />
+  );
+};
+
+export default SignTxWrap;

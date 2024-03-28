@@ -54,13 +54,13 @@ export const createMnemonics = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async getAllHDKeyrings(_?: any, store?) {
+    async getAllHDKeyrings(_: void, store) {
       await dispatch.account.getAllClassAccountsAsync();
 
       store.account.mnemonicAccounts;
     },
 
-    async prepareMnemonicsAsync(_?: any, store?) {
+    async prepareMnemonicsAsync(_: void, store) {
       const mnemonics =
         (await store.app.wallet.getPreMnemonics()) ||
         (await store.app.wallet.generatePreMnemonic());
@@ -68,7 +68,7 @@ export const createMnemonics = createModel<RootModel>()({
       dispatch.createMnemonics.setField({ mnemonics });
     },
 
-    async cleanCreateAsync(_?: any, store?) {
+    async cleanCreateAsync(_: void, store) {
       await store.app.wallet.removePreMnemonics();
     },
 

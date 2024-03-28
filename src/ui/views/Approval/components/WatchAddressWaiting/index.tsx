@@ -7,6 +7,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
   KEYRING_CATEGORY_MAP,
+  CHAINS_ENUM,
 } from 'consts';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
@@ -15,7 +16,7 @@ import Scan from './Scan';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -41,9 +42,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
+  const chain =
+    findChain({
+      id: params.chainId || 1,
+    })?.enum || CHAINS_ENUM.ETH;
   const isSignTextRef = useRef(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const explainRef = useRef<any | null>(null);

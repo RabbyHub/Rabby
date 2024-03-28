@@ -29,6 +29,7 @@ import { Token } from 'background/service/preference';
 import IconExternalLink from 'ui/assets/open-external-gray.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
+import { findChain } from '@/utils/chain';
 
 interface AddAssetProps {
   data: {
@@ -217,16 +218,18 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
 
   const currentChain = useMemo(() => {
     if (!token) return CHAINS[CHAINS_ENUM.ETH];
-    const list = Object.values(CHAINS);
-    const target = list.find((item) => item.serverId === token.chain);
+    const target = findChain({
+      serverId: token.chain,
+    });
     return target || CHAINS[CHAINS_ENUM.ETH];
   }, [token]);
 
   const supportChains = useMemo(() => {
-    const list = Object.values(CHAINS);
     const chains: CHAINS_ENUM[] = [];
     tokens.forEach((token) => {
-      const targetChain = list.find((chain) => chain.serverId === token.chain);
+      const targetChain = findChain({
+        serverId: token.chain,
+      });
       if (targetChain) {
         chains.push(targetChain.enum);
       }
@@ -235,7 +238,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
   }, [tokens]);
 
   const handleChainChanged = (id: CHAINS_ENUM) => {
-    const chain = CHAINS[id];
+    const chain = findChain({ enum: id });
     if (chain) {
       const t = tokens.find((token) => token.chain === chain.serverId);
       if (t) {

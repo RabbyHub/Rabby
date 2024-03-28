@@ -1,39 +1,38 @@
-import { Account } from 'background/service/preference';
-import React, { ReactNode, useEffect, useState, useRef, useMemo } from 'react';
-import { useScroll, useAsync } from 'react-use';
-import { Skeleton } from 'antd';
-import { useSize } from 'ahooks';
-import { useTranslation } from 'react-i18next';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { findChain } from '@/utils/chain';
+import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { getKRCategoryByType } from '@/utils/transaction';
+import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { useSize } from 'ahooks';
+import { Skeleton } from 'antd';
+import { Account } from 'background/service/preference';
 import {
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
-  CHAINS,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
-import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
-import { getKRCategoryByType } from '@/utils/transaction';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { FooterBar } from './FooterBar/FooterBar';
-import {
-  parseAction,
-  formatSecurityEngineCtx,
-  TextActionData,
-} from './TextActions/utils';
-import { useSecurityEngine } from 'ui/utils/securityEngine';
-import RuleDrawer from './SecurityEngine/RuleDrawer';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAsync, useScroll } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import Actions from './TextActions';
-import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
-import { isTestnetChainId } from '@/utils/chain';
+import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
+import { FooterBar } from './FooterBar/FooterBar';
+import RuleDrawer from './SecurityEngine/RuleDrawer';
+import Actions from './TextActions';
+import {
+  TextActionData,
+  formatSecurityEngineCtx,
+  parseAction,
+} from './TextActions/utils';
 import { WaitingSignMessageComponent } from './map';
-import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 
 interface SignTextProps {
   data: string[];
@@ -121,16 +120,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       const site = await wallet.getConnectedSite(params.session.origin);
       if (site) {
-        chainId = CHAINS[site.chain].id;
+        chainId =
+          findChain({
+            enum: site.chain,
+          })?.id || chainId;
       }
     }
     setChainId(chainId);
 
-    const apiProvider = isTestnetChainId(chainId)
-      ? wallet.testnetOpenapi
-      : wallet.openapi;
-
-    return await apiProvider.parseText({
+    return await wallet.openapi.parseText({
       text: signText,
       address: currentAccount!.address,
       origin: session.origin,

@@ -106,7 +106,14 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'Ledger' && <Ledger />}
       {componentName === 'ImKeyPermission' && <ImKeyPermission />}
       {componentName === 'Keystone' && <Keystone />}
-      {componentName === 'AssetList' && <AssetList visible={visible} />}
+      {componentName === 'AssetList' && (
+        <AssetList
+          visible={visible}
+          onClose={() => {
+            setVisible(false);
+          }}
+        />
+      )}
       {componentName === 'CancelApproval' && <CancelApproval />}
       {componentName === 'CancelConnect' && <CancelConnect />}
     </Popup>

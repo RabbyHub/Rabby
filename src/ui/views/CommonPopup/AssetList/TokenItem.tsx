@@ -7,6 +7,7 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -15,7 +16,9 @@ export interface Props {
 }
 
 const TokenItemAsset: React.FC<Props> = ({ item }) => {
-  const chain = CHAINS_LIST.find((c) => c.serverId === item.chain);
+  const chain = findChain({
+    serverId: item.chain,
+  });
 
   return (
     <TCell className="py-8 flex gap-12 w-[160px] items-center">

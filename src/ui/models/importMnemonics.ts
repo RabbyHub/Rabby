@@ -110,7 +110,7 @@ export const importMnemonics = createModel<RootModel>()({
       });
     },
 
-    async getImportedAccountsAsync(_?: void, store?) {
+    async getImportedAccountsAsync(_: void, store) {
       const importedAccounts = !store.importMnemonics.isExistedKeyring
         ? await store.app.wallet.requestKeyring<Account['address'][]>(
             KEYRING_TYPE.HdKeyring,
@@ -188,7 +188,7 @@ export const importMnemonics = createModel<RootModel>()({
       return accounts;
     },
 
-    async cleanUpImportedInfoAsync(_?: void, store?) {
+    async cleanUpImportedInfoAsync(_: void, store) {
       if (!store.importMnemonics.isExistedKeyring) {
         store.app.wallet.requestKeyring(
           KEYRING_TYPE.HdKeyring,
@@ -352,7 +352,7 @@ export const importMnemonics = createModel<RootModel>()({
       });
     },
 
-    beforeImportMoreAddresses(_?: void, store?) {
+    beforeImportMoreAddresses(_: void, store) {
       const selectedAddresses = store.importMnemonics.selectedAddresses;
       dispatch.importMnemonics.setField({
         draftAddressSelection: new Set([...selectedAddresses]),
@@ -365,7 +365,7 @@ export const importMnemonics = createModel<RootModel>()({
       });
     },
 
-    async confirmAllImportingAccountsAsync(_?: void, store?) {
+    async confirmAllImportingAccountsAsync(_: void, store) {
       const stashKeyringId = store.importMnemonics.stashKeyringId;
       const confirmingAccounts = store.importMnemonics.confirmingAccounts;
       const importedAddresses = store.importMnemonics.importedAddresses;

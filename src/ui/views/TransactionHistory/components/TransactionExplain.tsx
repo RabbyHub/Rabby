@@ -18,7 +18,7 @@ export const TransactionExplain = ({
   isSubmitFailed: boolean;
   isCancel: boolean;
   isWithdrawed: boolean;
-  explain: ExplainTxResponse;
+  explain?: ExplainTxResponse;
   onOpenScan(): void;
 }) => {
   const { t } = useTranslation();

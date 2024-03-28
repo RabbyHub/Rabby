@@ -1,9 +1,9 @@
-import { SIGN_PERMISSION_TYPES } from './../../constant/index';
+import { CHAINS, SIGN_PERMISSION_TYPES } from './../../constant/index';
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { BasicDappInfo } from './openapi';
 
 export interface ConnectedSite {
@@ -78,9 +78,15 @@ class PermissionService {
 
     if (!siteItem) return siteItem;
 
-    const chainItem = findChainByEnum(siteItem.chain);
+    const chainItem = findChain({ enum: siteItem.chain });
 
-    return chainItem ? siteItem : undefined;
+    return chainItem
+      ? siteItem
+      : {
+          ...siteItem,
+          chain: CHAINS_ENUM.ETH,
+          isConnected: false,
+        };
   };
 
   getSite = (origin: string | number) => {
@@ -173,7 +179,7 @@ class PermissionService {
     if (!this.lruCache || !this.lruCache.has(origin)) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return;
 
-    if (value.chain && !findChainByEnum(value.chain)) {
+    if (value.chain && !findChain({ enum: value.chain })) {
       return;
     }
 

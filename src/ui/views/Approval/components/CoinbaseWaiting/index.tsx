@@ -7,6 +7,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
   KEYRING_CATEGORY_MAP,
+  CHAINS_ENUM,
 } from 'consts';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
@@ -14,7 +15,7 @@ import Process from './Process';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -39,9 +40,10 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
   }>(null);
   const [result, setResult] = useState('');
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
+
+  const chain = findChain({
+    id: params.chainId || 1,
+  })?.enum;
   const isSignTextRef = useRef(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const explainRef = useRef<any | null>(null);
@@ -194,7 +196,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
       <div className="watchaddress-operation">
         {currentAccount && (
           <Process
-            chain={chain}
+            chain={chain || CHAINS_ENUM.ETH}
             result={result}
             status={connectStatus}
             error={connectError}

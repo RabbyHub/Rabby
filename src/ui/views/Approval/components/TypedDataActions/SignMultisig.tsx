@@ -9,6 +9,7 @@ import { MultiSigRequireData } from './utils';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { CHAINS } from 'consts';
+import { findChain } from '@/utils/chain';
 
 const Wrapper = styled.div``;
 
@@ -28,7 +29,9 @@ const PushMultiSig = ({
     if (!chain) {
       for (const key in requireData?.contract) {
         const contract = requireData.contract[key];
-        const c = Object.values(CHAINS).find((item) => item.serverId === key);
+        const c = findChain({
+          serverId: key,
+        });
         if (contract.multisig && c) {
           return {
             ...contract.multisig,

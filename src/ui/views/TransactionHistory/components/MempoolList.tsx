@@ -11,6 +11,7 @@ import { useWallet } from 'ui/utils';
 import IconCheck from '@/ui/assets/pending/icon-check-1.svg';
 import IconClock from '@/ui/assets/pending/icon-clock.svg';
 import iconSpin from '@/ui/assets/pending/icon-spin-1.svg';
+import { findChain } from '@/utils/chain';
 
 const Wrapper = styled.div`
   min-width: 168px;
@@ -100,9 +101,10 @@ export const MempoolList = ({
       if (!tx.hash) {
         return undefined;
       }
-      const chain = CHAINS_LIST.find((item) =>
-        new BigNumber(item.hex).isEqualTo(tx.rawTx.chainId)
-      );
+
+      const chain = findChain({
+        id: +tx.rawTx.chainId,
+      });
       if (!chain) {
         return undefined;
       }

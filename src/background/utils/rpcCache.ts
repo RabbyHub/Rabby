@@ -1,3 +1,4 @@
+import { getChainList, getMainnetChainList } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 import { CHAINS } from 'consts';
 import browser from 'webextension-polyfill';
@@ -21,7 +22,7 @@ class RpcCache {
   }
 
   async loadBlockNumber() {
-    const chainList = Object.values(CHAINS);
+    const chainList = getChainList('mainnet');
     // currently use random number as blockNumber to reduce the heavy burdens of server
     this.latestBlockNumber = chainList.reduce((res, current) => {
       return {

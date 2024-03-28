@@ -26,6 +26,7 @@ import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import AccountAlias from '../../AccountAlias';
 import { getAddressScanLink } from '@/utils';
+import { findChain } from '@/utils/chain';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -364,9 +365,9 @@ const Text = ({ children }: { children: ReactNode }) => {
 
 const DisplayChain = ({ chainServerId }: { chainServerId: string }) => {
   const chain = useMemo(() => {
-    return Object.values(CHAINS).find(
-      (item) => item.serverId === chainServerId
-    );
+    return findChain({
+      serverId: chainServerId,
+    });
   }, [chainServerId]);
   if (!chain) return null;
   return (

@@ -25,7 +25,7 @@ export const customRPC = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async getAllRPC(_?, store?) {
+    async getAllRPC(_: void, store) {
       const rpcMap = await store.app.wallet.getAllCustomRPC();
       dispatch.customRPC.setField({ customRPC: rpcMap });
       return rpcMap;
@@ -36,7 +36,7 @@ export const customRPC = createModel<RootModel>()({
         chain: CHAINS_ENUM;
         url: string;
       },
-      store?
+      store
     ) {
       await store.app.wallet.setCustomRPC(payload.chain, payload.url);
       dispatch.customRPC.getAllRPC();
@@ -50,7 +50,7 @@ export const customRPC = createModel<RootModel>()({
       dispatch.customRPC.getAllRPC();
     },
 
-    async deleteCustomRPC(chain: CHAINS_ENUM, store?) {
+    async deleteCustomRPC(chain: CHAINS_ENUM, store) {
       await store.app.wallet.removeCustomRPC(chain);
       dispatch.customRPC.getAllRPC();
     },

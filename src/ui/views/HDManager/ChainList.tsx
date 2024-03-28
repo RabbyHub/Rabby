@@ -1,8 +1,7 @@
 import { CHAINS } from '@debank/common';
 import React from 'react';
 import { Account } from './AccountList';
-
-const chainsArray = Object.values(CHAINS);
+import { findChain } from '@/utils/chain';
 
 interface Props {
   account: Account;
@@ -18,7 +17,9 @@ export const ChainList: React.FC<Props> = ({ account }) => {
   return (
     <div className="ChainList">
       {displayChains?.map(({ community_id }) => {
-        const chain = chainsArray.find((chain) => chain.id === community_id);
+        const chain = findChain({
+          id: community_id,
+        });
         if (!chain) return null;
         return (
           <div className="chain-item" key={chain.id}>

@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from '@/utils/message';
-import { CHAINS, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -41,6 +41,9 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
 import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 import Safe from '@rabby-wallet/gnosis-sdk';
+import { customTestnetService } from './service/customTestnet';
+import { findChain } from '@/utils/chain';
+import { syncChainService } from './service/syncChain';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -75,6 +78,7 @@ async function restoreAppState() {
   // Init keyring and openapi first since this two service will not be migrated
   await migrateData();
 
+  await customTestnetService.init();
   await permissionService.init();
   await preferenceService.init();
   await transactionWatchService.init();
@@ -94,15 +98,18 @@ async function restoreAppState() {
 
   appStoreLoaded = true;
 
+  syncChainService.roll();
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
   startEnableUser();
+  walletController.syncMainnetChainList();
 }
 
 restoreAppState();
 {
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
+    walletController.syncMainnetChainList();
     if (interval) {
       clearInterval(interval);
     }
@@ -272,7 +279,8 @@ browser.runtime.onConnect.addListener((port) => {
     if (subscriptionManager.methods[data?.method]) {
       const connectSite = permissionService.getConnectedSite(session!.origin);
       if (connectSite) {
-        const chain = CHAINS[connectSite.chain];
+        const chain =
+          findChain({ enum: connectSite.chain }) || CHAINS[CHAINS_ENUM.ETH];
         provider.chainId = chain.network;
       }
       return subscriptionManager.methods[data.method].call(null, req);

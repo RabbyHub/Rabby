@@ -12,6 +12,7 @@ import { KEYRING_TYPE, WALLET_BRAND_CONTENT, CHAINS } from 'consts';
 import './style.less';
 import { CommonSignal } from '../ConnectStatus/CommonSignal';
 import { useWalletConnectIcon } from '../WalletConnect/useWalletConnectIcon';
+import { findChain } from '@/utils/chain';
 
 interface AccountSelectDrawerProps {
   onChange(account: Account): void;
@@ -44,17 +45,24 @@ export const AccountItem = ({
 
   const init = async (networkId) => {
     const name = (await wallet.getAlianName(account.address))!;
-    const chain = Object.values(CHAINS).find(
-      (item) => item.id.toString() === networkId + ''
-    )!;
+
+    const chain = findChain({
+      id: +networkId,
+    });
+    if (!chain) {
+      return;
+    }
     setNativeTokenSymbol(chain.nativeTokenSymbol);
     setAlianName(name);
   };
 
   const fetchNativeTokenBalance = async () => {
-    const chain = Object.values(CHAINS).find(
-      (item) => item.id.toString() === networkId + ''
-    )!;
+    const chain = findChain({
+      id: +networkId,
+    });
+    if (!chain) {
+      return;
+    }
     const balanceInWei = await wallet.requestETHRpc(
       {
         method: 'eth_getBalance',

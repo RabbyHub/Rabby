@@ -39,7 +39,7 @@ export const swap = createModel<RootModel>()({
     init() {
       return this.syncState();
     },
-    async syncState(key?: keyof SwapServiceStore, store?) {
+    async syncState(key: keyof SwapServiceStore | undefined, store) {
       const data = await store.app.wallet.getSwap(key);
 
       this.setField(
@@ -93,7 +93,10 @@ export const swap = createModel<RootModel>()({
       });
     },
 
-    async setSelectedFromToken(selectedFromToken?: TokenItem, store?) {
+    async setSelectedFromToken(
+      selectedFromToken: TokenItem | undefined,
+      store
+    ) {
       await store.app.wallet.setSelectedFromToken(selectedFromToken);
 
       this.setField({
@@ -101,7 +104,7 @@ export const swap = createModel<RootModel>()({
       });
     },
 
-    async setSelectedToToken(selectedToToken?: TokenItem, store?) {
+    async setSelectedToToken(selectedToToken: TokenItem | undefined, store) {
       await store.app.wallet.setSelectedToToken(selectedToToken);
 
       this.setField({
@@ -117,7 +120,7 @@ export const swap = createModel<RootModel>()({
       });
     },
 
-    async getSwapViewList(_?, store?) {
+    async getSwapViewList(_: void, store) {
       const viewList = await store.app.wallet.getSwapViewList();
       this.setField({
         viewList,
@@ -125,7 +128,7 @@ export const swap = createModel<RootModel>()({
       return viewList;
     },
 
-    async getSwapTradeList(_?, store?) {
+    async getSwapTradeList(_: void, store) {
       const tradeList = await store.app.wallet.getSwapTradeList();
       this.setField({
         tradeList,
@@ -154,7 +157,7 @@ export const swap = createModel<RootModel>()({
       );
       this.getSwapTradeList();
     },
-    async getSwapSortIncludeGasFee(_?, store?) {
+    async getSwapSortIncludeGasFee(_: void, store) {
       const sortIncludeGasFee = await store.app.wallet.getSwapSortIncludeGasFee();
       this.setField({
         sortIncludeGasFee,
@@ -166,7 +169,7 @@ export const swap = createModel<RootModel>()({
       this.getSwapSortIncludeGasFee();
     },
 
-    async getSwapPreferMEV(_?, store?) {
+    async getSwapPreferMEV(_: void, store) {
       const preferMEVGuarded = await store.app.wallet.getSwapPreferMEVGuarded();
       this.setField({
         preferMEVGuarded,

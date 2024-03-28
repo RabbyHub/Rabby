@@ -27,7 +27,7 @@ export const openapi = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async getHost(_?, store?) {
+    async getHost(_: void, store) {
       const host = await store.app.wallet.openapi.getHost();
       this.setField({ host });
     },
@@ -35,7 +35,7 @@ export const openapi = createModel<RootModel>()({
       await store.app.wallet.openapi.setHost(host);
       this.getHost();
     },
-    async getTestnetHost(_?, store?) {
+    async getTestnetHost(_: void, store) {
       const testnetHost = await store.app.wallet.testnetOpenapi.getHost();
       this.setField({ testnetHost });
     },

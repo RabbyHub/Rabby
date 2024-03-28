@@ -12,6 +12,7 @@ import { CHAINS } from '@debank/common';
 import { ReactComponent as IconExternalLink } from 'ui/assets/open-external-gray.svg';
 
 import { ApprovalItem } from '@/utils/approval';
+import { findChain } from '@/utils/chain';
 
 type Props = {
   data: ApprovalItem[];
@@ -51,7 +52,9 @@ export const ApprovalContractItem = ({
         <NameAndAddress
           address={item.id}
           chainEnum={
-            Object.values(CHAINS).find((i) => i.serverId === item.chain)?.enum
+            findChain({
+              serverId: item.chain,
+            })?.enum
           }
           openExternal
         />
@@ -62,9 +65,9 @@ export const ApprovalContractItem = ({
     }
     if (item.nftContract) {
       const chain = item.chain;
-      const scanLink = Object.values(CHAINS)
-        .find((e) => e.serverId === chain)
-        ?.scanLink?.replace('/tx/_s_', '');
+      const scanLink = findChain({
+        serverId: chain,
+      })?.scanLink?.replace('/tx/_s_', '');
       return (
         <div className="flex items-center text-r-neutral-body">
           <span

@@ -1,3 +1,11 @@
+import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
+import { useRabbySelector } from '@/ui/store';
+import { useTokens } from '@/ui/utils/portfolio/token';
+import { findChain } from '@/utils/chain';
+import { Input } from 'antd';
+import { TokenItem } from 'background/service/openapi';
+import clsx from 'clsx';
+import uniqBy from 'lodash/uniqBy';
 import React, {
   useEffect,
   useLayoutEffect,
@@ -5,20 +13,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Input } from 'antd';
-import uniqBy from 'lodash/uniqBy';
-import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep } from 'ui/utils';
-import { getTokenSymbol, abstractTokenToTokenItem } from 'ui/utils/token';
-import TokenWithChain from '../TokenWithChain';
-import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
-import './style.less';
-import clsx from 'clsx';
-import { useTokens } from '@/ui/utils/portfolio/token';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { useRabbySelector } from '@/ui/store';
+import { splitNumberByStep } from 'ui/utils';
+import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
+import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
+import TokenWithChain from '../TokenWithChain';
+import './style.less';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -55,6 +57,16 @@ const TokenAmountInput = ({
   );
   const [keyword, setKeyword] = useState('');
   const [chainServerId, setChainServerId] = useState(chainId);
+
+  const chainItem = useMemo(
+    () =>
+      findChain({
+        serverId: chainServerId,
+      }),
+    [chainServerId]
+  );
+
+  const isTestnet = chainItem?.isTestnet;
 
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
@@ -100,6 +112,17 @@ const TokenAmountInput = ({
     list: searchedTokenByQuery,
   } = useSearchToken(currentAccount?.address, keyword, chainServerId);
 
+  const {
+    loading: isSearchTestnetLoading,
+    testnetTokenList,
+  } = useSearchTestnetToken({
+    address: currentAccount?.address,
+    withBalance: keyword ? false : true,
+    chainId: chainItem?.id,
+    q: keyword,
+    enabled: isTestnet,
+  });
+
   const availableToken = useMemo(() => {
     const allTokens = chainServerId
       ? allDisplayTokens.filter((token) => token.chain === chainServerId)
@@ -118,7 +141,19 @@ const TokenAmountInput = ({
     chainServerId,
   ]);
   const displayTokenList = useSortToken(availableToken);
-  const isListLoading = keyword ? isSearchLoading : isLoadingAllTokens;
+
+  const isListLoading = useMemo(() => {
+    if (isTestnet) {
+      return isSearchTestnetLoading;
+    }
+    return keyword ? isSearchLoading : isLoadingAllTokens;
+  }, [
+    keyword,
+    isSearchLoading,
+    isLoadingAllTokens,
+    isSearchTestnetLoading,
+    isTestnet,
+  ]);
 
   const handleSearchTokens = React.useCallback(async (ctx) => {
     setKeyword(ctx.keyword);
@@ -173,7 +208,7 @@ const TokenAmountInput = ({
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
-        list={displayTokenList}
+        list={isTestnet ? testnetTokenList : displayTokenList}
         onConfirm={handleCurrentTokenChange}
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}

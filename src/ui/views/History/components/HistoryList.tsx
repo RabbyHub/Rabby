@@ -14,10 +14,8 @@ import { Loading } from './Loading';
 const PAGE_COUNT = 10;
 
 export const HistoryList = ({
-  isMainnet = true,
   isFilterScam = false,
 }: {
-  isMainnet?: boolean;
   isFilterScam?: boolean;
 }) => {
   const wallet = useWallet();
@@ -29,9 +27,7 @@ export const HistoryList = ({
   const getAllTxHistory = (
     params: Parameters<typeof wallet.openapi.getAllTxHistory>[0]
   ) => {
-    const getHistory = isMainnet
-      ? wallet.openapi.getAllTxHistory
-      : wallet.testnetOpenapi.getAllTxHistory;
+    const getHistory = wallet.openapi.getAllTxHistory;
 
     return getHistory(params).then((res) => {
       if (res.history_list) {
@@ -51,9 +47,7 @@ export const HistoryList = ({
         list: [],
       };
     }
-    const getHistory = isMainnet
-      ? wallet.openapi.listTxHisotry
-      : wallet.testnetOpenapi.listTxHisotry;
+    const getHistory = wallet.openapi.listTxHisotry;
 
     const res = isFilterScam
       ? await getAllTxHistory({
@@ -158,7 +152,6 @@ export const HistoryList = ({
                     tokenDict={item.tokenDict || item.tokenUUIDDict || {}}
                     key={item.id}
                     onViewInputData={setFocusingHistoryItem}
-                    isTestnet={!isMainnet}
                   />
                 );
               }}

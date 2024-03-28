@@ -40,6 +40,7 @@ import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
 import { getKeyringBridge, hasBridge } from './bridge';
+import { getChainList } from '@/utils/chain';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -841,7 +842,11 @@ export class KeyringService extends EventEmitter {
         if (type !== KEYRING_CLASS.WALLETCONNECT) {
           return;
         }
-        (keyring as WalletConnectKeyring).init(address, brandName, allChainIds);
+        (keyring as WalletConnectKeyring).init(
+          address,
+          brandName,
+          getChainList('mainnet').map((item) => item.id)
+        );
       });
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
         eventBus.emit(EVENTS.broadcastToUI, {

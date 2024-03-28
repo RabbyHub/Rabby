@@ -35,8 +35,11 @@ const useSearchToken = (
       chainId?: string;
     }) => {
       let list: TokenItem[] = [];
-      setIsLoading(true);
       const chainItem = !chainId ? null : findChainByServerID(chainId);
+      if (isTestnet || chainItem?.isTestnet) {
+        return;
+      }
+      setIsLoading(true);
 
       if (q.length === 42 && q.toLowerCase().startsWith('0x')) {
         list = await requestOpenApiWithChainId(
@@ -95,7 +98,7 @@ const useSearchToken = (
   }, [kw]);
 
   useEffect(() => {
-    if (!address || !kw) {
+    if (!address || !kw || isTestnet) {
       setIsLoading(false);
       return;
     }

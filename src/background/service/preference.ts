@@ -300,26 +300,26 @@ class PreferenceService {
 
   getLastSelectedSwapPayToken = (address: string) => {
     const key = address.toLowerCase();
-    return this.store?.lastSelectedSwapPayToken?.[key];
+    return this.store.lastSelectedSwapPayToken?.[key];
   };
 
   setLastSelectedSwapPayToken = (address: string, token: TokenItem) => {
     const key = address.toLowerCase();
     this.store.lastSelectedSwapPayToken = {
-      ...this.store?.lastSelectedSwapPayToken,
+      ...this.store.lastSelectedSwapPayToken,
       [key]: token,
     };
   };
 
   getLastSelectedGasTopUpChain = (address: string) => {
     const key = address.toLowerCase();
-    return this.store?.lastSelectedGasTopUpChain?.[key];
+    return this.store.lastSelectedGasTopUpChain?.[key];
   };
 
   setLastSelectedGasTopUpChain = (address: string, chain: CHAINS_ENUM) => {
     const key = address.toLowerCase();
     this.store.lastSelectedGasTopUpChain = {
-      ...this.store?.lastSelectedGasTopUpChain,
+      ...this.store.lastSelectedGasTopUpChain,
       [key]: chain,
     };
   };

@@ -26,7 +26,7 @@ export const permission = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async getWebsites(_?: any, store?) {
+    async getWebsites(_: void, store) {
       const sites = await store.app.wallet.getConnectedSites();
       dispatch.permission.setField({
         websites: sites,
@@ -44,7 +44,7 @@ export const permission = createModel<RootModel>()({
       await store.app.wallet.unFavoriteWebsite(origin);
       await dispatch.permission.getWebsites();
     },
-    async clearAll(_?: any, store?) {
+    async clearAll(_: void, store) {
       await store.app.wallet.removeAllRecentConnectedSites();
       await dispatch.permission.getWebsites();
     },

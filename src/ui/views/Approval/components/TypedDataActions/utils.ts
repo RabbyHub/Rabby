@@ -37,7 +37,7 @@ import {
 } from '../Actions/utils';
 import { CHAINS, ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
-import { isTestnetChainId } from '@/utils/chain';
+import { findChain, isTestnetChainId } from '@/utils/chain';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -595,9 +595,9 @@ export const fetchRequireData = async (
 ): Promise<TypedDataRequireData> => {
   let chain: Chain | undefined;
   if (actionData.chainId) {
-    chain = Object.values(CHAINS).find(
-      (item) => item.id === Number(actionData.chainId)
-    );
+    chain = findChain({
+      id: Number(actionData.chainId),
+    });
   }
   const apiProvider = isTestnetChainId(actionData.chainId)
     ? wallet.testnetOpenapi
@@ -808,9 +808,9 @@ export const formatSecurityEngineCtx = async ({
 }): Promise<ContextActionData> => {
   let chain: Chain | undefined;
   if (actionData?.chainId) {
-    chain = Object.values(CHAINS).find(
-      (item) => item.id === Number(actionData.chainId)
-    );
+    chain = findChain({
+      id: Number(actionData.chainId),
+    });
   }
   if (actionData?.chainId && isTestnetChainId(actionData?.chainId)) {
     return {};
