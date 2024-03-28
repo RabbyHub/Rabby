@@ -107,6 +107,7 @@ restoreAppState();
 {
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
+    walletController.syncMainnetChainList();
     if (interval) {
       clearInterval(interval);
     }
