@@ -17,6 +17,7 @@ import { Emtpy } from './Empty';
 import { findChain } from '@/utils/chain';
 import { id } from 'ethers/lib/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { sortBy } from 'lodash';
 
 const Wraper = styled.div`
   position: absolute;
@@ -118,15 +119,18 @@ export const AddFromChainList = ({
 
   const { data: usedList, loading: isLoadingUsed } = useRequest(() => {
     return wallet.getUsedCustomTestnetChainList().then((list) => {
-      return list.map((item) => {
-        return createTestnetChain({
-          name: item.name,
-          id: item.chain_id,
-          nativeTokenSymbol: item.native_currency.symbol,
-          rpcUrl: item.rpc || '',
-          scanLink: item.explorer || '',
-        });
-      });
+      return sortBy(
+        list.map((item) => {
+          return createTestnetChain({
+            name: item.name,
+            id: item.chain_id,
+            nativeTokenSymbol: item.native_currency.symbol,
+            rpcUrl: item.rpc || '',
+            scanLink: item.explorer || '',
+          });
+        }),
+        'name'
+      );
     });
   });
 
@@ -164,13 +168,20 @@ export const AddFromChainList = ({
           allowClear
         />
       </div>
+
       {isLoading ? (
-        <div className="px-[20px] rounded-[6px]">
-          <Loading />
+        <div className="px-[20px]">
+          <div className="rounded-[6px] bg-r-neutral-card2">
+            <Loading />
+          </div>
         </div>
       ) : isEmpty ? (
-        <div className="h-full rounded-[6px] bg-r-neutral-card2 px-[20px]">
-          <Emtpy description={t('page.customTestnet.AddFromChainList.empty')} />
+        <div className="h-full px-[20px]">
+          <div className="h-full rounded-[6px] bg-r-neutral-card2">
+            <Emtpy
+              description={t('page.customTestnet.AddFromChainList.empty')}
+            />
+          </div>
         </div>
       ) : (
         <div ref={ref} className="flex-1 overflow-auto px-[20px]">
@@ -205,42 +216,38 @@ const CustomTestnetList = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className={className}>
-      {
-        <div className="rounded-[6px] bg-r-neutral-card2">
-          {list?.map((item) => {
-            const chain = findChain({ id: item.id });
+    <div className="rounded-[6px] bg-r-neutral-card2">
+      {list?.map((item) => {
+        const chain = findChain({ id: item.id });
 
-            return chain ? (
-              <TooltipWithMagnetArrow
-                className="rectangle w-[max-content]"
-                key={item.id + 'tooltip'}
-                align={{
-                  offset: [0, 30],
-                }}
-                placement="top"
-                title={
-                  chain?.isTestnet
-                    ? t('page.customTestnet.AddFromChainList.tips.added')
-                    : t('page.customTestnet.AddFromChainList.tips.supported')
-                }
-              >
-                <div className="chain-list-item relative">
-                  <CustomTestnetItem item={item} disabled />
-                </div>
-              </TooltipWithMagnetArrow>
-            ) : (
-              <CustomTestnetItem
-                item={item}
-                key={item.id}
-                onClick={onSelect}
-                className="relative chain-list-item"
-              />
-            );
-          })}
-          {loadingMore ? <Loading /> : null}
-        </div>
-      }
+        return chain ? (
+          <TooltipWithMagnetArrow
+            className="rectangle w-[max-content]"
+            key={item.id + 'tooltip'}
+            align={{
+              offset: [0, 30],
+            }}
+            placement="top"
+            title={
+              chain?.isTestnet
+                ? t('page.customTestnet.AddFromChainList.tips.added')
+                : t('page.customTestnet.AddFromChainList.tips.supported')
+            }
+          >
+            <div className="chain-list-item relative">
+              <CustomTestnetItem item={item} disabled />
+            </div>
+          </TooltipWithMagnetArrow>
+        ) : (
+          <CustomTestnetItem
+            item={item}
+            key={item.id}
+            onClick={onSelect}
+            className="relative chain-list-item"
+          />
+        );
+      })}
+      {loadingMore ? <Loading /> : null}
     </div>
   );
 };
@@ -248,14 +255,14 @@ const CustomTestnetList = ({
 const Loading = () => {
   return (
     <>
-      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2 rounded-[6px]">
         <Skeleton.Avatar active />
         <div className="flex flex-col gap-[4px]">
           <Skeleton.Input active className="w-[80px] h-[16px]" />
           <Skeleton.Input active className="w-[145px] h-[14px]" />
         </div>
       </div>
-      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2">
+      <div className="chain-list-item relative flex items-center px-[16px] py-[11px] gap-[12px] bg-r-neutral-card2 rounded-[6px]">
         <Skeleton.Avatar active />
         <div className="flex flex-col gap-[4px]">
           <Skeleton.Input active className="w-[80px] h-[16px]" />

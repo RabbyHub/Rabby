@@ -22,6 +22,7 @@ import { EditCustomTestnetModal } from './components/EditTestnetModal';
 import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
+import { sortBy } from 'lodash';
 
 const Footer = styled.div`
   height: 76px;
@@ -63,9 +64,12 @@ export const CustomTestnet = () => {
     });
   };
 
-  const { data: list, runAsync: runGetCustomTestnetList } = useRequest(() => {
-    return wallet.getCustomTestnetList();
-  });
+  const { data: list, runAsync: runGetCustomTestnetList } = useRequest(
+    async () => {
+      const res = await wallet.getCustomTestnetList();
+      return sortBy(res, 'name');
+    }
+  );
 
   const handleConfirm = useMemoizedFn(async () => {
     setState({

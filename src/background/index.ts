@@ -78,7 +78,6 @@ async function restoreAppState() {
   await migrateData();
 
   await customTestnetService.init();
-
   await permissionService.init();
   await preferenceService.init();
   await transactionWatchService.init();

@@ -3731,20 +3731,10 @@ export class WalletController extends BaseController {
           id,
         })
     );
-
-    const res = await Promise.all(
-      chainList.map((id) =>
-        openapiService
-          .searchChainList({
-            q: String(id),
-          })
-          .then((res) => {
-            return res.chain_list;
-          })
-          .catch(() => [])
-      )
-    );
-    return flatten(res);
+    const res = await openapiService.getChainListByIds({
+      ids: chainList.join(','),
+    });
+    return res;
   };
 
   syncMainnetChainList = async () => {
