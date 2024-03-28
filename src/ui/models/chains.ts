@@ -9,7 +9,9 @@ import {
   findChainByEnum,
   getChainList,
   getMainnetChainList,
+  getMainnetListFromLocal,
   getTestnetChainList,
+  updateChainStore,
   varyAndSortChainItems,
 } from '@/utils/chain';
 import type { AccountState } from './account';
@@ -70,6 +72,22 @@ export const chains = createModel<RootModel>()({
     };
   },
   effects: (dispatch) => ({
+    init(_: void, store) {
+      store.app.wallet.getCustomTestnetList().then((testnetList) => {
+        updateChainStore({
+          testnetList: testnetList,
+        });
+        this.setField({ testnetList });
+      });
+      getMainnetListFromLocal().then((mainnetList) => {
+        if (mainnetList.length) {
+          updateChainStore({
+            mainnetList: mainnetList,
+          });
+          this.setField({ mainnetList });
+        }
+      });
+    },
     /**
      * @description get all chains current account could access, vary them and sort them
      */

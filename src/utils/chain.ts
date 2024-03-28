@@ -11,10 +11,16 @@ import {
 import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
 import { toHex } from 'viem';
 
-chrome.storage.local.get('rabbyMainnetChainList', (res) => {
-  if (res?.rabbyMainnetChainList) {
+export const getMainnetListFromLocal = () => {
+  return chrome.storage.local.get('rabbyMainnetChainList').then((res) => {
+    return res?.rabbyMainnetChainList || [];
+  });
+};
+
+getMainnetListFromLocal().then((list) => {
+  if (list.length) {
     updateChainStore({
-      mainnetList: res.rabbyMainnetChainList,
+      mainnetList: list,
     });
   }
 });
