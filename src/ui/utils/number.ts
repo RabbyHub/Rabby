@@ -167,3 +167,7 @@ export function coerceFloat(input: any, fallbackNum = 0) {
 
   return output;
 }
+
+export function isMeaningfulNumber(input: any): input is number {
+  return typeof input === 'number' && !Number.isNaN(input);
+}
