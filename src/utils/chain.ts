@@ -68,7 +68,7 @@ export const findChain = (params: {
   networkId?: string | null;
 }) => {
   const { enum: chainEnum, id, serverId, hex, networkId } = params;
-  if (chainEnum && 'CUSTOM_'.startsWith(chainEnum)) {
+  if (chainEnum && chainEnum.startsWith('CUSTOM_')) {
     return findChain({
       id: +chainEnum.replace('CUSTOM_', ''),
     });
