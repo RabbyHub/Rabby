@@ -190,35 +190,13 @@ class ProviderController extends BaseController {
     const chain = findChain({
       serverId: chainServerId,
     })!;
-    if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
-      const promise = RPCService.requestCustomRPC(
-        chain.enum as CHAINS_ENUM,
-        method,
-        params
-      ).then((result) => {
-        RpcCache.set(currentAddress, {
+    if (!chain.isTestnet) {
+      if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
+        const promise = RPCService.requestCustomRPC(
+          chain.enum as CHAINS_ENUM,
           method,
-          params,
-          result,
-          chainId: chainServerId,
-        });
-        return result;
-      });
-      RpcCache.set(currentAddress, {
-        method,
-        params,
-        result: promise,
-        chainId: chainServerId,
-      });
-      return promise;
-    } else if (!chain.isTestnet) {
-      const promise = openapiService
-        .ethRpc(chainServerId, {
-          origin: encodeURIComponent(origin),
-          method,
-          params,
-        })
-        .then((result) => {
+          params
+        ).then((result) => {
           RpcCache.set(currentAddress, {
             method,
             params,
@@ -227,13 +205,37 @@ class ProviderController extends BaseController {
           });
           return result;
         });
-      RpcCache.set(currentAddress, {
-        method,
-        params,
-        result: promise,
-        chainId: chainServerId,
-      });
-      return promise;
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result: promise,
+          chainId: chainServerId,
+        });
+        return promise;
+      } else {
+        const promise = openapiService
+          .ethRpc(chainServerId, {
+            origin: encodeURIComponent(origin),
+            method,
+            params,
+          })
+          .then((result) => {
+            RpcCache.set(currentAddress, {
+              method,
+              params,
+              result,
+              chainId: chainServerId,
+            });
+            return result;
+          });
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result: promise,
+          chainId: chainServerId,
+        });
+        return promise;
+      }
     } else {
       const chainData = findChain({
         serverId: chainServerId,
@@ -649,50 +651,53 @@ class ProviderController extends BaseController {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
         let reqId: string | undefined = undefined;
-        if (RPCService.hasCustomRPC(chain)) {
-          const txData: any = {
-            ...approvalRes,
-            gasLimit: approvalRes.gas,
-            r: addHexPrefix(signedTx.r),
-            s: addHexPrefix(signedTx.s),
-            v: addHexPrefix(signedTx.v),
-          };
-          if (is1559) {
-            txData.type = '0x2';
-          }
-          const tx = TransactionFactory.fromTxData(txData);
-          const rawTx = bufferToHex(tx.serialize());
-          hash = await RPCService.requestCustomRPC(
-            chain,
-            'eth_sendRawTransaction',
-            [rawTx]
-          );
-
-          onTransactionCreated({ hash, reqId, pushType });
-        } else if (!findChain({ enum: chain })?.isTestnet) {
-          const res = await openapiService.submitTx({
-            tx: {
+        if (!findChain({ enum: chain })?.isTestnet) {
+          if (RPCService.hasCustomRPC(chain)) {
+            const txData: any = {
               ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-              value: approvalRes.value || '0x0',
-            },
-            push_type: pushType,
-            low_gas_deadline: lowGasDeadline,
-            req_id: preReqId || '',
-            origin,
-          });
-          hash = res.req.tx_id || undefined;
-          reqId = res.req.id || undefined;
-          if (res.req.push_status === 'failed') {
-            onTransactionSubmitFailed(new Error('Submit tx failed'));
-          } else {
-            onTransactionCreated({ hash, reqId, pushType });
-            if (notificationService.statsData?.signMethod) {
-              statsData.signMethod = notificationService.statsData?.signMethod;
+              gasLimit: approvalRes.gas,
+              r: addHexPrefix(signedTx.r),
+              s: addHexPrefix(signedTx.s),
+              v: addHexPrefix(signedTx.v),
+            };
+            if (is1559) {
+              txData.type = '0x2';
             }
-            notificationService.setStatsData(statsData);
+            const tx = TransactionFactory.fromTxData(txData);
+            const rawTx = bufferToHex(tx.serialize());
+            hash = await RPCService.requestCustomRPC(
+              chain,
+              'eth_sendRawTransaction',
+              [rawTx]
+            );
+
+            onTransactionCreated({ hash, reqId, pushType });
+          } else {
+            const res = await openapiService.submitTx({
+              tx: {
+                ...approvalRes,
+                r: bufferToHex(signedTx.r),
+                s: bufferToHex(signedTx.s),
+                v: bufferToHex(signedTx.v),
+                value: approvalRes.value || '0x0',
+              },
+              push_type: pushType,
+              low_gas_deadline: lowGasDeadline,
+              req_id: preReqId || '',
+              origin,
+            });
+            hash = res.req.tx_id || undefined;
+            reqId = res.req.id || undefined;
+            if (res.req.push_status === 'failed') {
+              onTransactionSubmitFailed(new Error('Submit tx failed'));
+            } else {
+              onTransactionCreated({ hash, reqId, pushType });
+              if (notificationService.statsData?.signMethod) {
+                statsData.signMethod =
+                  notificationService.statsData?.signMethod;
+              }
+              notificationService.setStatsData(statsData);
+            }
           }
         } else {
           const chainData = findChain({
