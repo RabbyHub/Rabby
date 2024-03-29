@@ -70,7 +70,7 @@ export const preference = createModel<RootModel>()({
     init() {
       return this.getPreference();
     },
-    async getPreference(key?: keyof PreferenceState, store?) {
+    async getPreference(key: keyof PreferenceState | undefined, store) {
       const value = await store.app.wallet.getPreference(key);
       if (key) {
         this.setField({
@@ -84,19 +84,19 @@ export const preference = createModel<RootModel>()({
 
       return value as PreferenceState;
     },
-    async getIsDefaultWallet(_?, store?) {
+    async getIsDefaultWallet(_: void, store) {
       const isDefaultWallet = await store.app.wallet.isDefaultWallet();
       this.setField({
         isDefaultWallet,
       });
     },
 
-    async setIsDefaultWallet(isDefault: boolean, store?) {
+    async setIsDefaultWallet(isDefault: boolean, store) {
       await store.app.wallet.setIsDefaultWallet(isDefault);
       this.getIsDefaultWallet();
     },
 
-    async getTokenApprovalChain(address: string, store?) {
+    async getTokenApprovalChain(address: string, store) {
       address = address.toLowerCase();
       const chain = await store.app.wallet.getTokenApprovalChain(address);
 
@@ -115,7 +115,7 @@ export const preference = createModel<RootModel>()({
         address: string;
         chain: CHAINS_ENUM;
       },
-      store?
+      store
     ) {
       await store.app.wallet.setTokenApprovalChain(address, chain);
 
@@ -129,48 +129,48 @@ export const preference = createModel<RootModel>()({
         address: string;
         chain: CHAINS_ENUM;
       },
-      store?
+      store
     ) {
       await store.app.wallet.setNFTApprovalChain(address, chain);
 
       dispatch.preference.getPreference('nftApprovalChain');
     },
-    async addPinnedChain(chain: CHAINS_ENUM, store?) {
+    async addPinnedChain(chain: CHAINS_ENUM, store) {
       if (store.preference.pinnedChain.includes(chain)) {
         return;
       }
       await store.app.wallet.saveChain(chain);
       dispatch.preference.getPreference('pinnedChain');
     },
-    async removePinnedChain(chain: CHAINS_ENUM, store?) {
+    async removePinnedChain(chain: CHAINS_ENUM, store) {
       const list = store.preference.pinnedChain.filter(
         (item) => item !== chain
       );
       await store.app.wallet.updateChain(list);
       dispatch.preference.getPreference('pinnedChain');
     },
-    async updatePinnedChainList(chains: CHAINS_ENUM[], store?) {
+    async updatePinnedChainList(chains: CHAINS_ENUM[], store) {
       dispatch.preference.setField({
         pinnedChain: chains,
       });
       await store.app.wallet.updateChain(chains);
       dispatch.preference.getPreference('pinnedChain');
     },
-    async setAutoLockTime(time: number, store?) {
+    async setAutoLockTime(time: number, store) {
       dispatch.preference.setField({
         autoLockTime: time,
       });
       await store.app.wallet.setAutoLockTime(time);
       dispatch.preference.getPreference('autoLockTime');
     },
-    async setHiddenBalance(hidden: boolean, store?) {
+    async setHiddenBalance(hidden: boolean, store) {
       dispatch.preference.setField({
         hiddenBalance: hidden,
       });
       await store.app.wallet.setHiddenBalance(hidden);
       dispatch.preference.getPreference('hiddenBalance');
     },
-    async setIsShowTestnet(value: boolean, store?) {
+    async setIsShowTestnet(value: boolean, store) {
       dispatch.preference.setField({
         isShowTestnet: value,
       });
@@ -178,7 +178,7 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('isShowTestnet');
     },
 
-    async switchLocale(locale: string, store?) {
+    async switchLocale(locale: string, store) {
       dispatch.preference.setField({
         locale,
       });
@@ -187,7 +187,7 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('locale');
     },
 
-    async switchThemeMode(themeMode: DARK_MODE_TYPE, store?) {
+    async switchThemeMode(themeMode: DARK_MODE_TYPE, store) {
       dispatch.preference.setField({
         themeMode,
       });
@@ -195,20 +195,20 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('themeMode');
     },
 
-    async getAddressSortStoreValue(key: keyof AddressSortStore, store?) {
+    async getAddressSortStoreValue(key: keyof AddressSortStore, store) {
       const value = await store.app.wallet.getAddressSortStoreValue(key);
       return value;
     },
 
     async setAddressSortStoreValue<K extends keyof AddressSortStore>(
       { key, value }: { key: K; value: AddressSortStore[K] },
-      store?
+      store
     ) {
       await store.app.wallet.setAddressSortStoreValue(key, value);
       dispatch.preference.getPreference('addressSortStore');
     },
 
-    // async setOpenapiHost(value: string, store?) {
+    // async setOpenapiHost(value: string, store) {
     //   dispatch.preference.setField({
     //     isShowTestnet: value,
     //   });

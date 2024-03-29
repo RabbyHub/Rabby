@@ -51,7 +51,7 @@ export const contactBook = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async getContactBookAsync(_?: any, store?) {
+    async getContactBookAsync(_: void, store) {
       const contactsByAddr: Record<
         string,
         ContactBookItem
@@ -67,7 +67,7 @@ export const contactBook = createModel<RootModel>()({
       return contactsByAddr;
     },
 
-    // async getAliasNamesAsync(_?, store?) {
+    // async getAliasNamesAsync(_:void, store) {
     //   const contactsMap: Record<string, ContactBookItem> =
     //     store.contactBook.contactsByAddr;
     //   return Object.values(contactsMap).filter((item) => item.isAlias);

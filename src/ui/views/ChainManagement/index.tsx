@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
-import { Chain } from 'background/service/openapi';
+// import { Chain } from 'background/service/openapi';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
+import { Chain } from '@debank/common';
+import { findChain, getChainList, getMainnetChainList } from '@/utils/chain';
 
 export const ChainManagementList = () => {
   const wallet = useWallet();
@@ -18,7 +20,7 @@ export const ChainManagementList = () => {
   const init = async () => {
     const savedChains = await getPinnedChain();
     const allChainList = sortBy(
-      Object.values(CHAINS)
+      getChainList('mainnet')
         .map((item) => {
           if (!savedChains.includes(item.enum))
             return { ...item, sortName: item.name.toLowerCase() };
@@ -29,7 +31,9 @@ export const ChainManagementList = () => {
     setChains(allChainList);
     const savedChainsData = savedChains
       .map((item) => {
-        return Object.values(CHAINS).find((chain) => chain.enum === item);
+        return findChain({
+          enum: item,
+        });
       })
       .filter(Boolean) as Chain[];
     setSavedChainsData(savedChainsData);
@@ -49,9 +53,9 @@ export const ChainManagementList = () => {
       (item) => item.enum !== chainName
     );
     setSavedChainsData(newSavedChainData);
-    const newChainData = Object.values(CHAINS).find(
-      (item) => item.enum === chainName
-    );
+    const newChainData = findChain({
+      enum: chainName,
+    });
     if (newChainData) {
       setChains(sortBy([...chains, newChainData], (item) => item?.name));
     }
@@ -59,9 +63,10 @@ export const ChainManagementList = () => {
 
   const saveToPin = async (chainName: string) => {
     await wallet.saveChain(chainName);
-    const newChainData = Object.values(CHAINS).find(
-      (item) => item.enum === chainName
-    );
+    const newChainData = findChain({
+      enum: chainName,
+    });
+
     setChains(chains.filter((item) => item?.enum !== chainName));
     setSavedChains([...savedChains, chainName]);
     if (newChainData) {

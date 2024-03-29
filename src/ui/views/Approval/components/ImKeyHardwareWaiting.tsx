@@ -27,6 +27,7 @@ import {
 } from './Popup/ApprovalPopupContainer';
 import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
+import { findChain } from '@/utils/chain';
 
 interface ApprovalParams {
   address: string;
@@ -55,9 +56,9 @@ export const ImKeyHardwareWaiting = ({
     WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!;
+  const chain = findChain({
+    id: params.chainId || 1,
+  });
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = React.useState(false);
   const [result, setResult] = React.useState('');
@@ -90,10 +91,10 @@ export const ImKeyHardwareWaiting = ({
     }
   };
 
-  const handleClickResult = () => {
-    const url = chain.scanLink.replace(/_s_/, result);
-    openInTab(url);
-  };
+  // const handleClickResult = () => {
+  //   const url = chain.scanLink.replace(/_s_/, result);
+  //   openInTab(url);
+  // };
 
   const init = async () => {
     const account = params.isGnosis
@@ -118,16 +119,16 @@ export const ImKeyHardwareWaiting = ({
 
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        if (!signingTx?.explain) {
+        if (!signingTx?.explain && chain && !chain.isTestnet) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
 
-        const explain = signingTx.explain;
+        const explain = signingTx?.explain;
 
         stats.report('signTransaction', {
           type: account.brandName,
-          chainId: chain.serverId,
+          chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success

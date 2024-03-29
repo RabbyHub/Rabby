@@ -10,6 +10,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { useTranslation } from 'react-i18next';
+import { getTxScanLink } from '@/utils';
 
 export const TxHash = ({ tx }: { tx: TransactionGroup }) => {
   const chain = findChainByID(tx.chainId);
@@ -21,7 +22,7 @@ export const TxHash = ({ tx }: { tx: TransactionGroup }) => {
       return;
     }
 
-    openInTab(chain?.scanLink.replace(/_s_/, maxGasTx.hash), false);
+    openInTab(getTxScanLink(chain?.scanLink, maxGasTx.hash), false);
   };
   return (
     <div>

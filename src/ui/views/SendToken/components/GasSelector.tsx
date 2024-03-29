@@ -9,6 +9,7 @@ import { formatTokenAmount } from 'ui/utils/number';
 import styled from 'styled-components';
 import { BigNumber } from 'bignumber.js';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
+import { findChain } from '@/utils/chain';
 
 interface GasSelectorProps {
   chainId: number;
@@ -47,7 +48,9 @@ const GasSelector = ({
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
   const [customGas, setCustomGas] = useState<string | number>('0');
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+  const chain = findChain({
+    id: chainId,
+  });
   const [selectedGas, setSelectedGas] = useState(gas);
 
   const handleConfirmGas = () => {
@@ -158,7 +161,7 @@ const GasSelector = ({
                 .times(MINIMUM_GAS_LIMIT)
                 .div(1e18)
                 .toFixed()
-            )} ${chain.nativeTokenSymbol}`}
+            )} ${chain?.nativeTokenSymbol}`}
           </p>
         </div>
         <div className="card-container">

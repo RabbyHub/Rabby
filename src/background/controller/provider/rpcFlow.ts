@@ -13,6 +13,7 @@ import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
+import { findChain } from '@/utils/chain';
 import browser from 'webextension-polyfill';
 
 const isSignApproval = (type: string) => {
@@ -191,9 +192,9 @@ const flowContext = flow
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
         const site = permissionService.getConnectedSite(origin);
         if (site) {
-          const chain = Object.values(CHAINS).find(
-            (item) => item.enum === site.chain
-          );
+          const chain = findChain({
+            enum: site.chain,
+          });
           if (chain) {
             params[0].chainId = chain.id;
           }

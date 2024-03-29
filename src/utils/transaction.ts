@@ -3,9 +3,12 @@ import { minBy } from 'lodash';
 import BigNumber from 'bignumber.js';
 import { CHAINS, GASPRICE_RANGE, KEYRING_CATEGORY_MAP } from 'consts';
 import { GasLevel, Tx } from 'background/service/openapi';
+import { findChain } from './chain';
 
 export const validateGasPriceRange = (tx: Tx) => {
-  const chain = Object.values(CHAINS).find((chain) => chain.id === tx.chainId);
+  const chain = findChain({
+    id: tx.chainId,
+  });
   if (!chain) return true;
   const range = GASPRICE_RANGE[chain.enum];
   if (!range) return true;

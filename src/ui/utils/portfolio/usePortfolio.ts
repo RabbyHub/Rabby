@@ -3,7 +3,7 @@ import produce from 'immer';
 import { Dayjs } from 'dayjs';
 // import { atom, useSetAtom } from 'jotai';
 
-import { CHAIN_ID_LIST } from 'consts';
+import { CHAIN_ID_LIST, syncChainIdList } from 'consts';
 import { useWallet } from '../WalletContext';
 import { chunk, loadTestnetPortfolioSnapshot } from './utils';
 import { useSafeState } from '../safeState';
@@ -206,6 +206,7 @@ export const usePortfolios = (
     }
 
     historyLoad.current = true;
+    syncChainIdList();
     const historyIds = realtimeIds.current.filter(
       (x) =>
         projectDict.current![x].chain &&

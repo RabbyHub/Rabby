@@ -18,6 +18,7 @@ import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
@@ -336,9 +337,8 @@ class NotificationService extends Events {
         )
       ) {
         const chainId = data.params?.data?.[0]?.chainId;
-        const chain = Object.values(CHAINS).find((chain) =>
-          new BigNumber(chain.hex).isEqualTo(chainId)
-        );
+
+        const chain = findChain({ id: +chainId });
 
         if (chain) {
           this.resolveApproval(null);

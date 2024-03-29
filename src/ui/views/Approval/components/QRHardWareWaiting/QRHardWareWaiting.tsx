@@ -4,6 +4,7 @@ import Player from './Player';
 import Reader from './Reader';
 import {
   CHAINS,
+  CHAINS_ENUM,
   EVENTS,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
@@ -16,7 +17,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 import { adjustV } from '@/ui/utils/gnosis';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import {
   UnderlineButton as SwitchButton,
   SIGNATURE_METHOD,
@@ -69,9 +70,10 @@ const QRHardWareWaiting = ({ params }) => {
     approvalId: string;
   }>();
 
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
+  const chain =
+    findChain({
+      id: params.chainId || 1,
+    })?.enum || CHAINS_ENUM.ETH;
   const init = useCallback(async () => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;
@@ -188,13 +190,16 @@ const QRHardWareWaiting = ({ params }) => {
           //   chainId: Number(chainId),
           // });
           const signingTx = await wallet.getSigningTx(signingTxId);
+          const chainInfo = findChain({
+            enum: chain,
+          });
 
-          if (!signingTx?.explain) {
+          if (!signingTx?.explain && chainInfo && !chainInfo.isTestnet) {
             setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
             return;
           }
 
-          const explain = signingTx.explain;
+          const explain = signingTx?.explain;
 
           stats.report('signTransaction', {
             type: account.brandName,

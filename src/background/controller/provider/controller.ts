@@ -51,9 +51,12 @@ import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
+import { customTestnetService } from '@/background/service/customTestnet';
+import { sendTransaction } from 'viem/actions';
+// import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
   method: string;
@@ -167,7 +170,10 @@ class ProviderController extends BaseController {
     const site = permissionService.getSite(origin);
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
     if (site) {
-      chainServerId = CHAINS[site.chain].serverId;
+      chainServerId =
+        findChain({
+          enum: site.chain,
+        })?.serverId || CHAINS[CHAINS_ENUM.ETH].serverId;
     }
     if (forceChainServerId) {
       chainServerId = forceChainServerId;
@@ -181,38 +187,16 @@ class ProviderController extends BaseController {
       chainId: chainServerId,
     });
     if (cache) return cache;
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === chainServerId
-    )!;
-    if (RPCService.hasCustomRPC(chain.enum)) {
-      const promise = RPCService.requestCustomRPC(
-        chain.enum,
-        method,
-        params
-      ).then((result) => {
-        RpcCache.set(currentAddress, {
+    const chain = findChain({
+      serverId: chainServerId,
+    })!;
+    if (!chain.isTestnet) {
+      if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
+        const promise = RPCService.requestCustomRPC(
+          chain.enum as CHAINS_ENUM,
           method,
-          params,
-          result,
-          chainId: chainServerId,
-        });
-        return result;
-      });
-      RpcCache.set(currentAddress, {
-        method,
-        params,
-        result: promise,
-        chainId: chainServerId,
-      });
-      return promise;
-    } else {
-      const promise = openapiService
-        .ethRpc(chainServerId, {
-          origin: encodeURIComponent(origin),
-          method,
-          params,
-        })
-        .then((result) => {
+          params
+        ).then((result) => {
           RpcCache.set(currentAddress, {
             method,
             params,
@@ -221,13 +205,43 @@ class ProviderController extends BaseController {
           });
           return result;
         });
-      RpcCache.set(currentAddress, {
-        method,
-        params,
-        result: promise,
-        chainId: chainServerId,
-      });
-      return promise;
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result: promise,
+          chainId: chainServerId,
+        });
+        return promise;
+      } else {
+        const promise = openapiService
+          .ethRpc(chainServerId, {
+            origin: encodeURIComponent(origin),
+            method,
+            params,
+          })
+          .then((result) => {
+            RpcCache.set(currentAddress, {
+              method,
+              params,
+              result,
+              chainId: chainServerId,
+            });
+            return result;
+          });
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result: promise,
+          chainId: chainServerId,
+        });
+        return promise;
+      }
+    } else {
+      const chainData = findChain({
+        serverId: chainServerId,
+      })!;
+      const client = customTestnetService.getClient(chainData.id);
+      return client.request({ method, params });
     }
   };
 
@@ -241,17 +255,19 @@ class ProviderController extends BaseController {
     sessionService.broadcastEvent('accountsChanged', account);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
-      const chain = CHAINS[connectSite.chain];
-      // rabby:chainChanged event must be sent before chainChanged event
-      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
-      sessionService.broadcastEvent(
-        'chainChanged',
-        {
-          chain: chain.hex,
-          networkVersion: chain.network,
-        },
-        origin
-      );
+      const chain = findChain({ enum: connectSite.chain });
+      if (chain) {
+        // rabby:chainChanged event must be sent before chainChanged event
+        sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
+        sessionService.broadcastEvent(
+          'chainChanged',
+          {
+            chain: chain.hex,
+            networkVersion: chain.network,
+          },
+          origin
+        );
+      }
     }
 
     return account;
@@ -296,7 +312,7 @@ class ProviderController extends BaseController {
         .getCurrentAccount()
         ?.address.toLowerCase();
       const currentChain = permissionService.isInternalOrigin(session.origin)
-        ? Object.values(CHAINS).find((chain) => chain.id === tx.chainId)!.enum
+        ? findChain({ id: tx.chainId })!.enum
         : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
@@ -305,7 +321,8 @@ class ProviderController extends BaseController {
       }
       if (
         'chainId' in tx &&
-        (!currentChain || Number(tx.chainId) !== CHAINS[currentChain].id)
+        (!currentChain ||
+          Number(tx.chainId) !== findChain({ enum: currentChain })?.id)
       ) {
         throw ethErrors.rpc.invalidParams(
           'chainId should be same as current chainId'
@@ -401,12 +418,17 @@ class ProviderController extends BaseController {
       }
     }
     const chain = permissionService.isInternalOrigin(origin)
-      ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
-          .enum
+      ? (findChain({
+          id: approvalRes.chainId,
+        })?.enum as CHAINS_ENUM)
       : permissionService.getConnectedSite(origin)!.chain;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
-    if (!approvingTx?.rawTx || !approvingTx?.explain) {
+
+    // if (!approvingTx?.rawTx || !approvingTx?.explain) {
+    //   throw new Error(`approvingTx not found: ${signingTxId}`);
+    // }
+    if (!approvingTx?.rawTx) {
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
     transactionHistoryService.updateSigningTx(signingTxId!, {
@@ -523,7 +545,7 @@ class ProviderController extends BaseController {
           transactionBroadcastWatchService.addTx(reqId, {
             reqId,
             address: txParams.from,
-            chainId: CHAINS[chain].id,
+            chainId: findChain({ enum: chain })!.id,
             nonce: approvalRes.nonce,
           });
         }
@@ -557,8 +579,8 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
-          transactionHistoryService.addSubmitFailedTransaction(
-            {
+          transactionHistoryService.addSubmitFailedTransaction({
+            tx: {
               rawTx: approvalRes,
               createdAt: Date.now(),
               isCompleted: true,
@@ -566,9 +588,9 @@ class ProviderController extends BaseController {
               failed: false,
               isSubmitFailed: true,
             },
-            cacheExplain,
-            origin
-          );
+            explain: cacheExplain,
+            origin,
+          });
         }
         const errMsg = e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
@@ -629,7 +651,58 @@ class ProviderController extends BaseController {
         validateGasPriceRange(approvalRes);
         let hash: string | undefined = undefined;
         let reqId: string | undefined = undefined;
-        if (RPCService.hasCustomRPC(chain)) {
+        if (!findChain({ enum: chain })?.isTestnet) {
+          if (RPCService.hasCustomRPC(chain)) {
+            const txData: any = {
+              ...approvalRes,
+              gasLimit: approvalRes.gas,
+              r: addHexPrefix(signedTx.r),
+              s: addHexPrefix(signedTx.s),
+              v: addHexPrefix(signedTx.v),
+            };
+            if (is1559) {
+              txData.type = '0x2';
+            }
+            const tx = TransactionFactory.fromTxData(txData);
+            const rawTx = bufferToHex(tx.serialize());
+            hash = await RPCService.requestCustomRPC(
+              chain,
+              'eth_sendRawTransaction',
+              [rawTx]
+            );
+
+            onTransactionCreated({ hash, reqId, pushType });
+          } else {
+            const res = await openapiService.submitTx({
+              tx: {
+                ...approvalRes,
+                r: bufferToHex(signedTx.r),
+                s: bufferToHex(signedTx.s),
+                v: bufferToHex(signedTx.v),
+                value: approvalRes.value || '0x0',
+              },
+              push_type: pushType,
+              low_gas_deadline: lowGasDeadline,
+              req_id: preReqId || '',
+              origin,
+            });
+            hash = res.req.tx_id || undefined;
+            reqId = res.req.id || undefined;
+            if (res.req.push_status === 'failed') {
+              onTransactionSubmitFailed(new Error('Submit tx failed'));
+            } else {
+              onTransactionCreated({ hash, reqId, pushType });
+              if (notificationService.statsData?.signMethod) {
+                statsData.signMethod =
+                  notificationService.statsData?.signMethod;
+              }
+              notificationService.setStatsData(statsData);
+            }
+          }
+        } else {
+          const chainData = findChain({
+            enum: chain,
+          })!;
           const txData: any = {
             ...approvalRes,
             gasLimit: approvalRes.gas,
@@ -642,38 +715,13 @@ class ProviderController extends BaseController {
           }
           const tx = TransactionFactory.fromTxData(txData);
           const rawTx = bufferToHex(tx.serialize());
-          hash = await RPCService.requestCustomRPC(
-            chain,
-            'eth_sendRawTransaction',
-            [rawTx]
-          );
+          const client = customTestnetService.getClient(chainData.id);
 
-          onTransactionCreated({ hash, reqId, pushType });
-        } else {
-          const res = await openapiService.submitTx({
-            tx: {
-              ...approvalRes,
-              r: bufferToHex(signedTx.r),
-              s: bufferToHex(signedTx.s),
-              v: bufferToHex(signedTx.v),
-              value: approvalRes.value || '0x0',
-            },
-            push_type: pushType,
-            low_gas_deadline: lowGasDeadline,
-            req_id: preReqId || '',
-            origin,
+          hash = await client.request({
+            method: 'eth_sendRawTransaction',
+            params: [rawTx as any],
           });
-          hash = res.req.tx_id || undefined;
-          reqId = res.req.id || undefined;
-          if (res.req.push_status === 'failed') {
-            onTransactionSubmitFailed(new Error('Submit tx failed'));
-          } else {
-            onTransactionCreated({ hash, reqId, pushType });
-            if (notificationService.statsData?.signMethod) {
-              statsData.signMethod = notificationService.statsData?.signMethod;
-            }
-            notificationService.setStatsData(statsData);
-          }
+          onTransactionCreated({ hash, reqId, pushType });
         }
 
         return hash;
@@ -947,8 +995,12 @@ class ProviderController extends BaseController {
         throw ethErrors.rpc.invalidParams('chainId is required');
       }
       const connected = permissionService.getConnectedSite(session.origin);
+
       if (connected) {
-        if (Number(chainParams.chainId) === CHAINS[connected.chain].id) {
+        if (
+          Number(chainParams.chainId) ===
+          findChain({ enum: connected.chain })?.id
+        ) {
           return true;
         }
       }
@@ -979,9 +1031,10 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) =>
-      new BigNumber(value.hex).isEqualTo(chainId)
-    );
+
+    const chain = findChain({
+      hex: chainId,
+    });
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
@@ -992,7 +1045,9 @@ class ProviderController extends BaseController {
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
 
     permissionService.updateConnectSite(
       origin,
@@ -1023,7 +1078,7 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', [
-    'AddChain',
+    'SwitchChain',
     ({ data, session }) => {
       if (!data.params[0]) {
         throw ethErrors.rpc.invalidParams('params is required but got []');
@@ -1034,7 +1089,12 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
-        if (Number(chainId) === CHAINS[connected.chain].id) {
+        if (
+          Number(chainId) ===
+          findChain({
+            enum: connected.chain,
+          })?.id
+        ) {
           return true;
         }
       }
@@ -1053,16 +1113,17 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) =>
-      new BigNumber(value.hex).isEqualTo(chainId)
-    );
+
+    const chain = findChain({ hex: chainId });
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
     const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite ? CHAINS[connectSite?.chain] : undefined;
+    const prev = connectSite
+      ? findChain({ enum: connectSite?.chain })
+      : undefined;
 
     permissionService.updateConnectSite(
       origin,

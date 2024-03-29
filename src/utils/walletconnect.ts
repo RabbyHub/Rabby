@@ -1,5 +1,6 @@
 import { t } from 'i18next';
 import { CHAINS_LIST } from '@debank/common';
+import { getChainList } from './chain';
 
 export const GET_WALLETCONNECT_CONFIG = () => {
   return {
@@ -34,6 +35,4 @@ export const GET_WALLETCONNECT_CONFIG = () => {
   };
 };
 
-export const allChainIds = CHAINS_LIST.map(
-  (chain) => !chain.isTestnet && chain.id
-).filter(Boolean) as number[];
+export const allChainIds = getChainList('mainnet').map((item) => item.id);

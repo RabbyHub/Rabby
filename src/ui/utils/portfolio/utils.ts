@@ -80,6 +80,9 @@ export const loadPortfolioSnapshot = (
   });
 };
 
+/**
+ * @deprecated
+ */
 export const loadTestnetPortfolioSnapshot = (
   userAddr: string,
   wallet: WalletControllerType

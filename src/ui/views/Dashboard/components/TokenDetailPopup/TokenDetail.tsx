@@ -15,7 +15,7 @@ import {
   useCommonPopupView,
   getUITypeName,
 } from 'ui/utils';
-import { getChain } from '@/utils';
+import { getAddressScanLink, getChain } from '@/utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
@@ -29,6 +29,7 @@ import { BlockedButton } from './BlockedButton';
 import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { findChain } from '@/utils/chain';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -126,13 +127,13 @@ const TokenDetail = ({
 
   const handleClickLink = (token: TokenItem) => {
     const serverId = token.chain;
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === serverId
-    );
+    const chain = findChain({
+      serverId: serverId,
+    });
     if (!chain) return;
-    const prefix = chain.scanLink?.replace('/tx/_s_', '');
+    const link = getAddressScanLink(chain.scanLink, token.id);
     const needClose = getUITypeName() !== 'notification';
-    openInTab(`${prefix}/address/${token.id}`, needClose);
+    openInTab(link, needClose);
   };
 
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;

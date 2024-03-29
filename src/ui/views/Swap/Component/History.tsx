@@ -17,6 +17,7 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ellipsis } from '@/ui/utils/address';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
+import { findChain } from '@/utils/chain';
 
 const TokenCost = ({
   payToken,
@@ -82,7 +83,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const targetDex = data?.dex_id;
     const txId = data?.tx_id;
     const chainItem = useMemo(
-      () => CHAINS_LIST.find((e) => e.serverId === data?.chain),
+      () =>
+        findChain({
+          serverId: data?.chain,
+        }),
       [data?.chain]
     );
     const chainName = chainItem?.name || '';
@@ -236,8 +240,6 @@ const HistoryList = () => {
       </div>
     );
   }
-
-  console.log('txList?.list', txList?.list);
 
   return (
     <div className="overflow-y-auto max-h-[434px] space-y-[12px] pb-20">
