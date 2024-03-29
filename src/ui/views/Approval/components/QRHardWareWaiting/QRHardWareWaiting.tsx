@@ -190,11 +190,14 @@ const QRHardWareWaiting = ({ params }) => {
           //   chainId: Number(chainId),
           // });
           const signingTx = await wallet.getSigningTx(signingTxId);
+          const chainInfo = findChain({
+            enum: chain,
+          });
 
-          // if (!signingTx?.explain) {
-          //   setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
-          //   return;
-          // }
+          if (!signingTx?.explain && chainInfo && !chainInfo.isTestnet) {
+            setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
+            return;
+          }
 
           const explain = signingTx?.explain;
 

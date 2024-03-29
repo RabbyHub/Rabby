@@ -105,10 +105,10 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
 
-        // if (!signingTx?.explain) {
-        //   setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
-        //   return;
-        // }
+        if (!signingTx?.explain && chain && !chain?.isTestnet) {
+          setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
+          return;
+        }
 
         const explain = signingTx?.explain;
 
