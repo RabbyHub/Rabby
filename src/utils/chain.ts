@@ -68,6 +68,11 @@ export const findChain = (params: {
   networkId?: string | null;
 }) => {
   const { enum: chainEnum, id, serverId, hex, networkId } = params;
+  if (chainEnum && 'CUSTOM_'.startsWith(chainEnum)) {
+    return findChain({
+      id: +chainEnum.replace('CUSTOM_', ''),
+    });
+  }
   const chain = [...store.mainnetList, ...store.testnetList].find(
     (item) =>
       item.enum === chainEnum ||
