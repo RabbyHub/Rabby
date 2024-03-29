@@ -222,7 +222,8 @@
           "enableTestnets": "启用测试网",
           "currentLanguage": "当前语言",
           "toggleThemeMode": "主题模式",
-          "themeMode": "主题模式"
+          "themeMode": "主题模式",
+          "customTestnet": "自定义测试网"
         },
         "supportedChains": "支持的链",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
