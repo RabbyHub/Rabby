@@ -324,6 +324,7 @@ const CustomRPC = () => {
         onChange={handleChainChanged}
         onCancel={handleCancelSelectChain}
         showRPCStatus
+        hideTestnetTab
       />
       <EditRPCModal
         visible={rpcModalVisible}
