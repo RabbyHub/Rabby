@@ -5,17 +5,20 @@ import browser from 'webextension-polyfill';
 import { ALARMS_SYNC_CHAINS } from '../utils/alarms';
 import { http } from '../utils/http';
 import { SupportedChain } from './openapi';
+import { openapiService } from '.';
 
 class SyncChainService {
   timer: ReturnType<typeof setInterval> | null = null;
 
   syncMainnetChainList = async () => {
     try {
-      const chains = await http
-        .get('https://static.debank.com/supported_chains.json')
-        .then((res) => {
-          return res.data as SupportedChain[];
-        });
+      const chains = process.env.DEBUG
+        ? await openapiService.getSupportedChains()
+        : await http
+            .get('https://static.debank.com/supported_chains.json')
+            .then((res) => {
+              return res.data as SupportedChain[];
+            });
       const list: Chain[] = chains
         .filter((item) => !item.is_disabled)
         .map((item) => {
