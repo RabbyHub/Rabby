@@ -73,7 +73,7 @@ export const UnsupportedAlert: React.FC<Props> = ({ data, session }) => {
       <div className="flex-1 px-20 pt-[52px] pb-[46px] text-center overflow-auto">
         <h1 className="text-20 font-medium text-r-neutral-title-1">
           <span>{t('page.switchChain.chainId')}</span>
-          <span>{data.chainId}</span>
+          <span>{+data.chainId}</span>
         </h1>
         <div
           className={clsx(
