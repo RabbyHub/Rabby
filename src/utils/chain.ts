@@ -1,5 +1,8 @@
 // import { customTestnetService } from '@/background/service/customTestnet';
-import { TestnetChain } from '@/background/service/customTestnet';
+import {
+  CustomTestnetToken,
+  TestnetChain,
+} from '@/background/service/customTestnet';
 import defaultSuppordChain from '@/constant/default-support-chains.json';
 import eventBus from '@/eventBus';
 import { Chain } from '@debank/common';
@@ -470,3 +473,19 @@ export function supportedChainToChain(item: SupportedChain): Chain {
     },
   };
 }
+
+export const isSameTesnetToken = <
+  T1 extends Pick<CustomTestnetToken, 'id' | 'chainId'>,
+  T2 extends Pick<CustomTestnetToken, 'id' | 'chainId'>
+>(
+  token1: T1,
+  token2: T2
+) => {
+  if (!token1 || !token2) {
+    return false;
+  }
+  return (
+    token1.id?.toLowerCase() === token2.id.toLowerCase() &&
+    +token1.chainId === +token2.chainId
+  );
+};

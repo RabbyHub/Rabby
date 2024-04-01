@@ -5,6 +5,7 @@ import React from 'react';
 import { useRabbyDispatch } from 'ui/store';
 import './style.less';
 import { CustomTestnetTokenDetail } from './CustomTestnetTokenDetail';
+import { useMemoizedFn, useRequest } from 'ahooks';
 
 interface TokenDetailProps {
   visible?: boolean;
@@ -20,46 +21,36 @@ export const CustomTestnetTokenDetailPopup = ({
   token,
   visible,
   onClose,
-  isAdded,
   onAdd,
   onRemove,
 }: TokenDetailProps) => {
   const wallet = useWallet();
 
-  const handleAddToken = React.useCallback(
-    async (token: CustomTestnetToken) => {
-      await wallet.addCustomTestnetToken(token);
-      onAdd?.(token);
+  const { data: isAdded, runAsync: runCheckIsAdded } = useRequest(
+    async () => {
+      if (token) {
+        const res = await wallet.isAddedCustomTestnetToken(token);
+        return res;
+      } else {
+        return false;
+      }
     },
-    []
+    {
+      refreshDeps: [token],
+    }
   );
 
-  const handleRemoveToken = React.useCallback(
-    async (token: CustomTestnetToken) => {
-      await wallet.removeCustomTestnetToken(token);
-      onRemove?.(token);
-    },
-    []
-  );
+  const handleAddToken = useMemoizedFn(async (token: CustomTestnetToken) => {
+    await wallet.addCustomTestnetToken(token);
+    runCheckIsAdded();
+    onAdd?.(token);
+  });
 
-  // const checkIsAdded = React.useCallback(async () => {
-  //   if (!token) return;
-  //   const account = await wallet.getCurrentAccount();
-
-  //   const list = await wallet.getCustomTestnetTokenList({
-  //     address: account!.address,
-  //   });
-
-  //   const isAdded = list.some(
-  //     (item) =>
-  //       isSameAddress(item.id, token.id) && item.chainId === token.chainId
-  //   );
-  //   setIsAdded(isAdded);
-  // }, [token]);
-
-  // React.useEffect(() => {
-  //   checkIsAdded();
-  // }, [checkIsAdded]);
+  const handleRemoveToken = useMemoizedFn(async (token: CustomTestnetToken) => {
+    await wallet.removeCustomTestnetToken(token);
+    onRemove?.(token);
+    runCheckIsAdded();
+  });
 
   return (
     <Popup
