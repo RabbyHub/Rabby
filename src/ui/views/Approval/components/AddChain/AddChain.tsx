@@ -33,9 +33,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     form.setFieldsValue({
       id: +addChainParams.chainId,
       name: addChainParams.chainName,
-      rpcUrl: addChainParams.rpcUrls[0],
+      rpcUrl: addChainParams.rpcUrls?.[0],
       nativeTokenSymbol: addChainParams.nativeCurrency?.symbol,
-      scanLink: addChainParams.blockExplorerUrls[0],
+      scanLink: addChainParams.blockExplorerUrls?.[0],
     });
   }, [form, addChainParams]);
 
