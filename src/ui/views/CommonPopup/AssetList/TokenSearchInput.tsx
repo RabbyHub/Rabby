@@ -1,14 +1,17 @@
-import { Input } from 'antd';
-import React from 'react';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { useCommonPopupView } from '@/ui/utils';
+import { Input } from 'antd';
 import clsx from 'clsx';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import styled from 'styled-components';
-import { useCommonPopupView } from '@/ui/utils';
-import { useTranslation } from 'react-i18next';
 
 export interface Props {
   onSearch?: (value: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  className?: string;
 }
 
 const InputStyled = styled(Input)`
@@ -22,9 +25,8 @@ const InputStyled = styled(Input)`
 `;
 
 export const TokenSearchInput = React.forwardRef<Input, Props>(
-  ({ onSearch }, ref) => {
+  ({ onSearch, onBlur, onFocus, className }, ref) => {
     const [input, setInput] = React.useState<string>('');
-    const [isFocus, setIsFocus] = React.useState<boolean>(false);
     const { visible } = useCommonPopupView();
     const { t } = useTranslation();
 
@@ -47,15 +49,14 @@ export const TokenSearchInput = React.forwardRef<Input, Props>(
         ref={ref}
         onChange={(e) => setInput(e.target.value)}
         placeholder={t('page.dashboard.assets.searchPlaceholder')}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        allowClear
         className={clsx(
           'text-12 text-black py-0 px-[9px] h-[32px]',
           'rounded-[6px]',
-          'transform-none w-[160px]',
-          {
-            'w-[248px]': isFocus || input,
-          }
+          'transform-none',
+          className
         )}
         prefix={<SearchSVG className="w-[14px] h-[14px]" />}
       />

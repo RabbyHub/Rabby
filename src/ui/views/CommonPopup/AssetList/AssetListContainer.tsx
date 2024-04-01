@@ -35,6 +35,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
+  const [isFocus, setIsFocus] = React.useState<boolean>(false);
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
@@ -120,8 +121,20 @@ export const AssetListContainer: React.FC<Props> = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
-        <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <TokenSearchInput
+          ref={inputRef}
+          onSearch={handleOnSearch}
+          onFocus={() => {
+            setIsFocus(true);
+          }}
+          onBlur={() => {
+            setIsFocus(false);
+          }}
+          className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
+        />
+        {isFocus || search ? null : (
+          <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        )}
       </div>
       {isTokensLoading || isSearching ? (
         <TokenListSkeleton />

@@ -1,22 +1,17 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TestnetChainBase } from '@/background/service/customTestnet';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useRequest } from 'ahooks';
+import { Button, Form } from 'antd';
 import clsx from 'clsx';
-import { Input, Button, Form } from 'antd';
-import styled from 'styled-components';
-import { useDebounce } from 'react-use';
-import { useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import { Popup, PageHeader } from 'ui/component';
-import { isValidateUrl } from 'ui/utils/url';
-import { RPCItem } from '@/background/service/rpc';
-import { findChainByEnum } from '@/utils/chain';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CustomTestnetForm } from './CustomTestnetForm';
+import styled from 'styled-components';
 import { ReactComponent as RcIconFlash } from 'ui/assets/custom-testnet/icon-flash.svg';
 import { ReactComponent as RcIconRight } from 'ui/assets/custom-testnet/icon-right.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { PageHeader, Popup } from 'ui/component';
+import { useWallet } from 'ui/utils';
 import { AddFromChainList } from './AddFromChainList';
-import { useRequest } from 'ahooks';
-import { TestnetChainBase } from '@/background/service/customTestnet';
+import { CustomTestnetForm } from './CustomTestnetForm';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -46,6 +41,8 @@ export const EditCustomTestnetModal = ({
   isEdit,
   zIndex,
   onChange,
+  height,
+  maskStyle,
 }: {
   isEdit?: boolean;
   data?: TestnetChainBase | null;
@@ -54,6 +51,8 @@ export const EditCustomTestnetModal = ({
   onConfirm(url?: string): void;
   onChange?: (values: Partial<TestnetChainBase>) => void;
   zIndex?: number;
+  height?: number;
+  maskStyle?: React.CSSProperties;
 }) => {
   const wallet = useWallet();
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
@@ -102,7 +101,7 @@ export const EditCustomTestnetModal = ({
 
   return (
     <Popup
-      height={520}
+      height={height || 520}
       visible={visible}
       onCancel={onCancel}
       bodyStyle={{
@@ -112,6 +111,7 @@ export const EditCustomTestnetModal = ({
       style={{
         zIndex: zIndex || 1001,
       }}
+      maskStyle={maskStyle}
       // isSupportDarkMode
     >
       <Wrapper>
