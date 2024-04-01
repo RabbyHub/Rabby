@@ -1,4 +1,7 @@
-import { TestnetChainBase } from '@/background/service/customTestnet';
+import {
+  TestnetChain,
+  TestnetChainBase,
+} from '@/background/service/customTestnet';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRequest } from 'ahooks';
 import { Button, Form } from 'antd';
@@ -48,7 +51,7 @@ export const EditCustomTestnetModal = ({
   data?: TestnetChainBase | null;
   visible: boolean;
   onCancel(): void;
-  onConfirm(url?: string): void;
+  onConfirm(values: TestnetChain): void;
   onChange?: (values: Partial<TestnetChainBase>) => void;
   zIndex?: number;
   height?: number;
@@ -81,7 +84,7 @@ export const EditCustomTestnetModal = ({
         },
       ]);
     } else {
-      onConfirm?.();
+      onConfirm?.(res);
     }
   };
 
