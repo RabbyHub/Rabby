@@ -121,7 +121,7 @@ export const EditCustomTestnetModal = ({
         <PageHeader className="pt-0" forceShowBack={false} canBack={false}>
           {t('page.customRpc.EditCustomTestnetModal.title')}
         </PageHeader>
-        <div className="h-[calc(100%-48px)] overflow-auto px-[20px]">
+        <div className="h-[calc(100%-40px)] overflow-auto px-[20px]">
           {isEdit ? null : (
             <div
               className={clsx(
