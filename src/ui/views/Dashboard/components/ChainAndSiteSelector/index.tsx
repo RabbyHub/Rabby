@@ -244,12 +244,6 @@ export default ({
       eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
-        // history.push('/popup/approval-manage');
-        if (process.env.NODE_ENV !== 'production' && evt.ctrlKey) {
-          history.push('/popup/approval-manage');
-          return;
-        }
-
         openInternalPageInTab('approval-manage');
       },
       badge: approvalRiskAlert,
