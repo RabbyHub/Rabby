@@ -1138,7 +1138,8 @@ export const fetchActionRequiredData = async ({
     });
     queue.add(async () => {
       let addr = actionData.common?.receiver;
-      if (addr) {
+
+      if (!addr) {
         const unexpectedAddrList = await apiProvider.unexpectedAddrList({
           chainId,
           tx,
