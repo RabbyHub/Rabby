@@ -19,6 +19,7 @@ type CommonActions = {
   desc: string;
   is_asset_changed: boolean;
   is_involving_privacy: boolean;
+  receiver?: string;
 };
 
 export const CommonAction = ({
@@ -58,6 +59,8 @@ export const CommonAction = ({
   React.useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
+
+  const addressInfo = (requireData as ContractCallRequireData).unexpectedAddr;
 
   return (
     <div className="relative">
@@ -153,63 +156,73 @@ export const CommonAction = ({
               }
             </Col>
           )}
-        {(requireData as ContractCallRequireData)?.unexpectedAddr && (
+        {data?.receiver && addressInfo && (
+          <Col>
+            <Row isTitle className="w-[100px]">
+              {t('page.signTx.swap.receiver')}
+            </Row>
+            <Row>
+              <Values.Address address={data.receiver} chain={chain} />
+              <ul className="desc-list">
+                <li>
+                  <Values.AddressMemo address={data.receiver} />
+                </li>
+                <SecurityListItem
+                  engineResult={engineResultMap['1139']}
+                  id="1139"
+                  dangerText={t('page.signTx.swap.unknownAddress')}
+                  defaultText={<Values.KnownAddress address={data.receiver} />}
+                />
+                <li>
+                  <ViewMore
+                    type="receiver"
+                    data={{
+                      title: t('page.signTx.contractCall.receiver'),
+                      address: addressInfo.address,
+                      chain: addressInfo.chain,
+                      eoa: addressInfo.eoa,
+                      cex: addressInfo.cex,
+                      contract: addressInfo.contract,
+                      usd_value: addressInfo.usd_value,
+                      hasTransfer: addressInfo.hasTransfer,
+                      isTokenContract: addressInfo.isTokenContract,
+                      name: addressInfo.name,
+                      onTransferWhitelist: addressInfo.onTransferWhitelist,
+                    }}
+                  />
+                </li>
+              </ul>
+            </Row>
+          </Col>
+        )}
+        {!data?.receiver && addressInfo && (
           <Col>
             <Row isTitle className="w-[100px]">
               {t('page.signTx.contractCall.suspectedReceiver')}
             </Row>
             <Row>
               <div>
-                <Values.Address
-                  address={
-                    (requireData as ContractCallRequireData).unexpectedAddr!
-                      .address
-                  }
-                  chain={chain}
-                />
+                <Values.Address address={addressInfo.address} chain={chain} />
                 <ul className="desc-list">
                   <li>
-                    <Values.AddressMemo
-                      address={
-                        (requireData as ContractCallRequireData).unexpectedAddr!
-                          .address
-                      }
-                    />
+                    <Values.AddressMemo address={addressInfo.address} />
                   </li>
-                  {(requireData as ContractCallRequireData).unexpectedAddr!
-                    .name && (
-                    <li>
-                      {
-                        (requireData as ContractCallRequireData).unexpectedAddr!
-                          .name
-                      }
-                    </li>
-                  )}
+                  {addressInfo.name && <li>{addressInfo.name}</li>}
                   <li>
                     <ViewMore
                       type="receiver"
                       data={{
                         title: t('page.signTx.contractCall.suspectedReceiver'),
-                        address: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.address,
-                        chain: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.chain,
-                        eoa: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.eoa,
-                        cex: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.cex,
-                        contract: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.contract,
-                        usd_value: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.usd_value,
-                        hasTransfer: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.hasTransfer,
-                        isTokenContract: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.isTokenContract,
-                        name: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.name,
-                        onTransferWhitelist: (requireData as ContractCallRequireData)
-                          .unexpectedAddr!.onTransferWhitelist,
+                        address: addressInfo.address,
+                        chain: addressInfo.chain,
+                        eoa: addressInfo.eoa,
+                        cex: addressInfo.cex,
+                        contract: addressInfo.contract,
+                        usd_value: addressInfo.usd_value,
+                        hasTransfer: addressInfo.hasTransfer,
+                        isTokenContract: addressInfo.isTokenContract,
+                        name: addressInfo.name,
+                        onTransferWhitelist: addressInfo.onTransferWhitelist,
                       }}
                     />
                   </li>
