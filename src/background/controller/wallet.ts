@@ -1230,7 +1230,7 @@ export class WalletController extends BaseController {
       throw new Error(`[wallet::setSite] Chain ${data.chain} is not supported`);
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
+    const connectSite = permissionService.getConnectedSite(data.origin);
     const prev = connectSite
       ? findChain({ enum: connectSite?.chain })
       : undefined;

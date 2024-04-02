@@ -32,14 +32,6 @@ export const CustomTestnetTokenTable: React.FC<Props> = ({
   const [token, setToken] = React.useState<TokenItemProps['item']>();
   const { t } = useTranslation();
   const wallet = useWallet();
-  const { data: isAdded, runAsync: runCheckIsAdded } = useRequest(
-    async () => {
-      return selected ? wallet.isAddedCustomTestnetToken(selected) : null;
-    },
-    {
-      refreshDeps: [selected],
-    }
-  );
 
   React.useEffect(() => {
     setVisible(!!selected);
@@ -78,14 +70,11 @@ export const CustomTestnetTokenTable: React.FC<Props> = ({
       )}
       <CustomTestnetTokenDetailPopup
         token={token}
-        isAdded={!!isAdded}
         onAdd={(item) => {
           onAdd?.(item);
-          runCheckIsAdded();
         }}
         onRemove={(item) => {
           onRemove?.(item);
-          runCheckIsAdded();
         }}
         visible={visible}
         onClose={() => setSelected(undefined)}

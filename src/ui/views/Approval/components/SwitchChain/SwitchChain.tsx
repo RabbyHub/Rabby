@@ -27,7 +27,6 @@ interface AddChainProps {
 
 const SwitchChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
 
   const { data, session } = params;
@@ -45,8 +44,6 @@ const SwitchChain = ({ params }: { params: AddChainProps }) => {
   const [state, setState] = useSetState({
     currentChain: null as Chain | null | undefined,
     nextChain: null as Chain | null | undefined,
-    isSwitchToMainnet: false,
-    isSwitchToTestnet: false,
     isShowUnsupportAlert: false,
   });
 
@@ -59,21 +56,8 @@ const SwitchChain = ({ params }: { params: AddChainProps }) => {
         hex: chainId,
       }) || null;
 
-    const isSwitchToMainnet =
-      currentChain &&
-      nextChain &&
-      currentChain.isTestnet &&
-      !nextChain.isTestnet;
-    const isSwitchToTestnet =
-      currentChain &&
-      nextChain &&
-      !currentChain.isTestnet &&
-      nextChain.isTestnet;
-
     setState({
       isShowUnsupportAlert: !nextChain,
-      isSwitchToMainnet: !!isSwitchToMainnet,
-      isSwitchToTestnet: !!isSwitchToTestnet,
       currentChain,
       nextChain,
     });
@@ -93,107 +77,13 @@ const SwitchChain = ({ params }: { params: AddChainProps }) => {
     }
   }, [state.isShowUnsupportAlert]);
 
-  const handleConfirm = () => {
-    resolveApproval();
-  };
-
-  const isShowTestnet = useRabbySelector(
-    (state) => state.preference.isShowTestnet
-  );
-
-  const isShowTestnetTip = useMemo(() => {
-    if (!isShowTestnet && state.nextChain?.isTestnet) {
-      return true;
-    }
-    return false;
-  }, [isShowTestnet, state.nextChain?.isTestnet]);
-
   if (!inited) return <></>;
 
   if (state.isShowUnsupportAlert) {
-    return <UnsupportedAlert data={data[0]} />;
+    return <UnsupportedAlert data={data[0]} session={session} />;
   }
 
-  if (state.isSwitchToMainnet || state.isSwitchToTestnet) {
-    return (
-      <OptionsWrapper>
-        <div className="content">
-          <div className="title">
-            {t('page.switchChain.title', {
-              chain: state.isSwitchToMainnet ? 'Mainnet' : 'Testnet',
-            })}
-          </div>
-          <div className="connect-site-card">
-            <FallbackSiteLogo
-              url={session.icon}
-              origin={session.origin}
-              width="40px"
-            />
-            <p className="site-origin">{session.origin}</p>
-          </div>
-          <div className="switch-chain">
-            <ChainCard chain={state.currentChain}></ChainCard>
-            <img src={IconArrowDown} alt="" />
-            <ChainCard chain={state.nextChain}></ChainCard>
-          </div>
-        </div>
-        <Footer className="border-0">
-          <Button
-            type="primary"
-            size="large"
-            ghost
-            className="rabby-btn-ghost w-[172px]"
-            onClick={() => rejectApproval()}
-          >
-            {t('global.cancelButton')}
-          </Button>
-          {isShowTestnetTip ? (
-            <TooltipWithMagnetArrow
-              overlayClassName="rectangle"
-              overlayStyle={{ maxWidth: '305px', width: '305px' }}
-              title={t('page.switchChain.testnetTip')}
-              placement="topRight"
-            >
-              <span>
-                <Button
-                  type="primary"
-                  className="w-[172px]"
-                  size="large"
-                  onClick={handleConfirm}
-                  disabled
-                >
-                  {t('global.Confirm')}
-                </Button>
-              </span>
-            </TooltipWithMagnetArrow>
-          ) : (
-            <Button
-              type="primary"
-              className="w-[172px]"
-              size="large"
-              onClick={handleConfirm}
-            >
-              {t('global.Confirm')}
-            </Button>
-          )}
-        </Footer>
-      </OptionsWrapper>
-    );
-  }
-
-  return null;
-};
-
-const ChainCard = ({ chain }: { chain?: Chain | null }) => {
-  if (!chain) {
-    return null;
-  }
-  return (
-    <div className="chain-card">
-      <img src={chain.logo} alt="" />
-      {chain.name}
-    </div>
-  );
+  return <></>;
 };
 
 export default SwitchChain;

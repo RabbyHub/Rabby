@@ -346,7 +346,10 @@ class NotificationService extends Events {
         }
       }
 
-      if (this.notifiWindowId !== null) {
+      if (
+        this.notifiWindowId !== null &&
+        QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)
+      ) {
         browser.windows.update(this.notifiWindowId, {
           focused: true,
         });

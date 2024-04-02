@@ -1113,7 +1113,8 @@
           "notFound": "Token not found"
         },
         "TestnetAssetListContainer": {
-          "add": "add token"
+          "add": "Token",
+          "addTestnet": "Testnet"
         },
         "noTestnetAssets": "No Testnet Assets"
       },
@@ -1489,7 +1490,9 @@
       "unknownChain": "Unknown chain",
       "requestsReceived": "1 request received",
       "requestsReceivedPlural": "{{count}} requests received",
-      "requestRabbyToSupport": "Request Rabby to Support"
+      "requestRabbyToSupport": "Request Rabby to Support",
+      "chainNotSupportAddChain": "The requested chain is not Integrated by Rabby yet You can add it as a Custom Testnet",
+      "addChain": "Add Testnet"
     },
     "signText": {
       "title": "Sign Text",

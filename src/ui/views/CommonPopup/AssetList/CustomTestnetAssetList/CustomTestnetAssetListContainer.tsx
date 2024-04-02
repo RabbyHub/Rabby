@@ -1,5 +1,5 @@
 import { useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
 import { Input } from 'antd';
 import React from 'react';
@@ -13,6 +13,9 @@ import { CustomTestnetTokenList } from './CustomTestTokenList';
 import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-add.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+import { isSameTesnetToken } from '@/utils/chain';
 
 interface Props {
   className?: string;
@@ -38,12 +41,19 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
     currentAccount: s.account.currentAccount,
   }));
   const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
+  const [
+    isShowAddTestnetModal,
+    setIsShowAddTestnetModal,
+  ] = React.useState<boolean>(false);
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
+  const { isDarkTheme } = useThemeMode();
 
   const inputRef = React.useRef<Input>(null);
   const handleFocusInput = React.useCallback(() => {
     inputRef.current?.focus();
   }, []);
+
+  const [isFocus, setIsFocus] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!visible) {
@@ -83,30 +93,68 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between gap-x-12 widget-has-ant-input">
-        <TokenSearchInput ref={inputRef} onSearch={handleOnSearch} />
-        <div
-          className={clsx(
-            'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
-            'border-[1px] border-transparent',
-            'hover:border-rabby-blue-default hover:bg-r-blue-light1'
-          )}
-        >
-          <div
-            className={clsx(
-              'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
-              'flex items-center gap-x-[4px]'
-            )}
-            onClick={() => {
-              setIsShowAddModal(true);
-            }}
-          >
-            <span className="text-r-neutral-body">
-              <RcIconAdd />
-            </span>
-            {t('page.dashboard.assets.TestnetAssetListContainer.add')}
+      <div className="flex items-center justify-between gap-x-[24px] widget-has-ant-input">
+        <TokenSearchInput
+          ref={inputRef}
+          onSearch={handleOnSearch}
+          onFocus={() => {
+            setIsFocus(true);
+          }}
+          onBlur={() => {
+            setIsFocus(false);
+          }}
+          className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
+        />
+        {isFocus || search ? null : (
+          <div className="flex items-center gap-x-[12px]">
+            <div
+              className={clsx(
+                'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
+                'border-[1px] border-transparent min-w-[82px] text-center',
+                'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              )}
+            >
+              <div
+                className={clsx(
+                  'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
+                  'flex items-center gap-x-[4px]'
+                )}
+                onClick={() => {
+                  setIsShowAddTestnetModal(true);
+                }}
+              >
+                <span className="text-r-neutral-body">
+                  <RcIconAdd />
+                </span>
+                {t(
+                  'page.dashboard.assets.TestnetAssetListContainer.addTestnet'
+                )}
+              </div>
+            </div>
+            <div
+              className={clsx(
+                'rounded-[6px] bg-r-neutral-card2 px-[9px] py-[7px] cursor-pointer',
+                'border-[1px] border-transparent min-w-[82px] text-center',
+                'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+              )}
+            >
+              <div
+                className={clsx(
+                  'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
+                  'flex items-center gap-x-[4px]'
+                )}
+                onClick={() => {
+                  setIsShowAddModal(true);
+                }}
+              >
+                <span className="text-r-neutral-body">
+                  <RcIconAdd />
+                </span>
+                {t('page.dashboard.assets.TestnetAssetListContainer.add')}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       {loading ? (
         <TokenListSkeleton />
@@ -117,11 +165,25 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
             onFocusInput={handleFocusInput}
             isSearch={!!search}
             isNoResults={isNoResults}
-            onAdd={(item) => {
-              refreshAsync();
+            onAdd={(token) => {
+              if (!search) {
+                mutate((prev) => {
+                  return (prev || []).find((item) => {
+                    return isSameTesnetToken(item, token);
+                  })
+                    ? prev
+                    : [...(prev || []), token];
+                });
+              }
             }}
-            onRemove={(item) => {
-              refreshAsync();
+            onRemove={(token) => {
+              if (!search) {
+                mutate((prev) => {
+                  return (prev || []).filter((item) => {
+                    return !isSameTesnetToken(item, token);
+                  });
+                });
+              }
             }}
           />
         </div>
@@ -135,6 +197,24 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
           setIsShowAddModal(false);
           refreshAsync();
         }}
+      />
+      <EditCustomTestnetModal
+        visible={isShowAddTestnetModal}
+        onCancel={() => {
+          setIsShowAddTestnetModal(false);
+        }}
+        onConfirm={() => {
+          setIsShowAddTestnetModal(false);
+          refreshAsync();
+        }}
+        height={488}
+        maskStyle={
+          isDarkTheme
+            ? {
+                backgroundColor: 'transparent',
+              }
+            : undefined
+        }
       />
     </div>
   );
