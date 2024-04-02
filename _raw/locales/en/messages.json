@@ -168,7 +168,8 @@
         "operationABIDesc": "Operation is decoded from ABI",
         "operationCantDecode": "Operation is not decoded",
         "payNativeToken": "Pay {{symbol}}",
-        "suspectedReceiver": "Exception Address"
+        "suspectedReceiver": "Exception Address",
+        "receiver": "Receiver Address"
       },
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
