@@ -699,12 +699,16 @@ export const fetchRequireData = async (
   }
   if (actionData?.assetOrder) {
     if (chain && actionData.contractId) {
-      return await fetchContractRequireData(
+      const data = await fetchContractRequireData(
         actionData.contractId,
         chain.serverId,
         sender,
         apiProvider
       );
+      return {
+        ...data,
+        sender,
+      } as AssetOrderRequireData;
     }
   }
   if (actionData?.send) {

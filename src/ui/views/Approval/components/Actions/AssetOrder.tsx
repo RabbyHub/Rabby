@@ -112,8 +112,6 @@ const AssetOrder = ({
     dispatch.securityEngine.init();
   }, []);
 
-  console.log('actionData', actionData);
-
   return (
     <Wrapper>
       <Table>
