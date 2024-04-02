@@ -485,7 +485,7 @@ export const isSameTesnetToken = <
     return false;
   }
   return (
-    token1.id?.toLowerCase() === token2.id.toLowerCase() &&
+    token1.id?.toLowerCase() === token2.id?.toLowerCase() &&
     +token1.chainId === +token2.chainId
   );
 };

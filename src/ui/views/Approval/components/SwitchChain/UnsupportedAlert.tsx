@@ -27,10 +27,6 @@ export const UnsupportedAlert: React.FC<Props> = ({ data, session }) => {
   const wallet = useWallet();
   const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
 
-  console.log({
-    data,
-  });
-
   React.useEffect(() => {
     const img = new Image();
     img.src = data.rpcUrls?.[0];
