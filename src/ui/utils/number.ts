@@ -39,9 +39,13 @@ export const numberWithCommasIsLtOne = (
   }
   if (x.toString() === '0') return '0';
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (x < 0.00005) {
     return '< 0.0001';
   }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   precision = x < 1 ? 4 : precision ?? 2;
   const parts: string[] = Number(x).toFixed(precision).split('.');
 
@@ -77,9 +81,13 @@ export const formatNumber = (
 };
 
 export const formatPrice = (price: string | number) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (price >= 1) {
     return formatNumber(price);
   }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (price < 0.00001) {
     if (price.toString().length > 10) {
       return Number(price).toExponential(4);
@@ -106,11 +114,19 @@ export const formatUsdValue = (value: string | number) => {
 };
 
 export const formatAmount = (amount: string | number, decimals = 4) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (amount > 1e9) {
     return `${new BigNumber(amount).div(1e9).toFormat(4)}B`;
   }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (amount > 10000) return formatNumber(amount);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (amount > 1) return formatNumber(amount, 4);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   if (amount < 0.00001) {
     if (amount.toString().length > 10) {
       return Number(amount).toExponential(4);
@@ -150,4 +166,8 @@ export function coerceFloat(input: any, fallbackNum = 0) {
   if (Number.isNaN(output)) return fallbackNum;
 
   return output;
+}
+
+export function isMeaningfulNumber(input: any): input is number {
+  return typeof input === 'number' && !Number.isNaN(input);
 }

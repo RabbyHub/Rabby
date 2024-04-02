@@ -25,6 +25,7 @@ import stats from '@/stats';
 import { useSwapSettings } from './settings';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { findChain } from '@/utils/chain';
 
 const useTokenInfo = ({
   userAddress,
@@ -409,9 +410,9 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
-      const target = Object.values(CHAINS).find(
-        (item) => item.serverId === searchObj.chain
-      );
+      const target = findChain({
+        serverId: searchObj.chain,
+      });
       if (target) {
         setChain(target?.enum);
         setPayToken({

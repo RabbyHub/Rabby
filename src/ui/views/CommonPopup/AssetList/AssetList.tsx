@@ -8,8 +8,15 @@ import NetSwitchTabs, {
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { CustomTestnetAssetList } from './CustomTestnetAssetList';
 
-export const AssetList = ({ visible }: { visible: boolean }) => {
+export const AssetList = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose?(): void;
+}) => {
   const { t } = useTranslation();
   const { setHeight, data } = useCommonPopupView();
   const [selectChainId, setSelectChainId] = useState<string | null>(null);
@@ -48,7 +55,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
       <div className={clsx(selectedTab === 'mainnet' ? 'block' : 'hidden')}>
         <div className={clsx('mt-[160px]', isEmptyAssets ? 'block' : 'hidden')}>
           <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
+          <div className="mt-0 text-r-neutral-foot text-[14px] text-center">
             {t('page.dashboard.assets.noAssets')}
           </div>
         </div>
@@ -63,27 +70,7 @@ export const AssetList = ({ visible }: { visible: boolean }) => {
         </div>
       </div>
       <div className={clsx(selectedTab === 'testnet' ? 'block' : 'hidden')}>
-        <div
-          className={clsx(
-            'mt-[160px]',
-            isTestnetEmptyAssets ? 'block' : 'hidden'
-          )}
-        >
-          <AssetEmptySVG className="m-auto" />
-          <div className="mt-[16px] text-r-neutral-foot text-12 text-center">
-            {t('page.dashboard.assets.noAssets')}
-          </div>
-        </div>
-        <div className={clsx(isTestnetEmptyAssets ? 'hidden' : 'block')}>
-          <ChainList onChange={handleTestnetSelectChainChange} isTestnet />
-          <AssetListContainer
-            className="mt-12"
-            selectChainId={selectTestnetChainId}
-            visible={visible}
-            onEmptyAssets={setIsTestnetEmptyAssets}
-            isTestnet
-          />
-        </div>
+        <CustomTestnetAssetList visible={visible} onClose={onClose} />
       </div>
     </>
   );

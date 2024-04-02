@@ -15,7 +15,9 @@ export default {
           dumpCache: data.permission.dumpCache.map((item) => {
             return 'isConnected' in item.v
               ? item
-              : { ...item, v: { ...item.v, isConnected: true } };
+              : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                { ...item, v: { ...item.v, isConnected: true } };
           }),
         },
       };

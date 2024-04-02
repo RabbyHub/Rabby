@@ -58,6 +58,7 @@ import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 import InputMnemonics from './ImportMnemonics/InputMnemonics';
 import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
+import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 
 declare global {
@@ -264,6 +265,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/custom-rpc">
           <CustomRPC />
+        </PrivateRoute>
+        <PrivateRoute exact path="/custom-testnet">
+          <CustomTestnet />
         </PrivateRoute>
         <PrivateRoute exact path="/prefer-metamask-dapps">
           <PreferMetamaskDapps />

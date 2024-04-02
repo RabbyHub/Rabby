@@ -1,18 +1,14 @@
-import IconArrowDown from '@/ui/assets/approval/icon-arrow-down.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { useRabbySelector } from '@/ui/store';
-import { CHAINS_LIST, Chain } from '@debank/common';
-import { useSetState } from 'ahooks';
+import { TestnetChainBase } from '@/background/service/customTestnet';
+import { CustomTestnetForm } from '@/ui/views/CustomTestnet/components/CustomTestnetForm';
+import { Chain } from '@debank/common';
+import { useRequest, useSetState } from 'ahooks';
 import { Button } from 'antd';
-import BigNumber from 'bignumber.js';
-import { CHAINS } from 'consts';
+import { useForm } from 'antd/lib/form/Form';
+import clsx from 'clsx';
 import { intToHex } from 'ethereumjs-util';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { OptionsWrapper, Footer } from './style';
-import { UnsupportedAlert } from './UnsupportedAlert';
 import { AddEthereumChainParams } from './type';
 
 interface AddChainProps {
@@ -30,166 +26,91 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const { t } = useTranslation();
 
   const { data, session } = params;
+  const [addChainParams] = data;
 
-  const chainId = useMemo(() => {
-    const chainId = data?.[0]?.chainId;
-    if (typeof chainId === 'number') {
-      return intToHex(chainId).toLowerCase();
-    } else {
-      return chainId.toLowerCase();
-    }
-  }, [data]);
-
-  const [inited, setInited] = useState(false);
-  const [state, setState] = useSetState({
-    currentChain: null as Chain | null,
-    nextChain: null as Chain | null,
-    isSwitchToMainnet: false,
-    isSwitchToTestnet: false,
-    isShowUnsupportAlert: false,
-  });
-
-  const init = async () => {
-    const site = await wallet.getConnectedSite(session.origin)!;
-
-    const currentChain = site ? CHAINS[site.chain] : null;
-    const nextChain =
-      CHAINS_LIST.find((item) => new BigNumber(item.hex).isEqualTo(chainId)) ||
-      null;
-
-    const isSwitchToMainnet =
-      currentChain &&
-      nextChain &&
-      currentChain.isTestnet &&
-      !nextChain.isTestnet;
-    const isSwitchToTestnet =
-      currentChain &&
-      nextChain &&
-      !currentChain.isTestnet &&
-      nextChain.isTestnet;
-
-    setState({
-      isShowUnsupportAlert: !nextChain,
-      isSwitchToMainnet: !!isSwitchToMainnet,
-      isSwitchToTestnet: !!isSwitchToTestnet,
-      currentChain,
-      nextChain,
+  const [form] = useForm<TestnetChainBase>();
+  useEffect(() => {
+    form.setFieldsValue({
+      id: +addChainParams.chainId,
+      name: addChainParams.chainName,
+      rpcUrl: addChainParams.rpcUrls?.[0],
+      nativeTokenSymbol: addChainParams.nativeCurrency?.symbol,
+      scanLink: addChainParams.blockExplorerUrls?.[0],
     });
+  }, [form, addChainParams]);
 
-    setInited(true);
-  };
+  const { loading, runAsync: runAddChain } = useRequest(
+    async () => {
+      await form.validateFields();
+      const values = form.getFieldsValue();
+      const res = await wallet.addCustomTestnet(values);
+      if ('error' in res) {
+        form.setFields([
+          {
+            name: res.error.key,
+            errors: [res.error.message],
+          },
+        ]);
+        throw new Error(res.error.message);
+      }
 
-  useEffect(() => {
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (state.isShowUnsupportAlert) {
-      wallet.updateNotificationWinProps({
-        height: 388,
-      });
+      const site = await wallet.getConnectedSite(session.origin)!;
+      if (site) {
+        await wallet.updateConnectSite(site?.origin, {
+          ...site,
+          chain: res.enum,
+        });
+      }
+    },
+    {
+      manual: true,
     }
-  }, [state.isShowUnsupportAlert]);
+  );
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    await runAddChain();
     resolveApproval();
   };
 
-  const isShowTestnet = useRabbySelector(
-    (state) => state.preference.isShowTestnet
-  );
-
-  const isShowTestnetTip = useMemo(() => {
-    if (!isShowTestnet && state.nextChain?.isTestnet) {
-      return true;
-    }
-    return false;
-  }, [isShowTestnet, state.nextChain?.isTestnet]);
-
-  if (!inited) return <></>;
-
-  if (state.isShowUnsupportAlert) {
-    return <UnsupportedAlert data={data[0]} />;
-  }
-
-  if (state.isSwitchToMainnet || state.isSwitchToTestnet) {
-    return (
-      <OptionsWrapper>
-        <div className="content">
-          <div className="title">
-            {t('page.switchChain.title', {
-              chain: state.isSwitchToMainnet ? 'Mainnet' : 'Testnet',
-            })}
-          </div>
-          <div className="connect-site-card">
-            <FallbackSiteLogo
-              url={session.icon}
-              origin={session.origin}
-              width="40px"
-            />
-            <p className="site-origin">{session.origin}</p>
-          </div>
-          <div className="switch-chain">
-            <ChainCard chain={state.currentChain}></ChainCard>
-            <img src={IconArrowDown} alt="" />
-            <ChainCard chain={state.nextChain}></ChainCard>
-          </div>
-        </div>
-        <Footer className="border-0">
-          <Button
-            type="primary"
-            size="large"
-            ghost
-            className="rabby-btn-ghost w-[172px]"
-            onClick={() => rejectApproval()}
-          >
-            {t('global.cancelButton')}
-          </Button>
-          {isShowTestnetTip ? (
-            <TooltipWithMagnetArrow
-              overlayClassName="rectangle"
-              overlayStyle={{ maxWidth: '305px', width: '305px' }}
-              title={t('page.switchChain.testnetTip')}
-              placement="topRight"
-            >
-              <span>
-                <Button
-                  type="primary"
-                  className="w-[172px]"
-                  size="large"
-                  onClick={handleConfirm}
-                  disabled
-                >
-                  {t('global.Confirm')}
-                </Button>
-              </span>
-            </TooltipWithMagnetArrow>
-          ) : (
-            <Button
-              type="primary"
-              className="w-[172px]"
-              size="large"
-              onClick={handleConfirm}
-            >
-              {t('global.Confirm')}
-            </Button>
-          )}
-        </Footer>
-      </OptionsWrapper>
-    );
-  }
-
-  return null;
-};
-
-const ChainCard = ({ chain }: { chain?: Chain | null }) => {
-  if (!chain) {
-    return null;
-  }
   return (
-    <div className="chain-card">
-      <img src={chain.logo} alt="" />
-      {chain.name}
+    <div className="h-[100vh] relative flex flex-col ">
+      <div className="p-[20px] text-center bg-r-blue-default text-r-neutral-title2 text-[20px] leading-[24px] font-medium">
+        Add custom Testnet to Rabby
+      </div>
+      <div className="p-[20px] flex-1 overflow-auto">
+        <div className="text-center text-r-neutral-body text-[13px] leading-[16px] pb-[20px]">
+          Rabby cannot verify the security of custom testnets. Please add
+          trusted networks only.
+        </div>
+        <CustomTestnetForm form={form} disabled />
+      </div>
+      <div
+        className={clsx(
+          'flex items-center px-[20px] py-[18px] gap-[16px]',
+          // 'absolute left-0 right-0 bottom-0',
+          'bg-r-neutral-bg1 border-t-[0.5px] border-t-rabby-neutral-line'
+        )}
+      >
+        <Button
+          type="primary"
+          size="large"
+          ghost
+          className="rabby-btn-ghost w-[172px]"
+          onClick={() => rejectApproval()}
+        >
+          {t('global.cancelButton')}
+        </Button>
+
+        <Button
+          type="primary"
+          className="w-[172px]"
+          size="large"
+          loading={loading}
+          onClick={handleConfirm}
+        >
+          {t('global.Confirm')}
+        </Button>
+      </div>
     </div>
   );
 };

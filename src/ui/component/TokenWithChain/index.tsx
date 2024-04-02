@@ -6,6 +6,7 @@ import IconUnknown from 'ui/assets/token-default.svg';
 import './style.less';
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 
 const TokenWithChain = ({
   token,
@@ -25,9 +26,9 @@ const TokenWithChain = ({
   isShowChainTooltip?: boolean;
 }) => {
   const chainServerId = token.chain;
-  const chain = Object.values(CHAINS).find(
-    (item) => item.serverId === chainServerId
-  );
+  const chain = findChain({
+    serverId: chainServerId,
+  });
   return (
     <div
       className={clsx('token-with-chain', noRound && 'no-round')}
@@ -74,9 +75,9 @@ export const IconWithChain = ({
   hideChainIcon?: boolean;
   isShowChainTooltip?: boolean;
 }) => {
-  const chain = Object.values(CHAINS).find(
-    (item) => item.serverId === chainServerId
-  );
+  const chain = findChain({
+    serverId: chainServerId,
+  });
   return (
     <div
       className={clsx('token-with-chain', noRound && 'no-round')}

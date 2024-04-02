@@ -1,7 +1,7 @@
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { useAccount } from '@/ui/store-hooks';
 import { intToHex, useWallet } from '@/ui/utils';
-import { findChainByID } from '@/utils/chain';
+import { findChain, findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
@@ -113,10 +113,17 @@ export const SkipNonceAlert = ({
     const maxGasPrice = Number(
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
     );
-    const chainServerId = Object.values(CHAINS).find(
-      (chain) => chain.id === item.chainId
-    )!.serverId;
-    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
+    const chain = findChain({
+      id: item.chainId,
+    });
+    if (!chain) {
+      throw new Error('chainServerId not found');
+    }
+    const gasLevels: GasLevel[] = chain.isTestnet
+      ? await wallet.getCustomTestnetGasMarket({
+          chainId: chain.id,
+        })
+      : await wallet.openapi.gasMarket(chain.serverId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
     await wallet.sendRequest({
       method: 'eth_sendTransaction',

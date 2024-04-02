@@ -5,6 +5,7 @@ export { default as Connect } from './Connect';
 export { default as WatchAddressWaiting } from './WatchAddressWaiting';
 export { default as CoinbaseWaiting } from './CoinbaseWaiting';
 export { default as AddChain } from './AddChain/AddChain';
+export { default as SwitchChain } from './SwitchChain/SwitchChain';
 export { default as QRHardWareWaiting } from './QRHardWareWaiting';
 export { default as LedgerHardwareWaiting } from './LedgerHardwareWaiting';
 export { CommonWaiting } from './CommonWaiting';

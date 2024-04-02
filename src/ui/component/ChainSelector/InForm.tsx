@@ -1,4 +1,4 @@
-import React, { InsHTMLAttributes, useEffect } from 'react';
+import React, { InsHTMLAttributes, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 
@@ -13,6 +13,7 @@ import ImgArrowDown, {
 } from '@/ui/assets/swap/arrow-down.svg';
 import { useWallet } from '@/ui/utils';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { findChain } from '@/utils/chain';
 
 const ChainWrapper = styled.div`
   height: 40px;
@@ -51,6 +52,9 @@ export const ChainRender = ({
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
 
+  const chainInfo = useMemo(() => {
+    return findChain({ enum: chain });
+  }, [chain]);
   const [customRPC, setCustomRPC] = useState('');
   const getCustomRPC = async () => {
     const rpc = await wallet.getCustomRpcByChain(chain);
@@ -76,7 +80,7 @@ export const ChainRender = ({
         size="small"
         showCustomRPCToolTip
       />
-      <span className="name">{CHAINS[chain].name}</span>
+      <span className="name">{chainInfo?.name}</span>
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
       {!readonly && <RcImgArrowDown className="down" />}
     </ChainWrapper>

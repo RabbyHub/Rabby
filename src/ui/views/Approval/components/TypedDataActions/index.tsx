@@ -1,5 +1,4 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { Chain } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -50,6 +49,7 @@ import {
   RevokeTokenApproveRequireData,
   SendRequireData,
 } from '../Actions/utils';
+import { Chain } from '@debank/common';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -81,6 +81,7 @@ const MessageWrapper = styled.div`
     line-height: 16px;
     color: var(--r-neutral-title-1, #f7fafc);
     text-align: center;
+    margin-top: 10px;
     margin-bottom: 10px;
     margin-left: -20px;
     margin-right: -20px;
@@ -219,143 +220,158 @@ const Actions = ({
             </TooltipWithMagnetArrow>
           </div>
         </div>
-        {(data?.actionType || data?.actionType === null) && (
-          <div className="container">
-            {data.permit && chain && (
-              <Permit
-                data={data.permit}
-                requireData={requireData as ApproveTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
+        {chain?.isTestnet ? (
+          <>
+            <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
+              {JSON.stringify(raw, null, 2)}
+            </div>
+          </>
+        ) : (
+          <>
+            {(data?.actionType || data?.actionType === null) && (
+              <div className="container">
+                {data.permit && chain && (
+                  <Permit
+                    data={data.permit}
+                    requireData={requireData as ApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.revokePermit && chain && (
+                  <RevokePermit2
+                    data={data.revokePermit}
+                    requireData={requireData as RevokeTokenApproveRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.permit2 && chain && (
+                  <Permit2
+                    data={data.permit2}
+                    requireData={requireData as ApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.batchPermit2 && chain && (
+                  <BatchPermit2
+                    data={data.batchPermit2}
+                    requireData={requireData as BatchApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.swapTokenOrder && chain && (
+                  <SwapTokenOrder
+                    data={data.swapTokenOrder}
+                    requireData={requireData as SwapTokenOrderRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.buyNFT && chain && (
+                  <BuyNFT
+                    data={data.buyNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.batchSellNFT && chain && (
+                  <BatchSellNFT
+                    data={data.batchSellNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.sellNFT && chain && (
+                  <SellNFT
+                    data={data.sellNFT}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.assetOrder && chain && (
+                  <AssetOrder
+                    data={data.assetOrder}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    sender={data.sender}
+                  />
+                )}
+                {data.signMultiSig && (
+                  <SignMultisig
+                    data={data.signMultiSig}
+                    requireData={requireData as MultiSigRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.send && chain && (
+                  <Send
+                    data={data.send}
+                    requireData={requireData as SendRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.createKey && (
+                  <CreateKey
+                    data={data.createKey}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.verifyAddress && (
+                  <VerifyAddress
+                    data={data.verifyAddress}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.contractCall && chain && (
+                  <ContractCall
+                    data={data.permit}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                    raw={raw}
+                  />
+                )}
+                {data.coboSafeCreate && (
+                  <CoboSafeCreate data={data.coboSafeCreate} />
+                )}
+                {data.coboSafeModificationRole && (
+                  <CoboSafeModificationRule
+                    data={data.coboSafeModificationRole}
+                  />
+                )}
+                {data.coboSafeModificationDelegatedAddress && (
+                  <CoboSafeModificationDelegatedAddress
+                    data={data.coboSafeModificationDelegatedAddress}
+                  />
+                )}
+                {data.coboSafeModificationTokenApproval && (
+                  <CoboSafeModificationTokenApproval
+                    data={data.coboSafeModificationTokenApproval}
+                  />
+                )}
+                {data.common && (
+                  <CommonAction
+                    data={data.common}
+                    requireData={requireData as ContractRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+              </div>
             )}
-            {data.revokePermit && chain && (
-              <RevokePermit2
-                data={data.revokePermit}
-                requireData={requireData as RevokeTokenApproveRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.permit2 && chain && (
-              <Permit2
-                data={data.permit2}
-                requireData={requireData as ApproveTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.batchPermit2 && chain && (
-              <BatchPermit2
-                data={data.batchPermit2}
-                requireData={requireData as BatchApproveTokenRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.swapTokenOrder && chain && (
-              <SwapTokenOrder
-                data={data.swapTokenOrder}
-                requireData={requireData as SwapTokenOrderRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.buyNFT && chain && (
-              <BuyNFT
-                data={data.buyNFT}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.batchSellNFT && chain && (
-              <BatchSellNFT
-                data={data.batchSellNFT}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.sellNFT && chain && (
-              <SellNFT
-                data={data.sellNFT}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.assetOrder && chain && (
-              <AssetOrder
-                data={data.assetOrder}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                sender={data.sender}
-              />
-            )}
-            {data.signMultiSig && (
-              <SignMultisig
-                data={data.signMultiSig}
-                requireData={requireData as MultiSigRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.send && chain && (
-              <Send
-                data={data.send}
-                requireData={requireData as SendRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-            {data.createKey && (
-              <CreateKey data={data.createKey} engineResults={engineResults} />
-            )}
-            {data.verifyAddress && (
-              <VerifyAddress
-                data={data.verifyAddress}
-                engineResults={engineResults}
-              />
-            )}
-            {data.contractCall && chain && (
-              <ContractCall
-                data={data.permit}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-                raw={raw}
-              />
-            )}
-            {data.coboSafeCreate && (
-              <CoboSafeCreate data={data.coboSafeCreate} />
-            )}
-            {data.coboSafeModificationRole && (
-              <CoboSafeModificationRule data={data.coboSafeModificationRole} />
-            )}
-            {data.coboSafeModificationDelegatedAddress && (
-              <CoboSafeModificationDelegatedAddress
-                data={data.coboSafeModificationDelegatedAddress}
-              />
-            )}
-            {data.coboSafeModificationTokenApproval && (
-              <CoboSafeModificationTokenApproval
-                data={data.coboSafeModificationTokenApproval}
-              />
-            )}
-            {data.common && (
-              <CommonAction
-                data={data.common}
-                requireData={requireData as ContractRequireData}
-                chain={chain}
-                engineResults={engineResults}
-              />
-            )}
-          </div>
+          </>
         )}
       </ActionWrapper>
       <MessageWrapper

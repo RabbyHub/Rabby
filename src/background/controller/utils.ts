@@ -4,6 +4,7 @@ import { preferenceService } from '../service';
 import buildinProvider from '../utils/buildinProvider';
 import { Account } from '../service/preference';
 import { t } from 'i18next';
+import { findChain } from '@/utils/chain';
 
 export const getWeb3Provider = async ({
   chainServerId,
@@ -17,9 +18,10 @@ export const getWeb3Provider = async ({
   }
   if (!account) throw new Error(t('background.error.noCurrentAccount'));
 
-  const chainId = Object.values(CHAINS)
-    .find((chain) => chain.serverId === chainServerId)
-    ?.id.toString();
+  const chainId = findChain({
+    serverId: chainServerId,
+  })?.id.toString();
+
   if (!chainId) throw new Error(t('background.error.invalidChainId'));
 
   buildinProvider.currentProvider.currentAccount = account.address;

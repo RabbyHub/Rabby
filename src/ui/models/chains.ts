@@ -5,8 +5,18 @@ import { ConnectedSite } from '@/background/service/permission';
 import { RootModel } from '.';
 import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import { RabbyRootState } from '../store';
-import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
+import {
+  findChainByEnum,
+  getChainList,
+  getMainnetChainList,
+  getMainnetListFromLocal,
+  getTestnetChainList,
+  updateChainStore,
+  varyAndSortChainItems,
+} from '@/utils/chain';
 import type { AccountState } from './account';
+import { Chain } from '@debank/common';
+import { TestnetChain } from '@/background/service/customTestnet';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
@@ -14,6 +24,8 @@ type IState = {
   gnosisPendingCount: number;
 
   gnosisNetworkIds: string[];
+  mainnetList: Chain[];
+  testnetList: TestnetChain[];
 };
 
 export const chains = createModel<RootModel>()({
@@ -21,6 +33,8 @@ export const chains = createModel<RootModel>()({
   state: <IState>{
     currentConnection: null,
     gnosisNetworkIds: [] as string[],
+    mainnetList: getChainList('mainnet'),
+    testnetList: getChainList('testnet'),
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -58,6 +72,22 @@ export const chains = createModel<RootModel>()({
     };
   },
   effects: (dispatch) => ({
+    init(_: void, store) {
+      store.app.wallet.getCustomTestnetList().then((testnetList) => {
+        updateChainStore({
+          testnetList: testnetList,
+        });
+        this.setField({ testnetList });
+      });
+      getMainnetListFromLocal().then((mainnetList) => {
+        if (mainnetList.length) {
+          updateChainStore({
+            mainnetList: mainnetList,
+          });
+          this.setField({ mainnetList });
+        }
+      });
+    },
     /**
      * @description get all chains current account could access, vary them and sort them
      */

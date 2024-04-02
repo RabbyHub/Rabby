@@ -13,6 +13,7 @@ import { sortBy } from 'lodash';
 import { NameAndAddress } from '@/ui/component';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import { Trans, useTranslation } from 'react-i18next';
+import { findChain } from '@/utils/chain';
 
 const GnosisAdminItem = ({
   accounts,
@@ -65,9 +66,9 @@ export const GnonisSafeInfo = ({
         const info = await wallet.getBasicSafeInfo({ address, networkId });
 
         return {
-          chain: Object.values(CHAINS).find(
-            (chain) => chain.network === networkId
-          ),
+          chain: findChain({
+            networkId: networkId,
+          }),
           data: {
             ...info,
           },

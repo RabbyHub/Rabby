@@ -38,7 +38,7 @@ import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
 import { ALIAS_ADDRESS, CHAINS } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
-import { isTestnet } from '@/utils/chain';
+import { findChain, isTestnet } from '@/utils/chain';
 import { findChainByServerID } from '@/utils/chain';
 import { ReceiverData } from './components/ViewMorePopup/ReceiverPopup';
 import {
@@ -148,6 +148,7 @@ export interface ParsedActionData {
     desc: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
+    receiver?: string;
   };
 }
 
@@ -549,6 +550,7 @@ export interface ContractCallRequireData {
   payNativeTokenAmount: string;
   nativeTokenSymbol: string;
   unexpectedAddr: ReceiverData | null;
+  receiverInWallet: boolean;
 }
 
 export interface ApproveNFTRequireData {
@@ -944,9 +946,9 @@ export const fetchActionRequiredData = async ({
     });
   }
   if (actionData.cancelTx) {
-    const chain = Object.values(CHAINS).find(
-      (chain) => chain.serverId === chainId
-    );
+    const chain = findChain({
+      serverId: chainId,
+    });
     if (chain) {
       const pendingTxs = await wallet.getPendingTxsByNonce(
         address,
@@ -1107,6 +1109,7 @@ export const fetchActionRequiredData = async ({
       payNativeTokenAmount: tx.value || '0x0',
       nativeTokenSymbol: chain?.nativeTokenSymbol || 'ETH',
       unexpectedAddr: null,
+      receiverInWallet: false,
     };
     queue.add(async () => {
       const credit = await apiProvider.getContractCredit(
@@ -1134,14 +1137,20 @@ export const fetchActionRequiredData = async ({
       result.hasInteraction = hasInteraction.has_interaction;
     });
     queue.add(async () => {
-      const unexpectedAddrList = await apiProvider.unexpectedAddrList({
-        chainId,
-        tx,
-        origin: origin || '',
-        addr: address,
-      });
-      if (unexpectedAddrList.length > 0) {
-        const addr = unexpectedAddrList[0].id;
+      let addr = actionData.common?.receiver;
+
+      if (!addr) {
+        const unexpectedAddrList = await apiProvider.unexpectedAddrList({
+          chainId,
+          tx,
+          origin: origin || '',
+          addr: address,
+        });
+        addr = unexpectedAddrList[0]?.id;
+      }
+
+      if (addr) {
+        result.receiverInWallet = await wallet.hasAddress(addr);
         const receiverData: ReceiverData = {
           address: addr,
           chain: chain!,
@@ -1461,6 +1470,15 @@ export const formatSecurityEngineCtx = ({
       contractCall: {
         chainId,
         id: data.id,
+      },
+    };
+  }
+  if (actionData.common) {
+    return {
+      common: {
+        ...actionData.common,
+        receiverInWallet: (requireData as ContractCallRequireData)
+          .receiverInWallet,
       },
     };
   }

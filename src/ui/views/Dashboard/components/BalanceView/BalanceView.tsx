@@ -17,6 +17,7 @@ import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const { t } = useTranslation();
@@ -31,18 +32,12 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     balanceFromCache,
     refreshBalance,
     hasValueChainBalances,
-    testnetBalance,
-    testnetMatteredChainBalances,
-    testnetSuccess,
-    testnetBalanceLoading,
-    hasTestnetValueChainBalances,
     missingList,
   } = useCurrentBalance(
     currentAccount?.address,
     true,
     false,
-    accountBalanceUpdateNonce,
-    isShowTestnet
+    accountBalanceUpdateNonce
   );
   const {
     result: curveData,
@@ -73,9 +68,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
     const chains = networkIds
       .map((networkId) => {
-        return Object.values(CHAINS).find(
-          (chain) => chain.id === Number(networkId)
-        );
+        return findChain({
+          id: Number(networkId),
+        });
       })
       .filter((v) => !!v);
     setGnosisNetworks(chains as Chain[]);
@@ -98,20 +93,10 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
         isOffline: !success,
-        testnetBalance,
-        testnetBalanceLoading,
-        testnetIsEmptyAssets: !testnetMatteredChainBalances.length,
-        isTestnetOffline: !testnetSuccess,
-        matteredTestnetChainBalances: hasTestnetValueChainBalances,
       });
     }
   }, [
     matteredChainBalances,
-    testnetMatteredChainBalances,
-    hasTestnetValueChainBalances,
-    testnetBalance,
-    testnetSuccess,
-    testnetBalanceLoading,
     balance,
     balanceLoading,
     componentName,

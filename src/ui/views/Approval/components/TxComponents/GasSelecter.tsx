@@ -28,6 +28,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { findChain } from '@/utils/chain';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -193,7 +194,7 @@ const ManuallySetGasLimitAlert = styled.div`
 `;
 
 const ErrorsWrapper = styled.div`
-  border-top: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   padding-top: 14px;
   margin-top: 14px;
   .item {
@@ -276,7 +277,9 @@ const GasSelector = ({
       message: null,
     },
   });
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+  const chain = findChain({
+    id: chainId,
+  })!;
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
@@ -1063,10 +1066,11 @@ const GasSelectPanel = ({
           >
             <div className="gas-level">{t(getGasLevelI18nKey(item.level))}</div>
             <div
-              className={clsx('cardTitle', {
+              className={clsx('cardTitle w-full', {
                 'custom-input': item.level === 'custom',
                 active: selectedGas?.level === item.level,
               })}
+              title={new BigNumber(item.price / 1e9).toFixed()}
             >
               {item.level === 'custom' ? (
                 <Input
@@ -1083,7 +1087,14 @@ const GasSelectPanel = ({
                   placeholder="0"
                 />
               ) : (
-                new BigNumber(item.price / 1e9).toFixed()
+                <Tooltip
+                  title={new BigNumber(item.price / 1e9).toFixed()}
+                  overlayClassName={clsx('rectangle')}
+                >
+                  <div>
+                    {new BigNumber(item.price / 1e9).toFixed().slice(0, 8)}
+                  </div>
+                </Tooltip>
               )}
             </div>
           </div>

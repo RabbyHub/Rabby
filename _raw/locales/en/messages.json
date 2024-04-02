@@ -168,7 +168,8 @@
         "operationABIDesc": "Operation is decoded from ABI",
         "operationCantDecode": "Operation is not decoded",
         "payNativeToken": "Pay {{symbol}}",
-        "suspectedReceiver": "Exception Address"
+        "suspectedReceiver": "Exception Address",
+        "receiver": "Receiver Address"
       },
       "revokePermit2": {
         "title": "Revoke Permit2 Token Approval"
@@ -1029,7 +1030,8 @@
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
-          "themeMode": "Theme Mode"
+          "themeMode": "Theme Mode",
+          "customTestnet": "Custom Testnet"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
@@ -1103,7 +1105,19 @@
         "customLinkText": "Search address to add custom token",
         "customDescription": "Custom token added by you will be shown here",
         "comingSoon": "Coming Soon...",
-        "searchPlaceholder": "Tokens"
+        "searchPlaceholder": "Tokens",
+        "AddTestnetToken": {
+          "title": "Add Testnet Token",
+          "selectChain": "Select chain",
+          "searching": "Searching Token",
+          "tokenAddress": "Token Address",
+          "notFound": "Token not found"
+        },
+        "TestnetAssetListContainer": {
+          "add": "Token",
+          "addTestnet": "Testnet"
+        },
+        "noTestnetAssets": "No Testnet Assets"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -1477,7 +1491,9 @@
       "unknownChain": "Unknown chain",
       "requestsReceived": "1 request received",
       "requestsReceivedPlural": "{{count}} requests received",
-      "requestRabbyToSupport": "Request Rabby to Support"
+      "requestRabbyToSupport": "Request Rabby to Support",
+      "chainNotSupportAddChain": "The requested chain is not Integrated by Rabby yet You can add it as a Custom Testnet",
+      "addChain": "Add Testnet"
     },
     "signText": {
       "title": "Sign Text",
@@ -1587,6 +1603,10 @@
         "title": "Edit RPC",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "Enter the RPC URL"
+      },
+      "EditCustomTestnetModal": {
+        "title": "Add Testnet",
+        "quickAdd": "Quick add from Chainlist"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -1820,6 +1840,34 @@
         }
       },
       "code-set-successfully": "Referral code set successfully"
+    },
+    "customTestnet": {
+      "title": "Custom Testnet",
+      "desc": "Rabby cannot verify the security of custom testnets. Please add trusted networks only.",
+      "add": "Add Testnet",
+      "empty": "No Custom Testnet",
+      "currency": "Currency",
+      "id": "ID",
+      "CustomTestnetForm": {
+        "id": "Chain ID",
+        "name": "Network name",
+        "rpcUrl": "RPC URL",
+        "idRequired": "Please input chain id",
+        "nameRequired": "Please input network name",
+        "rpcUrlRequired": "Please input RPC URL",
+        "nativeTokenSymbol": "Currency symbol",
+        "nativeTokenSymbolRequired": "Please input currency symbol",
+        "blockExplorerUrl": "Block explorer URL (Optional)"
+      },
+      "AddFromChainList": {
+        "title": "Quick add from Chainlist",
+        "search": "Search Testnet name or ID",
+        "empty": "No chains found",
+        "tips": {
+          "added": "You've already added this chain",
+          "supported": "Chain already supported by Rabby Wallet"
+        }
+      }
     }
   },
   "component": {
@@ -1913,7 +1961,8 @@
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "Search chain",
-      "noChains": "No chains"
+      "noChains": "No chains",
+      "addTestnet": "Custom Testnet"
     },
     "TokenSelector": {
       "listTableHead": {

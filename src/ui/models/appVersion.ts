@@ -31,11 +31,11 @@ export const appVersion = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async checkIfFirstLoginAsync(_?, store?) {
+    async checkIfFirstLoginAsync(_: void, store) {
       const firstOpen = await store.app.wallet.getIsFirstOpen();
       let updateContent = await getUpdateContent();
 
-      const locale = store?.preference?.locale || 'en';
+      const locale = store.preference?.locale || 'en';
       const version = process.env.release || '0';
       const versionMd = `${version.replace(/\./g, '')}.md`;
 
@@ -67,7 +67,7 @@ export const appVersion = createModel<RootModel>()({
       });
     },
 
-    async afterFirstLogin(_?: void, store?) {
+    async afterFirstLogin(_: void, store) {
       store.app.wallet.updateIsFirstOpen();
       dispatch.appVersion.setField({ firstNotice: false });
     },

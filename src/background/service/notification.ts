@@ -12,11 +12,13 @@ import {
   IS_VIVALDI,
   IS_CHROME,
   KEYRING_CATEGORY,
+  IS_WINDOWS,
 } from 'consts';
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
@@ -120,8 +122,12 @@ class NotificationService extends Events {
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_VIVALDI) return;
-      if (IS_CHROME && winId === chrome.windows.WINDOW_ID_NONE && IS_LINUX) {
-        // When sign on Linux, will focus on -1 first then focus on sign window
+      if (
+        IS_CHROME &&
+        winId === chrome.windows.WINDOW_ID_NONE &&
+        (IS_LINUX || IS_WINDOWS)
+      ) {
+        // When sign on Linux or Windows, will focus on -1 first then focus on sign window
         return;
       }
 
@@ -331,9 +337,8 @@ class NotificationService extends Events {
         )
       ) {
         const chainId = data.params?.data?.[0]?.chainId;
-        const chain = Object.values(CHAINS).find((chain) =>
-          new BigNumber(chain.hex).isEqualTo(chainId)
-        );
+
+        const chain = findChain({ id: +chainId });
 
         if (chain) {
           this.resolveApproval(null);
@@ -341,7 +346,10 @@ class NotificationService extends Events {
         }
       }
 
-      if (this.notifiWindowId !== null) {
+      if (
+        this.notifiWindowId !== null &&
+        QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)
+      ) {
         browser.windows.update(this.notifiWindowId, {
           focused: true,
         });

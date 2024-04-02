@@ -180,7 +180,12 @@ import IconImKey, {
 import IconUtila, {
   ReactComponent as RCIconUtila,
 } from 'ui/assets/walletlogo/utila.svg';
-import { ensureChainHashValid, ensureChainListValid } from '@/utils/chain';
+import {
+  ensureChainHashValid,
+  ensureChainListValid,
+  getChainList,
+  getMainnetChainList,
+} from '@/utils/chain';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import browser from 'webextension-polyfill';
 
@@ -204,10 +209,22 @@ interface PortfolioChain extends Chain {
 }
 
 export const CHAIN_ID_LIST = new Map<string, PortfolioChain>(
-  Object.values(CHAINS).map((chain) => {
+  getChainList('mainnet').map((chain) => {
     return [chain.serverId, { ...chain, isSupportHistory: false }];
   })
 );
+
+export const syncChainIdList = () => {
+  const chainList = getChainList('mainnet');
+  for (const chain of chainList) {
+    if (!CHAIN_ID_LIST.has(chain.serverId)) {
+      CHAIN_ID_LIST.set(chain.serverId, {
+        ...chain,
+        isSupportHistory: false,
+      });
+    }
+  }
+};
 
 export const KEYRING_TYPE = {
   HdKeyring: 'HD Key Tree',
@@ -1398,12 +1415,6 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
-  // [DEX_ENUM.UNISWAP]: {
-  //   id: DEX_ENUM.UNISWAP,
-  //   logo: LogoUniswap,
-  //   name: 'Uniswap',
-  //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNISWAP],
-  // },
   [DEX_ENUM.ONEINCH]: {
     id: DEX_ENUM.ONEINCH,
     logo: Logo1inch,
@@ -1421,18 +1432,6 @@ export const DEX = {
     logo: LogoParaswap,
     name: 'ParaSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
-  },
-  [DEX_ENUM.OPENOCEAN]: {
-    id: DEX_ENUM.OPENOCEAN,
-    logo: LogoOpenOcean,
-    name: 'OpenOcean',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
-  },
-  [DEX_ENUM.KYBERSWAP]: {
-    id: DEX_ENUM.KYBERSWAP,
-    logo: LogoKyberSwap,
-    name: 'KyberSwap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
   },
 };
 

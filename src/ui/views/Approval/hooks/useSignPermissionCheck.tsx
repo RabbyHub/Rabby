@@ -1,13 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import { SIGN_PERMISSION_TYPES } from '@/constant';
 import { useWallet } from '@/ui/utils';
-import { CHAINS_LIST } from '@debank/common';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useEffect, useMemo } from 'react';
 import { Button, Modal } from 'antd';
 import styled from 'styled-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { findChain } from '@/utils/chain';
 
 const Content = styled.div`
   text-align: center;
@@ -49,9 +49,9 @@ export const useSignPermissionCheck = ({
   const chain = useMemo(
     () =>
       chainId
-        ? CHAINS_LIST.find((item) =>
-            new BigNumber(item.network).isEqualTo(chainId)
-          )
+        ? findChain({
+            id: +chainId,
+          })
         : undefined,
     [chainId]
   );
