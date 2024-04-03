@@ -823,7 +823,7 @@ export const fetchRequireData = async (
     );
   }
 
-  if (actionData.common) {
+  if (actionData?.common) {
     if (chain && actionData.contractId) {
       const contractRequireData = await fetchContractRequireData(
         actionData.contractId,
@@ -1093,11 +1093,12 @@ export const formatSecurityEngineCtx = async ({
       },
     };
   }
-  if (actionData.common) {
+  if (actionData?.common) {
     return {
       common: {
         ...actionData.common,
-        receiverInWallet: (requireData as ContractRequireData).receiverInWallet,
+        receiverInWallet: (requireData as ContractRequireData)
+          ?.receiverInWallet,
       },
     };
   }
