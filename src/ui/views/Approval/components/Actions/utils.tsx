@@ -149,6 +149,7 @@ export interface ParsedActionData {
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
     receiver?: string;
+    from: string;
   };
 }
 
@@ -416,7 +417,10 @@ export const parseAction = (
   }
   if (data?.type === null) {
     return {
-      common: data as any,
+      common: {
+        from: tx.from,
+        ...(data as any),
+      },
     };
   }
   if (data?.type === 'swap_order') {
