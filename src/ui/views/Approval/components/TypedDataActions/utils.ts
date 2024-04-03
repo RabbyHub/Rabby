@@ -37,7 +37,12 @@ import {
 } from '../Actions/utils';
 import { CHAINS, ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
-import { findChain, isTestnetChainId } from '@/utils/chain';
+import {
+  findChain,
+  findChainByServerID,
+  isTestnetChainId,
+} from '@/utils/chain';
+import { ReceiverData } from '../Actions/components/ViewMorePopup/ReceiverPopup';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -98,6 +103,8 @@ export interface TypedDataActionData {
     desc: string;
     is_asset_changed: boolean;
     is_involving_privacy: boolean;
+    receiver?: string;
+    from: string;
   };
 }
 
@@ -245,7 +252,10 @@ export const parseAction = (
       result.revokePermit = data.action.data as RevokeTokenApproveAction;
       return result;
     case null:
-      result.common = data.action as any;
+      result.common = {
+        ...(data.action as any),
+        from: sender,
+      };
       return result;
     default:
       break;
@@ -268,6 +278,8 @@ export interface ContractRequireData {
   bornAt: number;
   hasInteraction: boolean;
   rank: number | null;
+  unexpectedAddr: ReceiverData | null;
+  receiverInWallet: boolean;
 }
 
 export const fetchContractRequireData = async (
@@ -276,7 +288,9 @@ export const fetchContractRequireData = async (
   sender: string,
   apiProvider:
     | WalletControllerType['openapi']
-    | WalletControllerType['testnetOpenapi']
+    | WalletControllerType['testnetOpenapi'],
+  wallet?: WalletControllerType,
+  actionData?: TypedDataActionData
 ) => {
   const queue = new PQueue();
   const result: ContractRequireData = {
@@ -285,6 +299,8 @@ export const fetchContractRequireData = async (
     bornAt: 0,
     hasInteraction: false,
     rank: null,
+    unexpectedAddr: null,
+    receiverInWallet: false,
   };
   queue.add(async () => {
     const credit = await apiProvider.getContractCredit(id, chainId);
@@ -307,6 +323,77 @@ export const fetchContractRequireData = async (
     );
     result.hasInteraction = hasInteraction.has_interaction;
   });
+
+  if (actionData && wallet) {
+    if (actionData.contractCall || actionData.common) {
+      const chain = findChainByServerID(chainId);
+
+      queue.add(async () => {
+        const addr = actionData.common?.receiver;
+
+        if (addr) {
+          result.receiverInWallet = await wallet.hasAddress(addr);
+          const receiverData: ReceiverData = {
+            address: addr,
+            chain: chain!,
+            eoa: null,
+            cex: null,
+            contract: null,
+            usd_value: 0,
+            hasTransfer: false,
+            isTokenContract: false,
+            name: null,
+            onTransferWhitelist: false,
+          };
+
+          const { has_transfer } = await apiProvider.hasTransfer(
+            chainId,
+            sender,
+            addr
+          );
+          receiverData.hasTransfer = has_transfer;
+
+          const { desc } = await apiProvider.addrDesc(addr);
+          if (desc.cex?.id) {
+            receiverData.cex = {
+              id: desc.cex.id,
+              logo: desc.cex.logo_url,
+              name: desc.cex.name,
+              bornAt: desc.born_at,
+              isDeposit: desc.cex.is_deposit,
+            };
+          }
+          if (desc.contract && Object.keys(desc.contract).length > 0) {
+            receiverData.contract = desc.contract;
+          }
+          if (!receiverData.cex && !receiverData.contract) {
+            receiverData.eoa = {
+              id: addr,
+              bornAt: desc.born_at,
+            };
+          }
+          receiverData.usd_value = desc.usd_value;
+          if (id) {
+            const { is_token } = await apiProvider.isTokenContract(
+              chainId,
+              addr
+            );
+            receiverData.isTokenContract = is_token;
+          }
+          receiverData.name = desc.name;
+          if (ALIAS_ADDRESS[addr.toLowerCase()]) {
+            receiverData.name = ALIAS_ADDRESS[addr.toLowerCase()];
+          }
+
+          const whitelist = await wallet.getWhitelist();
+          receiverData.onTransferWhitelist = whitelist.includes(
+            addr.toLowerCase()
+          );
+          result.unexpectedAddr = receiverData;
+        }
+      });
+    }
+  }
   await waitQueueFinished(queue);
   return result;
 };
@@ -730,16 +817,21 @@ export const fetchRequireData = async (
       actionData.contractId,
       chain.serverId,
       sender,
-      apiProvider
+      apiProvider,
+      wallet,
+      actionData
     );
   }
+
   if (actionData.common) {
     if (chain && actionData.contractId) {
       const contractRequireData = await fetchContractRequireData(
         actionData.contractId,
         chain.serverId,
         sender,
-        apiProvider
+        apiProvider,
+        wallet,
+        actionData
       );
       return contractRequireData;
     }
@@ -998,6 +1090,14 @@ export const formatSecurityEngineCtx = async ({
       contractCall: {
         id: actionData.contractId,
         chainId: chain.serverId,
+      },
+    };
+  }
+  if (actionData.common) {
+    return {
+      common: {
+        ...actionData.common,
+        receiverInWallet: (requireData as ContractRequireData).receiverInWallet,
       },
     };
   }
