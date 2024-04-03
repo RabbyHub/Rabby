@@ -20,6 +20,7 @@ type CommonActions = {
   is_asset_changed: boolean;
   is_involving_privacy: boolean;
   receiver?: string;
+  from?: string;
 };
 
 export const CommonAction = ({
@@ -61,6 +62,11 @@ export const CommonAction = ({
   }, []);
 
   const addressInfo = (requireData as ContractCallRequireData).unexpectedAddr;
+
+  const hasReceiver = useMemo(() => {
+    if (!actionData.receiver || !actionData.from) return false;
+    return !isSameAddress(actionData.receiver, actionData.from);
+  }, [actionData]);
 
   return (
     <div className="relative">
@@ -156,22 +162,24 @@ export const CommonAction = ({
               }
             </Col>
           )}
-        {data?.receiver && addressInfo && (
+        {hasReceiver && actionData.receiver && addressInfo && (
           <Col>
             <Row isTitle className="w-[100px]">
               {t('page.signTx.swap.receiver')}
             </Row>
             <Row>
-              <Values.Address address={data.receiver} chain={chain} />
+              <Values.Address address={actionData.receiver} chain={chain} />
               <ul className="desc-list">
                 <li>
-                  <Values.AddressMemo address={data.receiver} />
+                  <Values.AddressMemo address={actionData.receiver} />
                 </li>
                 <SecurityListItem
                   engineResult={engineResultMap['1139']}
                   id="1139"
                   dangerText={t('page.signTx.swap.unknownAddress')}
-                  defaultText={<Values.KnownAddress address={data.receiver} />}
+                  defaultText={
+                    <Values.KnownAddress address={actionData.receiver} />
+                  }
                 />
                 <li>
                   <ViewMore
@@ -195,7 +203,7 @@ export const CommonAction = ({
             </Row>
           </Col>
         )}
-        {!data?.receiver && addressInfo && (
+        {!hasReceiver && addressInfo && (
           <Col>
             <Row isTitle className="w-[100px]">
               {t('page.signTx.contractCall.suspectedReceiver')}
