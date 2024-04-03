@@ -21,7 +21,7 @@ import { getChainList, updateChainStore } from '@/utils/chain';
 
 Sentry.init({
   dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+    'https://a864fbae7ba680ce68816ff1f6ef2c4e@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
   ignoreErrors: [
