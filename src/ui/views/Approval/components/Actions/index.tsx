@@ -337,7 +337,7 @@ const Actions = ({
           {data.common && (
             <CommonAction
               data={data.common}
-              requireData={requireData as SwapRequireData}
+              requireData={requireData as ContractCallRequireData}
               chain={chain}
               engineResults={engineResults}
             />
