@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { isSameTesnetToken } from '@/utils/chain';
+import { isSameTestnetToken } from '@/utils/chain';
 
 interface Props {
   className?: string;
@@ -169,7 +169,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
               if (!search) {
                 mutate((prev) => {
                   return (prev || []).find((item) => {
-                    return isSameTesnetToken(item, token);
+                    return isSameTestnetToken(item, token);
                   })
                     ? prev
                     : [...(prev || []), token];
@@ -180,7 +180,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
               if (!search) {
                 mutate((prev) => {
                   return (prev || []).filter((item) => {
-                    return !isSameTesnetToken(item, token);
+                    return !isSameTestnetToken(item, token);
                   });
                 });
               }

@@ -1,5 +1,5 @@
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
-import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
+import { findChain, isSameTestnetToken, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from 'background/service/openapi';
 import { createPersistStore } from 'background/utils';
@@ -405,13 +405,13 @@ class CustomTestnetService {
 
   removeToken = (params: CustomTestnetTokenBase) => {
     this.store.customTokenList = this.store.customTokenList.filter((item) => {
-      return !isSameTesnetToken(item, params);
+      return !isSameTestnetToken(item, params);
     });
   };
 
   hasToken = (params: Pick<CustomTestnetTokenBase, 'id' | 'chainId'>) => {
     return !!this.store.customTokenList.find((item) => {
-      return isSameTesnetToken(params, item);
+      return isSameTestnetToken(params, item);
     });
   };
 
@@ -504,7 +504,7 @@ class CustomTestnetService {
     }
 
     const local = this.store.customTokenList?.find((item) => {
-      return isSameTesnetToken(item, {
+      return isSameTestnetToken(item, {
         id: tokenId,
         chainId,
       });

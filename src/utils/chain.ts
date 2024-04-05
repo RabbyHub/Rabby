@@ -474,7 +474,7 @@ export function supportedChainToChain(item: SupportedChain): Chain {
   };
 }
 
-export const isSameTesnetToken = <
+export const isSameTestnetToken = <
   T1 extends Pick<CustomTestnetToken, 'id' | 'chainId'>,
   T2 extends Pick<CustomTestnetToken, 'id' | 'chainId'>
 >(
