@@ -1,4 +1,3 @@
-// import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -7,7 +6,6 @@ import { Message } from '@/utils/message';
 import { getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
 
@@ -17,7 +15,7 @@ import store from './store';
 
 import '../i18n';
 import { getSentryEnv } from '@/utils/env';
-import { getChainList, updateChainStore } from '@/utils/chain';
+import { updateChainStore } from '@/utils/chain';
 
 Sentry.init({
   dsn:
@@ -56,8 +54,6 @@ initAppMeta();
 const { PortMessage } = Message;
 
 const portMessageChannel = new PortMessage();
-
-portMessageChannel.connect(getUITypeName());
 
 const wallet = new Proxy(
   {},
@@ -124,23 +120,42 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 });
 
 store.dispatch.app.initWallet({ wallet });
-store.dispatch.app.initBizStore();
 
 eventBus.addEventListener('syncChainList', (params) => {
   store.dispatch.chains.setField(params);
   updateChainStore(params);
 });
 
-store.dispatch.chains.init();
+const main = () => {
+  portMessageChannel.connect(getUITypeName());
 
-wallet.getLocale().then((locale) => {
-  addResourceBundle(locale).then(() => {
-    i18n.changeLanguage(locale);
-    ReactDOM.render(
-      <Provider store={store}>
-        <Views wallet={wallet} />
-      </Provider>,
-      document.getElementById('root')
-    );
+  store.dispatch.app.initBizStore();
+  store.dispatch.chains.init();
+
+  wallet.getLocale().then((locale) => {
+    addResourceBundle(locale).then(() => {
+      i18n.changeLanguage(locale);
+      ReactDOM.render(
+        <Provider store={store}>
+          <Views wallet={wallet} />
+        </Provider>,
+        document.getElementById('root')
+      );
+    });
   });
-});
+};
+
+const bootstrap = () => {
+  chrome.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
+    if (!res) {
+      setTimeout(() => {
+        bootstrap();
+      }, 100);
+      return;
+    }
+
+    main();
+  });
+};
+
+bootstrap();

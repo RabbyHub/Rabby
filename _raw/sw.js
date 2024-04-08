@@ -78,6 +78,11 @@ const registerInPageContentScript = async () => {
 };
 
 clearAlarms();
-importAllScripts();
 createOffscreen();
 keepAlive();
+
+// ref https://stackoverflow.com/questions/66406672/how-do-i-import-scripts-into-a-service-worker-using-chrome-extension-manifest-ve
+self.addEventListener('install', () => {
+  console.log('installing service worker');
+  importAllScripts();
+});

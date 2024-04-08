@@ -28,7 +28,7 @@ class SyncChainService {
       updateChainStore({
         mainnetList: list,
       });
-      chrome.storage.local.set({
+      browser.storage.local.set({
         rabbyMainnetChainList: list,
       });
     } catch (e) {
