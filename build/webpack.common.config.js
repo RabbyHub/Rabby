@@ -242,10 +242,10 @@ const config = {
             }
           : {
               from: require.resolve(
-                '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
+                '@trezor/connect-web/lib/webextension/trezor-content-script.js'
               ),
               to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-usb-permissions.js'
+                'dist/vendor/trezor/trezor-content-script.js'
               ),
             },
         process.env.ENABLE_MV3
@@ -259,10 +259,10 @@ const config = {
             }
           : {
               from: require.resolve(
-                '@trezor/connect-web/lib/webextension/trezor-content-script.js'
+                '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
               ),
               to: paths.rootResolve(
-                'dist/vendor/trezor/trezor-content-script.js'
+                'dist/vendor/trezor/trezor-usb-permissions.js'
               ),
             },
       ],
