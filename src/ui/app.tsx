@@ -14,7 +14,7 @@ import type { WalletControllerType } from 'ui/utils/WalletContext';
 import store from './store';
 
 import '../i18n';
-import { getSentryEnv } from '@/utils/env';
+import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 
 Sentry.init({
@@ -146,6 +146,10 @@ const main = () => {
 };
 
 const bootstrap = () => {
+  if (!isManifestV3) {
+    main();
+    return;
+  }
   chrome.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
     if (!res) {
       setTimeout(() => {
