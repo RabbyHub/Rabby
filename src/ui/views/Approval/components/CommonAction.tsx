@@ -123,7 +123,7 @@ export const CommonAction = ({
             {t('page.signTx.common.description')}
           </Row>
           <Row className="flex flex-row items-center gap-x-4">
-            <span>{actionData.desc}</span>
+            <span className="break-all">{actionData.desc}</span>
             {/* <TooltipWithMagnetArrow
               overlayClassName="rectangle w-[260px]"
               title={descTip}
