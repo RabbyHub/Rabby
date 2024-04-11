@@ -332,6 +332,11 @@ export class EthImKeyKeyring extends EventEmitter {
       const checksummedAddress = ethUtil.toChecksumAddress(address);
       const accountDetail = this.accountDetails[checksummedAddress];
       const isV4 = opts.version === 'V4';
+
+      if (opts.version !== 'V4' && opts.version !== 'V3') {
+        throw new Error('ImKey only supports V3 and V4 of typed data');
+      }
+
       const eip712HashHexWithoutSha3 = signHashHex(data, isV4);
 
       const res = await this.invokeApp('signMessage', [
