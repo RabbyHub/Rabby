@@ -32,7 +32,7 @@ export class SignHelper {
           const result = await fn();
           resolve(result);
         } catch (e) {
-          throwError(e.message, this.errorEventName);
+          throwError(e?.message ?? e, this.errorEventName);
         }
       };
       this.signFn();
