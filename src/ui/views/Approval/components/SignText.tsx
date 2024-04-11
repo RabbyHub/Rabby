@@ -31,8 +31,10 @@ import {
   TextActionData,
   formatSecurityEngineCtx,
   parseAction,
+  getActionTypeText,
 } from './TextActions/utils';
 import { WaitingSignMessageComponent } from './map';
+import stats from '@/stats';
 
 interface SignTextProps {
   data: string[];
@@ -47,6 +49,7 @@ interface SignTextProps {
 }
 
 const SignText = ({ params }: { params: SignTextProps }) => {
+  const renderStartAt = useRef(0);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -336,12 +339,25 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   }, [rules]);
 
   useEffect(() => {
+    renderStartAt.current = Date.now();
     checkWachMode();
   }, []);
 
   useEffect(() => {
     report('createSignText');
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const duration = Date.now() - renderStartAt.current;
+      stats.report('signPageRenderTime', {
+        type: 'text',
+        actionType: getActionTypeText(parsedActionData),
+        chain: '',
+        duration,
+      });
+    }
+  }, [isLoading]);
 
   return (
     <>
