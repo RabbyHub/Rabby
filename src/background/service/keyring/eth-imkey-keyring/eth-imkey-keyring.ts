@@ -331,7 +331,8 @@ export class EthImKeyKeyring extends EventEmitter {
       await this.unlock();
       const checksummedAddress = ethUtil.toChecksumAddress(address);
       const accountDetail = this.accountDetails[checksummedAddress];
-      const eip712HashHexWithoutSha3 = signHashHex(data, true);
+      const isV4 = opts.version === 'V4';
+      const eip712HashHexWithoutSha3 = signHashHex(data, isV4);
 
       const res = await this.invokeApp('signMessage', [
         accountDetail.hdPath,
