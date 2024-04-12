@@ -73,7 +73,7 @@ export const AddressSortPopup = ({
             onClick={handleChange(e.key)}
             className="text-14 text-r-neutral-title-1 font-normal"
             leftIconClassName="mr-12 w-20 text-r-neutral-title-1"
-            rightIcon={sortType === e.key ? ImgChecked : null}
+            rightIcon={ImgChecked}
             rightIconClassName="w-20"
           >
             {e.label}
