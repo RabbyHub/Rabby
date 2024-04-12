@@ -273,6 +273,15 @@ browser.runtime.onConnect.addListener((port) => {
     const origin = getOriginFromUrl(port.sender.url);
     const session = sessionService.getOrCreateSession(sessionId, origin);
     const req = { data, session, origin };
+    if (!session?.origin) {
+      const tabInfo = await browser.tabs.get(sessionId);
+      // prevent tabCheckin not triggered, re-fetch tab info when session have no info at all
+      session?.setProp({
+        origin,
+        name: tabInfo.title || '',
+        icon: tabInfo.favIconUrl || '',
+      });
+    }
     // for background push to respective page
     req.session!.setPortMessage(pm);
 

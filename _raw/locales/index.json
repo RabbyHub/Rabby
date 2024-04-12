@@ -1,6 +1,7 @@
 [
   { "code": "en", "name": "English" },
   { "code": "zh_CN", "name": "简体中文" },
+  { "code": "zh_HK", "name": "繁體中文（香港）" },
   { "code": "es", "name": "Español" },
   { "code": "fr_FR", "name": "Français" },
   { "code": "ua_UA", "name": "Українська" },
