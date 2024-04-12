@@ -100,7 +100,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
   } = normalizeTxParams(params.data[0]);
 
   const wallet = useWallet();
-  const chainId = params?.data?.[0]?.chainId;
+  const chainId = +params?.data?.[0]?.chainId;
   const chain = chainId ? findChain({ id: +chainId }) : undefined;
 
   const [realNonce, setRealNonce] = useState('');
