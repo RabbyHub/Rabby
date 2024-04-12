@@ -24,11 +24,11 @@ const DEFAULT_SCROLL = { y: 300, x: '100vw' };
 function TableBodyEmpty({
   isLoading,
   loadingText = 'Loading...',
-  noMatchText = 'No Match',
+  emptyText = 'No Match',
 }: {
   isLoading?: boolean;
   loadingText?: string;
-  noMatchText?: string;
+  emptyText?: string;
 }) {
   return (
     <Empty
@@ -36,7 +36,7 @@ function TableBodyEmpty({
       image={
         <RcIconNoMatchCC className="w-[52px] h-[52px] text-r-neutral-body" />
       }
-      description={isLoading ? loadingText : noMatchText}
+      description={isLoading ? loadingText : emptyText}
     />
   );
 }
@@ -192,6 +192,7 @@ export function VirtualTable<RecordType extends object>({
   getCellKey,
   getCellClassName,
   showScrollbar = true,
+  emptyText = 'No Data',
   sortedInfo,
   ...props
 }: TableProps<RecordType> & {
@@ -207,6 +208,7 @@ export function VirtualTable<RecordType extends object>({
   getCellKey?: (params: IVGridContextualPayload<RecordType>) => string | number;
   getCellClassName?: IVGridItemDataType<RecordType>['getCellClassName'];
   showScrollbar?: boolean;
+  emptyText?: string;
   sortedInfo?: SorterResult<RecordType>;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
@@ -299,9 +301,7 @@ export function VirtualTable<RecordType extends object>({
           loadingText={t(
             'page.approvals.component.table.bodyEmpty.loadingText'
           )}
-          noMatchText={t(
-            'page.approvals.component.table.bodyEmpty.noMatchText'
-          )}
+          emptyText={emptyText}
         />
       );
     }

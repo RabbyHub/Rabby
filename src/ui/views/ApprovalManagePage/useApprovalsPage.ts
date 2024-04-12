@@ -511,7 +511,21 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
     vGridRefAsset,
 
     account,
+    contractEmptyStatus: useMemo(() => {
+      if (!sortedContractList.length) return 'none' as const;
+
+      if (!displaySortedContractList.length) return 'no-matched' as const;
+
+      return false as const;
+    }, [sortedContractList, displaySortedContractList]),
     displaySortedContractList,
+    assetEmptyStatus: useMemo(() => {
+      if (!sortedAssetstList.length) return 'none' as const;
+
+      if (!displaySortedAssetsList.length) return 'no-matched' as const;
+
+      return false as const;
+    }, [sortedAssetstList, displaySortedAssetsList]),
     displaySortedAssetsList,
   };
 }

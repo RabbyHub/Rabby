@@ -324,7 +324,7 @@ export const RevokeApprovalModal = (props: {
                     ? RcIconCheckboxChecked
                     : RcIconCheckboxUnchecked
                 }
-                className="icon icon-checked w-[24px] h-[24px]"
+                className="icon icon-checked w-[20px] h-[20px]"
               />
             </div>
           </div>
