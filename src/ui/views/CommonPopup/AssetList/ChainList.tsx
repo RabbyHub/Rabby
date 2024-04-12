@@ -6,6 +6,10 @@ import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 
+function shouldChainRevealed(chainItem: ChainItemType) {
+  return chainItem.percent >= 1 || chainItem.usd_value >= 1000;
+}
+
 export const ChainList = ({
   onChange,
   isTestnet = false,
@@ -21,10 +25,6 @@ export const ChainList = ({
     ? (data?.testnetBalance as number) ?? 0
     : (data?.balance as number) ?? 0;
   const balanceLoading = (data?.balanceLoading as boolean) ?? false;
-  const [currentChainList, setCurrentChainList] = React.useState<
-    ChainItemType[]
-  >([]);
-  const [moreChainList, setMoreChainList] = React.useState<ChainItemType[]>([]);
   const [showMore, setShowMore] = React.useState(false);
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
@@ -39,15 +39,34 @@ export const ChainList = ({
     }
   };
 
-  React.useEffect(() => {
-    const list = chainList.map((item) => {
-      return {
+  const { chainsToReveal, chainsToHide } = React.useMemo(() => {
+    const res = {
+      allItems: [] as ChainItemType[],
+      chainsToReveal: [] as ChainItemType[],
+      chainsToHide: [] as ChainItemType[],
+    };
+
+    const chainCount = chainList.length;
+    chainList.forEach((item) => {
+      const chainItem: ChainItemType = {
         ...item,
         percent: (item.usd_value / balance) * 100,
       };
+      res.allItems.push(chainItem);
+
+      if (chainCount <= 6 || shouldChainRevealed(chainItem)) {
+        res.chainsToReveal.push(chainItem);
+      } else {
+        res.chainsToHide.push(chainItem);
+      }
     });
-    setCurrentChainList(list.filter((item) => item.percent >= 1));
-    setMoreChainList(list.filter((item) => item.percent < 1));
+
+    if (res.chainsToHide.length <= 2) {
+      res.chainsToReveal = [...res.allItems];
+      res.chainsToHide = [];
+    }
+
+    return res;
   }, [chainList, balance]);
 
   React.useEffect(() => {
@@ -57,7 +76,7 @@ export const ChainList = ({
     }
   }, [visible]);
 
-  const moreLen = moreChainList.length;
+  const moreLen = chainsToHide.length;
 
   if (balanceLoading) {
     return (
@@ -79,7 +98,7 @@ export const ChainList = ({
         'flex gap-12 flex-wrap'
       )}
     >
-      {currentChainList.map((item) => (
+      {chainsToReveal.map((item) => (
         <ChainItem
           inactive={activeChainId !== null && activeChainId !== item.id}
           key={item.id}
@@ -90,7 +109,7 @@ export const ChainList = ({
         />
       ))}
       {showMore ? (
-        moreChainList.map((item) => (
+        chainsToHide.map((item) => (
           <ChainItem
             onClick={() => {
               handleSelectChain(item.id);

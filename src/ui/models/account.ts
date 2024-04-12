@@ -44,6 +44,18 @@ export interface AccountState {
   mnemonicAccounts: DisplayedKeryring[];
 }
 
+/**
+ * filter chains with balance:
+ * 1. greater than $1 and has percentage 1%
+ * 2. or >= $1000
+ */
+export function isChainMattered(chainUsdValue: number, totalUsdValue: number) {
+  return (
+    chainUsdValue >= 1000 ||
+    (chainUsdValue > 1 && chainUsdValue / totalUsdValue > 0.01)
+  );
+}
+
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -429,8 +441,7 @@ export const account = createModel<RootModel>()({
       const matteredChainBalances = (result.mainnet?.chain_list || []).reduce(
         (accu, cur) => {
           const curUsdValue = coerceFloat(cur.usd_value);
-          // TODO: only leave chain with blance greater than $1 and has percentage 1%
-          if (curUsdValue > 1 && curUsdValue / mainnetTotalUsdValue > 0.01) {
+          if (isChainMattered(curUsdValue, mainnetTotalUsdValue)) {
             accu[cur.id] = formatChainToDisplay(cur);
           }
           return accu;
@@ -447,7 +458,7 @@ export const account = createModel<RootModel>()({
       ).reduce((accu, cur) => {
         const curUsdValue = coerceFloat(cur.usd_value);
 
-        if (curUsdValue > 1 && curUsdValue / testnetTotalUsdValue > 0.01) {
+        if (isChainMattered(curUsdValue, testnetTotalUsdValue)) {
           accu[cur.id] = formatChainToDisplay(cur);
         }
         return accu;
