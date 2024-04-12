@@ -46,6 +46,10 @@ const AccountItemSelector = styled.div`
   &:nth-last-child(1) {
     margin-bottom: 0;
   }
+  .rabby-checkbox__label {
+    flex: 1;
+    margin-left: 12px;
+  }
 `;
 
 interface Props {
@@ -139,7 +143,7 @@ const EditWhitelist = ({
             <Checkbox
               width="20px"
               height="20px"
-              className="mr-12"
+              className="flex-1"
               background="var(--r-green-default, #2ABB7F)"
               checked={
                 !!checkedList.find((item) =>
@@ -149,8 +153,9 @@ const EditWhitelist = ({
               onChange={(checked) =>
                 handleCheckAddress(checked, account.address)
               }
-            />
-            <AccountItem account={account} />
+            >
+              <AccountItem account={account} />
+            </Checkbox>
           </AccountItemSelector>
         ))}
       </ListScrollWrapper>
