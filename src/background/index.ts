@@ -103,6 +103,16 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   startEnableUser();
   walletController.syncMainnetChainList();
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'getBackgroundReady') {
+      sendResponse({
+        data: {
+          ready: true,
+        },
+      });
+    }
+  });
 }
 
 restoreAppState();

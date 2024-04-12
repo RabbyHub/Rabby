@@ -231,20 +231,40 @@ const config = {
             : paths.rootResolve('src/manifest/mv2/manifest.json'),
           to: paths.dist,
         },
-        {
-          from: require.resolve(
-            '@trezor/connect-webextension/build/content-script.js'
-          ),
-          to: paths.rootResolve('dist/vendor/trezor/trezor-content-script.js'),
-        },
-        {
-          from: require.resolve(
-            '@trezor/connect-webextension/build/trezor-connect-webextension.js'
-          ),
-          to: paths.rootResolve(
-            'dist/vendor/trezor/trezor-connect-webextension.js'
-          ),
-        },
+        process.env.ENABLE_MV3
+          ? {
+              from: require.resolve(
+                '@trezor/connect-webextension/build/content-script.js'
+              ),
+              to: paths.rootResolve(
+                'dist/vendor/trezor/trezor-content-script.js'
+              ),
+            }
+          : {
+              from: require.resolve(
+                '@trezor/connect-web/lib/webextension/trezor-content-script.js'
+              ),
+              to: paths.rootResolve(
+                'dist/vendor/trezor/trezor-content-script.js'
+              ),
+            },
+        process.env.ENABLE_MV3
+          ? {
+              from: require.resolve(
+                '@trezor/connect-webextension/build/trezor-connect-webextension.js'
+              ),
+              to: paths.rootResolve(
+                'dist/vendor/trezor/trezor-connect-webextension.js'
+              ),
+            }
+          : {
+              from: require.resolve(
+                '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
+              ),
+              to: paths.rootResolve(
+                'dist/vendor/trezor/trezor-usb-permissions.js'
+              ),
+            },
       ],
     }),
   ],
