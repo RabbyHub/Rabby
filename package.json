@@ -143,7 +143,7 @@
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
-    "@sentry/webpack-plugin": "1.18.9",
+    "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
     "@types/chrome": "^0.0.263",
     "@types/events": "3.0.0",

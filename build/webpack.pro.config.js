@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
-const SentryCliPlugin = require('@sentry/webpack-plugin');
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const sentrySourceMap = !!process.env.sourcemap || false;
 
@@ -17,13 +17,20 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
     sentrySourceMap &&
-      new SentryCliPlugin({
+      sentryWebpackPlugin({
         include: './dist',
         ignoreFile: '.sentrycliignore',
         ignore: ['node_modules', 'webpack.config.js'],
         configFile: 'sentry.properties',
-        release: process.env.VERSION,
+        release: {
+          name: process.env.VERSION,
+        },
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+
+        authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
+    ,
   ].filter(Boolean),
 
   optimization: {
