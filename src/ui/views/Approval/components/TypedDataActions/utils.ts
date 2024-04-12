@@ -21,6 +21,7 @@ import {
   RevokeTokenApproveAction,
   NFTItem,
   SwapOrderAction,
+  ApproveNFTAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
@@ -34,6 +35,8 @@ import {
   calcUSDValueChange,
   SendRequireData,
   AssetOrderRequireData,
+  ApproveNFTRequireData,
+  fetchNFTApproveRequiredData,
 } from '../Actions/utils';
 import { CHAINS, ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
@@ -71,6 +74,7 @@ export interface TypedDataActionData {
   buyNFT?: BuyNFTOrderAction;
   permit?: PermitActionData;
   permit2?: Permit2ActionData;
+  approveNFT?: ApproveNFTAction;
   batchPermit2?: BatchPermit2ActionData;
   swapTokenOrder?: {
     payToken: TokenItem;
@@ -186,6 +190,12 @@ export const parseAction = (
         ...actionData,
         sig_expire_at: data.action.expire_at,
       };
+      return result;
+    }
+    case 'approve_nft': {
+      const actionData = data.action.data as ApproveNFTAction;
+
+      result.approveNFT = actionData;
       return result;
     }
     case 'sign_multisig': {
@@ -673,6 +683,7 @@ export type TypedDataRequireData =
   | ApproveTokenRequireData
   | BatchApproveTokenRequireData
   | SendRequireData
+  | ApproveNFTRequireData
   | null;
 
 export const fetchRequireData = async (
@@ -757,6 +768,18 @@ export const fetchRequireData = async (
         apiProvider,
       });
       return tokenApproveRequireData;
+    }
+  }
+  if (actionData.approveNFT) {
+    const data = actionData.approveNFT;
+    if (chain && actionData.contractId) {
+      const nftApproveRequireData = await fetchNFTApproveRequiredData({
+        spender: data.spender,
+        address: sender,
+        chainId: chain.serverId,
+        apiProvider,
+      });
+      return nftApproveRequireData;
     }
   }
   if (actionData?.revokePermit) {
@@ -848,6 +871,9 @@ export const getActionTypeText = (data: TypedDataActionData | null) => {
   if (data?.permit2 || data?.batchPermit2) {
     return t('page.signTypedData.permit2.title');
   }
+  if (data?.approveNFT) {
+    return t('page.signTx.nftApprove.title');
+  }
   if (data?.swapTokenOrder) {
     return t('page.signTypedData.swapTokenOrder.title');
   }
@@ -936,6 +962,20 @@ export const formatSecurityEngineCtx = async ({
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
         chainId: chain?.serverId,
+      },
+    };
+  }
+  if (actionData?.approveNFT) {
+    const data = requireData as ApproveNFTRequireData;
+    return {
+      nftApprove: {
+        spender: actionData.approveNFT.spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
+        chainId: chain?.serverId || 'eth',
       },
     };
   }

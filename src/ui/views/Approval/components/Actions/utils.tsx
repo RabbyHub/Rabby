@@ -610,7 +610,7 @@ export const waitQueueFinished = (q: PQueue) => {
   });
 };
 
-const fetchNFTApproveRequiredData = async ({
+export const fetchNFTApproveRequiredData = async ({
   spender,
   address,
   chainId,
