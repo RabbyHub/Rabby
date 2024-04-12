@@ -664,6 +664,7 @@
         "table": {
           "bodyEmpty": {
             "loadingText": "Loading...",
+            "noDataText": "No Approvals",
             "noMatchText": "No Match"
           }
         },
