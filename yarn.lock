@@ -4409,10 +4409,10 @@
     ethereumjs-util "^7.1.5"
     hdkey "0.8.0"
 
-"@rabby-wallet/eth-walletconnect-keyring@2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.1.1.tgz#29cca74100508fe6be2fbd97d1a4476bb7faf60d"
-  integrity sha512-JNZoT7/dUTDo1b8n26eN5OTP+wonAYS8JST+2AQO7tLUEM84v1obMwCIXJ6pLUzfpZLaWzpuV2dEyVFc6TKWYw==
+"@rabby-wallet/eth-walletconnect-keyring@2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.1.2.tgz#ff369c5c6418006ff3aaadfe8caffe081f8eed38"
+  integrity sha512-1UjNJFUb4Xym8HTXIybzhJC4xRnbM5TVQny6KEEFkzvU8eNNy5ZKIi/gRk2UsOApf1LbUdSx9KyML4C9tdDVqA==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@rabby-wallet/wc-client" "^1.8.10"
@@ -4499,10 +4499,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-security-engine@^1.1.19":
-  version "1.1.19"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.19.tgz#9dc37b1be9eebe6afc5045cbce38cbe422577985"
-  integrity sha512-06BDCH3MzI3dE0inZ8Am6FAXgpJJD0Jou4kAC3K2enYZAsemjnZorEFgIyNsDuDc0vsmTkDyx5ZgC5aHwdkWMw==
+"@rabby-wallet/rabby-security-engine@1.1.20":
+  version "1.1.20"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-security-engine/-/rabby-security-engine-1.1.20.tgz#499d94a8f2d7a6b34b53ba6f3cc2469c4e5d0823"
+  integrity sha512-6/IZ2zSQkd5ttVYbX5M/z3IxqxfXyxBHA22FNuA6f77NSvI6AyOnceht1CGNC177fnYkXKeYNWAChuN60kgFZQ==
 
 "@rabby-wallet/rabby-sign@^0.3.3":
   version "0.3.3"
