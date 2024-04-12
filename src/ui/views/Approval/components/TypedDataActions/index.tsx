@@ -232,7 +232,7 @@ const Actions = ({
           <>
             {(data?.actionType || data?.actionType === null) && (
               <div className="container">
-                {data.permit && chain && (
+                {data.permit && (
                   <Permit
                     data={data.permit}
                     requireData={requireData as ApproveTokenRequireData}

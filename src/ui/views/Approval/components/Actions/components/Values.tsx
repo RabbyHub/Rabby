@@ -121,11 +121,11 @@ const AddressMark = ({
   onWhitelist: boolean;
   onBlacklist: boolean;
   address: string;
-  chain: Chain;
+  chain?: Chain;
   isContract?: boolean;
   onChange(): void;
 }) => {
-  const chainId = chain.serverId;
+  const chainId = chain?.serverId;
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
