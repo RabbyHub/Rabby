@@ -6,6 +6,7 @@ import { EVENTS } from '@/constant';
 import { is1559Tx } from '@/utils/transaction';
 import { bytesToHex } from 'web3-utils';
 import { ImKeyBridgeInterface } from './imkey-bridge-interface';
+import { signHashHex } from './utils';
 
 const keyringType = 'imKey Hardware';
 const MAX_INDEX = 1000;
@@ -330,10 +331,17 @@ export class EthImKeyKeyring extends EventEmitter {
       await this.unlock();
       const checksummedAddress = ethUtil.toChecksumAddress(address);
       const accountDetail = this.accountDetails[checksummedAddress];
+      const isV4 = opts.version === 'V4';
+
+      if (opts.version !== 'V4' && opts.version !== 'V3') {
+        throw new Error('ImKey only supports V3 and V4 of typed data');
+      }
+
+      const eip712HashHexWithoutSha3 = signHashHex(data, isV4);
 
       const res = await this.invokeApp('signMessage', [
         accountDetail.hdPath,
-        JSON.stringify(data),
+        eip712HashHexWithoutSha3,
         checksummedAddress,
         false,
       ]);

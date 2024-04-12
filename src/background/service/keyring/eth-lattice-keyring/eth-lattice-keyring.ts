@@ -36,6 +36,8 @@ class LatticeKeyring extends OldLatticeKeyring {
       return super._getCreds();
     }
 
+    if (this._hasCreds()) return;
+
     try {
       // If we are not aware of what Lattice we should be talking to,
       // we need to open a window that lets the user go through the

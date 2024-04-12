@@ -8,7 +8,7 @@ import { isSameAddress } from '@/ui/utils';
 
 interface SpenderData {
   spender: string;
-  chain: Chain;
+  chain?: Chain;
   protocol: {
     name: string;
     logo_url: string;
@@ -41,12 +41,12 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       isInBlackList: contractBlacklist.some(
         ({ address, chainId }) =>
           isSameAddress(address, data.spender) &&
-          chainId === data.chain.serverId
+          chainId === data.chain?.serverId
       ),
       isInWhiteList: contractWhitelist.some(
         ({ address, chainId }) =>
           isSameAddress(address, data.spender) &&
-          chainId === data.chain.serverId
+          chainId === data.chain?.serverId
       ),
     };
   }, [data.spender, data.chain, contractBlacklist, contractWhitelist]);
@@ -111,7 +111,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
             {data.rank
               ? t('page.signTx.contractPopularity', [
                   data.rank,
-                  data.chain.name,
+                  data.chain?.name,
                 ])
               : '-'}
           </Row>

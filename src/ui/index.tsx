@@ -1,5 +1,10 @@
-// import './wdyr';
 import './style/index.less';
+import './app';
+
+// in mv2, we need to import the app.tsx file delay to avoid ui render problem
+// setTimeout(() => {
+//   import('./app');
+// }, 0);
 
 // For fix chrome extension render problem in external screen
 if (
@@ -34,7 +39,3 @@ if (
     }
   });
 }
-
-setTimeout(() => {
-  import('./app');
-}, 0);

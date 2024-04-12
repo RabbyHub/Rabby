@@ -68,7 +68,6 @@ const GlobalStyle = createGlobalStyle`
 
 interface Props {
   address: string;
-  chain: Chain;
   onWhitelist: boolean;
   onBlacklist: boolean;
   onChange({
@@ -82,7 +81,6 @@ interface Props {
 
 const UserListDrawer = ({
   address,
-  chain,
   onWhitelist,
   onBlacklist,
   onChange,
@@ -147,7 +145,7 @@ export default ({
   onChange,
 }: {
   address: string;
-  chain: Chain;
+  chain?: Chain;
   onWhitelist: boolean;
   onBlacklist: boolean;
   onChange({
@@ -162,7 +160,6 @@ export default ({
     content: (
       <UserListDrawer
         address={address}
-        chain={chain}
         onWhitelist={onWhitelist}
         onBlacklist={onBlacklist}
         onChange={(res) => {
@@ -174,7 +171,7 @@ export default ({
     height: 240,
     closable: true,
     title: i18n.t('page.signTx.myMarkWithContract', {
-      chainName: chain.name,
+      chainName: chain?.name,
     }),
     className: 'user-list-drawer',
     onClose: () => destroy(),

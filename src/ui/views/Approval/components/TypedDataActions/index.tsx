@@ -43,9 +43,11 @@ import CoboSafeModificationDelegatedAddress from './CoboSafeModificationDelegate
 import CoboSafeModificationTokenApproval from './CoboSafeModificationTokenApproval';
 import RevokePermit2 from '../Actions/RevokePermit2';
 import AssetOrder from '../Actions/AssetOrder';
+import ApproveNFT from '../Actions/ApproveNFT';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
 import {
+  ApproveNFTRequireData,
   RevokeTokenApproveRequireData,
   SendRequireData,
 } from '../Actions/utils';
@@ -230,7 +232,7 @@ const Actions = ({
           <>
             {(data?.actionType || data?.actionType === null) && (
               <div className="container">
-                {data.permit && chain && (
+                {data.permit && (
                   <Permit
                     data={data.permit}
                     requireData={requireData as ApproveTokenRequireData}
@@ -250,6 +252,14 @@ const Actions = ({
                   <Permit2
                     data={data.permit2}
                     requireData={requireData as ApproveTokenRequireData}
+                    chain={chain}
+                    engineResults={engineResults}
+                  />
+                )}
+                {data.approveNFT && chain && (
+                  <ApproveNFT
+                    data={data.approveNFT}
+                    requireData={requireData as ApproveNFTRequireData}
                     chain={chain}
                     engineResults={engineResults}
                   />

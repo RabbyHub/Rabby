@@ -893,6 +893,7 @@ const getCellClassName = (
 
 type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   isLoading: boolean;
+  emptyStatus?: 'none' | 'no-matched' | false;
   dataSource: T[];
   containerHeight: number;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
@@ -902,6 +903,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
 };
 function TableByContracts({
   isLoading,
+  emptyStatus,
   dataSource,
   containerHeight,
   selectedRows = [],
@@ -965,6 +967,11 @@ function TableByContracts({
       markHoverRow={false}
       columns={columnsForContracts}
       sortedInfo={sortedInfo}
+      emptyText={
+        emptyStatus === 'no-matched'
+          ? t('page.approvals.component.table.bodyEmpty.noMatchText')
+          : t('page.approvals.component.table.bodyEmpty.noDataText')
+      }
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
@@ -979,6 +986,7 @@ function TableByContracts({
 
 function TableByAssetSpenders({
   isLoading,
+  emptyStatus,
   dataSource,
   containerHeight,
   onClickRow,
@@ -1018,6 +1026,11 @@ function TableByAssetSpenders({
         t,
       })}
       sortedInfo={sortedInfo}
+      emptyText={
+        emptyStatus === 'no-matched'
+          ? t('page.approvals.component.table.bodyEmpty.noMatchText')
+          : t('page.approvals.component.table.bodyEmpty.noDataText')
+      }
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
@@ -1048,7 +1061,9 @@ const ApprovalManagePage = () => {
     setSearchKw,
     account,
     displaySortedContractList,
+    contractEmptyStatus,
     displaySortedAssetsList,
+    assetEmptyStatus,
 
     filterType,
     setFilterType,
@@ -1217,6 +1232,7 @@ const ApprovalManagePage = () => {
                   className={filterType === 'contract' ? '' : 'hidden'}
                   vGridRef={vGridRefContracts}
                   containerHeight={yValue}
+                  emptyStatus={contractEmptyStatus}
                   dataSource={displaySortedContractList}
                   onClickRow={handleClickContractRow}
                   onChangeSelectedContractSpenders={
@@ -1230,6 +1246,7 @@ const ApprovalManagePage = () => {
                   isLoading={isLoading}
                   vGridRef={vGridRefAsset}
                   containerHeight={yValue}
+                  emptyStatus={assetEmptyStatus}
                   dataSource={displaySortedAssetsList}
                   selectedRows={assetRevokeList}
                   onClickRow={handleClickAssetRow}

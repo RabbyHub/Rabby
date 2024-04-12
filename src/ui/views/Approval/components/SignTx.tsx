@@ -62,6 +62,7 @@ import {
   fetchActionRequiredData,
   ActionRequireData,
   formatSecurityEngineCtx,
+  getActionTypeText,
 } from '../components/Actions/utils';
 import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
@@ -628,6 +629,7 @@ interface BlockInfo {
 
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
+  const renderStartAt = useRef(0);
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
@@ -1847,6 +1849,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [engineResults, currentTx]);
 
   useEffect(() => {
+    renderStartAt.current = Date.now();
     init();
   }, []);
 
@@ -1855,6 +1858,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       if (scrollRef.current && scrollRef.current.scrollTop > 0) {
         scrollRef.current && (scrollRef.current.scrollTop = 0);
       }
+      const duration = Date.now() - renderStartAt.current;
+      stats.report('signPageRenderTime', {
+        type: 'transaction',
+        actionType: getActionTypeText(actionData),
+        chain: chain?.serverId || '',
+        duration,
+      });
     }
   }, [isReady]);
 

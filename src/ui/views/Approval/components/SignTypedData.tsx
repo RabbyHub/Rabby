@@ -35,6 +35,7 @@ import {
   TypedDataActionData,
   formatSecurityEngineCtx,
   normalizeTypeData,
+  getActionTypeText,
 } from './TypedDataActions/utils';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
@@ -43,6 +44,7 @@ import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
 import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
+import stats from '@/stats';
 
 interface SignTypedDataProps {
   method: string;
@@ -58,6 +60,7 @@ interface SignTypedDataProps {
 }
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
+  const renderStartAt = useRef(0);
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -513,10 +516,23 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [scrollInfo, scrollRefSize]);
 
   useEffect(() => {
+    renderStartAt.current = Date.now();
     init();
     checkWachMode();
     report('createSignText');
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const duration = Date.now() - renderStartAt.current;
+      stats.report('signPageRenderTime', {
+        type: 'typedata',
+        actionType: getActionTypeText(parsedActionData),
+        chain: chain?.serverId || '',
+        duration,
+      });
+    }
+  }, [isLoading]);
 
   return (
     <>
