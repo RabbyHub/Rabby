@@ -53,6 +53,15 @@ Run `yarn build:dev` to develop with file watching and development log(you can s
 
 Run `yarn build:pro` to build a production package, it's in dist folder
 
+#### Loading extension in chrome
+
+1. In Chrome open the extensions page via settings
+2. On the extension page enable "Developer mode" in the top right
+3. Click "Load Unpacked" button in the top left
+4. Select the `/dist` folder in this package
+
+You should now see the Rabby extension installed in your browser. You can view errors by loading the extensions page and clicking "Errors" on the Rabby Wallet card.
+
 ## Architecture
 
 ![architecture](./docs/architecture.png)
