@@ -94,11 +94,15 @@ function NFTItemBadge({
 function ApprovalAmountInfo({
   className,
   amountValue,
-  balanceValue,
+  balanceNumText,
+  balanceUnitText,
+  minWidthLimit,
 }: {
   className?: string;
   amountValue: string | number;
-  balanceValue: string | number;
+  balanceNumText: string | number;
+  balanceUnitText: string;
+  minWidthLimit?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -109,10 +113,8 @@ function ApprovalAmountInfo({
   }, [amountValue]);
 
   const balanceText = useMemo(() => {
-    if (typeof balanceValue !== 'number') return balanceValue;
-
-    return formatNumber(balanceValue);
-  }, [balanceValue]);
+    return `${balanceNumText} ${balanceUnitText}`;
+  }, [balanceNumText, balanceUnitText]);
 
   return (
     <div
@@ -142,16 +144,22 @@ function ApprovalAmountInfo({
       {balanceText && (
         <div className="inline-flex">
           <Tooltip
-            overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
-            // My Balance
-            overlay={t(
-              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+            overlayClassName={clsx(
+              'J-modal-item__tooltip disable-ant-overwrite',
+              minWidthLimit && 'min-width-limit'
             )}
+            // My Balance
+            overlay={`${t(
+              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+            )}: ${balanceText}`}
             align={{ offset: [0, 3] }}
             arrowPointAtCenter
           >
-            <span className="text-12 font-nomral text-r-neutral-foot">
-              {balanceText}
+            <span className="text-12 font-nomral text-r-neutral-foot inline-flex">
+              <span className="whitespace-pre max-w-[8em] overflow-hidden overflow-ellipsis flex-shrink-1">
+                {balanceNumText}
+              </span>
+              <span className="flex-shrink-0">{balanceUnitText}</span>
             </span>
           </Tooltip>
         </div>
@@ -311,11 +319,14 @@ export const RevokeApprovalModal = (props: {
                 {...(spenderValues
                   ? {
                       amountValue: spenderValues.displayAmountText,
-                      balanceValue: spenderValues.displayBalanceText,
+                      balanceNumText: spenderValues.balanceNumText,
+                      balanceUnitText: spenderValues.balanceUnitText,
+                      minWidthLimit: !spenderValues.isTokenType,
                     }
                   : {
                       amountValue: 'amount' in e ? e.amount : '',
-                      balanceValue: '',
+                      balanceNumText: '',
+                      balanceUnitText: '',
                     })}
               />
               <ThemeIcon
@@ -389,7 +400,9 @@ export const RevokeApprovalModal = (props: {
               {item.type === 'token' && spendValues && (
                 <ApprovalAmountInfo
                   amountValue={spendValues.displayAmountText}
-                  balanceValue={spendValues.displayBalanceText}
+                  balanceNumText={spendValues.balanceNumText}
+                  balanceUnitText={spendValues.balanceUnitText}
+                  minWidthLimit={false}
                 />
               )}
               <ThemeIcon
