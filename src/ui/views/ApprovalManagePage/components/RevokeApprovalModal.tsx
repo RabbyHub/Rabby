@@ -510,7 +510,7 @@ export const RevokeApprovalModal = (props: {
 
         <section
           className={clsx(
-            'max-h-[100%] overflow-x-hidden rounded-[6px] pb-[12px] flex-shrink-1 approval-list'
+            'max-h-[100%] overflow-x-hidden pb-[12px] flex-shrink-1 approval-list'
           )}
           style={{
             overflowY: 'overlay',
