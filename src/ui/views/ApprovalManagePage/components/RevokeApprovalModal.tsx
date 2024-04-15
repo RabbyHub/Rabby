@@ -144,25 +144,25 @@ function ApprovalAmountInfo({
       )}
 
       {balanceText && (
-        <div className="text-12 font-nomral text-r-neutral-foot inline-flex justify-end">
-          <Tooltip
-            overlayClassName={clsx(
-              'J-modal-item__tooltip disable-ant-overwrite',
-              minWidthLimit && 'min-width-limit'
-            )}
-            // My Balance
-            overlay={`${t(
-              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
-            )}: ${balanceText}`}
-            align={{ offset: [0, 3] }}
-            arrowPointAtCenter
-          >
+        <Tooltip
+          overlayClassName={clsx(
+            'J-modal-item__tooltip disable-ant-overwrite',
+            minWidthLimit && 'min-width-limit'
+          )}
+          // My Balance
+          overlay={`${t(
+            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+          )}: ${balanceText}`}
+          align={{ offset: [0, 3] }}
+          arrowPointAtCenter
+        >
+          <div className="text-12 font-nomral text-r-neutral-foot inline-flex justify-end">
             <span className="whitespace-pre max-w-[8em] overflow-hidden overflow-ellipsis flex-shrink-1">
               {balanceNumText}
             </span>
             <span className="flex-shrink-0">{balanceUnitText}</span>
-          </Tooltip>
-        </div>
+          </div>
+        </Tooltip>
       )}
     </div>
   );
@@ -245,7 +245,7 @@ export const RevokeApprovalModal = (props: {
             className={clsx(
               'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
               isLastOne && 'rounded-b-[6px]',
-              'first:mt-0 dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
+              'first:mt-0 first:rounded-t-[6px] dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -327,7 +327,7 @@ export const RevokeApprovalModal = (props: {
                         amountValue: spenderValues.displayAmountText,
                         balanceNumText: spenderValues.balanceNumText,
                         balanceUnitText: spenderValues.balanceUnitText,
-                        minWidthLimit: !spenderValues.isTokenType,
+                        minWidthLimit: spenderValues.isCollectionHasNFTs,
                       }
                     : {
                         amountValue: 'amount' in e ? e.amount : '',
@@ -372,6 +372,7 @@ export const RevokeApprovalModal = (props: {
           className={clsx(
             'relative px-[16px] bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
             isLastOne && 'rounded-b-[6px]',
+            'first:rounded-t-[6px]',
             !risky ? 'h-[51px] ' : 'flex-col pt-[13px]'
           )}
           onClick={(e) => {

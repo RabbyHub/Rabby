@@ -333,7 +333,7 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let bigValue = new BigNumber(absValue);
 
   const isUnlimited = bigValue.gte(10 ** 9);
-  let isTokenType = false;
+  let isCollectionHasNFTs = false;
   const resTexts = {
     displayAmountText: '',
     displayBalanceText: '',
@@ -355,6 +355,8 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
           ? 'NFTs'
           : 'NFT'
         : '';
+      isCollectionHasNFTs = !!nftCount && parseInt(nftCount) > 1;
+
       resTexts.displayBalanceText =
         [`${resTexts.balanceNumText}`, `${resTexts.balanceUnitText}`]
           .filter(Boolean)
@@ -389,7 +391,6 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
       }
     }
   } else if (spender.$assetParent?.type === 'token') {
-    isTokenType = true;
     const stepNumberText = splitNumberByStep(bigValue.toFixed(2));
     resTexts.displayAmountText = isUnlimited
       ? 'Unlimited'
@@ -408,7 +409,7 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
 
   return {
     bigValue,
-    isTokenType,
+    isCollectionHasNFTs,
     isUnlimited,
     ...resTexts,
     nftOrderScore,
