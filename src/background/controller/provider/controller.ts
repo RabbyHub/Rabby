@@ -56,6 +56,7 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import { customTestnetService } from '@/background/service/customTestnet';
 import { sendTransaction } from 'viem/actions';
+import { SIGN_TIMEOUT } from '@/constant/timeout';
 // import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
@@ -440,7 +441,7 @@ class ProviderController extends BaseController {
     const chainItem = findChainByEnum(chain);
 
     // wait ui
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
 
     const statsData: StatsData = {
       signed: false,
@@ -777,7 +778,7 @@ class ProviderController extends BaseController {
     if (!data.params) return;
 
     // wait ui
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
 
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
@@ -822,7 +823,7 @@ class ProviderController extends BaseController {
     }
 
     // wait ui
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
 
     return keyringService.signTypedMessage(
       keyring,
