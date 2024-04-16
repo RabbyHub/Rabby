@@ -630,6 +630,7 @@ interface BlockInfo {
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const renderStartAt = useRef(0);
+  const actionType = useRef('');
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
@@ -1085,6 +1086,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         addr: address,
       })
       .then(async (actionData) => {
+        actionType.current = actionData?.action?.type || '';
         return preExecPromise.then(async (res) => {
           const parsed = parseAction(
             actionData.action,
@@ -1861,7 +1863,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       const duration = Date.now() - renderStartAt.current;
       stats.report('signPageRenderTime', {
         type: 'transaction',
-        actionType: getActionTypeText(actionData),
+        actionType: actionType.current,
         chain: chain?.serverId || '',
         duration,
       });
