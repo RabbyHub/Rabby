@@ -494,7 +494,7 @@ export const RevokeApprovalModal = (props: {
       closeIcon={<RcIconClose />}
     >
       <div className="flex flex-col h-[100%]">
-        <div className="mt-0 mb-18 flex-shrink-0">
+        <div className="mt-0 mb-0 flex-shrink-0">
           <ApprovalContractItem data={[item]} index={0} />
         </div>
 
