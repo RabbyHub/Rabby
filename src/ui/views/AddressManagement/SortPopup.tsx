@@ -58,7 +58,7 @@ export const AddressSortPopup = ({
     <Popup
       title={
         <span className="relative -top-2">
-          t('page.manageAddress.sort-address')
+          {t('page.manageAddress.sort-address')}
         </span>
       }
       closable
