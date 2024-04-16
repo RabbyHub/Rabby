@@ -96,18 +96,18 @@ const QRHardWareWaiting = ({ params }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
 
-    let currentSignId = null;
-    if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
-      currentSignId = await wallet.requestKeyring(
-        KEYSTONE_TYPE,
-        'exportCurrentSignRequestIdIfExist',
-        null
-      );
-    }
-
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      ({ request }) => {
+      async ({ request }) => {
+        let currentSignId = null;
+        if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
+          currentSignId = await wallet.requestKeyring(
+            KEYSTONE_TYPE,
+            'exportCurrentSignRequestIdIfExist',
+            null
+          );
+        }
+
         if (currentSignId) {
           if (currentSignId === request.requestId) {
             setSignPayload(request);
