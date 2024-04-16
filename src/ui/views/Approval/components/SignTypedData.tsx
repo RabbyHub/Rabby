@@ -61,6 +61,7 @@ interface SignTypedDataProps {
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const renderStartAt = useRef(0);
+  const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -494,6 +495,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
     if (!loading) {
       if (typedDataActionData) {
+        actionType.current = typedDataActionData?.action?.type || '';
         const parsed = parseAction(typedDataActionData, signTypedData, sender);
         setParsedActionData(parsed);
         getRequireData(parsed);
@@ -527,7 +529,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       const duration = Date.now() - renderStartAt.current;
       stats.report('signPageRenderTime', {
         type: 'typedata',
-        actionType: getActionTypeText(parsedActionData),
+        actionType: actionType.current,
         chain: chain?.serverId || '',
         duration,
       });

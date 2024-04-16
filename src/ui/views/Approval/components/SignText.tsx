@@ -50,6 +50,7 @@ interface SignTextProps {
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const renderStartAt = useRef(0);
+  const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -301,6 +302,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }
+    actionType.current = textActionData?.action?.type || '';
     const parsed = parseAction(textActionData, signText, sender);
     setParsedActionData(parsed);
     const ctx = formatSecurityEngineCtx({
@@ -352,7 +354,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       const duration = Date.now() - renderStartAt.current;
       stats.report('signPageRenderTime', {
         type: 'text',
-        actionType: getActionTypeText(parsedActionData),
+        actionType: actionType.current,
         chain: '',
         duration,
       });
