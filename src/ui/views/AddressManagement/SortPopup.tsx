@@ -56,7 +56,11 @@ export const AddressSortPopup = ({
   );
   return (
     <Popup
-      title={t('page.manageAddress.sort-address')}
+      title={
+        <span className="relative -top-2">
+          t('page.manageAddress.sort-address')
+        </span>
+      }
       closable
       visible={open}
       height={258}

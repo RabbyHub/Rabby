@@ -59,6 +59,7 @@ import SwitchThemeModal from './components/SwitchThemeModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList, getMainnetChainList } from '@/utils/chain';
+import { SvgIconCross } from '@/ui/assets';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -606,6 +607,9 @@ const SettingsInner = ({
         width: 320,
         closable: true,
         centered: true,
+        closeIcon: (
+          <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
+        ),
         className: clsx(updateVersionClassName, 'modal-support-darkmode'),
         title: t('page.dashboard.settings.updateVersion.title'),
         content: (
