@@ -2561,7 +2561,7 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     const keyring: KeystoneKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      keyring.getInteraction().on(MemStoreDataReady, (request) => {
+      keyring.getInteraction().once(MemStoreDataReady, (request) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
           params: {
