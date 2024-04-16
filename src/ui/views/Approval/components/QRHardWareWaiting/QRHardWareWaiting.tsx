@@ -25,6 +25,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
+import { SIGN_TIMEOUT } from '@/constant/timeout';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -95,18 +96,18 @@ const QRHardWareWaiting = ({ params }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
 
-    let currentSignId = null;
-    if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
-      currentSignId = await wallet.requestKeyring(
-        KEYSTONE_TYPE,
-        'exportCurrentSignRequestIdIfExist',
-        null
-      );
-    }
-
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      ({ request }) => {
+      async ({ request }) => {
+        let currentSignId = null;
+        if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
+          currentSignId = await wallet.requestKeyring(
+            KEYSTONE_TYPE,
+            'exportCurrentSignRequestIdIfExist',
+            null
+          );
+        }
+
         if (currentSignId) {
           if (currentSignId === request.requestId) {
             setSignPayload(request);
@@ -147,7 +148,10 @@ const QRHardWareWaiting = ({ params }) => {
         // rejectApproval(data.errorMsg);
       }
     });
-    await wallet.acquireKeystoneMemStoreData();
+    // Wait for the keyring to have called the signature method
+    setTimeout(() => {
+      wallet.acquireKeystoneMemStoreData();
+    }, SIGN_TIMEOUT);
   }, []);
 
   React.useEffect(() => {
