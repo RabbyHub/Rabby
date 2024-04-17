@@ -116,10 +116,7 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
-          const {
-            defaultChain,
-            signPermission,
-          } = await notificationService.requestApproval(
+          const { defaultChain } = await notificationService.requestApproval(
             {
               params: { origin, name, icon },
               approvalComponent: 'Connect',
@@ -132,7 +129,6 @@ const flowContext = flow
             name,
             icon,
             defaultChain,
-            signPermission,
           });
         } catch (e) {
           connectOrigins.delete(origin);

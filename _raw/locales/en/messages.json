@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} chains supported",
+      "title": "{{count}} chains Integrated",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -1026,7 +1026,7 @@
         "settings": {
           "label": "Settings",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
-          "customRpc": "Custom RPC",
+          "customRpc": "Modify RPC URL",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets",
@@ -1037,7 +1037,7 @@
         "aboutUs": "About us",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
-        "supportedChains": "Supported Chains",
+        "supportedChains": "Integrated Chains",
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
@@ -1108,7 +1108,7 @@
         "comingSoon": "Coming Soon...",
         "searchPlaceholder": "Tokens",
         "AddTestnetToken": {
-          "title": "Add Testnet Token",
+          "title": "Add Custom Network Token",
           "selectChain": "Select chain",
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
@@ -1484,7 +1484,7 @@
       "noTokenFoundOnThisChain": "No token found on this chain"
     },
     "switchChain": {
-      "title": "Switching to {{chain}}",
+      "title": "Add Custom Network to Rabby",
       "chainNotSupport": "The requested chain is not supported by Rabby yet",
       "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets",
       "chainNotSupportYet": "The requested chain is not supported by Rabby yet",
@@ -1494,7 +1494,8 @@
       "requestsReceivedPlural": "{{count}} requests received",
       "requestRabbyToSupport": "Request Rabby to Support",
       "chainNotSupportAddChain": "The requested chain is not Integrated by Rabby yet You can add it as a Custom Testnet",
-      "addChain": "Add Testnet"
+      "addChain": "Add Testnet",
+      "desc": "The requested network is not Integrated by Rabby yet You can add it as a custom network manually"
     },
     "signText": {
       "title": "Sign Text",
@@ -1606,7 +1607,7 @@
         "rpcUrlPlaceholder": "Enter the RPC URL"
       },
       "EditCustomTestnetModal": {
-        "title": "Add Testnet",
+        "title": "Add Custom Network",
         "quickAdd": "Quick add from Chainlist"
       }
     },
@@ -1843,10 +1844,10 @@
       "code-set-successfully": "Referral code set successfully"
     },
     "customTestnet": {
-      "title": "Custom Testnet",
-      "desc": "Rabby cannot verify the security of custom testnets. Please add trusted networks only.",
-      "add": "Add Testnet",
-      "empty": "No Custom Testnet",
+      "title": "Custom Network",
+      "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only.",
+      "add": "Add Custom Network",
+      "empty": "No Custom Network",
       "currency": "Currency",
       "id": "ID",
       "CustomTestnetForm": {
@@ -1869,6 +1870,10 @@
           "supported": "Chain already supported by Rabby Wallet"
         }
       }
+    },
+    "addChain": {
+      "title": "Add Custom Network to Rabby",
+      "desc": "The requested network is not Integrated by Rabby yet You can add it as a custom network manually"
     }
   },
   "component": {
@@ -1956,14 +1961,14 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Mainnets",
-        "testnet": "Testnets"
+        "mainnet": "Integrated Network",
+        "testnet": "Custom Network"
       }
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "Search chain",
       "noChains": "No chains",
-      "addTestnet": "Custom Testnet"
+      "addTestnet": "Add Custom Network"
     },
     "TokenSelector": {
       "listTableHead": {
@@ -2036,7 +2041,8 @@
     "Balance": "Balance",
     "Done": "Done",
     "Nonce": "Nonce",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "notSupportTesntnet": "Not supported for custom network"
   },
   "background": {
     "error": {

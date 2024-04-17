@@ -1048,11 +1048,6 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1066,7 +1061,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );
@@ -1124,11 +1118,6 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1142,7 +1131,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );

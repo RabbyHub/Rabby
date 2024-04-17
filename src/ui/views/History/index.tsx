@@ -55,7 +55,7 @@ const History = () => {
           <Empty
             desc={
               <div className="mt-[-12px] text-r-neutral-foot leading-[20px]">
-                Not supported on Testnets
+                {t('global.notSupportTesntnet')}
               </div>
             }
             className="pt-[108px]"

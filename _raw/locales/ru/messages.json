@@ -25,7 +25,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} блокчейнов поддерживается",
+      "title": "",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -205,8 +205,6 @@
       "firstOnChain": "Первый на блокчейне",
       "trustValue": "Доверительное значение",
       "importedDelegatedAddress": "Импортированный делегированный адрес",
-      "noDelegatedAddress": "Нет импортированного делегированного адреса",
-      "coboSafeNotPermission": "У этого делегированного адреса нет разрешения на инициацию этой транзакции",
       "noDelegatedAddress": "Нет импортированного делегированного адреса",
       "coboSafeNotPermission": "У этого испортированного делигированного адреса нет разрешения на инициацию транзакции",
       "l2GasEstimateTooltip": "Оценка газа для L2 не включает газ L1. Итоговая стоимость газа будет выше.",
@@ -995,7 +993,7 @@
         "settings": {
           "label": "Настройки",
           "enableWhitelistForSendingAssets": "Включить белый список для отправки активов",
-          "customRpc": "Пользовательский RPC",
+          "customRpc": "",
           "metamaskPreferredDapps": "Предпочитаемые dApp для MetaMask",
           "currentLanguage": "Текущий язык",
           "enableTestnets": "Включить тестовые сети",
@@ -1005,7 +1003,7 @@
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
         "updateAvailable": "Доступно обновление",
-        "supportedChains": "Поддерживаемые сети",
+        "supportedChains": "",
         "followUs": "Подписаться",
         "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",
         "clearWatchMode": "Очистить Режим Просмотра",
@@ -1430,7 +1428,7 @@
       "noTokenFoundOnThisChain": "В этой сети токен не найден"
     },
     "switchChain": {
-      "title": "Переключение на {{chain}}",
+      "title": "",
       "chainNotSupport": "Запрошенная сеть еще не поддерживается Rabby",
       "testnetTip": "Пожалуйста, включите \"Включить тестовые сети\" в разделе \"Еще\" перед подключением к тестовым сетям",
       "chainNotSupportYet": "Запрошенная сеть пока не поддерживается Rabby",
@@ -1806,8 +1804,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Основные сети",
-        "testnet": "Тестовые сети"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

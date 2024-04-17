@@ -20,7 +20,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}}つのチェーンが対応",
+      "title": "",
       "mainnet": "メインネット",
       "testnet": "テストネット"
     },
@@ -848,7 +848,7 @@
         "settings": {
           "label": "設定",
           "enableWhitelistForSendingAssets": "資産の送信にホワイトリストを有効にする",
-          "customRpc": "カスタムRPC",
+          "customRpc": "",
           "metamaskPreferredDapps": "MetaMask 優先Dapps",
           "currentLanguage": "現在の言語",
           "enableTestnets": "テストネットを有効にする"
@@ -856,7 +856,7 @@
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
         "updateAvailable": "アップデートが利用可能",
-        "supportedChains": "サポートされているチェーン",
+        "supportedChains": "",
         "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
@@ -1244,7 +1244,7 @@
       "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません"
     },
     "switchChain": {
-      "title": "{{chain}} に切り替え中",
+      "title": "",
       "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
       "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください"
     },
@@ -1523,8 +1523,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "メインネット",
-        "testnet": "テストネット"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

@@ -13,7 +13,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} cadenas soportadas",
+      "title": "",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -823,7 +823,7 @@
         "settings": {
           "label": "Configuración",
           "enableWhitelistForSendingAssets": "Habilitar Lista Blanca para Enviar Activos",
-          "customRpc": "RPC Personalizado",
+          "customRpc": "",
           "metamaskPreferredDapps": "Dapps Preferidas de MetaMask",
           "currentLanguage": "Idioma Actual",
           "enableTestnets": "Habilitar Testnets"
@@ -831,7 +831,7 @@
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
         "updateAvailable": "Actualización Disponible",
-        "supportedChains": "Cadenas Soportadas",
+        "supportedChains": "",
         "followUs": "Síguenos",
         "testnetBackendServiceUrl": "URL de Servicio de Backend de Testnet",
         "clearWatchMode": "Limpiar Modo de Observación",
@@ -1209,7 +1209,7 @@
       "noTokenFoundOnThisChain": "No se encontró ningún token en esta cadena"
     },
     "switchChain": {
-      "title": "Cambiar a {{chain}}",
+      "title": "",
       "chainNotSupport": "La cadena solicitada aún no es compatible con Rabby",
       "testnetTip": "Por favor, active \"Habilitar Testnets\" en \"Más\" antes de conectarse a las testnets"
     },
@@ -1485,8 +1485,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Mainnets",
-        "testnet": "Testnets"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

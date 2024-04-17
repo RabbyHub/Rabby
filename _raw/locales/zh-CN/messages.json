@@ -215,7 +215,7 @@
         "reset": "恢复初始设置",
         "save": "保存",
         "settings": {
-          "customRpc": "自定义 RPC",
+          "customRpc": "",
           "enableWhitelistForSendingAssets": "启用转账白名单",
           "label": "设置",
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
@@ -223,9 +223,9 @@
           "currentLanguage": "当前语言",
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
-          "customTestnet": "自定义测试网"
+          "customTestnet": ""
         },
-        "supportedChains": "支持的链",
+        "supportedChains": "",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
         "updateVersion": {
@@ -330,7 +330,7 @@
       }
     },
     "chainList": {
-      "title": "支持 {{count}} 条链",
+      "title": "",
       "mainnet": "主网",
       "testnet": "测试网"
     },
@@ -1483,7 +1483,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
-      "title": "切换到{{chain}}",
+      "title": "",
       "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接"
     },
     "unlock": {
@@ -1722,8 +1722,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "主网",
-        "testnet": "测试网"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {
