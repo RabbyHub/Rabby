@@ -1032,7 +1032,7 @@
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
-          "customTestnet": "Custom Testnet"
+          "customTestnet": "Add Custom Network"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",

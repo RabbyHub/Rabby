@@ -223,7 +223,7 @@
           "currentLanguage": "當前語言",
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
-          "customTestnet": "自定義測試網"
+          "customTestnet": ""
         },
         "supportedChains": "支持的鏈",
         "testnetBackendServiceUrl": "測試網後端服務 URL",

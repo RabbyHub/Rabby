@@ -23,6 +23,7 @@ i18n
       skipOnVariables: true,
     },
     returnNull: false,
+    returnEmptyString: false,
   });
 
 export const I18N_NS = 'translations';
