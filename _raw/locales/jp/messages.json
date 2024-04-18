@@ -1345,15 +1345,15 @@
     "customRpc": {
       "opened": "オープン",
       "closed": "クローズ",
-      "empty": "カスタムRPCがありません",
-      "title": "カスタムRPC",
-      "desc": "カスタムRPCを有効にすると、Rabbyがデフォルトのノードとして置き換えられます。Rabbyを引き続き使用するには、カスタムRPCノードを無効にするか削除してください。",
-      "add": "RPCを追加",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "無効なRPC URL",
         "invalidChainId": "無効なチェーンID",
         "rpcAuthFailed": "RPC認証に失敗しました",
-        "title": "RPCを編集",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URLを入力してください"
       }

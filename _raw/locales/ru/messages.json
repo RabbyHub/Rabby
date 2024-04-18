@@ -1535,15 +1535,15 @@
     "customRpc": {
       "opened": "Открыто",
       "closed": "Закрыто",
-      "empty": "Нет пользовательского RPC",
-      "title": "Пользовательский RPC",
-      "desc": "Включение пользовательского RPC заменит Rabby в качестве узла по умолчанию. Чтобы продолжить использование Rabby, отключите или удалите пользовательский узел RPC.",
-      "add": "Добавить RPC",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "Недействительный URL RPC",
         "invalidChainId": "Недействительный ID цепи",
         "rpcAuthFailed": "Аутентификация RPC не удалась",
-        "title": "Редактировать RPC",
+        "title": "",
         "rpcUrl": "URL RPC",
         "rpcUrlPlaceholder": "Введите URL RPC"
       }

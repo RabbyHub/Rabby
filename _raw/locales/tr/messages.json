@@ -1315,15 +1315,15 @@
     "customRpc": {
       "opened": "Açık",
       "closed": "Kapalı",
-      "empty": "Özel RPC yok",
-      "title": "Özel RPC",
-      "desc": "Özel RPC'yi etkinleştirmek, Rabby'yi varsayılan node olarak değiştirir. Rabby'yi kullanmaya devam etmek için, lütfen özel RPC node'unu devre dışı bırakın veya kaldırın.",
-      "add": "RPC Ekle",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "Geçersiz RPC URL'i",
         "invalidChainId": "Geçersiz Zincir ID'si",
         "rpcAuthFailed": "RPC doğrulaması başarısız",
-        "title": "RPC Düzenle",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URL'sini girin"
       }

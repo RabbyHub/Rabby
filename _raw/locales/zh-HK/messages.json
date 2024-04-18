@@ -1529,17 +1529,17 @@
       "empty": "No dapps"
     },
     "customRpc": {
-      "title": "自定義 RPC",
-      "desc": "添加的自定義RPC將替代Rabby默認的節點。如果想要繼續用Rabby的節點，請關閉或刪除自定義RPC節點。",
-      "add": "添加自定義 RPC",
-      "empty": "未添加自定義 RPC",
+      "title": "",
+      "desc": "",
+      "add": "",
+      "empty": "",
       "opened": "已打開",
       "closed": "已關閉",
       "EditRPCModal": {
         "invalidRPCUrl": " RPC URL 無效",
         "invalidChainId": "Chain ID 無效",
         "rpcAuthFailed": "RPC 驗證失敗",
-        "title": "編輯 RPC",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "輸入 RPC URL"
       }

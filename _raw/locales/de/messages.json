@@ -1382,15 +1382,15 @@
     "customRpc": {
       "opened": "Geöffnet",
       "closed": "Geschlossen",
-      "empty": "Keine benutzerdefinierten RPCs",
-      "title": "Benutzerdefinierte RPCs",
-      "desc": "Das Aktivieren von benutzerdefinierten RPCs ersetzt Rabby als Standardknoten. Um Rabby weiterhin zu verwenden, deaktivieren oder entfernen Sie den benutzerdefinierten RPC-Knoten.",
-      "add": "RPC hinzufügen",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "Ungültige RPC-URL",
         "invalidChainId": "Ungültige Chain-ID",
         "rpcAuthFailed": "Authentifizierung für RPC fehlgeschlagen",
-        "title": "RPC bearbeiten",
+        "title": "",
         "rpcUrl": "RPC-URL",
         "rpcUrlPlaceholder": "Geben Sie die RPC-URL ein"
       }

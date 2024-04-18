@@ -1594,15 +1594,15 @@
     "customRpc": {
       "opened": "Opened",
       "closed": "Closed",
-      "empty": "No custom RPC",
-      "title": "Custom RPC",
-      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
-      "add": "Add RPC",
+      "empty": "No custom RPC URL",
+      "title": "Modify RPC URL",
+      "desc": "Once modified, the custom RPC will replace Rabby's node. To continue using Rabby's node, delete the custom RPC.",
+      "add": "Modify RPC URL",
       "EditRPCModal": {
         "invalidRPCUrl": "Invalid RPC URL",
         "invalidChainId": "Invalid Chain ID",
         "rpcAuthFailed": "RPC authentication failed",
-        "title": "Edit RPC",
+        "title": "Modify RPC URL",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "Enter the RPC URL"
       },

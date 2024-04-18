@@ -1,27 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { CHAINS_ENUM, CHAINS } from '@debank/common';
-import { message, Button, Switch } from 'antd';
-import styled from 'styled-components';
-import { RPCItem } from 'background/service/rpc';
-import { PageHeader } from 'ui/component';
-import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import ChainIcon from 'ui/component/ChainIcon';
-import EditRPCModal from './components/EditRPCModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import IconEdit, {
-  ReactComponent as RcIconEdit,
-} from 'ui/assets/custom-rpc/edit.svg';
-import IconDelete, {
-  ReactComponent as RcIconDelete,
-} from 'ui/assets/custom-rpc/delete.svg';
-import IconSuccess, {
-  ReactComponent as RcIconSuccess,
-} from 'ui/assets/success.svg';
-import './style.less';
-import { findChainByEnum } from '@/utils/chain';
-import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { findChainByEnum } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { CHAINS_ENUM } from '@debank/common';
+import { Button, Switch, message } from 'antd';
+import { RPCItem } from 'background/service/rpc';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { ReactComponent as RcIconDelete } from 'ui/assets/custom-rpc/delete.svg';
+import { ReactComponent as RcIconEdit } from 'ui/assets/custom-rpc/edit.svg';
+import IconSuccess from 'ui/assets/success.svg';
+import { PageHeader } from 'ui/component';
+import ChainIcon from 'ui/component/ChainIcon';
+import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
+import EditRPCModal from './components/EditRPCModal';
+import './style.less';
 
 const RPCItemWrapper = styled.div`
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
@@ -297,7 +291,7 @@ const CustomRPC = () => {
       >
         {t('page.customRpc.title')}
       </PageHeader>
-      <p className="text-r-neutral-body text-14 mb-20 px-20">
+      <p className="text-r-neutral-body text-[13px] mb-20 px-20">
         {t('page.customRpc.desc')}
       </p>
       {rpcList.length <= 0 ? (
@@ -313,7 +307,7 @@ const CustomRPC = () => {
         <Button
           size="large"
           type="primary"
-          className="w-[172px]"
+          className="w-[200px]"
           onClick={handleClickAdd}
         >
           {t('page.customRpc.add')}

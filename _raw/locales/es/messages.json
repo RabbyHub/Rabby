@@ -1307,15 +1307,15 @@
     "customRpc": {
       "opened": "Abierto",
       "closed": "Cerrado",
-      "empty": "Sin RPC personalizados",
-      "title": "RPC Personalizado",
-      "desc": "Habilitar un RPC personalizado reemplazará a Rabby como nodo predeterminado. Para seguir usando Rabby, por favor deshabilita o elimina el nodo RPC personalizado.",
-      "add": "Agregar RPC",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "URL de RPC inválido",
         "invalidChainId": "ID de cadena inválido",
         "rpcAuthFailed": "Autenticación RPC fallida",
-        "title": "Editar RPC",
+        "title": "",
         "rpcUrl": "URL de RPC",
         "rpcUrlPlaceholder": "Ingresa la URL de RPC"
       }
