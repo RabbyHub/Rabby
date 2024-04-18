@@ -23,6 +23,7 @@ import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const Footer = styled.div`
   height: 76px;
@@ -61,6 +62,10 @@ export const CustomTestnet = () => {
       states: {
         ...next,
       },
+    });
+    matomoRequestEvent({
+      category: 'Custom Network',
+      action: 'Click Add Network',
     });
   };
 

@@ -120,6 +120,14 @@ restoreAppState();
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
+    const customTestnetLength = customTestnetService.getList()?.length;
+    if (customTestnetLength) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Custom Network Status',
+        value: customTestnetLength,
+      });
+    }
     if (interval) {
       clearInterval(interval);
     }

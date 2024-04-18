@@ -15,6 +15,7 @@ import { PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { AddFromChainList } from './AddFromChainList';
 import { CustomTestnetForm } from './CustomTestnetForm';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -132,6 +133,10 @@ export const EditCustomTestnetModal = ({
               )}
               onClick={() => {
                 setIsShowAddFromChainList(true);
+                matomoRequestEvent({
+                  category: 'Custom Network',
+                  action: 'Click Add From ChanList',
+                });
               }}
             >
               <ThemeIcon src={RcIconFlash}></ThemeIcon>
@@ -179,6 +184,11 @@ export const EditCustomTestnetModal = ({
         onSelect={(item) => {
           form.setFieldsValue(item);
           setIsShowAddFromChainList(false);
+          matomoRequestEvent({
+            category: 'Custom Network',
+            action: 'Choose ChainList Network',
+            label: String(item.id),
+          });
         }}
       />
     </Popup>
