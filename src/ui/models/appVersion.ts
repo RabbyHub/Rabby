@@ -10,7 +10,7 @@ type IState = {
 };
 
 /**
- * @description state about user installtion, app version
+ * @description state about user installation, app version
  */
 export const appVersion = createModel<RootModel>()({
   name: 'appVersion',

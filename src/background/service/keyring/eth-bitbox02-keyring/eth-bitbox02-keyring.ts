@@ -220,7 +220,7 @@ class BitBox02Keyring extends EventEmitter {
       );
       const correctAddress = ethUtil.toChecksumAddress(address);
       if (addressSignedWith !== correctAddress) {
-        throw new Error('signature doesnt match the right address');
+        throw new Error('signature doesn't match the right address');
       }
       return signedTx;
     });
@@ -278,7 +278,7 @@ class BitBox02Keyring extends EventEmitter {
         ethUtil.toChecksumAddress(addressSignedWith) !==
         ethUtil.toChecksumAddress(withAccount)
       ) {
-        throw new Error('The signature doesnt match the right address');
+        throw new Error('The signature doesn't match the right address');
       }
       return sigHex;
     });

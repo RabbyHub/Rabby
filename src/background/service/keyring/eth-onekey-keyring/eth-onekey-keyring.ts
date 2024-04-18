@@ -422,7 +422,7 @@ class OneKeyKeyring extends EventEmitter {
           );
           const correctAddress = ethUtil.toChecksumAddress(address);
           if (addressSignedWith !== correctAddress) {
-            throw new Error('signature doesnt match the right address');
+            throw new Error('signature doesn't match the right address');
           }
 
           return newOrMutatedTx;
@@ -459,7 +459,7 @@ class OneKeyKeyring extends EventEmitter {
                         ethUtil.toChecksumAddress(withAccount)
                       ) {
                         reject(
-                          new Error('signature doesnt match the right address')
+                          new Error('signature doesn't match the right address')
                         );
                       }
                       const signature = `0x${response.payload.signature}`;
@@ -563,7 +563,7 @@ class OneKeyKeyring extends EventEmitter {
                         ) {
                           reject(
                             new Error(
-                              'signature doesnt match the right address'
+                              'signature doesn't match the right address'
                             )
                           );
                         }

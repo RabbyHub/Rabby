@@ -480,7 +480,7 @@ class LedgerBridgeKeyring {
           ethUtil.toChecksumAddress(withAccount)
         ) {
           throw new Error(
-            'Ledger: The signature doesnt match the right address'
+            'Ledger: The signature doesn't match the right address'
           );
         }
         return signature;

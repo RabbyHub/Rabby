@@ -184,7 +184,7 @@ export class EthereumProvider extends EventEmitter {
         break;
 
       default:
-        throw new Error('sync method doesnt support');
+        throw new Error('sync method doesn't support');
     }
 
     return {
