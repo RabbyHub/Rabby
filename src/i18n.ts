@@ -42,4 +42,9 @@ i18n.on('languageChanged', function (lng) {
   addResourceBundle(lng);
 });
 
+export const changeLanguage = (locale: string) => {
+  i18n.changeLanguage(locale);
+  document.documentElement.lang = locale;
+};
+
 export default i18n;
