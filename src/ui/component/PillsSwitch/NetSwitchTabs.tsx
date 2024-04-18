@@ -65,7 +65,7 @@ export default function NetSwitchTabs(props: SwitchTabProps) {
   return (
     <PillsSwitch
       {...props}
-      className="flex bg-r-neutral-line w-[260px] mx-[auto] my-[0] h-[28px] p-[2px] mb-[14px]"
+      className="flex bg-r-neutral-line w-[260px] mx-[auto] my-[0] h-[32px] p-[2px] mb-[14px]"
       itemClassname={clsx('w-[128px] text-[12px]')}
       itemClassnameActive="bg-r-neutral-bg-1"
       itemClassnameInActive={clsx(

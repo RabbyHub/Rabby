@@ -1116,7 +1116,7 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
-          "addTestnet": "Testnet"
+          "addTestnet": "Network"
         },
         "noTestnetAssets": "No Custom Network Assets"
       },

@@ -19,11 +19,11 @@ const TabsStyled = styled(Tabs)`
   .ant-tabs-tab {
     border-radius: 4px;
     color: var(--r-neutral-body, #3e495e);
-    font-size: 13px;
+    font-size: 12px;
     transition: all 0.3s ease-in-out;
     margin: 0 !important;
     width: 100px;
-    height: 24px;
+    height: 28px;
     font-weight: 500;
     padding: 0;
     text-align: center;

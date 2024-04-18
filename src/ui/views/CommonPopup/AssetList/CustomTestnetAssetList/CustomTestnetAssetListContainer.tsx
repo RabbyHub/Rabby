@@ -86,7 +86,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   );
 
   if (!isFetched && !search) {
-    return <TokenListViewSkeleton />;
+    return <TokenListViewSkeleton isTestnet />;
   }
 
   const isNoResults = !list?.length;
@@ -117,7 +117,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
               <div
                 className={clsx(
                   'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
-                  'flex items-center gap-x-[4px]'
+                  'flex items-center gap-x-[4px] justify-center'
                 )}
                 onClick={() => {
                   setIsShowAddTestnetModal(true);
@@ -141,7 +141,7 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
               <div
                 className={clsx(
                   'text-r-neutral-body text-[13px] leading-[16px] cursor-pointer',
-                  'flex items-center gap-x-[4px]'
+                  'flex items-center gap-x-[4px] justify-center'
                 )}
                 onClick={() => {
                   setIsShowAddModal(true);
