@@ -26,11 +26,9 @@ const History = () => {
         {t('page.transactions.title')}
       </PageHeader>
       {isShowTestnet && (
-        <NetSwitchTabs
-          value={selectedTab}
-          onTabChange={onTabChange}
-          className="h-[28px] box-content mt-[20px] mb-[20px]"
-        />
+        <div className="flex-shrink-0">
+          <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
+        </div>
       )}
       {selectedTab === 'mainnet' ? (
         <div

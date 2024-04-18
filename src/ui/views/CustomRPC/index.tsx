@@ -95,7 +95,7 @@ const Footer = styled.div`
   height: 76px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-  padding: 16px 0;
+  padding: 18px 20px;
   display: flex;
   justify-content: center;
 `;
@@ -304,12 +304,7 @@ const CustomRPC = () => {
         </RPCListContainer>
       )}
       <Footer>
-        <Button
-          size="large"
-          type="primary"
-          className="w-[200px]"
-          onClick={handleClickAdd}
-        >
+        <Button size="large" type="primary" block onClick={handleClickAdd}>
           {t('page.customRpc.add')}
         </Button>
       </Footer>
