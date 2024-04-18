@@ -485,7 +485,7 @@
       "add": "Ajouter un RPC",
       "closed": "Fermé",
       "desc": "L'activation du RPC personnalisé remplacera Rabby comme nœud par défaut. Pour continuer à utiliser Rabby, veuillez désactiver ou supprimer le nœud RPC personnalisé.",
-      "empty": "Aucun RPC personnalisé",
+      "empty": "",
       "opened": "Ouvert",
       "title": "RPC personnalisé"
     },
