@@ -1118,7 +1118,7 @@
           "add": "Token",
           "addTestnet": "Testnet"
         },
-        "noTestnetAssets": "No Testnet Assets"
+        "noTestnetAssets": "No Custom Network Assets"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
