@@ -79,7 +79,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
         <div className="text-center text-r-neutral-body text-[13px] leading-[16px] mb-[20px] p-[10px] bg-r-neutral-card2 rounded-[6px]">
           {t('page.addChain.desc')}
         </div>
-        <CustomTestnetForm form={form} disabled />
+        <CustomTestnetForm form={form} idDisabled />
       </div>
       <div
         className={clsx(

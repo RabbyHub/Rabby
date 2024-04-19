@@ -1873,7 +1873,7 @@
     },
     "addChain": {
       "title": "Add Custom Network to Rabby",
-      "desc": "The requested network is not Integrated by Rabby yet You can add it as a custom network manually"
+      "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only."
     }
   },
   "component": {
