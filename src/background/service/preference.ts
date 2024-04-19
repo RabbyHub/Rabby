@@ -166,9 +166,6 @@ class PreferenceService {
       },
     });
 
-    if (this.store.locale?.includes('_')) {
-      this.store.locale = this.store.locale?.replace('_', '-');
-    }
     if (
       !this.store.locale ||
       !LANGS.find((item) => item.code === this.store.locale)
