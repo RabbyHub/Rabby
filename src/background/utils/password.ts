@@ -1,10 +1,22 @@
 import { isManifestV3 } from '@/utils/env';
-import * as encryptor from '@metamask/browser-passworder';
-import { decryptWithDetail } from '@metamask/browser-passworder';
+import {
+  encryptWithDetail,
+  decryptWithDetail,
+  importKey,
+  decryptWithKey,
+  encryptWithKey,
+} from '@metamask/browser-passworder';
 import { isNil } from 'lodash';
 import Browser from 'webextension-polyfill';
 
-export const rabbyEncrypt = async ({
+/**
+ * Encrypt data with password
+ * @param param
+ * @param param.data data to be encrypted
+ * @param param.password (Optional) if not provided, will use the password from session
+ * @returns
+ */
+export const passwordEncrypt = async ({
   data,
   password,
 }: {
@@ -12,7 +24,7 @@ export const rabbyEncrypt = async ({
   password?: string | null;
 }) => {
   if (!isNil(password)) {
-    const { vault, exportedKeyString } = await encryptor.encryptWithDetail(
+    const { vault, exportedKeyString } = await encryptWithDetail(
       password,
       data
     );
@@ -33,29 +45,35 @@ export const rabbyEncrypt = async ({
   ]);
 
   if (!exportedKey || !salt) {
-    throw new Error('No exportedKey found');
+    throw new Error('No exportedKey found in session');
   }
 
-  const key = await encryptor.importKey(exportedKey);
-  const encryptedData = await encryptor.encryptWithKey(key, data);
+  const key = await importKey(exportedKey);
+  const encryptedData = await encryptWithKey(key, data);
   const vault = JSON.stringify({ ...encryptedData, salt });
 
   return vault;
 };
 
-export const rabbyDecrypt = async ({
+/**
+ * Decrypt data with password
+ * @param param
+ * @param param.encryptedData encrypted data, should be a string
+ * @param param.password (Optional) if not provided, will use the password from session
+ * @returns
+ */
+export const passwordDecrypt = async ({
   encryptedData,
   password,
 }: {
-  encryptedData: any;
+  encryptedData: string;
   password?: string | null;
 }) => {
   if (!isNil(password)) {
-    const {
-      vault,
-      exportedKeyString,
-      salt,
-    } = await encryptor.decryptWithDetail(password, encryptedData);
+    const { vault, exportedKeyString, salt } = await decryptWithDetail(
+      password,
+      encryptedData
+    );
 
     if (isManifestV3) {
       Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
@@ -74,14 +92,11 @@ export const rabbyDecrypt = async ({
   ]);
 
   if (!exportedKey || !salt) {
-    throw new Error('No exportedKey found');
+    throw new Error('No exportedKey found in session');
   }
 
-  const key = await encryptor.importKey(exportedKey);
-  const decryptedData = await encryptor.decryptWithKey(
-    key,
-    JSON.parse(encryptedData)
-  );
+  const key = await importKey(exportedKey);
+  const decryptedData = await decryptWithKey(key, JSON.parse(encryptedData));
 
   return decryptedData;
 };

@@ -41,8 +41,8 @@ import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
 import { getKeyringBridge, hasBridge } from './bridge';
 import { getChainList } from '@/utils/chain';
 import {
-  rabbyEncrypt,
-  rabbyDecrypt,
+  passwordEncrypt,
+  passwordDecrypt,
   rabbyClearKey,
 } from 'background/utils/password';
 
@@ -113,7 +113,7 @@ export class KeyringService extends EventEmitter {
 
   async boot(password: string) {
     this.password = password;
-    const encryptBooted = await rabbyEncrypt({ data: 'true', password });
+    const encryptBooted = await passwordEncrypt({ data: 'true', password });
     this.store.updateState({ booted: encryptBooted });
     this.memStore.updateState({ isUnlocked: true });
   }
@@ -188,7 +188,7 @@ export class KeyringService extends EventEmitter {
       throw new Error(i18n.t('background.error.unlock'));
     }
     const mnemonic = this.generateMnemonic();
-    const preMnemonics = await rabbyEncrypt({
+    const preMnemonics = await passwordEncrypt({
       data: mnemonic,
       password: this.password,
     });
@@ -216,7 +216,7 @@ export class KeyringService extends EventEmitter {
       throw new Error(i18n.t('background.error.unlock'));
     }
 
-    return await rabbyDecrypt({
+    return await passwordDecrypt({
       password: this.password,
       encryptedData: this.memStore.getState().preMnemonics,
     });
@@ -351,7 +351,7 @@ export class KeyringService extends EventEmitter {
       this.setUnlocked();
       this.fullUpdate();
     } catch (e) {
-      console.log('tryUnlock error', e);
+      console.log('tryUnlock failed: ', e.message);
     }
   }
 
@@ -368,7 +368,7 @@ export class KeyringService extends EventEmitter {
     if (!encryptedBooted) {
       throw new Error(i18n.t('background.error.canNotUnlock'));
     }
-    await rabbyDecrypt({ password, encryptedData: encryptedBooted });
+    await passwordDecrypt({ password, encryptedData: encryptedBooted });
   }
 
   /**
@@ -781,7 +781,7 @@ export class KeyringService extends EventEmitter {
       })
     )
       .then((serializedKeyrings) => {
-        return rabbyEncrypt({
+        return passwordEncrypt({
           data: serializedKeyrings,
           password: this.password,
         });
@@ -808,7 +808,7 @@ export class KeyringService extends EventEmitter {
     }
 
     await this.clearKeyrings();
-    const vault = await rabbyDecrypt({
+    const vault = await passwordDecrypt({
       password,
       encryptedData: encryptedVault,
     });
