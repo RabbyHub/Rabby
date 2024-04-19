@@ -16,6 +16,7 @@ import { findChain, findChainByServerID } from '@/utils/chain';
 import MatchImage from 'ui/assets/match.svg';
 import IconSearch from 'ui/assets/search.svg';
 import { ReactComponent as RcIconChainFilterClose } from 'ui/assets/chain-select/chain-filter-close.svg';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { isNil } from 'lodash';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 
@@ -216,6 +217,9 @@ const TokenSelector = ({
       placement="bottom"
       visible={visible}
       onClose={onCancel}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
+      }
     >
       {/* Select a token */}
       <div className="header">{t('component.TokenSelector.header.title')}</div>
