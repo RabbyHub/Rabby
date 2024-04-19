@@ -4,7 +4,7 @@ import {
 } from '@/background/service/customTestnet';
 import { CustomTestnetForm } from '@/ui/views/CustomTestnet/components/CustomTestnetForm';
 import { useRequest } from 'ahooks';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -12,6 +12,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApproval, useWallet } from 'ui/utils';
 import { SwitchEthereumChainParams } from './type';
+import { LoadingOutlined } from '@ant-design/icons';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 interface SwitchChainProps {
   data: SwitchEthereumChainParams[];
@@ -32,7 +34,7 @@ const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
   const chainId = data?.[0]?.chainId;
 
   const [form] = useForm<TestnetChainBase>();
-  useRequest(
+  const { loading: isFetching } = useRequest(
     async () => {
       if (chainId) {
         const res = await wallet.openapi.getChainListByIds({
@@ -96,16 +98,39 @@ const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
     resolveApproval();
   };
 
+  const { isDarkTheme } = useThemeMode();
+
   return (
     <div className="h-[100vh] relative flex flex-col ">
       <div className="p-[20px] text-center bg-r-blue-default text-r-neutral-title2 text-[20px] leading-[24px] font-medium">
         {t('page.switchChain.title')}
       </div>
       <div className="p-[20px] flex-1 overflow-auto">
-        <div className="text-center text-r-neutral-body text-[13px] leading-[16px] mb-[20px] p-[10px] bg-r-neutral-card2 rounded-[6px]">
+        <div className="text-center text-r-neutral-body text-[13px] leading-[16px]  p-[10px] bg-r-neutral-card2 rounded-[6px]">
           {t('page.switchChain.desc')}
         </div>
-        <CustomTestnetForm form={form} />
+
+        <div className="py-[20px] relative">
+          <CustomTestnetForm form={form} />
+          {isFetching ? (
+            <div
+              className={clsx(
+                'absolute top-0 left-[-20px] bottom-0 right-[-20px]',
+                'flex items-center justify-center',
+                isDarkTheme
+                  ? 'bg-[rgba(0,0,0,0.3)]'
+                  : 'bg-[rgba(255,255,255,0.3)]'
+              )}
+            >
+              <div className="text-r-neutral-body flex flex-col items-center ">
+                <LoadingOutlined style={{ fontSize: 22 }} spin />
+                <div className="text-[13px] leading-[16px] mt-[6px]">
+                  Loading
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
       <div
         className={clsx(
