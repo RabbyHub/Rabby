@@ -8,14 +8,17 @@
 @import './var.less';
 @import './antd-overwrite.less';
 
-html,
-body {
+html {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif;
-  &[lang="zh_CN"], &[lang="zh_HK"] {
+  &[lang='zh_CN'],
+  &[lang='zh_CN'] body,
+  &[lang='zh_HK'],
+  &[lang='zh_HK'] body {
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
       'PingFang SC', 'Microsoft Yahei', sans-serif;
   }
-  &[lang="jp"] {
+  &[lang='jp'],
+  &[lang='jp'] body {
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
       'Noto Sans JP', sans-serif;
   }
