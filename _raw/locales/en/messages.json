@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} chains supported",
+      "title": "{{count}} chains enhanced",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -1037,7 +1037,7 @@
         "aboutUs": "About us",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
-        "supportedChains": "Supported Chains",
+        "supportedChains": "Enhanced Chains",
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",

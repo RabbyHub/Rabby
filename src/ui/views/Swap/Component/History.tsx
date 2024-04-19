@@ -128,7 +128,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         )}
         ref={ref}
       >
-        <div className="flex justify-between items-center pb-8 border-b border-solid border-rabby-neutral-line">
+        <div className="flex justify-between items-center pb-8 border-b-[0.5px] border-solid border-rabby-neutral-line">
           <div className="flex items-center text-12 font-medium text-r-neutral-title-1">
             {isPending && (
               <TooltipWithMagnetArrow title={t('page.swap.pendingTip')}>
@@ -199,7 +199,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
           </div>
         </div>
 
-        <div className="flex items-center text-12 text-r-neutral-foot pt-10 border-t border-solid border-rabby-neutral-line">
+        <div className="flex items-center text-12 text-r-neutral-foot pt-10 border-t-[0.5px] border-solid border-rabby-neutral-line">
           <span className="cursor-pointer" onClick={gotoScan}>
             {chainName}:{' '}
             <span className="underline underline-r-neutral-foot">
