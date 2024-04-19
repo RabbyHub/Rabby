@@ -1028,7 +1028,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           const recommendGasLimit = needRatio
             ? gas.times(ratio).toFixed(0)
             : gas.toFixed(0);
-          setGasLimit(intToHex(Number(recommendGasLimit)));
+          setGasLimit(
+            intToHex(Math.max(Number(recommendGasLimit), Number(tx.gas || 0)))
+          );
           reCalcGasLimitBaseAccountBalance({
             nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
             tx: {

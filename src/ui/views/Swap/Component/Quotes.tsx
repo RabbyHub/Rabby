@@ -257,8 +257,7 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
-      <div className="pt-[40px]" />
-      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot">
+      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot pb-20">
         {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
         <span
           onClick={openSettings}
