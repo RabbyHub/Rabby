@@ -15,7 +15,6 @@ const ModalStyled = styled(Modal)`
   }
 
   pre.json-viewer {
-    background: rgb(238 238 238 / 40%);
     padding: 8px 12px;
     border-radius: 6px;
   }
