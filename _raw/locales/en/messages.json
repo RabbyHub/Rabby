@@ -1863,11 +1863,11 @@
       },
       "AddFromChainList": {
         "title": "Quick add from Chainlist",
-        "search": "Search Testnet name or ID",
+        "search": "Search custom network name or ID",
         "empty": "No chains found",
         "tips": {
           "added": "You've already added this chain",
-          "supported": "Chain already supported by Rabby Wallet"
+          "supported": "Chain already integrated by Rabby Wallet"
         }
       }
     },
