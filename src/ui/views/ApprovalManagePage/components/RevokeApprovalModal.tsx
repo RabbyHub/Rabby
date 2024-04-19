@@ -38,6 +38,7 @@ import { ReactComponent as RcIconBadgeNFT } from '../icons/modal-badge-nft.svg';
 import { ensureSuffix } from '@/utils/string';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
+const BOTTOM_BUTTON_AREA = 76;
 const ModalStyled = styled(Modal)`
   .ant-modal-header {
     border-bottom: none;
@@ -45,6 +46,7 @@ const ModalStyled = styled(Modal)`
 
   .ant-modal-body {
     padding-top: 16px;
+    padding-bottom: ${BOTTOM_BUTTON_AREA}px;
   }
 `;
 
@@ -94,11 +96,15 @@ function NFTItemBadge({
 function ApprovalAmountInfo({
   className,
   amountValue,
-  balanceValue,
+  balanceNumText,
+  balanceUnitText,
+  minWidthLimit,
 }: {
   className?: string;
   amountValue: string | number;
-  balanceValue: string | number;
+  balanceNumText: string | number;
+  balanceUnitText: string;
+  minWidthLimit?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -109,10 +115,8 @@ function ApprovalAmountInfo({
   }, [amountValue]);
 
   const balanceText = useMemo(() => {
-    if (typeof balanceValue !== 'number') return balanceValue;
-
-    return formatNumber(balanceValue);
-  }, [balanceValue]);
+    return `${balanceNumText} ${balanceUnitText}`;
+  }, [balanceNumText, balanceUnitText]);
 
   return (
     <div
@@ -140,21 +144,25 @@ function ApprovalAmountInfo({
       )}
 
       {balanceText && (
-        <div className="inline-flex">
-          <Tooltip
-            overlayClassName="J-modal-item__tooltip disable-ant-overwrite"
-            // My Balance
-            overlay={t(
-              'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
-            )}
-            align={{ offset: [0, 3] }}
-            arrowPointAtCenter
-          >
-            <span className="text-12 font-nomral text-r-neutral-foot">
-              {balanceText}
+        <Tooltip
+          overlayClassName={clsx(
+            'J-modal-item__tooltip disable-ant-overwrite',
+            minWidthLimit && 'min-width-limit'
+          )}
+          // My Balance
+          overlay={`${t(
+            'page.approvals.tableConfig.byAssets.columnCell.approvedAmount.tipMyBalance'
+          )}: ${balanceText}`}
+          align={{ offset: [0, 3] }}
+          arrowPointAtCenter
+        >
+          <div className="text-12 font-nomral text-r-neutral-foot inline-flex justify-end">
+            <span className="whitespace-pre max-w-[8em] overflow-hidden overflow-ellipsis flex-shrink-1">
+              {balanceNumText}
             </span>
-          </Tooltip>
-        </div>
+            <span className="flex-shrink-0">{balanceUnitText}</span>
+          </div>
+        </Tooltip>
       )}
     </div>
   );
@@ -229,16 +237,15 @@ export const RevokeApprovalModal = (props: {
         const spenderValues = spender
           ? getSpenderApprovalAmount(spender)
           : null;
+        const isLastOne = index === item.list.length - 1;
 
         return (
           <div
             key={index}
             className={clsx(
-              'relative px-[16px] h-[56px] flex justify-between items-center bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
-              index === item.list.length - 1 && 'rounded-b-[6px]',
-              index !== item.list.length - 1 &&
-                'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-r-neutral-line',
-              '-mt-1 first:mt-0 dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
+              'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+              isLastOne && 'rounded-b-[6px]',
+              'first:mt-0 first:rounded-t-[6px] dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -250,82 +257,93 @@ export const RevokeApprovalModal = (props: {
               }
             }}
           >
-            {'logo_url' in e ? (
-              <TokenWithChain
-                width="24px"
-                height="24px"
-                hideChainIcon
-                token={(e as unknown) as TokenItem}
-              />
-            ) : (
-              <NFTAvatar
-                className="w-[24px] h-[24px]"
-                type={(e as NFTApproval)?.content_type || 'image'}
-                content={
-                  (e as NFTApproval)?.content ||
-                  (e as any)?.collection?.logo_url
-                }
-                thumbnail
-                // chain={(e as NFTApproval)?.chain}
-                unknown={IconUnknownNFT}
-              />
-            )}
-            {'spender' in e ? (
-              <div className="flex flex-col ml-[8px]">
-                <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] inline-flex items-center justify-start">
-                  <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
-                    {itemName}
-                  </span>
+            <div
+              className={clsx(
+                'flex justify-between items-center h-[100%]',
+                !isLastOne &&
+                  'border-b-rabby-neutral-line border-b-[0.5px] border-b-solid'
+              )}
+            >
+              {'logo_url' in e ? (
+                <TokenWithChain
+                  width="24px"
+                  height="24px"
+                  hideChainIcon
+                  token={(e as unknown) as TokenItem}
+                />
+              ) : (
+                <NFTAvatar
+                  className="w-[24px] h-[24px]"
+                  type={(e as NFTApproval)?.content_type || 'image'}
+                  content={
+                    (e as NFTApproval)?.content ||
+                    (e as any)?.collection?.logo_url
+                  }
+                  thumbnail
+                  // chain={(e as NFTApproval)?.chain}
+                  unknown={IconUnknownNFT}
+                />
+              )}
+              {'spender' in e ? (
+                <div className="flex flex-col ml-[8px]">
+                  <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] inline-flex items-center justify-start">
+                    <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
+                      {itemName}
+                    </span>
 
-                  {maybeContractForNFT && (
-                    <ThemeIcon
-                      onClick={(evt) => {
-                        evt.stopPropagation();
-                        openScanLinkFromChainItem(
-                          chainItem?.scanLink,
-                          e.spender.id
-                        );
-                      }}
-                      src={RcIconExternal}
-                      className={clsx(
-                        'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
-                      )}
-                    />
-                  )}
+                    {maybeContractForNFT && (
+                      <ThemeIcon
+                        onClick={(evt) => {
+                          evt.stopPropagation();
+                          openScanLinkFromChainItem(
+                            chainItem?.scanLink,
+                            e.spender.id
+                          );
+                        }}
+                        src={RcIconExternal}
+                        className={clsx(
+                          'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
+                        )}
+                      />
+                    )}
+                  </div>
+                  <NFTItemBadge
+                    className="mt-2"
+                    contractListItem={e}
+                    contract={item as ContractApprovalItem}
+                  />
                 </div>
-                <NFTItemBadge
-                  className="mt-2"
-                  contractListItem={e}
-                  contract={item as ContractApprovalItem}
+              ) : (
+                <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
+                  {e.symbol}
+                </div>
+              )}
+
+              <div className="ml-auto flex items-center justify-between flex-shrink-0">
+                <ApprovalAmountInfo
+                  className="mr-[8px]"
+                  {...(spenderValues
+                    ? {
+                        amountValue: spenderValues.displayAmountText,
+                        balanceNumText: spenderValues.balanceNumText,
+                        balanceUnitText: spenderValues.balanceUnitText,
+                        minWidthLimit: spenderValues.isCollectionHasNFTs,
+                      }
+                    : {
+                        amountValue: 'amount' in e ? e.amount : '',
+                        balanceNumText: '',
+                        balanceUnitText: '',
+                      })}
+                />
+                <ThemeIcon
+                  src={
+                    selectedList.includes(index)
+                      ? RcIconCheckboxChecked
+                      : RcIconCheckboxUnchecked
+                  }
+                  className="icon icon-checked w-[20px] h-[20px]"
                 />
               </div>
-            ) : (
-              <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
-                {e.symbol}
-              </div>
-            )}
-
-            <div className="ml-auto flex items-center justify-between flex-shrink-0">
-              <ApprovalAmountInfo
-                className="mr-[8px]"
-                {...(spenderValues
-                  ? {
-                      amountValue: spenderValues.displayAmountText,
-                      balanceValue: spenderValues.displayBalanceText,
-                    }
-                  : {
-                      amountValue: 'amount' in e ? e.amount : '',
-                      balanceValue: '',
-                    })}
-              />
-              <ThemeIcon
-                src={
-                  selectedList.includes(index)
-                    ? RcIconCheckboxChecked
-                    : RcIconCheckboxUnchecked
-                }
-                className="icon icon-checked w-[20px] h-[20px]"
-              />
             </div>
           </div>
         );
@@ -346,15 +364,15 @@ export const RevokeApprovalModal = (props: {
           : spender.name || 'Unknown';
 
       const spendValues = spender ? getSpenderApprovalAmount(spender) : null;
+      const isLastOne = index === item.list.length - 1;
 
       return (
         <div
           key={spender.id}
           className={clsx(
-            'relative px-[16px] flex justify-between bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
-            index === item.list.length - 1 && 'rounded-b-[6px]',
-            index !== item.list.length - 1 &&
-              'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-r-neutral-line',
+            'relative px-[16px] bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+            isLastOne && 'rounded-b-[6px]',
+            'first:rounded-t-[6px]',
             !risky ? 'h-[51px] ' : 'flex-col pt-[13px]'
           )}
           onClick={(e) => {
@@ -365,63 +383,75 @@ export const RevokeApprovalModal = (props: {
             }
           }}
         >
-          <div className="flex w-full justify-between items-center">
-            <IconWithChain
-              width="16px"
-              height="16px"
-              hideChainIcon
-              iconUrl={chainItem?.logo || IconUnknown}
-              chainServerId={item.chain}
-            />
-            <div className="flex flex-col ml-[12px]">
-              <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] mb-2">
-                {fullName}
-              </div>
-              <ApprovalsNameAndAddr
-                className="justify-start"
-                addressClass="text-12"
-                copyIconClass="w-[14px] h-[14px]"
-                address={spender.id}
+          <div
+            className={clsx(
+              'flex justify-between items-center h-[100%]',
+              !isLastOne &&
+                'border-b-rabby-neutral-line border-b-[0.5px] border-b-solid'
+            )}
+          >
+            <div className="flex w-full justify-between items-center">
+              <IconWithChain
+                width="16px"
+                height="16px"
+                hideChainIcon
+                iconUrl={chainItem?.logo || IconUnknown}
+                chainServerId={item.chain}
               />
-            </div>
-
-            <div className="ml-auto flex justify-center items-center flex-shrink-0">
-              {item.type === 'token' && spendValues && (
-                <ApprovalAmountInfo
-                  amountValue={spendValues.displayAmountText}
-                  balanceValue={spendValues.displayBalanceText}
+              <div className="flex flex-col ml-[12px]">
+                <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] mb-2">
+                  {fullName}
+                </div>
+                <ApprovalsNameAndAddr
+                  className="justify-start"
+                  addressClass="text-12"
+                  copyIconClass="w-[14px] h-[14px]"
+                  address={spender.id}
                 />
-              )}
-              <ThemeIcon
-                src={
-                  selectedList.includes(index)
-                    ? RcIconCheckboxChecked
-                    : RcIconCheckboxUnchecked
-                }
-                className="icon icon-checked"
-              />
-            </div>
-          </div>
-          {risky && (
-            <div className="pt-[8px] pb-[16px]">
-              <Alert
-                className={clsx(
-                  'rounded-[4px] px-[8px] py-[3px]',
-                  spender.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange'
+              </div>
+
+              <div className="ml-auto flex justify-center items-center flex-shrink-0">
+                {item.type === 'token' && spendValues && (
+                  <ApprovalAmountInfo
+                    amountValue={spendValues.displayAmountText}
+                    balanceNumText={spendValues.balanceNumText}
+                    balanceUnitText={spendValues.balanceUnitText}
+                    minWidthLimit={false}
+                  />
                 )}
-                icon={
-                  <InfoCircleOutlined className="text-white pt-[4px] self-start" />
-                }
-                banner
-                message={
-                  <span className="text-12 text-white">
-                    {spender.risk_alert}
-                  </span>
-                }
-                type={'error'}
-              />
+                <ThemeIcon
+                  src={
+                    selectedList.includes(index)
+                      ? RcIconCheckboxChecked
+                      : RcIconCheckboxUnchecked
+                  }
+                  className="icon icon-checked"
+                />
+              </div>
             </div>
-          )}
+            {risky && (
+              <div className="pt-[8px] pb-[16px]">
+                <Alert
+                  className={clsx(
+                    'rounded-[4px] px-[8px] py-[3px]',
+                    spender.risk_level === 'danger'
+                      ? 'bg-[#ec5151]'
+                      : 'bg-orange'
+                  )}
+                  icon={
+                    <InfoCircleOutlined className="text-white pt-[4px] self-start" />
+                  }
+                  banner
+                  message={
+                    <span className="text-12 text-white">
+                      {spender.risk_alert}
+                    </span>
+                  }
+                  type={'error'}
+                />
+              </div>
+            )}
+          </div>
         </div>
       );
     });
@@ -463,12 +493,12 @@ export const RevokeApprovalModal = (props: {
       title={t('page.approvals.RevokeApprovalModal.title')}
       closeIcon={<RcIconClose />}
     >
-      <div>
-        <div className="mt-0 mb-18">
+      <div className="flex flex-col h-[100%]">
+        <div className="mt-0 mb-0 flex-shrink-0">
           <ApprovalContractItem data={[item]} index={0} />
         </div>
 
-        <section className="mb-[6px] flex justify-between items-center">
+        <section className="mb-[6px] flex justify-between items-center flex-shrink-0">
           <span className="text-12 text-r-neutral-title1">{subTitle}</span>
           <div
             className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]"
@@ -481,7 +511,7 @@ export const RevokeApprovalModal = (props: {
 
         <section
           className={clsx(
-            'max-h-[424px] overflow-x-hidden rounded-[6px] pb-[60px] approval-list'
+            'max-h-[100%] overflow-x-hidden pb-[12px] flex-shrink-1 approval-list'
           )}
           style={{
             overflowY: 'overlay',
@@ -492,9 +522,9 @@ export const RevokeApprovalModal = (props: {
       </div>
       <div
         className={clsx(
-          'absolute flex flex-col items-center justify-center bg-r-neutral-card1 left-0 bottom-0 w-full z-[99999] border-t border-rabby-neutral-line',
-          'h-[76px]'
+          'absolute flex flex-col items-center justify-center bg-r-neutral-card1 left-0 bottom-0 w-full z-[99999] border-t border-rabby-neutral-line'
         )}
+        style={{ height: BOTTOM_BUTTON_AREA }}
       >
         <Button
           style={{
