@@ -25,7 +25,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} блокчейнов поддерживается",
+      "title": "",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -205,8 +205,6 @@
       "firstOnChain": "Первый на блокчейне",
       "trustValue": "Доверительное значение",
       "importedDelegatedAddress": "Импортированный делегированный адрес",
-      "noDelegatedAddress": "Нет импортированного делегированного адреса",
-      "coboSafeNotPermission": "У этого делегированного адреса нет разрешения на инициацию этой транзакции",
       "noDelegatedAddress": "Нет импортированного делегированного адреса",
       "coboSafeNotPermission": "У этого испортированного делигированного адреса нет разрешения на инициацию транзакции",
       "l2GasEstimateTooltip": "Оценка газа для L2 не включает газ L1. Итоговая стоимость газа будет выше.",
@@ -735,7 +733,7 @@
       "no-transaction-records": "Нет записей о транзакциях",
       "swap-history": "История обменов",
       "InSufficientTip": "Недостаточный баланс для симуляции транзакции и оценки газа. Отображаются исходные котировки агрегатора",
-      "testnet-is-not-supported": "Тестовые сети не поддерживаются",
+      "testnet-is-not-supported": "",
       "not-supported": "Не поддерживается",
       "slippage-adjusted-refresh-quote": "Отклонение скорректировано. Обновить котировку.",
       "price-expired-refresh-quote": "Цена устарела. Обновить котировку.",
@@ -995,7 +993,7 @@
         "settings": {
           "label": "Настройки",
           "enableWhitelistForSendingAssets": "Включить белый список для отправки активов",
-          "customRpc": "Пользовательский RPC",
+          "customRpc": "",
           "metamaskPreferredDapps": "Предпочитаемые dApp для MetaMask",
           "currentLanguage": "Текущий язык",
           "enableTestnets": "Включить тестовые сети",
@@ -1005,7 +1003,7 @@
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
         "updateAvailable": "Доступно обновление",
-        "supportedChains": "Поддерживаемые сети",
+        "supportedChains": "",
         "followUs": "Подписаться",
         "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",
         "clearWatchMode": "Очистить Режим Просмотра",
@@ -1430,7 +1428,7 @@
       "noTokenFoundOnThisChain": "В этой сети токен не найден"
     },
     "switchChain": {
-      "title": "Переключение на {{chain}}",
+      "title": "",
       "chainNotSupport": "Запрошенная сеть еще не поддерживается Rabby",
       "testnetTip": "Пожалуйста, включите \"Включить тестовые сети\" в разделе \"Еще\" перед подключением к тестовым сетям",
       "chainNotSupportYet": "Запрошенная сеть пока не поддерживается Rabby",
@@ -1537,15 +1535,15 @@
     "customRpc": {
       "opened": "Открыто",
       "closed": "Закрыто",
-      "empty": "Нет пользовательского RPC",
-      "title": "Пользовательский RPC",
-      "desc": "Включение пользовательского RPC заменит Rabby в качестве узла по умолчанию. Чтобы продолжить использование Rabby, отключите или удалите пользовательский узел RPC.",
-      "add": "Добавить RPC",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "Недействительный URL RPC",
         "invalidChainId": "Недействительный ID цепи",
         "rpcAuthFailed": "Аутентификация RPC не удалась",
-        "title": "Редактировать RPC",
+        "title": "",
         "rpcUrl": "URL RPC",
         "rpcUrlPlaceholder": "Введите URL RPC"
       }
@@ -1806,8 +1804,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Основные сети",
-        "testnet": "Тестовые сети"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

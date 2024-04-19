@@ -708,16 +708,6 @@ const SettingsInner = ({
             />
           ),
         },
-        {
-          leftIcon: RcIconTestnet,
-          content: t('page.dashboard.settings.settings.enableTestnets'),
-          rightIcon: (
-            <Switch
-              checked={isShowTestnet}
-              onChange={handleSwitchIsShowTestnet}
-            />
-          ),
-        },
 
         {
           leftIcon: RcIconCustomTestnet,

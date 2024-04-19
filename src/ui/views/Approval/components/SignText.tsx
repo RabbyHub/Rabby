@@ -22,8 +22,6 @@ import { useAsync, useScroll } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { hex2Text, useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
-import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
-import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { FooterBar } from './FooterBar/FooterBar';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
@@ -138,24 +136,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       origin: session.origin,
     });
   }, [signText, session]);
-
-  useSignPermissionCheck({
-    origin: params.session.origin,
-    chainId,
-    onOk: () => {
-      handleCancel();
-    },
-    onDisconnect: () => {
-      handleCancel();
-    },
-  });
-
-  useTestnetCheck({
-    chainId,
-    onOk: () => {
-      handleCancel();
-    },
-  });
 
   const report = async (
     action:

@@ -58,11 +58,13 @@ export const CustomTestnetForm = ({
   form,
   isEdit,
   disabled,
+  idDisabled,
   onFieldsChange,
 }: {
   form: FormInstance<TestnetChainBase>;
   isEdit?: boolean;
   disabled?: boolean;
+  idDisabled?: boolean;
   onFieldsChange?(changedFields: any, allFields: any): void;
 }) => {
   const { t } = useTranslation();
@@ -95,7 +97,7 @@ export const CustomTestnetForm = ({
           <Input
             ref={inputRef}
             autoComplete="off"
-            disabled={disabled || isEdit}
+            disabled={disabled || idDisabled || isEdit}
           />
         </Form.Item>
         <Form.Item

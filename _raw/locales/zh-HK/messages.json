@@ -215,7 +215,7 @@
         "reset": "恢覆初始設置",
         "save": "保存",
         "settings": {
-          "customRpc": "自定義 RPC",
+          "customRpc": "",
           "enableWhitelistForSendingAssets": "啟用轉賬白名單",
           "label": "設置",
           "metamaskPreferredDapps": "優先使用MetaMask連接的Dapp",
@@ -223,9 +223,9 @@
           "currentLanguage": "當前語言",
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
-          "customTestnet": "自定義測試網"
+          "customTestnet": ""
         },
-        "supportedChains": "支持的鏈",
+        "supportedChains": "",
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
         "updateVersion": {
@@ -330,7 +330,7 @@
       }
     },
     "chainList": {
-      "title": "支持 {{count}} 條鏈",
+      "title": "",
       "mainnet": "主網",
       "testnet": "測試網"
     },
@@ -1460,7 +1460,7 @@
       "swap-from": "賣出",
       "swap-history": "兌換歷史",
       "swap-via-x": "通過 {{name}} 兌換",
-      "testnet-is-not-supported": "不支持測試網",
+      "testnet-is-not-supported": "",
       "the-following-swap-rates-are-found": "發現以下兌換報價",
       "sort-with-gas": "排序考慮gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何費用和滑點",
@@ -1483,7 +1483,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
-      "title": "切換到{{chain}}",
+      "title": "",
       "testnetTip": "請在\"更多\"中打開“開啟測試網”後再發起測試網連接"
     },
     "unlock": {
@@ -1529,17 +1529,17 @@
       "empty": "No dapps"
     },
     "customRpc": {
-      "title": "自定義 RPC",
-      "desc": "添加的自定義RPC將替代Rabby默認的節點。如果想要繼續用Rabby的節點，請關閉或刪除自定義RPC節點。",
-      "add": "添加自定義 RPC",
-      "empty": "未添加自定義 RPC",
+      "title": "",
+      "desc": "",
+      "add": "",
+      "empty": "",
       "opened": "已打開",
       "closed": "已關閉",
       "EditRPCModal": {
         "invalidRPCUrl": " RPC URL 無效",
         "invalidChainId": "Chain ID 無效",
         "rpcAuthFailed": "RPC 驗證失敗",
-        "title": "編輯 RPC",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "輸入 RPC URL"
       }
@@ -1722,8 +1722,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "主網",
-        "testnet": "測試網"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

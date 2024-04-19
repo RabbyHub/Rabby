@@ -43,7 +43,7 @@ export const ChainWrapper = styled.div`
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
-  if (chainItem?.isTestnet) return 'Testnet is not supported';
+  if (chainItem?.isTestnet) return 'Custom network is not supported';
 
   return 'Coming Soon';
 };

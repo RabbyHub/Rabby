@@ -1,12 +1,10 @@
 import { TestnetChainBase } from '@/background/service/customTestnet';
 import { CustomTestnetForm } from '@/ui/views/CustomTestnet/components/CustomTestnetForm';
-import { Chain } from '@debank/common';
-import { useRequest, useSetState } from 'ahooks';
+import { useRequest } from 'ahooks';
 import { Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import clsx from 'clsx';
-import { intToHex } from 'ethereumjs-util';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApproval, useWallet } from 'ui/utils';
 import { AddEthereumChainParams } from './type';
@@ -75,14 +73,13 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   return (
     <div className="h-[100vh] relative flex flex-col ">
       <div className="p-[20px] text-center bg-r-blue-default text-r-neutral-title2 text-[20px] leading-[24px] font-medium">
-        Add custom Testnet to Rabby
+        {t('page.addChain.title')}
       </div>
       <div className="p-[20px] flex-1 overflow-auto">
-        <div className="text-center text-r-neutral-body text-[13px] leading-[16px] pb-[20px]">
-          Rabby cannot verify the security of custom testnets. Please add
-          trusted networks only.
+        <div className="text-center text-r-neutral-body text-[13px] leading-[16px] mb-[20px] p-[10px] bg-r-neutral-card2 rounded-[6px]">
+          {t('page.addChain.desc')}
         </div>
-        <CustomTestnetForm form={form} disabled />
+        <CustomTestnetForm form={form} idDisabled />
       </div>
       <div
         className={clsx(
@@ -108,7 +105,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           loading={loading}
           onClick={handleConfirm}
         >
-          {t('global.Confirm')}
+          {t('global.addButton')}
         </Button>
       </div>
     </div>

@@ -26,11 +26,9 @@ const History = () => {
         {t('page.transactions.title')}
       </PageHeader>
       {isShowTestnet && (
-        <NetSwitchTabs
-          value={selectedTab}
-          onTabChange={onTabChange}
-          className="h-[28px] box-content mt-[20px] mb-[20px]"
-        />
+        <div className="flex-shrink-0">
+          <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
+        </div>
       )}
       {selectedTab === 'mainnet' ? (
         <div
@@ -55,7 +53,7 @@ const History = () => {
           <Empty
             desc={
               <div className="mt-[-12px] text-r-neutral-foot leading-[20px]">
-                Not supported on Testnets
+                {t('global.notSupportTesntnet')}
               </div>
             }
             className="pt-[108px]"

@@ -70,8 +70,6 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
-import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
-import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
@@ -771,24 +769,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tokenDetail: s.sign.tokenDetail,
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
-
-  useSignPermissionCheck({
-    origin,
-    chainId,
-    onDisconnect: () => {
-      handleCancel();
-    },
-    onOk: () => {
-      handleCancel();
-    },
-  });
-
-  useTestnetCheck({
-    chainId,
-    onOk: () => {
-      handleCancel();
-    },
-  });
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:

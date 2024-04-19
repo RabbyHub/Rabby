@@ -40,8 +40,6 @@ import {
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
-import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
-import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
@@ -86,23 +84,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     number | string | undefined
   >(undefined);
 
-  useSignPermissionCheck({
-    origin: params.session.origin,
-    chainId: currentChainId,
-    onOk: () => {
-      handleCancel();
-    },
-    onDisconnect: () => {
-      handleCancel();
-    },
-  });
-
-  useTestnetCheck({
-    chainId: currentChainId,
-    onOk: () => {
-      handleCancel();
-    },
-  });
   const [
     actionRequireData,
     setActionRequireData,
@@ -565,11 +546,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               'absolute top-[350px] right-[10px]',
               'px-[16px] py-[12px] rotate-[-23deg]',
               'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
-              'text-r-neutral-title1 text-[28px] leading-[28px]',
+              'text-r-neutral-title1 text-[20px] leading-[24px]',
               'opacity-30'
             )}
           >
-            Testnet
+            Custom Network
           </div>
         ) : null}
       </div>

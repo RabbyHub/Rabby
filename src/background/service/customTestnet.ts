@@ -23,6 +23,7 @@ import {
   readContract,
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 export interface TestnetChainBase {
   id: number;
@@ -168,6 +169,20 @@ class CustomTestnetService {
     };
     this.chains[chain.id] = createClientByChain(chain);
     this.syncChainList();
+    if (isAdd) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Success Add Network',
+        label: String(chain.id),
+      });
+    }
+    if (this.getList().length) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Custom Network Status',
+        value: this.getList().length,
+      });
+    }
     return this.store.customTestnet[chain.id];
   };
 
@@ -178,6 +193,13 @@ class CustomTestnetService {
     });
     delete this.chains[chainId];
     this.syncChainList();
+    if (this.getList().length) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Custom Network Status',
+        value: this.getList().length,
+      });
+    }
   };
 
   getClient = (chainId: number) => {

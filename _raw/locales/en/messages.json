@@ -26,7 +26,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}} chains enhanced",
+      "title": "{{count}} chains Integrated",
       "mainnet": "Mainnets",
       "testnet": "Testnets"
     },
@@ -757,7 +757,7 @@
       "no-transaction-records": "No transaction records",
       "swap-history": "Swap history",
       "InSufficientTip": "Insufficient balance to do transaction simulation and gas estimation. Original aggregator quotes are displayed",
-      "testnet-is-not-supported": "Testnet is not supported",
+      "testnet-is-not-supported": "Custom network is not supported",
       "not-supported": "Not supported",
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
       "price-expired-refresh-quote": "Price expired. Refresh quote.",
@@ -1026,18 +1026,18 @@
         "settings": {
           "label": "Settings",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
-          "customRpc": "Custom RPC",
+          "customRpc": "Modify RPC URL",
           "metamaskPreferredDapps": "MetaMask Preferred Dapps",
           "currentLanguage": "Current Language",
           "enableTestnets": "Enable Testnets",
           "toggleThemeMode": "Theme Mode",
           "themeMode": "Theme Mode",
-          "customTestnet": "Custom Testnet"
+          "customTestnet": "Add Custom Network"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
-        "supportedChains": "Enhanced Chains",
+        "supportedChains": "Integrated Chains",
         "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
@@ -1108,7 +1108,7 @@
         "comingSoon": "Coming Soon...",
         "searchPlaceholder": "Tokens",
         "AddTestnetToken": {
-          "title": "Add Testnet Token",
+          "title": "Add Custom Network Token",
           "selectChain": "Select chain",
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
@@ -1116,9 +1116,9 @@
         },
         "TestnetAssetListContainer": {
           "add": "Token",
-          "addTestnet": "Testnet"
+          "addTestnet": "Network"
         },
-        "noTestnetAssets": "No Testnet Assets"
+        "noTestnetAssets": "No Custom Network Assets"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -1484,7 +1484,7 @@
       "noTokenFoundOnThisChain": "No token found on this chain"
     },
     "switchChain": {
-      "title": "Switching to {{chain}}",
+      "title": "Add Custom Network to Rabby",
       "chainNotSupport": "The requested chain is not supported by Rabby yet",
       "testnetTip": "Please turn on \"Enable Testnets\" under \"More\" before connecting to testnets",
       "chainNotSupportYet": "The requested chain is not supported by Rabby yet",
@@ -1494,7 +1494,8 @@
       "requestsReceivedPlural": "{{count}} requests received",
       "requestRabbyToSupport": "Request Rabby to Support",
       "chainNotSupportAddChain": "The requested chain is not Integrated by Rabby yet You can add it as a Custom Testnet",
-      "addChain": "Add Testnet"
+      "addChain": "Add Testnet",
+      "desc": "The requested network is not Integrated by Rabby yet You can add it as a custom network manually"
     },
     "signText": {
       "title": "Sign Text",
@@ -1593,20 +1594,20 @@
     "customRpc": {
       "opened": "Opened",
       "closed": "Closed",
-      "empty": "No custom RPC",
-      "title": "Custom RPC",
-      "desc": "Enabling custom RPC will replace Rabby as the default node. To continue         using Rabby, please disable or remove the custom RPC node.",
-      "add": "Add RPC",
+      "empty": "No custom RPC URL",
+      "title": "Modify RPC URL",
+      "desc": "Once modified, the custom RPC will replace Rabby's node. To continue using Rabby's node, delete the custom RPC.",
+      "add": "Modify RPC URL",
       "EditRPCModal": {
         "invalidRPCUrl": "Invalid RPC URL",
         "invalidChainId": "Invalid Chain ID",
         "rpcAuthFailed": "RPC authentication failed",
-        "title": "Edit RPC",
+        "title": "Modify RPC URL",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "Enter the RPC URL"
       },
       "EditCustomTestnetModal": {
-        "title": "Add Testnet",
+        "title": "Add Custom Network",
         "quickAdd": "Quick add from Chainlist"
       }
     },
@@ -1843,10 +1844,10 @@
       "code-set-successfully": "Referral code set successfully"
     },
     "customTestnet": {
-      "title": "Custom Testnet",
-      "desc": "Rabby cannot verify the security of custom testnets. Please add trusted networks only.",
-      "add": "Add Testnet",
-      "empty": "No Custom Testnet",
+      "title": "Custom Network",
+      "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only.",
+      "add": "Add Custom Network",
+      "empty": "No Custom Network",
       "currency": "Currency",
       "id": "ID",
       "CustomTestnetForm": {
@@ -1869,6 +1870,10 @@
           "supported": "Chain already supported by Rabby Wallet"
         }
       }
+    },
+    "addChain": {
+      "title": "Add Custom Network to Rabby",
+      "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only."
     }
   },
   "component": {
@@ -1956,14 +1961,14 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "Mainnets",
-        "testnet": "Testnets"
+        "mainnet": "Integrated Network",
+        "testnet": "Custom Network"
       }
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "Search chain",
       "noChains": "No chains",
-      "addTestnet": "Custom Testnet"
+      "addTestnet": "Add Custom Network"
     },
     "TokenSelector": {
       "listTableHead": {
@@ -2036,7 +2041,8 @@
     "Balance": "Balance",
     "Done": "Done",
     "Nonce": "Nonce",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "notSupportTesntnet": "Not supported for custom network"
   },
   "background": {
     "error": {
