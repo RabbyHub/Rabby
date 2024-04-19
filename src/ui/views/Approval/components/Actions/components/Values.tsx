@@ -88,6 +88,9 @@ const TimeSpanFuture = ({
   const timeSpan = useMemo(() => {
     if (!to) return '-';
     const { d, h, m } = getTimeSpan(to - from);
+    if (d >= 365000) {
+      return 'Forever';
+    }
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''}`;
     }
