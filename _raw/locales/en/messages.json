@@ -757,7 +757,7 @@
       "no-transaction-records": "No transaction records",
       "swap-history": "Swap history",
       "InSufficientTip": "Insufficient balance to do transaction simulation and gas estimation. Original aggregator quotes are displayed",
-      "testnet-is-not-supported": "Testnet is not supported",
+      "testnet-is-not-supported": "Custom network is not supported",
       "not-supported": "Not supported",
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
       "price-expired-refresh-quote": "Price expired. Refresh quote.",

@@ -621,7 +621,7 @@
       "no-transaction-records": "Kein Transaktionsverlauf",
       "swap-history": "Tauschverlauf",
       "InSufficientTip": "Unzureichendes Guthaben für Transaktionssimulation und Gasschätzung. Ursprüngliche Aggregator-Angebote werden angezeigt",
-      "testnet-is-not-supported": "Testnet wird nicht unterstützt",
+      "testnet-is-not-supported": "",
       "not-supported": "Wird nicht unterstützt",
       "slippage-adjusted-refresh-quote": "Kursabweichung angepasst. Angebot aktualisieren.",
       "price-expired-refresh-quote": "Preis abgelaufen. Angebot aktualisieren.",

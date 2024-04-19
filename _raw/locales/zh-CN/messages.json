@@ -1460,7 +1460,7 @@
       "swap-from": "卖出",
       "swap-history": "兑换历史",
       "swap-via-x": "通过 {{name}} 兑换",
-      "testnet-is-not-supported": "不支持测试网",
+      "testnet-is-not-supported": "",
       "the-following-swap-rates-are-found": "发现以下兑换报价",
       "sort-with-gas": "排序考虑gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何费用和滑点",

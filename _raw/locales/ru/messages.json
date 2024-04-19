@@ -733,7 +733,7 @@
       "no-transaction-records": "Нет записей о транзакциях",
       "swap-history": "История обменов",
       "InSufficientTip": "Недостаточный баланс для симуляции транзакции и оценки газа. Отображаются исходные котировки агрегатора",
-      "testnet-is-not-supported": "Тестовые сети не поддерживаются",
+      "testnet-is-not-supported": "",
       "not-supported": "Не поддерживается",
       "slippage-adjusted-refresh-quote": "Отклонение скорректировано. Обновить котировку.",
       "price-expired-refresh-quote": "Цена устарела. Обновить котировку.",

@@ -597,7 +597,7 @@
       "no-transaction-records": "トランザクション履歴はありません",
       "swap-history": "スワップ履歴",
       "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの引用が表示されます",
-      "testnet-is-not-supported": "テストネットはサポートされていません",
+      "testnet-is-not-supported": "",
       "not-supported": "サポートされていません",
       "slippage-adjusted-refresh-quote": "スリッページが調整されました。引用を更新してください。",
       "price-expired-refresh-quote": "価格の有効期限が切れました。引用を更新してください。",

@@ -572,7 +572,7 @@
       "no-transaction-records": "No hay registros de transacciones",
       "swap-history": "Historial de Intercambio",
       "InSufficientTip": "Saldo insuficiente para realizar la simulación de transacción y la estimación de gas. Se muestran las cotizaciones originales del agregador.",
-      "testnet-is-not-supported": "No se admite la Testnet",
+      "testnet-is-not-supported": "",
       "not-supported": "No es compatible",
       "slippage-adjusted-refresh-quote": "Slippage ajustado. Actualizar cotización.",
       "price-expired-refresh-quote": "Precio expirado. Actualizar cotización.",

@@ -569,7 +569,7 @@
       "no-transaction-records": "İşlem kaydı yok",
       "swap-history": "Takas geçmişi",
       "InSufficientTip": "İşlem simülasyonu ve gas tahmini yapmak için yetersiz bakiye. Orijinal fiyat toplayıcı teklifleri gösteriliyor",
-      "testnet-is-not-supported": "Testnet desteklenmiyor",
+      "testnet-is-not-supported": "",
       "not-supported": "Desteklenmiyor",
       "slippage-adjusted-refresh-quote": "Kayma toleransı ayarlandı. Teklifi yenileyin.",
       "price-expired-refresh-quote": "Fiyatın süresi doldu. Teklifi yenileyin.",

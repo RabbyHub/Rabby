@@ -597,7 +597,7 @@
       "no-transaction-records": "Немає записів про транзакції",
       "swap-history": "Історія свапів",
       "InSufficientTip": "Недостатній баланс для симуляції транзакції та оцінки газу. Відображаються оригінальні котирування агрегатора",
-      "testnet-is-not-supported": "Testnet не підтримується",
+      "testnet-is-not-supported": "",
       "not-supported": "Не підтримується",
       "slippage-adjusted-refresh-quote": "Прослизання скориговано. Оновити пропозицію.",
       "price-expired-refresh-quote": "Термін дії ціни закінчився. Оновити котирування.",
