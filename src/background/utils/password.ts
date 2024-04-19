@@ -101,7 +101,7 @@ export const passwordDecrypt = async ({
   return decryptedData;
 };
 
-export const rabbyClearKey = async () => {
+export const passwordClearKey = async () => {
   if (isManifestV3) {
     await Browser.storage.session.remove(['exportedKey', 'salt']);
   }

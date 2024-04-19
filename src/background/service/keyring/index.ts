@@ -43,7 +43,7 @@ import { getChainList } from '@/utils/chain';
 import {
   passwordEncrypt,
   passwordDecrypt,
-  rabbyClearKey,
+  passwordClearKey,
 } from 'background/utils/password';
 
 export const KEYRING_SDK_TYPES = {
@@ -306,7 +306,7 @@ export class KeyringService extends EventEmitter {
   async setLocked(): Promise<MemStoreState> {
     // set locked
     this.password = null;
-    rabbyClearKey();
+    passwordClearKey();
     this.memStore.updateState({ isUnlocked: false });
     // remove keyrings
     this.keyrings = [];
