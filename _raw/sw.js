@@ -88,6 +88,8 @@ self.addEventListener('install', () => {
 });
 
 // In MV3, Event handler must be added on the initial evaluation of worker script.
-navigator.usb.addEventListener('disconnect', (device) => {
-  console.log('USB device disconnected', device);
-});
+if (navigator?.usb) {
+  navigator.usb.addEventListener('disconnect', (device) => {
+    console.log('USB device disconnected', device);
+  });
+}
