@@ -507,87 +507,6 @@ const useCheckGasAndNonce = ({
   );
 };
 
-const getGasLimitBaseAccountBalance = ({
-  gasPrice,
-  nativeTokenBalance,
-  nonce,
-  pendingList,
-  tx,
-  recommendGasLimit,
-  recommendGasLimitRatio,
-}: {
-  tx: Tx;
-  nonce: number | string | BigNumber;
-  gasPrice: number | string | BigNumber;
-  pendingList: TransactionGroup[];
-  nativeTokenBalance: string;
-  recommendGasLimit: string | number;
-  recommendGasLimitRatio: number;
-}) => {
-  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
-  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
-    ? new BigNumber(0)
-    : sendNativeTokenAmount;
-  const pendingsSumNativeTokenCost = pendingList
-    .filter((item) => new BigNumber(item.nonce).lt(nonce))
-    .reduce((sum, item) => {
-      return sum.plus(
-        item.txs
-          .map((txItem) => ({
-            value: isNaN(Number(txItem.rawTx.value))
-              ? 0
-              : Number(txItem.rawTx.value),
-            gasPrice: txItem.rawTx.gasPrice || txItem.rawTx.maxFeePerGas,
-            gasUsed:
-              txItem.gasUsed || txItem.rawTx.gasLimit || txItem.rawTx.gas || 0,
-          }))
-          .reduce((sum, txItem) => {
-            return sum.plus(
-              new BigNumber(txItem.value).plus(
-                new BigNumber(txItem.gasUsed).times(txItem.gasUsed)
-              )
-            );
-          }, new BigNumber(0))
-      );
-    }, new BigNumber(0)); // sum native token cost in pending tx list which nonce less than current tx
-  const avaliableGasToken = new BigNumber(nativeTokenBalance).minus(
-    sendNativeTokenAmount.plus(pendingsSumNativeTokenCost)
-  ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
-  if (avaliableGasToken.lte(0)) {
-    // avaliableGasToken less than 0 use 1.5x gasUsed as gasLimit
-    return Math.floor(
-      new BigNumber(recommendGasLimit)
-        .times(Math.min(recommendGasLimitRatio, 1.5))
-        .toNumber()
-    );
-  }
-  if (
-    avaliableGasToken.gt(
-      new BigNumber(gasPrice).times(
-        Number(recommendGasLimit) * recommendGasLimitRatio
-      )
-    )
-  ) {
-    // if avaliableGasToken is enough to pay gas fee of recommendGasLimit * recommendGasLimitRatio, use recommendGasLimit * recommendGasLimitRatio as gasLimit
-    return Math.ceil(Number(recommendGasLimit) * recommendGasLimitRatio);
-  }
-  const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
-  if (
-    adaptGasLimit.lt(
-      new BigNumber(recommendGasLimit).times(
-        Math.min(recommendGasLimitRatio, 1.5)
-      )
-    )
-  ) {
-    return Math.floor(
-      new BigNumber(recommendGasLimit)
-        .times(Math.min(recommendGasLimitRatio, 1.5))
-        .toNumber()
-    );
-  }
-  return Math.floor(adaptGasLimit.toNumber());
-};
-
 interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
@@ -751,6 +670,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       priority_price: null,
     },
   ]);
+  const [canUseGasLess, setCanUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -1025,21 +945,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         }
         if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
           setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
-          reCalcGasLimitBaseAccountBalance({
-            nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-            tx: {
-              ...tx,
-              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
-              data: tx.data,
-              value: tx.value || '0x0',
-              gas: tx.gas || '', // set gas limit if dapp not set
-            },
-            gasPrice: selectedGas?.price || 0,
-            customRecommendGasLimit: gas.toNumber(),
-            customGasLimit: Number(tx.gas),
-            customRecommendGasLimitRatio: 1,
-            block,
-          });
         } else if (!gasLimit) {
           // use server response gas limit
           const ratio =
@@ -1049,21 +954,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             ? gas.times(ratio).toFixed(0)
             : gas.toFixed(0);
           setGasLimit(intToHex(Number(recommendGasLimit)));
-          reCalcGasLimitBaseAccountBalance({
-            nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
-            tx: {
-              ...tx,
-              nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
-              data: tx.data,
-              value: tx.value || '0x0',
-              gas: tx.gas || '', // set gas limit if dapp not set
-            },
-            gasPrice: selectedGas?.price || 0,
-            customRecommendGasLimit: gas.toNumber(),
-            customGasLimit: Number(recommendGasLimit),
-            customRecommendGasLimitRatio: needRatio ? ratio : 1,
-            block,
-          });
         }
         setTxDetail(res);
 
@@ -1344,7 +1234,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           requiredData: actionRequireData,
         },
       }));
-
+    // add isGasLess in params of resolveApproval
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...transaction,
@@ -1439,18 +1329,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setGasLimit(intToHex(gas.gasLimit));
     if (Number(gasLimit) !== gas.gasLimit) {
       setManuallyChangeGasLimit(true);
-    } else {
-      reCalcGasLimitBaseAccountBalance({
-        gasPrice: gas.price,
-        tx: {
-          ...tx,
-          gasPrice: intToHex(Math.round(gas.price)),
-          gas: intToHex(gas.gasLimit),
-          nonce: afterNonce,
-        },
-        nonce: afterNonce,
-        block: blockInfo,
-      });
     }
     if (!isGnosisAccount) {
       setRealNonce(afterNonce);
@@ -1531,6 +1409,31 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         );
       }
     }
+  };
+
+  const checkGasLessStatus = async () => {
+    const sendUsdValue =
+      txDetail?.balance_change.send_token_list?.reduce((sum, item) => {
+        return new BigNumber(item.raw_amount || 0)
+          .times(item.price || 0)
+          .plus(sum);
+      }, new BigNumber(0)) || new BigNumber(0);
+    const receiveUsdValue =
+      txDetail?.balance_change?.receive_token_list.reduce((sum, item) => {
+        return new BigNumber(item.raw_amount || 0)
+          .times(item.price || 0)
+          .plus(sum);
+      }, new BigNumber(0)) || new BigNumber(0);
+    const res = await wallet.openapi.gasLessTxCheck({
+      tx: {
+        ...tx,
+        nonce: realNonce,
+        gasPrice: tx.gasPrice || tx.maxFeePerGas,
+        gasLimit,
+      },
+      usdValue: sendUsdValue.plus(receiveUsdValue).toNumber(),
+    });
+    setCanUseGasLess(res.is_gasless);
   };
 
   const getSafeInfo = async () => {
@@ -1769,53 +1672,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
-  const reCalcGasLimitBaseAccountBalance = async ({
-    gasPrice,
-    nonce,
-    tx,
-    customRecommendGasLimit,
-    customGasLimit,
-    customRecommendGasLimitRatio,
-    block,
-  }: {
-    tx: Tx;
-    nonce: number | string | BigNumber;
-    gasPrice: number | string | BigNumber;
-    customRecommendGasLimit?: number;
-    customGasLimit?: number;
-    customRecommendGasLimitRatio?: number;
-    block: BlockInfo | null;
-  }) => {
-    if (isGnosisAccount || isCoboArugsAccount) return; // Gnosis Safe transaction no need gasLimit
-    const calcGasLimit = customGasLimit || gasLimit;
-    const calcGasLimitRatio =
-      customRecommendGasLimitRatio || recommendGasLimitRatio;
-    const calcRecommendGasLimit = customRecommendGasLimit || recommendGasLimit;
-    if (!calcGasLimit) return;
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
-    const { pendings } = await wallet.getTransactionHistory(
-      currentAccount.address
-    );
-    let res = getGasLimitBaseAccountBalance({
-      gasPrice,
-      nonce,
-      pendingList: pendings.filter((item) => item.chainId === chainId),
-      nativeTokenBalance,
-      tx,
-      recommendGasLimit: calcRecommendGasLimit,
-      recommendGasLimitRatio: calcGasLimitRatio,
-    });
-
-    if (block && res > Number(block.gasLimit)) {
-      res = Math.floor(Number(block.gasLimit) * 0.95); // use 95% of block gasLimit when gasLimit greater than block gasLimit
-    }
-    if (!new BigNumber(res).eq(calcGasLimit)) {
-      setGasLimit(`0x${new BigNumber(res).toNumber().toString(16)}`);
-      setManuallyChangeGasLimit(false);
-    }
-  };
-
   const executeSecurityEngine = async () => {
     const ctx = formatSecurityEngineCtx({
       actionData: actionData,
@@ -1869,6 +1725,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
     }
   }, [isReady]);
+
+  useEffect(() => {
+    if (isReady) {
+      const gasCost = new BigNumber(tx.gasPrice || tx.maxFeePerGas || 0).times(
+        gasLimit || 0
+      );
+      const gasNotEnough = gasCost.gt(nativeTokenBalance);
+      if (gasNotEnough) {
+        // gasNotEnough && isNotWalletConnect && noCustomRPC for current chain
+        checkGasLessStatus();
+      }
+    }
+  }, [isReady, nativeTokenBalance, gasLimit, tx, realNonce, txDetail]);
 
   useEffect(() => {
     if (isGnosisAccount) {
