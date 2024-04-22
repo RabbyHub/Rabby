@@ -9,7 +9,7 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, SecurityEngineLevel } from 'consts';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -17,6 +17,9 @@ import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { findChain } from '@/utils/chain';
+import { ReactComponent as RcIconGas } from '@/ui/assets/sign/tx/gas-cc.svg';
+import GasLessBg from '@/ui/assets/sign/tx/bg.svg';
+import { ReactComponent as RcIconLogo } from '@/ui/assets/dashboard/rabby.svg';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -29,6 +32,10 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isTestnet?: boolean;
   engineResults?: Result[];
   onIgnoreAllRules(): void;
+  useGasLess?: boolean;
+  showGasLess?: boolean;
+  enableGasLess?: () => void;
+  canUseGasLess?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -163,7 +170,11 @@ export const FooterBar: React.FC<Props> = ({
   engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
+  showGasLess = false,
+  useGasLess = false,
+  canUseGasLess = false,
   onIgnoreAllRules,
+  enableGasLess,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -303,7 +314,13 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           isTestnet={props.isTestnet}
         />
-        <ActionGroup account={account} {...props} />
+        <ActionGroup
+          account={account}
+          gasLess={useGasLess}
+          {...props}
+          disabledProcess={useGasLess ? false : props.disabledProcess}
+          enableTooltip={useGasLess ? false : props.enableTooltip}
+        />
         {securityLevel && hasUnProcessSecurityResult && (
           <div
             className="security-level-tip"
@@ -335,7 +352,96 @@ export const FooterBar: React.FC<Props> = ({
             </span>
           </div>
         )}
+        {showGasLess &&
+          (!securityLevel || !hasUnProcessSecurityResult) &&
+          (canUseGasLess ? (
+            <FreeGasToSign
+              gasLessEnable={useGasLess}
+              handleFreeGas={() => {
+                enableGasLess?.();
+              }}
+            />
+          ) : (
+            <GasLessNotEnough />
+          ))}
       </Wrapper>
     </div>
   );
 };
+
+function GasLessNotEnough() {
+  const { t } = useTranslation();
+  return (
+    <div className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2">
+      {/* <img className="icon icon-level bg-r-neutral-card2" /> */}
+      <RcIconGas
+        viewBox="0 0 16 16"
+        className="w-16 h-16 mr-4 text-r-neutral-title-1"
+      />
+      <span className="flex-1 text-r-neutral-title1">
+        {t('page.signFooterBar.gasless.unavailable')}
+      </span>
+    </div>
+  );
+}
+
+function FreeGasToSign({
+  handleFreeGas,
+  gasLessEnable,
+}: {
+  handleFreeGas: () => void;
+  gasLessEnable: boolean;
+}) {
+  const { t } = useTranslation();
+  if (gasLessEnable) {
+    return <FreeGasReady />;
+  }
+  return (
+    <span className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 items-center">
+      <RcIconGas
+        viewBox="0 0 16 16"
+        className="w-16 h-16 mr-4 text-r-neutral-title-1"
+      />
+      <span className="flex-1 text-r-neutral-title-1">
+        {t('page.signFooterBar.gasless.notEnough')}
+      </span>
+
+      <span
+        className="mr-auto px-10 py-[7px] text-r-neutral-title-2 cursor-pointer"
+        style={{
+          fontSize: 12,
+          borderRadius: '6px',
+          background: 'linear-gradient(94deg, #60BCFF 14.47%, #8154FF 93.83%)',
+          boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
+        }}
+        onClick={handleFreeGas}
+      >
+        {t('page.signFooterBar.gasless.GetFreeGasToSign')}
+      </span>
+    </span>
+  );
+}
+
+function FreeGasReady() {
+  const { t } = useTranslation();
+  return (
+    <span
+      className="security-level-tip bg-transparent text-transparent py-0 pt-12 h-[35px]"
+      style={{
+        backgroundImage: `url(${GasLessBg})`,
+      }}
+    >
+      <RcIconLogo viewBox="0 0 20 20" className="w-16 h-16 mr-4 " />
+      <span
+        className="flex-1"
+        style={{
+          color: 'var(--r-blue-default, #7084FF)',
+          fontSize: '13px',
+          fontWeight: '500',
+        }}
+      >
+        {t('page.signFooterBar.gasless.rabbyPayGas')}
+      </span>
+    </span>
+  );
+}

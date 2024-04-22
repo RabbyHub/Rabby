@@ -670,7 +670,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       priority_price: null,
     },
   ]);
+  const [currentAccountType, setCurrentAccountType] = useState<
+    undefined | string
+  >();
   const [canUseGasLess, setCanUseGasLess] = useState(false);
+  const [useGasLess, setUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -867,6 +871,42 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     nativeTokenBalance,
     recommendGasLimitRatio,
   });
+
+  const isGasNotEnough = useMemo(() => {
+    return checkErrors.some((e) => e.code === 3001);
+  }, [checkErrors]);
+
+  const isNotWalletConnect = useMemo(() => {
+    return currentAccountType !== KEYRING_TYPE.WalletConnectKeyring;
+  }, [currentAccountType]);
+
+  const [noCustomRPC, setNoCustomRPC] = useState(true);
+
+  useEffect(() => {
+    const hasCustomRPC = async () => {
+      if (chain?.enum) {
+        const b = await wallet.hasCustomRPC(chain?.enum);
+        setNoCustomRPC(!b);
+      }
+    };
+    hasCustomRPC();
+  }, [chain?.enum]);
+
+  // const noCustomRPC = useMemo(() => {
+  //   return !!chain && !wallet.hasCustomRPC(chain?.enum);
+  // }, [chain, wallet?.hasCustomRPC]);
+
+  console.log('chain?.enum', chain?.enum);
+  console.log(
+    'isNotWalletConnect',
+    isNotWalletConnect,
+    wallet.hasCustomRPC(chain?.enum)
+  );
+  console.log('noCustomRPC', noCustomRPC);
+
+  const showGasLess = useMemo(() => {
+    return isGasNotEnough && isNotWalletConnect && noCustomRPC;
+  }, [isGasNotEnough, isNotWalletConnect, noCustomRPC]);
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
@@ -1253,6 +1293,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         pushType: pushInfo.type,
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
+        isGasLess: useGasLess,
       });
 
       return;
@@ -1552,6 +1593,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     try {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+
+      setCurrentAccountType(currentAccount.type);
       const is1559 =
         support1559 &&
         SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
@@ -1732,12 +1775,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gasLimit || 0
       );
       const gasNotEnough = gasCost.gt(nativeTokenBalance);
-      if (gasNotEnough) {
+      console.log('gasNotEnough', gasNotEnough);
+      if (gasNotEnough && isNotWalletConnect && noCustomRPC) {
         // gasNotEnough && isNotWalletConnect && noCustomRPC for current chain
         checkGasLessStatus();
       }
     }
-  }, [isReady, nativeTokenBalance, gasLimit, tx, realNonce, txDetail]);
+  }, [
+    isReady,
+    nativeTokenBalance,
+    gasLimit,
+    tx,
+    realNonce,
+    txDetail,
+    isNotWalletConnect,
+    noCustomRPC,
+  ]);
 
   useEffect(() => {
     if (isGnosisAccount) {
@@ -1909,6 +1962,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       {txDetail && (
         <>
           <FooterBar
+            canUseGasLess={canUseGasLess}
+            showGasLess={showGasLess}
+            useGasLess={showGasLess && useGasLess}
+            enableGasLess={() => setUseGasLess(true)}
             hasShadow={footerShowShadow}
             origin={origin}
             originLogo={params.session.icon}

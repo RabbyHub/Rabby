@@ -307,6 +307,12 @@
       "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
       "signAndSubmitButton": "Sign and Create",
+      "gasless": {
+        "unavailable": "Gas is not enough and not qualify for Free Gas",
+        "notEnough": "Your gas is not enough",
+        "GetFreeGasToSign": "Get Free Gas to sign",
+        "rabbyPayGas": "Rabby‘ll pay for the need Gas and you can just sign"
+      },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
         "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",

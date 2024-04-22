@@ -11,6 +11,7 @@ export const SubmitActions: React.FC<Props> = ({
   onCancel,
   tooltipContent,
   enableTooltip,
+  gasLess,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -31,8 +32,17 @@ export const SubmitActions: React.FC<Props> = ({
     <ActionsContainer onCancel={onCancel}>
       {isSign ? (
         <div
+          style={
+            gasLess
+              ? {
+                  background:
+                    'linear-gradient(93deg, #60BCFF 13.49%, #8154FF 94.44%)',
+                }
+              : {}
+          }
           className={clsx(
-            'bg-blue-light text-white',
+            !gasLess && 'bg-blue-light',
+            'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
             'relative',
@@ -45,7 +55,7 @@ export const SubmitActions: React.FC<Props> = ({
         >
           <button
             className={clsx(
-              'hover:bg-[#00000033]',
+              gasLess ? 'hover:bg-[#00000033]' : 'hover:bg-[rgba(0,0,0,0.15)]',
               'w-[184px] h-full',
               'font-medium'
             )}
@@ -55,7 +65,7 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
           <button
             className={clsx(
-              'hover:bg-[#00000033]',
+              gasLess ? 'hover:bg-[#00000033]' : 'hover:bg-[rgba(0,0,0,0.15)]',
               'w-[60px] h-full',
               'flex justify-center items-center'
             )}
@@ -73,6 +83,14 @@ export const SubmitActions: React.FC<Props> = ({
             <Button
               disabled={disabledProcess}
               type="primary"
+              style={
+                gasLess
+                  ? {
+                      background:
+                        'linear-gradient(93deg, #60BCFF 13.49%, #8154FF 94.44%)',
+                    }
+                  : {}
+              }
               className={clsx(
                 'w-[246px] h-[48px] rounded-[8px]',
                 'disabled:opacity-40 disabled:bg-blue-light',
