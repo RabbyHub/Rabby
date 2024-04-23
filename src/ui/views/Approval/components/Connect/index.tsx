@@ -491,7 +491,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           account!.address,
           origin
         );
-        let targetChain: Chain | undefined;
+        let targetChain: Chain | null | undefined;
         for (let i = 0; i < recommendChains.length; i++) {
           targetChain = findChain({
             serverId: recommendChains[i].id,

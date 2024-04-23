@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import { TokenTabEnum, TokenTabs } from './TokenTabs';
+import AddTokenEntry from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
 import { TokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
@@ -48,9 +48,7 @@ export const AssetListContainer: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
   } = useQueryProjects(currentAccount?.address, false, visible, isTestnet);
-  const [activeTab, setActiveTab] = React.useState<TokenTabEnum>(
-    TokenTabEnum.List
-  );
+
   const isEmptyAssets =
     !isTokensLoading &&
     !tokenList.length &&
@@ -98,7 +96,6 @@ export const AssetListContainer: React.FC<Props> = ({
 
   React.useEffect(() => {
     if (!visible) {
-      setActiveTab(TokenTabEnum.List);
       setSearch('');
       inputRef.current?.setValue('');
       inputRef.current?.focus();
@@ -132,40 +129,27 @@ export const AssetListContainer: React.FC<Props> = ({
           }}
           className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
         />
-        {isFocus || search ? null : (
-          <TokenTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        )}
+        {isFocus || search ? null : <AddTokenEntry onConfirm={() => {}} />}
       </div>
       {isTokensLoading || isSearching ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-18">
-          {(activeTab === TokenTabEnum.List || search) && (
-            <TokenList
-              list={sortTokens}
-              onFocusInput={handleFocusInput}
-              isSearch={!!search}
-              isNoResults={isNoResults}
-              blockedTokens={blockedTokens}
-              customizeTokens={customizeTokens}
-              isTestnet={isTestnet}
-            />
-          )}
-          {activeTab === TokenTabEnum.Summary && !search && (
-            <SummaryList chainId={selectChainId} />
-          )}
-          {activeTab === TokenTabEnum.History && !search && <HistoryList />}
+          <TokenList
+            list={sortTokens}
+            onFocusInput={handleFocusInput}
+            isSearch={!!search}
+            isNoResults={isNoResults}
+            blockedTokens={blockedTokens}
+            customizeTokens={customizeTokens}
+            isTestnet={isTestnet}
+          />
         </div>
       )}
 
       <div
         style={{
-          display:
-            visible &&
-            activeTab !== TokenTabEnum.Summary &&
-            activeTab !== TokenTabEnum.History
-              ? 'block'
-              : 'none',
+          display: visible ? 'block' : 'none',
         }}
       >
         {isPortfoliosLoading ? (

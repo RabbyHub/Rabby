@@ -1107,6 +1107,13 @@
         "customDescription": "Custom token added by you will be shown here",
         "comingSoon": "Coming Soon...",
         "searchPlaceholder": "Tokens",
+        "AddMainnetToken": {
+          "title": "Add Custom Token",
+          "selectChain": "Select chain",
+          "searching": "Searching Token",
+          "tokenAddress": "Token Address",
+          "notFound": "Token not found"
+        },
         "AddTestnetToken": {
           "title": "Add Custom Network Token",
           "selectChain": "Select chain",

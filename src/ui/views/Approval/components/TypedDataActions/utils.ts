@@ -691,7 +691,7 @@ export const fetchRequireData = async (
   sender: string,
   wallet: WalletControllerType
 ): Promise<TypedDataRequireData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
@@ -928,7 +928,7 @@ export const formatSecurityEngineCtx = async ({
   requireData: TypedDataRequireData;
   wallet: WalletControllerType;
 }): Promise<ContextActionData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData?.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
