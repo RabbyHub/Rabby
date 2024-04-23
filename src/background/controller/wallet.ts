@@ -1335,7 +1335,9 @@ export class WalletController extends BaseController {
   };
   addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {
-    const sites = permissionService.getRecentConnectedSites();
+    const sites = permissionService
+      .getRecentConnectedSites()
+      .filter((item) => !item.isTop);
     sites.forEach((item) => {
       this.removeConnectedSite(item.origin);
     });
