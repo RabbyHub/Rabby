@@ -36,6 +36,7 @@ import { WaitingSignComponent } from '../map';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { getAddress } from 'viem';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const { TabPane } = Tabs;
 
@@ -232,6 +233,20 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         (item) => item.type === currentAccount.type
       )
     );
+    wallet.reportStats('createTransaction', {
+      type: currentAccount.brandName,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      chainId: chain?.serverId || '',
+      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
+    });
+
+    matomoRequestEvent({
+      category: 'Transaction',
+      action: 'init',
+      label: currentAccount.brandName,
+    });
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
     }
@@ -441,22 +456,21 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     //   return;
     // }
 
-    // await wallet.reportStats('signTransaction', {
-    //   type: currentAccount.brandName,
-    //   chainId: chain.serverId,
-    //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    //   preExecSuccess:
-    //     checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
-    //   createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-    //   source: params?.$ctx?.ga?.source || '',
-    //   trigger: params?.$ctx?.ga?.trigger || '',
-    // });
+    await wallet.reportStats('signTransaction', {
+      type: currentAccount.brandName,
+      chainId: chain?.serverId || '',
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      preExecSuccess: true,
+      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
+    });
 
-    // matomoRequestEvent({
-    //   category: 'Transaction',
-    //   action: 'Submit',
-    //   label: currentAccount.brandName,
-    // });
+    matomoRequestEvent({
+      category: 'Transaction',
+      action: 'Submit',
+      label: currentAccount.brandName,
+    });
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -466,8 +480,6 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
       reqId,
     });
   };
-
-  useMount(() => {});
 
   if (!chain) {
     return null;
