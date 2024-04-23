@@ -342,30 +342,56 @@ const useExplainGas = ({
   tx,
   wallet,
   gasLimit,
-}: Parameters<typeof explainGas>[0]) => {
+  isReady,
+}: {
+  gasUsed: number | string;
+  gasPrice: number | string;
+  chainId: number;
+  nativeTokenPrice: number;
+  tx: Tx;
+  wallet: ReturnType<typeof useWallet>;
+  gasLimit: string | undefined;
+  isReady: boolean;
+}) => {
   const [result, setResult] = useState({
     gasCostUsd: new BigNumber(0),
     gasCostAmount: new BigNumber(0),
     maxGasCostAmount: new BigNumber(0),
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    explainGas({
-      gasUsed,
-      gasPrice,
-      chainId,
-      nativeTokenPrice,
-      wallet,
-      tx,
-      gasLimit,
-    }).then((data) => {
-      setResult(data);
-    });
-  }, [gasUsed, gasPrice, chainId, nativeTokenPrice, wallet, tx, gasLimit]);
+    if (isReady) {
+      explainGas({
+        gasUsed,
+        gasPrice,
+        chainId,
+        nativeTokenPrice,
+        wallet,
+        tx,
+        gasLimit,
+      }).then((data) => {
+        setResult(data);
+        setIsLoading(false);
+      });
+    }
+  }, [
+    gasUsed,
+    gasPrice,
+    chainId,
+    nativeTokenPrice,
+    wallet,
+    tx,
+    gasLimit,
+    isReady,
+  ]);
 
-  return {
-    ...result,
-  };
+  return useMemo(() => {
+    return {
+      ...result,
+      isExplainingGas: isLoading,
+    };
+  }, [result, isLoading]);
 };
 
 const checkGasAndNonce = ({
@@ -856,6 +882,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tx,
     wallet,
     gasLimit,
+    isReady,
   });
 
   const checkErrors = useCheckGasAndNonce({
@@ -891,18 +918,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     };
     hasCustomRPC();
   }, [chain?.enum]);
-
-  // const noCustomRPC = useMemo(() => {
-  //   return !!chain && !wallet.hasCustomRPC(chain?.enum);
-  // }, [chain, wallet?.hasCustomRPC]);
-
-  console.log('chain?.enum', chain?.enum);
-  console.log(
-    'isNotWalletConnect',
-    isNotWalletConnect,
-    wallet.hasCustomRPC(chain?.enum)
-  );
-  console.log('noCustomRPC', noCustomRPC);
 
   const showGasLess = useMemo(() => {
     return isGasNotEnough && isNotWalletConnect && noCustomRPC;
@@ -1456,12 +1471,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const sendUsdValue =
       txDetail?.balance_change.send_token_list?.reduce((sum, item) => {
         return new BigNumber(item.raw_amount || 0)
+          .div(10 ** item.decimals)
           .times(item.price || 0)
           .plus(sum);
       }, new BigNumber(0)) || new BigNumber(0);
     const receiveUsdValue =
       txDetail?.balance_change?.receive_token_list.reduce((sum, item) => {
         return new BigNumber(item.raw_amount || 0)
+          .div(10 ** item.decimals)
           .times(item.price || 0)
           .plus(sum);
       }, new BigNumber(0)) || new BigNumber(0);
@@ -1472,7 +1489,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gasPrice: tx.gasPrice || tx.maxFeePerGas,
         gasLimit,
       },
-      usdValue: sendUsdValue.plus(receiveUsdValue).toNumber(),
+      usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
     });
     setCanUseGasLess(res.is_gasless);
   };
@@ -1770,14 +1787,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [isReady]);
 
   useEffect(() => {
-    if (isReady) {
-      const gasCost = new BigNumber(tx.gasPrice || tx.maxFeePerGas || 0).times(
-        gasLimit || 0
-      );
-      const gasNotEnough = gasCost.gt(nativeTokenBalance);
-      console.log('gasNotEnough', gasNotEnough);
+    if (isReady && !gasExplainResponse.isExplainingGas) {
+      let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+      sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+        ? new BigNumber(0)
+        : sendNativeTokenAmount;
+      const gasNotEnough = gasExplainResponse.maxGasCostAmount
+        .plus(sendNativeTokenAmount.div(1e18))
+        .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
       if (gasNotEnough && isNotWalletConnect && noCustomRPC) {
-        // gasNotEnough && isNotWalletConnect && noCustomRPC for current chain
         checkGasLessStatus();
       }
     }
@@ -1790,6 +1808,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     txDetail,
     isNotWalletConnect,
     noCustomRPC,
+    gasExplainResponse,
   ]);
 
   useEffect(() => {
