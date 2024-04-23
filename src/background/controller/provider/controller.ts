@@ -457,6 +457,9 @@ class ProviderController extends BaseController {
       createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
+      networkType: chainItem?.isTestnet
+        ? 'Custom Network'
+        : 'Integrated Network',
       reported: false,
     };
 
@@ -574,6 +577,9 @@ class ProviderController extends BaseController {
           createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
           source: options?.data?.$ctx?.ga?.source || '',
           trigger: options?.data?.$ctx?.ga?.trigger || '',
+          networkType: chainItem?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
