@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import AddTokenEntry from './AddTokenEntry';
+import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
-import { TokenList } from './TokenList';
+import { HomeTokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
 import useSearchToken from '@/ui/hooks/useSearchToken';
 import {
@@ -12,8 +12,6 @@ import {
 import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { Input } from 'antd';
-import { SummaryList } from './SummaryList';
-import { HistoryList } from './HisotryList';
 import { useFilterProtocolList } from './useFilterProtocolList';
 
 interface Props {
@@ -103,6 +101,8 @@ export const AssetListContainer: React.FC<Props> = ({
     }
   }, [visible]);
 
+  const addTokenEntryRef = React.useRef<AddTokenEntryInst>(null);
+
   if (isTokensLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
   }
@@ -129,15 +129,18 @@ export const AssetListContainer: React.FC<Props> = ({
           }}
           className={isFocus || search ? 'w-[360px]' : 'w-[160px]'}
         />
-        {isFocus || search ? null : <AddTokenEntry onConfirm={() => {}} />}
+        {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />}
       </div>
       {isTokensLoading || isSearching ? (
         <TokenListSkeleton />
       ) : (
         <div className="mt-18">
-          <TokenList
+          <HomeTokenList
             list={sortTokens}
             onFocusInput={handleFocusInput}
+            onOpenAddEntryPopup={() => {
+              addTokenEntryRef.current?.startAddToken();
+            }}
             isSearch={!!search}
             isNoResults={isNoResults}
             blockedTokens={blockedTokens}

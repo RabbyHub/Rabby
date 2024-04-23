@@ -29,7 +29,7 @@ const SwitchStyled = styled(Switch)`
   }
 `;
 
-export const CustomizedButton: React.FC<Props> = ({
+export const CustomizedSwitch: React.FC<Props> = ({
   selected,
   onOpen,
   onClose,

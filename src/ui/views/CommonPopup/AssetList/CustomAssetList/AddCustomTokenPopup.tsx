@@ -23,11 +23,18 @@ import {
   useFindCustomToken,
   useIsTokenAddedLocally,
 } from '@/ui/hooks/useSearchToken';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 
 interface Props {
   visible?: boolean;
   onClose?(): void;
-  onConfirm?(): void;
+  onConfirm?: (
+    addedInfo: {
+      token: TokenItem;
+      portofolioToken?: AbstractPortfolioToken | null;
+    } | null
+  ) => void;
 }
 
 const Wraper = styled.div`
@@ -112,14 +119,13 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
   const { t } = useTranslation();
   const [form] = useForm();
 
-  const { resetSearchResult, searchCustomToken } = useFindCustomToken();
-
   const {
-    data,
-    runAsync: doSearch,
-    loading: isSearchingToken,
-    error,
-  } = useRequest(
+    tokenList,
+    resetSearchResult,
+    searchCustomToken,
+  } = useFindCustomToken();
+
+  const { runAsync: doSearch, loading: isSearchingToken, error } = useRequest(
     async () => {
       if (!chain?.id || !tokenId) {
         return null;
@@ -134,7 +140,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
         },
       ]);
 
-      return searchCustomToken({
+      await searchCustomToken({
         address: currentAccount!.address,
         chainServerId: chain.serverId,
         q: tokenId,
@@ -160,7 +166,6 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     }
   }, [chain?.serverId, tokenId]);
 
-  const { tokenList } = data || {};
   const token = useMemo(() => tokenList?.[0], [tokenList]);
   // const { isLocal: isLocalToken } = useIsTokenAddedLocally(token);
 
@@ -171,7 +176,12 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
       if (!token || !chain?.id || !tokenId) {
         return null;
       }
-      return addToken(token);
+      const portofolioToken = (await addToken(token)) || null;
+
+      return {
+        token,
+        portofolioToken,
+      };
     },
     {
       manual: true,
@@ -180,8 +190,8 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
 
   const handleConfirm = useCallback(async () => {
     try {
-      await runAddToken();
-      onConfirm?.();
+      const addedInfo = await runAddToken();
+      onConfirm?.(addedInfo);
     } catch (e) {
       message.error(e?.message);
     }

@@ -7,12 +7,15 @@ import { ReactComponent as EmptySVG } from '@/ui/assets/dashboard/empty.svg';
 import { TokenTable } from './TokenTable';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'antd';
 
 export interface Props {
   label: string;
-  onClickLink: () => void;
+  onClickButton?: () => void;
   tokens?: AbstractPortfolioToken[];
+  onClickLink?: () => void;
   linkText?: string;
+  buttonText?: string;
   description?: string;
   hiddenSubTitle?: boolean;
 }
@@ -22,6 +25,8 @@ export const TokenButton: React.FC<Props> = ({
   tokens,
   onClickLink,
   linkText,
+  onClickButton,
+  buttonText,
   description,
   hiddenSubTitle,
 }) => {
@@ -32,8 +37,13 @@ export const TokenButton: React.FC<Props> = ({
 
   const handleClickLink = React.useCallback(() => {
     setVisible(false);
-    onClickLink();
-  }, []);
+    onClickLink?.();
+  }, [onClickLink]);
+
+  const handleClickButton = React.useCallback(() => {
+    setVisible(false);
+    onClickButton?.();
+  }, [onClickButton]);
 
   React.useEffect(() => {
     if (!commonPopupVisible) {
@@ -78,12 +88,23 @@ export const TokenButton: React.FC<Props> = ({
             <div className="space-y-24 text-13 text-center mt-[100px]">
               <EmptySVG className="w-[52px] h-[52px] m-auto" />
               <div className="text-r-neutral-body">{description}</div>
-              <div
-                onClick={handleClickLink}
-                className="text-r-blue-default underline cursor-pointer"
-              >
-                {linkText}
-              </div>
+              {linkText && (
+                <div
+                  onClick={handleClickLink}
+                  className="text-r-blue-default underline cursor-pointer"
+                >
+                  {linkText}
+                </div>
+              )}
+              {buttonText && (
+                <Button
+                  onClick={handleClickButton}
+                  type="primary"
+                  className="w-[200px] h-[44px]"
+                >
+                  {buttonText}
+                </Button>
+              )}
             </div>
           }
         />

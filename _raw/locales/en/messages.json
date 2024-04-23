@@ -1103,7 +1103,7 @@
         "blockDescription": "Token blocked by you will be shown here",
         "unfoldChain": "Unfold 1 chain",
         "unfoldChainPlural": "Unfold {{moreLen}} chains",
-        "customLinkText": "Search address to add custom token",
+        "customButtonText": "Add custom token",
         "customDescription": "Custom token added by you will be shown here",
         "comingSoon": "Coming Soon...",
         "searchPlaceholder": "Tokens",
