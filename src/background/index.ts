@@ -120,14 +120,7 @@ restoreAppState();
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
-    const customTestnetLength = customTestnetService.getList()?.length;
-    if (customTestnetLength) {
-      matomoRequestEvent({
-        category: 'Custom Network',
-        action: 'Custom Network Status',
-        value: customTestnetLength,
-      });
-    }
+
     if (interval) {
       clearInterval(interval);
     }
@@ -135,6 +128,14 @@ restoreAppState();
       const time = preferenceService.getSendLogTime();
       if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
         return;
+      }
+      const customTestnetLength = customTestnetService.getList()?.length;
+      if (customTestnetLength) {
+        matomoRequestEvent({
+          category: 'Custom Network',
+          action: 'Custom Network Status',
+          value: customTestnetLength,
+        });
       }
       const chains = preferenceService.getSavedChains();
       matomoRequestEvent({

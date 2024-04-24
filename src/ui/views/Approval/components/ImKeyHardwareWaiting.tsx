@@ -136,6 +136,9 @@ export const ImKeyHardwareWaiting = ({
           createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     } else {
@@ -181,7 +184,7 @@ export const ImKeyHardwareWaiting = ({
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: KEYRING_CLASS.HARDWARE.IMKEY,
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
 
         setSignFinishedData({

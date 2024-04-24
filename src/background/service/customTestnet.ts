@@ -169,13 +169,7 @@ class CustomTestnetService {
     };
     this.chains[chain.id] = createClientByChain(chain);
     this.syncChainList();
-    if (isAdd) {
-      matomoRequestEvent({
-        category: 'Custom Network',
-        action: 'Success Add Network',
-        label: String(chain.id),
-      });
-    }
+
     if (this.getList().length) {
       matomoRequestEvent({
         category: 'Custom Network',

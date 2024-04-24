@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { isSameTesnetToken } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface Props {
   className?: string;
@@ -120,6 +121,10 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
                   'flex items-center gap-x-[4px] justify-center'
                 )}
                 onClick={() => {
+                  matomoRequestEvent({
+                    category: 'Custom Network',
+                    action: 'TokenList Add Network',
+                  });
                   setIsShowAddTestnetModal(true);
                 }}
               >
@@ -199,6 +204,11 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
         }}
       />
       <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'tokenList',
+          },
+        }}
         visible={isShowAddTestnetModal}
         onCancel={() => {
           setIsShowAddTestnetModal(false);

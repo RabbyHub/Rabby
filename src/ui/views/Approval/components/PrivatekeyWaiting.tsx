@@ -129,6 +129,9 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
           createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     } else {
@@ -166,7 +169,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: type,
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
         setSignFinishedData({
           data: sig,
