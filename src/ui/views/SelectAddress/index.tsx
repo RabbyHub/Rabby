@@ -35,19 +35,6 @@ const SelectAddress = () => {
     state.keyringId = Number(query.get('keyringId') as string);
   }
 
-  if (!state) {
-    if (getUiType().isTab) {
-      if (history.length) {
-        history.goBack();
-      } else {
-        window.close();
-      }
-    } else {
-      history.replace('/dashboard');
-    }
-    return null;
-  }
-
   const [isMounted, setIsMounted] = React.useState(false);
   const dispatch = useRabbyDispatch();
   const initMnemonics = async () => {
@@ -63,8 +50,22 @@ const SelectAddress = () => {
     initMnemonics();
   }, [query]);
 
-  const { keyring, brand } = state;
   const keyringId = useRef<number | null | undefined>(state.keyringId);
+
+  if (!state) {
+    if (getUiType().isTab) {
+      if (history.length) {
+        history.goBack();
+      } else {
+        window.close();
+      }
+    } else {
+      history.replace('/dashboard');
+    }
+    return null;
+  }
+
+  const { keyring, brand } = state;
   const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
 
   if (isMnemonic) {

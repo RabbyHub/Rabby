@@ -174,29 +174,31 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               !isPopup && 'lg:h-[200px] lg:w-[460px]'
             )}
           >
-            {sortBy(accounts, (item) => item?.index).map((account, index) => (
-              <AddressItem
-                className="mb-12 rounded bg-r-neutral-card-1 py-12 pl-16 h-[92px] flex"
-                key={account.address}
-                account={account}
-                showAssets
-                icon={importedIcon}
-                showImportIcon={showImportIcon}
-                editing={editing}
-                index={index}
-                showIndex={!editing}
-                importedAccount
-                isMnemonics={isMnemonics}
-                importedLength={importedLength}
-                stopEditing={!editing}
-                canEditing={(editing) => startEdit(editing, index)}
-                showEditIcon={false}
-                ellipsis={false}
-                ref={(el) => {
-                  addressItems.current[index] = el;
-                }}
-              />
-            ))}
+            {sortBy(accounts, (item) => item?.index).map((account, index) =>
+              !account ? null : (
+                <AddressItem
+                  className="mb-12 rounded bg-r-neutral-card-1 py-12 pl-16 h-[92px] flex"
+                  key={account.address}
+                  account={account}
+                  showAssets
+                  icon={importedIcon}
+                  showImportIcon={showImportIcon}
+                  editing={editing}
+                  index={index}
+                  showIndex={!editing}
+                  importedAccount
+                  isMnemonics={isMnemonics}
+                  importedLength={importedLength}
+                  stopEditing={!editing}
+                  canEditing={(editing) => startEdit(editing, index)}
+                  showEditIcon={false}
+                  ellipsis={false}
+                  ref={(el) => {
+                    addressItems.current[index] = el;
+                  }}
+                />
+              )
+            )}
             {!!state?.supportChainList?.length && (
               <div className="chain-list-container">
                 <div className="desc">

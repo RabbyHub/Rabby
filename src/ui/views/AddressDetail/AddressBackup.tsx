@@ -21,11 +21,6 @@ export const AddressBackup = ({ address, type }: Props) => {
 
   const [form] = useForm();
 
-  if (
-    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
-  ) {
-    return null;
-  }
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
@@ -67,6 +62,12 @@ export const AddressBackup = ({ address, type }: Props) => {
       wallet,
     });
   };
+
+  if (
+    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
+  ) {
+    return null;
+  }
 
   return (
     <div className="rabby-list">
