@@ -210,54 +210,59 @@ const TokenDetail = ({
             )}
           </div>
         </div>
-        {variant === 'add' ? (
-          token.is_core ? (
-            <BlockedButton
-              selected={isAdded}
-              onOpen={() => addToken(tokenWithAmount)}
-              onClose={() => removeToken(tokenWithAmount)}
-            />
-          ) : (
-            <CustomizedButton
-              selected={isAdded}
-              onOpen={() => addToken(tokenWithAmount)}
-              onClose={() => removeToken(tokenWithAmount)}
-            />
-          )
-        ) : null}
-        <div className="balance">
-          <div className="balance-title">
-            {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
-          </div>
-          <div className="balance-content overflow-hidden">
-            <TooltipWithMagnetArrow
-              className="rectangle w-[max-content]"
-              title={(tokenWithAmount.amount || 0).toString()}
-              placement="bottom"
-            >
-              <div className="balance-value truncate">
-                {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
-              </div>
-            </TooltipWithMagnetArrow>
-            <TooltipWithMagnetArrow
-              title={`≈ $${(
-                tokenWithAmount.amount * token.price || 0
-              ).toString()}`}
-              className="rectangle w-[max-content]"
-              placement="bottom"
-            >
-              <div className="balance-value-usd truncate">
-                ≈ $
-                {splitNumberByStep(
-                  (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-                )}
-              </div>
-            </TooltipWithMagnetArrow>
+      </div>
+
+      <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
+        <div className="token-detail-stickyarea">
+          {variant === 'add' ? (
+            token.is_core ? (
+              <BlockedButton
+                selected={isAdded}
+                onOpen={() => addToken(tokenWithAmount)}
+                onClose={() => removeToken(tokenWithAmount)}
+              />
+            ) : (
+              <CustomizedButton
+                selected={isAdded}
+                onOpen={() => addToken(tokenWithAmount)}
+                onClose={() => removeToken(tokenWithAmount)}
+              />
+            )
+          ) : null}
+          <div className="balance">
+            <div className="balance-title">
+              {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
+            </div>
+            <div className="balance-content overflow-hidden">
+              <TooltipWithMagnetArrow
+                className="rectangle w-[max-content]"
+                title={(tokenWithAmount.amount || 0).toString()}
+                placement="bottom"
+              >
+                <div className="balance-value truncate">
+                  {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
+                </div>
+              </TooltipWithMagnetArrow>
+              <TooltipWithMagnetArrow
+                title={`≈ $${(
+                  tokenWithAmount.amount * token.price || 0
+                ).toString()}`}
+                className="rectangle w-[max-content]"
+                placement="bottom"
+              >
+                <div className="balance-value-usd truncate">
+                  ≈ $
+                  {splitNumberByStep(
+                    (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                  )}
+                </div>
+              </TooltipWithMagnetArrow>
+            </div>
           </div>
         </div>
 
         {!isHiddenButton && !hideOperationButtons && (
-          <div className="flex flex-row justify-between mt-24">
+          <div className="flex flex-row justify-between J_buttons_area">
             <Tooltip
               overlayClassName="rectangle token_swap__tooltip"
               placement="topLeft"
@@ -297,9 +302,7 @@ const TokenDetail = ({
             </Button>
           </div>
         )}
-      </div>
 
-      <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
         {data?.list.map((item) => (
           <HistoryItem
             data={item}

@@ -10,8 +10,15 @@
     }
   }
 
+  @header-py-offset: 20px;
+  // @header-inner-height: 44px;
+  @header-height: 56px;
+  @button-area-h: 44px;
+  @balance-area-h: 48px;
   &-header {
-    padding: 20px;
+    padding: @header-py-offset;
+    height: @header-height;
+    box-sizing: border-box;
     border-bottom: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
     position: sticky;
     background: var(--r-neutral-bg-1, #FFF);
@@ -86,6 +93,27 @@
 
   &-body {
     padding: 20px 20px 100px;
+    position: relative;
+  }
+
+  // @stickyarea-height: @header-inner-height + @header-py-offset * 2;
+  @stickyarea-height: @header-height;
+  @stickyarea-pb: 10px;
+  &-stickyarea {
+    position: sticky;
+    top: @stickyarea-height;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background: var(--r-neutral-bg-1, #FFF);
+    padding: 0;
+    padding-bottom: @stickyarea-pb;
+  }
+
+  &-body .J_buttons_area {
+    height: @button-area-h;
+    width: 100%;
+    margin-bottom: 10px;
   }
 
   &-footer {
