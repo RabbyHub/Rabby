@@ -25,7 +25,7 @@ export function GasLessNotEnough({ url }: { url?: string }) {
       />
       <span className="flex-1 text-r-neutral-title1 inline-flex gap-4 items-center">
         {t('page.signFooterBar.gasless.unavailable')}
-        <RcIconLink />
+        {/* <RcIconLink /> */}
       </span>
     </div>
   );

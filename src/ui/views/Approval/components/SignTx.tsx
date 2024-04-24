@@ -1491,7 +1491,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           ...tx,
           nonce: realNonce,
           gasPrice: tx.gasPrice || tx.maxFeePerGas,
-          gasLimit,
+          gas: gasLimit,
         },
         usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
         pre_exec_success: txDetail?.pre_exec.success || false,
