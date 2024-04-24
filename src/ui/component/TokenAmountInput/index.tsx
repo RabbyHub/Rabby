@@ -21,7 +21,7 @@ import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
-import { INPUT_NUMBER_RE } from '@/constant/regexp';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -169,7 +169,7 @@ const TokenAmountInput = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (INPUT_NUMBER_RE.test(e.target.value)) {
-      onChange?.(e.target.value);
+      onChange?.(filterNumber(e.target.value));
     }
   };
 

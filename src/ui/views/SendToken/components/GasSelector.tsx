@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { BigNumber } from 'bignumber.js';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
-import { INPUT_NUMBER_RE } from '@/constant/regexp';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 interface GasSelectorProps {
   chainId: number;
@@ -73,7 +73,7 @@ const GasSelector = ({
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (INPUT_NUMBER_RE.test(e.target.value)) {
-      setCustomGas(e.target.value);
+      setCustomGas(filterNumber(e.target.value));
     }
   };
 
