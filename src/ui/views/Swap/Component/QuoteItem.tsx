@@ -284,13 +284,6 @@ export const DexQuoteItem = (
           .times(100);
       }
 
-      console.log({
-        receivedUsdBn,
-        bestQuoteUsdBn,
-        receivedTokeAmountBn,
-        bestQuoteAmountBn,
-      });
-
       receivedUsd = formatUsdValue(
         receivedTokeAmountBn.times(receiveToken.price || 0).toString(10)
       );

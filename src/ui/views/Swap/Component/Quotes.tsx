@@ -162,14 +162,6 @@ export const Quotes = ({
 
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
 
-  console.log({
-    bestQuoteAmount,
-    bestQuoteGasUsd,
-    other,
-    price: other?.receiveToken?.price,
-    sortedList,
-  });
-
   const noCex = useMemo(() => {
     return Object.keys(CEX).every((e) => swapViewList?.[e] === false);
   }, [swapViewList]);
