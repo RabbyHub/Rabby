@@ -5,12 +5,14 @@ import clsx from 'clsx';
 import { AddCustomTokenPopup } from './CustomAssetList/AddCustomTokenPopup';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useTranslation } from 'react-i18next';
 
 export type AddTokenEntryInst = {
   startAddToken: () => void;
 };
 const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
   function AddTokenEntryPorto(_, ref) {
+    const { t } = useTranslation();
     const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
 
     useImperativeHandle(ref, () => ({
@@ -37,7 +39,7 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
           }}
         >
           <RcAddEntryCC className="text-r-neutral-body w-[14px] h-[14px] mr-[4px]" />
-          <span>Add Tokens</span>
+          <span>{t('page.dashboard.assets.addTokenEntryText')}</span>
         </div>
 
         <AddCustomTokenPopup
