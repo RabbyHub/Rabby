@@ -92,6 +92,7 @@ export const Quotes = ({
     () => [
       ...(list?.sort((a, b) => {
         const getNumber = (quote: typeof a) => {
+          const price = other.receiveToken.price ? other.receiveToken.price : 1;
           if (quote.isDex) {
             if (inSufficient) {
               return new BigNumber(quote.data?.toTokenAmount || 0)
@@ -99,10 +100,10 @@ export const Quotes = ({
                   10 **
                     (quote.data?.toTokenDecimals || other.receiveToken.decimals)
                 )
-                .times(other.receiveToken.price);
+                .times(price);
             }
             if (!quote.preExecResult) {
-              return new BigNumber(0);
+              return new BigNumber(Number.MIN_SAFE_INTEGER);
             }
 
             if (sortIncludeGasFee) {
@@ -110,21 +111,19 @@ export const Quotes = ({
                 quote?.preExecResult.swapPreExecTx.balance_change
                   .receive_token_list?.[0]?.amount || 0
               )
-                .times(other.receiveToken.price)
+                .times(price)
                 .minus(quote?.preExecResult?.gasUsdValue || 0);
             }
 
             return new BigNumber(
               quote?.preExecResult.swapPreExecTx.balance_change
                 .receive_token_list?.[0]?.amount || 0
-            ).times(other.receiveToken.price);
+            ).times(price);
           }
 
-          return new BigNumber(
-            quote?.data?.receive_token
-              ? quote?.data?.receive_token?.amount
-              : -Number.MAX_SAFE_INTEGER
-          ).times(other.receiveToken.price);
+          return quote?.data?.receive_token
+            ? new BigNumber(quote?.data?.receive_token?.amount).times(price)
+            : new BigNumber(Number.MIN_SAFE_INTEGER);
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),
@@ -162,6 +161,14 @@ export const Quotes = ({
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
+
+  console.log({
+    bestQuoteAmount,
+    bestQuoteGasUsd,
+    other,
+    price: other?.receiveToken?.price,
+    sortedList,
+  });
 
   const noCex = useMemo(() => {
     return Object.keys(CEX).every((e) => swapViewList?.[e] === false);
