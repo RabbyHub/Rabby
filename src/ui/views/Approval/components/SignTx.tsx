@@ -1799,7 +1799,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [isReady]);
 
   useEffect(() => {
-    if (isReady && !gasExplainResponse.isExplainingGas) {
+    if (
+      isReady &&
+      !gasExplainResponse.isExplainingGas &&
+      !isGnosisAccount &&
+      !isCoboArugsAccount
+    ) {
       let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
       sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
         ? new BigNumber(0)
@@ -1821,6 +1826,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isNotWalletConnect,
     noCustomRPC,
     gasExplainResponse,
+    isGnosisAccount,
+    isCoboArugsAccount,
   ]);
 
   useEffect(() => {
