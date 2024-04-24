@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-white.svg';
+import { GasLessAnimatedWrapper } from './GasLessComponents';
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -32,16 +33,8 @@ export const SubmitActions: React.FC<Props> = ({
     <ActionsContainer onCancel={onCancel}>
       {isSign ? (
         <div
-          style={
-            gasLess
-              ? {
-                  background:
-                    'linear-gradient(93deg, #60BCFF 13.49%, #8154FF 94.44%)',
-                }
-              : {}
-          }
           className={clsx(
-            !gasLess && 'bg-blue-light',
+            'bg-blue-light',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
@@ -55,7 +48,7 @@ export const SubmitActions: React.FC<Props> = ({
         >
           <button
             className={clsx(
-              gasLess ? 'hover:bg-[#00000033]' : 'hover:bg-[rgba(0,0,0,0.15)]',
+              'hover:bg-[#00000033]',
               'w-[184px] h-full',
               'font-medium'
             )}
@@ -65,7 +58,7 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
           <button
             className={clsx(
-              gasLess ? 'hover:bg-[#00000033]' : 'hover:bg-[rgba(0,0,0,0.15)]',
+              'hover:bg-[#00000033]',
               'w-[60px] h-full',
               'flex justify-center items-center'
             )}
@@ -79,19 +72,12 @@ export const SubmitActions: React.FC<Props> = ({
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           title={enableTooltip ? tooltipContent : null}
         >
-          <div>
+          <GasLessAnimatedWrapper>
             <Button
               disabled={disabledProcess}
               type="primary"
-              style={
-                gasLess
-                  ? {
-                      background:
-                        'linear-gradient(93deg, #60BCFF 13.49%, #8154FF 94.44%)',
-                    }
-                  : {}
-              }
               className={clsx(
+                gasLess && 'gasLess',
                 'w-[246px] h-[48px] rounded-[8px]',
                 'disabled:opacity-40 disabled:bg-blue-light',
                 'before:content-none'
@@ -100,7 +86,7 @@ export const SubmitActions: React.FC<Props> = ({
             >
               {t('page.signFooterBar.signAndSubmitButton')}
             </Button>
-          </div>
+          </GasLessAnimatedWrapper>
         </Tooltip>
       )}
     </ActionsContainer>

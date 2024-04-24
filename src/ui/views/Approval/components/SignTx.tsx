@@ -700,6 +700,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     undefined | string
   >();
   const [canUseGasLess, setCanUseGasLess] = useState(false);
+  const [chainSupportGasLess, setChainSupportGasLess] = useState(false);
   const [useGasLess, setUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
@@ -920,8 +921,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [chain?.enum]);
 
   const showGasLess = useMemo(() => {
-    return isGasNotEnough && isNotWalletConnect && noCustomRPC;
-  }, [isGasNotEnough, isNotWalletConnect, noCustomRPC]);
+    return (
+      chainSupportGasLess && isGasNotEnough && isNotWalletConnect && noCustomRPC
+    );
+  }, [chainSupportGasLess, isGasNotEnough, isNotWalletConnect, noCustomRPC]);
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
@@ -1482,16 +1485,25 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           .times(item.price || 0)
           .plus(sum);
       }, new BigNumber(0)) || new BigNumber(0);
-    const res = await wallet.openapi.gasLessTxCheck({
-      tx: {
-        ...tx,
-        nonce: realNonce,
-        gasPrice: tx.gasPrice || tx.maxFeePerGas,
-        gasLimit,
-      },
-      usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
-    });
-    setCanUseGasLess(res.is_gasless);
+    try {
+      const res = await wallet.openapi.gasLessTxCheck({
+        tx: {
+          ...tx,
+          nonce: realNonce,
+          gasPrice: tx.gasPrice || tx.maxFeePerGas,
+          gasLimit,
+        },
+        usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
+        pre_exec_success: txDetail?.pre_exec.success || false,
+      });
+      setCanUseGasLess(res.is_gasless);
+      setChainSupportGasLess(true);
+    } catch (error) {
+      const err = error as { message?: string };
+      console.error('gasLessTxCheck error', error);
+      if (err?.message && err?.message.includes('not support'))
+        setChainSupportGasLess(false);
+    }
   };
 
   const getSafeInfo = async () => {

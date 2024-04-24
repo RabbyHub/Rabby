@@ -4,47 +4,7 @@ import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-
-const ButtonWrapper = styled(Button)`
-  &.gasLess {
-    position: relative;
-    border-radius: 6px;
-    border: 1px solid transparent;
-
-    &:hover,
-    &:active {
-      background: linear-gradient(
-        92deg,
-        rgba(97, 189, 255, 0.1) 5.19%,
-        rgba(128, 90, 255, 0.1) 98.4%
-      );
-    }
-
-    & > span {
-      background: linear-gradient(93deg, #60bcff 13.49%, #9570ff 94.44%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    &::after {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(93deg, #60bcff 13.49%, #9570ff 94.44%);
-      content: '';
-      border-radius: 6px;
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      padding: 1px;
-    }
-  }
-`;
+import { GasLessAnimatedWrapper } from './GasLessComponents';
 
 export const ProcessActions: React.FC<Props> = ({
   onSubmit,
@@ -60,8 +20,8 @@ export const ProcessActions: React.FC<Props> = ({
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
         title={tooltipContent}
       >
-        <div className="absolute left-0 right-0">
-          <ButtonWrapper
+        <GasLessAnimatedWrapper className="absolute left-0 right-0">
+          <Button
             disabled={disabledProcess}
             type="ghost"
             className={clsx(
@@ -76,8 +36,8 @@ export const ProcessActions: React.FC<Props> = ({
             onClick={onSubmit}
           >
             {t('page.signFooterBar.beginSigning')}
-          </ButtonWrapper>
-        </div>
+          </Button>
+        </GasLessAnimatedWrapper>
       </Tooltip>
     </ActionsContainer>
   );
