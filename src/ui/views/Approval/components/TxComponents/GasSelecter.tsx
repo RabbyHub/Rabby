@@ -1071,7 +1071,6 @@ const GasSelectPanel = ({
                 'custom-input': item.level === 'custom',
                 active: selectedGas?.level === item.level,
               })}
-              title={new BigNumber(item.price / 1e9).toFixed()}
             >
               {item.level === 'custom' ? (
                 <Input
