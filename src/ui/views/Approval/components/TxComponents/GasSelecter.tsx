@@ -29,11 +29,7 @@ import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
-import {
-  INPUT_INTEGER_RE,
-  INPUT_NUMBER_RE,
-  filterNumber,
-} from '@/constant/regexp';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -391,13 +387,13 @@ const GasSelector = ({
   };
 
   const handleGasLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (INPUT_INTEGER_RE.test(e.target.value)) {
+    if (/^\d*$/.test(e.target.value)) {
       setGasLimit(e.target.value);
     }
   };
 
   const handleCustomNonceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (INPUT_INTEGER_RE.test(e.target.value)) {
+    if (/^\d*$/.test(e.target.value)) {
       setCustomNonce(Number(e.target.value));
     }
   };
