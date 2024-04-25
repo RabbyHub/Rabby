@@ -82,7 +82,7 @@ const GasLessReady = styled.div`
 
   & > .gas-to-sign {
     z-index: 1;
-    margin-top: 15px !important;
+    margin-top: 8px !important;
   }
 
   &.gasLess > {
@@ -99,7 +99,7 @@ function FreeGasReady() {
   const { t } = useTranslation();
   return (
     <span
-      className="gas-ready security-level-tip bg-transparent text-transparent py-0 pt-[17px] h-[46px]"
+      className="gas-ready security-level-tip bg-transparent text-transparent py-0 pt-[18px] h-[46px]"
       style={{
         backgroundImage: `url(${GasLessBg})`,
       }}
@@ -131,7 +131,7 @@ export function GasLessToSign({
     <>
       <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
         <FreeGasReady />
-        <span className="gas-to-sign security-level-tip bg-r-neutral-card2 text-r-neutral-card2 items-center">
+        <span className="gas-to-sign security-level-tip bg-r-neutral-card2 text-r-neutral-card2 items-center pr-6">
           <RcIconGas
             viewBox="0 0 16 16"
             className="w-16 h-16 mr-4 text-r-neutral-title-1"

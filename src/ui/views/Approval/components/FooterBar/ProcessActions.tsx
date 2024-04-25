@@ -20,7 +20,7 @@ export const ProcessActions: React.FC<Props> = ({
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
         title={tooltipContent}
       >
-        <GasLessAnimatedWrapper className="absolute left-0 right-0">
+        <GasLessAnimatedWrapper className="absolute left-0 right-0 w-[246px]">
           <Button
             disabled={disabledProcess}
             type="ghost"
