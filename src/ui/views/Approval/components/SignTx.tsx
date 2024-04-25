@@ -904,8 +904,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return checkErrors.some((e) => e.code === 3001);
   }, [checkErrors]);
 
-  const isNotWalletConnect = useMemo(() => {
-    return currentAccountType !== KEYRING_TYPE.WalletConnectKeyring;
+  const isSupportedAddr = useMemo(() => {
+    const isNotWalletConnect =
+      currentAccountType !== KEYRING_TYPE.WalletConnectKeyring;
+    const isNotWatchAddress =
+      currentAccountType !== KEYRING_TYPE.WatchAddressKeyring;
+
+    return isNotWatchAddress && isNotWalletConnect;
   }, [currentAccountType]);
 
   const [noCustomRPC, setNoCustomRPC] = useState(true);
@@ -922,9 +927,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const showGasLess = useMemo(() => {
     return (
-      chainSupportGasLess && isGasNotEnough && isNotWalletConnect && noCustomRPC
+      chainSupportGasLess && isGasNotEnough && isSupportedAddr && noCustomRPC
     );
-  }, [chainSupportGasLess, isGasNotEnough, isNotWalletConnect, noCustomRPC]);
+  }, [chainSupportGasLess, isGasNotEnough, isSupportedAddr, noCustomRPC]);
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
@@ -1812,7 +1817,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       const gasNotEnough = gasExplainResponse.maxGasCostAmount
         .plus(sendNativeTokenAmount.div(1e18))
         .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
-      if (gasNotEnough && isNotWalletConnect && noCustomRPC) {
+      if (gasNotEnough && isSupportedAddr && noCustomRPC) {
         checkGasLessStatus();
       }
     }
@@ -1823,7 +1828,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     tx,
     realNonce,
     txDetail,
-    isNotWalletConnect,
+    isSupportedAddr,
     noCustomRPC,
     gasExplainResponse,
     isGnosisAccount,
