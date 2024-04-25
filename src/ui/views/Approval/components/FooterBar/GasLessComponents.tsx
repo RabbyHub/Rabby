@@ -77,12 +77,12 @@ const GasLessReady = styled.div`
 
   & > .gas-ready {
     z-index: -1;
-    margin-top: 3px !important;
+    margin-top: -2px !important;
   }
 
   & > .gas-to-sign {
     z-index: 1;
-    margin-top: 8px !important;
+    margin-top: 4px !important;
   }
 
   &.gasLess > {

@@ -926,10 +926,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [chain?.enum]);
 
   const showGasLess = useMemo(() => {
-    return (
-      chainSupportGasLess && isGasNotEnough && isSupportedAddr && noCustomRPC
-    );
-  }, [chainSupportGasLess, isGasNotEnough, isSupportedAddr, noCustomRPC]);
+    return isGasNotEnough;
+    // return (
+    //   chainSupportGasLess && isGasNotEnough && isSupportedAddr && noCustomRPC
+    // );
+  }, [isGasNotEnough]);
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
@@ -2021,8 +2022,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             onSubmit={() => handleAllow()}
             onIgnoreAllRules={handleIgnoreAllRules}
             enableTooltip={
-              !canProcess ||
-              !!checkErrors.find((item) => item.level === 'forbidden')
+              // 3001 use gasless tip
+              checkErrors && checkErrors?.[0]?.code === 3001
+                ? false
+                : !canProcess ||
+                  !!checkErrors.find((item) => item.level === 'forbidden')
             }
             tooltipContent={
               checkErrors.find((item) => item.level === 'forbidden')
