@@ -171,7 +171,7 @@ const Dashboard = () => {
           setDisplayName(name!);
         });
 
-      eventBus.addEventListener(EVENTS.TX_COMPLETED, async ({ address }) => {
+      const handler = async ({ address }) => {
         if (isSameAddress(address, currentAccount.address)) {
           const count = await dispatch.transactions.getPendingTxCountAsync(
             currentAccount.address
@@ -184,11 +184,13 @@ const Dashboard = () => {
             }, 5000);
           }
         }
-      });
+      };
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+
+      return () => {
+        eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+      };
     }
-    return () => {
-      eventBus.removeAllEventListeners(EVENTS.TX_COMPLETED);
-    };
   }, [currentAccount]);
 
   useEffect(() => {

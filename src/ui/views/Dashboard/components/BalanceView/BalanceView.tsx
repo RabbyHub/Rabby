@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from 'react';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { useCommonPopupView, useWallet } from 'ui/utils';
-import { CHAINS, KEYRING_TYPE } from 'consts';
+import { sleep, useCommonPopupView, useWallet } from 'ui/utils';
+import { CHAINS, EVENTS, KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
@@ -12,12 +20,14 @@ import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
-import { useDebounce } from 'react-use';
+import { useDebounce, useInterval, usePrevious } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
+import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
+import eventBus from '@/eventBus';
 
 const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const { t } = useTranslation();
@@ -27,7 +37,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const {
     balance,
     matteredChainBalances,
-    success,
+    success: loadBalanceSuccess,
     balanceLoading,
     balanceFromCache,
     refreshBalance,
@@ -49,21 +59,56 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
-  const [startRefresh, setStartRefresh] = useState(false);
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const onRefresh = async () => {
-    setStartRefresh(true);
-    try {
-      await Promise.all([refreshBalance(), refreshCurve()]);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setStartRefresh(false);
-    }
-  };
+  const {
+    checkExpirationInterval,
+    checkIfHomeBalanceExpired,
+    refreshHomeBalanceExpiration,
+  } = useShouldHomeBalanceShowLoading();
 
-  const handleIsGnosisChange = async () => {
+  const onRefresh = useCallback(
+    async (isManual = true) => {
+      isManual && setIsManualRefreshing(true);
+      try {
+        await Promise.all([refreshBalance(), refreshCurve()]);
+        if (!isManual) await sleep(1000);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsManualRefreshing(false);
+        refreshHomeBalanceExpiration();
+      }
+    },
+    [refreshBalance, refreshCurve, refreshHomeBalanceExpiration]
+  );
+
+  useEffect(() => {
+    if (checkIfHomeBalanceExpired()) {
+      onRefresh(false);
+    }
+
+    const handler = async () => {
+      console.log('[feat] now TX_COMPLETED');
+      if (checkIfHomeBalanceExpired()) {
+        onRefresh(false);
+      }
+    };
+    eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+
+    return () => {
+      eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+    };
+  }, []); /* eslint-disable-line react-hooks/exhaustive-deps */
+
+  useInterval(() => {
+    if (checkIfHomeBalanceExpired()) {
+      onRefresh(false);
+    }
+  }, checkExpirationInterval);
+
+  const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
     const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
     const chains = networkIds
@@ -74,7 +119,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
       })
       .filter((v) => !!v);
     setGnosisNetworks(chains as Chain[]);
-  };
+  }, [currentAccount, wallet]);
 
   const handleHoverCurve = (data) => {
     setCurvePoint(data);
@@ -92,7 +137,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
-        isOffline: !success,
+        isOffline: !loadBalanceSuccess,
       });
     }
   }, [
@@ -101,6 +146,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     balanceLoading,
     componentName,
     hasValueChainBalances,
+    setData,
+    loadBalanceSuccess,
   ]);
 
   useEffect(() => {
@@ -113,7 +160,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     if (isGnosis) {
       handleIsGnosisChange();
     }
-  }, [isGnosis, currentAccount]);
+  }, [isGnosis, handleIsGnosisChange]);
 
   useEffect(() => {
     if (!isHover) {
@@ -123,7 +170,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   useEffect(() => {
     if (!balanceLoading && !curveLoading) {
-      setStartRefresh(false);
+      setIsManualRefreshing(false);
     }
   }, [balanceLoading, curveLoading]);
 
@@ -155,15 +202,43 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const currentChangeValue = currentHover ? curvePoint?.change : null;
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
+  const shouldHidePercentChange = !currentChangePercent || hiddenBalance;
+  const shouldRefreshButtonShow =
+    isManualRefreshing || balanceLoading || curveLoading;
+
+  const prevAddress = usePrevious(currentAccount?.address);
+  const loadedBalanceForThisAddress =
+    prevAddress === currentAccount?.address ? balance : null;
+
+  const couldShowLoadingDueToBalanceNil =
+    currentBalance === null || (balanceFromCache && currentBalance === 0);
+  const couldShowLoadingDueToUpdateSource =
+    !loadedBalanceForThisAddress || isManualRefreshing;
+  const shouldBalanceShowLoading =
+    couldShowLoadingDueToBalanceNil ||
+    (couldShowLoadingDueToUpdateSource && balanceLoading);
+
+  const prevCurveData = usePrevious(curveData);
+
+  const curveRenderInfo = {
+    curveDataToRender: (loadBalanceSuccess ? curveData : prevCurveData) || null,
+    shouldShowCurveLoading:
+      couldShowLoadingDueToBalanceNil ||
+      (couldShowLoadingDueToUpdateSource && curveLoading),
+    shouldRenderCurve: false,
+  };
+  curveRenderInfo.shouldRenderCurve =
+    !isManualRefreshing &&
+    !curveLoading &&
+    !hiddenBalance &&
+    !!curveRenderInfo.curveDataToRender;
+
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left relative overflow-x-hidden mx-10">
         <div className={clsx('amount group', 'text-32 mt-6')}>
           <div className={clsx('amount-number leading-[38px]')}>
-            {startRefresh ||
-            (balanceLoading && !balanceFromCache) ||
-            currentBalance === null ||
-            (balanceFromCache && currentBalance === 0) ? (
+            {shouldBalanceShowLoading ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
             ) : (
               <BalanceLabel
@@ -178,8 +253,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
               'text-15 font-normal mb-[5px]',
               {
-                hidden:
-                  !currentChangePercent || balanceLoading || hiddenBalance,
+                hidden: shouldHidePercentChange,
               }
             )}
           >
@@ -208,8 +282,8 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
           <div
             onClick={onRefresh}
             className={clsx('mb-[5px]', {
-              'block animate-spin': startRefresh,
-              hidden: !startRefresh,
+              'block animate-spin': shouldRefreshButtonShow,
+              hidden: !shouldRefreshButtonShow,
               'group-hover:block': !hiddenBalance,
             })}
           >
@@ -231,7 +305,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             src={ArrowNextSVG}
             className={clsx(
               'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
-              startRefresh || balanceLoading || currentBalance === null
+              shouldBalanceShowLoading
                 ? !currentHover && 'opacity-0'
                 : !currentHover && 'opacity-80'
             )}
@@ -242,11 +316,11 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               'mx-[10px] pt-[8px] mb-[8px]'
             )}
           >
-            {startRefresh || balanceLoading || currentBalance === null ? (
+            {shouldBalanceShowLoading ? (
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
               </>
-            ) : !success ? (
+            ) : !loadBalanceSuccess ? (
               <>
                 <SvgIconOffline className="mr-4 text-white" />
                 <span className="leading-tight">
@@ -278,19 +352,21 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
             )}
           </div>
           <div className={clsx('h-[80px] w-full relative')}>
-            {(!success && !curveData) || hiddenBalance ? null : curveLoading ? (
+            {!!curveRenderInfo.shouldRenderCurve &&
+              curveRenderInfo.curveDataToRender && (
+                <CurveThumbnail
+                  isHover={currentHover}
+                  data={curveRenderInfo.curveDataToRender}
+                  onHover={handleHoverCurve}
+                />
+              )}
+            {!!curveRenderInfo.shouldShowCurveLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active
                   className="m-auto w-[360px] h-[72px] rounded"
                 />
               </div>
-            ) : (
-              <CurveThumbnail
-                isHover={currentHover}
-                data={curveData}
-                onHover={handleHoverCurve}
-              />
             )}
           </div>
         </div>

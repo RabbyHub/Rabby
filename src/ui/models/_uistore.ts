@@ -28,6 +28,15 @@ export default (store: typeof import('@/ui/store').default) => {
         dispatch.preference.setField({
           themeMode: payload.partials.themeMode,
         });
+        break;
+      }
+      case 'homeBalanceLoadingExpiration': {
+        console.log('[feat] payload.partials', payload.partials);
+        dispatch.preference.setField({
+          homeBalanceLoadingExpiration:
+            payload.partials.homeBalanceLoadingExpiration,
+        });
+        break;
       }
     }
   });

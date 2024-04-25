@@ -5,7 +5,13 @@ import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from '@/utils/message';
-import { CHAINS, CHAINS_ENUM, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
+import {
+  CHAINS,
+  CHAINS_ENUM,
+  EVENTS,
+  EVENTS_IN_BG,
+  KEYRING_CATEGORY_MAP,
+} from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -103,6 +109,13 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   startEnableUser();
   walletController.syncMainnetChainList();
+
+  eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, () => {
+    console.log('[feat] I am here');
+    preferenceService.forceExpireHomeBalance();
+  });
+  // just for mock
+  globalThis._eventBus = eventBus;
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {

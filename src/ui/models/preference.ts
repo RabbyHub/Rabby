@@ -8,6 +8,7 @@ import {
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import i18n from '@/i18n';
+import { getNewHomeBalanceExpiration } from '@/constant/timeout';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -25,6 +26,7 @@ interface PreferenceState {
   nftApprovalChain: Record<string, CHAINS_ENUM>;
   autoLockTime: number;
   hiddenBalance: boolean;
+  homeBalanceLoadingExpiration: number;
   isShowTestnet: boolean;
   addressSortStore: AddressSortStore;
   themeMode: DARK_MODE_TYPE;
@@ -49,6 +51,7 @@ export const preference = createModel<RootModel>()({
     nftApprovalChain: {},
     autoLockTime: 0,
     hiddenBalance: false,
+    homeBalanceLoadingExpiration: getNewHomeBalanceExpiration(),
     isShowTestnet: false,
     themeMode: DARK_MODE_TYPE.system,
     addressSortStore: {} as AddressSortStore,
@@ -169,6 +172,18 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setHiddenBalance(hidden);
       dispatch.preference.getPreference('hiddenBalance');
+    },
+
+    /**
+     * @description call it when you think the expiration should be reset
+     */
+    async refreshHomeBalanceExpiration(_?, store?) {
+      const newExpire = await store!.app.wallet.refreshHomeBalanceExpiration();
+      // dispatch.preference.setField({
+      //   homeBalanceLoadingExpiration: newExpire,
+      // });
+
+      return newExpire;
     },
     async setIsShowTestnet(value: boolean, store) {
       dispatch.preference.setField({

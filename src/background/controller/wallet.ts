@@ -113,7 +113,6 @@ import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import CoinbaseKeyring from '@rabby-wallet/eth-coinbase-keyring/dist/coinbase-keyring';
 import { customTestnetService } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
-import { http } from '../utils/http';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
@@ -1009,6 +1008,12 @@ export class WalletController extends BaseController {
   setIsShowTestnet = (value: boolean) => {
     return preferenceService.setIsShowTestnet(value);
   };
+  getHomeBalanceLoadingExpiration = () => {
+    return preferenceService.getHomeBalanceLoadingExpiration();
+  };
+  refreshHomeBalanceExpiration() {
+    return preferenceService.refreshHomeBalanceExpiration();
+  }
 
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);

@@ -492,6 +492,10 @@ export const EVENTS = {
   RELOAD_TX: 'RELOAD_TX',
 };
 
+export const EVENTS_IN_BG = {
+  ON_TX_COMPLETED: 'ON_TX_COMPLETED',
+};
+
 export enum WALLET_BRAND_TYPES {
   AMBER = 'AMBER',
   BITBOX02 = 'BITBOX02',

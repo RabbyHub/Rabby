@@ -5,7 +5,7 @@ import {
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS_IN_BG } from 'consts';
 import { format, getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -135,6 +135,8 @@ class TransactionWatcher {
       method: EVENTS.TX_COMPLETED,
       params: { address, hash },
     });
+
+    eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED);
   };
 
   // fetch pending txs status every 5s

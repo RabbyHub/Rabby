@@ -51,6 +51,7 @@ import { confirmAddToContactsModalPromise } from '../SendToken/components/ModalC
 import { useContactAccounts } from '@/ui/hooks/useContact';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { getAddressScanLink } from '@/utils';
+import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -200,6 +201,8 @@ const SendNFT = () => {
     to: string;
     amount: number;
   }) => {
+    const { refreshHomeBalanceExpiration } = useShouldHomeBalanceShowLoading();
+
     if (!nftItem) return;
     await wallet.setPageStateCache({
       path: history.location.pathname,

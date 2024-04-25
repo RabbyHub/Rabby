@@ -77,6 +77,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -525,6 +526,8 @@ const SendToken = () => {
     };
   }, [isNativeToken, addressType]);
 
+  const { refreshHomeBalanceExpiration } = useShouldHomeBalanceShowLoading();
+
   const handleSubmit = async ({
     to,
     amount,
@@ -532,6 +535,7 @@ const SendToken = () => {
     messageDataForContractCall,
   }: FormSendToken) => {
     setIsSubmitLoading(true);
+    refreshHomeBalanceExpiration();
     const chain = findChain({
       serverId: currentToken.chain,
     })!;
