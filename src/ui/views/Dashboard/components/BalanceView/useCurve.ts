@@ -1,10 +1,13 @@
+import { useEffect, useMemo, useState } from 'react';
+
+import type { WalletController } from '@/background/controller/wallet';
 import {
   coerceFloat,
   formatUsdValue,
   isMeaningfulNumber,
   useWallet,
 } from '@/ui/utils';
-import { useEffect, useMemo, useState } from 'react';
+import { IExtractFromPromise } from '@/ui/utils/type';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
 
@@ -72,17 +75,16 @@ const formChartData = (
   };
 };
 
+export type CurvePointCollection = IExtractFromPromise<
+  ReturnType<WalletController['getNetCurve']>
+>;
+export type CurveData = ReturnType<typeof formChartData>;
 export const useCurve = (
   address: string | undefined,
   nonce: number,
   realtimeNetWorth: number | null
 ) => {
-  const [data, setData] = useState<
-    {
-      timestamp: number;
-      usd_value: number;
-    }[]
-  >([]);
+  const [data, setData] = useState<CurvePointCollection>([]);
   const [isLoading, setIsLoading] = useState(true);
   const select = useMemo(() => {
     return formChartData(data, realtimeNetWorth, new Date().getTime());
