@@ -201,13 +201,13 @@ export function useFindCustomToken(input?: {
             }
           );
         } else {
-          lists.tokenList = await requestOpenApiWithChainId(
-            (ctx) => ctx.openapi.searchToken(address, q, chainServerId),
-            {
-              isTestnet: !!isTestnet || !!chainItem?.isTestnet,
-              wallet,
-            }
-          );
+          // lists.tokenList = await requestOpenApiWithChainId(
+          //   (ctx) => ctx.openapi.searchToken(address, q, chainServerId),
+          //   {
+          //     isTestnet: !!isTestnet || !!chainItem?.isTestnet,
+          //     wallet,
+          //   }
+          // );
         }
 
         if (q === skRef.current) {
