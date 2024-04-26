@@ -376,7 +376,10 @@ export const GasTopUp = () => {
 
       <ConfirmDrawer
         visible={visible}
-        onClose={() => setVisible(false)}
+        onClose={() => {
+          setVisible(false);
+          setToken(undefined);
+        }}
         cost={prices?.[index]?.[0] ? prices?.[index]?.[0] + '' : '0'}
         list={availableTokenList}
         token={token}
