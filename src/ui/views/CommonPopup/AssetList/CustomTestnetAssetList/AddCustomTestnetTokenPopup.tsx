@@ -8,7 +8,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -17,7 +17,6 @@ import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/c
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-
 interface Props {
   visible?: boolean;
   onClose?(): void;
@@ -49,6 +48,11 @@ const Wraper = styled.div`
 
     &:focus {
       border-color: var(--r-blue-default, #7084ff);
+    }
+
+    &::placeholder {
+      font-size: 14px;
+      font-weight: 400;
     }
   }
   .ant-input[disabled] {
@@ -177,6 +181,13 @@ export const AddCustomTestnetTokenPopup = ({
     }
   }, [visible]);
 
+  const inputRef = useRef<Input>(null);
+  useEffect(() => {
+    if (visible) {
+      inputRef.current?.focus();
+    }
+  }, [visible]);
+
   const { isDarkTheme } = useThemeMode();
 
   return (
@@ -256,6 +267,8 @@ export const AddCustomTestnetTokenPopup = ({
               name="address"
             >
               <Input
+                ref={inputRef}
+                autoFocus
                 placeholder={t(
                   'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
                 )}

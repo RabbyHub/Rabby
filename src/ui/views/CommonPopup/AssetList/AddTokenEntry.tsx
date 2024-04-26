@@ -79,6 +79,11 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, Props>(
 
         <SpecialTokenListPopup
           label={t('page.dashboard.tokenDetail.customizedButton')}
+          buttonText={t('page.dashboard.assets.customButtonText')}
+          description={t('page.dashboard.assets.customDescription')}
+          onClickButton={() => {
+            setShowCustomizedTokens(true);
+          }}
           tokens={tokens}
           visible={showCustomizedTokens}
           onClose={() => setShowCustomizedTokens(false)}

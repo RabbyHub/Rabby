@@ -199,7 +199,8 @@ export function useFindCustomToken(input?: {
               isTestnet: !!isTestnet || !!chainItem?.isTestnet,
               wallet,
             }
-          );
+            // filter out core tokens
+          ).then((res) => res.filter((item) => !item.is_core));
         } else {
           // lists.tokenList = await requestOpenApiWithChainId(
           //   (ctx) => ctx.openapi.searchToken(address, q, chainServerId),

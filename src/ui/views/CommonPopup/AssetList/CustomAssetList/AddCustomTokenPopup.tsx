@@ -9,7 +9,13 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -62,6 +68,11 @@ const Wraper = styled.div`
 
     &:focus {
       border-color: var(--r-blue-default, #7084ff);
+    }
+
+    &::placeholder {
+      font-size: 14px;
+      font-weight: 400;
     }
   }
   .ant-input[disabled] {
@@ -219,6 +230,13 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     }
   }, [visible, resetSearchResult]);
 
+  const inputRef = useRef<Input>(null);
+  useEffect(() => {
+    if (visible) {
+      inputRef.current?.focus();
+    }
+  }, [visible]);
+
   const { isDarkTheme } = useThemeMode();
 
   return (
@@ -298,6 +316,8 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
               name="address"
             >
               <Input
+                ref={inputRef}
+                autoFocus
                 placeholder={t(
                   'page.dashboard.assets.AddMainnetToken.tokenAddressPlaceholder'
                 )}
