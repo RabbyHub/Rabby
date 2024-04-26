@@ -70,7 +70,7 @@ export const findChain = (params: {
   serverId?: string | null;
   hex?: string | null;
   networkId?: string | null;
-}): Chain | TestnetChain | undefined => {
+}): Chain | TestnetChain | null | undefined => {
   const { enum: chainEnum, id, serverId, hex, networkId } = params;
   if (chainEnum && chainEnum.startsWith('CUSTOM_')) {
     return findChain({
@@ -85,6 +85,7 @@ export const findChain = (params: {
       item.hex === hex ||
       item.network === networkId
   );
+
   return chain;
 };
 

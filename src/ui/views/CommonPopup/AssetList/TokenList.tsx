@@ -13,15 +13,17 @@ export interface Props {
   list?: TokenItemProps['item'][];
   isSearch: boolean;
   onFocusInput: () => void;
+  onOpenAddEntryPopup: () => void;
   isNoResults?: boolean;
   blockedTokens?: TokenItemProps['item'][];
   customizeTokens?: TokenItemProps['item'][];
   isTestnet: boolean;
 }
 
-export const TokenList: React.FC<Props> = ({
+export const HomeTokenList = ({
   list,
   onFocusInput,
+  onOpenAddEntryPopup,
   isSearch,
   isNoResults,
   blockedTokens,
@@ -68,7 +70,10 @@ export const TokenList: React.FC<Props> = ({
       </div>
       {!isSearch && hasList && (
         <div className="flex gap-12 pt-12 border-t-[0.5px] border-rabby-neutral-line">
-          <CustomizedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
+          <CustomizedButton
+            onClickButton={onOpenAddEntryPopup}
+            isTestnet={isTestnet}
+          />
           <BlockedButton onClickLink={onFocusInput} isTestnet={isTestnet} />
         </div>
       )}

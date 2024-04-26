@@ -1,14 +1,21 @@
+/** eslint-enable react-hooks/exhaustive-deps */
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Popup } from '@/ui/component';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, useWallet } from '@/ui/utils';
-import { findChain, getChainList, getTestnetChainList } from '@/utils/chain';
+import { findChain, getChainList } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -17,10 +24,23 @@ import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/c
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import {
+  useOperateCustomToken,
+  useFindCustomToken,
+  useIsTokenAddedLocally,
+} from '@/ui/hooks/useSearchToken';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
+
 interface Props {
   visible?: boolean;
   onClose?(): void;
-  onConfirm?(): void;
+  onConfirm?: (
+    addedInfo: {
+      token: TokenItem;
+      portofolioToken?: AbstractPortfolioToken | null;
+    } | null
+  ) => void;
 }
 
 const Wraper = styled.div`
@@ -90,32 +110,39 @@ const Footer = styled.div`
   bottom: 0;
 `;
 
-export const AddCustomTestnetTokenPopup = ({
-  visible,
-  onClose,
-  onConfirm,
-}: Props) => {
+/**
+ * @description now this popup only server mainnet chains' token list
+ */
+export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
   const wallet = useWallet();
   const [chainSelectorState, setChainSelectorState] = useSetState<{
     visible: boolean;
     chain: CHAINS_ENUM | null;
   }>({
     visible: false,
-    chain: getChainList('testnet')?.[0]?.enum || null,
+    chain: getChainList('mainnet')?.[0]?.enum || null,
   });
 
   const chain = findChain({ enum: chainSelectorState.chain });
   const [tokenId, setTokenId] = useState('');
+
   const [checked, setChecked] = useState(false);
   const { t } = useTranslation();
   const [form] = useForm();
 
-  const { data: token, runAsync: runGetToken, loading, error } = useRequest(
+  const {
+    tokenList,
+    resetSearchResult,
+    searchCustomToken,
+  } = useFindCustomToken();
+
+  const { runAsync: doSearch, loading: isSearchingToken, error } = useRequest(
     async () => {
-      const currentAccount = await wallet.getCurrentAccount();
       if (!chain?.id || !tokenId) {
         return null;
       }
+
+      const currentAccount = await wallet.getCurrentAccount();
       setChecked(false);
       form.setFields([
         {
@@ -123,63 +150,85 @@ export const AddCustomTestnetTokenPopup = ({
           errors: [],
         },
       ]);
-      return wallet.getCustomTestnetToken({
+
+      await searchCustomToken({
         address: currentAccount!.address,
-        chainId: chain.id,
-        tokenId,
+        chainServerId: chain.serverId,
+        q: tokenId,
+      }).then((lists) => {
+        if (!lists?.tokenList.length) {
+          form.setFields([
+            {
+              name: 'address',
+              errors: [t('page.dashboard.assets.AddMainnetToken.notFound')],
+            },
+          ]);
+        }
       });
     },
     {
-      refreshDeps: [chain?.id, tokenId],
+      manual: true,
 
       onError: (e) => {
         form.setFields([
           {
             name: 'address',
-            errors: [t('page.dashboard.assets.AddTestnetToken.notFound')],
+            errors: [t('page.dashboard.assets.AddMainnetToken.notFound')],
           },
         ]);
       },
     }
   );
 
+  useEffect(() => {
+    if (tokenId) {
+      doSearch();
+    }
+  }, [chain?.serverId, tokenId]);
+
+  const token = useMemo(() => tokenList?.[0], [tokenList]);
+  // const { isLocal: isLocalToken } = useIsTokenAddedLocally(token);
+
+  const { addToken } = useOperateCustomToken();
+
   const { runAsync: runAddToken, loading: isSubmitting } = useRequest(
     async () => {
-      if (!chain?.id || !tokenId) {
+      if (!token || !chain?.id || !tokenId) {
         return null;
       }
-      return wallet.addCustomTestnetToken({
-        chainId: chain.id,
-        id: tokenId,
-        symbol: token!.symbol,
-        decimals: token!.decimals,
-      });
+      const portofolioToken = (await addToken(token)) || null;
+
+      return {
+        token,
+        portofolioToken,
+      };
     },
     {
       manual: true,
     }
   );
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(async () => {
     try {
-      await runAddToken();
-      onConfirm?.();
+      const addedInfo = await runAddToken();
+      onConfirm?.(addedInfo);
     } catch (e) {
       message.error(e?.message);
     }
-  };
+  }, [runAddToken, onConfirm]);
 
   useEffect(() => {
     if (!visible) {
       setChainSelectorState({
         visible: false,
-        chain: getChainList('testnet')?.[0]?.enum || null,
+        chain: getChainList('mainnet')?.[0]?.enum || null,
       });
+      resetSearchResult();
       setTokenId('');
       setChecked(false);
       form.resetFields();
     }
-  }, [visible]);
+  }, [visible, resetSearchResult]);
 
   const inputRef = useRef<Input>(null);
   useEffect(() => {
@@ -201,7 +250,7 @@ export const AddCustomTestnetTokenPopup = ({
         push={false}
         title={
           <div className="text-r-neutral-title1">
-            {t('page.dashboard.assets.AddTestnetToken.title')}
+            {t('page.dashboard.assets.AddMainnetToken.title')}
           </div>
         }
         maskStyle={
@@ -232,7 +281,7 @@ export const AddCustomTestnetTokenPopup = ({
                     )}
                   >
                     <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
-                      {t('page.dashboard.assets.AddTestnetToken.selectChain')}
+                      {t('page.dashboard.assets.AddMainnetToken.selectChain')}
                     </div>
                     <div className="ml-auto text-r-neutral-body">
                       <RcIconDown />
@@ -263,14 +312,14 @@ export const AddCustomTestnetTokenPopup = ({
               </div>
             </Form.Item>
             <Form.Item
-              label={t('page.dashboard.assets.AddTestnetToken.tokenAddress')}
+              label={t('page.dashboard.assets.AddMainnetToken.tokenAddress')}
               name="address"
             >
               <Input
                 ref={inputRef}
                 autoFocus
                 placeholder={t(
-                  'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
+                  'page.dashboard.assets.AddMainnetToken.tokenAddressPlaceholder'
                 )}
                 onChange={(e) => {
                   setTokenId(e.target.value);
@@ -278,10 +327,10 @@ export const AddCustomTestnetTokenPopup = ({
                 autoComplete="off"
               />
             </Form.Item>
-            {loading ? (
+            {isSearchingToken ? (
               <div className="flex items-center text-r-neutral-body text-[13px] gap-[4px]">
                 <Loading3QuartersOutlined className="animate-spin" />{' '}
-                {t('page.dashboard.assets.AddTestnetToken.searching')}
+                {t('page.dashboard.assets.AddMainnetToken.searching')}
               </div>
             ) : (
               <>
@@ -289,6 +338,7 @@ export const AddCustomTestnetTokenPopup = ({
                   <Form.Item label="Found Token">
                     <div
                       onClick={() => {
+                        // if (isLocalToken) return;
                         setChecked((v) => !v);
                       }}
                       className={clsx(
@@ -296,6 +346,7 @@ export const AddCustomTestnetTokenPopup = ({
                         'bg-r-neutral-card2 min-h-[52px] px-[16px] py-[14px]',
                         'border-[1px] border-transparent',
                         checked && 'border-rabby-blue-default'
+                        // isLocalToken && 'opacity-60 cursor-not-allowed'
                       )}
                     >
                       <div className="relative h-[24px]">
@@ -347,7 +398,9 @@ export const AddCustomTestnetTokenPopup = ({
               type="primary"
               size="large"
               className="w-[172px]"
-              disabled={Boolean(!token || error || loading || !checked)}
+              disabled={Boolean(
+                !token || error || isSearchingToken || !checked
+              )}
               loading={isSubmitting}
               onClick={handleConfirm}
             >
@@ -357,9 +410,9 @@ export const AddCustomTestnetTokenPopup = ({
         </Wraper>
       </Popup>
       <ChainSelectorModal
-        hideTestnetTab={false}
-        hideMainnetTab={true}
         value={chainSelectorState.chain || CHAINS_ENUM.ETH}
+        hideTestnetTab
+        hideMainnetTab={false}
         visible={chainSelectorState.visible}
         onCancel={() => {
           setChainSelectorState({

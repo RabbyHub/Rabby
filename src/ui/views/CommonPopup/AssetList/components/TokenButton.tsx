@@ -7,33 +7,106 @@ import { ReactComponent as EmptySVG } from '@/ui/assets/dashboard/empty.svg';
 import { TokenTable } from './TokenTable';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'antd';
 
-export interface Props {
+interface TokenButtonPopupProps {
+  visible?: boolean;
+  onClose?: () => void;
   label: string;
-  onClickLink: () => void;
+  onClickButton?: () => void;
   tokens?: AbstractPortfolioToken[];
+  onClickLink?: () => void;
   linkText?: string;
+  buttonText?: string;
   description?: string;
   hiddenSubTitle?: boolean;
 }
+
+export function SpecialTokenListPopup({
+  visible,
+  onClose,
+  label,
+  tokens,
+  onClickLink,
+  linkText,
+  onClickButton,
+  buttonText,
+  description,
+  hiddenSubTitle,
+}: TokenButtonPopupProps) {
+  const { t } = useTranslation();
+  const len = tokens?.length ?? 0;
+
+  return (
+    <Popup
+      height={494}
+      visible={visible}
+      closable
+      push={false}
+      onClose={onClose}
+      title={`${len} ${label}`}
+      isSupportDarkMode
+    >
+      {!hiddenSubTitle && (
+        <div className="text-r-neutral-foot text-13 mb-[30px] text-center -m-8">
+          {t('page.dashboard.assets.tokenButton.subTitle')}
+        </div>
+      )}
+      <TokenTable
+        list={tokens}
+        EmptyComponent={
+          <div className="space-y-24 text-13 text-center mt-[100px]">
+            <EmptySVG className="w-[52px] h-[52px] m-auto" />
+            <div className="text-r-neutral-body">{description}</div>
+            {linkText && (
+              <div
+                onClick={onClickLink}
+                className="text-r-blue-default underline cursor-pointer"
+              >
+                {linkText}
+              </div>
+            )}
+            {buttonText && (
+              <Button
+                onClick={onClickButton}
+                type="primary"
+                className="w-[200px] h-[44px]"
+              >
+                {buttonText}
+              </Button>
+            )}
+          </div>
+        }
+      />
+    </Popup>
+  );
+}
+
+export type Props = TokenButtonPopupProps;
 
 export const TokenButton: React.FC<Props> = ({
   label,
   tokens,
   onClickLink,
   linkText,
+  onClickButton,
+  buttonText,
   description,
   hiddenSubTitle,
 }) => {
   const { visible: commonPopupVisible } = useCommonPopupView();
   const [visible, setVisible] = React.useState(false);
   const len = tokens?.length ?? 0;
-  const { t } = useTranslation();
 
   const handleClickLink = React.useCallback(() => {
     setVisible(false);
-    onClickLink();
-  }, []);
+    onClickLink?.();
+  }, [onClickLink]);
+
+  const handleClickButton = React.useCallback(() => {
+    setVisible(false);
+    onClickButton?.();
+  }, [onClickButton]);
 
   React.useEffect(() => {
     if (!commonPopupVisible) {
@@ -58,36 +131,18 @@ export const TokenButton: React.FC<Props> = ({
         <LowValueArrowSVG className="w-14 h-14" />
       </button>
 
-      <Popup
-        height={494}
+      <SpecialTokenListPopup
         visible={visible}
-        closable
-        push={false}
         onClose={() => setVisible(false)}
-        title={`${len} ${label}`}
-        isSupportDarkMode
-      >
-        {!hiddenSubTitle && (
-          <div className="text-r-neutral-foot text-13 mb-[30px] text-center -m-8">
-            {t('page.dashboard.assets.tokenButton.subTitle')}
-          </div>
-        )}
-        <TokenTable
-          list={tokens}
-          EmptyComponent={
-            <div className="space-y-24 text-13 text-center mt-[100px]">
-              <EmptySVG className="w-[52px] h-[52px] m-auto" />
-              <div className="text-r-neutral-body">{description}</div>
-              <div
-                onClick={handleClickLink}
-                className="text-r-blue-default underline cursor-pointer"
-              >
-                {linkText}
-              </div>
-            </div>
-          }
-        />
-      </Popup>
+        label={label}
+        tokens={tokens}
+        onClickLink={handleClickLink}
+        linkText={linkText}
+        onClickButton={handleClickButton}
+        buttonText={buttonText}
+        description={description}
+        hiddenSubTitle={hiddenSubTitle}
+      />
     </div>
   );
 };
