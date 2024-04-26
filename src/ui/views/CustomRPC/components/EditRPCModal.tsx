@@ -35,16 +35,25 @@ const Footer = styled.div`
 const EditRPCWrapped = styled.div`
   position: relative;
   height: 100%;
-  .rpc-input {
+  .rpc-input.rpc-input {
     height: 52px;
-    width: 360px;
+
+    height: 52px;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
-    background: #f5f6fa;
-    border: 1px solid #e5e9ef;
+    background: transparent !important;
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
     border-radius: 6px;
+
+    color: var(--r-neutral-title1, #192945) !important;
+    font-size: 15px;
+    /* font-weight: 500; */
+    &:focus {
+      border-color: var(--r-blue-default, #7084ff) !important;
+    }
     &.has-error {
-      border-color: #ec5151;
+      border-color: #ec5151 !important;
     }
   }
 `;

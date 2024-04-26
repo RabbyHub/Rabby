@@ -270,11 +270,19 @@ export const DexQuoteItem = (
         .times(receiveToken.price)
         .minus(sortIncludeGasFee ? bestQuoteGasUsd : 0);
 
-      const percent = receivedUsdBn
+      let percent = receivedUsdBn
         .minus(bestQuoteUsdBn)
         .div(bestQuoteUsdBn)
         .abs()
         .times(100);
+
+      if (!receiveToken.price) {
+        percent = receivedTokeAmountBn
+          .minus(bestQuoteAmountBn)
+          .div(bestQuoteAmountBn)
+          .abs()
+          .times(100);
+      }
 
       receivedUsd = formatUsdValue(
         receivedTokeAmountBn.times(receiveToken.price || 0).toString(10)

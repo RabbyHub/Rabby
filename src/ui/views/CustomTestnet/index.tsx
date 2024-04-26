@@ -174,6 +174,11 @@ export const CustomTestnet = () => {
         </Button>
       </Footer>
       <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'setting',
+          },
+        }}
         visible={state.isShowModal}
         data={state.current}
         isEdit={state.isEdit}

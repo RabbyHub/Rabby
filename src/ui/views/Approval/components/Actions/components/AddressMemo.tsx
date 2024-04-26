@@ -1,20 +1,25 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
-import { useAlias } from '@/ui/utils';
 import IconEdit from 'ui/assets/editpen.svg';
+import { useApprovalUtils } from '../../../hooks/useApprovalUtils';
 
 const AddressMemo = ({ address }: { address: string }) => {
-  const [addressAlias, updateAlias] = useAlias(address);
+  const { alias } = useApprovalUtils();
+  const addressAlias = alias.accountMap[address]?.alias;
   const inputRef = useRef<Input>(null);
   const [form] = useForm();
   const { t } = useTranslation();
 
+  useEffect(() => {
+    alias.add(address);
+  }, [address]);
+
   const updateAddressMemo = (
     alias: string | undefined,
-    update: (memo: string) => void
+    update: (addr: string, memo: string) => void
   ) => {
     form.setFieldsValue({
       memo: alias,
@@ -34,7 +39,7 @@ const AddressMemo = ({ address }: { address: string }) => {
               form
                 .validateFields()
                 .then((values) => {
-                  return update(values.memo);
+                  return update(address, values.memo);
                 })
                 .then(() => {
                   destroy();
@@ -80,7 +85,7 @@ const AddressMemo = ({ address }: { address: string }) => {
   return (
     <div
       className="inline-flex cursor-pointer"
-      onClick={() => updateAddressMemo(addressAlias, updateAlias)}
+      onClick={() => updateAddressMemo(addressAlias, alias.update)}
     >
       <span className="mr-6">{addressAlias || '-'}</span>
       <img src={IconEdit} className="icon-edit-alias icon w-[13px]" />

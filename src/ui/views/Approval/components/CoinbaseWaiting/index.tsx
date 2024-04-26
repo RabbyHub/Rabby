@@ -136,11 +136,12 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
 
     if (!isText && !isSignTriggered) {
       const explain = explainRef.current;
+      const chainInfo = findChainByEnum(chain);
 
-      if (explain) {
+      if (explain || chainInfo?.isTestnet) {
         wallet.reportStats('signTransaction', {
           type: account.brandName,
-          chainId: findChainByEnum(chain)?.serverId || '',
+          chainId: chainInfo?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success
@@ -148,12 +149,15 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
           createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chainInfo?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
       matomoRequestEvent({
         category: 'Transaction',
         action: 'Submit',
-        label: account.brandName,
+        label: chainInfo?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
       isSignTriggered = true;
     }

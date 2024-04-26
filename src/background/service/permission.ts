@@ -13,9 +13,6 @@ export interface ConnectedSite {
   chain: CHAINS_ENUM;
   e?: number;
   isSigned: boolean;
-  /**
-   * @deprecated
-   */
   isTop: boolean;
   order?: number;
   isConnected: boolean;

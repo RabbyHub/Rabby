@@ -115,6 +115,7 @@ import { customTestnetService } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { http } from '../utils/http';
 import { syncChainService } from '../service/syncChain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1335,7 +1336,9 @@ export class WalletController extends BaseController {
   };
   addConnectedSiteV2 = permissionService.addConnectedSiteV2;
   removeAllRecentConnectedSites = () => {
-    const sites = permissionService.getRecentConnectedSites();
+    const sites = permissionService
+      .getRecentConnectedSites()
+      .filter((item) => !item.isTop);
     sites.forEach((item) => {
       this.removeConnectedSite(item.origin);
     });
@@ -3684,7 +3687,26 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  addCustomTestnet = customTestnetService.add;
+  addCustomTestnet = async (
+    chain: Parameters<typeof customTestnetService.add>[0],
+    ctx?: {
+      ga?: {
+        source?: string;
+      };
+    }
+  ) => {
+    const source = ctx?.ga?.source || 'setting';
+
+    const res = await customTestnetService.add(chain);
+    if (!('error' in res)) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Success Add Network',
+        label: `${source}_${String(chain.id)}`,
+      });
+    }
+    return res;
+  };
   updateCustomTestnet = customTestnetService.update;
   removeCustomTestnet = customTestnetService.remove;
   getCustomTestnetList = customTestnetService.getList;
