@@ -1,25 +1,19 @@
-import ChainIcon from '@/ui/component/ChainIcon';
-import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { getOriginFromUrl } from '@/utils';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { useRequest } from 'ahooks';
 import { message, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import { ReactComponent as RcIconDisconnect } from 'ui/assets/dashboard/current-connection/cc-disconnect.svg';
-import { ReactComponent as RcIconSearch } from 'ui/assets/dashboard/current-connection/cc-search.svg';
-import { ReactComponent as RcIconStarFill } from 'ui/assets/dashboard/current-connection/cc-star-fill.svg';
-import { ReactComponent as RcIconStar } from 'ui/assets/dashboard/current-connection/cc-star.svg';
-import IconMetamaskBadge from 'ui/assets/dashboard/icon-metamask-badge.svg';
-import { FallbackSiteLogo } from 'ui/component';
-import { getCurrentTab, openInternalPageInTab, useWallet } from 'ui/utils';
+import { ChainSelector, FallbackSiteLogo } from 'ui/component';
+import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
+import { useLocation } from 'react-router-dom';
+import { getOriginFromUrl } from '@/utils';
+import IconMetamaskBadge from 'ui/assets/dashboard/icon-metamask-badge.svg';
+import { useRequest } from 'ahooks';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -35,12 +29,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
 
-  const customRPC = useRabbySelector((s) => s.customRPC.customRPC);
-
-  const handleClickSearch = () => {
-    openInternalPageInTab('dapp-search');
-  };
-
   const { data: hasOtherProvider } = useRequest(() =>
     wallet.getHasOtherProvider()
   );
@@ -52,9 +40,8 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
     if (!tab.id || !tab.url) return;
-    const domain = getOriginFromUrl(tab?.url);
+    const domain = getOriginFromUrl(tab.url);
     const current = await wallet.getCurrentSite(tab.id, domain);
-
     setSite(current);
   }, []);
 
@@ -89,139 +76,57 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     }
   };
 
-  const handleFavoriteChnage = async (value: boolean) => {
-    const _site = {
-      ...site!,
-      isFavorite: value,
-    };
-    setSite(_site);
-    setVisible(false);
-    await wallet.setSite(_site);
-    if (value) {
-      await wallet.updateSiteBasicInfo(_site.origin);
-    }
-  };
-
   useEffect(() => {
     getCurrentSite();
   }, []);
 
-  const dispatch = useRabbyDispatch();
-
-  useEffect(() => {
-    dispatch.customRPC.getAllRPC();
-  }, []);
-
   const Content = site && (
-    <div className="site">
-      <div
-        className="site-chain-selector"
-        onClick={() => {
-          setVisible(true);
-          matomoRequestEvent({
-            category: 'Front Page Click',
-            action: 'Click',
-            label: 'Change Chain',
-          });
-        }}
-      >
-        <div className="relative">
-          {site?.preferMetamask && hasOtherProvider ? (
-            <Tooltip
-              placement="topLeft"
-              overlayClassName="rectangle prefer-metamask-tooltip"
-              align={{
-                offset: [-9, -4],
-              }}
-              title={t('page.dashboard.recentConnection.metamaskTooltip')}
-            >
-              <img
-                src={IconMetamaskBadge}
-                alt=""
-                className="prefer-metamask-badge"
-              />
-            </Tooltip>
-          ) : null}
-          <FallbackSiteLogo
-            url={site.icon}
-            origin={site.origin}
-            width="32px"
-            className="site-icon"
-          ></FallbackSiteLogo>
-          {site ? (
-            <ChainIcon
-              chain={site.chain}
-              innerClassName="chain-icon-inner"
-              showCustomRPCToolTip
-              customRPC={
-                customRPC[site.chain]?.enable ? customRPC[site.chain].url : ''
-              }
-              tooltipTriggerElement="dot"
-              tooltipProps={{
-                placement: 'topLeft',
-                overlayClassName:
-                  'rectangle current-connection-custom-rpc-tooltip',
-                align: {
-                  offset: [-40, 0],
-                },
-              }}
+    <div className="site mr-[18px]">
+      {site?.preferMetamask && hasOtherProvider ? (
+        <Tooltip
+          placement="topLeft"
+          overlayClassName="rectangle prefer-metamask-tooltip"
+          align={{
+            offset: [-12, -4],
+          }}
+          title={t('page.dashboard.recentConnection.metamaskTooltip')}
+        >
+          <div className="relative">
+            <img
+              src={IconMetamaskBadge}
+              alt=""
+              className="prefer-metamask-badge"
             />
-          ) : null}
-        </div>
-      </div>
+            <FallbackSiteLogo
+              url={site.icon}
+              origin={site.origin}
+              width="28px"
+              className="site-icon"
+            ></FallbackSiteLogo>
+          </div>
+        </Tooltip>
+      ) : (
+        <FallbackSiteLogo
+          url={site.icon}
+          origin={site.origin}
+          width="28px"
+          className="site-icon"
+        ></FallbackSiteLogo>
+      )}
       <div className="site-content">
         <div className="site-name" title={site?.origin}>
-          <div className="site-name-inner">{site?.origin}</div>
-          {site?.isFavorite ? (
-            <div
-              className="icon-star text-r-blue-default is-active"
-              onClick={() => {
-                handleFavoriteChnage(false);
-              }}
-            >
-              <RcIconStarFill />
-            </div>
-          ) : (
-            <div
-              className="icon-star text-r-neutral-foot"
-              onClick={() => {
-                handleFavoriteChnage(true);
-              }}
-            >
-              <RcIconStar />
-            </div>
-          )}
+          {site?.origin}
         </div>
         <div className={clsx('site-status', site?.isConnected && 'active')}>
-          {site?.isConnected ? (
-            t('page.dashboard.recentConnection.connected')
-          ) : (
-            <Tooltip
-              placement="topLeft"
-              overlayClassName="rectangle current-connection-block-tooltip"
-              title={t('page.dashboard.recentConnection.connectedDapp')}
-              align={{
-                offset: [0, 4],
-              }}
-            >
-              <span>{t('page.dashboard.recentConnection.notConnected')}</span>
-            </Tooltip>
-          )}
-          <Tooltip
-            placement="top"
-            overlayClassName="rectangle"
-            title="Disconnect"
-            align={{
-              offset: [0, 2],
-            }}
-          >
-            <div
-              className="site-status-icon"
-              onClick={() => handleRemove(site!.origin)}
-            >
-              <RcIconDisconnect />
-            </div>
-          </Tooltip>
+          {site?.isConnected
+            ? t('page.dashboard.recentConnection.connected')
+            : t('page.dashboard.recentConnection.notConnected')}
+          <img
+            src={IconDisconnect}
+            className="site-status-icon"
+            alt=""
+            onClick={() => handleRemove(site!.origin)}
+          />
         </div>
       </div>
     </div>
@@ -230,31 +135,42 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   return (
     <div className={clsx('current-connection-block h-[52px]')}>
       {site ? (
-        Content
+        site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
+          Content
+        ) : (
+          <Tooltip
+            placement="topLeft"
+            overlayClassName="rectangle current-connection-block-tooltip"
+            align={{
+              offset: [-12, -15],
+            }}
+            title={t('page.dashboard.recentConnection.connectedDapp')}
+          >
+            {Content}
+          </Tooltip>
+        )
       ) : (
         <div className="site is-empty">
-          <img src={IconDapps} className="site-icon" alt="" />
-          <div className="site-content text-r-neutral-body text-[13px] leading-[16px]">
+          <img src={IconDapps} className="site-icon ml-6" alt="" />
+          <div className="site-content">
             {t('page.dashboard.recentConnection.noDappFound')}
           </div>
         </div>
       )}
-      <div className="w-[0.5px] bg-r-neutral-line h-[28px]"></div>
-      <div
-        className={clsx('site-dapps', { 'mr-[20px]': hasOtherProvider })}
-        onClick={handleClickSearch}
-      >
-        <RcIconSearch />
-        {t('page.dashboard.recentConnection.dapps')}
-      </div>
-      <ChainSelectorModal
+      <ChainSelector
+        className={clsx(!site && 'disabled', {
+          'mr-[20px]': hasOtherProvider,
+        })}
         value={site?.chain || CHAINS_ENUM.ETH}
-        visible={visible}
         onChange={handleChangeDefaultChain}
-        onCancel={() => {
-          setVisible(false);
+        showModal={visible}
+        onAfterOpen={() => {
+          matomoRequestEvent({
+            category: 'Front Page Click',
+            action: 'Click',
+            label: 'Change Chain',
+          });
         }}
-        zIndex={9999}
         showRPCStatus
       />
     </div>

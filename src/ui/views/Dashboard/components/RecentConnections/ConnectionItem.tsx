@@ -6,12 +6,15 @@ import { findChainByEnum } from '@/utils/chain';
 import clsx from 'clsx';
 import React, { forwardRef, memo } from 'react';
 import { ReactComponent as RcIconDisconnect } from 'ui/assets/icon-disconnect.svg';
+import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
+import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 
 interface ConnectionItemProps {
   className?: string;
   item: ConnectedSite;
   onClick?(): void;
   onRemove?(origin: string): void;
+  onPin?(item: ConnectedSite): void;
 }
 
 export const Item = memo(
@@ -21,6 +24,7 @@ export const Item = memo(
         item,
         onClick,
         onRemove,
+        onPin,
         className,
         ...rest
       }: ConnectionItemProps & Record<string, any>,
@@ -54,7 +58,21 @@ export const Item = memo(
               />
             </TooltipWithMagnetArrow>
           </div>
-          <span className="item-content">{item.origin}</span>
+          <div className="flex items-center gap-[4px] min-w-0">
+            <div className="item-content flex-1 truncate">{item.origin}</div>
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onPin?.(item);
+              }}
+            >
+              <ThemeIcon
+                src={item.isTop ? RcIconPinnedFill : RcIconPinned}
+                className={clsx('pin-website', item.isTop && 'is-active')}
+              />
+            </div>
+          </div>
           <div
             className="item-extra"
             onClick={(e) => {
