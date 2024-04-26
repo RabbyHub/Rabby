@@ -206,7 +206,7 @@ const TokenDetail = ({
                 />
               </>
             ) : (
-              token?.name
+              getChain(token?.chain)?.name
             )}
           </div>
         </div>
