@@ -144,6 +144,15 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
         address: currentAccount!.address,
         chainServerId: chain.serverId,
         q: tokenId,
+      }).then((lists) => {
+        if (!lists?.tokenList.length) {
+          form.setFields([
+            {
+              name: 'address',
+              errors: [t('page.dashboard.assets.AddMainnetToken.notFound')],
+            },
+          ]);
+        }
       });
     },
     {
@@ -289,6 +298,9 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
               name="address"
             >
               <Input
+                placeholder={t(
+                  'page.dashboard.assets.AddMainnetToken.tokenAddressPlaceholder'
+                )}
                 onChange={(e) => {
                   setTokenId(e.target.value);
                 }}
@@ -378,6 +390,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
         </Wraper>
       </Popup>
       <ChainSelectorModal
+        value={chainSelectorState.chain || CHAINS_ENUM.ETH}
         hideTestnetTab
         hideMainnetTab={false}
         visible={chainSelectorState.visible}

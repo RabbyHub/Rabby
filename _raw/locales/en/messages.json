@@ -1112,6 +1112,7 @@
           "selectChain": "Select chain",
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
+          "tokenAddressPlaceholder": "Token Address",
           "notFound": "Token not found"
         },
         "AddTestnetToken": {
@@ -1119,6 +1120,7 @@
           "selectChain": "Select chain",
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
+          "tokenAddressPlaceholder": "Token Address",
           "notFound": "Token not found"
         },
         "TestnetAssetListContainer": {
@@ -1126,7 +1128,7 @@
           "addTestnet": "Network"
         },
         "noTestnetAssets": "No Custom Network Assets",
-        "addTokenEntryText": "Add Tokens"
+        "addTokenEntryText": "Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",

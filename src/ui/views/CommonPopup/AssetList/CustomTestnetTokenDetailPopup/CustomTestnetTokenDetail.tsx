@@ -159,9 +159,7 @@ export const CustomTestnetTokenDetail = ({
               type="primary"
               size="large"
               disabled
-              style={{
-                width: 114,
-              }}
+              className="w-[114px] h-[36px] py-[0]"
             >
               {t('page.dashboard.tokenDetail.swap')}
             </Button>
@@ -171,7 +169,7 @@ export const CustomTestnetTokenDetail = ({
             type="primary"
             ghost
             size="large"
-            className="w-[114px] rabby-btn-ghost"
+            className="w-[114px] h-[36px] py-[0] rabby-btn-ghost"
             onClick={goToSend}
           >
             {t('page.dashboard.tokenDetail.send')}
@@ -180,7 +178,7 @@ export const CustomTestnetTokenDetail = ({
             type="primary"
             ghost
             size="large"
-            className="w-[114px] rabby-btn-ghost"
+            className="w-[114px] h-[36px] py-[0] rabby-btn-ghost"
             onClick={goToReceive}
           >
             {t('page.dashboard.tokenDetail.receive')}

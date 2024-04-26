@@ -4,14 +4,19 @@ import { ReactComponent as RcAddEntryCC } from './icons/add-entry-cc.svg';
 import clsx from 'clsx';
 import { AddCustomTokenPopup } from './CustomAssetList/AddCustomTokenPopup';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useTranslation } from 'react-i18next';
+import { SpecialTokenListPopup } from './components/TokenButton';
+import { useRabbySelector } from '@/ui/store';
+import useSortToken from '@/ui/hooks/useSortTokens';
 
+type Props = {
+  onConfirm?: React.ComponentProps<typeof AddCustomTokenPopup>['onConfirm'];
+};
 export type AddTokenEntryInst = {
   startAddToken: () => void;
 };
-const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
-  function AddTokenEntryPorto(_, ref) {
+const AddTokenEntry = React.forwardRef<AddTokenEntryInst, Props>(
+  function AddTokenEntryPorto({ onConfirm }, ref) {
     const { t } = useTranslation();
     const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
 
@@ -21,8 +26,15 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
       },
     }));
 
-    const [focusingToken, setFocusingToken] = React.useState<TokenItem | null>(
-      null
+    // const [focusingToken, setFocusingToken] = React.useState<TokenItem | null>(
+    //   null
+    // );
+
+    const { customize } = useRabbySelector((store) => store.account.tokens);
+    const tokens = useSortToken(customize);
+
+    const [showCustomizedTokens, setShowCustomizedTokens] = React.useState(
+      false
     );
 
     return (
@@ -30,7 +42,9 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
         <div
           className={clsx(
             'flex flex-row justify-start items-center',
-            'px-[14px] py-[8px] bg-r-neutral-card2 rounded-[6px] cursor-pointer',
+            'border-[1px] border-transparent',
+            'hover:border-rabby-blue-default hover:bg-r-blue-light1',
+            'h-[32px] px-[14px] py-[8px] bg-r-neutral-card2 rounded-[6px] cursor-pointer',
             'text-r-neutral-body text-[13px] text-center',
             'whitespace-nowrap'
           )}
@@ -49,16 +63,25 @@ const AddTokenEntry = React.forwardRef<AddTokenEntryInst, { foo?: any }>(
           }}
           onConfirm={(addedToken) => {
             setIsShowAddModal(false);
-            setFocusingToken(addedToken?.token || null);
+            setShowCustomizedTokens(true);
+
+            // setFocusingToken(addedToken?.token || null);
             // refreshAsync();
           }}
         />
 
-        <TokenDetailPopup
+        {/* <TokenDetailPopup
           variant="add"
           token={focusingToken}
           visible={!!focusingToken}
           onClose={() => setFocusingToken(null)}
+        /> */}
+
+        <SpecialTokenListPopup
+          label={t('page.dashboard.tokenDetail.customizedButton')}
+          tokens={tokens}
+          visible={showCustomizedTokens}
+          onClose={() => setShowCustomizedTokens(false)}
         />
       </>
     );

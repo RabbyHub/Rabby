@@ -256,6 +256,9 @@ export const AddCustomTestnetTokenPopup = ({
               name="address"
             >
               <Input
+                placeholder={t(
+                  'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
+                )}
                 onChange={(e) => {
                   setTokenId(e.target.value);
                 }}
@@ -343,6 +346,7 @@ export const AddCustomTestnetTokenPopup = ({
       <ChainSelectorModal
         hideTestnetTab={false}
         hideMainnetTab={true}
+        value={chainSelectorState.chain || CHAINS_ENUM.ETH}
         visible={chainSelectorState.visible}
         onCancel={() => {
           setChainSelectorState({

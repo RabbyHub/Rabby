@@ -4,10 +4,10 @@ import { useRabbySelector } from '@/ui/store';
 import useSortToken from '@/ui/hooks/useSortTokens';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
+type Props = {
   onClickButton: () => void;
   isTestnet: boolean;
-}
+};
 
 export const CustomizedButton: React.FC<Props> = ({
   onClickButton,
