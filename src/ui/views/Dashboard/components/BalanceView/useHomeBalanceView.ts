@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CurveData } from './useCurve';
+import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { usePrevious } from 'react-use';
 
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
 type AddressCacheItem = {
   balance: number | null;
+  matteredChainBalances: DisplayChainWithWhiteLogo[];
   curveData: CurveData;
 };
 type AddressCacheDict = Record<string, AddressCacheItem>;
@@ -34,14 +36,14 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
     getHomeBalanceViewCache()
   );
 
-  const prevAddress = usePrevious(currentAddress);
-
   const cacheHomeBalanceByAddress = useCallback(
     (address: string, input: Partial<AddressCacheItem>) => {
       setAddressBalanceMap((prev) => {
         const next = { ...prev };
         next[address] = { ...next[address] };
         if (input.balance) next[address].balance = input.balance;
+        if (input.matteredChainBalances)
+          next[address].matteredChainBalances = input.matteredChainBalances;
         if (input.curveData) next[address].curveData = input.curveData;
 
         return cacheHomeBalanceView(next);
@@ -63,8 +65,6 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
   //       deleteHomeBalanceByAddress(prevAddress);
   //     }
   //   }, [prevAddress, currentAddress]);
-
-  //   console.log('[feat] addressBalanceMap', addressBalanceMap);
 
   return {
     currentHomeBalanceCache:

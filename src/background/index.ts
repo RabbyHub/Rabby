@@ -42,7 +42,7 @@ import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon, wait } from './utils';
-import { getSentryEnv } from '@/utils/env';
+import { appIsDev, getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
 import fetchAdapter from '@vespaiach/axios-fetch-adapter';
@@ -111,11 +111,10 @@ async function restoreAppState() {
   walletController.syncMainnetChainList();
 
   eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, () => {
-    console.log('[feat] I am here');
     preferenceService.forceExpireHomeBalance();
   });
   // just for mock
-  globalThis._eventBus = eventBus;
+  if (appIsDev) globalThis._eventBus = eventBus;
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {

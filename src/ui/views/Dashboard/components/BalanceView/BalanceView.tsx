@@ -7,8 +7,10 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { sleep, useCommonPopupView, useWallet } from 'ui/utils';
+import useCurrentBalance, {
+  filterChainWithBalance,
+} from '@/ui/hooks/useCurrentBalance';
+import { isSameAddress, sleep, useCommonPopupView, useWallet } from 'ui/utils';
 import { CHAINS, EVENTS, KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
@@ -21,7 +23,7 @@ import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
 import { useDebounce, useInterval, usePrevious } from 'react-use';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -30,24 +32,43 @@ import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
 import eventBus from '@/eventBus';
 import { useHomeBalanceView } from './useHomeBalanceView';
 
-const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
+const BalanceView = ({ currentAccount }) => {
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
+
+  const {
+    currentHomeBalanceCache,
+    cacheHomeBalanceByAddress,
+    deleteHomeBalanceByAddress,
+  } = useHomeBalanceView(currentAccount?.address);
+
+  const firstTouchRef = useRef({
+    haveTouched: false,
+    hasCacheOnInit: !!currentHomeBalanceCache?.balance,
+  });
+
+  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const {
     balance: latestBalance,
-    matteredChainBalances,
+    matteredChainBalances: latestMatteredChainBalances,
     success: loadBalanceSuccess,
     balanceLoading,
     balanceFromCache,
     refreshBalance,
-    hasValueChainBalances,
+    chainBalancesWithValue: latestChainBalancesWithValue,
     missingList,
-  } = useCurrentBalance(
-    currentAccount?.address,
-    true,
-    false,
-    accountBalanceUpdateNonce
-  );
+  } = useCurrentBalance(currentAccount?.address, {
+    update: true,
+    noNeedBalance: false,
+    nonce: accountBalanceUpdateNonce,
+  });
+  const previousLoadingBalance = usePrevious(balanceLoading);
+  useEffect(() => {
+    if (previousLoadingBalance && !balanceLoading)
+      firstTouchRef.current.haveTouched = true;
+  }, [previousLoadingBalance, balanceLoading]);
+
   const {
     result: latestCurveData,
     refresh: refreshCurve,
@@ -65,17 +86,12 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const {
-    currentHomeBalanceCache,
-    cacheHomeBalanceByAddress,
-    deleteHomeBalanceByAddress,
-  } = useHomeBalanceView(currentAccount?.address);
-
   useEffect(() => {
     if (!currentAccount?.address) return;
 
     cacheHomeBalanceByAddress(currentAccount?.address, {
       balance: latestBalance,
+      matteredChainBalances: latestMatteredChainBalances,
       curveData: latestCurveData,
     });
   }, [
@@ -83,6 +99,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     cacheHomeBalanceByAddress,
     deleteHomeBalanceByAddress,
     latestBalance,
+    latestMatteredChainBalances,
     latestCurveData,
   ]);
 
@@ -116,18 +133,28 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
     };
     checkRefresh();
 
-    const handler = async () => {
-      console.log('[feat] now TX_COMPLETED');
-      setTimeout(() => {
-        checkRefresh();
-      }, 500);
+    const handler = async ({ address }) => {
+      if (!isSameAddress(address, currentAccount.address)) return;
+
+      const count = await dispatch.transactions.getPendingTxCountAsync(
+        currentAccount.address
+      );
+      if (count === 0) {
+        setTimeout(() => {
+          // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+          // delay 5s for waiting db sync data
+          setAccountBalanceUpdateNonce((prev) => prev + 1);
+        }, 5000);
+        setTimeout(checkRefresh, 5000);
+      }
     };
     eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
 
     return () => {
       eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
     };
-  }, []); /* eslint-disable-line react-hooks/exhaustive-deps */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAccount.address]);
 
   useInterval(() => {
     if (checkIfHomeBalanceExpired()) {
@@ -160,19 +187,19 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances: hasValueChainBalances,
+        matteredChainBalances: latestChainBalancesWithValue,
         balance: latestBalance,
         balanceLoading,
-        isEmptyAssets: !matteredChainBalances.length,
+        isEmptyAssets: !latestMatteredChainBalances.length,
         isOffline: !loadBalanceSuccess,
       });
     }
   }, [
-    matteredChainBalances,
+    latestMatteredChainBalances,
     latestBalance,
     balanceLoading,
     componentName,
-    hasValueChainBalances,
+    latestChainBalancesWithValue,
     setData,
     loadBalanceSuccess,
   ]);
@@ -224,6 +251,15 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
   const balance = latestBalance || currentHomeBalanceCache?.balance;
   const curveData = latestCurveData || currentHomeBalanceCache?.curveData;
 
+  const chainBalancesWithValue = useMemo(() => {
+    return currentHomeBalanceCache?.matteredChainBalances
+      ? filterChainWithBalance(currentHomeBalanceCache?.matteredChainBalances)
+      : latestChainBalancesWithValue;
+  }, [
+    currentHomeBalanceCache?.matteredChainBalances,
+    latestChainBalancesWithValue,
+  ]);
+
   const currentBalance = currentHover ? curvePoint?.value || balance : balance;
   const currentChangePercent = currentHover
     ? curvePoint?.changePercent || curveData?.changePercent
@@ -235,7 +271,9 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
 
   const shouldHidePercentChange = !currentChangePercent || hiddenBalance;
   const shouldRefreshButtonShow =
-    isManualRefreshing || balanceLoading || curveLoading;
+    (!firstTouchRef.current.hasCacheOnInit ||
+      firstTouchRef.current.haveTouched) &&
+    (isManualRefreshing || balanceLoading || curveLoading);
 
   const couldShowLoadingDueToBalanceNil =
     currentBalance === null || (balanceFromCache && currentBalance === 0);
@@ -354,7 +392,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
                   {t('page.dashboard.home.offline')}
                 </span>
               </>
-            ) : hasValueChainBalances.length > 0 ? (
+            ) : chainBalancesWithValue.length > 0 ? (
               <div
                 className={clsx(
                   'flex space-x-4',
@@ -363,7 +401,7 @@ const BalanceView = ({ currentAccount, accountBalanceUpdateNonce = 0 }) => {
               >
                 <ChainList
                   isGnosis={isGnosis}
-                  matteredChainBalances={hasValueChainBalances}
+                  matteredChainBalances={chainBalancesWithValue}
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>

@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
 import type { ChainWithBalance } from 'background/service/openapi';
 
-import { CHAINS } from 'consts';
-import { findChain, findChainByServerID } from '@/utils/chain';
+import {
+  findChain,
+  findChainByServerID,
+  DisplayChainWithWhiteLogo,
+} from '@/utils/chain';
 
-export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
-  logo?: string;
-  whiteLogo?: string;
-}
+/** @deprecated import from '@/utils/chain' directly  */
+export type { DisplayChainWithWhiteLogo };
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
   const chain = findChain({
@@ -23,12 +24,29 @@ const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
   };
 };
 
+function normalizeChainList(chain_balances: ChainWithBalance[]) {
+  return chain_balances
+    .filter((item) => item.born_at !== null)
+    .map(formatChain);
+}
+
+export function filterChainWithBalance(chainList: DisplayChainWithWhiteLogo[]) {
+  return chainList.filter((item) => item.usd_value > 0);
+}
+
 export default function useCurrentBalance(
   account: string | undefined,
-  update = false,
-  noNeedBalance = false,
-  nonce = 0
+  opts?: {
+    noNeedBalance?: boolean;
+    update?: boolean;
+    /**
+     * @description in the future, only nonce >= 0, the fetching will be triggered
+     */
+    nonce?: number;
+  }
 ) {
+  const { update = false, noNeedBalance = false, nonce = 0 } = opts || {};
+
   const wallet = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
   const [success, setSuccess] = useState(true);
@@ -38,7 +56,7 @@ export default function useCurrentBalance(
   const [matteredChainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
-  const [hasValueChainBalances, setHasValueChainBalances] = useState<
+  const [chainBalancesWithValue, setChainBalancesWithValue] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
 
@@ -49,11 +67,10 @@ export default function useCurrentBalance(
       if (isCanceled) return;
       setBalance(total_usd_value);
       setSuccess(true);
-      const chanList = chain_list
-        .filter((item) => item.born_at !== null)
-        .map(formatChain);
-      setChainBalances(chanList);
-      setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
+      const chainList = normalizeChainList(chain_list);
+
+      setChainBalances(chainList);
+      setChainBalancesWithValue(filterChainWithBalance(chainList));
       setBalanceLoading(false);
       setBalanceFromCache(false);
     },
@@ -85,10 +102,11 @@ export default function useCurrentBalance(
     if (cacheData) {
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
-      const chanList = cacheData.chain_list
-        .filter((item) => item.born_at !== null)
-        .map(formatChain);
-      setHasValueChainBalances(chanList.filter((item) => item.usd_value > 0));
+      const chainList = normalizeChainList(cacheData.chain_list);
+      // TODO: is here necessary?
+      // setChainBalances(chainList);
+
+      setChainBalancesWithValue(filterChainWithBalance(chainList));
       if (update) {
         if (apiLevel < 2) {
           setBalanceLoading(true);
@@ -115,16 +133,12 @@ export default function useCurrentBalance(
   };
 
   useEffect(() => {
+    // if (nonce < 0) return;
+
     getCurrentBalance();
     if (!noNeedBalance) {
       wallet.getAddressCacheBalance(account).then((cache) => {
-        setChainBalances(
-          cache
-            ? cache.chain_list
-                .filter((item) => item.born_at !== null)
-                .map(formatChain)
-            : []
-        );
+        setChainBalances(cache ? normalizeChainList(cache.chain_list) : []);
       });
     }
     return () => {
@@ -139,7 +153,7 @@ export default function useCurrentBalance(
     balanceLoading,
     balanceFromCache,
     refreshBalance: refresh,
-    hasValueChainBalances,
+    chainBalancesWithValue,
     missingList,
   };
 }

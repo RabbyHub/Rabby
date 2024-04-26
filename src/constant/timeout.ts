@@ -11,16 +11,16 @@ export const BALANCE_LOADING_TIMES = appIsDev
   ? {
       CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT_BUFFER: 500,
-      TIMEOUT: 15 * 1e3,
+      TIMEOUT: 5 * 1e3,
     }
   : appIsDebugPkg
   ? {
-      CHECK_INTERVAL: 5 * 1e3,
+      CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT_BUFFER: 500,
-      TIMEOUT: 30 * 1e3,
+      TIMEOUT: 90 * 1e3,
     }
   : {
-      CHECK_INTERVAL: 5 * 1e3,
+      CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT_BUFFER: 500,
       TIMEOUT: DEFT_BALANCE_LOADING_TIMEOUT_PROD,
     };

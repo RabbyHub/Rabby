@@ -31,7 +31,6 @@ export default (store: typeof import('@/ui/store').default) => {
         break;
       }
       case 'homeBalanceLoadingExpiration': {
-        console.log('[feat] payload.partials', payload.partials);
         dispatch.preference.setField({
           homeBalanceLoadingExpiration:
             payload.partials.homeBalanceLoadingExpiration,

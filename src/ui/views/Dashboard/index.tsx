@@ -85,7 +85,6 @@ const Dashboard = () => {
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
-  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const gnosisPendingCount = useRabbySelector(
@@ -170,26 +169,6 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name!);
         });
-
-      const handler = async ({ address }) => {
-        if (isSameAddress(address, currentAccount.address)) {
-          const count = await dispatch.transactions.getPendingTxCountAsync(
-            currentAccount.address
-          );
-          if (count === 0) {
-            setTimeout(() => {
-              // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
-              // delay 5s for waiting db sync data
-              setAccountBalanceUpdateNonce(accountBalanceUpdateNonce + 1);
-            }, 5000);
-          }
-        }
-      };
-      eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-
-      return () => {
-        eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-      };
     }
   }, [currentAccount]);
 
@@ -414,10 +393,7 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-          <BalanceView
-            currentAccount={currentAccount}
-            accountBalanceUpdateNonce={accountBalanceUpdateNonce}
-          />
+          <BalanceView currentAccount={currentAccount} />
           {isGnosis ? (
             <Queue
               count={gnosisPendingCount || 0}
