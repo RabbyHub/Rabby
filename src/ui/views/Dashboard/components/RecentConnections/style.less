@@ -66,11 +66,16 @@
       display: flex;
       align-items: center;
       column-gap: 12px;
-      padding: 11px 15px;
+      padding: 13px 15px;
       border-radius: 6px;
       border: 1px solid transparent;
       background: var(--r-neutral-card2, #f2f4f7);
       cursor: pointer;
+      .pin-website:not(.is-active) {
+        path {
+          stroke: var(--r-neutral-foot);
+        }
+      }
       .icon-close {
         width: 16px;
         height: 16px;
