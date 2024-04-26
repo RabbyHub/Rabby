@@ -7,7 +7,7 @@ import {
   addedToken,
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
-import i18n from '@/i18n';
+import { changeLanguage } from '@/i18n';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -182,7 +182,7 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.setField({
         locale,
       });
-      i18n.changeLanguage(locale);
+      changeLanguage(locale);
       await store.app.wallet.setLocale(locale);
       dispatch.preference.getPreference('locale');
     },
