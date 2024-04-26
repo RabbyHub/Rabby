@@ -65,7 +65,6 @@ const ProtocolItemWrapper = styled.div`
       font-size: 13px;
       line-height: 15px;
       color: var(--r-neutral-title-1, #192945);
-      margin-left: 8px;
     }
     .net-worth {
       font-weight: 500;
@@ -134,7 +133,7 @@ const ProtocolItem = ({
             isShowChainTooltip={true}
           />
           <div
-            className="flex items-center"
+            className="ml-[8px] flex items-center border-b-[1px] border-b-solid border-transparent hover:border-b-rabby-neutral-foot"
             onClick={(evt) => {
               evt.stopPropagation();
               openInTab(protocol.site_url, false);
