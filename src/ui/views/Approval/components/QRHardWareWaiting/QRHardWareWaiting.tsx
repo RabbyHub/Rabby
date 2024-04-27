@@ -207,7 +207,7 @@ const QRHardWareWaiting = ({ params }) => {
 
           stats.report('signTransaction', {
             type: account.brandName,
-            chainId: findChainByEnum(chain)?.serverId || '',
+            chainId: chainInfo?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
             preExecSuccess: explain
               ? explain?.calcSuccess && explain?.pre_exec.success
@@ -216,6 +216,9 @@ const QRHardWareWaiting = ({ params }) => {
             source: params?.$ctx?.ga?.source || '',
             trigger: params?.$ctx?.ga?.trigger || '',
             signMethod,
+            networkType: chainInfo?.isTestnet
+              ? 'Custom Network'
+              : 'Integrated Network',
           });
         }
       } else {

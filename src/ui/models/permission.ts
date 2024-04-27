@@ -44,6 +44,14 @@ export const permission = createModel<RootModel>()({
       await store.app.wallet.unFavoriteWebsite(origin);
       await dispatch.permission.getWebsites();
     },
+    async pinWebsite(origin: string, store) {
+      await store.app.wallet.topConnectedSite(origin);
+      await dispatch.permission.getWebsites();
+    },
+    async unpinWebsite(origin: string, store) {
+      await store.app.wallet.unpinConnectedSite(origin);
+      await dispatch.permission.getWebsites();
+    },
     async clearAll(_: void, store) {
       await store.app.wallet.removeAllRecentConnectedSites();
       await dispatch.permission.getWebsites();

@@ -29,6 +29,7 @@ import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
+import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -380,8 +381,8 @@ const GasSelector = ({
 
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    if (/^\d*(\.\d*)?$/.test(e.target.value)) {
-      setCustomGas(e.target.value);
+    if (INPUT_NUMBER_RE.test(e.target.value)) {
+      setCustomGas(filterNumber(e.target.value));
     }
   };
 
@@ -473,11 +474,8 @@ const GasSelector = ({
   ) => {
     e.stopPropagation();
 
-    if (/^\d*(\.\d*)?$/.test(e.target.value)) {
-      let value = e?.target?.value || '';
-      if (value.trim() === '.') {
-        value = '0.';
-      }
+    if (INPUT_NUMBER_RE.test(e.target.value)) {
+      const value = filterNumber(e.target.value);
       setCustomGas(value);
 
       const gasObj = {
@@ -652,11 +650,11 @@ const GasSelector = ({
             gas.error || !gas.success ? 'items-start mb-12' : 'mb-12'
           )}
         >
-          <div className="relative flex">
+          <div className="relative flex overflow-hidden">
             <div className="gas-selector-card-title">
               {t('page.signTx.gasSelectorTitle')}
             </div>
-            <div className="gas-selector-card-content ml-4">
+            <div className="gas-selector-card-content ml-4 overflow-hidden">
               {disabled ? (
                 <div className="font-semibold">
                   {t('page.signTx.noGasRequired')}
@@ -669,15 +667,17 @@ const GasSelector = ({
                 </>
               ) : (
                 <div className="gas-selector-card-content-item">
-                  <div className="gas-selector-card-amount translate-y-1 flex items-center">
-                    <span className="text-r-blue-default font-medium text-15">
+                  <div className="gas-selector-card-amount translate-y-1 flex items-center overflow-hidden">
+                    <span className="text-r-blue-default font-medium text-15 truncate">
                       {formatTokenAmount(
                         new BigNumber(gas.gasCostAmount).toString(10),
                         8
                       )}{' '}
                       {chain.nativeTokenSymbol}
                     </span>
-                    &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                    <span className="truncate">
+                      &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                    </span>
                     {L2_ENUMS.includes(chain.enum) &&
                       !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                         <span className="relative ml-6">
@@ -1070,7 +1070,6 @@ const GasSelectPanel = ({
                 'custom-input': item.level === 'custom',
                 active: selectedGas?.level === item.level,
               })}
-              title={new BigNumber(item.price / 1e9).toFixed()}
             >
               {item.level === 'custom' ? (
                 <Input

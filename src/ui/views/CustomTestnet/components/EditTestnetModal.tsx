@@ -47,6 +47,7 @@ export const EditCustomTestnetModal = ({
   onChange,
   height,
   maskStyle,
+  ctx,
 }: {
   isEdit?: boolean;
   data?: TestnetChainBase | null;
@@ -57,16 +58,28 @@ export const EditCustomTestnetModal = ({
   zIndex?: number;
   height?: number;
   maskStyle?: React.CSSProperties;
+  ctx?: {
+    ga?: {
+      source?: string;
+    };
+  };
 }) => {
   const wallet = useWallet();
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
   const [form] = Form.useForm();
 
   const { loading, runAsync: runAddTestnet } = useRequest(
-    (data: TestnetChainBase) => {
+    (
+      data: TestnetChainBase,
+      ctx?: {
+        ga?: {
+          source?: string;
+        };
+      }
+    ) => {
       return isEdit
         ? wallet.updateCustomTestnet(data)
-        : wallet.addCustomTestnet(data);
+        : wallet.addCustomTestnet(data, ctx);
     },
     {
       manual: true,
@@ -76,7 +89,7 @@ export const EditCustomTestnetModal = ({
   const handleSubmit = async () => {
     await form.validateFields();
     const values = form.getFieldsValue();
-    const res = await runAddTestnet(values);
+    const res = await runAddTestnet(values, ctx);
     if ('error' in res) {
       form.setFields([
         {
@@ -133,9 +146,11 @@ export const EditCustomTestnetModal = ({
               )}
               onClick={() => {
                 setIsShowAddFromChainList(true);
+                const source = ctx?.ga?.source || 'setting';
                 matomoRequestEvent({
                   category: 'Custom Network',
                   action: 'Click Add From ChanList',
+                  label: source,
                 });
               }}
             >
@@ -184,10 +199,11 @@ export const EditCustomTestnetModal = ({
         onSelect={(item) => {
           form.setFieldsValue(item);
           setIsShowAddFromChainList(false);
+          const source = ctx?.ga?.source || 'setting';
           matomoRequestEvent({
             category: 'Custom Network',
             action: 'Choose ChainList Network',
-            label: String(item.id),
+            label: `${source}_${String(item.id)}`,
           });
         }}
       />

@@ -159,6 +159,7 @@ export const CustomTestnetTokenDetail = ({
               type="primary"
               size="large"
               disabled
+              className="wrapped-button w-[114px]"
               style={{
                 width: 114,
               }}

@@ -98,7 +98,7 @@ export const TokenDetailPopup = ({
           onClose={onClose}
           canClickToken={canClickToken}
           hideOperationButtons={hideOperationButtons}
-        ></TokenDetail>
+        />
       )}
     </Popup>
   );

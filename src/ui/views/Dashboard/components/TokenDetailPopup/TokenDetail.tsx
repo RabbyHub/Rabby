@@ -24,7 +24,7 @@ import { CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
-import { CustomizedButton } from './CustomizedButton';
+import { CustomizedSwitch } from './CustomizedButton';
 import { BlockedButton } from './BlockedButton';
 import { useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -206,7 +206,7 @@ const TokenDetail = ({
                 />
               </>
             ) : (
-              token?.name
+              getChain(token?.chain)?.name
             )}
           </div>
         </div>
@@ -222,7 +222,7 @@ const TokenDetail = ({
                 onClose={() => removeToken(tokenWithAmount)}
               />
             ) : (
-              <CustomizedButton
+              <CustomizedSwitch
                 selected={isAdded}
                 onOpen={() => addToken(tokenWithAmount)}
                 onClose={() => removeToken(tokenWithAmount)}
@@ -260,7 +260,6 @@ const TokenDetail = ({
             </div>
           </div>
         </div>
-
         {!isHiddenButton && !hideOperationButtons && (
           <div className="flex flex-row justify-between J_buttons_area">
             <Tooltip
@@ -274,6 +273,7 @@ const TokenDetail = ({
                 size="large"
                 onClick={goToSwap}
                 disabled={!tokenSupportSwap}
+                className="w-[114px]"
                 style={{
                   width: 114,
                 }}
@@ -302,7 +302,6 @@ const TokenDetail = ({
             </Button>
           </div>
         )}
-
         {data?.list.map((item) => (
           <HistoryItem
             data={item}

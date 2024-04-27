@@ -6,14 +6,13 @@ import { Message } from '@/utils/message';
 import { getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
-import i18n, { addResourceBundle } from 'src/i18n';
+import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
 import store from './store';
 
-import '../i18n';
 import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 
@@ -134,7 +133,7 @@ const main = () => {
 
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
-      i18n.changeLanguage(locale);
+      changeLanguage(locale);
       ReactDOM.render(
         <Provider store={store}>
           <Views wallet={wallet} />

@@ -914,7 +914,8 @@
         "disconnectRecentlyUsed": {
           "title_one": "Disconnect <strong>{{count}}</strong> connected Dapp",
           "title_other": "Disconnect <strong>{{count}}</strong> connected Dapps",
-          "description": "Pinned DApps will remain connected"
+          "description": "Pinned DApps will remain connected",
+          "title": "Disconnect recently used <strong>{{count}}</strong> DApps"
         },
         "title": "Connected Dapp",
         "pinned": "Pinned",
@@ -1103,22 +1104,32 @@
         "blockDescription": "Token blocked by you will be shown here",
         "unfoldChain": "Unfold 1 chain",
         "unfoldChainPlural": "Unfold {{moreLen}} chains",
-        "customLinkText": "Search address to add custom token",
+        "customButtonText": "Add custom token",
         "customDescription": "Custom token added by you will be shown here",
         "comingSoon": "Coming Soon...",
         "searchPlaceholder": "Tokens",
+        "AddMainnetToken": {
+          "title": "Add Custom Token",
+          "selectChain": "Select chain",
+          "searching": "Searching Token",
+          "tokenAddress": "Token Address",
+          "tokenAddressPlaceholder": "Token Address",
+          "notFound": "Token not found"
+        },
         "AddTestnetToken": {
           "title": "Add Custom Network Token",
           "selectChain": "Select chain",
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
+          "tokenAddressPlaceholder": "Token Address",
           "notFound": "Token not found"
         },
         "TestnetAssetListContainer": {
           "add": "Token",
           "addTestnet": "Network"
         },
-        "noTestnetAssets": "No Custom Network Assets"
+        "noTestnetAssets": "No Custom Network Assets",
+        "addTokenEntryText": "Token"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",

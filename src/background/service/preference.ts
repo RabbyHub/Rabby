@@ -605,19 +605,18 @@ class PreferenceService {
   getCustomizedToken = () => {
     return this.store.customizedToken || [];
   };
+  hasCustomizedToken = (token: Token) => {
+    return !!this.store.customizedToken?.find(
+      (item) =>
+        isSameAddress(item.address, token.address) && item.chain === token.chain
+    );
+  };
   addCustomizedToken = (token: Token) => {
-    if (
-      !this.store.customizedToken?.find(
-        (item) =>
-          isSameAddress(item.address, token.address) &&
-          item.chain === token.chain
-      )
-    ) {
-      this.store.customizedToken = [
-        ...(this.store.customizedToken || []),
-        token,
-      ];
+    if (this.hasCustomizedToken(token)) {
+      throw new Error('Token already added');
     }
+
+    this.store.customizedToken = [...(this.store.customizedToken || []), token];
   };
   removeCustomizedToken = (token: Token) => {
     this.store.customizedToken = this.store.customizedToken?.filter(

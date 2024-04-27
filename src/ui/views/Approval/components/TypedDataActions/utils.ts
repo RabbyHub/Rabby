@@ -27,6 +27,7 @@ import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rule
 import BigNumber from 'bignumber.js';
 import { getArrayType, isArrayType } from '@metamask/abi-utils/dist/parsers';
 import { BigNumber as EthersBigNumber } from 'ethers';
+import { isStrictHexString, add0x } from 'ui/utils/address';
 import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
@@ -38,7 +39,7 @@ import {
   ApproveNFTRequireData,
   fetchNFTApproveRequiredData,
 } from '../Actions/utils';
-import { CHAINS, ALIAS_ADDRESS } from 'consts';
+import { ALIAS_ADDRESS } from 'consts';
 import { Chain } from 'background/service/openapi';
 import {
   findChain,
@@ -691,7 +692,7 @@ export const fetchRequireData = async (
   sender: string,
   wallet: WalletControllerType
 ): Promise<TypedDataRequireData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
@@ -928,7 +929,7 @@ export const formatSecurityEngineCtx = async ({
   requireData: TypedDataRequireData;
   wallet: WalletControllerType;
 }): Promise<ContextActionData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData?.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
@@ -1171,8 +1172,10 @@ export function normalizeValue(type: string, value: unknown): any {
   }
 
   if (type === 'address') {
-    if (typeof value === 'string' && !value.startsWith('0x')) {
+    if (typeof value === 'string' && !/^(0x|0X)/.test(value)) {
       return EthersBigNumber.from(value).toHexString();
+    } else if (isStrictHexString(value)) {
+      return add0x(value);
     }
   }
 

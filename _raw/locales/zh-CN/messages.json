@@ -849,7 +849,7 @@
       "Balance": "余额",
       "Confirm": "确认",
       "Continue": "继续",
-      "Including-service-fee": "包含 ${{fee}} 服务费",
+      "Including-service-fee": "包含 {{fee}} 服务费",
       "InsufficientBalance": "当前链的 Rabby 合约地址余额不足，\n请稍后再试",
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",

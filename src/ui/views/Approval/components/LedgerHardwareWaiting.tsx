@@ -132,6 +132,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     } else {
@@ -179,7 +182,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: KEYRING_CLASS.HARDWARE.LEDGER,
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
 
         setSignFinishedData({

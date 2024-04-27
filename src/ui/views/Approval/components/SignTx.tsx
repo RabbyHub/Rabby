@@ -1152,6 +1152,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
     if (!isViewGnosisSafe) {
       const params: any = {
@@ -1194,6 +1195,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
     let newTx;
@@ -1363,12 +1365,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
     matomoRequestEvent({
       category: 'Transaction',
       action: 'Submit',
-      label: currentAccount.brandName,
+      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
     resolveApproval({
       ...transaction,
@@ -1655,12 +1658,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
         source: params?.$ctx?.ga?.source || '',
         trigger: params?.$ctx?.ga?.trigger || '',
+        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
 
       matomoRequestEvent({
         category: 'Transaction',
         action: 'init',
-        label: currentAccount.brandName,
+        label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
 
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
