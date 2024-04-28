@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { WalletController } from '@/background/controller/wallet';
 import {
@@ -11,7 +11,7 @@ import { IExtractFromPromise } from '@/ui/utils/type';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
 
-const formChartData = (
+export const formChartData = (
   data: CurveList,
   /** @notice if realtimeNetWorth is not number, it means 'unknown' due to not-loaded or load-failure */
   realtimeNetWorth?: number | null,
@@ -78,44 +78,66 @@ const formChartData = (
 export type CurvePointCollection = IExtractFromPromise<
   ReturnType<WalletController['getNetCurve']>
 >;
-export type CurveData = ReturnType<typeof formChartData>;
+export type CurveChartData = ReturnType<typeof formChartData>;
 export const useCurve = (
   address: string | undefined,
-  nonce: number,
-  realtimeNetWorth: number | null
+  options: {
+    nonce: number;
+    realtimeNetWorth: number | null;
+    initData?: CurvePointCollection;
+  }
 ) => {
-  const [data, setData] = useState<CurvePointCollection>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const select = useMemo(() => {
-    return formChartData(data, realtimeNetWorth, new Date().getTime());
-  }, [data, realtimeNetWorth]);
+  const { nonce, realtimeNetWorth, initData = [] } = options;
+  const [data, setData] = useState<CurvePointCollection>(initData);
+  const [isLoading, setIsLoading] = useState(!data.length);
+
   const wallet = useWallet();
 
   const fetch = async (addr: string, force = false) => {
-    const curve = await wallet.getNetCurve(addr, force);
-    setData(curve);
-    setIsLoading(false);
+    setIsLoading(true);
+    try {
+      const curve = await wallet.getNetCurve(addr, force);
+      setData(curve);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!address) return;
-    setIsLoading(true);
     await fetch(address, true);
-  };
+  }, [address]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    setData([]);
+  const isCurveCollectionExpired = useCallback(async () => {
+    if (!address) return false;
+
+    try {
+      return wallet.isNetCurveExpired(address);
+    } catch (error) {
+      return false;
+    }
   }, [address]);
 
   useEffect(() => {
+    if (nonce < 0) return;
+
     if (!address) return;
-    fetch(address);
+
+    setData([]);
+    fetch(address, false);
   }, [address, nonce]);
 
+  const select = useMemo(() => {
+    return formChartData(data, realtimeNetWorth, new Date().getTime());
+  }, [data, realtimeNetWorth]);
+
   return {
-    result: isLoading ? undefined : select,
+    curveData: data,
+    curveChartData: isLoading ? undefined : select,
     isLoading,
+    isCurveCollectionExpired,
     refresh,
   };
 };

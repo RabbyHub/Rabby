@@ -110,9 +110,6 @@ async function restoreAppState() {
   startEnableUser();
   walletController.syncMainnetChainList();
 
-  eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, () => {
-    preferenceService.forceExpireHomeBalance();
-  });
   // just for mock
   if (appIsDev) globalThis._eventBus = eventBus;
 

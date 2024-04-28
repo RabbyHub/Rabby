@@ -115,6 +115,7 @@ import { customTestnetService } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1008,12 +1009,6 @@ export class WalletController extends BaseController {
   setIsShowTestnet = (value: boolean) => {
     return preferenceService.setIsShowTestnet(value);
   };
-  getHomeBalanceLoadingExpiration = () => {
-    return preferenceService.getHomeBalanceLoadingExpiration();
-  };
-  refreshHomeBalanceExpiration() {
-    return preferenceService.refreshHomeBalanceExpiration();
-  }
 
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
@@ -1052,18 +1047,17 @@ export class WalletController extends BaseController {
     }
   };
 
-  private getTotalBalanceCached = cached(async (address) => {
+  private getTotalBalanceCached = cached(async (address: string) => {
     const data = await openapiService.getTotalBalance(address);
     preferenceService.updateAddressBalance(address, data);
     return data;
-    // 5s
-  }, 5000);
+  }, BALANCE_LOADING_TIMES.TIMEOUT);
 
-  private getTestnetTotalBalanceCached = cached(async (address) => {
+  private getTestnetTotalBalanceCached = cached(async (address: string) => {
     const testnetData = await testnetOpenapiService.getTotalBalance(address);
     preferenceService.updateTestnetAddressBalance(address, testnetData);
     return testnetData;
-  }, 5000);
+  }, BALANCE_LOADING_TIMES.TIMEOUT);
 
   getAddressBalance = async (
     address: string,
@@ -1071,9 +1065,17 @@ export class WalletController extends BaseController {
     isTestnet = false
   ) => {
     if (isTestnet) {
-      return this.getTestnetTotalBalanceCached([address], address, force);
+      return this.getTestnetTotalBalanceCached.fn([address], address, force);
     }
-    return this.getTotalBalanceCached([address], address, force);
+    return this.getTotalBalanceCached.fn([address], address, force);
+  };
+
+  isAddressBalanceExpired = (address: string, isTestnet = false) => {
+    if (isTestnet) {
+      return this.getTestnetTotalBalanceCached.isExpired(address);
+    }
+
+    return this.getTotalBalanceCached.isExpired(address);
   };
 
   getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
@@ -1086,10 +1088,14 @@ export class WalletController extends BaseController {
 
   private getNetCurveCached = cached(async (address) => {
     return openapiService.getNetCurve(address);
-  }, 5000);
+  }, BALANCE_LOADING_TIMES.TIMEOUT);
 
-  getNetCurve = (address, force = false) => {
-    return this.getNetCurveCached([address], address, force);
+  getNetCurve = (address: string, force = false) => {
+    return this.getNetCurveCached.fn([address], address, force);
+  };
+
+  isNetCurveExpired = (address: string) => {
+    return this.getNetCurveCached.isExpired(address);
   };
 
   setHasOtherProvider = (val: boolean) =>
@@ -3647,7 +3653,7 @@ export class WalletController extends BaseController {
     } catch (e) {
       return 0;
     }
-  }, 10000);
+  }, 10000).fn;
 
   rabbyPointVerifyAddress = async (params?: {
     code?: string;

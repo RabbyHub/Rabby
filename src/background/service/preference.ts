@@ -103,7 +103,6 @@ export interface PreferenceStore {
    */
   autoLockTime?: number;
   hiddenBalance?: boolean;
-  homeBalanceLoadingExpiration?: number;
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
@@ -160,7 +159,6 @@ class PreferenceService {
         blockedToken: [],
         collectionStarred: [],
         hiddenBalance: false,
-        homeBalanceLoadingExpiration: getNewHomeBalanceExpiration(),
         isShowTestnet: false,
         themeMode: DARK_MODE_TYPE.light,
         addressSortStore: {
@@ -716,17 +714,6 @@ class PreferenceService {
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;
   };
-  getHomeBalanceLoadingExpiration = () => {
-    return this.store.homeBalanceLoadingExpiration;
-  };
-  forceExpireHomeBalance = () => {
-    this.store.homeBalanceLoadingExpiration = Date.now() - 1e3;
-  };
-  refreshHomeBalanceExpiration() {
-    const newExpire = getNewHomeBalanceExpiration();
-    this.store.homeBalanceLoadingExpiration = newExpire;
-    return newExpire;
-  }
   saveCurrentCoboSafeAddress = async () => {
     this.currentCoboSafeAddress = await this.getCurrentAccount();
   };

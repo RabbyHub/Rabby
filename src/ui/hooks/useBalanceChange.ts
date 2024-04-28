@@ -47,38 +47,3 @@ export default function useBalanceChange({
     };
   }, [balance_change]);
 }
-
-export function useShouldHomeBalanceShowLoading() {
-  const { homeBalanceLoadingExpiration } = useRabbySelector(
-    (state) => state.preference
-  );
-  const dispatch = useRabbyDispatch();
-
-  const homeBalanceLoadingExpirationRef = useRef(homeBalanceLoadingExpiration);
-
-  useEffect(() => {
-    homeBalanceLoadingExpirationRef.current = homeBalanceLoadingExpiration;
-  }, [homeBalanceLoadingExpiration]);
-
-  const refreshHomeBalanceExpiration = useCallback(async () => {
-    homeBalanceLoadingExpirationRef.current = await dispatch.preference.refreshHomeBalanceExpiration();
-  }, [dispatch]);
-
-  /**
-   * @description interval in JavaScript maybe delay a little bit due to thread scheduling, so we need to add a little bit of time
-   */
-  const checkIfHomeBalanceExpired = useCallback(() => {
-    return (
-      Date.now() - homeBalanceLoadingExpirationRef.current >
-      -BALANCE_LOADING_TIMES.TIMEOUT_BUFFER
-    );
-  }, []);
-
-  return {
-    checkExpirationInterval: BALANCE_LOADING_TIMES.CHECK_INTERVAL,
-    homeBalanceViewExpired: checkIfHomeBalanceExpired(),
-    homeBalanceLoadingExpirationRef,
-    refreshHomeBalanceExpiration,
-    checkIfHomeBalanceExpired,
-  };
-}

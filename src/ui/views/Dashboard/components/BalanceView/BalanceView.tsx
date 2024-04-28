@@ -22,15 +22,18 @@ import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
-import { useDebounce, useInterval, usePrevious } from 'react-use';
+import { useDebounce } from 'react-use';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
-import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
 import eventBus from '@/eventBus';
-import { useHomeBalanceView } from './useHomeBalanceView';
+import {
+  useHomeBalanceView,
+  useRefreshHomeBalanceView,
+} from './useHomeBalanceView';
+import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 
 const BalanceView = ({ currentAccount }) => {
   const { t } = useTranslation();
@@ -42,96 +45,115 @@ const BalanceView = ({ currentAccount }) => {
     deleteHomeBalanceByAddress,
   } = useHomeBalanceView(currentAccount?.address);
 
-  const firstTouchRef = useRef({
-    haveTouched: false,
-    hasCacheOnInit: !!currentHomeBalanceCache?.balance,
-  });
+  const initHasCacheRef = useRef(!!currentHomeBalanceCache?.balance);
+  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(
+    initHasCacheRef?.current ? -1 : 0
+  );
 
-  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
+  useEffect(() => {
+    if (!initHasCacheRef?.current) return;
+    const timer = setTimeout(() => {
+      setAccountBalanceUpdateNonce((prev) => prev + 1);
+    }, BALANCE_LOADING_TIMES.TIMEOUT);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const {
     balance: latestBalance,
     matteredChainBalances: latestMatteredChainBalances,
+    chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
     balanceLoading,
     balanceFromCache,
+    isCurrentBalanceExpired,
     refreshBalance,
-    chainBalancesWithValue: latestChainBalancesWithValue,
+    // fetchBalance,
     missingList,
   } = useCurrentBalance(currentAccount?.address, {
     update: true,
     noNeedBalance: false,
     nonce: accountBalanceUpdateNonce,
+    initBalanceFromLocalCache: !!currentHomeBalanceCache?.balance,
   });
-  const previousLoadingBalance = usePrevious(balanceLoading);
-  useEffect(() => {
-    if (previousLoadingBalance && !balanceLoading)
-      firstTouchRef.current.haveTouched = true;
-  }, [previousLoadingBalance, balanceLoading]);
 
   const {
-    result: latestCurveData,
+    curveData: latestCurveData,
+    curveChartData: latestCurveChartData,
     refresh: refreshCurve,
+    isCurveCollectionExpired,
     isLoading: curveLoading,
-  } = useCurve(
-    currentAccount?.address,
-    accountBalanceUpdateNonce,
-    latestBalance
-  );
+  } = useCurve(currentAccount?.address, {
+    nonce: accountBalanceUpdateNonce,
+    realtimeNetWorth: latestBalance,
+    initData: currentHomeBalanceCache?.originalCurveData,
+  });
   const wallet = useWallet();
   const [isGnosis, setIsGnosis] = useState(false);
   const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
-  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isDebounceHover, setIsDebounceHover] = useState(false);
+
+  const { balance, curveChartData, chainBalancesWithValue } = useMemo(() => {
+    return {
+      balance: latestBalance || currentHomeBalanceCache?.balance,
+      curveChartData:
+        latestCurveChartData || currentHomeBalanceCache?.curveChartData,
+      chainBalancesWithValue: latestChainBalancesWithValue.length
+        ? latestChainBalancesWithValue
+        : currentHomeBalanceCache?.chainBalancesWithValue || [],
+    };
+  }, [
+    latestBalance,
+    latestChainBalancesWithValue,
+    latestCurveChartData,
+    currentHomeBalanceCache,
+  ]);
 
   useEffect(() => {
     if (!currentAccount?.address) return;
 
     cacheHomeBalanceByAddress(currentAccount?.address, {
-      balance: latestBalance,
-      matteredChainBalances: latestMatteredChainBalances,
-      curveData: latestCurveData,
+      balance,
+      chainBalancesWithValue,
+      originalCurveData: latestCurveData,
     });
   }, [
     currentAccount,
     cacheHomeBalanceByAddress,
     deleteHomeBalanceByAddress,
-    latestBalance,
-    latestMatteredChainBalances,
+    balance,
+    chainBalancesWithValue,
     latestCurveData,
   ]);
 
-  const {
-    checkExpirationInterval,
-    checkIfHomeBalanceExpired,
-    refreshHomeBalanceExpiration,
-  } = useShouldHomeBalanceShowLoading();
-
-  const onRefresh = useCallback(
-    async (isManual = true) => {
-      isManual && setIsManualRefreshing(true);
-      try {
-        await Promise.all([refreshBalance(), refreshCurve()]);
-        if (!isManual) await sleep(1000);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsManualRefreshing(false);
-        refreshHomeBalanceExpiration();
-      }
-    },
-    [refreshBalance, refreshCurve, refreshHomeBalanceExpiration]
-  );
+  const { isManualRefreshing, onRefresh } = useRefreshHomeBalanceView({
+    refreshFn: useCallback(
+      (ctx) => {
+        return Promise.all(
+          [
+            ctx.balanceExpired && refreshBalance(),
+            ctx.curveExpired && refreshCurve(),
+          ].filter(Boolean)
+        );
+      },
+      [refreshBalance, refreshCurve]
+    ),
+    isExpired: useCallback(async () => {
+      return {
+        balanceExpired: await isCurrentBalanceExpired(),
+        curveExpired: await isCurveCollectionExpired(),
+      };
+    }, [isCurrentBalanceExpired, isCurveCollectionExpired]),
+  });
 
   useEffect(() => {
-    const checkRefresh = () => {
-      if (checkIfHomeBalanceExpired()) {
-        onRefresh(false);
-      }
-    };
-    checkRefresh();
+    if (!currentHomeBalanceCache?.balance) {
+      onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
+    }
 
     const handler = async ({ address }) => {
       if (!isSameAddress(address, currentAccount.address)) return;
@@ -145,7 +167,7 @@ const BalanceView = ({ currentAccount }) => {
           // delay 5s for waiting db sync data
           setAccountBalanceUpdateNonce((prev) => prev + 1);
         }, 5000);
-        setTimeout(checkRefresh, 5000);
+        setTimeout(onRefresh, 30 * 1e3);
       }
     };
     eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
@@ -155,12 +177,6 @@ const BalanceView = ({ currentAccount }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount.address]);
-
-  useInterval(() => {
-    if (checkIfHomeBalanceExpired()) {
-      onRefresh(false);
-    }
-  }, checkExpirationInterval);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
@@ -187,7 +203,7 @@ const BalanceView = ({ currentAccount }) => {
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances: latestChainBalancesWithValue,
+        matteredChainBalances: latestMatteredChainBalances,
         balance: latestBalance,
         balanceLoading,
         isEmptyAssets: !latestMatteredChainBalances.length,
@@ -199,7 +215,6 @@ const BalanceView = ({ currentAccount }) => {
     latestBalance,
     balanceLoading,
     componentName,
-    latestChainBalancesWithValue,
     setData,
     loadBalanceSuccess,
   ]);
@@ -222,11 +237,11 @@ const BalanceView = ({ currentAccount }) => {
     }
   }, [isHover]);
 
-  useEffect(() => {
-    if (!balanceLoading && !curveLoading) {
-      setIsManualRefreshing(false);
-    }
-  }, [balanceLoading, curveLoading]);
+  // useEffect(() => {
+  //   if (!balanceLoading && !curveLoading) {
+  //     setIsManualRefreshing(false);
+  //   }
+  // }, [balanceLoading, curveLoading]);
 
   const onMouseMove = () => {
     setHover(true);
@@ -248,58 +263,45 @@ const BalanceView = ({ currentAccount }) => {
 
   const currentHover = isDebounceHover;
 
-  const balance = latestBalance || currentHomeBalanceCache?.balance;
-  const curveData = latestCurveData || currentHomeBalanceCache?.curveData;
-
-  const chainBalancesWithValue = useMemo(() => {
-    return currentHomeBalanceCache?.matteredChainBalances
-      ? filterChainWithBalance(currentHomeBalanceCache?.matteredChainBalances)
-      : latestChainBalancesWithValue;
-  }, [
-    currentHomeBalanceCache?.matteredChainBalances,
-    latestChainBalancesWithValue,
-  ]);
-
   const currentBalance = currentHover ? curvePoint?.value || balance : balance;
   const currentChangePercent = currentHover
-    ? curvePoint?.changePercent || curveData?.changePercent
-    : curveData?.changePercent;
+    ? curvePoint?.changePercent || curveChartData?.changePercent
+    : curveChartData?.changePercent;
   const currentIsLoss =
-    currentHover && curvePoint ? curvePoint.isLoss : curveData?.isLoss;
+    currentHover && curvePoint ? curvePoint.isLoss : curveChartData?.isLoss;
   const currentChangeValue = currentHover ? curvePoint?.change : null;
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
   const shouldHidePercentChange = !currentChangePercent || hiddenBalance;
-  const shouldRefreshButtonShow =
-    (!firstTouchRef.current.hasCacheOnInit ||
-      firstTouchRef.current.haveTouched) &&
-    (isManualRefreshing || balanceLoading || curveLoading);
+  const shouldShowRefreshButton =
+    isManualRefreshing || balanceLoading || curveLoading;
 
   const couldShowLoadingDueToBalanceNil =
     currentBalance === null || (balanceFromCache && currentBalance === 0);
+  // const couldShowLoadingDueToUpdateSource = !balanceFromCache || isManualRefreshing;
   const couldShowLoadingDueToUpdateSource =
     !currentHomeBalanceCache?.balance || isManualRefreshing;
 
   const shouldShowBalanceLoading =
     couldShowLoadingDueToBalanceNil ||
     (couldShowLoadingDueToUpdateSource && balanceLoading);
+  const shouldShowCurveLoading =
+    couldShowLoadingDueToBalanceNil ||
+    (couldShowLoadingDueToUpdateSource && curveLoading);
+  const shouldShowLoading = shouldShowBalanceLoading || shouldShowCurveLoading;
 
   const curveRenderInfo = {
-    curveDataToRender: curveData || currentHomeBalanceCache?.curveData,
-    shouldShowCurveLoading:
-      couldShowLoadingDueToBalanceNil ||
-      (couldShowLoadingDueToUpdateSource && curveLoading),
+    curveDataToRender:
+      curveChartData || currentHomeBalanceCache?.curveChartData,
     shouldRenderCurve: false,
   };
   curveRenderInfo.shouldRenderCurve =
-    !curveRenderInfo.shouldShowCurveLoading &&
-    !hiddenBalance &&
-    !!curveRenderInfo.curveDataToRender;
+    !shouldShowLoading && !hiddenBalance && !!curveRenderInfo.curveDataToRender;
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left relative overflow-x-hidden mx-10">
-        <div className={clsx('amount group', 'text-32 mt-6')}>
+        <div className={clsx('amount group w-[100%]', 'text-32 mt-6')}>
           <div className={clsx('amount-number leading-[38px]')}>
             {shouldShowBalanceLoading ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
@@ -313,7 +315,7 @@ const BalanceView = ({ currentAccount }) => {
             )}
           </div>
           <div
-            onClick={onRefresh}
+            onClick={() => onRefresh({ isManual: true })}
             className={clsx(
               currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
               'text-15 font-normal mb-[5px]',
@@ -345,10 +347,10 @@ const BalanceView = ({ currentAccount }) => {
             </TooltipWithMagnetArrow>
           ) : null}
           <div
-            onClick={onRefresh}
+            onClick={() => onRefresh({ isManual: true })}
             className={clsx('mb-[5px]', {
-              'block animate-spin': shouldRefreshButtonShow,
-              hidden: !shouldRefreshButtonShow,
+              'block animate-spin': shouldShowRefreshButton,
+              hidden: !shouldShowRefreshButton,
               'group-hover:block': !hiddenBalance,
             })}
           >
@@ -370,7 +372,7 @@ const BalanceView = ({ currentAccount }) => {
             src={ArrowNextSVG}
             className={clsx(
               'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
-              shouldShowBalanceLoading
+              balanceFromCache
                 ? !currentHover && 'opacity-0'
                 : !currentHover && 'opacity-80'
             )}
@@ -381,7 +383,7 @@ const BalanceView = ({ currentAccount }) => {
               'mx-[10px] pt-[8px] mb-[8px]'
             )}
           >
-            {shouldShowBalanceLoading ? (
+            {shouldShowLoading ? (
               <>
                 <Skeleton.Input active className="w-[130px] h-[20px] rounded" />
               </>
@@ -425,7 +427,7 @@ const BalanceView = ({ currentAccount }) => {
                   onHover={handleHoverCurve}
                 />
               )}
-            {!!curveRenderInfo.shouldShowCurveLoading && (
+            {!!shouldShowLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input
                   active

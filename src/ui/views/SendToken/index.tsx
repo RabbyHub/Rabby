@@ -57,7 +57,6 @@ import {
   findChain,
   findChainByEnum,
   findChainByID,
-  findChainByServerID,
   makeTokenFromChain,
 } from '@/utils/chain';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
@@ -73,11 +72,9 @@ import { isHex } from 'web3-utils';
 import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { copyAddress } from '@/ui/utils/clipboard';
-import { useShouldHomeBalanceShowLoading } from '@/ui/hooks/useBalanceChange';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
 
@@ -526,8 +523,6 @@ const SendToken = () => {
     };
   }, [isNativeToken, addressType]);
 
-  const { refreshHomeBalanceExpiration } = useShouldHomeBalanceShowLoading();
-
   const handleSubmit = async ({
     to,
     amount,
@@ -535,7 +530,6 @@ const SendToken = () => {
     messageDataForContractCall,
   }: FormSendToken) => {
     setIsSubmitLoading(true);
-    refreshHomeBalanceExpiration();
     const chain = findChain({
       serverId: currentToken.chain,
     })!;

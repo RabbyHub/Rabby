@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
 import type { ChainWithBalance } from 'background/service/openapi';
@@ -43,20 +43,25 @@ export default function useCurrentBalance(
      * @description in the future, only nonce >= 0, the fetching will be triggered
      */
     nonce?: number;
+    initBalanceFromLocalCache?: boolean;
   }
 ) {
-  const { update = false, noNeedBalance = false, nonce = 0 } = opts || {};
+  const {
+    update = false,
+    noNeedBalance = false,
+    nonce = 0,
+    initBalanceFromLocalCache = false,
+  } = opts || {};
 
   const wallet = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
   const [success, setSuccess] = useState(true);
   const [balanceLoading, setBalanceLoading] = useState(false);
-  const [balanceFromCache, setBalanceFromCache] = useState(false);
+  const [balanceFromCache, setBalanceFromCache] = useState(
+    initBalanceFromLocalCache
+  );
   let isCanceled = false;
   const [matteredChainBalances, setChainBalances] = useState<
-    DisplayChainWithWhiteLogo[]
-  >([]);
-  const [chainBalancesWithValue, setChainBalancesWithValue] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
 
@@ -70,7 +75,6 @@ export default function useCurrentBalance(
       const chainList = normalizeChainList(chain_list);
 
       setChainBalances(chainList);
-      setChainBalancesWithValue(filterChainWithBalance(chainList));
       setBalanceLoading(false);
       setBalanceFromCache(false);
     },
@@ -103,14 +107,12 @@ export default function useCurrentBalance(
       setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
       const chainList = normalizeChainList(cacheData.chain_list);
-      // TODO: is here necessary?
-      // setChainBalances(chainList);
+      setChainBalances(chainList);
 
-      setChainBalancesWithValue(filterChainWithBalance(chainList));
       if (update) {
         if (apiLevel < 2) {
           setBalanceLoading(true);
-          getAddressBalance(account.toLowerCase(), force);
+          await getAddressBalance(account.toLowerCase(), force);
         } else {
           setBalanceLoading(false);
         }
@@ -119,7 +121,7 @@ export default function useCurrentBalance(
       }
     } else {
       if (apiLevel < 2) {
-        getAddressBalance(account.toLowerCase(), force);
+        await getAddressBalance(account.toLowerCase(), force);
         setBalanceLoading(false);
         setBalanceFromCache(false);
       } else {
@@ -128,12 +130,22 @@ export default function useCurrentBalance(
     }
   };
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     await getCurrentBalance(true);
-  };
+  }, [getCurrentBalance]);
+
+  const isCurrentBalanceExpired = useCallback(async () => {
+    if (!account) return false;
+
+    try {
+      return wallet.isAddressBalanceExpired(account);
+    } catch (error) {
+      return false;
+    }
+  }, [account]);
 
   useEffect(() => {
-    // if (nonce < 0) return;
+    if (nonce < 0) return;
 
     getCurrentBalance();
     if (!noNeedBalance) {
@@ -145,15 +157,22 @@ export default function useCurrentBalance(
       isCanceled = true;
     };
   }, [account, nonce]);
+
+  const chainBalancesWithValue = useMemo(() => {
+    return filterChainWithBalance(matteredChainBalances);
+  }, [matteredChainBalances]);
+
   return {
     balance,
     matteredChainBalances,
+    chainBalancesWithValue,
+    isCurrentBalanceExpired,
     getAddressBalance,
     success,
     balanceLoading,
     balanceFromCache,
     refreshBalance: refresh,
-    chainBalancesWithValue,
+    fetchBalance: getCurrentBalance,
     missingList,
   };
 }

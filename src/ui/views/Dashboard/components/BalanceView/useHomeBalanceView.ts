@@ -1,13 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { CurveData } from './useCurve';
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
+import { useCallback, useRef, useState } from 'react';
+import { formChartData } from './useCurve';
+import type { CurveChartData, CurvePointCollection } from './useCurve';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
-import { usePrevious } from 'react-use';
+import { useInterval } from 'react-use';
+import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
+import { sleep } from '@/ui/utils';
 
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
 type AddressCacheItem = {
   balance: number | null;
-  matteredChainBalances: DisplayChainWithWhiteLogo[];
-  curveData: CurveData;
+  chainBalancesWithValue: DisplayChainWithWhiteLogo[];
+  originalCurveData: CurvePointCollection;
+  curveChartData: CurveChartData;
 };
 type AddressCacheDict = Record<string, AddressCacheItem>;
 function cacheHomeBalanceView(newValue: AddressCacheDict) {
@@ -42,9 +48,16 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
         const next = { ...prev };
         next[address] = { ...next[address] };
         if (input.balance) next[address].balance = input.balance;
-        if (input.matteredChainBalances)
-          next[address].matteredChainBalances = input.matteredChainBalances;
-        if (input.curveData) next[address].curveData = input.curveData;
+        if (input.chainBalancesWithValue)
+          next[address].chainBalancesWithValue = input.chainBalancesWithValue;
+        if (input.originalCurveData) {
+          next[address].originalCurveData = input.originalCurveData;
+          next[address].curveChartData = formChartData(
+            input.originalCurveData,
+            input.balance || 0,
+            new Date().getTime()
+          );
+        }
 
         return cacheHomeBalanceView(next);
       });
@@ -66,11 +79,62 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
   //     }
   //   }, [prevAddress, currentAddress]);
 
+  const currentHomeBalanceCache = !currentAddress
+    ? null
+    : addressBalanceMap[currentAddress ?? ''];
+
   return {
-    currentHomeBalanceCache:
-      (!currentAddress ? null : addressBalanceMap[currentAddress ?? '']) ||
-      null,
+    currentHomeBalanceCache: currentHomeBalanceCache?.balance
+      ? currentHomeBalanceCache
+      : null,
     cacheHomeBalanceByAddress,
     deleteHomeBalanceByAddress,
+  };
+}
+
+type ExpirationInfo = { balanceExpired: boolean; curveExpired: boolean };
+export function useRefreshHomeBalanceView(options: {
+  refreshFn: (ctx: Partial<ExpirationInfo>) => Promise<any>;
+  isExpired: () => Promise<ExpirationInfo>;
+}) {
+  const { refreshFn, isExpired } = options;
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+
+  const isRefreshingRef = useRef(false);
+  const onRefresh = useCallback(
+    async (ctx: Partial<ExpirationInfo> & { isManual?: boolean }) => {
+      if (isRefreshingRef.current) return;
+      isRefreshingRef.current = true;
+
+      const {
+        isManual = false,
+        balanceExpired = true,
+        curveExpired = true,
+      } = ctx;
+      const expiration = { balanceExpired, curveExpired };
+
+      isManual && setIsManualRefreshing(true);
+      try {
+        await Promise.all(
+          [refreshFn(expiration), !isManual && sleep(1000)].filter(Boolean)
+        );
+      } catch (e) {
+        console.error(e);
+      } finally {
+        isRefreshingRef.current = false;
+        setIsManualRefreshing(false);
+      }
+    },
+    [refreshFn]
+  );
+
+  useInterval(async () => {
+    const expiration = await isExpired();
+    onRefresh(expiration);
+  }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
+
+  return {
+    onRefresh,
+    isManualRefreshing,
   };
 }

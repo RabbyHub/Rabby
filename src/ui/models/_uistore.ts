@@ -30,13 +30,6 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
-      case 'homeBalanceLoadingExpiration': {
-        dispatch.preference.setField({
-          homeBalanceLoadingExpiration:
-            payload.partials.homeBalanceLoadingExpiration,
-        });
-        break;
-      }
     }
   });
 

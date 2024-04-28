@@ -6,12 +6,12 @@ import { appIsDebugPkg, appIsDev } from '@/utils/env';
  */
 export const SIGN_TIMEOUT = 100;
 
-const DEFT_BALANCE_LOADING_TIMEOUT_PROD = 60 * 60 * 1e3;
+export const DEFT_BALANCE_LOADING_TIMEOUT_PROD = 60 * 60 * 1e3;
 export const BALANCE_LOADING_TIMES = appIsDev
   ? {
       CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT_BUFFER: 500,
-      TIMEOUT: 5 * 1e3,
+      TIMEOUT: 60 * 1e3,
     }
   : appIsDebugPkg
   ? {
