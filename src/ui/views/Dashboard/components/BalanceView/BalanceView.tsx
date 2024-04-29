@@ -34,8 +34,13 @@ import {
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
+import type { Account } from '@/background/service/preference';
 
-const BalanceView = ({ currentAccount }) => {
+const BalanceView = ({
+  currentAccount,
+}: {
+  currentAccount?: Account | null;
+}) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
@@ -151,24 +156,27 @@ const BalanceView = ({ currentAccount }) => {
     }, [isCurrentBalanceExpired, isCurveCollectionExpired]),
   });
 
-  const refreshTimers = {
-    legacy: useRef<NodeJS.Timeout>(),
-  };
+  const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   useEffect(() => {
     if (!currentHomeBalanceCache?.balance) {
       onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
     }
 
     const handler = async ({ address }) => {
-      if (!currentAccount?.address && !isSameAddress(address, currentAccount.address)) return;
+      if (
+        !currentAccount?.address ||
+        !isSameAddress(address, currentAccount.address)
+      )
+        return;
 
       const count = await dispatch.transactions.getPendingTxCountAsync(
         currentAccount.address
       );
       if (count === 0) {
-        if (refreshTimers.legacy.current)
-          clearTimeout(refreshTimers.legacy.current);
-        refreshTimers.legacy.current = setTimeout(() => {
+        if (refreshTimerlegacy.current)
+          clearTimeout(refreshTimerlegacy.current);
+
+        refreshTimerlegacy.current = setTimeout(() => {
           // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
           // delay 5s for waiting db sync data
           setAccountBalanceUpdateNonce((prev) => prev + 1);
@@ -180,7 +188,12 @@ const BalanceView = ({ currentAccount }) => {
     return () => {
       eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
     };
-  }, [currentAccount?.address]);
+  }, [
+    currentHomeBalanceCache?.balance,
+    currentAccount?.address,
+    dispatch.transactions,
+    onRefresh,
+  ]);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;

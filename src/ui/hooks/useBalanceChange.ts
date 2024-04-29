@@ -1,10 +1,8 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 
 import { ExplainTxResponse } from '@/background/service/openapi';
-import { useRabbyDispatch, useRabbySelector } from '../store';
-import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 
 function getDefaultValues() {
   return {
