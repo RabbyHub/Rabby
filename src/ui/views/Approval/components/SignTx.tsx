@@ -699,6 +699,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [currentAccountType, setCurrentAccountType] = useState<
     undefined | string
   >();
+  const [gasLessLoading, setGasLessLoading] = useState(false);
   const [canUseGasLess, setCanUseGasLess] = useState(false);
   const [chainSupportGasLess, setChainSupportGasLess] = useState(false);
   const [useGasLess, setUseGasLess] = useState(false);
@@ -1492,6 +1493,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           .plus(sum);
       }, new BigNumber(0)) || new BigNumber(0);
     try {
+      setGasLessLoading(true);
       const res = await wallet.openapi.gasLessTxCheck({
         tx: {
           ...tx,
@@ -1505,11 +1507,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
       setCanUseGasLess(res.is_gasless);
       setChainSupportGasLess(true);
+      setGasLessLoading(false);
     } catch (error) {
       const err = error as { message?: string };
       console.error('gasLessTxCheck error', error);
-      if (err?.message && err?.message.includes('not support'))
+      if (err?.message && err?.message.includes('not support')) {
         setChainSupportGasLess(false);
+      }
+      setGasLessLoading(false);
     }
   };
 
@@ -1821,6 +1826,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
       if (gasNotEnough && isSupportedAddr && noCustomRPC) {
         checkGasLessStatus();
+      } else {
+        setGasLessLoading(false);
       }
     }
   }, [
@@ -2008,8 +2015,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         <>
           <FooterBar
             canUseGasLess={canUseGasLess}
-            showGasLess={showGasLess}
-            useGasLess={showGasLess && useGasLess}
+            showGasLess={!gasLessLoading && isReady && showGasLess}
+            useGasLess={showGasLess && canUseGasLess && useGasLess}
             enableGasLess={() => setUseGasLess(true)}
             hasShadow={footerShowShadow}
             origin={origin}
