@@ -75,7 +75,6 @@ const BalanceView = ({
     balanceFromCache,
     isCurrentBalanceExpired,
     refreshBalance,
-    // fetchBalance,
     missingList,
   } = useCurrentBalance(currentAccount?.address, {
     update: true,
@@ -333,46 +332,49 @@ const BalanceView = ({
             )}
           </div>
           <div
+            className="flex flex-end items-center gap-[8px] mb-[5px] min-h-[20px]"
             onClick={() => onRefresh({ isManual: true })}
-            className={clsx(
-              currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
-              'text-15 font-normal mb-[5px]',
-              {
-                hidden: shouldHidePercentChange,
-              }
-            )}
           >
-            {currentIsLoss ? '-' : '+'}
-            <span>
-              {currentChangePercent === '0%' ? '0.00%' : currentChangePercent}
-            </span>
-            {currentChangeValue ? (
-              <span className="ml-4">({currentChangeValue})</span>
+            <div
+              className={clsx(
+                currentIsLoss ? 'text-[#FF6E6E]' : 'text-[#33CE43]',
+                'text-15 font-normal',
+                {
+                  hidden: shouldHidePercentChange,
+                }
+              )}
+            >
+              {currentIsLoss ? '-' : '+'}
+              <span>
+                {currentChangePercent === '0%' ? '0.00%' : currentChangePercent}
+              </span>
+              {currentChangeValue ? (
+                <span className="ml-4">({currentChangeValue})</span>
+              ) : null}
+            </div>
+            {missingList?.length ? (
+              <TooltipWithMagnetArrow
+                overlayClassName="rectangle font-normal whitespace-pre-wrap"
+                title={t('page.dashboard.home.missingDataTooltip', {
+                  text:
+                    missingList.join(t('page.dashboard.home.chain')) +
+                    t('page.dashboard.home.chainEnd'),
+                })}
+              >
+                <div onClick={(evt) => evt.stopPropagation()}>
+                  <WarningSVG />
+                </div>
+              </TooltipWithMagnetArrow>
             ) : null}
-          </div>
-          {missingList?.length ? (
-            <TooltipWithMagnetArrow
-              overlayClassName="rectangle font-normal whitespace-pre-wrap"
-              title={t('page.dashboard.home.missingDataTooltip', {
-                text:
-                  missingList.join(t('page.dashboard.home.chain')) +
-                  t('page.dashboard.home.chainEnd'),
+            <div
+              className={clsx({
+                'block animate-spin': shouldShowRefreshButton,
+                hidden: !shouldShowRefreshButton,
+                'group-hover:block': !hiddenBalance,
               })}
             >
-              <div className={clsx('mb-[6px]')}>
-                <WarningSVG />
-              </div>
-            </TooltipWithMagnetArrow>
-          ) : null}
-          <div
-            onClick={() => onRefresh({ isManual: true })}
-            className={clsx('mb-[5px]', {
-              'block animate-spin': shouldShowRefreshButton,
-              hidden: !shouldShowRefreshButton,
-              'group-hover:block': !hiddenBalance,
-            })}
-          >
-            <UpdateSVG />
+              <UpdateSVG />
+            </div>
           </div>
         </div>
         <div
