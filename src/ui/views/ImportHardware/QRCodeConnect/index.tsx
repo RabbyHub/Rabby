@@ -29,13 +29,8 @@ export const QRCodeConnect = () => {
   const brand = new URLSearchParams(search).get('brand');
   const stashKeyringIdRef = useRef<number | null>(null);
 
-  if (!brand) {
-    history.goBack();
-    return null;
-  }
-
   const brandInfo: Valueof<typeof WALLET_BRAND_CONTENT> =
-    WALLET_BRAND_CONTENT[brand] || WALLET_BRAND_CONTENT.Keystone;
+    (!!brand && WALLET_BRAND_CONTENT[brand]) || WALLET_BRAND_CONTENT.Keystone;
 
   const [progress, setProgress] = useState(0);
 
@@ -119,6 +114,8 @@ export const QRCodeConnect = () => {
   };
 
   useEffect(() => {
+    if (!brand) return;
+
     wallet.initQRHardware(brand).then((stashKeyringId) => {
       stashKeyringIdRef.current = stashKeyringId;
       wallet
@@ -141,6 +138,12 @@ export const QRCodeConnect = () => {
     setProgress(0);
     decoder.current = new URDecoder();
   };
+
+  if (!brand) {
+    history.goBack();
+    return null;
+  }
+
   return (
     <div className="bg-r-neutral-bg1 h-full flex">
       <main

@@ -70,6 +70,8 @@ const ChainSelector = ({
   );
 };
 
+type SUPPORT_CHAINS_HASH = typeof DEX_SUPPORT_CHAINS;
+
 export const SwapChainSelector = ({
   value,
   onChange,
@@ -99,14 +101,16 @@ ChainSelectorProps) => {
 
   const dexId = useRabbySelector((s) => s.swap.selectedDex);
 
-  if (!dexId) {
-    return null;
-  }
-  const supportChains = DEX_SUPPORT_CHAINS[dexId];
+  const supportChains = ((dexId ? DEX_SUPPORT_CHAINS[dexId] : []) ||
+    []) as SUPPORT_CHAINS_HASH[keyof SUPPORT_CHAINS_HASH];
 
   const chainItem = React.useMemo(() => {
     return findChainByEnum(value);
   }, [value]);
+
+  if (!dexId) {
+    return null;
+  }
 
   return (
     <>

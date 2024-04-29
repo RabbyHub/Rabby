@@ -218,7 +218,6 @@ const Dashboard = () => {
   }, [clicked]);
 
   const handleCopyCurrentAddress = () => {
-    const { t } = useTranslation();
     const clipboard = new ClipboardJS('.address-popover', {
       text: function () {
         return currentAccount!.address;

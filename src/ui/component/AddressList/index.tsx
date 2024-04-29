@@ -51,6 +51,9 @@ const Row: React.FC<RowProps> = memo((props) => {
     editIndex,
   } = others;
   const account = combinedList[index];
+
+  if (!account) return null;
+
   return (
     <li
       className={clsx(

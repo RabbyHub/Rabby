@@ -82,9 +82,6 @@ const AddressItem = memo(
       }: AddressItemProps,
       ref
     ) => {
-      if (!account) {
-        return null;
-      }
       const { t } = useTranslation();
       const wallet = useWallet();
       const [alianName, setAlianName] = useState<string>(

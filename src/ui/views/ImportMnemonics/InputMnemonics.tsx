@@ -105,12 +105,6 @@ const ImportMnemonics = () => {
     }
   );
 
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
-
   useEffect(() => {
     (async () => {
       if (await wallet.hasPageStateCache()) {
@@ -139,6 +133,12 @@ const ImportMnemonics = () => {
   }, [needPassphrase]);
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
+
+  // if is pop, redirect to dashboard
+  if (getUiType().isPop) {
+    history.replace('/dashboard');
+    return null;
+  }
 
   return (
     <main className="w-screen h-screen bg-r-neutral-bg-2">
