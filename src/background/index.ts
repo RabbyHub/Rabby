@@ -50,6 +50,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
+import { refreshBalanceService } from './service/refreshBalance';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -110,6 +111,9 @@ async function restoreAppState() {
   startEnableUser();
   walletController.syncMainnetChainList();
 
+  eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
+    refreshBalanceService.resetTimer(address);
+  });
   // just for mock
   if (appIsDev) globalThis._eventBus = eventBus;
 

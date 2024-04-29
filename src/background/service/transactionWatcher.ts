@@ -136,7 +136,11 @@ class TransactionWatcher {
       params: { address, hash },
     });
 
-    eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED);
+    eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, {
+      address,
+      hash,
+      status: txReceipt.status,
+    });
   };
 
   // fetch pending txs status every 5s

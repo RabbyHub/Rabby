@@ -1,12 +1,15 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { formChartData } from './useCurve';
 import type { CurveChartData, CurvePointCollection } from './useCurve';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { useInterval } from 'react-use';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 import { sleep } from '@/ui/utils';
+import { isSameAddress } from '@/background/utils';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
 type AddressCacheItem = {
@@ -94,10 +97,11 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
 
 type ExpirationInfo = { balanceExpired: boolean; curveExpired: boolean };
 export function useRefreshHomeBalanceView(options: {
+  currentAddress?: string;
   refreshFn: (ctx: Partial<ExpirationInfo>) => Promise<any>;
   isExpired: () => Promise<ExpirationInfo>;
 }) {
-  const { refreshFn, isExpired } = options;
+  const { currentAddress, refreshFn, isExpired } = options;
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
   const isRefreshingRef = useRef(false);
@@ -132,6 +136,21 @@ export function useRefreshHomeBalanceView(options: {
     const expiration = await isExpired();
     onRefresh(expiration);
   }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
+
+  useEffect(() => {
+    if (!currentAddress) return;
+
+    const handler = async (ret) => {
+      if (!isSameAddress(currentAddress, ret.accountToRefresh)) return;
+
+      onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
+    };
+    eventBus.addEventListener(EVENTS.REFRESH_HOME_BALANCE, handler);
+
+    return () => {
+      eventBus.removeEventListener(EVENTS.REFRESH_HOME_BALANCE, handler);
+    };
+  }, [currentAddress, onRefresh]);
 
   return {
     onRefresh,

@@ -490,6 +490,7 @@ export const EVENTS = {
   },
   LOCK_WALLET: 'LOCK_WALLET',
   RELOAD_TX: 'RELOAD_TX',
+  REFRESH_HOME_BALANCE: 'REFRESH_HOME_BALANCE',
 };
 
 export const EVENTS_IN_BG = {

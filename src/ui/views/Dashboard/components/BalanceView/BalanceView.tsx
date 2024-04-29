@@ -131,6 +131,7 @@ const BalanceView = ({ currentAccount }) => {
   ]);
 
   const { isManualRefreshing, onRefresh } = useRefreshHomeBalanceView({
+    currentAddress: currentAccount?.address,
     refreshFn: useCallback(
       (ctx) => {
         return Promise.all(
@@ -152,8 +153,7 @@ const BalanceView = ({ currentAccount }) => {
 
   const refreshTimers = {
     legacy: useRef<NodeJS.Timeout>(),
-    afterTxCompleted: useRef<NodeJS.Timeout>(),
-  }
+  };
   useEffect(() => {
     if (!currentHomeBalanceCache?.balance) {
       onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
@@ -166,17 +166,13 @@ const BalanceView = ({ currentAccount }) => {
         currentAccount.address
       );
       if (count === 0) {
-        if (refreshTimers.legacy.current) clearTimeout(refreshTimers.legacy.current);
+        if (refreshTimers.legacy.current)
+          clearTimeout(refreshTimers.legacy.current);
         refreshTimers.legacy.current = setTimeout(() => {
           // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
           // delay 5s for waiting db sync data
           setAccountBalanceUpdateNonce((prev) => prev + 1);
         }, 5000);
-
-        if (refreshTimers.afterTxCompleted.current) clearTimeout(refreshTimers.afterTxCompleted.current);
-        refreshTimers.afterTxCompleted.current = setTimeout(() => {
-          onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
-        }, BALANCE_LOADING_TIMES.DELAY_AFTER_TX_COMPLETED);
       }
     };
     eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);

@@ -11,13 +11,13 @@ export const BALANCE_LOADING_TIMES = appIsDev
   ? {
       CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT: 60 * 1e3,
-      DELAY_AFTER_TX_COMPLETED: 8 * 1e3,
+      DELAY_AFTER_TX_COMPLETED: 1 * 60 * 1e3,
     }
   : appIsDebugPkg
   ? {
       CHECK_INTERVAL: 2 * 1e3,
       TIMEOUT: 90 * 1e3,
-      DELAY_AFTER_TX_COMPLETED: 8 * 1e3,
+      DELAY_AFTER_TX_COMPLETED: 1 * 60 * 1e3,
     }
   : {
       CHECK_INTERVAL: 2 * 1e3,
