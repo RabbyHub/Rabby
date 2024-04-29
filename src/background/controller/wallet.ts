@@ -116,7 +116,6 @@ import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
-import { refreshBalanceService } from '../service/refreshBalance';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -3793,14 +3792,6 @@ autoLockService.onAutoLock = async () => {
   eventBus.emit(EVENTS.broadcastToUI, {
     method: EVENTS.LOCK_WALLET,
   });
-};
-refreshBalanceService.onRefreshBalance = (ctx) => {
-  const address =
-    ctx?.accountToRefresh || refreshBalanceService.accountToRefresh;
-  if (!address) return;
-
-  wallet.forceExpireAddressBalance(address);
-  wallet.forceExpireNetCurve(address);
 };
 
 export default wallet;

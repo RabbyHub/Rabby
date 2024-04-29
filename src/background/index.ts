@@ -41,7 +41,7 @@ import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { setPopupIcon, wait } from './utils';
+import { setPopupIcon } from './utils';
 import { appIsDev, getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
@@ -50,7 +50,6 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { customTestnetService } from './service/customTestnet';
 import { findChain } from '@/utils/chain';
 import { syncChainService } from './service/syncChain';
-import { refreshBalanceService } from './service/refreshBalance';
 
 Safe.adapter = fetchAdapter as any;
 
@@ -112,10 +111,20 @@ async function restoreAppState() {
   walletController.syncMainnetChainList();
 
   eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
-    refreshBalanceService.resetTimer(address);
+    if (!address) return;
+
+    walletController.forceExpireAddressBalance(address);
+    walletController.forceExpireNetCurve(address);
   });
   // just for mock
-  if (appIsDev) globalThis._eventBus = eventBus;
+  if (appIsDev) {
+    globalThis._eventBus = eventBus;
+    globalThis._expireAddressBalance = (address: string) => {
+      address = address.toLowerCase();
+      walletController.forceExpireAddressBalance(address);
+      walletController.forceExpireNetCurve(address);
+    };
+  }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
