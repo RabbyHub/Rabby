@@ -160,7 +160,7 @@ const BalanceView = ({ currentAccount }) => {
     }
 
     const handler = async ({ address }) => {
-      if (!isSameAddress(address, currentAccount.address)) return;
+      if (!currentAccount?.address && !isSameAddress(address, currentAccount.address)) return;
 
       const count = await dispatch.transactions.getPendingTxCountAsync(
         currentAccount.address
@@ -180,8 +180,7 @@ const BalanceView = ({ currentAccount }) => {
     return () => {
       eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccount.address]);
+  }, [currentAccount?.address]);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
