@@ -277,7 +277,6 @@ const BalanceView = ({ currentAccount }) => {
   const currentChangeValue = currentHover ? curvePoint?.change : null;
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
-  const shouldHidePercentChange = !currentChangePercent || hiddenBalance;
   const shouldShowRefreshButton =
     isManualRefreshing || balanceLoading || curveLoading;
 
@@ -294,6 +293,8 @@ const BalanceView = ({ currentAccount }) => {
     couldShowLoadingDueToBalanceNil ||
     (couldShowLoadingDueToUpdateSource && curveLoading);
   const shouldShowLoading = shouldShowBalanceLoading || shouldShowCurveLoading;
+  const shouldHidePercentChange =
+    !currentChangePercent || hiddenBalance || shouldShowLoading;
 
   const curveRenderInfo = {
     curveDataToRender:
