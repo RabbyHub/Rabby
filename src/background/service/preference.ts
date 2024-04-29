@@ -20,7 +20,6 @@ import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import dayjs from 'dayjs';
-import { getNewHomeBalanceExpiration } from '@/constant/timeout';
 
 const version = process.env.release || '0';
 

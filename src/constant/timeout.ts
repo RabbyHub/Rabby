@@ -24,10 +24,3 @@ export const BALANCE_LOADING_TIMES = appIsDev
       TIMEOUT: DEFT_BALANCE_LOADING_TIMEOUT_PROD,
       DELAY_AFTER_TX_COMPLETED: 30 * 60 * 1e3,
     };
-
-/**
- * @description isomorphic function
- */
-export function getNewHomeBalanceExpiration() {
-  return BALANCE_LOADING_TIMES.TIMEOUT + Date.now();
-}

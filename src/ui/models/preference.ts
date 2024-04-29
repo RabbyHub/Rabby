@@ -8,7 +8,6 @@ import {
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import i18n from '@/i18n';
-import { getNewHomeBalanceExpiration } from '@/constant/timeout';
 
 interface PreferenceState {
   externalLinkAck: boolean;
