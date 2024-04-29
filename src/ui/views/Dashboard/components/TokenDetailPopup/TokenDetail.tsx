@@ -273,9 +273,11 @@ const TokenDetail = ({
                 size="large"
                 onClick={goToSwap}
                 disabled={!tokenSupportSwap}
-                className="w-[114px]"
+                className="w-[114px] h-[36px] leading-[16px]"
                 style={{
                   width: 114,
+                  height: 36,
+                  lineHeight: '16px',
                 }}
               >
                 {t('page.dashboard.tokenDetail.swap')}
@@ -286,7 +288,7 @@ const TokenDetail = ({
               type="primary"
               ghost
               size="large"
-              className="w-[114px] rabby-btn-ghost"
+              className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
               onClick={goToSend}
             >
               {t('page.dashboard.tokenDetail.send')}
@@ -295,7 +297,7 @@ const TokenDetail = ({
               type="primary"
               ghost
               size="large"
-              className="w-[114px] rabby-btn-ghost"
+              className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
               onClick={goToReceive}
             >
               {t('page.dashboard.tokenDetail.receive')}
