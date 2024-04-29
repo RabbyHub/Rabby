@@ -1071,6 +1071,13 @@ export class WalletController extends BaseController {
     return this.getTotalBalanceCached.fn([address], address, force);
   };
 
+  forceExpireAddressBalance = (address: string, isTestnet = false) => {
+    if (isTestnet) {
+      return this.getTestnetTotalBalanceCached.forceExpire(address);
+    }
+    return this.getTotalBalanceCached.forceExpire(address);
+  };
+
   isAddressBalanceExpired = (address: string, isTestnet = false) => {
     if (isTestnet) {
       return this.getTestnetTotalBalanceCached.isExpired(address);
@@ -1093,6 +1100,10 @@ export class WalletController extends BaseController {
 
   getNetCurve = (address: string, force = false) => {
     return this.getNetCurveCached.fn([address], address, force);
+  };
+
+  forceExpireNetCurve = (address: string) => {
+    return this.getNetCurveCached.forceExpire(address);
   };
 
   isNetCurveExpired = (address: string) => {
@@ -3784,13 +3795,12 @@ autoLockService.onAutoLock = async () => {
   });
 };
 refreshBalanceService.onRefreshBalance = async (ctx) => {
-  eventBus.emit(EVENTS.broadcastToUI, {
-    method: EVENTS.REFRESH_HOME_BALANCE,
-    params: {
-      accountToRefresh:
-        ctx?.accountToRefresh || refreshBalanceService.accountToRefresh,
-    },
-  });
+  const address =
+    ctx?.accountToRefresh || refreshBalanceService.accountToRefresh;
+  if (!address) return;
+
+  wallet.forceExpireAddressBalance(address);
+  wallet.forceExpireNetCurve(address);
 };
 
 export default wallet;

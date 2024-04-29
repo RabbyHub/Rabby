@@ -314,7 +314,7 @@ const BalanceView = ({ currentAccount }) => {
             ) : (
               !!currentBalance && (
                 <BalanceLabel
-                  isCache={balanceFromCache}
+                  // isCache={balanceFromCache}
                   balance={currentBalance}
                 />
               )
@@ -378,9 +378,10 @@ const BalanceView = ({ currentAccount }) => {
             src={ArrowNextSVG}
             className={clsx(
               'absolute w-[20px] h-[20px] top-[8px] right-[10px]',
-              balanceFromCache
-                ? !currentHover && 'opacity-0'
-                : !currentHover && 'opacity-80'
+              !currentHover && 'opacity-80'
+              // balanceFromCache
+              //   ? !currentHover && 'opacity-0'
+              //   : !currentHover && 'opacity-80'
             )}
           />
           <div

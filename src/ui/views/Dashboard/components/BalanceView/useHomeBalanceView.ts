@@ -86,6 +86,21 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
     ? null
     : addressBalanceMap[currentAddress ?? ''];
 
+  // useEffect(() => {
+  //   if (!currentAddress) return;
+
+  //   const handler = async (ret) => {
+  //     if (!isSameAddress(currentAddress, ret.accountToRefresh)) return;
+
+  //     deleteHomeBalanceByAddress(ret.accountToRefresh);
+  //   };
+  //   eventBus.addEventListener(EVENTS.FORCE_EXPIRE_ADDRESS_BALANCE, handler);
+
+  //   return () => {
+  //     eventBus.removeEventListener(EVENTS.FORCE_EXPIRE_ADDRESS_BALANCE, handler);
+  //   };
+  // }, [currentAddress, deleteHomeBalanceByAddress]);
+
   return {
     currentHomeBalanceCache: currentHomeBalanceCache?.balance
       ? currentHomeBalanceCache
@@ -136,21 +151,6 @@ export function useRefreshHomeBalanceView(options: {
     const expiration = await isExpired();
     onRefresh(expiration);
   }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
-
-  useEffect(() => {
-    if (!currentAddress) return;
-
-    const handler = async (ret) => {
-      if (!isSameAddress(currentAddress, ret.accountToRefresh)) return;
-
-      onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
-    };
-    eventBus.addEventListener(EVENTS.REFRESH_HOME_BALANCE, handler);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.REFRESH_HOME_BALANCE, handler);
-    };
-  }, [currentAddress, onRefresh]);
 
   return {
     onRefresh,
