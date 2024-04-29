@@ -138,7 +138,7 @@ export default function useCurrentBalance(
     if (!account) return false;
 
     try {
-      return wallet.isAddressBalanceExpired(account);
+      return wallet.isAddressBalanceExpired(account.toLowerCase());
     } catch (error) {
       return false;
     }

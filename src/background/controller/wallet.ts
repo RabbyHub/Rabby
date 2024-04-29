@@ -3794,7 +3794,7 @@ autoLockService.onAutoLock = async () => {
     method: EVENTS.LOCK_WALLET,
   });
 };
-refreshBalanceService.onRefreshBalance = async (ctx) => {
+refreshBalanceService.onRefreshBalance = (ctx) => {
   const address =
     ctx?.accountToRefresh || refreshBalanceService.accountToRefresh;
   if (!address) return;

@@ -35,6 +35,7 @@ import {
 } from './useHomeBalanceView';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
+import { IExtractFromPromise } from '@/ui/utils/type';
 
 const BalanceView = ({
   currentAccount,
@@ -134,6 +135,17 @@ const BalanceView = ({
     latestCurveData,
   ]);
 
+  const getCacheExpired = useCallback(async () => {
+    const res = {
+      balanceExpired: await isCurrentBalanceExpired(),
+      curveExpired: await isCurveCollectionExpired(),
+      expired: false,
+    };
+    res.expired = res.balanceExpired || res.curveExpired;
+
+    return res;
+  }, [isCurrentBalanceExpired, isCurveCollectionExpired]);
+
   const { isManualRefreshing, onRefresh } = useRefreshHomeBalanceView({
     currentAddress: currentAccount?.address,
     refreshFn: useCallback(
@@ -147,19 +159,33 @@ const BalanceView = ({
       },
       [refreshBalance, refreshCurve]
     ),
-    isExpired: useCallback(async () => {
-      return {
-        balanceExpired: await isCurrentBalanceExpired(),
-        curveExpired: await isCurveCollectionExpired(),
-      };
-    }, [isCurrentBalanceExpired, isCurveCollectionExpired]),
+    isExpired: getCacheExpired,
   });
 
   const refreshTimerlegacy = useRef<NodeJS.Timeout>();
+  // only execute once on component mounted or address changed
   useEffect(() => {
-    if (!currentHomeBalanceCache?.balance) {
-      onRefresh({ balanceExpired: true, curveExpired: true, isManual: false });
-    }
+    (async () => {
+      let expirationInfo: IExtractFromPromise<
+        ReturnType<typeof getCacheExpired>
+      > | null = null;
+      if (!currentHomeBalanceCache?.balance) {
+        onRefresh({
+          balanceExpired: true,
+          curveExpired: true,
+          isManual: false,
+        });
+      } else if (
+        (expirationInfo = await getCacheExpired()) &&
+        expirationInfo.expired
+      ) {
+        onRefresh({
+          balanceExpired: expirationInfo.balanceExpired,
+          curveExpired: expirationInfo.curveExpired,
+          isManual: false,
+        });
+      }
+    })();
 
     const handler = async ({ address }) => {
       if (
@@ -192,6 +218,7 @@ const BalanceView = ({
     currentAccount?.address,
     dispatch.transactions,
     onRefresh,
+    getCacheExpired,
   ]);
 
   const handleIsGnosisChange = useCallback(async () => {
