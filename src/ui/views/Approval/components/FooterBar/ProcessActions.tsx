@@ -25,9 +25,10 @@ export const ProcessActions: React.FC<Props> = ({
             disabled={disabledProcess}
             type="ghost"
             className={clsx(
-              gasLess && 'gasLess',
-              !gasLess && ' border-blue-light text-blue-light',
-              !gasLess && 'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+              gasLess && 'gasLess text-r-neutral-title2',
+              !gasLess && 'text-blue-light',
+              'border-blue-light',
+              'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
               'w-[246px] h-[48px]',
               'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
               'rounded-[8px]',

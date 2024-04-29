@@ -1500,7 +1500,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           gas: gasLimit,
         },
         usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
-        pre_exec_success: txDetail?.pre_exec.success || false,
+        preExecSuccess: txDetail?.pre_exec.success || false,
+        gasUsed: txDetail?.gas?.gas_used || 0,
       });
       setCanUseGasLess(res.is_gasless);
       setChainSupportGasLess(true);
@@ -2029,7 +2030,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   !!checkErrors.find((item) => item.level === 'forbidden')
             }
             tooltipContent={
-              checkErrors.find((item) => item.level === 'forbidden')
+              checkErrors && checkErrors?.[0]?.code === 3001
+                ? undefined
+                : checkErrors.find((item) => item.level === 'forbidden')
                 ? checkErrors.find((item) => item.level === 'forbidden')!.msg
                 : cantProcessReason
             }

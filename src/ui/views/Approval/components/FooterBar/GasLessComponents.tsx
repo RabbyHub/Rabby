@@ -182,9 +182,6 @@ export const GasLessAnimatedWrapper = styled.div`
 
     100% {
       background-position-x: 120%, 100%;
-      /* for PrecessActions button */
-      border-color: transparent;
-      color: var(--r-neutral-title2);
     }
   }
 `;
