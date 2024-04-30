@@ -326,6 +326,8 @@ export const account = createModel<RootModel>()({
         ? store.account.testnetTokens.list
         : store.account.tokens.list;
       setTokenList(tokenList.filter((item) => item.id !== token.id));
+
+      return token;
     },
 
     async removeBlockedToken(token: AbstractPortfolioToken, store) {
@@ -354,6 +356,8 @@ export const account = createModel<RootModel>()({
           : store.account.tokens.list;
         setTokenList([...tokenList, token]);
       }
+
+      return token;
     },
 
     async triggerFetchBalanceOnBackground(

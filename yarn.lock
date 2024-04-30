@@ -4549,10 +4549,10 @@
     ethereumjs-util "^7.1.5"
     hdkey "0.8.0"
 
-"@rabby-wallet/eth-walletconnect-keyring@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.1.2.tgz#ff369c5c6418006ff3aaadfe8caffe081f8eed38"
-  integrity sha512-1UjNJFUb4Xym8HTXIybzhJC4xRnbM5TVQny6KEEFkzvU8eNNy5ZKIi/gRk2UsOApf1LbUdSx9KyML4C9tdDVqA==
+"@rabby-wallet/eth-walletconnect-keyring@2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.1.3.tgz#8ea63178e2fa4c9369ba2ea1df6940d016d32c2a"
+  integrity sha512-Yvx1uCC/E8Zv53vx0ZjHpXL+udZLgLfnER37O04i6pN2aRFmh9SFPh9nnNn7+Nh/i/Q2gz4UziCu6AjIdq5I1w==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@rabby-wallet/wc-client" "^1.8.10"
@@ -4611,10 +4611,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.3.2.tgz#adae53dce8642998ef8571afe45031312e5d8376"
-  integrity sha512-3zKKQk29mYocaESaRG1MDwk+omUv/Db9/ssbQlP5/SPxw7MQqmT6x7rT8s6gK5jKOzv7PJwAEAq1oy+qFEw3OQ==
+"@rabby-wallet/page-provider@0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.3.4.tgz#da447472c76195e2bab2170e24271fb85ebeef3b"
+  integrity sha512-PE2lP0XtaYY/HkIy4YN+b9S6mFUzffDdW7gFvIK0/2WCixnBSFbBS2/jSGM0Iy8aPIsBWwzpuFMNeGJQnhTYHw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
@@ -4654,10 +4654,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.34.tgz#b12e15fff9c25caf991733bb8b0a9072a1336d33"
-  integrity sha512-khJ38CJiMqA3cuAM0NbOzIbpzDOgrFYyaMcPqqMmHkCwV3Y9vWkd+pKaSC2fq/oK2inYBsKAJ/HvrCeIMo8pcg==
+"@rabby-wallet/rabby-swap@0.0.36":
+  version "0.0.36"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.36.tgz#51596ce9b78865b854ca1b9befc5fc4fd9f3e040"
+  integrity sha512-wmtDqguo84smd38fF7IxlVt8XUcfoK5/fN/RwAB2+k8eARc1gUpArdqTfxo5x75VaTe6m5WtreMjJy2c1nFTcg==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
@@ -9855,6 +9855,11 @@ eslint-plugin-prettier@3.4.0:
   integrity sha512-UDK6rJT6INSfcOo545jiaOwB701uAIt2/dR7WnFQoGCVl1/EMqdANBmwUaqqQ45aXprsTGzSa39LI1PyuRBxxw==
   dependencies:
     prettier-linter-helpers "^1.0.0"
+
+eslint-plugin-react-hooks@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.6.0.tgz#4c3e697ad95b77e93f8646aaa1630c1ba607edd3"
+  integrity sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==
 
 eslint-plugin-react@7.23.2:
   version "7.23.2"

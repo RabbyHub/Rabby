@@ -569,7 +569,7 @@
       "no-transaction-records": "Nenhum registro de transação",
       "swap-history": "Histórico de Troca",
       "InSufficientTip": "Saldo insuficiente para simulação de transação e estimativa de gás. Cotações originais do agregador são exibidas",
-      "testnet-is-not-supported": "Testnet não é suportada",
+      "testnet-is-not-supported": "",
       "not-supported": "Não suportada",
       "slippage-adjusted-refresh-quote": "Escorregamento ajustado. Atualizar cotação.",
       "price-expired-refresh-quote": "Preço expirado. Atualizar cotação.",
@@ -1315,7 +1315,7 @@
     "customRpc": {
       "opened": "Aberto",
       "closed": "Fechado",
-      "empty": "Nenhum RPC personalizado",
+      "empty": "",
       "title": "RPC Personalizado",
       "desc": "Ativar o RPC personalizado substituirá o Rabby como o nó padrão. Para continuar usando o Rabby, desative ou remova o nó RPC personalizado.",
       "add": "Adicionar RPC",

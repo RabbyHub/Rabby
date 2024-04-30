@@ -215,7 +215,7 @@
         "reset": "恢复初始设置",
         "save": "保存",
         "settings": {
-          "customRpc": "自定义 RPC",
+          "customRpc": "",
           "enableWhitelistForSendingAssets": "启用转账白名单",
           "label": "设置",
           "metamaskPreferredDapps": "优先使用MetaMask连接的Dapp",
@@ -223,9 +223,9 @@
           "currentLanguage": "当前语言",
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
-          "customTestnet": "自定义测试网"
+          "customTestnet": ""
         },
-        "supportedChains": "支持的链",
+        "supportedChains": "",
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
         "updateVersion": {
@@ -330,7 +330,7 @@
       }
     },
     "chainList": {
-      "title": "支持 {{count}} 条链",
+      "title": "",
       "mainnet": "主网",
       "testnet": "测试网"
     },
@@ -849,7 +849,7 @@
       "Balance": "余额",
       "Confirm": "确认",
       "Continue": "继续",
-      "Including-service-fee": "包含 ${{fee}} 服务费",
+      "Including-service-fee": "包含 {{fee}} 服务费",
       "InsufficientBalance": "当前链的 Rabby 合约地址余额不足，\n请稍后再试",
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",
@@ -1460,7 +1460,7 @@
       "swap-from": "卖出",
       "swap-history": "兑换历史",
       "swap-via-x": "通过 {{name}} 兑换",
-      "testnet-is-not-supported": "不支持测试网",
+      "testnet-is-not-supported": "",
       "the-following-swap-rates-are-found": "发现以下兑换报价",
       "sort-with-gas": "排序考虑gas",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何费用和滑点",
@@ -1483,7 +1483,7 @@
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
-      "title": "切换到{{chain}}",
+      "title": "",
       "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接"
     },
     "unlock": {
@@ -1529,17 +1529,17 @@
       "empty": "No dapps"
     },
     "customRpc": {
-      "title": "自定义 RPC",
-      "desc": "添加的自定义RPC将替代Rabby默认的节点。如果想要继续用Rabby的节点，请关闭或删除自定义RPC节点。",
-      "add": "添加自定义 RPC",
-      "empty": "未添加自定义 RPC",
+      "title": "",
+      "desc": "",
+      "add": "",
+      "empty": "",
       "opened": "已打开",
       "closed": "已关闭",
       "EditRPCModal": {
         "invalidRPCUrl": " RPC URL 无效",
         "invalidChainId": "Chain ID 无效",
         "rpcAuthFailed": "RPC 验证失败",
-        "title": "编辑 RPC",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "输入 RPC URL"
       }
@@ -1722,8 +1722,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "主网",
-        "testnet": "测试网"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

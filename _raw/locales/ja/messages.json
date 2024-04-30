@@ -20,7 +20,7 @@
       }
     },
     "chainList": {
-      "title": "{{count}}つのチェーンが対応",
+      "title": "",
       "mainnet": "メインネット",
       "testnet": "テストネット"
     },
@@ -597,7 +597,7 @@
       "no-transaction-records": "トランザクション履歴はありません",
       "swap-history": "スワップ履歴",
       "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの引用が表示されます",
-      "testnet-is-not-supported": "テストネットはサポートされていません",
+      "testnet-is-not-supported": "",
       "not-supported": "サポートされていません",
       "slippage-adjusted-refresh-quote": "スリッページが調整されました。引用を更新してください。",
       "price-expired-refresh-quote": "価格の有効期限が切れました。引用を更新してください。",
@@ -848,7 +848,7 @@
         "settings": {
           "label": "設定",
           "enableWhitelistForSendingAssets": "資産の送信にホワイトリストを有効にする",
-          "customRpc": "カスタムRPC",
+          "customRpc": "",
           "metamaskPreferredDapps": "MetaMask 優先Dapps",
           "currentLanguage": "現在の言語",
           "enableTestnets": "テストネットを有効にする"
@@ -856,7 +856,7 @@
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
         "updateAvailable": "アップデートが利用可能",
-        "supportedChains": "サポートされているチェーン",
+        "supportedChains": "",
         "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "ウォッチモードをクリア",
@@ -1244,7 +1244,7 @@
       "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません"
     },
     "switchChain": {
-      "title": "{{chain}} に切り替え中",
+      "title": "",
       "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
       "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください"
     },
@@ -1345,15 +1345,15 @@
     "customRpc": {
       "opened": "オープン",
       "closed": "クローズ",
-      "empty": "カスタムRPCがありません",
-      "title": "カスタムRPC",
-      "desc": "カスタムRPCを有効にすると、Rabbyがデフォルトのノードとして置き換えられます。Rabbyを引き続き使用するには、カスタムRPCノードを無効にするか削除してください。",
-      "add": "RPCを追加",
+      "empty": "",
+      "title": "",
+      "desc": "",
+      "add": "",
       "EditRPCModal": {
         "invalidRPCUrl": "無効なRPC URL",
         "invalidChainId": "無効なチェーンID",
         "rpcAuthFailed": "RPC認証に失敗しました",
-        "title": "RPCを編集",
+        "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "RPC URLを入力してください"
       }
@@ -1523,8 +1523,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "メインネット",
-        "testnet": "テストネット"
+        "mainnet": "",
+        "testnet": ""
       }
     },
     "ChainSelectorModal": {

@@ -363,11 +363,7 @@ export const GasTopUp = () => {
         </div>
         <div className="flex justify-center ">
           <Button
-            style={{
-              width: 280,
-              height: 52,
-              marginTop: 63,
-            }}
+            className="mt-[63px] h-[52px] w-[360px]"
             type="primary"
             size="large"
             onClick={handleContinue}
@@ -380,7 +376,10 @@ export const GasTopUp = () => {
 
       <ConfirmDrawer
         visible={visible}
-        onClose={() => setVisible(false)}
+        onClose={() => {
+          setVisible(false);
+          setToken(undefined);
+        }}
         cost={prices?.[index]?.[0] ? prices?.[index]?.[0] + '' : '0'}
         list={availableTokenList}
         token={token}

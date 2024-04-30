@@ -388,7 +388,7 @@ export const Main = () => {
             tokenRender={(p) => <TokenRender {...p} />}
           />
           <IconSwapArrow
-            className="text-r-neutral-line hover:text-r-neutral-foot text-opacity-60 hover:text-opacity-100 cursor-pointer"
+            className="text-r-neutral-foot opacity-60 hover:opacity-100 cursor-pointer"
             onClick={exchangeToken}
           />
           <TokenSelect

@@ -158,14 +158,14 @@ export const TestnetActions = ({
       </div>
       <div
         className={clsx(
-          'absolute bottom-[36px] right-0',
+          'absolute bottom-[72px] right-0',
           'px-[16px] py-[12px] rotate-[-23deg]',
           'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
-          'text-r-neutral-title1 text-[28px] leading-[28px]',
+          'text-r-neutral-title1 text-[20px] leading-[24px]',
           'opacity-30'
         )}
       >
-        Testnet
+        Custom Network
       </div>
     </div>
   );

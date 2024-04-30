@@ -62,11 +62,12 @@ export type StatsData = {
   chainId: string;
   category: KEYRING_CATEGORY;
   preExecSuccess: boolean;
-  createBy: string;
+  createdBy: string;
   source: any;
   trigger: any;
   reported: boolean;
   signMethod?: string;
+  networkType?: string;
 };
 
 // something need user approval in window
@@ -258,15 +259,24 @@ class NotificationService extends Events {
         : null;
       const explain = signingTx?.explain;
 
-      if (explain && currentAccount) {
+      const chain = findChain({
+        id: signingTx?.rawTx.chainId,
+      });
+
+      if ((explain || chain?.isTestnet) && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          chainId: explain.native_token.chain,
-          success: explain.calcSuccess && explain.pre_exec.success,
-          createBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
+          chainId: chain?.serverId || '',
+          success: explain
+            ? explain.calcSuccess && explain.pre_exec.success
+            : true,
+          createdBy: data?.params.$ctx?.ga ? 'rabby' : 'dapp',
           source: data?.params.$ctx?.ga?.source || '',
           trigger: data?.params.$ctx?.ga.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     };

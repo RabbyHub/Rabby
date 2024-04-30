@@ -26,7 +26,7 @@ import { getTokenSymbol } from 'ui/utils/token';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { ellipsis } from 'ui/utils/address';
 import { Token } from 'background/service/preference';
-import IconExternalLink from 'ui/assets/open-external-gray.svg';
+import { ReactComponent as RcIconExternalCC } from 'ui/assets/open-external-cc.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
 import { findChain } from '@/utils/chain';
@@ -57,7 +57,7 @@ const AddAssetWrapper = styled.div`
     padding: 20px;
     text-align: center;
     background-color: var(--r-blue-default, #7084ff);
-    color: #fff;
+    color: var(--r-neutral-title2, #fff);
     font-size: 20px;
     font-weight: 500;
     margin-bottom: 32px;
@@ -85,8 +85,8 @@ const AddAssetWrapper = styled.div`
       }
       .token-address {
         padding: 5px 8px;
-        background-color: #f5f6fa;
-        color: #707280;
+        background-color: var(--r-neutral-card2);
+        color: var(--r-neutral-foot);
         font-size: 12px;
         gap: 6px;
         display: flex;
@@ -107,7 +107,7 @@ const AddAssetWrapper = styled.div`
         .amount {
           font-size: 24px;
           font-weight: 700;
-          color: #13141a;
+          color: var(--r-neutral-title1);
           margin-right: 4px;
         }
         &:nth-child(1) {
@@ -137,8 +137,8 @@ const AddAssetWrapper = styled.div`
     }
   }
   .footer {
-    background-color: #fff;
-    border-top: 0.5px solid #e5e9ef;
+    background-color: var(--r-neutral-card1);
+    border-top: 0.5px solid var(--r-neutral-line);
     .ant-btn-primary[disabled] {
       width: 100%;
       height: 100%;
@@ -165,7 +165,6 @@ const NoTokenWrapper = styled.div`
   .footer {
     display: flex;
     justify-content: center;
-    padding: 24px;
     background-color: var(--r-neutral-bg-1, #fff);
     border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   }
@@ -326,11 +325,11 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
           <img src={IconWarning} className="icon icon-warning" />
           <p>{t('page.addToken.tokenNotFound')}</p>
         </div>
-        <div className="footer">
+        <div className="footer h-[80px] items-center justify-center">
           <Button
             type="primary"
             size="large"
-            className="w-[200px] h-[48px]"
+            className="w-[200px] h-[44px]"
             onClick={() => rejectApproval('User rejected the request.')}
           >
             OK
@@ -347,7 +346,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
         <div className="token">
           {token && (
             <>
-              <div className="token-info">
+              <div className="token-info text-r-neutral-title1">
                 <img
                   src={token.logo_url || IconUnknown}
                   className="icon icon-token"
@@ -356,23 +355,22 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 <div className="token-address">
                   <img src={currentChain.logo} className="icon icon-chain" />
                   {ellipsis(token.id)}
-                  <img
-                    src={IconExternalLink}
-                    className="icon icon-open-external cursor-pointer"
+                  <RcIconExternalCC
+                    className="icon icon-open-external cursor-pointer text-r-neutral-foot"
                     onClick={handleOpenExplorer}
                   />
                   <CopyChecked
                     addr={token.id}
-                    className="w-14 h-14 cursor-pointer"
+                    className="w-14 h-14 cursor-pointer text-r-neutral-foot"
                   />
                 </div>
               </div>
-              <div className="token-balance">
+              <div className="token-balance text-r-neutral-body">
                 <div>
                   {getTokenSymbol(token)} {t('page.addToken.balance')}
                 </div>
                 <div>
-                  <span className="amount">
+                  <span className="amount text-r-neutral-title1">
                     {formatTokenAmount(token.amount)}
                   </span>{' '}
                   ≈{' '}
@@ -385,7 +383,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
                 {isTokenHistoryLoaded && tokenHistory.length <= 0 && (
                   <div className="empty">
                     <img className="no-data" src="./images/nodata-tx.png" />
-                    <p className="text-14 text-gray-content mt-12">
+                    <p className="text-[12px] text-r-neutral-body mt-[12px]">
                       {t('page.dashboard.tokenDetail.noTransactions')}
                     </p>
                   </div>
@@ -404,13 +402,13 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
             </>
           )}
         </div>
-        <div className="footer p-[20px] relative">
+        <div className="footer h-[80px] flex items-center relative">
           <div
-            className={clsx(['action-buttons flex mt-4', 'justify-between'])}
+            className={'action-buttons w-[100%] flex justify-center gap-[16px]'}
           >
             <Button
               type="ghost"
-              className="w-[172px] h-[48px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
+              className="w-[172px] h-[44px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
               onClick={() => rejectApproval('User rejected the request.')}
             >
               {t('global.cancelButton')}
@@ -422,7 +420,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
               <Button
                 type="primary"
                 size="large"
-                className="w-[172px] h-[48px]"
+                className="w-[172px] h-[44px]"
                 disabled={addButtonStatus.disable}
                 onClick={handleConfirm}
               >

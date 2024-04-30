@@ -457,9 +457,12 @@ class ProviderController extends BaseController {
       preExecSuccess: cacheExplain
         ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
         : true,
-      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
+      networkType: chainItem?.isTestnet
+        ? 'Custom Network'
+        : 'Integrated Network',
       reported: false,
     };
 
@@ -574,9 +577,12 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
           source: options?.data?.$ctx?.ga?.source || '',
           trigger: options?.data?.$ctx?.ga?.trigger || '',
+          networkType: chainItem?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
@@ -672,6 +678,7 @@ class ProviderController extends BaseController {
             );
 
             onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
           } else {
             const res = await openapiService.submitTx({
               tx: {
@@ -723,6 +730,7 @@ class ProviderController extends BaseController {
             params: [rawTx as any],
           });
           onTransactionCreated({ hash, reqId, pushType });
+          notificationService.setStatsData(statsData);
         }
 
         return hash;
@@ -1052,11 +1060,6 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1070,7 +1073,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );
@@ -1128,11 +1130,6 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1146,7 +1143,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );

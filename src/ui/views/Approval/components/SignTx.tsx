@@ -70,8 +70,6 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
-import { useSignPermissionCheck } from '../hooks/useSignPermissionCheck';
-import { useTestnetCheck } from '../hooks/useTestnetCheck';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
@@ -724,24 +722,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }));
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
-  useSignPermissionCheck({
-    origin,
-    chainId,
-    onDisconnect: () => {
-      handleCancel();
-    },
-    onOk: () => {
-      handleCancel();
-    },
-  });
-
-  useTestnetCheck({
-    chainId,
-    onOk: () => {
-      handleCancel();
-    },
-  });
-
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
       | {
@@ -1018,7 +998,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           const recommendGasLimit = needRatio
             ? gas.times(ratio).toFixed(0)
             : gas.toFixed(0);
-          setGasLimit(intToHex(Number(recommendGasLimit)));
+          setGasLimit(
+            intToHex(Math.max(Number(recommendGasLimit), Number(tx.gas || 0)))
+          );
         }
         setTxDetail(res);
 
@@ -1116,15 +1098,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisConfirm = async (account: Account) => {
     if (!safeInfo) return;
-    stats.report('signTransaction', {
+    wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
       chainId: chain.serverId,
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
-      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
     if (!isViewGnosisSafe) {
       const params: any = {
@@ -1158,15 +1141,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleCoboArugsConfirm = async (account: Account) => {
     if (!coboArgusInfo) return;
 
-    stats.report('signTransaction', {
+    wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.CoboArgusKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.CoboArgus],
       chainId: chain.serverId,
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
-      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
     let newTx;
@@ -1334,15 +1318,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
-      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
     matomoRequestEvent({
       category: 'Transaction',
       action: 'Submit',
-      label: currentAccount.brandName,
+      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
     resolveApproval({
       ...transaction,
@@ -1657,15 +1642,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         type: currentAccount.brandName,
         category: KEYRING_CATEGORY_MAP[currentAccount.type],
         chainId: chain.serverId,
-        createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+        createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
         source: params?.$ctx?.ga?.source || '',
         trigger: params?.$ctx?.ga?.trigger || '',
+        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
 
       matomoRequestEvent({
         category: 'Transaction',
         action: 'init',
-        label: currentAccount.brandName,
+        label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
 
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {

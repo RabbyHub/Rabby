@@ -1,34 +1,28 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, message } from 'antd';
-import clsx from 'clsx';
-import { useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { Chain } from 'background/service/openapi';
-import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
-import {
-  CHAINS_ENUM,
-  CHAINS,
-  SecurityEngineLevel,
-  SIGN_PERMISSION_TYPES,
-} from 'consts';
-import styled from 'styled-components';
-import {
-  ContextActionData,
-  RuleConfig,
-  Level,
-} from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { Result } from '@rabby-wallet/rabby-security-engine';
-import { useSecurityEngine } from 'ui/utils/securityEngine';
-import RuleResult from './RuleResult';
-import RuleDrawer from '../SecurityEngine/RuleDrawer';
-import UserListDrawer from './UserListDrawer';
-import IconSuccess from 'ui/assets/success.svg';
-import PQueue from 'p-queue';
-import { SignTestnetPermission } from './SignTestnetPermission';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/approval/arrow-down-blue.svg';
 import { findChain } from '@/utils/chain';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import {
+  ContextActionData,
+  Level,
+  RuleConfig,
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { Button, message } from 'antd';
+import { Chain } from 'background/service/openapi';
+import clsx from 'clsx';
+import { CHAINS_ENUM, SecurityEngineLevel } from 'consts';
+import PQueue from 'p-queue';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import IconSuccess from 'ui/assets/success.svg';
+import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
+import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
+import RuleDrawer from '../SecurityEngine/RuleDrawer';
+import RuleResult from './RuleResult';
+import UserListDrawer from './UserListDrawer';
 
 interface ConnectProps {
   params: any;
@@ -224,8 +218,6 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     level?: Level;
     ignored: boolean;
   } | null>(null);
-
-  const [signPermission, setSignPermission] = useState<SIGN_PERMISSION_TYPES>();
 
   const userListResult = useMemo(() => {
     const originBlacklist = engineResults.find(
@@ -499,7 +491,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           account!.address,
           origin
         );
-        let targetChain: Chain | undefined;
+        let targetChain: Chain | null | undefined;
         for (let i = 0; i < recommendChains.length; i++) {
           targetChain = findChain({
             serverId: recommendChains[i].id,
@@ -555,7 +547,6 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
-      signPermission,
     });
   };
 
@@ -681,10 +672,6 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           })}
         </div>
         <div>
-          <SignTestnetPermission
-            value={signPermission}
-            onChange={(v) => setSignPermission(v)}
-          />
           <Footer>
             <div className="action-buttons flex flex-col mt-4 items-center">
               <Button

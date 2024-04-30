@@ -1,7 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react"],
+  "plugins": ["@typescript-eslint", "react", "react-hooks"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -18,7 +18,10 @@
       {
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "react-hooks/exhaustive-deps": ["off", {
+      "additionalHooks": "(useWallet)"
+    }]
   },
   "env": {
     "browser": true,

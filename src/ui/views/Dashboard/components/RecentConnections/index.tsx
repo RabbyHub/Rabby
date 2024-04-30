@@ -28,6 +28,16 @@ const RecentConnections = ({
     return connections.sort((a, b) => (a.order || 0) - (b.order || 0));
   }, [connections]);
 
+  const pinnedList = useMemo(() => {
+    return connections
+      .filter((item) => item && item.isTop)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [connections]);
+
+  const recentList = useMemo(() => {
+    return connections.filter((item) => item && !item.isTop);
+  }, [connections]);
+
   const handleClick = (connection: ConnectedSite) => {
     matomoRequestEvent({
       category: 'Dapps',
@@ -39,21 +49,11 @@ const RecentConnections = ({
     openInTab(connection.origin);
   };
 
-  const handleFavoriteChange = (item: ConnectedSite) => {
+  const handlePinChange = (item: ConnectedSite) => {
     if (item.isTop) {
-      dispatch.permission.unFavoriteWebsite(item.origin);
-      matomoRequestEvent({
-        category: 'Dapps',
-        action: 'unfavoriteDapp',
-        label: item.origin,
-      });
+      dispatch.permission.unpinWebsite(item.origin);
     } else {
-      dispatch.permission.favoriteWebsite(item.origin);
-      matomoRequestEvent({
-        category: 'Dapps',
-        action: 'favoriteDapp',
-        label: item.origin,
-      });
+      dispatch.permission.pinWebsite(item.origin);
     }
   };
   const handleRemove = async (origin: string) => {
@@ -109,7 +109,7 @@ const RecentConnections = ({
         <div>
           <div className="title">
             <Trans
-              count={list.length}
+              count={recentList.length}
               i18nKey="page.dashboard.recentConnection.disconnectRecentlyUsed.title"
             ></Trans>
           </div>
@@ -156,7 +156,14 @@ const RecentConnections = ({
             <ConnectionList
               onRemove={handleRemove}
               onClick={handleClick}
-              data={list}
+              onPin={handlePinChange}
+              data={pinnedList}
+            ></ConnectionList>
+            <ConnectionList
+              onRemove={handleRemove}
+              onClick={handleClick}
+              onPin={handlePinChange}
+              data={recentList}
             ></ConnectionList>
           </div>
           <footer

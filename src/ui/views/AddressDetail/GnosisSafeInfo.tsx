@@ -50,7 +50,7 @@ export const GnonisSafeInfo = ({
   const wallet = useWallet();
   const [activeData, setActiveData] = useState<
     | {
-        chain?: Chain;
+        chain?: Chain | null;
         data: BasicSafeInfo;
       }
     | undefined

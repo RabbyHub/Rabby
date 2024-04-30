@@ -21,6 +21,8 @@ i18n.init({
   interpolation: {
     escapeValue: false, // react already safes from xss
   },
+  returnNull: false,
+  returnEmptyString: false,
 });
 
 export const I18N_NS = 'translations';

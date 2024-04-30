@@ -188,6 +188,7 @@
         border-radius: 6px;
         background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
         align-items: center;
+        margin-bottom: 12px;
 
         color: var(--r-neutral-title-1, #f7fafc);
         font-size: 14px;
@@ -199,10 +200,6 @@
         &:hover {
           background-color: rgba(134, 151, 255, 0.2);
           border: 1px solid var(--r-blue-default, #7084ff);
-        }
-
-        &:not(:last-child) {
-          margin-bottom: 12px;
         }
 
         &-icon {
@@ -218,6 +215,9 @@
     &.show {
       transform: translateX(0);
     }
+  }
+  .auto-lock-modal {
+    padding: 20px 20px 0 20px;
   }
   .resolve-conflict-modal {
     .page-header {

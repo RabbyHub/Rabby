@@ -24,6 +24,10 @@
 .ant-btn {
   border-radius: 6px;
 
+  & > .ant-btn-loading-icon .anticon {
+    display: block;
+  }
+
   &:hover {
     color: #fff;
     border-color: transparent;
@@ -59,7 +63,7 @@
   &[disabled]:hover,
   &[disabled]:focus,
   &[disabled]:active {
-    color: var(--r-neutral-title-2, #FFF);
+    color: var(--r-neutral-title-2, #fff);
     background-color: var(--r-blue-disable, rgba(219, 224, 255, 1));
     border-color: var(--r-blue-disable, rgba(219, 224, 255, 1));
   }
@@ -131,27 +135,26 @@
   .ant-modal-header,
   .ant-modal-content,
   .ant-modal-content {
-    background: var(--r-neutral-bg-1, #3D4251);
+    background: var(--r-neutral-bg-1, #3d4251);
   }
 
   .ant-modal-confirm-body .ant-modal-confirm-content {
-    // background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06)); 
+    // background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     // background: var(--r-neutral-bg-1, #3D4251);
   }
 
   .ant-modal-confirm-title,
   .ant-modal-confirm-body .ant-modal-confirm-title,
   .ant-modal-confirm-body .ant-modal-confirm-content {
-    color: var(--r-neutral-title-1, #F7FAFC);
+    color: var(--r-neutral-title-1, #f7fafc);
   }
 
   .ant-modal-close-x .anticon-close svg {
-    color: var(--r-neutral-foot, #6A7587);
+    color: var(--r-neutral-foot, #6a7587);
   }
 }
 
 .ant-modal-content {
-  box-shadow: 0px 16px 20px rgb(45 48 51 / 16%);
   border-radius: 6px;
   overflow: hidden;
 
@@ -308,7 +311,9 @@
   line-height: 1;
 
   &.border-bright-on-active {
-    &:active, &:focus, &:hover {
+    &:active,
+    &:focus,
+    &:hover {
       border-color: var(--r-blue-default);
     }
   }

@@ -256,7 +256,10 @@ class PreferenceService {
     if (!key || ['search', 'lastCurrent'].includes(key)) {
       this.resetAddressSortStoreExpiredValue();
     }
-    return key ? this.store[key] : this.store;
+    if (key === 'isShowTestnet') {
+      return true;
+    }
+    return key ? this.store[key] : { ...this.store, isShowTestnet: true };
   };
 
   getTokenApprovalChain = (address: string) => {
@@ -602,19 +605,18 @@ class PreferenceService {
   getCustomizedToken = () => {
     return this.store.customizedToken || [];
   };
+  hasCustomizedToken = (token: Token) => {
+    return !!this.store.customizedToken?.find(
+      (item) =>
+        isSameAddress(item.address, token.address) && item.chain === token.chain
+    );
+  };
   addCustomizedToken = (token: Token) => {
-    if (
-      !this.store.customizedToken?.find(
-        (item) =>
-          isSameAddress(item.address, token.address) &&
-          item.chain === token.chain
-      )
-    ) {
-      this.store.customizedToken = [
-        ...(this.store.customizedToken || []),
-        token,
-      ];
+    if (this.hasCustomizedToken(token)) {
+      throw new Error('Token already added');
     }
+
+    this.store.customizedToken = [...(this.store.customizedToken || []), token];
   };
   removeCustomizedToken = (token: Token) => {
     this.store.customizedToken = this.store.customizedToken?.filter(
@@ -704,7 +706,8 @@ class PreferenceService {
     this.store.hiddenBalance = value;
   };
   getIsShowTestnet = () => {
-    return this.store.isShowTestnet;
+    // return this.store.isShowTestnet;
+    return true;
   };
   setIsShowTestnet = (value: boolean) => {
     this.store.isShowTestnet = value;

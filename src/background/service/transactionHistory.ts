@@ -728,12 +728,13 @@ class TxHistory {
       stats.report('completeTransaction', {
         chainId: chain.serverId,
         success,
-        preExecSuccess: Boolean(
-          target.explain?.pre_exec.success && target.explain?.calcSuccess
-        ),
-        createBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
+        preExecSuccess: target?.explain
+          ? target.explain?.pre_exec.success && target.explain?.calcSuccess
+          : true,
+        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
         source: target?.$ctx?.ga?.source || '',
         trigger: target?.$ctx?.ga?.trigger || '',
+        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
       });
     }
     this.clearBefore({ address, chainId, nonce });

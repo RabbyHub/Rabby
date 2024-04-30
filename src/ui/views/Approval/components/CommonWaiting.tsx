@@ -112,16 +112,19 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
         const explain = signingTx?.explain;
 
-        stats.report('signTransaction', {
+        wallet.reportStats('signTransaction', {
           type: account.brandName,
           chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain
             ? explain?.calcSuccess && explain?.pre_exec.success
             : true,
-          createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
           source: params?.$ctx?.ga?.source || '',
           trigger: params?.$ctx?.ga?.trigger || '',
+          networkType: chain?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
       }
     } else {
@@ -165,7 +168,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
-          label: brandName,
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
         });
         setSignFinishedData({
           data: sig,

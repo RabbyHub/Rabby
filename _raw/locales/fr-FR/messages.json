@@ -485,7 +485,7 @@
       "add": "Ajouter un RPC",
       "closed": "Fermé",
       "desc": "L'activation du RPC personnalisé remplacera Rabby comme nœud par défaut. Pour continuer à utiliser Rabby, veuillez désactiver ou supprimer le nœud RPC personnalisé.",
-      "empty": "Aucun RPC personnalisé",
+      "empty": "",
       "opened": "Ouvert",
       "title": "RPC personnalisé"
     },
@@ -1783,7 +1783,7 @@
       "swap-from": "Échange de",
       "swap-history": "Historique des échanges",
       "swap-via-x": "Échange via {{name}}",
-      "testnet-is-not-supported": "Testnet n'est pas pris en charge",
+      "testnet-is-not-supported": "",
       "the-following-swap-rates-are-found": "Les taux de swap suivants sont trouvés",
       "there-is-no-fee-and-slippage-for-this-trade": "Il n'y a pas de frais ni de slippage pour cette transaction",
       "this-exchange-is-not-enabled-to-trade-by-you": "Cet exchange n'est pas autorisé à négocier par vous.",

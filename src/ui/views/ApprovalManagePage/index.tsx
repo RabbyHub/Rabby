@@ -1168,10 +1168,7 @@ const ApprovalManagePage = () => {
         <header className="approvals-manager__header">
           {isShowTestnet && (
             <div className="tabs">
-              <NetSwitchTabs.ApprovalsPage
-                value={selectedTab}
-                onTabChange={onTabChange}
-              />
+              <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
             </div>
           )}
           <div className="title">
@@ -1211,7 +1208,9 @@ const ApprovalManagePage = () => {
                   onTabChange={(key) => setFilterType(key)}
                   itemClassname="text-[15px] w-[148px] h-[40px]"
                   itemClassnameActive="bg-r-neutral-bg-1"
-                  itemClassnameInActive={'text-r-neutral-body'}
+                  itemClassnameInActive={
+                    'text-r-neutral-body hover:text-r-blue-default'
+                  }
                 />
 
                 <SearchInput
@@ -1280,7 +1279,7 @@ const ApprovalManagePage = () => {
           <div className="mt-[20px] rounded-[8px] bg-r-neutral-card1 pt-[145px] pb-[175px] flex flex-col items-center w-full">
             <RcIconEmpty />
             <div className="mt-[4px] text-r-neutral-foot text-[14px] leading-[20px]">
-              Not supported on Testnets
+              {t('global.notSupportTesntnet')}
             </div>
           </div>
         )}

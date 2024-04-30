@@ -149,7 +149,7 @@ export const CustomTestnetTokenDetail = ({
           </div>
         </div>
 
-        <div className="flex flex-row justify-between mt-24">
+        <div className="flex flex-row justify-between mt-[12px]">
           <Tooltip
             overlayClassName="rectangle token_swap__tooltip"
             placement="topLeft"
@@ -159,8 +159,11 @@ export const CustomTestnetTokenDetail = ({
               type="primary"
               size="large"
               disabled
+              className="w-[114px] h-[36px] leading-[16px]"
               style={{
                 width: 114,
+                height: 36,
+                lineHeight: '16px',
               }}
             >
               {t('page.dashboard.tokenDetail.swap')}
@@ -171,7 +174,7 @@ export const CustomTestnetTokenDetail = ({
             type="primary"
             ghost
             size="large"
-            className="w-[114px] rabby-btn-ghost"
+            className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
             onClick={goToSend}
           >
             {t('page.dashboard.tokenDetail.send')}
@@ -180,7 +183,7 @@ export const CustomTestnetTokenDetail = ({
             type="primary"
             ghost
             size="large"
-            className="w-[114px] rabby-btn-ghost"
+            className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
             onClick={goToReceive}
           >
             {t('page.dashboard.tokenDetail.receive')}
