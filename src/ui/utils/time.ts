@@ -118,3 +118,6 @@ export const sinceTimeWithSecs = (time: number) => {
     ? `${fromNowWithSecs(time)} ago`
     : dayjs(time * 1000).format('YYYY/MM/DD HH:mm');
 };
+
+export const sleep = async (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

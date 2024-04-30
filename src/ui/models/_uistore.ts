@@ -28,6 +28,7 @@ export default (store: typeof import('@/ui/store').default) => {
         dispatch.preference.setField({
           themeMode: payload.partials.themeMode,
         });
+        break;
       }
     }
   });

@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useMemo } from 'react';
 
 import { ExplainTxResponse } from '@/background/service/openapi';
@@ -17,9 +19,9 @@ export default function useBalanceChange({
 }: {
   balance_change?: ExplainTxResponse['balance_change'] | null;
 }) {
-  if (!balance_change) return getDefaultValues();
-
   return useMemo(() => {
+    if (!balance_change) return getDefaultValues();
+
     const hasNFTChange =
       balance_change.receive_nft_list.length > 0 ||
       balance_change.send_nft_list.length > 0;

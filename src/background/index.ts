@@ -5,7 +5,13 @@ import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from '@/utils/message';
-import { CHAINS, CHAINS_ENUM, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
+import {
+  CHAINS,
+  CHAINS_ENUM,
+  EVENTS,
+  EVENTS_IN_BG,
+  KEYRING_CATEGORY_MAP,
+} from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -35,8 +41,8 @@ import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { setPopupIcon, wait } from './utils';
-import { getSentryEnv } from '@/utils/env';
+import { setPopupIcon } from './utils';
+import { appIsDev, getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { testnetOpenapiService } from './service/openapi';
 import fetchAdapter from '@vespaiach/axios-fetch-adapter';
@@ -103,6 +109,13 @@ async function restoreAppState() {
   transactionBroadcastWatchService.roll();
   startEnableUser();
   walletController.syncMainnetChainList();
+
+  eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
+    if (!address) return;
+
+    walletController.forceExpireAddressBalance(address);
+    walletController.forceExpireNetCurve(address);
+  });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
