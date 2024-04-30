@@ -1,12 +1,9 @@
 import { IExtractFromPromise } from '@/ui/utils/type';
-
-type CacheItem<T> = {
-  expire: number;
-  value: T;
-};
+import { appIsDev } from '@/utils/env';
 
 // cached any function with a key and a timer
 export const cached = <T extends (...args: any[]) => Promise<any>>(
+  name: string,
   fn: T,
   timeout = 3 * 60 * 1000
 ) => {
@@ -16,6 +13,10 @@ export const cached = <T extends (...args: any[]) => Promise<any>>(
       value: IExtractFromPromise<ReturnType<T>>;
     };
   } = {};
+
+  if (appIsDev) {
+    globalThis[`${name}_cache`] = cache;
+  }
 
   const wrappedFn = async (
     args: Parameters<T>,

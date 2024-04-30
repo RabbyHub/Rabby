@@ -160,7 +160,7 @@ const BalanceView = ({
     isExpired: getCacheExpired,
   });
 
-  const refreshTimerlegacy = useRef<NodeJS.Timeout>();
+  // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed
   useEffect(() => {
     (async () => {
@@ -185,39 +185,33 @@ const BalanceView = ({
       }
     })();
 
-    const handler = async ({ address }) => {
-      if (
-        !currentAccount?.address ||
-        !isSameAddress(address, currentAccount.address)
-      )
-        return;
+    // const handler = async ({ address }) => {
+    //   if (
+    //     !currentAccount?.address ||
+    //     !isSameAddress(address, currentAccount.address)
+    //   )
+    //     return;
 
-      const count = await dispatch.transactions.getPendingTxCountAsync(
-        currentAccount.address
-      );
-      if (count === 0) {
-        if (refreshTimerlegacy.current)
-          clearTimeout(refreshTimerlegacy.current);
+    //   const count = await dispatch.transactions.getPendingTxCountAsync(
+    //     currentAccount.address
+    //   );
+    //   if (count === 0) {
+    //     if (refreshTimerlegacy.current)
+    //       clearTimeout(refreshTimerlegacy.current);
 
-        refreshTimerlegacy.current = setTimeout(() => {
-          // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
-          // delay 5s for waiting db sync data
-          setAccountBalanceUpdateNonce((prev) => prev + 1);
-        }, 5000);
-      }
-    };
-    eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+    //     refreshTimerlegacy.current = setTimeout(() => {
+    //       // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+    //       // delay 5s for waiting db sync data
+    //       setAccountBalanceUpdateNonce((prev) => prev + 1);
+    //     }, 5000);
+    //   }
+    // };
+    // eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
 
-    return () => {
-      eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-    };
-  }, [
-    currentHomeBalanceCache?.balance,
-    currentAccount?.address,
-    dispatch.transactions,
-    onRefresh,
-    getCacheExpired,
-  ]);
+    // return () => {
+    //   eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+    // };
+  }, [currentHomeBalanceCache?.balance, onRefresh, getCacheExpired]);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;

@@ -116,15 +116,6 @@ async function restoreAppState() {
     walletController.forceExpireAddressBalance(address);
     walletController.forceExpireNetCurve(address);
   });
-  // just for mock
-  if (appIsDev) {
-    globalThis._eventBus = eventBus;
-    globalThis._expireAddressBalance = (address: string) => {
-      address = address.toLowerCase();
-      walletController.forceExpireAddressBalance(address);
-      walletController.forceExpireNetCurve(address);
-    };
-  }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {

@@ -1047,17 +1047,25 @@ export class WalletController extends BaseController {
     }
   };
 
-  private getTotalBalanceCached = cached(async (address: string) => {
-    const data = await openapiService.getTotalBalance(address);
-    preferenceService.updateAddressBalance(address, data);
-    return data;
-  }, BALANCE_LOADING_TIMES.TIMEOUT);
+  private getTotalBalanceCached = cached(
+    'getTotalBalanceCached',
+    async (address: string) => {
+      const data = await openapiService.getTotalBalance(address);
+      preferenceService.updateAddressBalance(address, data);
+      return data;
+    },
+    BALANCE_LOADING_TIMES.TIMEOUT
+  );
 
-  private getTestnetTotalBalanceCached = cached(async (address: string) => {
-    const testnetData = await testnetOpenapiService.getTotalBalance(address);
-    preferenceService.updateTestnetAddressBalance(address, testnetData);
-    return testnetData;
-  }, BALANCE_LOADING_TIMES.TIMEOUT);
+  private getTestnetTotalBalanceCached = cached(
+    'getTestnetTotalBalanceCached',
+    async (address: string) => {
+      const testnetData = await testnetOpenapiService.getTotalBalance(address);
+      preferenceService.updateTestnetAddressBalance(address, testnetData);
+      return testnetData;
+    },
+    BALANCE_LOADING_TIMES.TIMEOUT
+  );
 
   getAddressBalance = async (
     address: string,
@@ -1093,9 +1101,13 @@ export class WalletController extends BaseController {
     return preferenceService.getAddressBalance(address);
   };
 
-  private getNetCurveCached = cached(async (address) => {
-    return openapiService.getNetCurve(address);
-  }, BALANCE_LOADING_TIMES.TIMEOUT);
+  private getNetCurveCached = cached(
+    'getNetCurveCached',
+    async (address) => {
+      return openapiService.getNetCurve(address);
+    },
+    BALANCE_LOADING_TIMES.TIMEOUT
+  );
 
   getNetCurve = (address: string, force = false) => {
     return this.getNetCurveCached.fn([address], address, force);
@@ -3642,29 +3654,35 @@ export class WalletController extends BaseController {
    * disable approval management and transaction history when level is 1
    * disable total balance refresh and level 1 content when level is 2
    */
-  getAPIConfig = cached(async () => {
-    interface IConfig {
-      data: {
-        level: number;
-        authorized: {
-          enable: boolean;
+  getAPIConfig = cached(
+    'getAPIConfig',
+    async () => {
+      interface IConfig {
+        data: {
+          level: number;
+          authorized: {
+            enable: boolean;
+          };
+          balance: {
+            enable: boolean;
+          };
+          history: {
+            enable: boolean;
+          };
         };
-        balance: {
-          enable: boolean;
-        };
-        history: {
-          enable: boolean;
-        };
-      };
-    }
-    try {
-      const config = await fetch('https://static.debank.com/rabby/config.json');
-      const { data } = (await config.json()) as IConfig;
-      return data.level;
-    } catch (e) {
-      return 0;
-    }
-  }, 10000).fn;
+      }
+      try {
+        const config = await fetch(
+          'https://static.debank.com/rabby/config.json'
+        );
+        const { data } = (await config.json()) as IConfig;
+        return data.level;
+      } catch (e) {
+        return 0;
+      }
+    },
+    10000
+  ).fn;
 
   rabbyPointVerifyAddress = async (params?: {
     code?: string;
