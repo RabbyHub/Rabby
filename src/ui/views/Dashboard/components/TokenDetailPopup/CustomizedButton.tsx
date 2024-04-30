@@ -39,7 +39,7 @@ export const CustomizedSwitch: React.FC<Props> = ({
     <div
       className={clsx(
         'flex rounded',
-        'py-[9px] px-12 bg-orange bg-opacity-20 justify-between mb-[26px]'
+        'py-[9px] px-12 bg-orange bg-opacity-20 justify-between mb-[10px]'
       )}
     >
       <div className={clsx('text-orange text-13')}>

@@ -12,6 +12,7 @@ import { useForm } from 'antd/lib/form/Form';
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -231,9 +232,10 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
   }, [visible, resetSearchResult]);
 
   const inputRef = useRef<Input>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible) {
-      inputRef.current?.focus();
+      const timer = setTimeout(() => inputRef.current?.focus(), 250);
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 

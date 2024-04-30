@@ -210,54 +210,58 @@ const TokenDetail = ({
             )}
           </div>
         </div>
-        {variant === 'add' ? (
-          token.is_core ? (
-            <BlockedButton
-              selected={isAdded}
-              onOpen={() => addToken(tokenWithAmount)}
-              onClose={() => removeToken(tokenWithAmount)}
-            />
-          ) : (
-            <CustomizedSwitch
-              selected={isAdded}
-              onOpen={() => addToken(tokenWithAmount)}
-              onClose={() => removeToken(tokenWithAmount)}
-            />
-          )
-        ) : null}
-        <div className="balance">
-          <div className="balance-title">
-            {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
-          </div>
-          <div className="balance-content overflow-hidden">
-            <TooltipWithMagnetArrow
-              className="rectangle w-[max-content]"
-              title={(tokenWithAmount.amount || 0).toString()}
-              placement="bottom"
-            >
-              <div className="balance-value truncate">
-                {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
-              </div>
-            </TooltipWithMagnetArrow>
-            <TooltipWithMagnetArrow
-              title={`≈ $${(
-                tokenWithAmount.amount * token.price || 0
-              ).toString()}`}
-              className="rectangle w-[max-content]"
-              placement="bottom"
-            >
-              <div className="balance-value-usd truncate">
-                ≈ $
-                {splitNumberByStep(
-                  (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
-                )}
-              </div>
-            </TooltipWithMagnetArrow>
+      </div>
+
+      <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
+        <div className="token-detail-stickyarea">
+          {variant === 'add' ? (
+            token.is_core ? (
+              <BlockedButton
+                selected={isAdded}
+                onOpen={() => addToken(tokenWithAmount)}
+                onClose={() => removeToken(tokenWithAmount)}
+              />
+            ) : (
+              <CustomizedSwitch
+                selected={isAdded}
+                onOpen={() => addToken(tokenWithAmount)}
+                onClose={() => removeToken(tokenWithAmount)}
+              />
+            )
+          ) : null}
+          <div className="balance">
+            <div className="balance-title">
+              {getTokenSymbol(token)} {t('page.newAddress.hd.balance')}
+            </div>
+            <div className="balance-content overflow-hidden">
+              <TooltipWithMagnetArrow
+                className="rectangle w-[max-content]"
+                title={(tokenWithAmount.amount || 0).toString()}
+                placement="bottom"
+              >
+                <div className="balance-value truncate">
+                  {splitNumberByStep((tokenWithAmount.amount || 0)?.toFixed(8))}
+                </div>
+              </TooltipWithMagnetArrow>
+              <TooltipWithMagnetArrow
+                title={`≈ $${(
+                  tokenWithAmount.amount * token.price || 0
+                ).toString()}`}
+                className="rectangle w-[max-content]"
+                placement="bottom"
+              >
+                <div className="balance-value-usd truncate">
+                  ≈ $
+                  {splitNumberByStep(
+                    (tokenWithAmount.amount * token.price || 0)?.toFixed(2)
+                  )}
+                </div>
+              </TooltipWithMagnetArrow>
+            </div>
           </div>
         </div>
-
         {!isHiddenButton && !hideOperationButtons && (
-          <div className="flex flex-row justify-between mt-24">
+          <div className="flex flex-row justify-between J_buttons_area">
             <Tooltip
               overlayClassName="rectangle token_swap__tooltip"
               placement="topLeft"
@@ -269,9 +273,11 @@ const TokenDetail = ({
                 size="large"
                 onClick={goToSwap}
                 disabled={!tokenSupportSwap}
-                className="w-[114px]"
+                className="w-[114px] h-[36px] leading-[16px]"
                 style={{
                   width: 114,
+                  height: 36,
+                  lineHeight: '16px',
                 }}
               >
                 {t('page.dashboard.tokenDetail.swap')}
@@ -282,7 +288,7 @@ const TokenDetail = ({
               type="primary"
               ghost
               size="large"
-              className="w-[114px] rabby-btn-ghost"
+              className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
               onClick={goToSend}
             >
               {t('page.dashboard.tokenDetail.send')}
@@ -291,16 +297,13 @@ const TokenDetail = ({
               type="primary"
               ghost
               size="large"
-              className="w-[114px] rabby-btn-ghost"
+              className="w-[114px] h-[36px] leading-[16px] rabby-btn-ghost"
               onClick={goToReceive}
             >
               {t('page.dashboard.tokenDetail.receive')}
             </Button>
           </div>
         )}
-      </div>
-
-      <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
         {data?.list.map((item) => (
           <HistoryItem
             data={item}

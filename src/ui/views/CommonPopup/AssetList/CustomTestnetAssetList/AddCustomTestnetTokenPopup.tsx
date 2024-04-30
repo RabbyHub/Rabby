@@ -8,7 +8,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -182,9 +182,10 @@ export const AddCustomTestnetTokenPopup = ({
   }, [visible]);
 
   const inputRef = useRef<Input>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (visible) {
-      inputRef.current?.focus();
+      const timer = setTimeout(() => inputRef.current?.focus(), 250);
+      return () => clearTimeout(timer);
     }
   }, [visible]);
 
