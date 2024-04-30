@@ -113,38 +113,47 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
 type ExpirationInfo = { balanceExpired: boolean; curveExpired: boolean };
 export function useRefreshHomeBalanceView(options: {
   currentAddress?: string;
-  refreshFn: (ctx: Partial<ExpirationInfo>) => Promise<any>;
+  refreshBalance: () => Promise<any>;
+  refreshCurve: () => Promise<any>;
   isExpired: () => Promise<ExpirationInfo>;
 }) {
-  const { currentAddress, refreshFn, isExpired } = options;
+  const { refreshBalance, refreshCurve, isExpired } = options;
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
   const isRefreshingRef = useRef(false);
   const onRefresh = useCallback(
     async (ctx: Partial<ExpirationInfo> & { isManual?: boolean }) => {
-      if (isRefreshingRef.current) return;
-      isRefreshingRef.current = true;
-
       const {
         isManual = false,
         balanceExpired = true,
         curveExpired = true,
       } = ctx;
-      const expiration = { balanceExpired, curveExpired };
 
       isManual && setIsManualRefreshing(true);
-      try {
-        await Promise.all(
-          [refreshFn(expiration), !isManual && sleep(1000)].filter(Boolean)
-        );
-      } catch (e) {
-        console.error(e);
-      } finally {
-        isRefreshingRef.current = false;
-        setIsManualRefreshing(false);
+
+      if (isRefreshingRef.current) return;
+
+      const needRequest = balanceExpired || curveExpired;
+      isRefreshingRef.current = needRequest;
+
+      if (needRequest) {
+        try {
+          await Promise.all(
+            [
+              balanceExpired && refreshBalance(),
+              curveExpired && refreshCurve(),
+              !isManual && sleep(1000),
+            ].filter(Boolean)
+          );
+        } catch (e) {
+          console.error(e);
+        }
       }
+
+      isRefreshingRef.current = false;
+      setIsManualRefreshing(false);
     },
-    [refreshFn]
+    [refreshBalance, refreshCurve]
   );
 
   useInterval(async () => {

@@ -148,17 +148,8 @@ const BalanceView = ({
 
   const { isManualRefreshing, onRefresh } = useRefreshHomeBalanceView({
     currentAddress: currentAccount?.address,
-    refreshFn: useCallback(
-      (ctx) => {
-        return Promise.all(
-          [
-            ctx.balanceExpired && refreshBalance(),
-            ctx.curveExpired && refreshCurve(),
-          ].filter(Boolean)
-        );
-      },
-      [refreshBalance, refreshCurve]
-    ),
+    refreshBalance,
+    refreshCurve,
     isExpired: getCacheExpired,
   });
 
