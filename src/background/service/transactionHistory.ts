@@ -731,7 +731,7 @@ class TxHistory {
         preExecSuccess: target?.explain
           ? target.explain?.pre_exec.success && target.explain?.calcSuccess
           : true,
-        createBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
+        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
         source: target?.$ctx?.ga?.source || '',
         trigger: target?.$ctx?.ga?.trigger || '',
         networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',

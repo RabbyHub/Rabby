@@ -454,7 +454,7 @@ class ProviderController extends BaseController {
       preExecSuccess: cacheExplain
         ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
         : true,
-      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
       networkType: chainItem?.isTestnet
@@ -574,7 +574,7 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
           source: options?.data?.$ctx?.ga?.source || '',
           trigger: options?.data?.$ctx?.ga?.trigger || '',
           networkType: chainItem?.isTestnet
