@@ -165,23 +165,37 @@ export const GasLessAnimatedWrapper = styled.div`
     background-size: 10%, 200%;
     background-position-x: -12%, 200%;
     background-position-y: center;
-    animation: gasLoading 0.6s linear 1 forwards;
+    animation: gasLoading 0.9s linear 1 forwards, jump 0.3s linear 3 forwards;
   }
 
   @keyframes gasLoading {
     0% {
-      background-position-x: -12%, 200%;
+      background-position-x: -12%, 212%;
     }
 
     50% {
-      background-position-x: 50%, 150%;
+      background-position-x: 55%, 150%;
     }
     99% {
-      background-position-x: 100%, 108%;
+      background-position-x: 100%, 109%;
     }
 
     100% {
       background-position-x: 120%, 100%;
+    }
+  }
+
+  @keyframes jump {
+    0% {
+      background-position-y: 100%, 200%;
+    }
+
+    90% {
+      background-position-y: 0%, 100%;
+    }
+
+    100% {
+      background-position-y: 50%, 100%;
     }
   }
 `;

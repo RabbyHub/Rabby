@@ -79,7 +79,7 @@ export const SubmitActions: React.FC<Props> = ({
               className={clsx(
                 gasLess && 'gasLess',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:opacity-40 disabled:bg-blue-light',
+                'disabled:opacity-40 disabled:bg-blue-light border-transparent',
                 'before:content-none'
               )}
               onClick={handleClickSign}
