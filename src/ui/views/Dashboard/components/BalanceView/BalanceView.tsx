@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import { Skeleton } from 'antd';
 import { Chain } from '@debank/common';
 import { ChainList } from './ChainList';
-import { useCurve } from './useCurve';
+import { formChartData, useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
 import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
@@ -103,10 +103,17 @@ const BalanceView = ({
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
   const { balance, curveChartData, chainBalancesWithValue } = useMemo(() => {
+    const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
+
     return {
-      balance: latestBalance || currentHomeBalanceCache?.balance,
+      balance: balanceValue,
       curveChartData:
-        latestCurveChartData || currentHomeBalanceCache?.curveChartData,
+        latestCurveChartData ||
+        formChartData(
+          currentHomeBalanceCache?.originalCurveData || [],
+          balanceValue,
+          Date.now()
+        ),
       chainBalancesWithValue: latestChainBalancesWithValue.length
         ? latestChainBalancesWithValue
         : currentHomeBalanceCache?.chainBalancesWithValue || [],
@@ -323,15 +330,13 @@ const BalanceView = ({
     (couldShowLoadingDueToUpdateSource && curveLoading);
   const shouldShowLoading = shouldShowBalanceLoading || shouldShowCurveLoading;
   const shouldHidePercentChange =
-    !currentChangePercent || hiddenBalance || shouldShowLoading;
+    !currentChangePercent ||
+    hiddenBalance ||
+    shouldShowLoading ||
+    !curveChartData?.startUsdValue;
 
-  const curveRenderInfo = {
-    curveDataToRender:
-      curveChartData || currentHomeBalanceCache?.curveChartData,
-    shouldRenderCurve: false,
-  };
-  curveRenderInfo.shouldRenderCurve =
-    !shouldShowLoading && !hiddenBalance && !!curveRenderInfo.curveDataToRender;
+  const shouldRenderCurve =
+    !shouldShowLoading && !hiddenBalance && !!curveChartData;
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
@@ -458,14 +463,13 @@ const BalanceView = ({
             )}
           </div>
           <div className={clsx('h-[80px] w-full relative')}>
-            {!!curveRenderInfo.shouldRenderCurve &&
-              curveRenderInfo.curveDataToRender && (
-                <CurveThumbnail
-                  isHover={currentHover}
-                  data={curveRenderInfo.curveDataToRender}
-                  onHover={handleHoverCurve}
-                />
-              )}
+            {!!shouldRenderCurve && !!curveChartData && (
+              <CurveThumbnail
+                isHover={currentHover}
+                data={curveChartData}
+                onHover={handleHoverCurve}
+              />
+            )}
             {!!shouldShowLoading && (
               <div className="flex mt-[14px]">
                 <Skeleton.Input

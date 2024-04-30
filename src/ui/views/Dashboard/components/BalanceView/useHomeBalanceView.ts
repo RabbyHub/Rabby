@@ -2,21 +2,18 @@
 /* eslint-enable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { formChartData } from './useCurve';
-import type { CurveChartData, CurvePointCollection } from './useCurve';
+import type { CurvePointCollection } from './useCurve';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { useInterval } from 'react-use';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 import { sleep } from '@/ui/utils';
-import { isSameAddress } from '@/background/utils';
-import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
 
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
 type AddressCacheItem = {
   balance: number | null;
   chainBalancesWithValue: DisplayChainWithWhiteLogo[];
   originalCurveData: CurvePointCollection;
-  curveChartData: CurveChartData;
+  // curveChartData: CurveChartData;
 };
 type AddressCacheDict = Record<string, AddressCacheItem>;
 function cacheHomeBalanceView(newValue: AddressCacheDict) {
@@ -55,11 +52,11 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
           next[address].chainBalancesWithValue = input.chainBalancesWithValue;
         if (input.originalCurveData) {
           next[address].originalCurveData = input.originalCurveData;
-          next[address].curveChartData = formChartData(
-            input.originalCurveData,
-            input.balance || 0,
-            new Date().getTime()
-          );
+          // next[address].curveChartData = formChartData(
+          //   input.originalCurveData,
+          //   input.balance || 0,
+          //   new Date().getTime()
+          // );
         }
 
         return cacheHomeBalanceView(next);

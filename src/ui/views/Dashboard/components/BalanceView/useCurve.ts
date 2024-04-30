@@ -66,6 +66,7 @@ export const formChartData = (
     list,
     netWorth: endNetWorth === 0 ? '$0' : `${formatUsdValue(endNetWorth)}`,
     change: `${formatUsdValue(Math.abs(assetsChange))}`,
+    startUsdValue,
     changePercent:
       startUsdValue !== 0
         ? `${Math.abs((assetsChange * 100) / startUsdValue).toFixed(2)}%`
