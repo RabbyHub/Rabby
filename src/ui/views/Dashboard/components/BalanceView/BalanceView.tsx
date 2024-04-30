@@ -162,56 +162,64 @@ const BalanceView = ({
 
   // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed
-  useEffect(() => {
-    (async () => {
-      let expirationInfo: IExtractFromPromise<
-        ReturnType<typeof getCacheExpired>
-      > | null = null;
-      if (!currentHomeBalanceCache?.balance) {
-        onRefresh({
-          balanceExpired: true,
-          curveExpired: true,
-          isManual: false,
-        });
-      } else if (
-        (expirationInfo = await getCacheExpired()) &&
-        expirationInfo.expired
-      ) {
-        onRefresh({
-          balanceExpired: expirationInfo.balanceExpired,
-          curveExpired: expirationInfo.curveExpired,
-          isManual: false,
-        });
-      }
-    })();
+  useEffect(
+    () => {
+      (async () => {
+        let expirationInfo: IExtractFromPromise<
+          ReturnType<typeof getCacheExpired>
+        > | null = null;
+        if (!currentHomeBalanceCache?.balance) {
+          onRefresh({
+            balanceExpired: true,
+            curveExpired: true,
+            isManual: false,
+          });
+        } else if (
+          (expirationInfo = await getCacheExpired()) &&
+          expirationInfo.expired
+        ) {
+          onRefresh({
+            balanceExpired: expirationInfo.balanceExpired,
+            curveExpired: expirationInfo.curveExpired,
+            isManual: false,
+          });
+        }
+      })();
 
-    // const handler = async ({ address }) => {
-    //   if (
-    //     !currentAccount?.address ||
-    //     !isSameAddress(address, currentAccount.address)
-    //   )
-    //     return;
+      // const handler = async ({ address }) => {
+      //   if (
+      //     !currentAccount?.address ||
+      //     !isSameAddress(address, currentAccount.address)
+      //   )
+      //     return;
 
-    //   const count = await dispatch.transactions.getPendingTxCountAsync(
-    //     currentAccount.address
-    //   );
-    //   if (count === 0) {
-    //     if (refreshTimerlegacy.current)
-    //       clearTimeout(refreshTimerlegacy.current);
+      //   const count = await dispatch.transactions.getPendingTxCountAsync(
+      //     currentAccount.address
+      //   );
+      //   if (count === 0) {
+      //     if (refreshTimerlegacy.current)
+      //       clearTimeout(refreshTimerlegacy.current);
 
-    //     refreshTimerlegacy.current = setTimeout(() => {
-    //       // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
-    //       // delay 5s for waiting db sync data
-    //       setAccountBalanceUpdateNonce((prev) => prev + 1);
-    //     }, 5000);
-    //   }
-    // };
-    // eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+      //     refreshTimerlegacy.current = setTimeout(() => {
+      //       // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+      //       // delay 5s for waiting db sync data
+      //       setAccountBalanceUpdateNonce((prev) => prev + 1);
+      //     }, 5000);
+      //   }
+      // };
+      // eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
 
-    // return () => {
-    //   eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-    // };
-  }, [currentHomeBalanceCache?.balance, onRefresh, getCacheExpired]);
+      // return () => {
+      //   eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+      // };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      // currentHomeBalanceCache?.balance,
+      // onRefresh,
+      // getCacheExpired
+    ]
+  );
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
