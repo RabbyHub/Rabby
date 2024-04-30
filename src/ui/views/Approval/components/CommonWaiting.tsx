@@ -112,7 +112,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
 
         const explain = signingTx?.explain;
 
-        stats.report('signTransaction', {
+        wallet.reportStats('signTransaction', {
           type: account.brandName,
           chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],

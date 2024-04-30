@@ -1143,7 +1143,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisConfirm = async (account: Account) => {
     if (!safeInfo) return;
-    stats.report('signTransaction', {
+    wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
       chainId: chain.serverId,
@@ -1186,7 +1186,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleCoboArugsConfirm = async (account: Account) => {
     if (!coboArgusInfo) return;
 
-    stats.report('signTransaction', {
+    wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.CoboArgusKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.CoboArgus],
       chainId: chain.serverId,

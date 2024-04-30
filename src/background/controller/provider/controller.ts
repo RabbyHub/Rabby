@@ -675,6 +675,7 @@ class ProviderController extends BaseController {
             );
 
             onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
           } else {
             const res = await openapiService.submitTx({
               tx: {
@@ -725,6 +726,7 @@ class ProviderController extends BaseController {
             params: [rawTx as any],
           });
           onTransactionCreated({ hash, reqId, pushType });
+          notificationService.setStatsData(statsData);
         }
 
         return hash;

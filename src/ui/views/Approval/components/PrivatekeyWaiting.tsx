@@ -107,6 +107,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     const isSignText = params.isGnosis
       ? true
       : approval?.data.approvalType !== 'SignTx';
+
     if (!isSignText) {
       const signingTxId = approval.data.params.signingTxId;
       if (signingTxId) {
@@ -119,7 +120,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
 
         const explain = signingTx?.explain;
 
-        stats.report('signTransaction', {
+        wallet.reportStats('signTransaction', {
           type: account.brandName,
           chainId: chain?.serverId || '',
           category: KEYRING_CATEGORY_MAP[account.type],

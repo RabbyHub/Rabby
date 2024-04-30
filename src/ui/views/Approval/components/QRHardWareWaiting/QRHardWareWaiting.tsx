@@ -205,7 +205,7 @@ const QRHardWareWaiting = ({ params }) => {
 
           const explain = signingTx?.explain;
 
-          stats.report('signTransaction', {
+          wallet.reportStats('signTransaction', {
             type: account.brandName,
             chainId: chainInfo?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
