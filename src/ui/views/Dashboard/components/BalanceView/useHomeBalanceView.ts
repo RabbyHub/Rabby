@@ -153,10 +153,10 @@ export function useRefreshHomeBalanceView(options: {
     [refreshBalance, refreshCurve]
   );
 
-  useInterval(async () => {
-    const expiration = await isExpired();
-    onRefresh(expiration);
-  }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
+  // useInterval(async () => {
+  //   const expiration = await isExpired();
+  //   onRefresh(expiration);
+  // }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
 
   return {
     onRefresh,
