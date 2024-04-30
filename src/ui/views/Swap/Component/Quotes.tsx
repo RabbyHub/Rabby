@@ -79,7 +79,10 @@ export const Quotes = ({
 
   const tradeCount = useMemo(() => {
     if (swapTradeList) {
-      return Object.values(swapTradeList).filter((e) => e === true).length;
+      const TradeDexList = Object.keys(DEX);
+      return Object.entries(swapTradeList).filter(
+        ([name, enable]) => enable === true && TradeDexList.includes(name)
+      ).length;
     }
     return 0;
   }, [swapTradeList]);

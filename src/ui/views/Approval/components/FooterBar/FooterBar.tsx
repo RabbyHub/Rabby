@@ -9,7 +9,7 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, SecurityEngineLevel } from 'consts';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -17,6 +17,7 @@ import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { findChain } from '@/utils/chain';
+import { GasLessToSign, GasLessNotEnough } from './GasLessComponents';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -29,6 +30,10 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isTestnet?: boolean;
   engineResults?: Result[];
   onIgnoreAllRules(): void;
+  useGasLess?: boolean;
+  showGasLess?: boolean;
+  enableGasLess?: () => void;
+  canUseGasLess?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -106,7 +111,7 @@ const Wrapper = styled.section`
       height: 0;
       border: 5px solid transparent;
       border-bottom: 8px solid currentColor;
-      top: -12px;
+      top: -13px;
       left: 115px;
     }
   }
@@ -163,7 +168,11 @@ export const FooterBar: React.FC<Props> = ({
   engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
+  showGasLess = false,
+  useGasLess = false,
+  canUseGasLess = false,
   onIgnoreAllRules,
+  enableGasLess,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -303,7 +312,13 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           isTestnet={props.isTestnet}
         />
-        <ActionGroup account={account} {...props} />
+        <ActionGroup
+          account={account}
+          gasLess={useGasLess}
+          {...props}
+          disabledProcess={useGasLess ? false : props.disabledProcess}
+          enableTooltip={useGasLess ? false : props.enableTooltip}
+        />
         {securityLevel && hasUnProcessSecurityResult && (
           <div
             className="security-level-tip"
@@ -335,6 +350,18 @@ export const FooterBar: React.FC<Props> = ({
             </span>
           </div>
         )}
+        {showGasLess &&
+          (!securityLevel || !hasUnProcessSecurityResult) &&
+          (canUseGasLess ? (
+            <GasLessToSign
+              gasLessEnable={useGasLess}
+              handleFreeGas={() => {
+                enableGasLess?.();
+              }}
+            />
+          ) : (
+            <GasLessNotEnough />
+          ))}
       </Wrapper>
     </div>
   );

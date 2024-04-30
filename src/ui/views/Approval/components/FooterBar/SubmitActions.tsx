@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-white.svg';
+import { GasLessAnimatedWrapper } from './GasLessComponents';
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -11,6 +12,7 @@ export const SubmitActions: React.FC<Props> = ({
   onCancel,
   tooltipContent,
   enableTooltip,
+  gasLess,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -32,7 +34,8 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light text-white',
+            'bg-blue-light',
+            'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
             'relative',
@@ -69,20 +72,21 @@ export const SubmitActions: React.FC<Props> = ({
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           title={enableTooltip ? tooltipContent : null}
         >
-          <div>
+          <GasLessAnimatedWrapper>
             <Button
               disabled={disabledProcess}
               type="primary"
               className={clsx(
+                gasLess && 'gasLess',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:opacity-40 disabled:bg-blue-light',
+                'disabled:opacity-40 disabled:bg-blue-light border-transparent',
                 'before:content-none'
               )}
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
             </Button>
-          </div>
+          </GasLessAnimatedWrapper>
         </Tooltip>
       )}
     </ActionsContainer>

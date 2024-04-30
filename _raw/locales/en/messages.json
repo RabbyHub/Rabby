@@ -35,7 +35,7 @@
       "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
       "gasLimitLessThanExpect": "Gas limit is low. There is 1% chance that the transaction may fail.",
       "gasLimitLessThanGasUsed": "Gas limit is too low. There is 95% chance that the transaction may fail.",
-      "nativeTokenNotEngouthForGas": "You do not have enough gas in your wallet",
+      "nativeTokenNotEngouthForGas": "Gas balance is not enough for transaction",
       "nonceLowerThanExpect": "Nonce is too low, the minimum should be {{0}}",
       "canOnlyUseImportedAddress": "You can only use imported addresses to sign",
       "multiSigChainNotMatch": "Multi-signature addresses are not on this chain and cannot initiate transactions",
@@ -307,6 +307,12 @@
       "keystoneConnected": "Keystone is connected",
       "ledgerConnected": "Ledger is connected",
       "signAndSubmitButton": "Sign and Create",
+      "gasless": {
+        "unavailable": "Gas balance is not enough for this transaction",
+        "notEnough": "Gas balance is not enough",
+        "GetFreeGasToSign": "Get Free Gas to sign",
+        "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on"
+      },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
         "switchToCorrectAddress": "Please switch to the correct address in mobile wallet",

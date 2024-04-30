@@ -1142,6 +1142,7 @@ export const SAFE_GAS_LIMIT_RATIO = {
 export const GAS_TOP_UP_ADDRESS = '0x7559e1bbe06e94aeed8000d5671ed424397d25b5';
 export const GAS_TOP_UP_PAY_ADDRESS =
   '0x1f1f2bf8942861e6194fda1c0a9f13921c0cf117';
+export const FREE_GAS_ADDRESS = '0x76dd65529dc6c073c1e0af2a5ecc78434bdbf7d9';
 
 export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
   arb: [
@@ -1211,6 +1212,7 @@ export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 export const ALIAS_ADDRESS = {
   [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
   [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
+  [FREE_GAS_ADDRESS]: 'Free Gas',
 };
 
 // non-opstack L2 chains
