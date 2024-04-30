@@ -205,14 +205,14 @@ const QRHardWareWaiting = ({ params }) => {
 
           const explain = signingTx?.explain;
 
-          stats.report('signTransaction', {
+          wallet.reportStats('signTransaction', {
             type: account.brandName,
             chainId: chainInfo?.serverId || '',
             category: KEYRING_CATEGORY_MAP[account.type],
             preExecSuccess: explain
               ? explain?.calcSuccess && explain?.pre_exec.success
               : true,
-            createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+            createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
             source: params?.$ctx?.ga?.source || '',
             trigger: params?.$ctx?.ga?.trigger || '',
             signMethod,
