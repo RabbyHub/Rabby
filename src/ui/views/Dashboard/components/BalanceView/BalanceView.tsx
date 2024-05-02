@@ -102,7 +102,12 @@ const BalanceView = ({
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const { balance, curveChartData, chainBalancesWithValue } = useMemo(() => {
+  const {
+    balance,
+    curveChartData,
+    matteredChainBalances,
+    chainBalancesWithValue,
+  } = useMemo(() => {
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
 
     return {
@@ -114,12 +119,16 @@ const BalanceView = ({
           balanceValue,
           Date.now()
         ),
+      matteredChainBalances: latestMatteredChainBalances.length
+        ? latestMatteredChainBalances
+        : currentHomeBalanceCache?.matteredChainBalances || [],
       chainBalancesWithValue: latestChainBalancesWithValue.length
         ? latestChainBalancesWithValue
         : currentHomeBalanceCache?.chainBalancesWithValue || [],
     };
   }, [
     latestBalance,
+    latestMatteredChainBalances,
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
@@ -130,6 +139,7 @@ const BalanceView = ({
 
     cacheHomeBalanceByAddress(currentAccount?.address, {
       balance,
+      matteredChainBalances,
       chainBalancesWithValue,
       originalCurveData: latestCurveData,
     });
@@ -138,6 +148,7 @@ const BalanceView = ({
     cacheHomeBalanceByAddress,
     deleteHomeBalanceByAddress,
     balance,
+    matteredChainBalances,
     chainBalancesWithValue,
     latestCurveData,
   ]);
@@ -246,16 +257,16 @@ const BalanceView = ({
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances: latestMatteredChainBalances,
-        balance: latestBalance,
+        matteredChainBalances,
+        balance,
         balanceLoading,
-        isEmptyAssets: !latestMatteredChainBalances.length,
+        isEmptyAssets: !matteredChainBalances.length,
         isOffline: !loadBalanceSuccess,
       });
     }
   }, [
-    latestMatteredChainBalances,
-    latestBalance,
+    matteredChainBalances,
+    balance,
     balanceLoading,
     componentName,
     setData,

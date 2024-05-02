@@ -11,6 +11,7 @@ import { sleep } from '@/ui/utils';
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
 type AddressCacheItem = {
   balance: number | null;
+  matteredChainBalances: DisplayChainWithWhiteLogo[];
   chainBalancesWithValue: DisplayChainWithWhiteLogo[];
   originalCurveData: CurvePointCollection;
   // curveChartData: CurveChartData;
@@ -48,6 +49,8 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
         const next = { ...prev };
         next[address] = { ...next[address] };
         if (input.balance) next[address].balance = input.balance;
+        if (input.matteredChainBalances)
+          next[address].matteredChainBalances = input.matteredChainBalances;
         if (input.chainBalancesWithValue)
           next[address].chainBalancesWithValue = input.chainBalancesWithValue;
         if (input.originalCurveData) {
