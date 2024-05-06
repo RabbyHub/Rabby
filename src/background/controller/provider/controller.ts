@@ -598,7 +598,7 @@ class ProviderController extends BaseController {
             origin,
           });
         }
-        const errMsg = e.message || JSON.stringify(e);
+        const errMsg = e.details || e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
