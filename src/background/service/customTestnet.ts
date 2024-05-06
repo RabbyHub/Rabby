@@ -46,6 +46,7 @@ export interface TestnetChain extends TestnetChainBase {
   isTestnet?: boolean;
   logo: string;
   whiteLogo?: string;
+  needEstimateGas?: boolean;
 }
 
 export interface RPCItem {
