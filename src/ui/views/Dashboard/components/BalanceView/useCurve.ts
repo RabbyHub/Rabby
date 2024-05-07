@@ -41,19 +41,21 @@ export const formChartData = (
   if (isMeaningfulNumber(realtimeNetWorth) && realtimeTimestamp) {
     const realtimeChange = realtimeNetWorth - startUsdValue;
 
-    list.push({
-      value: realtimeNetWorth || 0,
-      netWorth: realtimeNetWorth
-        ? `$${formatUsdValue(realtimeNetWorth)}`
-        : '$0',
-      change: `${formatUsdValue(Math.abs(realtimeChange))}`,
-      isLoss: realtimeChange < 0,
-      changePercent:
-        startUsdValue === 0
-          ? `${realtimeNetWorth === 0 ? '0' : '100.00'}%`
-          : `${(Math.abs(realtimeChange * 100) / startUsdValue).toFixed(2)}%`,
-      timestamp: Math.floor(realtimeTimestamp / 1000),
-    });
+    if (list.length) {
+      list.push({
+        value: realtimeNetWorth || 0,
+        netWorth: realtimeNetWorth
+          ? `$${formatUsdValue(realtimeNetWorth)}`
+          : '$0',
+        change: `${formatUsdValue(Math.abs(realtimeChange))}`,
+        isLoss: realtimeChange < 0,
+        changePercent:
+          startUsdValue === 0
+            ? `${realtimeNetWorth === 0 ? '0' : '100.00'}%`
+            : `${(Math.abs(realtimeChange * 100) / startUsdValue).toFixed(2)}%`,
+        timestamp: Math.floor(realtimeTimestamp / 1000),
+      });
+    }
   }
 
   const endNetWorth = list?.length
