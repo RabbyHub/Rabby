@@ -1,11 +1,8 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { formChartData } from './useCurve';
+import { useCallback, useRef, useState } from 'react';
 import type { CurvePointCollection } from './useCurve';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
-import { useInterval } from 'react-use';
-import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 import { sleep } from '@/ui/utils';
 
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
