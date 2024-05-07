@@ -359,12 +359,10 @@ const BalanceView = ({
             {shouldShowBalanceLoading ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
             ) : (
-              !!currentBalance && (
-                <BalanceLabel
-                  // isCache={balanceFromCache}
-                  balance={currentBalance}
-                />
-              )
+              <BalanceLabel
+                // isCache={balanceFromCache}
+                balance={currentBalance || 0}
+              />
             )}
           </div>
           <div
