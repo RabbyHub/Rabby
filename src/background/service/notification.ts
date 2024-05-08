@@ -341,20 +341,6 @@ class NotificationService extends Events {
           this.currentApproval = approval;
         }
       }
-      if (
-        ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
-          data?.params?.method
-        )
-      ) {
-        const chainId = data.params?.data?.[0]?.chainId;
-
-        const chain = findChain({ id: +chainId });
-
-        if (chain) {
-          this.resolveApproval(null);
-          return;
-        }
-      }
 
       if (
         this.notifiWindowId !== null &&
