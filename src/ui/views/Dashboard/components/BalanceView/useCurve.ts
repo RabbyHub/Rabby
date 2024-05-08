@@ -8,6 +8,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
+import { CurvePointCollection } from '@/background/service/preference';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
 
@@ -78,9 +79,6 @@ export const formChartData = (
   };
 };
 
-export type CurvePointCollection = IExtractFromPromise<
-  ReturnType<WalletController['getNetCurve']>
->;
 export type CurveChartData = ReturnType<typeof formChartData>;
 export const useCurve = (
   address: string | undefined,

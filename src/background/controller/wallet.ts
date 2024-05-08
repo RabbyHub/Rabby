@@ -1051,7 +1051,9 @@ export class WalletController extends BaseController {
     'getTotalBalanceCached',
     async (address: string) => {
       const data = await openapiService.getTotalBalance(address);
-      preferenceService.updateAddressBalance(address, data);
+      preferenceService.updateBalanceAboutCache(address, {
+        totalBalance: data,
+      });
       return data;
     },
     BALANCE_LOADING_TIMES.TIMEOUT
@@ -1067,25 +1069,35 @@ export class WalletController extends BaseController {
     BALANCE_LOADING_TIMES.TIMEOUT
   );
 
-  getAddressBalance = async (
+  /**
+   * @description get balance about info by address,
+   * it will use cache in memory, or re-fetch, update-cache
+   * AND **persist the cache to preference store** if expired
+   */
+  getInMemoryAddressBalance = async (
     address: string,
     force = false,
     isTestnet = false
   ) => {
+    const addr = address?.toLowerCase() || '';
+
     if (isTestnet) {
-      return this.getTestnetTotalBalanceCached.fn([address], address, force);
+      return this.getTestnetTotalBalanceCached.fn([addr], addr, force);
     }
-    return this.getTotalBalanceCached.fn([address], address, force);
+    return this.getTotalBalanceCached.fn([addr], addr, force);
   };
 
-  forceExpireAddressBalance = (address: string, isTestnet = false) => {
+  forceExpireInMemoryAddressBalance = (address: string, isTestnet = false) => {
     if (isTestnet) {
+      preferenceService.removeTestnetAddressBalance(address);
       return this.getTestnetTotalBalanceCached.forceExpire(address);
     }
+
+    preferenceService.removeAddressBalance(address);
     return this.getTotalBalanceCached.forceExpire(address);
   };
 
-  isAddressBalanceExpired = (address: string, isTestnet = false) => {
+  isInMemoryAddressBalanceExpired = (address: string, isTestnet = false) => {
     if (isTestnet) {
       return this.getTestnetTotalBalanceCached.isExpired(address);
     }
@@ -1093,18 +1105,31 @@ export class WalletController extends BaseController {
     return this.getTotalBalanceCached.isExpired(address);
   };
 
+  /**
+   * @deprecatedgetPersistedBalanceAboutCacheMap
+   */
   getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
     if (!address) return null;
     if (isTestnet) {
       return null;
     }
-    return preferenceService.getAddressBalance(address);
+
+    return (
+      preferenceService.getBalanceAboutCacheByAddress(address)?.totalBalance ??
+      null
+    );
+  };
+
+  getPersistedBalanceAboutCacheMap = () => {
+    return preferenceService.getBalanceAboutCacheMap();
   };
 
   private getNetCurveCached = cached(
     'getNetCurveCached',
     async (address) => {
-      return openapiService.getNetCurve(address);
+      const data = await openapiService.getNetCurve(address);
+      preferenceService.updateBalanceAboutCache(address, { curvePoints: data });
+      return data;
     },
     BALANCE_LOADING_TIMES.TIMEOUT
   );
@@ -1114,6 +1139,7 @@ export class WalletController extends BaseController {
   };
 
   forceExpireNetCurve = (address: string) => {
+    preferenceService.removeCurvePoints(address);
     return this.getNetCurveCached.forceExpire(address);
   };
 
@@ -2199,6 +2225,7 @@ export class WalletController extends BaseController {
       });
     }
     preferenceService.removeAddressBalance(address);
+    preferenceService.removeCurvePoints(address);
     const current = preferenceService.getCurrentAccount();
     if (
       current?.address === address &&

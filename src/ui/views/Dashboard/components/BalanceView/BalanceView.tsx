@@ -7,11 +7,9 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import useCurrentBalance, {
-  filterChainWithBalance,
-} from '@/ui/hooks/useCurrentBalance';
-import { isSameAddress, sleep, useCommonPopupView, useWallet } from 'ui/utils';
-import { CHAINS, EVENTS, KEYRING_TYPE } from 'consts';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useCommonPopupView, useWallet } from 'ui/utils';
+import { KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
@@ -28,7 +26,6 @@ import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
-import eventBus from '@/eventBus';
 import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
@@ -43,13 +40,10 @@ const BalanceView = ({
   currentAccount?: Account | null;
 }) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
 
-  const {
-    currentHomeBalanceCache,
-    cacheHomeBalanceByAddress,
-    deleteHomeBalanceByAddress,
-  } = useHomeBalanceView(currentAccount?.address);
+  const { currentHomeBalanceCache } = useHomeBalanceView(
+    currentAccount?.address
+  );
 
   const initHasCacheRef = useRef(!!currentHomeBalanceCache?.balance);
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(
@@ -132,25 +126,6 @@ const BalanceView = ({
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
-  ]);
-
-  useEffect(() => {
-    if (!currentAccount?.address) return;
-
-    cacheHomeBalanceByAddress(currentAccount?.address, {
-      balance,
-      matteredChainBalances,
-      chainBalancesWithValue,
-      originalCurveData: latestCurveData,
-    });
-  }, [
-    currentAccount,
-    cacheHomeBalanceByAddress,
-    deleteHomeBalanceByAddress,
-    balance,
-    matteredChainBalances,
-    chainBalancesWithValue,
-    latestCurveData,
   ]);
 
   const getCacheExpired = useCallback(async () => {

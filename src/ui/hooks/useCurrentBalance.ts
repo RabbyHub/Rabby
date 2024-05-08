@@ -1,38 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
-import type { ChainWithBalance } from 'background/service/openapi';
-
-import {
-  findChain,
-  findChainByServerID,
-  DisplayChainWithWhiteLogo,
-} from '@/utils/chain';
+import { findChainByServerID, DisplayChainWithWhiteLogo } from '@/utils/chain';
+import { filterChainWithBalance, normalizeChainList } from '@/utils/account';
 
 /** @deprecated import from '@/utils/chain' directly  */
 export type { DisplayChainWithWhiteLogo };
-
-const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
-  const chain = findChain({
-    id: item.community_id,
-  });
-
-  return {
-    ...item,
-    logo: chain?.logo || item.logo_url,
-    whiteLogo: chain?.whiteLogo,
-  };
-};
-
-function normalizeChainList(chain_balances: ChainWithBalance[]) {
-  return chain_balances
-    .filter((item) => item.born_at !== null)
-    .map(formatChain);
-}
-
-export function filterChainWithBalance(chainList: DisplayChainWithWhiteLogo[]) {
-  return chainList.filter((item) => item.usd_value > 0);
-}
 
 export default function useCurrentBalance(
   account: string | undefined,
@@ -67,36 +40,39 @@ export default function useCurrentBalance(
 
   const [missingList, setMissingList] = useState<string[]>();
 
-  const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
-    onSuccess({ total_usd_value, chain_list }) {
-      if (isCanceled) return;
-      setBalance(total_usd_value);
-      setSuccess(true);
-      const chainList = normalizeChainList(chain_list);
+  const [getInMemoryAddressBalance] = useWalletRequest(
+    wallet.getInMemoryAddressBalance,
+    {
+      onSuccess({ total_usd_value, chain_list }) {
+        if (isCanceled) return;
+        setBalance(total_usd_value);
+        setSuccess(true);
+        const chainList = normalizeChainList(chain_list);
 
-      setChainBalances(chainList);
-      setBalanceLoading(false);
-      setBalanceFromCache(false);
-    },
-    onError(e) {
-      setBalanceLoading(false);
-      try {
-        const { error_code, err_chain_ids } = JSON.parse(e.message);
-        if (error_code === 2) {
-          const chainNames = err_chain_ids.map((serverId: string) => {
-            const chain = findChainByServerID(serverId);
-            return chain?.name;
-          });
-          setMissingList(chainNames);
-          setSuccess(true);
-          return;
+        setChainBalances(chainList);
+        setBalanceLoading(false);
+        setBalanceFromCache(false);
+      },
+      onError(e) {
+        setBalanceLoading(false);
+        try {
+          const { error_code, err_chain_ids } = JSON.parse(e.message);
+          if (error_code === 2) {
+            const chainNames = err_chain_ids.map((serverId: string) => {
+              const chain = findChainByServerID(serverId);
+              return chain?.name;
+            });
+            setMissingList(chainNames);
+            setSuccess(true);
+            return;
+          }
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
-      }
-      setSuccess(false);
-    },
-  });
+        setSuccess(false);
+      },
+    }
+  );
 
   const getCurrentBalance = async (force = false) => {
     if (!account || noNeedBalance) return;
@@ -112,7 +88,7 @@ export default function useCurrentBalance(
       if (update) {
         if (apiLevel < 2) {
           setBalanceLoading(true);
-          await getAddressBalance(account.toLowerCase(), force);
+          await getInMemoryAddressBalance(account, force);
         } else {
           setBalanceLoading(false);
         }
@@ -121,7 +97,7 @@ export default function useCurrentBalance(
       }
     } else {
       if (apiLevel < 2) {
-        await getAddressBalance(account.toLowerCase(), force);
+        await getInMemoryAddressBalance(account, force);
         setBalanceLoading(false);
         setBalanceFromCache(false);
       } else {
@@ -138,7 +114,7 @@ export default function useCurrentBalance(
     if (!account) return false;
 
     try {
-      return wallet.isAddressBalanceExpired(account.toLowerCase());
+      return wallet.isInMemoryAddressBalanceExpired(account.toLowerCase());
     } catch (error) {
       return false;
     }
@@ -150,7 +126,7 @@ export default function useCurrentBalance(
     getCurrentBalance();
     if (!noNeedBalance) {
       wallet.getAddressCacheBalance(account).then((cache) => {
-        setChainBalances(cache ? normalizeChainList(cache.chain_list) : []);
+        setChainBalances(cache ? normalizeChainList(cache?.chain_list) : []);
       });
     }
     return () => {
@@ -167,7 +143,7 @@ export default function useCurrentBalance(
     matteredChainBalances,
     chainBalancesWithValue,
     isCurrentBalanceExpired,
-    getAddressBalance,
+    // getInMemoryAddressBalance,
     success,
     balanceLoading,
     balanceFromCache,

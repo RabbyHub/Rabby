@@ -251,7 +251,7 @@ export const useBalance = (address: string) => {
         .getAddressCacheBalance(address)
         .then((d) => flag && setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => flag && setBalance(d.total_usd_value));
     }
     return () => {

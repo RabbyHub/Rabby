@@ -1,108 +1,99 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import { useCallback, useRef, useState } from 'react';
-import type { CurvePointCollection } from './useCurve';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { sleep } from '@/ui/utils';
+import { CurvePointCollection } from '@/background/service/preference';
+import { useRabbyDispatch, useRabbyGetter } from '@/ui/store';
+import { formChartData } from './useCurve';
+import { normalizeAndVaryChainList, normalizeChainList } from '@/utils/account';
+import { useRefState } from '@/ui/hooks/useRefState';
+import { usePrevious } from 'react-use';
 
+/** @deprecated */
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
-type AddressCacheItem = {
-  balance: number | null;
-  matteredChainBalances: DisplayChainWithWhiteLogo[];
-  chainBalancesWithValue: DisplayChainWithWhiteLogo[];
-  originalCurveData: CurvePointCollection;
-  // curveChartData: CurveChartData;
-};
-type AddressCacheDict = Record<string, AddressCacheItem>;
-function cacheHomeBalanceView(newValue: AddressCacheDict) {
-  localStorage.setItem(HomeBalanceViewCacheKey, JSON.stringify(newValue));
-
-  return newValue;
+if (localStorage.getItem(HomeBalanceViewCacheKey)) {
+  localStorage.removeItem(HomeBalanceViewCacheKey);
 }
-function getHomeBalanceViewCache(): AddressCacheDict {
-  const cache = localStorage.getItem(HomeBalanceViewCacheKey);
 
-  try {
-    const ret = cache ? JSON.parse(cache) : {};
+export function useHomeBalanceViewOuterPrefetch(
+  currentAddress?: string | null
+) {
+  const dispatch = useRabbyDispatch();
 
-    if (ret && typeof ret === 'object') {
-      return ret;
-    }
+  const {
+    state: dashboardBalanceCacheInited,
+    stateRef: dashboardBalanceCacheInitedRef,
+    setRefState: setDashboardBalanceCacheInitedRef,
+  } = useRefState(false);
+  const prevAddress = usePrevious(currentAddress);
 
-    return {};
-  } catch (err) {
-    console.error(err);
-    return {};
-  }
-}
-export function useHomeBalanceView(currentAddress?: string | undefined) {
-  const [addressBalanceMap, setAddressBalanceMap] = useState(
-    getHomeBalanceViewCache()
-  );
+  useEffect(() => {
+    if (!currentAddress) return;
+    if (prevAddress === currentAddress) return;
 
-  const cacheHomeBalanceByAddress = useCallback(
-    (address: string, input: Partial<AddressCacheItem>) => {
-      setAddressBalanceMap((prev) => {
-        const next = { ...prev };
-        next[address] = { ...next[address] };
-        if (input.balance) next[address].balance = input.balance;
-        if (input.matteredChainBalances)
-          next[address].matteredChainBalances = input.matteredChainBalances;
-        if (input.chainBalancesWithValue)
-          next[address].chainBalancesWithValue = input.chainBalancesWithValue;
-        if (input.originalCurveData) {
-          next[address].originalCurveData = input.originalCurveData;
-          // next[address].curveChartData = formChartData(
-          //   input.originalCurveData,
-          //   input.balance || 0,
-          //   new Date().getTime()
-          // );
-        }
+    setDashboardBalanceCacheInitedRef(false);
+  }, [prevAddress, currentAddress, setDashboardBalanceCacheInitedRef]);
 
-        return cacheHomeBalanceView(next);
-      });
-    },
-    []
-  );
+  useEffect(() => {
+    if (!currentAddress) return;
+    if (dashboardBalanceCacheInitedRef.current) return;
 
-  const deleteHomeBalanceByAddress = useCallback((address: string) => {
-    setAddressBalanceMap((prev) => {
-      const next = { ...prev };
-      delete next[address];
-      return cacheHomeBalanceView(next);
+    Promise.allSettled([
+      dispatch.account.getPersistedBalanceAboutCacheAsync(currentAddress),
+      sleep(50),
+    ]).finally(() => {
+      setDashboardBalanceCacheInitedRef(true);
     });
-  }, []);
+  }, [
+    dispatch,
+    currentAddress,
+    dashboardBalanceCacheInitedRef,
+    setDashboardBalanceCacheInitedRef,
+  ]);
 
-  //   useEffect(() => {
-  //     if (prevAddress && currentAddress !== prevAddress) {
-  //       deleteHomeBalanceByAddress(prevAddress);
-  //     }
-  //   }, [prevAddress, currentAddress]);
+  return {
+    dashboardBalanceCacheInited,
+  };
+}
 
-  const currentHomeBalanceCache = !currentAddress
-    ? null
-    : addressBalanceMap[currentAddress ?? ''];
+export function useHomeBalanceView(currentAddress?: string | undefined) {
+  const cacheAboutData = useRabbyGetter(
+    (s) => s.account.currentBalanceAboutMap
+  );
 
-  // useEffect(() => {
-  //   if (!currentAddress) return;
+  const currentHomeBalanceCache = useMemo(() => {
+    const { balanceMap, curvePointsMap } = cacheAboutData;
+    const totalBalance = balanceMap[currentAddress || ''];
+    const curvePoints = curvePointsMap[currentAddress || ''];
 
-  //   const handler = async (ret) => {
-  //     if (!isSameAddress(currentAddress, ret.accountToRefresh)) return;
+    if (!totalBalance || !curvePoints) return null;
 
-  //     deleteHomeBalanceByAddress(ret.accountToRefresh);
-  //   };
-  //   eventBus.addEventListener(EVENTS.FORCE_EXPIRE_ADDRESS_BALANCE, handler);
+    const balanceValue = totalBalance?.total_usd_value || 0;
 
-  //   return () => {
-  //     eventBus.removeEventListener(EVENTS.FORCE_EXPIRE_ADDRESS_BALANCE, handler);
-  //   };
-  // }, [currentAddress, deleteHomeBalanceByAddress]);
+    const { chainList, chainListWithValue } = normalizeAndVaryChainList(
+      totalBalance?.chain_list || []
+    );
+
+    return {
+      balance: balanceValue,
+      originalCurveData: curvePoints || [],
+      curveChartData: formChartData(
+        curvePoints || [],
+        balanceValue,
+        Date.now()
+      ),
+      matteredChainBalances: chainList,
+      chainBalancesWithValue: chainListWithValue || [],
+    };
+  }, [currentAddress, cacheAboutData]);
+
+  const deleteHomeBalanceByAddress = useCallback((address: string) => {}, []);
 
   return {
     currentHomeBalanceCache: currentHomeBalanceCache?.balance
       ? currentHomeBalanceCache
       : null,
-    cacheHomeBalanceByAddress,
     deleteHomeBalanceByAddress,
   };
 }

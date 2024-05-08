@@ -113,9 +113,15 @@ async function restoreAppState() {
   eventBus.addEventListener(EVENTS_IN_BG.ON_TX_COMPLETED, ({ address }) => {
     if (!address) return;
 
-    walletController.forceExpireAddressBalance(address);
+    walletController.forceExpireInMemoryAddressBalance(address);
     walletController.forceExpireNetCurve(address);
   });
+
+  if (appIsDev) {
+    globalThis._forceExpireBalanceAboutData = (address: string) => {
+      eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, { address });
+    };
+  }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
