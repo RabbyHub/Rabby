@@ -598,7 +598,7 @@ class ProviderController extends BaseController {
             origin,
           });
         }
-        const errMsg = e.message || JSON.stringify(e);
+        const errMsg = e.details || e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
@@ -1013,10 +1013,8 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
 
       if (connected) {
-        if (
-          Number(chainParams.chainId) ===
-          findChain({ enum: connected.chain })?.id
-        ) {
+        // if rabby supported this chain, do not show popup
+        if (findChain({ id: chainParams.chainId })) {
           return true;
         }
       }
@@ -1099,14 +1097,18 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
+        // if rabby supported this chain, do not show popup
         if (
-          Number(chainId) ===
           findChain({
-            enum: connected.chain,
-          })?.id
+            id: chainId,
+          })
         ) {
           return true;
         }
+        throw ethErrors.provider.custom({
+          code: 4902,
+          message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+        });
       }
     },
     { height: 650 },

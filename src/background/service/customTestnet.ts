@@ -130,7 +130,7 @@ class CustomTestnetService {
         return {
           error: {
             key: 'id',
-            message: 'Chain already supported by Rabby Wallet',
+            message: 'Chain already integrated by Rabby Wallet',
           },
         };
       }

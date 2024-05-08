@@ -1,6 +1,6 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Account, ChainGas } from 'background/service/preference';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
@@ -23,10 +23,12 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
+  MINIMUM_GAS_LIMIT,
 } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -37,6 +39,7 @@ import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { getAddress } from 'viem';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import i18n from '@/i18n';
 
 const { TabPane } = Tabs;
 
@@ -63,6 +66,144 @@ export const SignTitle = styled.div`
   }
 `;
 
+const checkGasAndNonce = ({
+  recommendGasLimitRatio,
+  recommendGasLimit,
+  recommendNonce,
+  tx,
+  gasLimit,
+  nonce,
+  isCancel,
+  maxGasCostAmount,
+  isSpeedUp,
+  isGnosisAccount,
+  nativeTokenBalance,
+}: {
+  recommendGasLimitRatio: number;
+  nativeTokenBalance: string;
+  recommendGasLimit: number | string | BigNumber;
+  recommendNonce: number | string | BigNumber;
+  tx: Tx;
+  gasLimit: number | string | BigNumber;
+  nonce: number | string | BigNumber;
+  maxGasCostAmount: number | string | BigNumber;
+  isCancel: boolean;
+  isSpeedUp: boolean;
+  isGnosisAccount: boolean;
+}) => {
+  const errors: {
+    code: number;
+    msg: string;
+    level?: 'warn' | 'danger' | 'forbidden';
+  }[] = [];
+  if (!isGnosisAccount && new BigNumber(gasLimit).lt(MINIMUM_GAS_LIMIT)) {
+    errors.push({
+      code: 3006,
+      msg: i18n.t('page.signTx.gasLimitNotEnough'),
+      level: 'forbidden',
+    });
+  }
+  if (
+    !isGnosisAccount &&
+    new BigNumber(gasLimit).lt(
+      new BigNumber(recommendGasLimit).times(recommendGasLimitRatio)
+    ) &&
+    new BigNumber(gasLimit).gte(21000)
+  ) {
+    if (recommendGasLimitRatio === DEFAULT_GAS_LIMIT_RATIO) {
+      const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
+      if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      } else if (realRatio.lt(1)) {
+        errors.push({
+          code: 3005,
+          msg: i18n.t('page.signTx.gasLimitLessThanGasUsed'),
+          level: 'danger',
+        });
+      }
+    } else {
+      if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      }
+    }
+  }
+  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+    ? new BigNumber(0)
+    : sendNativeTokenAmount;
+  if (
+    !isGnosisAccount &&
+    new BigNumber(maxGasCostAmount)
+      .plus(sendNativeTokenAmount.div(1e18))
+      .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
+  ) {
+    errors.push({
+      code: 3001,
+      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
+      level: 'forbidden',
+    });
+  }
+  if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
+    errors.push({
+      code: 3003,
+      msg: i18n.t('page.signTx.nonceLowerThanExpect', [
+        new BigNumber(recommendNonce),
+      ]),
+    });
+  }
+  return errors;
+};
+
+const useCheckGasAndNonce = ({
+  recommendGasLimitRatio,
+  recommendGasLimit,
+  recommendNonce,
+  tx,
+  gasLimit,
+  nonce,
+  isCancel,
+  maxGasCostAmount,
+  isSpeedUp,
+  isGnosisAccount,
+  nativeTokenBalance,
+}: Parameters<typeof checkGasAndNonce>[0]) => {
+  return useMemo(
+    () =>
+      checkGasAndNonce({
+        recommendGasLimitRatio,
+        recommendGasLimit,
+        recommendNonce,
+        tx,
+        gasLimit,
+        nonce,
+        isCancel,
+        maxGasCostAmount,
+        isSpeedUp,
+        isGnosisAccount,
+        nativeTokenBalance,
+      }),
+    [
+      recommendGasLimit,
+      recommendNonce,
+      tx,
+      gasLimit,
+      nonce,
+      isCancel,
+      maxGasCostAmount,
+      isSpeedUp,
+      isGnosisAccount,
+      nativeTokenBalance,
+    ]
+  );
+};
 interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
@@ -483,6 +624,22 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
+  const checkErrors = useCheckGasAndNonce({
+    recommendGasLimit: gasUsed || 0,
+    recommendNonce: recommendNonce || '',
+    gasLimit: Number(gasLimit),
+    nonce: Number(realNonce || tx.nonce),
+    maxGasCostAmount: new BigNumber(selectedGas?.price || 0)
+      .multipliedBy(gasLimit || 0)
+      .div(1e18),
+    isSpeedUp,
+    isCancel,
+    tx,
+    isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
+    nativeTokenBalance,
+    recommendGasLimitRatio: 1.5,
+  });
+
   if (!chain) {
     return null;
   }
@@ -535,7 +692,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           is1559={false}
           isHardware={isHardware}
           manuallyChangeGasLimit={false}
-          errors={[]}
+          errors={checkErrors}
           engineResults={[]}
           nativeTokenBalance={nativeTokenBalance}
           gasPriceMedian={null}
@@ -553,15 +710,23 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         onCancel={handleCancel}
         onSubmit={handleAllow}
         onIgnoreAllRules={() => {}}
-        enableTooltip={!canProcess}
-        tooltipContent={cantProcessReason}
+        enableTooltip={
+          !canProcess ||
+          !!checkErrors.find((item) => item.level === 'forbidden')
+        }
+        tooltipContent={
+          checkErrors.find((item) => item.level === 'forbidden')
+            ? checkErrors.find((item) => item.level === 'forbidden')!.msg
+            : cantProcessReason
+        }
         disabledProcess={
           !isReady ||
           (selectedGas ? selectedGas.price < 0 : true) ||
           isGnosisAccount ||
           isCoboArugsAccount ||
           (isLedger && !hasConnectedLedgerHID) ||
-          !canProcess
+          !canProcess ||
+          !!checkErrors.find((item) => item.level === 'forbidden')
         }
       />
     </>
