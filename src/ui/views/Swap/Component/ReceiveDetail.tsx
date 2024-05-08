@@ -12,7 +12,8 @@ import {
 import styled from 'styled-components';
 import ImgVerified from '@/ui/assets/swap/verified.svg';
 import ImgWarning from '@/ui/assets/swap/warn.svg';
-import ImgInfo from '@/ui/assets/swap/info-outline.svg';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+
 import ImgSwitch from '@/ui/assets/swap/switch.svg';
 import ImgGas from '@/ui/assets/swap/gas.svg';
 import ImgLock from '@/ui/assets/swap/lock.svg';
@@ -262,7 +263,7 @@ export const ReceiveDetails = (
             </div>
             {!!activeProvider?.gasUsd && (
               <div className="flex items-center gap-2 text-12 text-r-neutral-foot font-normal">
-                <img src={ImgGas} className="w-14 h-14 relative top-[-1px] " />
+                <img src={ImgGas} className="w-14 h-14 relative" />
                 <span>{activeProvider?.gasUsd}</span>
               </div>
             )}
@@ -330,7 +331,7 @@ export const ReceiveDetails = (
                 </div>
               }
             >
-              <img src={ImgInfo} />
+              <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
             </Tooltip>
           </div>
         </div>
