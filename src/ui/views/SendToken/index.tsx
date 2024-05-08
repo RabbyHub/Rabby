@@ -815,7 +815,7 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const gasUsed = await wallet.requestETHRpc(
+        const _gasUsed = await wallet.requestETHRpc(
           {
             method: 'eth_estimateGas',
             params: [
@@ -828,6 +828,9 @@ const SendToken = () => {
           },
           chainItem.serverId
         );
+        const gasUsed = chainItem.isTestnet
+          ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
+          : _gasUsed;
         setEstimateGas(Number(gasUsed));
         let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
         if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
