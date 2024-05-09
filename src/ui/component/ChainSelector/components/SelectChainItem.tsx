@@ -77,15 +77,16 @@ export const SelectChainItem = forwardRef(
       <Tooltip
         trigger={['click', 'hover']}
         mouseEnterDelay={3}
-        overlayClassName={clsx('rectangle left-[20px]')}
+        overlayClassName={clsx('rectangle')}
         placement="top"
         title={finalDisabledTips}
         visible={disabled ? undefined : false}
+        align={{ targetOffset: [0, -30] }}
       >
         <div
           className={clsx(
             'select-chain-item',
-            disabled && 'opacity-50',
+            disabled && 'opacity-50 select-chain-item-disabled',
             className
           )}
           ref={ref}

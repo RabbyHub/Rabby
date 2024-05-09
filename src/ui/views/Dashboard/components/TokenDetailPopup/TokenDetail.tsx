@@ -1,5 +1,5 @@
 import { useInfiniteScroll } from 'ahooks';
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
 import clsx from 'clsx';
 import { last } from 'lodash';
@@ -261,10 +261,11 @@ const TokenDetail = ({
           </div>
         </div>
         {!isHiddenButton && !hideOperationButtons && (
-          <div className="flex flex-row justify-between J_buttons_area">
-            <Tooltip
-              overlayClassName="rectangle token_swap__tooltip"
-              placement="topLeft"
+          <div className="flex flex-row justify-between J_buttons_area relative">
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
+              placement="top"
+              arrowPointAtCenter
               title={t('page.dashboard.tokenDetail.notSupported')}
               visible={tokenSupportSwap ? false : undefined}
             >
@@ -282,7 +283,7 @@ const TokenDetail = ({
               >
                 {t('page.dashboard.tokenDetail.swap')}
               </Button>
-            </Tooltip>
+            </TooltipWithMagnetArrow>
 
             <Button
               type="primary"
@@ -317,7 +318,7 @@ const TokenDetail = ({
         ))}
         {(loadingMore || loading) && <Loading count={5} active />}
         {isEmpty && (
-          <div className="token-txs-history__empty">
+          <div className="token-txs-history__empty mt-60">
             <img className="no-data" src="./images/nodata-tx.png" />
             <p className="text-14 text-gray-content mt-12">
               {t('page.dashboard.tokenDetail.noTransactions')}

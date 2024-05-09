@@ -840,7 +840,10 @@ const GasSelector = ({
                         disabled={disabled}
                       />
                     ) : (
-                      new BigNumber(item.price / 1e9).toFixed()
+                      formatTokenAmount(
+                        new BigNumber(item.price / 1e9).toFixed(),
+                        6
+                      )
                     )}
                   </div>
                 </div>
