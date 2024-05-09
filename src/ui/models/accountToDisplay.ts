@@ -115,7 +115,7 @@ export const accountToDisplay = createModel<RootModel>()({
         (store.accountToDisplay?.accountsList || []).map((item) => {
           return async () => {
             try {
-              const balance = await store.app.wallet.getAddressBalance(
+              const balance = await store.app.wallet.getInMemoryAddressBalance(
                 item.address
               );
               return {

@@ -32,7 +32,7 @@ import {
   useRabbyGetter,
   useRabbySelector,
 } from 'ui/store';
-import { isSameAddress, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import {
   BalanceView,
   ChainAndSiteSelector,
@@ -44,7 +44,6 @@ import './style.less';
 import PendingApproval from './components/PendingApproval';
 import PendingTxs from './components/PendingTxs';
 import { getKRCategoryByType } from '@/utils/transaction';
-import eventBus from '@/eventBus';
 
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
@@ -54,6 +53,7 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
+import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -275,9 +275,14 @@ const Dashboard = () => {
     });
     history.push('/add-address');
   };
+
+  const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
+    currentAccount?.address
+  );
+
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
-  }, []);
+  }, [dispatch]);
 
   const hideAllList = () => {
     setShowAssets(false);
@@ -393,7 +398,9 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} />
+          {dashboardBalanceCacheInited && (
+            <BalanceView currentAccount={currentAccount} />
+          )}
           {isGnosis ? (
             <Queue
               count={gnosisPendingCount || 0}

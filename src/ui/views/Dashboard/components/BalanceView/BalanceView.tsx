@@ -7,11 +7,9 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import useCurrentBalance, {
-  filterChainWithBalance,
-} from '@/ui/hooks/useCurrentBalance';
-import { isSameAddress, sleep, useCommonPopupView, useWallet } from 'ui/utils';
-import { CHAINS, EVENTS, KEYRING_TYPE } from 'consts';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useCommonPopupView, useWallet } from 'ui/utils';
+import { KEYRING_TYPE } from 'consts';
 import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
@@ -28,7 +26,6 @@ import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
-import eventBus from '@/eventBus';
 import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
@@ -43,13 +40,10 @@ const BalanceView = ({
   currentAccount?: Account | null;
 }) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
 
-  const {
-    currentHomeBalanceCache,
-    cacheHomeBalanceByAddress,
-    deleteHomeBalanceByAddress,
-  } = useHomeBalanceView(currentAccount?.address);
+  const { currentHomeBalanceCache } = useHomeBalanceView(
+    currentAccount?.address
+  );
 
   const initHasCacheRef = useRef(!!currentHomeBalanceCache?.balance);
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(
@@ -102,7 +96,12 @@ const BalanceView = ({
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [isDebounceHover, setIsDebounceHover] = useState(false);
 
-  const { balance, curveChartData, chainBalancesWithValue } = useMemo(() => {
+  const {
+    balance,
+    curveChartData,
+    matteredChainBalances,
+    chainBalancesWithValue,
+  } = useMemo(() => {
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
 
     return {
@@ -114,32 +113,19 @@ const BalanceView = ({
           balanceValue,
           Date.now()
         ),
+      matteredChainBalances: latestMatteredChainBalances.length
+        ? latestMatteredChainBalances
+        : currentHomeBalanceCache?.matteredChainBalances || [],
       chainBalancesWithValue: latestChainBalancesWithValue.length
         ? latestChainBalancesWithValue
         : currentHomeBalanceCache?.chainBalancesWithValue || [],
     };
   }, [
     latestBalance,
+    latestMatteredChainBalances,
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
-  ]);
-
-  useEffect(() => {
-    if (!currentAccount?.address) return;
-
-    cacheHomeBalanceByAddress(currentAccount?.address, {
-      balance,
-      chainBalancesWithValue,
-      originalCurveData: latestCurveData,
-    });
-  }, [
-    currentAccount,
-    cacheHomeBalanceByAddress,
-    deleteHomeBalanceByAddress,
-    balance,
-    chainBalancesWithValue,
-    latestCurveData,
   ]);
 
   const getCacheExpired = useCallback(async () => {
@@ -246,16 +232,16 @@ const BalanceView = ({
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances: latestMatteredChainBalances,
-        balance: latestBalance,
+        matteredChainBalances,
+        balance,
         balanceLoading,
-        isEmptyAssets: !latestMatteredChainBalances.length,
+        isEmptyAssets: !matteredChainBalances.length,
         isOffline: !loadBalanceSuccess,
       });
     }
   }, [
-    latestMatteredChainBalances,
-    latestBalance,
+    matteredChainBalances,
+    balance,
     balanceLoading,
     componentName,
     setData,
@@ -348,12 +334,10 @@ const BalanceView = ({
             {shouldShowBalanceLoading ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
             ) : (
-              !!currentBalance && (
-                <BalanceLabel
-                  // isCache={balanceFromCache}
-                  balance={currentBalance}
-                />
-              )
+              <BalanceLabel
+                // isCache={balanceFromCache}
+                balance={currentBalance || 0}
+              />
             )}
           </div>
           <div

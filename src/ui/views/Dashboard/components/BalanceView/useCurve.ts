@@ -8,8 +8,11 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
+import { CurvePointCollection } from '@/background/service/preference';
 
 type CurveList = Array<{ timestamp: number; usd_value: number }>;
+
+const EXPECTED_CHECK_DIFF = 600;
 
 export const formChartData = (
   data: CurveList,
@@ -38,22 +41,40 @@ export const formChartData = (
     }) || [];
 
   // ONLY patch realtime newworth on realtimeNetWorth is LOADED
-  if (isMeaningfulNumber(realtimeNetWorth) && realtimeTimestamp) {
+  if (
+    isMeaningfulNumber(realtimeNetWorth) &&
+    realtimeTimestamp &&
+    list.length
+  ) {
     const realtimeChange = realtimeNetWorth - startUsdValue;
 
-    list.push({
-      value: realtimeNetWorth || 0,
-      netWorth: realtimeNetWorth
-        ? `$${formatUsdValue(realtimeNetWorth)}`
-        : '$0',
-      change: `${formatUsdValue(Math.abs(realtimeChange))}`,
-      isLoss: realtimeChange < 0,
-      changePercent:
-        startUsdValue === 0
-          ? `${realtimeNetWorth === 0 ? '0' : '100.00'}%`
-          : `${(Math.abs(realtimeChange * 100) / startUsdValue).toFixed(2)}%`,
-      timestamp: Math.floor(realtimeTimestamp / 1000),
-    });
+    const lastTwoSecs = [
+      list[list.length - 2]?.timestamp || 0,
+      list[list.length - 1]?.timestamp || 0,
+    ];
+    const checkDiff = Math.min(
+      Math.max(lastTwoSecs[1] - lastTwoSecs[0], 0),
+      EXPECTED_CHECK_DIFF
+    );
+    const realTimeSec = Math.floor(realtimeTimestamp / 1000);
+    const isLastPointSmooth =
+      !!lastTwoSecs[1] && realTimeSec - lastTwoSecs[1] <= checkDiff;
+
+    if (isLastPointSmooth) {
+      list.push({
+        value: realtimeNetWorth || 0,
+        netWorth: realtimeNetWorth
+          ? `$${formatUsdValue(realtimeNetWorth)}`
+          : '$0',
+        change: `${formatUsdValue(Math.abs(realtimeChange))}`,
+        isLoss: realtimeChange < 0,
+        changePercent:
+          startUsdValue === 0
+            ? `${realtimeNetWorth === 0 ? '0' : '100.00'}%`
+            : `${(Math.abs(realtimeChange * 100) / startUsdValue).toFixed(2)}%`,
+        timestamp: realTimeSec,
+      });
+    }
   }
 
   const endNetWorth = list?.length
@@ -76,9 +97,6 @@ export const formChartData = (
   };
 };
 
-export type CurvePointCollection = IExtractFromPromise<
-  ReturnType<WalletController['getNetCurve']>
->;
 export type CurveChartData = ReturnType<typeof formChartData>;
 export const useCurve = (
   address: string | undefined,

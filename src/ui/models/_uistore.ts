@@ -30,6 +30,12 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
+      // case 'curvePointsMap': {
+      //   dispatch.account.setField({
+      //     curvePointsMap: payload.partials.curvePointsMap,
+      //   })
+      //   break;
+      // }
     }
   });
 

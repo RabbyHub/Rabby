@@ -840,10 +840,16 @@ const GasSelector = ({
                         disabled={disabled}
                       />
                     ) : (
-                      formatTokenAmount(
-                        new BigNumber(item.price / 1e9).toFixed(),
-                        6
-                      )
+                      <Tooltip
+                        title={new BigNumber(item.price / 1e9).toFixed()}
+                        overlayClassName={clsx('rectangle')}
+                      >
+                        <div>
+                          {new BigNumber(item.price / 1e9)
+                            .toFixed()
+                            .slice(0, 8)}
+                        </div>
+                      </Tooltip>
                     )}
                   </div>
                 </div>

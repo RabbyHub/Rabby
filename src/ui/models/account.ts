@@ -1,6 +1,9 @@
 import { Chain } from '@debank/common';
 
-import type { Account } from '@/background/service/preference';
+import type {
+  Account,
+  CurvePointCollection,
+} from '@/background/service/preference';
 import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -8,7 +11,7 @@ import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
-import { coerceFloat } from '../utils';
+import { coerceFloat, isSameAddress } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
 
@@ -21,8 +24,13 @@ export interface AccountState {
   visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
   keyrings: DisplayedKeryring[];
-  balanceMap: {
-    [address: string]: TotalBalanceResponse;
+  balanceAboutCache: {
+    totalBalance: TotalBalanceResponse | null;
+    curvePoints: CurvePointCollection;
+  };
+  balanceAboutCacheMap: {
+    balanceMap: Record<string, TotalBalanceResponse>;
+    curvePointsMap: Record<string, CurvePointCollection>;
   };
   matteredChainBalances: {
     [P in Chain['serverId']]?: DisplayChainWithWhiteLogo;
@@ -65,7 +73,14 @@ export const account = createModel<RootModel>()({
     visibleAccounts: [],
     hiddenAccounts: [],
     keyrings: [],
-    balanceMap: {},
+    balanceAboutCache: {
+      totalBalance: null,
+      curvePoints: [],
+    },
+    balanceAboutCacheMap: {
+      balanceMap: {},
+      curvePointsMap: {},
+    },
     matteredChainBalances: {},
     testnetMatteredChainBalances: {},
     mnemonicAccounts: [],
@@ -168,6 +183,9 @@ export const account = createModel<RootModel>()({
       currentAccountAddr() {
         return slice((account) => account.currentAccount?.address);
       },
+      currentBalanceAboutMap() {
+        return slice((account) => account.balanceAboutCacheMap);
+      },
       allMatteredChainBalances() {
         return slice((account) => {
           return {
@@ -254,6 +272,30 @@ export const account = createModel<RootModel>()({
         KEYRING_CLASS.MNEMONIC
       );
       dispatch.account.setField({ mnemonicAccounts });
+    },
+
+    async getPersistedBalanceAboutCacheAsync(_?: string, _store?) {
+      const store = _store!;
+      // const currentAddr = (store as any).account.currentAccount?.address;
+      // const couldNarrowCacheSize = address && currentAddr && isSameAddress(address, currentAddr) ? address : null;
+
+      const result = await store.app.wallet.getPersistedBalanceAboutCacheMap();
+
+      if (result) {
+        dispatch.account.setField({
+          balanceAboutCacheMap: result
+            ? {
+                balanceMap: result.balanceMap || {},
+                curvePointsMap: result.curvePointsMap || {},
+              }
+            : {
+                balanceMap: {},
+                curvePointsMap: {},
+              },
+        });
+      }
+
+      return result;
     },
 
     async addCustomizeToken(token: AbstractPortfolioToken, store) {
@@ -375,7 +417,7 @@ export const account = createModel<RootModel>()({
 
       await requestOpenApiMultipleNets<TotalBalanceResponse | null, void>(
         (ctx) => {
-          return wallet.getAddressBalance(
+          return wallet.getInMemoryAddressBalance(
             currentAccount.address,
             true /* force */,
             ctx.isTestnetTask

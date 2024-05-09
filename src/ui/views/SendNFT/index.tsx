@@ -282,7 +282,7 @@ const SendNFT = () => {
         await Promise.allSettled([
           fetchContactAccounts(),
           // trigger get balance of address
-          wallet.getAddressBalance(result.contactAddrAdded, true),
+          wallet.getInMemoryAddressBalance(result.contactAddrAdded, true),
         ]);
       },
     });

@@ -20,6 +20,8 @@ import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import dayjs from 'dayjs';
+import type { IExtractFromPromise } from '@/ui/utils/type';
+import { OpenApiService } from '@rabby-wallet/rabby-api';
 
 const version = process.env.release || '0';
 
@@ -57,6 +59,9 @@ export type IHighlightedAddress = {
   brandName: Account['brandName'];
   address: Account['address'];
 };
+export type CurvePointCollection = IExtractFromPromise<
+  ReturnType<OpenApiService['getNetCurve']>
+>;
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -64,9 +69,20 @@ export interface PreferenceStore {
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  curvePointsMap: {
+    [address: string]: CurvePointCollection;
+  };
   testnetBalanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  /**
+   * @why only mainnet assets would be calculated in Dashboard, we don't need curvePointsMap for testnet
+   */
+  // testnetCurveDataMap: {
+  //   [address: string]: {
+  //     curveData: CurvePointCollection;
+  //   };
+  // };
   /**
    * @deprecated
    */
@@ -134,6 +150,7 @@ class PreferenceService {
         externalLinkAck: false,
         hiddenAddresses: [],
         balanceMap: {},
+        curvePointsMap: {},
         testnetBalanceMap: {},
         useLedgerLive: false,
         locale: defaultLang,
@@ -437,14 +454,6 @@ class PreferenceService {
     };
   };
 
-  updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
-    const balanceMap = this.store.balanceMap || {};
-    this.store.balanceMap = {
-      ...balanceMap,
-      [address.toLowerCase()]: data,
-    };
-  };
-
   removeTestnetAddressBalance = (address: string) => {
     const key = address.toLowerCase();
     if (key in this.store.testnetBalanceMap) {
@@ -463,15 +472,63 @@ class PreferenceService {
     }
   };
 
-  getAddressBalance = (address: string): TotalBalanceResponse | null => {
-    const balanceMap = this.store.balanceMap || {};
-    return balanceMap[address.toLowerCase()] || null;
+  updateBalanceAboutCache = (
+    address: string,
+    data: {
+      totalBalance?: TotalBalanceResponse;
+      curvePoints?: CurvePointCollection;
+    }
+  ) => {
+    const addr = address.toLowerCase();
+    if (data.totalBalance) {
+      const balanceMap = this.store.balanceMap || {};
+      this.store.balanceMap = {
+        ...balanceMap,
+        [addr]: data.totalBalance,
+      };
+    }
+
+    if (data.curvePoints) {
+      const curvePointsMap = this.store.curvePointsMap || {};
+      this.store.curvePointsMap = {
+        ...curvePointsMap,
+        [addr]: data.curvePoints,
+      };
+    }
   };
 
-  getTestnetAddressBalance = (address: string): TotalBalanceResponse | null => {
-    const balanceMap = this.store.testnetBalanceMap || {};
-    return balanceMap[address.toLowerCase()] || null;
+  getBalanceAboutCacheByAddress = (address: string) => {
+    const addr = address.toLowerCase();
+    const balanceMap = this.store.balanceMap || {};
+    const curvePointsMap = this.store.curvePointsMap || {};
+
+    return {
+      totalBalance: balanceMap[addr] || null,
+      curvePoints: curvePointsMap[addr] || null,
+    };
   };
+
+  getBalanceAboutCacheMap = () => {
+    return {
+      balanceMap: this.store.balanceMap || {},
+      curvePointsMap: this.store.curvePointsMap || {},
+    };
+  };
+
+  removeCurvePoints = (address: string) => {
+    const key = address.toLowerCase();
+    if (key in this.store.curvePointsMap) {
+      const map = this.store.curvePointsMap;
+      delete map[key];
+      this.store.curvePointsMap = map;
+    }
+  };
+
+  /** useless now, maybe useful in the future */
+  // getTestnetAddressBalance = (address: string): TotalBalanceResponse | null => {
+  //   const balanceMap = this.store.testnetBalanceMap || {};
+  //   return balanceMap[address.toLowerCase()] || null;
+  // };
 
   getExternalLinkAck = (): boolean => {
     return this.store.externalLinkAck;
