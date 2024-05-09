@@ -115,7 +115,7 @@ export const useCurve = (
   const fetch = async (addr: string, force = false) => {
     setIsLoading(true);
     try {
-      const curve = await wallet.getNetCurve(addr, force);
+      const curve = await wallet.getInMemoryNetCurve(addr, force);
       setData(curve);
     } catch (err) {
       console.error(err);
@@ -133,7 +133,7 @@ export const useCurve = (
     if (!address) return false;
 
     try {
-      return wallet.isNetCurveExpired(address);
+      return wallet.isInMemoryNetCurveExpired(address);
     } catch (error) {
       return false;
     }

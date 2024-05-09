@@ -114,7 +114,7 @@ async function restoreAppState() {
     if (!address) return;
 
     walletController.forceExpireInMemoryAddressBalance(address);
-    walletController.forceExpireNetCurve(address);
+    walletController.forceExpireInMemoryNetCurve(address);
   });
 
   if (appIsDev) {
