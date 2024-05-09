@@ -58,26 +58,25 @@ export const ConfirmDrawer = ({
       style: CSSProperties;
     }) => {
       const item = data[index];
+      const disabled = new BigNumber(item.amount)
+        .times(item.price)
+        .lt(new BigNumber(cost).times(1.2));
 
       return (
         <Tooltip
           overlayClassName={clsx('rectangle')}
           placement="top"
-          visible={
-            new BigNumber(item.amount)
-              .times(item.price)
-              .lt(new BigNumber(cost).times(1.2))
-              ? undefined
-              : false
-          }
+          visible={disabled ? undefined : false}
           title={t('page.gasTopUp.InsufficientBalanceTips')}
+          align={{ targetOffset: [0, -30] }}
         >
           <div
             key={item.id}
             style={style}
             className={clsx(
-              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
+              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent  rounded-[6px]',
               'text-13 font-medium text-r-neutral-title-1',
+              !disabled && 'hover:border-blue-light',
               new BigNumber(item.amount)
                 .times(item.price)
                 .lt(new BigNumber(cost).times(1.2)) &&

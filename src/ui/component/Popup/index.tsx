@@ -3,9 +3,10 @@ import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.less';
-import { SvgIconCross } from 'ui/assets';
+import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
+  <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-foot" />
 );
 
 interface PopupProps extends DrawerProps {
