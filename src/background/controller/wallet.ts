@@ -1089,11 +1089,11 @@ export class WalletController extends BaseController {
 
   forceExpireInMemoryAddressBalance = (address: string, isTestnet = false) => {
     if (isTestnet) {
-      preferenceService.removeTestnetAddressBalance(address);
+      // preferenceService.removeTestnetAddressBalance(address);
       return this.getTestnetTotalBalanceCached.forceExpire(address);
     }
 
-    preferenceService.removeAddressBalance(address);
+    // preferenceService.removeAddressBalance(address);
     return this.getTotalBalanceCached.forceExpire(address);
   };
 
@@ -1134,16 +1134,16 @@ export class WalletController extends BaseController {
     BALANCE_LOADING_TIMES.TIMEOUT
   );
 
-  getNetCurve = (address: string, force = false) => {
+  getInMemoryNetCurve = (address: string, force = false) => {
     return this.getNetCurveCached.fn([address], address, force);
   };
 
-  forceExpireNetCurve = (address: string) => {
-    preferenceService.removeCurvePoints(address);
+  forceExpireInMemoryNetCurve = (address: string) => {
+    // preferenceService.removeCurvePoints(address);
     return this.getNetCurveCached.forceExpire(address);
   };
 
-  isNetCurveExpired = (address: string) => {
+  isInMemoryNetCurveExpired = (address: string) => {
     return this.getNetCurveCached.isExpired(address);
   };
 
