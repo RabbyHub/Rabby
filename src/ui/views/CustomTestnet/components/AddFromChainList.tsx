@@ -222,24 +222,24 @@ const CustomTestnetList = ({
         const chain = findChain({ id: item.id });
 
         return chain ? (
-          <TooltipWithMagnetArrow
-            className="rectangle w-[max-content]"
-            key={item.id + 'tooltip'}
-            trigger={['click']}
-            align={{
-              offset: [0, 30],
-            }}
-            placement="top"
-            title={
-              chain?.isTestnet
-                ? t('page.customTestnet.AddFromChainList.tips.added')
-                : t('page.customTestnet.AddFromChainList.tips.supported')
-            }
-          >
-            <div className="chain-list-item relative">
+          <div className="chain-list-item relative">
+            <TooltipWithMagnetArrow
+              className="rectangle w-[max-content]"
+              key={item.id + 'tooltip'}
+              trigger={['click']}
+              align={{
+                offset: [0, 30],
+              }}
+              placement="top"
+              title={
+                chain?.isTestnet
+                  ? t('page.customTestnet.AddFromChainList.tips.added')
+                  : t('page.customTestnet.AddFromChainList.tips.supported')
+              }
+            >
               <CustomTestnetItem item={item} disabled />
-            </div>
-          </TooltipWithMagnetArrow>
+            </TooltipWithMagnetArrow>
+          </div>
         ) : (
           <CustomTestnetItem
             item={item}

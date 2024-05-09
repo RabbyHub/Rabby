@@ -1,5 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import {
   MINIMUM_GAS_LIMIT,
   CAN_ESTIMATE_L1_FEE_CHAINS,
   ARB_LIKE_L2_CHAINS,
+  L2_ENUMS,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
@@ -428,7 +429,7 @@ const SendToken = () => {
         </>
       ),
     };
-  }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled]);
+  }, [t, temporaryGrant, toAddressInWhitelist, whitelistEnabled]);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
@@ -578,6 +579,10 @@ const SendToken = () => {
       }
 
       params.value = `0x${sendValue.toString(16)}`;
+      const noEstimateGasRequired =
+        !ARB_LIKE_L2_CHAINS.includes(chain.enum) &&
+        !L2_ENUMS.includes(chain.enum);
+
       try {
         const code = await wallet.requestETHRpc(
           {
@@ -586,17 +591,21 @@ const SendToken = () => {
           },
           chain.serverId
         );
-        if (estimateGas > 0) {
+        /**
+         * we dont' need always fetch estimateGas, if no `params.gas` set below,
+         * `params.gas` would be filled on Tx Page.
+         */
+        if (chain.needEstimateGas && estimateGas > 0) {
           params.gas = intToHex(estimateGas);
         } else if (
           code &&
           (code === '0x' || code === '0x0') &&
-          !ARB_LIKE_L2_CHAINS.includes(chain.enum)
+          noEstimateGasRequired
         ) {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       } catch (e) {
-        if (!ARB_LIKE_L2_CHAINS.includes(chain.enum)) {
+        if (noEstimateGasRequired) {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       }
@@ -806,7 +815,7 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const gasUsed = await wallet.requestETHRpc(
+        const _gasUsed = await wallet.requestETHRpc(
           {
             method: 'eth_estimateGas',
             params: [
@@ -819,6 +828,9 @@ const SendToken = () => {
           },
           chainItem.serverId
         );
+        const gasUsed = chainItem.isTestnet
+          ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
+          : _gasUsed;
         setEstimateGas(Number(gasUsed));
         let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
         if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
@@ -1066,6 +1078,7 @@ const SendToken = () => {
     if (inited) {
       initByCache();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited]);
 
   const getAlianName = async () => {
@@ -1156,12 +1169,14 @@ const SendToken = () => {
     return () => {
       wallet.clearPageStateCache();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (currentAccount) {
       getAlianName();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAccount]);
 
   return (

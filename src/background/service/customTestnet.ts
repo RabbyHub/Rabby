@@ -46,6 +46,7 @@ export interface TestnetChain extends TestnetChainBase {
   isTestnet?: boolean;
   logo: string;
   whiteLogo?: string;
+  needEstimateGas?: boolean;
 }
 
 export interface RPCItem {
@@ -129,7 +130,7 @@ class CustomTestnetService {
         return {
           error: {
             key: 'id',
-            message: 'Chain already supported by Rabby Wallet',
+            message: 'Chain already integrated by Rabby Wallet',
           },
         };
       }
