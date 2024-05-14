@@ -1028,7 +1028,8 @@
           "lockWallet": "Lock Wallet",
           "signatureRecord": "Signature Record",
           "manageAddress": "Manage Address",
-          "connectedDapp": "Connected Dapp"
+          "connectedDapp": "Connected Dapp",
+          "searchDapps": "Search Dapps"
         },
         "settings": {
           "label": "Settings",

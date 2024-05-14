@@ -39,7 +39,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
-import { openInTab, useWallet } from 'ui/utils';
+import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
@@ -47,6 +47,7 @@ import { ReactComponent as RcIconSettingsFeatureConnectedDapps } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboard/settings/follow-us.svg';
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
+import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
@@ -691,6 +692,19 @@ const SettingsInner = ({
             reportSettings('Connected Dapps');
           },
         },
+        {
+          leftIcon: RcIconSettingsSearchDapps,
+          content: t('page.dashboard.settings.features.searchDapps'),
+          onClick: () => {
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Search Dapps',
+            });
+            reportSettings('Search Dapps');
+            openInternalPageInTab('dapp-search');
+          },
+        },
       ] as SettingItem[],
     },
     settings: {
@@ -1007,9 +1021,7 @@ const SettingsInner = ({
   };
 
   if (process.env.DEBUG) {
-    renderData.features.items.splice(
-      -1,
-      0,
+    renderData.features.items.push(
       {
         leftIcon: RcIconServer,
         content: t('page.dashboard.settings.backendServiceUrl'),
@@ -1025,15 +1037,12 @@ const SettingsInner = ({
         rightIcon: (
           <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
         ),
+      } as typeof renderData.features.items[0],
+      {
+        content: t('page.dashboard.settings.clearWatchMode'),
+        onClick: handleClickClearWatchMode,
       } as typeof renderData.features.items[0]
     );
-  }
-
-  if (process.env.DEBUG) {
-    renderData.features.items.push({
-      content: t('page.dashboard.settings.clearWatchMode'),
-      onClick: handleClickClearWatchMode,
-    } as typeof renderData.features.items[0]);
   }
 
   const lockWallet = async () => {
