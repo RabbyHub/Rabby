@@ -9,6 +9,7 @@ import {
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
+import wallet from '../wallet';
 
 const networkIdMap: {
   [key: string]: string;
@@ -80,7 +81,9 @@ const hasOtherProvider = () => {
   if (!prev) {
     contextMenuService.init();
   }
-  setPopupIcon(isRabby ? 'rabby' : 'metamask');
+  if (wallet.isUnlocked()) {
+    setPopupIcon(isRabby ? 'rabby' : 'metamask');
+  }
   return true;
 };
 

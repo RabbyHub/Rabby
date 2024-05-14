@@ -981,6 +981,13 @@ export class WalletController extends BaseController {
     if (!alianNameInited && alianNames.length === 0) {
       this.initAlianNames();
     }
+    const hasOtherProvider = preferenceService.getHasOtherProvider();
+    const isDefaultWallet = preferenceService.getIsDefaultWallet();
+    if (!hasOtherProvider) {
+      setPopupIcon('default');
+    } else {
+      setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
+    }
   };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
 
@@ -988,6 +995,7 @@ export class WalletController extends BaseController {
     await keyringService.setLocked();
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
+    setPopupIcon('locked');
   };
 
   setAutoLockTime = (time: number) => {
@@ -2955,7 +2963,6 @@ export class WalletController extends BaseController {
     preferenceService.setIsDefaultWallet(val);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     if (hasOtherProvider) {
-      // todo: check is code
       const sites = permissionService
         .getSites()
         .filter((item) => !item.preferMetamask);
@@ -2966,9 +2973,16 @@ export class WalletController extends BaseController {
           site.origin
         );
       });
-      setPopupIcon(val ? 'rabby' : 'metamask');
+    }
+    const isUnlocked = this.isUnlocked();
+    if (isUnlocked) {
+      if (hasOtherProvider) {
+        setPopupIcon(val ? 'rabby' : 'metamask');
+      } else {
+        setPopupIcon('default');
+      }
     } else {
-      setPopupIcon('default');
+      setPopupIcon('locked');
     }
   };
   isDefaultWallet = (origin?: string) =>

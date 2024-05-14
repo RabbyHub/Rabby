@@ -91,12 +91,16 @@ export const isSameAddress = (a: string, b: string) => {
   return a.toLowerCase() === b.toLowerCase();
 };
 
-export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
+export const setPopupIcon = (
+  type: 'default' | 'rabby' | 'metamask' | 'locked'
+) => {
   const icons = [16, 19, 32, 48, 128].reduce((res, size) => {
-    if (type === 'default') {
-      res[size] = `images/icon-${size}.png`;
-    } else {
+    if (type === 'rabby' || type === 'metamask') {
       res[size] = `images/icon-default-${type}-${size}.png`;
+    } else if (type === 'locked') {
+      res[size] = `images/icon-lock-${size}.png`;
+    } else {
+      res[size] = `images/icon-${size}.png`;
     }
     return res;
   }, {});
