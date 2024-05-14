@@ -1366,7 +1366,8 @@
         "descTipWarningPrivacy": "签名可能涉及身份验证权限",
         "descTipWarningAssets": "签名可能涉及资产变动",
         "descTipWarningBoth": "该签名不涉及资产变动和身份验证权限"
-      }
+      },
+      "chain": "链"
     },
     "signTypedData": {
       "buyNFT": {

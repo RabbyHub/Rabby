@@ -59,6 +59,8 @@ import { ContractRequireData } from '../TypedDataActions/utils';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
+import { Col, Row } from './components/Table';
+import LogoWithText from './components/LogoWithText';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -198,6 +200,16 @@ const Actions = ({
           </div>
           <Divide />
           <div className="container">
+            <Col>
+              <Row isTitle>{t('page.signTx.chain')}</Row>
+              <Row>
+                <LogoWithText
+                  logo={chain.logo}
+                  text={chain.name}
+                  logoRadius="100%"
+                />
+              </Row>
+            </Col>
             {data.swap && (
               <Swap
                 data={data.swap}

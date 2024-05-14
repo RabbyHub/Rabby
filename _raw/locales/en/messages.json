@@ -201,6 +201,7 @@
       "decodedTooltip": "This signature is decoded by Rabby Wallet",
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
+      "chain": "Chain",
       "unknownActionType": "Unknown action type",
       "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
       "nftCollection": "NFT Collection",

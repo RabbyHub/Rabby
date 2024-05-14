@@ -20,20 +20,28 @@ const ColWrapper = styled.div`
   display: flex;
   align-items: stretch;
   width: 100%;
-  padding: 10px 0;
+  padding: 12px 0;
 `;
 
-const Col = ({ children }: { children: ReactNode }) => {
-  return <ColWrapper className="col">{children}</ColWrapper>;
+const Col = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  return <ColWrapper className={clsx('col', className)}>{children}</ColWrapper>;
 };
 
 const RowWrapper = styled.div`
   position: relative;
   font-weight: 500;
-  font-size: 15px;
-  line-height: 18px;
-  color: var(--r-neutral-title-1);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--r-neutral-body, #3e495e);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
 
   &:not(.title) {
     text-align: right;
@@ -44,9 +52,6 @@ const RowWrapper = styled.div`
     padding-right: 0;
   }
   &.title {
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #192945);
     flex-shrink: 0;
     flex: 1;
 

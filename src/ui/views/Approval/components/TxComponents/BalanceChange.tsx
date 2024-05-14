@@ -196,7 +196,7 @@ const BalanceChange = ({
         </HeadlineStyled>
         <div className="token-balance-change-content">
           <Table>
-            <Col>
+            <Col className="py-10">
               <Row>
                 <span className="text-13 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
@@ -224,7 +224,7 @@ const BalanceChange = ({
       <div className="token-balance-change-content">
         <Table>
           {!hasChange && isSuccess && (
-            <Col>
+            <Col className="py-10">
               <Row>
                 <span className="text-13 font-normal text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
@@ -233,7 +233,7 @@ const BalanceChange = ({
             </Col>
           )}
           {data.error && (
-            <Col>
+            <Col className="py-10">
               <Row className="text-13 font-medium flex whitespace-pre-wrap text-left">
                 <ThemeIcon
                   src={RcIconAlert}
@@ -245,9 +245,10 @@ const BalanceChange = ({
             </Col>
           )}
           {sendTokenList?.map((token) => (
-            <Col key={token.id}>
-              <Row isTitle>
+            <Col className="py-10" key={token.id}>
+              <Row isTitle className="text-15">
                 <LogoWithText
+                  logoSize={24}
                   logo={token.logo_url}
                   text={
                     <>
@@ -282,9 +283,10 @@ const BalanceChange = ({
             </Col>
           ))}
           {receiveTokenList?.map((token) => (
-            <Col key={token.id}>
-              <Row isTitle>
+            <Col className="py-10" key={token.id}>
+              <Row isTitle className="text-15">
                 <LogoWithText
+                  logoSize={24}
                   logo={token.logo_url}
                   text={
                     <>

@@ -11,9 +11,6 @@ const Wrapper = styled.div`
     margin-right: 6px;
   }
   .text {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
     margin-right: 4px;
     overflow: hidden;
@@ -27,7 +24,7 @@ const LogoWithText = ({
   text,
   icon,
   logoRadius = '',
-  logoSize = 24,
+  logoSize = 16,
   textStyle = {},
   className,
 }: {
