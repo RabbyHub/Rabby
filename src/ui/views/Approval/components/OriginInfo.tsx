@@ -37,7 +37,6 @@ const RequestOrigin = styled.div`
   box-sizing: content-box;
   padding-top: 10px;
   padding-bottom: 8px;
-  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,17 +56,6 @@ const RequestOrigin = styled.div`
   }
   .security-level-tag {
     margin-top: -15px;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100vw;
-    margin-left: -20px;
-    height: 1px;
-    height: 0.5px;
-    background-color: var(--r-neutral-card2, #f2f4f7);
   }
 `;
 

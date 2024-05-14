@@ -58,6 +58,7 @@ import { ActionWrapper } from '../ActionWrapper';
 import { ContractRequireData } from '../TypedDataActions/utils';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
+import { Divide } from '../Divide';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -134,13 +135,7 @@ const Actions = ({
           )}
           {t('page.signTx.signTransactionOnChain', { chain: chain.name })}
         </div>
-        <div
-          className="float-right text-12 cursor-pointer flex items-center view-raw"
-          onClick={handleViewRawClick}
-        >
-          {t('page.signTx.viewRaw')}
-          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
-        </div>
+      
       </SignTitle> */}
       <ActionWrapper>
         <Card>
@@ -150,218 +145,224 @@ const Actions = ({
             originLogo={originLogo}
             engineResults={engineResults}
           />
+          <Divide />
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}
           />
         </Card>
 
-        <div
-          className={clsx('action-header', {
-            'is-unknown': isUnknown,
-          })}
-        >
-          <div className="left">{actionName}</div>
-          <div className="right">
-            <TooltipWithMagnetArrow
-              placement="bottom"
-              overlayClassName="rectangle w-[max-content] decode-tooltip"
-              title={
-                isUnknown ? (
-                  <NoActionAlert
-                    data={{
-                      chainId: chain.serverId,
-                      contractAddress:
-                        requireData && 'id' in requireData
-                          ? requireData.id
-                          : txDetail.type_call?.contract,
-                      selector: raw.data.toString(),
-                    }}
-                  />
-                ) : (
-                  <span className="flex w-[358px] p-12 items-center">
-                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
-                    {t('page.signTx.decodedTooltip')}
-                  </span>
-                )
-              }
-            >
-              {isUnknown ? (
-                <img src={IconQuestionMark} className="w-24" />
-              ) : (
-                <img
-                  src={IconRabbyDecoded}
-                  className="icon icon-rabby-decoded"
+        <Card>
+          <div
+            className={clsx('action-header', {
+              'is-unknown': isUnknown,
+            })}
+          >
+            <div className="left">
+              <span>{actionName}</span>
+              <TooltipWithMagnetArrow
+                placement="bottom"
+                overlayClassName="rectangle w-[max-content] decode-tooltip"
+                title={
+                  isUnknown ? (
+                    <NoActionAlert
+                      data={{
+                        chainId: chain.serverId,
+                        contractAddress:
+                          requireData && 'id' in requireData
+                            ? requireData.id
+                            : txDetail.type_call?.contract,
+                        selector: raw.data.toString(),
+                      }}
+                    />
+                  ) : null
+                }
+              >
+                {isUnknown ? (
+                  <img src={IconQuestionMark} className="w-24" />
+                ) : null}
+              </TooltipWithMagnetArrow>
+            </div>
+            <div className="right">
+              <div
+                className="float-right text-12 cursor-pointer flex items-center view-raw"
+                onClick={handleViewRawClick}
+              >
+                {t('page.signTx.viewRaw')}
+                <ThemeIcon
+                  className="icon icon-arrow-right"
+                  src={RcIconArrowRight}
                 />
-              )}
-            </TooltipWithMagnetArrow>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="container">
-          {data.swap && (
-            <Swap
-              data={data.swap}
-              requireData={requireData as SwapRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.crossToken && (
-            <CrossToken
-              data={data.crossToken}
-              requireData={requireData as SwapRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.crossSwapToken && (
-            <CrossSwapToken
-              data={data.crossSwapToken}
-              requireData={requireData as SwapRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.wrapToken && (
-            <WrapToken
-              data={data.wrapToken}
-              requireData={requireData as WrapTokenRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.unWrapToken && (
-            <UnWrapToken
-              data={data.unWrapToken}
-              requireData={requireData as WrapTokenRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.send && (
-            <Send
-              data={data.send}
-              requireData={requireData as SendRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data.approveToken && (
-            <TokenApprove
-              data={data.approveToken}
-              requireData={requireData as ApproveTokenRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            />
-          )}
-          {data.revokeToken && (
-            <RevokeTokenApprove
-              data={data.revokeToken}
-              requireData={requireData as RevokeTokenApproveRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            />
-          )}
-          {data.revokePermit2 && (
-            <RevokePermit2
-              data={data.revokePermit2}
-              requireData={requireData as RevokeTokenApproveRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            />
-          )}
-          {data.cancelTx && (
-            <CancelTx
-              data={data.cancelTx}
-              requireData={requireData as CancelTxRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            ></CancelTx>
-          )}
-          {data?.sendNFT && (
-            <SendNFT
-              data={data.sendNFT}
-              requireData={requireData as SendRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data?.approveNFT && (
-            <ApproveNFT
-              data={data.approveNFT}
-              requireData={requireData as ApproveNFTRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data?.revokeNFT && (
-            <RevokeNFT
-              data={data.revokeNFT}
-              requireData={requireData as RevokeNFTRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data?.revokeNFTCollection && (
-            <RevokeNFTCollection
-              data={data.revokeNFTCollection}
-              requireData={requireData as RevokeNFTRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data?.approveNFTCollection && (
-            <ApproveNFTCollection
-              data={data.approveNFTCollection}
-              requireData={requireData as RevokeNFTRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-          {data?.deployContract && <DeployContract />}
-          {data?.pushMultiSig && (
-            <PushMultiSig
-              data={data.pushMultiSig}
-              requireData={requireData as PushMultiSigRequireData}
-              chain={chain}
-            />
-          )}
-          {data?.assetOrder && (
-            <AssetOrder
-              data={data.assetOrder}
-              requireData={requireData as ContractRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              sender={(requireData as AssetOrderRequireData).sender}
-            />
-          )}
-          {data.contractCall && (
-            <ContractCall
-              data={data.contractCall}
-              requireData={requireData as ContractCallRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            />
-          )}
-          {data.common && (
-            <CommonAction
-              data={data.common}
-              requireData={requireData as ContractCallRequireData}
-              chain={chain}
-              engineResults={engineResults}
-            />
-          )}
-        </div>
+          <Divide />
+          <div className="container">
+            {data.swap && (
+              <Swap
+                data={data.swap}
+                requireData={requireData as SwapRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.crossToken && (
+              <CrossToken
+                data={data.crossToken}
+                requireData={requireData as SwapRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.crossSwapToken && (
+              <CrossSwapToken
+                data={data.crossSwapToken}
+                requireData={requireData as SwapRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.wrapToken && (
+              <WrapToken
+                data={data.wrapToken}
+                requireData={requireData as WrapTokenRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.unWrapToken && (
+              <UnWrapToken
+                data={data.unWrapToken}
+                requireData={requireData as WrapTokenRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.send && (
+              <Send
+                data={data.send}
+                requireData={requireData as SendRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.approveToken && (
+              <TokenApprove
+                data={data.approveToken}
+                requireData={requireData as ApproveTokenRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                onChange={onChange}
+                raw={raw}
+              />
+            )}
+            {data.revokeToken && (
+              <RevokeTokenApprove
+                data={data.revokeToken}
+                requireData={requireData as RevokeTokenApproveRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                onChange={onChange}
+                raw={raw}
+              />
+            )}
+            {data.revokePermit2 && (
+              <RevokePermit2
+                data={data.revokePermit2}
+                requireData={requireData as RevokeTokenApproveRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                onChange={onChange}
+                raw={raw}
+              />
+            )}
+            {data.cancelTx && (
+              <CancelTx
+                data={data.cancelTx}
+                requireData={requireData as CancelTxRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                onChange={onChange}
+                raw={raw}
+              ></CancelTx>
+            )}
+            {data?.sendNFT && (
+              <SendNFT
+                data={data.sendNFT}
+                requireData={requireData as SendRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data?.approveNFT && (
+              <ApproveNFT
+                data={data.approveNFT}
+                requireData={requireData as ApproveNFTRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data?.revokeNFT && (
+              <RevokeNFT
+                data={data.revokeNFT}
+                requireData={requireData as RevokeNFTRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data?.revokeNFTCollection && (
+              <RevokeNFTCollection
+                data={data.revokeNFTCollection}
+                requireData={requireData as RevokeNFTRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data?.approveNFTCollection && (
+              <ApproveNFTCollection
+                data={data.approveNFTCollection}
+                requireData={requireData as RevokeNFTRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data?.deployContract && <DeployContract />}
+            {data?.pushMultiSig && (
+              <PushMultiSig
+                data={data.pushMultiSig}
+                requireData={requireData as PushMultiSigRequireData}
+                chain={chain}
+              />
+            )}
+            {data?.assetOrder && (
+              <AssetOrder
+                data={data.assetOrder}
+                requireData={requireData as ContractRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                sender={(requireData as AssetOrderRequireData).sender}
+              />
+            )}
+            {data.contractCall && (
+              <ContractCall
+                data={data.contractCall}
+                requireData={requireData as ContractCallRequireData}
+                chain={chain}
+                engineResults={engineResults}
+                onChange={onChange}
+                raw={raw}
+              />
+            )}
+            {data.common && (
+              <CommonAction
+                data={data.common}
+                requireData={requireData as ContractCallRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+          </div>
+        </Card>
       </ActionWrapper>
     </>
   );

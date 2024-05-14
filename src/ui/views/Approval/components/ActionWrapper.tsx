@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -5,16 +6,17 @@ export const DIV = styled.div`
   .action-header {
     display: flex;
     justify-content: space-between;
-    background: var(--r-blue-default, #7084ff);
-    padding: 13px;
+    background: var(--r-neutral-card-1, #fff);
+    padding: 12px 16px;
     align-items: center;
-    color: #fff;
+    color: var(--r-neutral-title1, #192945);
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+
     .left {
       font-weight: 500;
-      font-size: 16px;
-      line-height: 19px;
+      font-size: 13px;
+      line-height: 16px;
     }
     .right {
       font-size: 14px;
@@ -42,7 +44,7 @@ export const DIV = styled.div`
       }
     }
     &.is-unknown {
-      background: var(--r-neutral-foot, #6a7587);
+      background: var(--r-neutral-card-1, #fff);
     }
   }
   .container {
@@ -76,7 +78,9 @@ export const ActionWrapper: React.FC<{
 }> = ({ children, isEmptyBody }) => {
   return (
     <DIV>
-      <div className={isEmptyBody ? '' : 'overflow-hidden'}>{children}</div>
+      <div className={clsx(isEmptyBody ? '' : 'overflow-hidden', 'space-y-12')}>
+        {children}
+      </div>
     </DIV>
   );
 };
