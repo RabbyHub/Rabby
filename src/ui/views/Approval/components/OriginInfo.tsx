@@ -23,19 +23,21 @@ const ChainLogo = styled.img`
   position: absolute;
   bottom: -4px;
   right: -4px;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 100%;
 `;
 
 const RequestOrigin = styled.div`
-  height: 48px;
+  height: 26px;
   font-weight: 500;
   font-size: 13px;
   line-height: 15px;
-  color: #707280;
   position: relative;
-  margin-bottom: 12px;
+  box-sizing: content-box;
+  padding-top: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -33,11 +33,10 @@ const RowWrapper = styled.div`
   font-size: 15px;
   line-height: 18px;
   color: var(--r-neutral-title-1);
-  text-wrap: nowrap;
+  white-space: nowrap;
 
   &:not(.title) {
     text-align: right;
-    max-width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
   }

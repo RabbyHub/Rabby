@@ -27,7 +27,7 @@ const LogoWithText = ({
   text,
   icon,
   logoRadius = '',
-  logoSize = 16,
+  logoSize = 24,
   textStyle = {},
   className,
 }: {

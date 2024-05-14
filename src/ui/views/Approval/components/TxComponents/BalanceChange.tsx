@@ -16,6 +16,17 @@ import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useRabbyDispatch } from 'ui/store';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import styled from 'styled-components';
+
+const HeadlineStyled = styled.div`
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  color: var(--r-neutral-title-1, #f7fafc);
+`;
 
 const NFTBalanceChange = ({
   data,
@@ -134,6 +145,7 @@ const BalanceChange = ({
 }) => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+
   const isSuccess = data.success;
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
@@ -166,18 +178,10 @@ const BalanceChange = ({
 
   if (version === 'v0') {
     return (
-      <div className="token-balance-change">
-        <div className="token-balance-change-content">
-          <Table>
-            <Col>
-              <Row>
-                <span className="text-15 text-r-neutral-title-1 font-medium">
-                  {t('page.signTx.balanceChange.notSupport')}
-                </span>
-              </Row>
-            </Col>
-          </Table>
-        </div>
+      <div className="token-balance-change mt-10 pb-10">
+        <HeadlineStyled className="mb-0">
+          {t('page.signTx.balanceChange.notSupport')}
+        </HeadlineStyled>
       </div>
     );
   }
@@ -185,20 +189,16 @@ const BalanceChange = ({
   if (version === 'v1' && data.error) {
     return (
       <div className="token-balance-change">
+        <HeadlineStyled>
+          {isSuccess
+            ? t('page.signTx.balanceChange.successTitle')
+            : t('page.signTx.balanceChange.failedTitle')}
+        </HeadlineStyled>
         <div className="token-balance-change-content">
           <Table>
             <Col>
               <Row>
-                <span className="text-15 text-r-neutral-title-1 font-medium">
-                  {isSuccess
-                    ? t('page.signTx.balanceChange.successTitle')
-                    : t('page.signTx.balanceChange.failedTitle')}
-                </span>
-              </Row>
-            </Col>
-            <Col>
-              <Row>
-                <span className="text-15 text-r-neutral-title-1 font-medium">
+                <span className="text-13 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
                 </span>
               </Row>
@@ -211,26 +211,22 @@ const BalanceChange = ({
 
   return (
     <div className="token-balance-change">
-      <p className="text-16 text-r-neutral-title-1 font-medium mb-12 flex items-center">
-        <span>
-          {isSuccess
-            ? t('page.signTx.balanceChange.successTitle')
-            : t('page.signTx.balanceChange.failedTitle')}
-        </span>
+      <HeadlineStyled>
+        <span>{t('page.signTx.balanceChange.successTitle')}</span>
         {showUsdValueDiff && (
-          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-neutral-body text-right text-13 font-normal">
+          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-title-1 text-right text-13 font-normal">
             {`${data.usd_value_change >= 0 ? '+' : '-'} $${formatNumber(
               Math.abs(data.usd_value_change)
             )}`}
           </span>
         )}
-      </p>
+      </HeadlineStyled>
       <div className="token-balance-change-content">
         <Table>
           {!hasChange && isSuccess && (
             <Col>
               <Row>
-                <span className="text-15 font-medium text-r-neutral-title-1">
+                <span className="text-13 font-normal text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>
@@ -238,12 +234,13 @@ const BalanceChange = ({
           )}
           {data.error && (
             <Col>
-              <Row className="text-14 font-medium flex">
+              <Row className="text-13 font-medium flex whitespace-pre-wrap text-left">
                 <ThemeIcon
                   src={RcIconAlert}
-                  className="w-[15px] mr-6 text-r-neutral-body top-[2px] relative"
+                  className="w-[16px] flex-shrink-0 mr-4 text-r-neutral-foot top-[2px] relative"
                 />
-                {data.error.msg} #{data.error.code}
+                {t('page.signTx.balanceChange.failedTitle')} ({data.error.msg} #
+                {data.error.code})
               </Row>
             </Col>
           )}
@@ -276,7 +273,7 @@ const BalanceChange = ({
                   }
                 />
               </Row>
-              <Row>
+              <Row className="text-r-neutral-body text-13 font-normal">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()
@@ -314,7 +311,7 @@ const BalanceChange = ({
                 />
               </Row>
 
-              <Row>
+              <Row className="text-r-neutral-body text-13 font-normal">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()
