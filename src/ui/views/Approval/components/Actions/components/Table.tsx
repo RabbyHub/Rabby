@@ -4,10 +4,7 @@ import clsx from 'clsx';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
-const TableWrapper = styled.div`
-  border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  border-radius: 8px;
-`;
+const TableWrapper = styled.div``;
 
 const Table = ({
   children,
@@ -21,20 +18,9 @@ const Table = ({
 
 const ColWrapper = styled.div`
   display: flex;
-  border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
   align-items: stretch;
   width: 100%;
-  &:nth-child(1) {
-    .row:nth-child(1) {
-      border-top-left-radius: 8px;
-    }
-  }
-  &:nth-last-child(1) {
-    border-bottom: none;
-    .row:nth-child(1) {
-      border-bottom-left-radius: 8px;
-    }
-  }
+  padding: 10px 0;
 `;
 
 const Col = ({ children }: { children: ReactNode }) => {
@@ -43,14 +29,17 @@ const Col = ({ children }: { children: ReactNode }) => {
 
 const RowWrapper = styled.div`
   position: relative;
-  padding: 13px 10px;
   font-weight: 500;
   font-size: 15px;
   line-height: 18px;
   color: var(--r-neutral-title-1);
+  text-wrap: nowrap;
+
   &:not(.title) {
-    flex: 1;
-    width: 190px;
+    text-align: right;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   &:has(.desc-list) {
     padding-right: 0;
@@ -59,21 +48,14 @@ const RowWrapper = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
-    border-right: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    width: 123px;
     flex-shrink: 0;
-    background-color: var(--r-neutral-card-3, #f7fafc);
+    flex: 1;
+
     .icon-tip {
       display: inline;
     }
   }
   &.has-bottom-border {
-    flex: 1;
-    border-bottom: 1px solid #e5e9ef;
-    width: auto;
-    &:nth-last-child(1) {
-      border-bottom: none;
-    }
   }
   .desc-list {
     font-size: 13px;

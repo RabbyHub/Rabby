@@ -247,100 +247,81 @@ const BalanceChange = ({
               </Row>
             </Col>
           )}
-          {sendTokenList && sendTokenList.length > 0 && (
-            <Col>
-              <Row isTitle>{t('page.signTx.balanceChange.tokenOut')}</Row>
-              <div className="flex-1 overflow-hidden">
-                {sendTokenList.map((token) => (
-                  <Row className="has-bottom-border" key={token.id}>
-                    <LogoWithText
-                      logo={token.logo_url}
-                      text={
-                        <>
-                          <span className="text-red-forbidden">
-                            - {formatAmount(token.amount)}
-                          </span>{' '}
-                          <span
-                            onClick={() => handleClickToken(token)}
-                            className="hover:underline cursor-pointer"
-                          >
-                            {getTokenSymbol(token)}
-                          </span>
-                        </>
-                      }
-                      key={token.id}
-                      logoRadius="100%"
-                      icon={
-                        <Values.TokenLabel
-                          isFake={token.is_verified === false}
-                          isScam={
-                            token.is_verified !== false && !!token.is_suspicious
-                          }
-                        />
+          {sendTokenList?.map((token) => (
+            <Col key={token.id}>
+              <Row isTitle>
+                <LogoWithText
+                  logo={token.logo_url}
+                  text={
+                    <>
+                      <span className="text-red-forbidden">
+                        - {formatAmount(token.amount)}
+                      </span>{' '}
+                      <span
+                        onClick={() => handleClickToken(token)}
+                        className="hover:underline cursor-pointer"
+                      >
+                        {getTokenSymbol(token)}
+                      </span>
+                    </>
+                  }
+                  logoRadius="100%"
+                  icon={
+                    <Values.TokenLabel
+                      isFake={token.is_verified === false}
+                      isScam={
+                        token.is_verified !== false && !!token.is_suspicious
                       }
                     />
-                    <ul className="desc-list">
-                      <li>
-                        ≈{' '}
-                        {formatUsdValue(
-                          new BigNumber(token.amount)
-                            .times(token.price)
-                            .toFixed()
-                        )}
-                      </li>
-                    </ul>
-                  </Row>
-                ))}
-              </div>
+                  }
+                />
+              </Row>
+              <Row>
+                ≈{' '}
+                {formatUsdValue(
+                  new BigNumber(token.amount).times(token.price).toFixed()
+                )}
+              </Row>
             </Col>
-          )}
-          {receiveTokenList && receiveTokenList.length > 0 && (
-            <Col>
-              <Row isTitle>{t('page.signTx.balanceChange.tokenIn')}</Row>
-              <div className="flex-1 overflow-hidden">
-                {receiveTokenList.map((token) => (
-                  <Row className="has-bottom-border" key={token.id}>
-                    <LogoWithText
-                      logo={token.logo_url}
-                      text={
-                        <>
-                          <span className="text-green">
-                            + {formatAmount(token.amount)}
-                          </span>{' '}
-                          <span
-                            onClick={() => handleClickToken(token)}
-                            className="hover:underline cursor-pointer"
-                          >
-                            {getTokenSymbol(token)}
-                          </span>
-                        </>
-                      }
-                      key={token.id}
-                      logoRadius="100%"
-                      icon={
-                        <Values.TokenLabel
-                          isFake={token.is_verified === false}
-                          isScam={
-                            token.is_verified !== false && !!token.is_suspicious
-                          }
-                        />
+          ))}
+          {receiveTokenList?.map((token) => (
+            <Col key={token.id}>
+              <Row isTitle>
+                <LogoWithText
+                  logo={token.logo_url}
+                  text={
+                    <>
+                      <span className="text-green">
+                        + {formatAmount(token.amount)}
+                      </span>{' '}
+                      <span
+                        onClick={() => handleClickToken(token)}
+                        className="hover:underline cursor-pointer"
+                      >
+                        {getTokenSymbol(token)}
+                      </span>
+                    </>
+                  }
+                  logoRadius="100%"
+                  icon={
+                    <Values.TokenLabel
+                      isFake={token.is_verified === false}
+                      isScam={
+                        token.is_verified !== false && !!token.is_suspicious
                       }
                     />
-                    <ul className="desc-list">
-                      <li>
-                        ≈{' '}
-                        {formatUsdValue(
-                          new BigNumber(token.amount)
-                            .times(token.price)
-                            .toFixed()
-                        )}
-                      </li>
-                    </ul>
-                  </Row>
-                ))}
-              </div>
+                  }
+                />
+              </Row>
+
+              <Row>
+                ≈{' '}
+                {formatUsdValue(
+                  new BigNumber(token.amount).times(token.price).toFixed()
+                )}
+              </Row>
             </Col>
-          )}
+          ))}
           <NFTBalanceChange type="send" data={data}></NFTBalanceChange>
           <NFTBalanceChange type="receive" data={data}></NFTBalanceChange>
         </Table>

@@ -1,0 +1,194 @@
+import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { FallbackSiteLogo } from '@/ui/component';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { findChain } from '@/utils/chain';
+import { CHAINS, Chain } from '@debank/common';
+import React, { useEffect, useMemo } from 'react';
+import SecurityLevelTagNoText from './SecurityEngine/SecurityLevelTagNoText';
+import { ConnectedSite } from '@/background/service/permission';
+import { useWallet } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { Result } from '@rabby-wallet/rabby-security-engine';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+
+interface Props {
+  chain?: Chain;
+  origin?: string;
+  originLogo?: string;
+  engineResults?: Result[];
+}
+
+const ChainLogo = styled.img`
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
+`;
+
+const RequestOrigin = styled.div`
+  height: 48px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  color: #707280;
+  position: relative;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  .origin {
+    color: var(--r-neutral-title-1, #f7fafc);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    line-height: 18px;
+  }
+  .right {
+    font-size: 12px;
+    line-height: 14px;
+    color: #707280;
+  }
+  .security-level-tag {
+    margin-top: -15px;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    margin-left: -20px;
+    height: 1px;
+    height: 0.5px;
+    background-color: var(--r-neutral-card2, #f2f4f7);
+  }
+`;
+
+export const OriginInfo: React.FC<Props> = ({
+  origin,
+  chain,
+  originLogo,
+  engineResults = [],
+}) => {
+  const wallet = useWallet();
+
+  const [
+    connectedSite,
+    setConnectedSite,
+  ] = React.useState<ConnectedSite | null>(null);
+  const dispatch = useRabbyDispatch();
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
+
+  const currentChain = useMemo(() => {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      return chain || CHAINS.ETH;
+    } else {
+      if (!connectedSite) return CHAINS.ETH;
+      return findChain({
+        enum: connectedSite.chain,
+      })!;
+    }
+  }, [chain, origin, connectedSite]);
+
+  const displayOrigin = useMemo(() => {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      return 'Rabby Wallet';
+    }
+    return origin;
+  }, [origin]);
+
+  useEffect(() => {
+    if (origin) {
+      wallet.getConnectedSite(origin).then((site) => {
+        site && setConnectedSite(site);
+      });
+    }
+  }, [origin]);
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
+  const init = async () => {
+    dispatch.securityEngine.init();
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (!origin) {
+    return null;
+  }
+
+  return (
+    <RequestOrigin>
+      {originLogo && (
+        <div className="relative mr-8">
+          <FallbackSiteLogo
+            url={originLogo}
+            origin={origin}
+            width="24px"
+            height="24px"
+          />
+          <TooltipWithMagnetArrow
+            className="rectangle w-[max-content]"
+            title={currentChain.name}
+          >
+            <ChainLogo src={currentChain.logo} />
+          </TooltipWithMagnetArrow>
+        </div>
+      )}
+      <span className="origin">{displayOrigin}</span>
+      {engineResultMap['1088'] && (
+        <SecurityLevelTagNoText
+          enable={engineResultMap['1088'].enable}
+          level={
+            processedRules.includes('1088')
+              ? 'proceed'
+              : engineResultMap['1088'].level
+          }
+          onClick={() => handleClickRule('1088')}
+          right="0px"
+          className="security-level-tag"
+        />
+      )}
+      {engineResultMap['1089'] && (
+        <SecurityLevelTagNoText
+          enable={engineResultMap['1089'].enable}
+          level={
+            processedRules.includes('1089')
+              ? 'proceed'
+              : engineResultMap['1089'].level
+          }
+          onClick={() => handleClickRule('1089')}
+          className="security-level-tag"
+        />
+      )}
+    </RequestOrigin>
+  );
+};

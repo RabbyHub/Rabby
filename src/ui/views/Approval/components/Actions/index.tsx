@@ -56,6 +56,8 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
 import { ContractRequireData } from '../TypedDataActions/utils';
+import { OriginInfo } from '../OriginInfo';
+import { Card } from '../Card';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -90,6 +92,8 @@ const Actions = ({
   raw,
   onChange,
   isSpeedUp,
+  origin,
+  originLogo,
 }: {
   data: ParsedActionData;
   requireData: ActionRequireData;
@@ -99,6 +103,8 @@ const Actions = ({
   raw: Record<string, string | number>;
   onChange(tx: Record<string, any>): void;
   isSpeedUp: boolean;
+  origin?: string;
+  originLogo?: string;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -116,7 +122,7 @@ const Actions = ({
 
   return (
     <>
-      <SignTitle>
+      {/* <SignTitle>
         <div className="left relative">
           {isSpeedUp && (
             <TooltipWithMagnetArrow
@@ -135,8 +141,21 @@ const Actions = ({
           {t('page.signTx.viewRaw')}
           <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
         </div>
-      </SignTitle>
+      </SignTitle> */}
       <ActionWrapper>
+        <Card>
+          <OriginInfo
+            chain={chain}
+            origin={origin}
+            originLogo={originLogo}
+            engineResults={engineResults}
+          />
+          <BalanceChange
+            version={txDetail.pre_exec_version}
+            data={txDetail.balance_change}
+          />
+        </Card>
+
         <div
           className={clsx('action-header', {
             'is-unknown': isUnknown,
@@ -344,10 +363,6 @@ const Actions = ({
           )}
         </div>
       </ActionWrapper>
-      <BalanceChange
-        version={txDetail.pre_exec_version}
-        data={txDetail.balance_change}
-      />
     </>
   );
 };

@@ -49,47 +49,6 @@ const Wrapper = styled.section`
 
   position: relative;
 
-  .request-origin {
-    height: 30px;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    color: #707280;
-    padding-bottom: 12px;
-    position: relative;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    .origin {
-      color: var(--r-neutral-title-1, #f7fafc);
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 15px;
-      line-height: 18px;
-    }
-    .right {
-      font-size: 12px;
-      line-height: 14px;
-      color: #707280;
-    }
-    .security-level-tag {
-      margin-top: -15px;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100vw;
-      margin-left: -20px;
-      height: 1px;
-      height: 0.5px;
-      background-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-    }
-  }
   .security-level-tip {
     margin-top: 10px;
     border-radius: 4px;
@@ -260,53 +219,6 @@ export const FooterBar: React.FC<Props> = ({
           'is-darkmode': hasShadow,
         })}
       >
-        {origin && (
-          <div className="request-origin">
-            {originLogo && (
-              <div className="relative mr-8">
-                <FallbackSiteLogo
-                  url={originLogo}
-                  origin={origin}
-                  width="24px"
-                  height="24px"
-                />
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
-                  title={currentChain.name}
-                >
-                  <ChainLogo src={currentChain.logo} />
-                </TooltipWithMagnetArrow>
-              </div>
-            )}
-            <span className="origin">{displayOirigin}</span>
-            <span className="right">{t('page.signFooterBar.requestFrom')}</span>
-            {engineResultMap['1088'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1088'].enable}
-                level={
-                  processedRules.includes('1088')
-                    ? 'proceed'
-                    : engineResultMap['1088'].level
-                }
-                onClick={() => handleClickRule('1088')}
-                right="0px"
-                className="security-level-tag"
-              />
-            )}
-            {engineResultMap['1089'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1089'].enable}
-                level={
-                  processedRules.includes('1089')
-                    ? 'proceed'
-                    : engineResultMap['1089'].level
-                }
-                onClick={() => handleClickRule('1089')}
-                className="security-level-tag"
-              />
-            )}
-          </div>
-        )}
         <AccountInfo
           chain={props.chain}
           account={account}

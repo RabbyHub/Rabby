@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 export const DIV = styled.div`
-  background-color: var(--r-neutral-bg-1, #fff);
-  border-radius: 8px;
   .action-header {
     display: flex;
     justify-content: space-between;
