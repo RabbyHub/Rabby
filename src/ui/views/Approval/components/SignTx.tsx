@@ -1897,7 +1897,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 originLogo={params.session.icon}
               />
             )}
-            {isGnosisAccount ? (
+            {/* TODO */}
+            {/* {isGnosisAccount ? (
               <SafeNonceSelector
                 disabled={isViewGnosisSafe}
                 isReady={isReady}
@@ -1951,7 +1952,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 nativeTokenBalance={nativeTokenBalance}
                 gasPriceMedian={gasPriceMedian}
               />
-            )}
+            )} */}
           </>
         )}
         {!isGnosisAccount && !isCoboArugsAccount ? (

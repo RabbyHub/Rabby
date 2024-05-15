@@ -61,7 +61,7 @@ const SecurityLevelTagWrapper = styled.div`
   display: flex;
   position: absolute;
   top: 50%;
-  margin-top: -12px;
+  margin-top: -10px;
   right: -6px;
   padding: 2px;
   padding-left: 6px;
@@ -119,7 +119,7 @@ const SecurityLevelTag = ({
   level,
   translucent,
   onClick,
-  right = '-13px',
+  right = '-21px',
   className,
 }: {
   enable: boolean;

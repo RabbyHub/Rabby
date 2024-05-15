@@ -1811,31 +1811,57 @@
 }
 
 .view-raw-detail {
-  .ant-drawer-body {
-    padding: 0 20px 0;
-  }
-  .ant-tabs-tab {
-    padding-top: 16px;
-    padding-bottom: 4px;
-    &-btn {
-      font-size: 15px;
-      font-weight: 500;
-      color: @color-comment-1;
+  .ant-tabs-nav {
+      margin-bottom: 16px;
+      margin-top: 20px;
     }
-  }
-  .ant-tabs-nav::before {
-    display: none;
-  }
+  
+    .ant-tabs-nav::before {
+      display: none;
+    }
+  
+    .ant-tabs-nav-list {
+      background: var(--r-neutral-line, #d3d8e0);
+      border-radius: 6px;
+      padding: 2px;
+    }
+  
+    .ant-tabs-ink-bar {
+      display: none;
+    }
+  
+    .ant-tabs-tab {
+      width: 72px;
+      height: 24px;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 4px;
+      color: var(--r-neutral-body, #3e495e);
+      font-size: 13px;
+      transition: all 0.3s ease-in-out;
+      margin: 0;
+  
+      &.ant-tabs-tab-active {
+        background: var(--r-neutral-bg1, #fff);
+  
+        .ant-tabs-tab-btn {
+          color: var(--r-blue-default, #7084ff);
+        }
+      }
+    }
   .ant-tabs-tabpane {
     // font-family: 'Roboto Mono', monospace;
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     color: var(--r-neutral-title-1, #192945);
-    border-radius: 6px 6px 0 0;
-    padding: 16px;
+    padding: 12px;
     height: 660px;
     overflow: auto;
     word-break: break-all;
     white-space: pre-wrap;
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #FFF);
   }
 }
 
