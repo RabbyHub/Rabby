@@ -81,6 +81,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
   >('SENDING');
   const { setHeight } = useCommonPopupView();
   const decoder = useRef(new URDecoder());
+  const [signFinished, setSignFinished] = React.useState<boolean>(false);
 
   useEffect(() => {
     setHeight(360);
@@ -88,12 +89,17 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
 
   const { value, error, retry, loading } = useAsyncRetry(async () => {
     if (!(payload?.cbor && payload?.type)) return null;
-    return await wallet.requestKeyring(
-      KEYSTONE_TYPE,
-      'signTransactionUrViaUSB',
-      null,
-      buildKeystoneSignPayload(payload)
-    );
+    return await wallet
+      .requestKeyring(
+        KEYSTONE_TYPE,
+        'signTransactionUrViaUSB',
+        null,
+        buildKeystoneSignPayload(payload)
+      )
+      .then((data) => {
+        setSignFinished(true);
+        return data;
+      });
   }, [payload, requestId]);
 
   const handleRetry = useCallback(async () => {
@@ -214,6 +220,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       showAnimation={loading || ['SENDING', 'WAITING'].includes(statusProp)}
       hdType="wired"
       status={statusProp}
+      retryDisabled={signFinished}
       onRetry={handleRetry}
       onDone={onDone}
       onCancel={handleCancel}

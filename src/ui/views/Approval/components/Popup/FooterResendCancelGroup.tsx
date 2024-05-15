@@ -6,11 +6,13 @@ import { useTranslation } from 'react-i18next';
 export interface Props {
   onResend: () => void;
   onCancel: () => void;
+  retryDisabled?: boolean;
 }
 
 export const FooterResendCancelGroup: React.FC<Props> = ({
   onResend,
   onCancel,
+  retryDisabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -22,6 +24,7 @@ export const FooterResendCancelGroup: React.FC<Props> = ({
           'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
           'before:content-none'
         )}
+        disabled={retryDisabled}
         type="ghost"
         onClick={onResend}
       >

@@ -29,6 +29,7 @@ export interface Props {
     | 'SUBMITTING';
   content: React.ReactNode;
   description?: React.ReactNode;
+  retryDisabled?: boolean;
   onRetry?: () => void;
   onDone?: () => void;
   onCancel?: () => void;
@@ -43,6 +44,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
   status,
   content,
   description,
+  retryDisabled = false,
   onRetry = noop,
   onDone = noop,
   onCancel = noop,
@@ -162,11 +164,19 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         {status === 'SENDING' && <FooterResend onResend={onRetry} />}
         {status === 'WAITING' && <FooterResend onResend={onRetry} />}
         {status === 'FAILED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+          <FooterResendCancelGroup
+            retryDisabled={retryDisabled}
+            onCancel={onCancel}
+            onResend={onRetry}
+          />
         )}
         {status === 'RESOLVED' && <FooterDoneButton onDone={onDone} hide />}
         {status === 'REJECTED' && (
-          <FooterResendCancelGroup onCancel={onCancel} onResend={onRetry} />
+          <FooterResendCancelGroup
+            retryDisabled={retryDisabled}
+            onCancel={onCancel}
+            onResend={onRetry}
+          />
         )}
         {status === 'SUBMITTING' && (
           <FooterButton
