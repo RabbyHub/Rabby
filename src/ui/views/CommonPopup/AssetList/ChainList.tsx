@@ -1,17 +1,13 @@
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
-import { ChainItem, ChainItemType } from './ChainItem';
+import { ChainItem, ChainItemType, sortChainWithValueDesc } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 function shouldChainRevealed(chainItem: ChainItemType) {
   return chainItem.percent >= 1 || chainItem.usd_value >= 1000;
-}
-
-function sortChainItemsDesc(a: ChainItemType, b: ChainItemType) {
-  return b.usd_value - a.usd_value;
 }
 
 export const ChainList = ({
@@ -70,8 +66,8 @@ export const ChainList = ({
       res.chainsToHide = [];
     }
 
-    res.chainsToReveal.sort(sortChainItemsDesc);
-    res.chainsToHide.sort(sortChainItemsDesc);
+    res.chainsToReveal.sort(sortChainWithValueDesc);
+    res.chainsToHide.sort(sortChainWithValueDesc);
 
     return res;
   }, [chainList, balance]);
