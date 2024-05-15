@@ -125,6 +125,7 @@ const Actions = ({
 
   return (
     <>
+      {/* TODO */}
       {/* <SignTitle>
         <div className="left relative">
           {isSpeedUp && (
@@ -135,7 +136,6 @@ const Actions = ({
               <img src={IconSpeedUp} className="icon icon-speedup" />
             </TooltipWithMagnetArrow>
           )}
-          {t('page.signTx.signTransactionOnChain', { chain: chain.name })}
         </div>
       
       </SignTitle> */}

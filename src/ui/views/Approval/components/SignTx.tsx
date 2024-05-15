@@ -1955,7 +1955,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )} */}
           </>
         )}
-        {!isGnosisAccount && !isCoboArugsAccount ? (
+        {!isGnosisAccount && !isCoboArugsAccount && isReady ? (
           <BroadcastMode
             className="mt-[12px]"
             chain={chain.enum}

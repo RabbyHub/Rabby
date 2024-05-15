@@ -17,8 +17,8 @@ import IconEdit from 'ui/assets/editpen.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
-import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ReactComponent as IconAddressCopy } from 'ui/assets/icon-copy-cc.svg';
+import { ReactComponent as IconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
 import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -299,7 +299,7 @@ const AddressWrapper = styled.div`
 const Address = ({
   address,
   chain,
-  iconWidth = '12px',
+  iconWidth = '14px',
   hasHover = false,
   id,
 }: {
@@ -320,32 +320,33 @@ const Address = ({
     copyAddress(address);
   };
   return (
-    <AddressWrapper
-      className={clsx('value-address relative', {
-        'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
-      })}
-    >
+    <AddressWrapper className="value-address relative">
       <TooltipWithMagnetArrow
         title={address}
         className="rectangle w-[max-content]"
       >
-        <span id={id}>{ellipsis(address)}</span>
+        <span
+          className={clsx({
+            'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
+          })}
+          id={id}
+        >
+          {ellipsis(address)}
+        </span>
       </TooltipWithMagnetArrow>
       {chain && (
-        <img
+        <IconExternal
           onClick={handleClickContractId}
-          src={IconExternal}
           width={iconWidth}
           height={iconWidth}
-          className="ml-6 cursor-pointer"
+          className="ml-6 cursor-pointer text-r-neutral-foot hover:text-r-blue-default"
         />
       )}
-      <img
+      <IconAddressCopy
         onClick={handleCopyContractAddress}
-        src={IconAddressCopy}
         width={iconWidth}
         height={iconWidth}
-        className="ml-6 cursor-pointer icon-copy"
+        className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
       />
     </AddressWrapper>
   );
