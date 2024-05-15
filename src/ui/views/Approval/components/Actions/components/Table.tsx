@@ -30,7 +30,9 @@ const Col = ({
   children: ReactNode;
   className?: string;
 }) => {
-  return <ColWrapper className={clsx('col', className)}>{children}</ColWrapper>;
+  return (
+    <ColWrapper className={clsx('col group', className)}>{children}</ColWrapper>
+  );
 };
 
 const RowWrapper = styled.div`
@@ -45,7 +47,6 @@ const RowWrapper = styled.div`
 
   &:not(.title) {
     text-align: right;
-    overflow: hidden;
     text-overflow: ellipsis;
   }
   &:has(.desc-list) {

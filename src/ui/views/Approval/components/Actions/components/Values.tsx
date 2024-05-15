@@ -1,12 +1,10 @@
 import React, { useMemo, ReactNode, useState, useEffect } from 'react';
 import { message } from 'antd';
 import styled from 'styled-components';
-import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
-import { CHAINS } from 'consts';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch } from 'ui/store';
@@ -27,6 +25,8 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import AccountAlias from '../../AccountAlias';
 import { getAddressScanLink } from '@/utils';
 import { findChain } from '@/utils/chain';
+import clsx from 'clsx';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -268,7 +268,11 @@ const TokenLabel = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex gap-4 shrink-0 relative">
+    <div
+      className={clsx('flex gap-4 shrink-0 relative', {
+        'ml-4': isScam || isFake,
+      })}
+    >
       {isFake && (
         <TooltipWithMagnetArrow
           overlayClassName="rectangle w-[max-content]"
@@ -296,47 +300,36 @@ const Address = ({
   address,
   chain,
   iconWidth = '12px',
+  hasHover = false,
+  id,
 }: {
   address: string;
   chain?: Chain;
   iconWidth?: string;
+  hasHover?: boolean;
+  id?: string;
 }) => {
   const { t } = useTranslation();
-  const handleClickContractId = () => {
+  const handleClickContractId = (e) => {
+    e.stopPropagation();
     if (!chain) return;
     openInTab(getAddressScanLink(chain.scanLink, address), false);
   };
-  const handleCopyContractAddress = () => {
-    const clipboard = new ClipboardJS('.value-address', {
-      text: function () {
-        return address;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleCopyContractAddress = (e) => {
+    e.stopPropagation();
+    copyAddress(address);
   };
   return (
-    <AddressWrapper className="value-address relative">
+    <AddressWrapper
+      className={clsx('value-address relative', {
+        'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
+      })}
+    >
       <TooltipWithMagnetArrow
         title={address}
         className="rectangle w-[max-content]"
       >
-        <span>{ellipsis(address)}</span>
+        <span id={id}>{ellipsis(address)}</span>
       </TooltipWithMagnetArrow>
       {chain && (
         <img
@@ -384,17 +377,7 @@ const Interacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.interacted')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverInteracted')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };

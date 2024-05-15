@@ -57,7 +57,11 @@ const PopupContainer = styled.div`
   }
 `;
 
-const ViewMore = (props: Props) => {
+const ViewMore = (
+  props: Props & {
+    children?: React.ReactNode;
+  }
+) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -85,9 +89,16 @@ const ViewMore = (props: Props) => {
 
   return (
     <>
-      <span className="underline cursor-pointer" onClick={handleClickViewMore}>
-        {t('page.approvals.component.ViewMore.text')}
-      </span>
+      {props.children ? (
+        <div onClick={handleClickViewMore}>{props.children}</div>
+      ) : (
+        <span
+          className="underline cursor-pointer"
+          onClick={handleClickViewMore}
+        >
+          {t('page.approvals.component.ViewMore.text')}
+        </span>
+      )}
       <Popup
         visible={popupVisible}
         closable

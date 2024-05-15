@@ -1,3 +1,6 @@
+import { useRabbyDispatch } from '@/ui/store';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import IconUnknown from 'ui/assets/token-default.svg';
@@ -12,7 +15,6 @@ const Wrapper = styled.div`
   }
   .text {
     color: var(--r-neutral-title-1, #192945);
-    margin-right: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -27,6 +29,7 @@ const LogoWithText = ({
   logoSize = 16,
   textStyle = {},
   className,
+  hoverToken,
 }: {
   logo?: string;
   text: string | ReactNode;
@@ -35,7 +38,15 @@ const LogoWithText = ({
   logoSize?: number;
   textStyle?: React.CSSProperties;
   className?: string;
+  hoverToken?: TokenItem;
 }) => {
+  const dispatch = useRabbyDispatch();
+  const handleClickTokenSymbol = () => {
+    if (hoverToken) {
+      dispatch.sign.openTokenDetailPopup(hoverToken);
+    }
+  };
+
   return (
     <Wrapper className={className}>
       <img
@@ -47,7 +58,13 @@ const LogoWithText = ({
           height: `${logoSize}px`,
         }}
       />
-      <div className="text" style={textStyle}>
+      <div
+        className={clsx('text', {
+          'group-hover:underline hover:text-r-blue-default cursor-pointer': hoverToken,
+        })}
+        onClick={handleClickTokenSymbol}
+        style={textStyle}
+      >
         {text}
       </div>
       {icon || null}

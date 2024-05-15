@@ -293,7 +293,12 @@
         "descTipWarningPrivacy": "Signature may verify address ownership",
         "descTipWarningAssets": "Signature may cause asset change",
         "descTipWarningBoth": "Signature may cause asset change and verify address ownership"
-      }
+      },
+      "protocol": "Protocol",
+      "yes": "Yes",
+      "no": "No",
+      "hasInteraction": "Interacted before",
+      "address": "Address"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
