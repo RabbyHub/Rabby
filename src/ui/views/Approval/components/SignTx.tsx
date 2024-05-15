@@ -975,7 +975,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         });
         setGasUsed(gasUsed);
         setRecommendGasLimit(`0x${gas.toString(16)}`);
-        let block = null;
+        let block: null | BlockInfo = null;
         try {
           block = await wallet.requestETHRpc(
             {
@@ -995,9 +995,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           const ratio =
             SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
           setRecommendGasLimitRatio(needRatio ? ratio : 1);
-          const recommendGasLimit = needRatio
+          let recommendGasLimit = needRatio
             ? gas.times(ratio).toFixed(0)
             : gas.toFixed(0);
+          if (block && new BigNumber(recommendGasLimit).gt(block.gasLimit)) {
+            recommendGasLimit = new BigNumber(block.gasLimit)
+              .times(0.95)
+              .toFixed(0);
+          }
           setGasLimit(
             intToHex(Math.max(Number(recommendGasLimit), Number(tx.gas || 0)))
           );
