@@ -126,7 +126,16 @@ export class WalletController extends BaseController {
   testnetOpenapi = testnetOpenapiService;
 
   /* wallet */
-  boot = (password) => keyringService.boot(password);
+  boot = (password) => {
+    keyringService.boot(password);
+    const hasOtherProvider = preferenceService.getHasOtherProvider();
+    const isDefaultWallet = preferenceService.getIsDefaultWallet();
+    if (!hasOtherProvider) {
+      setPopupIcon('default');
+    } else {
+      setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
+    }
+  };
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);

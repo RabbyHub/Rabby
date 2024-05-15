@@ -98,7 +98,11 @@ async function restoreAppState() {
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
 
-  setPopupIcon(walletController.isUnlocked() ? 'default' : 'locked');
+  setPopupIcon(
+    walletController.isUnlocked() || !walletController.isBooted()
+      ? 'default'
+      : 'locked'
+  );
 
   rpcCache.start();
 
