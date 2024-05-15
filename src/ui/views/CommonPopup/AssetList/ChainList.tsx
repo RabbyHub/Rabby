@@ -10,6 +10,10 @@ function shouldChainRevealed(chainItem: ChainItemType) {
   return chainItem.percent >= 1 || chainItem.usd_value >= 1000;
 }
 
+function sortChainItemsDesc(a: ChainItemType, b: ChainItemType) {
+  return b.usd_value - a.usd_value;
+}
+
 export const ChainList = ({
   onChange,
   isTestnet = false,
@@ -65,6 +69,9 @@ export const ChainList = ({
       res.chainsToReveal = [...res.allItems];
       res.chainsToHide = [];
     }
+
+    res.chainsToReveal.sort(sortChainItemsDesc);
+    res.chainsToHide.sort(sortChainItemsDesc);
 
     return res;
   }, [chainList, balance]);
