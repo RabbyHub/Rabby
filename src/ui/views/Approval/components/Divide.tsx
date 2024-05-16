@@ -8,6 +8,6 @@ const Div = styled.div`
   width: 100%;
 `;
 
-export const Divide: React.FC = ({ children }) => {
-  return <Div>{children}</Div>;
+export const Divide: React.FC<any> = (props) => {
+  return <Div {...props} />;
 };

@@ -41,10 +41,10 @@ const Wrapper = styled.section`
   padding-top: 12px;
   border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
-  box-shadow: 0px -8px 24px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
 
   &.is-darkmode {
-    box-shadow: 0px -8px 12px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
   }
 
   position: relative;
@@ -76,11 +76,11 @@ const Wrapper = styled.section`
   }
 `;
 
-const Shadow = styled.div`
+const Shadow = styled.div<{ isShow: boolean }>`
   pointer-events: none;
   position: absolute;
   top: -85px;
-  height: 85px;
+  height: 100px;
   left: 0;
   width: 100%;
   background: linear-gradient(
@@ -89,7 +89,9 @@ const Shadow = styled.div`
     rgba(175, 175, 175, 0.168147) 41.66%,
     rgba(130, 130, 130, 0.35) 83.44%
   );
-  z-index: 10;
+  z-index: 0;
+  opacity: ${(props) => (props.isShow ? 1 : 0)};
+  transition: opacity 0.1s;
 `;
 
 const ChainLogo = styled.img`
@@ -213,7 +215,7 @@ export const FooterBar: React.FC<Props> = ({
 
   return (
     <div className="relative">
-      {!isDarkTheme && hasShadow && <Shadow />}
+      {!isDarkTheme && <Shadow isShow={hasShadow} />}
       <Wrapper
         className={clsx({
           'is-darkmode': hasShadow,

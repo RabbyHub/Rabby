@@ -5,6 +5,8 @@ import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
 import IconEdit from 'ui/assets/editpen.svg';
 import { useApprovalUtils } from '../../../hooks/useApprovalUtils';
+import clsx from 'clsx';
+import { Divide } from '../../Divide';
 
 const AddressMemo = ({ address }: { address: string }) => {
   const { alias } = useApprovalUtils();
@@ -30,9 +32,12 @@ const AddressMemo = ({ address }: { address: string }) => {
     const { destroy } = Popup.info({
       title: t('component.Contact.EditModal.title'),
       isSupportDarkMode: true,
-      height: 215,
+      height: 224,
+      bodyStyle: {
+        padding: '0 20px',
+      },
       content: (
-        <div className="pt-[4px]">
+        <div className="mt-16">
           <Form
             form={form}
             onFinish={async () => {
@@ -66,7 +71,22 @@ const AddressMemo = ({ address }: { address: string }) => {
                 maxLength={50}
               ></Input>
             </Form.Item>
-            <div className="text-center">
+            <Divide className="bg-r-neutral-line absolute left-0" />
+            <div className="text-center flex gap-x-16 mt-20">
+              <Button
+                size="large"
+                type="ghost"
+                onClick={() => destroy()}
+                className={clsx(
+                  'w-[200px]',
+                  'text-blue-light',
+                  'border-blue-light',
+                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'before:content-none'
+                )}
+              >
+                {t('global.Cancel')}
+              </Button>
               <Button
                 type="primary"
                 size="large"

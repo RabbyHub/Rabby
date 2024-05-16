@@ -31,27 +31,42 @@ type Props =
 
 const PopupContainer = styled.div`
   .title {
-    font-size: 16px;
-    line-height: 19px;
-    color: var(--r-neutral-title-1, #192945);
+    font-size: 15px;
+    line-height: 18px;
     display: flex;
-    margin-bottom: 14px;
+    margin-bottom: 17px;
+    color: var(--r-neutral-body, #3e495e);
+
     .value-address {
+      color: var(--r-neutral-title-1, #192945);
       font-weight: 500;
       margin-left: 7px;
+      display: flex;
+      align-items: center;
     }
   }
   .view-more-table {
-    .row {
-      min-height: 48px;
+    border-radius: 6px;
+    background: var(--r-neutral-card3, #f7fafc);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+
+    .col {
       display: flex;
-      align-items: center;
-      font-size: 15px;
+      width: 100%;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .row {
+      font-size: 13px;
+      line-height: normal;
+      color: var(--r-neutral-title1, #192945);
+      font-weight: 500;
 
       &:nth-child(1) {
-        max-width: 140px;
-        border-right: 0.5px solid var(--r-neutral-line);
-        flex-shrink: 0;
+        color: var(--r-neutral-body, #3e495e);
       }
     }
   }
@@ -103,7 +118,10 @@ const ViewMore = (
         visible={popupVisible}
         closable
         onClose={() => setPopupVisible(false)}
-        height={height}
+        contentWrapperStyle={{
+          maxHeight: `${height}px`,
+          height: 'auto',
+        }}
       >
         <PopupContainer>
           {props.type === 'contract' && <ContractPopup data={props.data} />}

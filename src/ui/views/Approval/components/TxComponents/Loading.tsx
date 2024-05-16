@@ -21,7 +21,7 @@ const Loading = () => {
           <Skeleton.Input active className="w-[100px] h-[16px] rounded mb-8" />
 
           {Array.from({ length: 2 }).map((_, index) => (
-            <div className="space-x-[8px] py-10 flex items-center">
+            <div key={index} className="space-x-[8px] py-10 flex items-center">
               <Skeleton.Avatar active className="w-[24px] h-[24px]" />
               <Skeleton.Input active className="w-[140px] h-[16px] rounded" />
             </div>
@@ -36,7 +36,7 @@ const Loading = () => {
         <Divide />
         <Table className="p-12">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Col>
+            <Col key={index}>
               <Row isTitle>
                 <Skeleton.Input active className="w-[80px] h-[16px] rounded" />
               </Row>
@@ -47,7 +47,7 @@ const Loading = () => {
           ))}
           <SubTable>
             {Array.from({ length: 2 }).map((_, index) => (
-              <SubCol>
+              <SubCol key={index}>
                 <SubRow isTitle>
                   <Skeleton.Input
                     active
