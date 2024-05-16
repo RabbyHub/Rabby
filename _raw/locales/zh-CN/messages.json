@@ -202,7 +202,8 @@
           "label": "功能",
           "lockWallet": "锁定钱包",
           "manageAddress": "管理地址",
-          "signatureRecord": "签名记录"
+          "signatureRecord": "签名记录",
+          "searchDapps": "搜索 Dapp"
         },
         "followUs": "关注我们",
         "host": "host",
