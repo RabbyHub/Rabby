@@ -9,8 +9,11 @@ import { ReactComponent as GasCustomSVG } from '@/ui/assets/sign/gas-custom.svg'
 import { ReactComponent as GasFastSVG } from '@/ui/assets/sign/gas-fast.svg';
 import { ReactComponent as GasNormalSVG } from '@/ui/assets/sign/gas-normal.svg';
 import { ReactComponent as GasInstantSVG } from '@/ui/assets/sign/gas-instant.svg';
+import { ReactComponent as CheckSVG } from '@/ui/assets/sign/check.svg';
 import BigNumber from 'bignumber.js';
 import { Divide } from '../Divide';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
+import clsx from 'clsx';
 
 const MenuButtonStyled = styled.div`
   display: flex;
@@ -32,17 +35,6 @@ const MenuButtonStyled = styled.div`
     border-color: var(--r-blue-default, #7084ff);
     background: var(--r-blue-light1, #eef1ff);
   }
-
-  .ant-dropdown-menu-item-group-title {
-    padding: 0;
-    color: var(--r-neutral-title1, #192945);
-  }
-
-  .ant-dropdown-menu-item-group-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
 `;
 
 const MenuItemStyled = styled(Menu.Item)`
@@ -50,12 +42,21 @@ const MenuItemStyled = styled(Menu.Item)`
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
+  border-radius: 6px;
+  border-width: 0.5px;
+  border-style: solid;
+  border-color: transparent;
+
+  &:hover {
+    background: var(--r-blue-light1, #eef1ff);
+  }
 `;
 
 const LevelTextWrapStyled = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 `;
 
 const LevelTextStyled = styled.div`
@@ -77,6 +78,17 @@ const MenuStyled = styled(Menu)`
   border: 0.5px solid var(--r-neutral-line, #d3d8e0);
   background: var(--r-neutral-bg1, #fff);
   padding: 4px;
+
+  .ant-dropdown-menu-item-group-title {
+    padding: 0;
+    color: var(--r-neutral-title1, #192945);
+  }
+
+  .ant-dropdown-menu-item-group-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 `;
 
 const MenuTitleStyled = styled.div`
@@ -127,21 +139,7 @@ export const GasMenuButton: React.FC<Props> = ({
   onCustom,
 }) => {
   const { t } = useTranslation();
-
-  // custom, fast, normal, slow
-  const orderedGasList = gasList
-    .sort((a, b) => {
-      if (a.level === 'custom') return 1;
-      if (b.level === 'custom') return -1;
-      if (a.level === 'fast') return 1;
-      if (b.level === 'fast') return -1;
-      if (a.level === 'normal') return 1;
-      if (b.level === 'normal') return -1;
-      if (a.level === 'slow') return 1;
-      if (b.level === 'slow') return -1;
-      return 0;
-    })
-    .reverse();
+  const orderedGasList = [...gasList].reverse();
 
   return (
     <Dropdown
@@ -156,31 +154,41 @@ export const GasMenuButton: React.FC<Props> = ({
               </MenuTitleStyled>
             }
           >
-            {orderedGasList.map((gas) => (
-              <MenuItemStyled
-                key={gas.level}
-                onClick={(e) => {
-                  onSelect(e.domEvent, gas);
-                  if (gas.level === 'custom') {
-                    onCustom();
-                  }
-                }}
-                active={selectedGas?.level === gas.level}
-              >
-                <GasLevelIcon level={gas.level} />
-                <LevelTextWrapStyled>
-                  <LevelTextStyled>
-                    {t(getGasLevelI18nKey(gas.level))}
-                  </LevelTextStyled>
-                  {gas.level !== 'custom' && (
-                    <LevelPriceStyled>
-                      {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
-                      Gwei
-                    </LevelPriceStyled>
+            {orderedGasList.map((gas) => {
+              const isSelected = selectedGas?.level === gas.level;
+
+              return (
+                <MenuItemStyled
+                  key={gas.level}
+                  onClick={(e) => {
+                    onSelect(e.domEvent, gas);
+                    if (gas.level === 'custom') {
+                      onCustom();
+                    }
+                  }}
+                  className={clsx({
+                    'bg-r-blue-light-1 border-r-blue-default': isSelected,
+                  })}
+                >
+                  <GasLevelIcon level={gas.level} />
+                  <LevelTextWrapStyled>
+                    <LevelTextStyled>
+                      {t(getGasLevelI18nKey(gas.level))}
+                    </LevelTextStyled>
+                    {gas.level !== 'custom' && (
+                      <LevelPriceStyled>
+                        {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
+                        Gwei
+                      </LevelPriceStyled>
+                    )}
+                  </LevelTextWrapStyled>
+                  {isSelected && <CheckSVG className="text-r-blue-default" />}
+                  {!isSelected && gas.level === 'custom' && (
+                    <RcIconArrowRight className="text-r-neutral-foot" />
                   )}
-                </LevelTextWrapStyled>
-              </MenuItemStyled>
-            ))}
+                </MenuItemStyled>
+              );
+            })}
           </Menu.ItemGroup>
         </MenuStyled>
       }

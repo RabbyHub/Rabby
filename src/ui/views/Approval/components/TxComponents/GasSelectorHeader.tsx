@@ -132,6 +132,7 @@ const CardBody = styled.div<{
             &.active {
               background: var(--r-blue-light-1, #eef1ff);
               border: 1px solid var(--r-blue-default, #7084ff);
+              box-shadow: none;
             }
           }
 
@@ -143,10 +144,11 @@ const CardBody = styled.div<{
         `}
 
   .card {
-    width: 76px;
-    height: 52px;
-    background: var(--r-neutral-card-3, #f7fafc);
-    border-radius: 4px;
+    width: 84px;
+    height: 80px;
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #fff);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     border: 1px solid transparent;
@@ -157,23 +159,32 @@ const CardBody = styled.div<{
       font-size: 12px;
       line-height: 14px;
       color: var(--r-neutral-body, #3e495e);
-      margin: 8px auto 0;
+      margin: 14px auto 0;
+      font-weight: 500;
     }
     .cardTitle {
       color: var(--r-neutral-title-1, #192945) !important;
       font-weight: 500;
-      font-size: 13px !important;
-      margin: 4px auto 0;
+      font-size: 15px !important;
+      line-height: 18px;
+      margin: 6px auto 0;
       .ant-input {
-        background: transparent;
+        background: transparent !important;
       }
     }
+    .cardTime {
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--r-neutral-foot, #6a7587);
+      margin: 2px auto 0;
+    }
+
     .custom-input {
-      margin: 4px auto 0;
+      margin: 6px auto 0;
     }
     .ant-input {
       text-align: center !important;
-      font-size: 13px !important;
+      font-size: 15px !important;
       font-weight: 500;
       color: var(--r-neutral-title-1, #192945);
       padding-top: 0;
@@ -185,36 +196,6 @@ const CardBody = styled.div<{
     .ant-input:focus,
     .ant-input-focused {
       color: var(--r-neutral-title-1);
-    }
-  }
-`;
-
-const ManuallySetGasLimitAlert = styled.div`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 15px;
-  margin-top: 10px;
-  color: var(--r-neutral-body);
-`;
-
-const ErrorsWrapper = styled.div`
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  padding-top: 14px;
-  margin-top: 14px;
-  .item {
-    display: flex;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 16px;
-    color: var(--r-neutral-body, #3e495e);
-    margin-bottom: 10px;
-    align-items: flex-start;
-    .icon-alert {
-      width: 15px;
-      margin-right: 8px;
-    }
-    &:nth-last-child(1) {
-      margin-bottom: 0;
     }
   }
 `;
@@ -237,7 +218,6 @@ const GasSelectorHeader = ({
   chainId,
   onChange,
   isReady,
-  recommendGasLimit,
   recommendNonce,
   nonce,
   disableNonce,
@@ -248,11 +228,7 @@ const GasSelectorHeader = ({
   version,
   gasCalcMethod,
   disabled,
-  manuallyChangeGasLimit,
-  errors,
   engineResults = [],
-  nativeTokenBalance,
-  gasPriceMedian,
   isCancel,
   isSpeedUp,
 }: GasSelectorProps) => {
@@ -309,12 +285,6 @@ const GasSelectorHeader = ({
     });
     return map;
   }, [engineResults]);
-
-  const handleSetRecommendTimes = () => {
-    if (disabled) return;
-    const value = new BigNumber(recommendGasLimit).times(1.5).toFixed(0);
-    setGasLimit(value);
-  };
 
   const formValidator = () => {
     if (!afterGasLimit) {
@@ -401,18 +371,6 @@ const GasSelectorHeader = ({
     }
   };
 
-  const handleGasLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (/^\d*$/.test(e.target.value)) {
-      setGasLimit(e.target.value);
-    }
-  };
-
-  const handleCustomNonceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (/^\d*$/.test(e.target.value)) {
-      setCustomNonce(Number(e.target.value));
-    }
-  };
-
   const handleClickEdit = () => {
     setModalVisible(true);
     setSelectedGas(rawSelectedGas);
@@ -484,39 +442,6 @@ const GasSelectorHeader = ({
     }
   };
 
-  const externalHandleCustomGasChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    e.stopPropagation();
-
-    if (INPUT_NUMBER_RE.test(e.target.value)) {
-      const value = filterNumber(e.target.value);
-      setCustomGas(value);
-
-      const gasObj = {
-        level: 'custom',
-        front_tx_count: 0,
-        estimated_seconds: 0,
-        base_fee: gasList[0].base_fee,
-        priority_price: 0,
-      };
-
-      const currentObj = {
-        ...gasObj,
-        ...rawSelectedGas,
-        front_tx_count: 0,
-        estimated_seconds: 0,
-        base_fee: gasList[0].base_fee,
-        price: Number(value) * 1e9,
-        level: 'custom',
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce),
-        maxPriorityFee: Number(value) * 1e9,
-      };
-      onChange(currentObj);
-    }
-  };
-
   const customGasConfirm = (e) => {
     const gas = {
       level: 'custom',
@@ -533,7 +458,14 @@ const GasSelectorHeader = ({
     });
   };
 
+  const priorityFeeMax = selectedGas ? selectedGas.price / 1e9 : 0;
   const handleMaxPriorityFeeChange = (val: number) => {
+    if (val < 0) return;
+    if (val > priorityFeeMax) {
+      setMaxPriorityFee(priorityFeeMax);
+      return;
+    }
+    if (val.toString().split('.')[1]?.length > 2) return;
     setMaxPriorityFee(val);
   };
 
@@ -698,12 +630,13 @@ const GasSelectorHeader = ({
         <GasMenuButton
           gasList={gasList}
           selectedGas={selectedGas}
-          onSelect={handlePanelSelection}
+          onSelect={externalPanelSelection}
           onCustom={handleClickEdit}
         />
       </HeaderStyled>
       <Popup
-        height={720}
+        isNew
+        height={'auto'}
         visible={modalVisible}
         title={t('page.signTx.gasSelectorTitle')}
         className="gas-modal"
@@ -732,14 +665,15 @@ const GasSelectorHeader = ({
           ) : (
             <>
               <div className="gas-selector-modal-amount">
+                ${modalExplainGas.gasCostUsd.toFixed(2)}
+              </div>
+              <div className="gas-selector-modal-usd">
+                <img src={chain.logo} className="w-16 h-16" />
                 {formatTokenAmount(
                   new BigNumber(modalExplainGas.gasCostAmount).toString(10),
                   6
                 )}{' '}
                 {chain.nativeTokenSymbol}
-              </div>
-              <div className="gas-selector-modal-usd">
-                ≈${modalExplainGas.gasCostUsd.toFixed(2)}
               </div>
             </>
           )}
@@ -802,6 +736,11 @@ const GasSelectorHeader = ({
                       </Tooltip>
                     )}
                   </div>
+                  <div className="cardTime">
+                    {item.estimated_seconds
+                      ? `~${item.estimated_seconds} sec`
+                      : '~12 sec'}
+                  </div>
                 </div>
               ))}
             </CardBody>
@@ -825,17 +764,18 @@ const GasSelectorHeader = ({
                 </Tooltip>
               </p>
               <div className="priority-slider-body">
-                <Slider
-                  min={0}
-                  max={selectedGas ? selectedGas.price / 1e9 : 0}
-                  onChange={handleMaxPriorityFeeChange}
+                <Input
+                  onFocus={(e) => e.target.select()}
                   value={maxPriorityFee}
+                  onChange={(e) =>
+                    handleMaxPriorityFeeChange(Number(e.target.value))
+                  }
+                  prefixCls="priority-slider-input"
+                  type="number"
+                  min={0}
+                  max={priorityFeeMax}
                   step={0.01}
                 />
-                <p className="priority-slider__mark">
-                  <span>0</span>
-                  <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
-                </p>
               </div>
             </div>
           )}
@@ -848,7 +788,7 @@ const GasSelectorHeader = ({
         <div className="flex justify-center mt-32 popup-footer">
           <Button
             type="primary"
-            className="w-[200px]"
+            className="w-full mx-20"
             size="large"
             onClick={handleModalConfirmGas}
             disabled={!isReady || validateStatus.customGas.status === 'error'}
@@ -858,138 +798,6 @@ const GasSelectorHeader = ({
         </div>
       </Popup>
     </>
-  );
-};
-
-const GasPriceDesc = styled.ul`
-  margin-top: 12px;
-  margin-bottom: 0;
-  font-size: 13px;
-  color: var(--r-neutral-body, #3e495e);
-  li {
-    position: relative;
-    margin-bottom: 8px;
-    padding-left: 12px;
-    &:nth-last-child(1) {
-      margin-bottom: 0;
-    }
-    &::before {
-      content: '';
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      border-radius: 100%;
-      background-color: var(--r-neutral-body, #3e495e);
-      left: 0;
-      top: 8px;
-    }
-  }
-`;
-
-const GasSelectPanel = ({
-  gasList,
-  selectedGas,
-  panelSelection,
-  customGas,
-  customGasConfirm = () => null,
-  handleCustomGasChange,
-  disabled,
-  chain,
-  nativeTokenBalance,
-  gasPriceMedian,
-}: {
-  gasList: GasLevel[];
-  selectedGas: GasLevel | null;
-  panelSelection: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    item: GasLevel
-  ) => void;
-  customGas: string | number;
-  customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
-  handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  disabled?: boolean;
-  chain: Chain;
-  nativeTokenBalance: string;
-  gasPriceMedian: number | null;
-}) => {
-  const { t } = useTranslation();
-  const customerInputRef = useRef<Input>(null);
-  const handlePanelSelection = (e, item) => {
-    if (disabled) return;
-    return panelSelection(e, item);
-  };
-
-  return (
-    <Tooltip
-      overlayClassName="rectangle"
-      title={disabled ? t('page.signTx.gasNotRequireForSafeTransaction') : null}
-    >
-      <CardBody $disabled={disabled}>
-        {gasList.map((item, idx) => (
-          <div
-            key={`gas-item-${item.level}-${idx}`}
-            className={clsx('card', {
-              active: selectedGas?.level === item.level,
-            })}
-            onClick={(e) => {
-              handlePanelSelection(e, item);
-              if (item.level === 'custom') {
-                customerInputRef.current?.focus();
-              }
-            }}
-          >
-            <div className="gas-level">{t(getGasLevelI18nKey(item.level))}</div>
-            <div
-              className={clsx('cardTitle w-full', {
-                'custom-input': item.level === 'custom',
-                active: selectedGas?.level === item.level,
-              })}
-            >
-              {item.level === 'custom' ? (
-                <Input
-                  value={customGas}
-                  defaultValue={customGas}
-                  onChange={handleCustomGasChange}
-                  onClick={(e) => handlePanelSelection(e, item)}
-                  onPressEnter={customGasConfirm}
-                  ref={customerInputRef}
-                  autoFocus={selectedGas?.level === item.level}
-                  min={0}
-                  bordered={false}
-                  disabled={disabled}
-                  placeholder="0"
-                />
-              ) : (
-                <Tooltip
-                  title={new BigNumber(item.price / 1e9).toFixed()}
-                  overlayClassName={clsx('rectangle')}
-                >
-                  <div>
-                    {new BigNumber(item.price / 1e9).toFixed().slice(0, 8)}
-                  </div>
-                </Tooltip>
-              )}
-            </div>
-          </div>
-        ))}
-      </CardBody>
-      <GasPriceDesc>
-        <li>
-          {t('page.signTx.myNativeTokenBalance', {
-            symbol: chain.nativeTokenSymbol,
-            amount: formatTokenAmount(
-              new BigNumber(nativeTokenBalance).div(1e18).toFixed()
-            ),
-          })}
-        </li>
-        {gasPriceMedian !== null && (
-          <li>
-            {t('page.signTx.gasPriceMedian')}
-            {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
-          </li>
-        )}
-      </GasPriceDesc>
-    </Tooltip>
   );
 };
 
