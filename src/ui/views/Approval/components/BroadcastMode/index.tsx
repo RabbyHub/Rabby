@@ -354,6 +354,7 @@ export const BroadcastMode = ({
         )}
       </Wrapper>
       <Popup
+        isNew
         placement="bottom"
         height="352px"
         visible={drawerVisible}

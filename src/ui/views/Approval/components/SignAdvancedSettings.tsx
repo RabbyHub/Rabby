@@ -172,6 +172,7 @@ export const SignAdvancedSettings = ({
         )}
       </Card>
       <Popup
+        isNew
         height={392}
         visible={visible}
         placement="bottom"

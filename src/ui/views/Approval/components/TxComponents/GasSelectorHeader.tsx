@@ -695,7 +695,12 @@ const GasSelectorHeader = ({
             />
           )}
         </GasStyled>
-        <GasMenuButton />
+        <GasMenuButton
+          gasList={gasList}
+          selectedGas={selectedGas}
+          onSelect={handlePanelSelection}
+          onCustom={handleClickEdit}
+        />
       </HeaderStyled>
       <Popup
         height={720}

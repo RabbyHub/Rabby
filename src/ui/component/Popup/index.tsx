@@ -13,6 +13,7 @@ interface PopupProps extends DrawerProps {
   onCancel?(): void;
   children?: ReactNode;
   isSupportDarkMode?: boolean;
+  isNew?: boolean;
 }
 
 const Popup = ({
@@ -23,6 +24,7 @@ const Popup = ({
   onClose,
   onCancel,
   isSupportDarkMode,
+  isNew,
   ...rest
 }: PopupProps) => (
   <Drawer
@@ -32,7 +34,10 @@ const Popup = ({
     className={clsx(
       'custom-popup',
       isSupportDarkMode && 'is-support-darkmode',
-      className
+      className,
+      {
+        'is-new': isNew,
+      }
     )}
     destroyOnClose
     closeIcon={closeIcon}

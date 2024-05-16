@@ -16,9 +16,15 @@
   }
   .ant-drawer-content {
     flex: 1;
-    background: var(--r-neutral-bg2, #F2F4F7);
+    background-color: var(--r-neutral-bg-1, #fff);
     border-radius: 16px 16px 0px 0px;
     overflow: visible;
+  }
+
+  &.is-new {
+    .ant-drawer-content {
+      background-color: var(--r-neutral-bg-2, #F2F4F7);
+    }
   }
 
   &.isConnectView {
@@ -71,7 +77,13 @@
     background: transparent;
   }
   .ant-drawer-content {
-    background: var(--r-neutral-bg2, #F2F4F7);
+    background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  &.is-new {
+    .ant-drawer-content {
+      background: var(--r-neutral-bg-2, #3D4251);
+    }
   }
 
   &.isConnectView {

@@ -44,6 +44,7 @@ const ViewRawModal = () => {
 
 ViewRawModal.open = ({ raw, abi }: ContentProps) => {
   Popup.info({
+    isNew: true,
     closable: true,
     height: 720,
     content: <Content raw={raw} abi={abi} />,

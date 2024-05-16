@@ -567,7 +567,7 @@
           "custom": "Custom",
           "fast": "Instant",
           "normal": "Fast",
-          "slow": "Standard"
+          "slow": "Normal"
         },
         "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
         "popupTitle": "Set Gas Price (Gwei)"
@@ -1899,6 +1899,9 @@
     "addChain": {
       "title": "Add Custom Network to Rabby",
       "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only."
+    },
+    "sign": {
+      "transactionSpeed": "Transaction Speed"
     }
   },
   "component": {

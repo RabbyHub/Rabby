@@ -115,6 +115,7 @@ const ViewMore = (
         </span>
       )}
       <Popup
+        isNew
         visible={popupVisible}
         closable
         onClose={() => setPopupVisible(false)}
