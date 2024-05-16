@@ -22,7 +22,7 @@
     "postinstall": "patch-package && npm run sync-chain"
   },
   "dependencies": {
-    "@coinbase/wallet-sdk": "3.8.0-beta.3",
+    "@coinbase/wallet-sdk": "3.9.0",
     "@debank/common": "0.3.60",
     "@debank/festats": "1.0.1",
     "@dnd-kit/core": "5.0.1",
