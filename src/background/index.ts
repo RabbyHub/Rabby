@@ -55,8 +55,6 @@ Safe.adapter = fetchAdapter as any;
 
 dayjs.extend(utc);
 
-setPopupIcon('default');
-
 const { PortMessage } = Message;
 
 let appStoreLoaded = false;
@@ -99,6 +97,12 @@ async function restoreAppState() {
   await securityEngineService.init();
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
+
+  setPopupIcon(
+    walletController.isUnlocked() || !walletController.isBooted()
+      ? 'default'
+      : 'locked'
+  );
 
   rpcCache.start();
 
