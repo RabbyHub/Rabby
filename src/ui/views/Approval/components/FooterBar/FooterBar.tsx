@@ -34,6 +34,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   showGasLess?: boolean;
   enableGasLess?: () => void;
   canUseGasLess?: boolean;
+  Header?: React.ReactNode;
 }
 
 const Wrapper = styled.section`
@@ -134,6 +135,7 @@ export const FooterBar: React.FC<Props> = ({
   canUseGasLess = false,
   onIgnoreAllRules,
   enableGasLess,
+  Header,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -144,13 +146,6 @@ export const FooterBar: React.FC<Props> = ({
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-
-  const displayOirigin = useMemo(() => {
-    if (origin === INTERNAL_REQUEST_ORIGIN) {
-      return 'Rabby Wallet';
-    }
-    return origin;
-  }, [origin]);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
@@ -221,6 +216,7 @@ export const FooterBar: React.FC<Props> = ({
           'is-darkmode': hasShadow,
         })}
       >
+        {Header}
         <AccountInfo
           chain={props.chain}
           account={account}

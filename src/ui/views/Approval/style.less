@@ -1289,8 +1289,9 @@
 
     &-content {
       margin-right: 4px;
-      color: var(--r-neutral-title-1);
-      // flex: 1;
+      color: var(--r-neutral-title1, #192945);
+      font-size: 15px;
+      line-height: 18px;
       &-item {
         display: flex;
         gap: 6px;
@@ -1301,7 +1302,7 @@
     &-error {
       font-size: 15px;
       line-height: 18px;
-      color: #ffb020;
+      color: var(--r-orange-default, #FFB020);
 
       &-desc {
         font-weight: 400;
@@ -1338,9 +1339,7 @@
       text-transform: capitalize;
     }
     &-amount {
-      font-size: 14px;
-      line-height: 16px;
-      color: var(--r-neutral-foot, #6A7587);
+      color: var(--r-neutral-title1, #192945);
     }
     &-usd {
       font-size: 12px;

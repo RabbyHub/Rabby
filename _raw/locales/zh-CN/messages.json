@@ -1190,7 +1190,7 @@
       "eip1559Desc1": "在支持 EIP-1559 的链上，Priority Fee 是给处理你的交易的矿工的小费。\n你可以通过降低 Max Priority Fee 来节省最终的矿工费，这可能会导致完成交易需要耗费更长时间",
       "eip1559Desc2": "在 Rabby 中，Priority Fee（小费）= Max Fee - Base Fee。\n设置 Max Priority Fee 后，将从中扣除 Base Fee，剩下的部分将作为小费给予矿工",
       "enoughSafeSigCollected": "已收集到足够的签名",
-      "failToFetchGasCost": "获取矿工费失败",
+      "failToFetchGasCost": "无法估计矿工费",
       "importedAddress": "已导入地址",
       "fakeTokenAlert": "这是由 Rabby 标记的诈骗代币",
       "firstOnChain": "首次链上交易",

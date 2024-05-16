@@ -1,6 +1,3 @@
-/**
- * @deprecated new version is GasSelectorHeader.tsx
- */
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -8,7 +5,6 @@ import { GasLevel } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
-  CHAINS,
   MINIMUM_GAS_LIMIT,
   L2_ENUMS,
   CAN_ESTIMATE_L1_FEE_CHAINS,
@@ -33,6 +29,10 @@ import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
+import { ReactComponent as GasSavingSVG } from 'ui/assets/sign/tx/gas-saving.svg';
+import { ReactComponent as GasMevSVG } from 'ui/assets/sign/tx/gas-mev.svg';
+import { ReactComponent as GasInstantSVG } from 'ui/assets/sign/tx/gas-instant.svg';
+import { GasMenuButton } from './GasMenuButton';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -219,7 +219,19 @@ const ErrorsWrapper = styled.div`
   }
 `;
 
-const GasSelector = ({
+const HeaderStyled = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+`;
+
+const GasStyled = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const GasSelectorHeader = ({
   gasLimit,
   gas,
   chainId,
@@ -620,141 +632,71 @@ const GasSelector = ({
     }
   }, [gasList, selectedGas, isReady, chainId]);
 
-  if (!isReady && isFirstTimeLoad)
+  if (!isReady && isFirstTimeLoad) {
     return (
-      <>
-        <div className="gas-selector pt-[14px] pb-[16px]">
-          <div>
-            <div>
-              <Skeleton.Input active style={{ width: 120, height: 18 }} />
-            </div>
-            <div className="flex items-center justify-between mt-12">
-              {Array(4)
-                .fill(0)
-                .map((_e, i) => (
-                  <Skeleton.Input
-                    key={i}
-                    active
-                    style={{ width: 76, height: 52 }}
-                  />
-                ))}
-            </div>
-          </div>
-        </div>
-      </>
+      <HeaderStyled>
+        <Skeleton.Input className="rounded w-[130px] h-20" active />
+      </HeaderStyled>
     );
+  }
 
   return (
     <>
-      <div className="gas-selector">
-        <div
-          className={clsx(
-            'gas-selector-card',
-            gas.error || !gas.success ? 'items-start mb-12' : 'mb-12'
-          )}
-        >
-          <div className="relative flex overflow-hidden">
-            <div className="gas-selector-card-title">
-              {t('page.signTx.gasSelectorTitle')}
-            </div>
-            <div className="gas-selector-card-content ml-4 overflow-hidden">
-              {disabled ? (
-                <div className="font-semibold">
-                  {t('page.signTx.noGasRequired')}
+      <HeaderStyled>
+        <GasStyled>
+          <GasInstantSVG />
+          <div className="gas-selector-card-content ml-4 overflow-hidden">
+            {disabled ? (
+              <div className="font-semibold">
+                {t('page.signTx.noGasRequired')}
+              </div>
+            ) : gas.error || !gas.success ? (
+              <>
+                <div className="gas-selector-card-error">
+                  {t('page.signTx.failToFetchGasCost')}
                 </div>
-              ) : gas.error || !gas.success ? (
-                <>
-                  <div className="gas-selector-card-error">
-                    {t('page.signTx.failToFetchGasCost')}
-                  </div>
-                </>
-              ) : (
-                <div className="gas-selector-card-content-item">
-                  <div className="gas-selector-card-amount translate-y-1 flex items-center overflow-hidden">
-                    <span className="text-r-blue-default font-medium text-15 truncate">
-                      {formatTokenAmount(
-                        new BigNumber(gas.gasCostAmount).toString(10),
-                        8
-                      )}{' '}
-                      {chain.nativeTokenSymbol}
-                    </span>
-                    <span className="truncate">
-                      &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
-                    </span>
-                    {L2_ENUMS.includes(chain.enum) &&
-                      !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
-                        <span className="relative ml-6">
-                          <TooltipWithMagnetArrow
-                            title={t('page.signTx.l2GasEstimateTooltip')}
-                            className="rectangle w-[max-content]"
-                          >
-                            <img
-                              src={IconQuestionMark}
-                              className="cursor-pointer w-14"
-                            />
-                          </TooltipWithMagnetArrow>
-                        </span>
-                      )}
-                  </div>
+              </>
+            ) : (
+              <div className="gas-selector-card-content-item">
+                <div className="gas-selector-card-amount translate-y-1 flex items-center overflow-hidden">
+                  <span className="truncate">
+                    ${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  </span>
+                  {L2_ENUMS.includes(chain.enum) &&
+                    !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
+                      <span className="relative ml-6">
+                        <TooltipWithMagnetArrow
+                          title={t('page.signTx.l2GasEstimateTooltip')}
+                          className="rectangle w-[max-content]"
+                        >
+                          <img
+                            src={IconQuestionMark}
+                            className="cursor-pointer w-14"
+                          />
+                        </TooltipWithMagnetArrow>
+                      </span>
+                    )}
                 </div>
-              )}
-            </div>
-            {engineResultMap['1118'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1118'].enable}
-                level={
-                  processedRules.includes('1118')
-                    ? 'proceed'
-                    : engineResultMap['1118'].level
-                }
-                onClick={() => handleClickRule('1118')}
-                right="-40px"
-                className="security-level-tag"
-              />
+              </div>
             )}
           </div>
-          <div className="flex-1" />
-          <div
-            className="flex items-center text-12 text-r-neutral-foot cursor-pointer"
-            role="button"
-            onClick={handleClickEdit}
-          >
-            <span>{t('page.signTx.gasMoreButton')}</span>
-            <IconArrowRight />
-          </div>
-        </div>
-        <GasSelectPanel
-          gasList={gasList}
-          selectedGas={rawSelectedGas}
-          panelSelection={externalPanelSelection}
-          customGas={customGas}
-          handleCustomGasChange={externalHandleCustomGasChange}
-          disabled={disabled}
-          chain={chain}
-          nativeTokenBalance={nativeTokenBalance}
-          gasPriceMedian={gasPriceMedian}
-        />
-        {manuallyChangeGasLimit && (
-          <ManuallySetGasLimitAlert>
-            {t('page.signTx.manuallySetGasLimitAlert')} {Number(gasLimit)}
-          </ManuallySetGasLimitAlert>
-        )}
-        {errors.length > 0 && (
-          <ErrorsWrapper>
-            {errors.map((error) => (
-              <div className="item" key={error.code}>
-                <ThemeIcon
-                  src={RcIconAlert}
-                  className="icon icon-alert text-r-neutral-body"
-                />
-                <span className="flex-1">
-                  {error.msg} #{error.code}
-                </span>
-              </div>
-            ))}
-          </ErrorsWrapper>
-        )}
-      </div>
+          <div className="ml-3 text-r-neutral-body text-12 mt-2">~12 sec</div>
+          {engineResultMap['1118'] && (
+            <SecurityLevelTagNoText
+              enable={engineResultMap['1118'].enable}
+              level={
+                processedRules.includes('1118')
+                  ? 'proceed'
+                  : engineResultMap['1118'].level
+              }
+              onClick={() => handleClickRule('1118')}
+              right="0"
+              className="relative m-0 security-level-tag"
+            />
+          )}
+        </GasStyled>
+        <GasMenuButton />
+      </HeaderStyled>
       <Popup
         height={720}
         visible={modalVisible}
@@ -897,91 +839,6 @@ const GasSelector = ({
               {t('page.signTx.hardwareSupport1559Alert')}
             </div>
           )}
-          <Form onFinish={handleConfirmGas}>
-            <div className="gas-limit">
-              <p
-                className={clsx('gas-limit-label flex leading-[16px]', {
-                  disabled: disabled,
-                })}
-              >
-                <span className="flex-1">{t('page.signTx.gasLimitTitle')}</span>
-              </p>
-              <div className="expanded gas-limit-panel-wrapper widget-has-ant-input">
-                <Tooltip
-                  overlayClassName="rectangle"
-                  title={
-                    disabled
-                      ? t('page.signTx.gasNotRequireForSafeTransaction')
-                      : null
-                  }
-                >
-                  <Form.Item
-                    className={clsx('gas-limit-panel mb-0', {
-                      disabled: disabled,
-                    })}
-                    validateStatus={validateStatus.gasLimit.status}
-                  >
-                    <Input
-                      className="popup-input"
-                      value={afterGasLimit}
-                      onChange={handleGasLimitChange}
-                      disabled={disabled}
-                    />
-                  </Form.Item>
-                </Tooltip>
-                {validateStatus.gasLimit.message ? (
-                  <p className="tip text-red-light not-italic">
-                    {validateStatus.gasLimit.message}
-                  </p>
-                ) : (
-                  <p className={clsx('tip', { disabled: disabled })}>
-                    <Trans
-                      i18nKey="page.signTx.recommendGasLimitTip"
-                      values={{
-                        est: Number(recommendGasLimit),
-                        current: new BigNumber(afterGasLimit)
-                          .div(recommendGasLimit)
-                          .toFixed(1),
-                      }}
-                    />
-                    <span
-                      className="recommend-times"
-                      onClick={handleSetRecommendTimes}
-                    >
-                      1.5x
-                    </span>
-                    .
-                  </p>
-                )}
-                <div className={clsx({ 'opacity-50': disableNonce })}>
-                  <p className="gas-limit-title mt-20 mb-0 leading-[16px]">
-                    {t('page.signTx.nonceTitle')}
-                  </p>
-                  <Form.Item
-                    className="gas-limit-panel mb-0"
-                    required
-                    validateStatus={validateStatus.nonce.status}
-                  >
-                    <Input
-                      className="popup-input"
-                      value={customNonce}
-                      onChange={handleCustomNonceChange}
-                      disabled={disableNonce}
-                    />
-                  </Form.Item>
-                  {validateStatus.nonce.message ? (
-                    <p className="tip text-red-light not-italic">
-                      {validateStatus.nonce.message}
-                    </p>
-                  ) : (
-                    <p className="tip">
-                      {t('page.signTx.gasLimitModifyOnlyNecessaryAlert')}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Form>
         </div>
         <div className="flex justify-center mt-32 popup-footer">
           <Button
@@ -1116,9 +973,7 @@ const GasSelectPanel = ({
           {t('page.signTx.myNativeTokenBalance', {
             symbol: chain.nativeTokenSymbol,
             amount: formatTokenAmount(
-              new BigNumber(nativeTokenBalance).div(1e18).toFixed(),
-              4,
-              true
+              new BigNumber(nativeTokenBalance).div(1e18).toFixed()
             ),
           })}
         </li>
@@ -1133,4 +988,4 @@ const GasSelectPanel = ({
   );
 };
 
-export default GasSelector;
+export default GasSelectorHeader;

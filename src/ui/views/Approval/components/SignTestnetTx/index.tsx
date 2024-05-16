@@ -1,18 +1,9 @@
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Account, ChainGas } from 'background/service/preference';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import { findChain } from '@/utils/chain';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import { Popup } from '@/ui/component';
-import { Tabs } from 'antd';
 import { TestnetActions } from './components/TestnetActions';
-import GasSelector, { GasSelectorResponse } from '../TxComponents/GasSelecter';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
@@ -36,12 +27,12 @@ import { normalizeTxParams } from '../SignTx';
 import { isHexString, toChecksumAddress } from 'ethereumjs-util';
 import { WaitingSignComponent } from '../map';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { getAddress } from 'viem';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import i18n from '@/i18n';
-
-const { TabPane } = Tabs;
+import GasSelectorHeader, {
+  GasSelectorResponse,
+} from '../TxComponents/GasSelectorHeader';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -657,48 +648,50 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           }}
           isSpeedUp={isSpeedUp}
         />
-        <GasSelector
-          disabled={false}
-          isReady={isReady}
-          gasLimit={gasLimit}
-          noUpdate={isCancel || isSpeedUp}
-          gasList={gasList || []}
-          selectedGas={selectedGas}
-          version={'v0'}
-          gas={{
-            error: null,
-            success: true,
-            gasCostUsd: 0,
-            gasCostAmount: new BigNumber(selectedGas?.price || 0)
-              .multipliedBy(gasUsed || 0)
-              .div(1e18),
-          }}
-          gasCalcMethod={async (price) => {
-            return {
-              gasCostAmount: new BigNumber(price || 0)
-                .multipliedBy(gasUsed || 0)
-                .div(1e18),
-              gasCostUsd: new BigNumber(0),
-            };
-          }}
-          recommendGasLimit={gasUsed || ''}
-          recommendNonce={recommendNonce || ''}
-          chainId={chainId}
-          onChange={handleGasChange}
-          nonce={realNonce || tx.nonce}
-          disableNonce={isSpeedUp || isCancel}
-          isSpeedUp={isSpeedUp}
-          isCancel={isCancel}
-          is1559={false}
-          isHardware={isHardware}
-          manuallyChangeGasLimit={false}
-          errors={checkErrors}
-          engineResults={[]}
-          nativeTokenBalance={nativeTokenBalance}
-          gasPriceMedian={null}
-        />
       </div>
       <FooterBar
+        Header={
+          <GasSelectorHeader
+            disabled={false}
+            isReady={isReady}
+            gasLimit={gasLimit}
+            noUpdate={isCancel || isSpeedUp}
+            gasList={gasList || []}
+            selectedGas={selectedGas}
+            version={'v0'}
+            gas={{
+              error: null,
+              success: true,
+              gasCostUsd: 0,
+              gasCostAmount: new BigNumber(selectedGas?.price || 0)
+                .multipliedBy(gasUsed || 0)
+                .div(1e18),
+            }}
+            gasCalcMethod={async (price) => {
+              return {
+                gasCostAmount: new BigNumber(price || 0)
+                  .multipliedBy(gasUsed || 0)
+                  .div(1e18),
+                gasCostUsd: new BigNumber(0),
+              };
+            }}
+            recommendGasLimit={gasUsed || ''}
+            recommendNonce={recommendNonce || ''}
+            chainId={chainId}
+            onChange={handleGasChange}
+            nonce={realNonce || tx.nonce}
+            disableNonce={isSpeedUp || isCancel}
+            isSpeedUp={isSpeedUp}
+            isCancel={isCancel}
+            is1559={false}
+            isHardware={isHardware}
+            manuallyChangeGasLimit={false}
+            errors={checkErrors}
+            engineResults={[]}
+            nativeTokenBalance={nativeTokenBalance}
+            gasPriceMedian={null}
+          />
+        }
         // hasShadow={footerShowShadow}
         origin={origin}
         originLogo={params.session.icon}
