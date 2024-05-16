@@ -298,7 +298,8 @@
       "yes": "Yes",
       "no": "No",
       "hasInteraction": "Interacted before",
-      "address": "Address"
+      "address": "Address",
+      "advancedSettings": "Advanced Settings"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

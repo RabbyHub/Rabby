@@ -23,15 +23,12 @@ import IconFind from 'ui/assets/safe-nonce-select/find.svg';
 import IconUnchecked from 'ui/assets/safe-nonce-select/unchecked.svg';
 import { intToHex } from 'ui/utils/number';
 import { getActionTypeTextByType } from '../Actions/utils';
+import { Card } from '../Card';
+import { Divide } from '../Divide';
 
-const Wrapper = styled.div`
-  border-radius: 6px;
-  background: var(--r-neutral-card-1, #fff);
-  margin-top: 12px;
-
-  padding: 16px 12px 12px 12px;
-
+const Wrapper = styled(Card)`
   .nonce-select {
+    padding: 16px;
     &-label {
       color: var(--r-neutral-title-1, #192945);
       font-size: 15px;
@@ -226,7 +223,7 @@ export const SafeNonceSelector = ({
           <div>
             <Skeleton.Input active style={{ width: 120, height: 18 }} />
           </div>
-          <div className="flex items-center justify-between mt-12">
+          <div className="flex items-center justify-between mt-12 p-16">
             {Array(4)
               .fill(0)
               .map((_e, i) => (
@@ -242,9 +239,8 @@ export const SafeNonceSelector = ({
     );
   }
   return (
-    <Wrapper>
+    <Wrapper headline={t('global.Nonce')}>
       <div className="nonce-select">
-        <div className="nonce-select-label">{t('global.Nonce')}</div>
         <Form form={form}>
           <Form.Item
             name="nonce"

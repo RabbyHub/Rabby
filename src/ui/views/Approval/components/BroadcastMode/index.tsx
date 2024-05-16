@@ -24,10 +24,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 const Wrapper = styled(Card)`
-  cursor: pointer;
-  &:hover {
-    border-color: var(--r-blue-default, #7084ff);
-  }
   .broadcast-mode {
     &-header {
       display: flex;
@@ -314,16 +310,10 @@ export const BroadcastMode = ({
         onClick={() => {
           setDrawerVisible(true);
         }}
+        headline={t('page.signTx.BroadcastMode.title')}
+        actionText={selectedOption?.title}
+        hasDivider={value.type !== 'default'}
       >
-        <div className="broadcast-mode-header">
-          <div className="broadcast-mode-title">
-            {t('page.signTx.BroadcastMode.title')}
-          </div>
-          <div className="broadcast-mode-extra">
-            {selectedOption?.title}
-            <SvgIconArrowRight />
-          </div>
-        </div>
         {value.type !== 'default' && (
           <>
             <Divide />

@@ -77,6 +77,7 @@ import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain } from '@/utils/chain';
 import { SignTestnetTx } from './SignTestnetTx';
+import { SignAdvancedSettings } from './SignAdvancedSettings';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -1406,6 +1407,40 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleAdvancedSettingsChange = (gas: GasSelectorResponse) => {
+    const beforeNonce = realNonce || tx.nonce;
+    const afterNonce = intToHex(gas.nonce);
+    if (support1559) {
+      setTx({
+        ...tx,
+        gas: intToHex(gas.gasLimit),
+        nonce: afterNonce,
+      });
+    } else {
+      setTx({
+        ...tx,
+        gas: intToHex(gas.gasLimit),
+        nonce: afterNonce,
+      });
+    }
+    setGasLimit(intToHex(gas.gasLimit));
+    if (Number(gasLimit) !== gas.gasLimit) {
+      setManuallyChangeGasLimit(true);
+    }
+    if (!isGnosisAccount) {
+      setRealNonce(afterNonce);
+    } else {
+      if (safeInfo && safeInfo.nonce <= gas.nonce) {
+        setRealNonce(afterNonce);
+      } else {
+        safeInfo && setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+      }
+    }
+    if (beforeNonce !== afterNonce) {
+      setNonceChanged(true);
+    }
+  };
+
   const handleCancel = () => {
     gaEvent('cancel');
     rejectApproval('User rejected the request.');
@@ -1897,8 +1932,23 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 originLogo={params.session.icon}
               />
             )}
+
+            {isGnosisAccount && isReady && (
+              <SafeNonceSelector
+                disabled={isViewGnosisSafe}
+                isReady={isReady}
+                chainId={chainId}
+                value={realNonce}
+                safeInfo={safeInfo}
+                onChange={(v) => {
+                  setRealNonce(v);
+                  setNonceChanged(true);
+                }}
+              />
+            )}
+
             {/* TODO */}
-            {/* {isGnosisAccount ? (
+            {isGnosisAccount ? (
               <SafeNonceSelector
                 disabled={isViewGnosisSafe}
                 isReady={isReady}
@@ -1952,12 +2002,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 nativeTokenBalance={nativeTokenBalance}
                 gasPriceMedian={gasPriceMedian}
               />
-            )} */}
+            )}
           </>
         )}
         {!isGnosisAccount && !isCoboArugsAccount && isReady ? (
           <BroadcastMode
-            className="mt-[12px]"
             chain={chain.enum}
             value={pushInfo}
             isCancel={isCancel}
@@ -1966,6 +2015,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             onChange={(value) => {
               setPushInfo(value);
             }}
+          />
+        ) : null}
+
+        {!isGnosisAccount && !isCoboArugsAccount && txDetail && isReady ? (
+          <SignAdvancedSettings
+            disabled={isGnosisAccount || isCoboArugsAccount}
+            isReady={isReady}
+            gasLimit={gasLimit}
+            recommendGasLimit={recommendGasLimit}
+            recommendNonce={recommendNonce}
+            onChange={handleAdvancedSettingsChange}
+            nonce={realNonce || tx.nonce}
+            disableNonce={isSpeedUp || isCancel}
+            manuallyChangeGasLimit={manuallyChangeGasLimit}
           />
         ) : null}
 

@@ -234,7 +234,7 @@ const BalanceChange = ({
           )}
           {data.error && (
             <Col className="py-10">
-              <Row className="text-13 font-medium flex whitespace-pre-wrap text-left">
+              <Row className="text-13 font-medium flex whitespace-pre-wrap text-left items-start">
                 <ThemeIcon
                   src={RcIconAlert}
                   className="w-[16px] flex-shrink-0 mr-4 text-r-neutral-foot top-[2px] relative"

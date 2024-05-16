@@ -638,12 +638,13 @@
   }
 
   .approval-tx {
-    padding: 15px 18px;
+    padding: 15px 18px 25px;
     display: flex;
     flex-direction: column;
     background: var(--r-neutral-bg-2, #3D4251);
     flex: 1;
     margin-bottom: -10px;
+    row-gap: 12px;
 
     .chromelike-scrollbar();
 
@@ -1571,13 +1572,15 @@
     }
     &-label {
       margin-bottom: 0;
-      color: var(--r-neutral-body, #D3D8E0);
+      color: var(--r-neutral-title1, #192945);
+      font-size: 13px;
       &.disabled {
         opacity: 0.5;
       }
     }
     &-title {
-      color: var(--r-neutral-body, #D3D8E0);
+      color: var(--r-neutral-title1, #192945);
+      font-size: 13px;
     }
     .gas-limit-panel-wrapper {
       max-height: 0;
@@ -1589,18 +1592,17 @@
     }
     .gas-limit-panel {
       margin-top: 8px;
-      background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-      border-radius: 6px;
       overflow: hidden;
       .ant-input {
         width: 100%;
         padding: 15px;
-        border-radius: 0;
         outline: none;
         transition: none;
         font-size: 15px;
         font-weight: 500;
         color: var(--r-neutral-title-1, #F7FAFC);
+        background-color: var(--r-neutral-card1, #FFF)!important;
+        border-color: var(--r-neutral-line, #D3D8E0);
         position: relative;
         border-width: 1px;
         border-style: solid;
@@ -1619,8 +1621,8 @@
     }
     .tip {
       color: var(--r-neutral-foot, #BABEC5);
-      font-size: 12px;
-      margin-top: 12px;
+      font-size: 13px;
+      margin-top: 8px;
       margin-bottom: 0;
       .recommend-times {
         text-decoration: underline;

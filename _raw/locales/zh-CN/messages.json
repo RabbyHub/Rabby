@@ -1372,7 +1372,8 @@
       "hasInteraction": "之前互动过",
       "no": "否",
       "yes": "是",
-      "address": "地址"
+      "address": "地址",
+      "advancedSettings": "高级设置"
     },
     "signTypedData": {
       "buyNFT": {
