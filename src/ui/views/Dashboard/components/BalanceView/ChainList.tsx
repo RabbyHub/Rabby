@@ -1,6 +1,7 @@
 import React from 'react';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Chain } from '@debank/common';
+import { sortChainWithValueDesc } from '@/ui/views/CommonPopup/AssetList/ChainItem';
 
 export const ChainList: React.FC<{
   isGnosis: boolean;
@@ -35,7 +36,7 @@ export const ChainList: React.FC<{
     }
   }
   const result = matteredChainBalances
-    .sort((a, b) => b.usd_value - a.usd_value)
+    .sort(sortChainWithValueDesc)
     .map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
