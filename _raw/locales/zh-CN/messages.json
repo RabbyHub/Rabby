@@ -919,7 +919,7 @@
       "forbiddenCantIgnore": "发现了不可忽视的高危风险",
       "ignoreAlert": "忽略警报",
       "no": "不",
-      "riskProcessed": "风险已处理",
+      "riskProcessed": "风险提示被忽视",
       "ruleDetailTitle": "规则详情",
       "ruleDisabled": "安全规则已被禁用。\n为了你的安全，你可以随时将其打开",
       "understandRisk": "我理解并自行承担任何损失",

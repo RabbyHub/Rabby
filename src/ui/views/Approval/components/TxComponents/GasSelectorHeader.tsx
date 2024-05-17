@@ -15,7 +15,7 @@ import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
-import { formatTokenAmount } from 'ui/utils/number';
+import { formatTokenAmount } from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -612,8 +612,10 @@ const GasSelectorHeader = ({
     !processedRules.includes('1118') &&
     engineResultMap['1118']?.level === 'danger';
 
-  const gasCostUsdStr = `$${new BigNumber(gas.gasCostUsd).toFixed(2)}`;
-
+  const gasCostUsdStr = `$${formatTokenAmount(
+    new BigNumber(gas.gasCostUsd).toFixed(2)
+  )}`;
+  console.log('chain', chain);
   return (
     <>
       <HeaderStyled>
@@ -720,7 +722,7 @@ const GasSelectorHeader = ({
                 ${modalExplainGas.gasCostUsd.toFixed(2)}
               </div>
               <div className="gas-selector-modal-usd">
-                <img src={chain.logo} className="w-16 h-16" />
+                <img src={chain.nativeTokenLogo} className="w-16 h-16" />
                 {formatTokenAmount(
                   new BigNumber(modalExplainGas.gasCostAmount).toString(10),
                   6

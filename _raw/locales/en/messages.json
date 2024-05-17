@@ -1537,7 +1537,7 @@
       "currentValueIs": "Current value is {{value}}",
       "viewRules": "View security rules",
       "undo": "Undo",
-      "riskProcessed": "Risk Processed",
+      "riskProcessed": "Risk alert have been ignored",
       "ignoreAlert": "Ignore the alert",
       "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
       "unknownResult": "Unknown result because security engine is unavailable right now",

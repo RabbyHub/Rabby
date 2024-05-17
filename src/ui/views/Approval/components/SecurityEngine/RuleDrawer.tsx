@@ -5,12 +5,9 @@ import { Popup } from 'ui/component';
 import {
   RuleConfig,
   Level,
-  NumberDefine,
-  EnumDefine,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
-import { sortBy } from 'lodash';
-import { SecurityEngineLevel, SecurityEngineLevelOrder } from 'consts';
+import { SecurityEngineLevel } from 'consts';
 import clsx from 'clsx';
 import { useHover } from '@/ui/utils';
 import IconError from 'ui/assets/sign/security-engine/error-big.svg';
@@ -39,6 +36,12 @@ const RuleDrawerWrapper = styled.div`
       font-weight: 500;
       line-height: 18px;
       justify-content: center;
+      align-items: center;
+    }
+
+    .level-icon {
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -56,11 +59,12 @@ const RuleDrawerWrapper = styled.div`
     .button-ignore {
       padding: 12px;
       width: 100%;
-      height: 40px;
+      height: 44px;
       font-weight: 500;
       font-size: 13px;
       line-height: 15px;
       text-align: center;
+      text-shadow: none;
       color: #ffffff;
       &[disabled] {
         opacity: 0.4;
@@ -187,119 +191,14 @@ const RuleDrawer = ({
   onClose,
   onIgnore,
   onUndo,
-  onRuleEnableStatusChange,
 }: Props) => {
   const [changed, setChanged] = useState(false);
-  const [enabled, setEnabled] = useState<boolean | null>(null);
-  const [ruleDetailDrawerVisible, setRuleDetailDrawerVisible] = useState(false);
   const { t } = useTranslation();
 
-  const [isHovering, hoverProps] = useHover();
+  const [isHovering, hoverProps, resetHovering] = useHover();
   const currentLevel = useMemo(() => {
     if (!selectRule || selectRule.ignored) return 'proceed';
     return selectRule.level;
-  }, [selectRule]);
-
-  const displayValue = useMemo(() => {
-    if (!selectRule) return '';
-    const { value, ruleConfig } = selectRule;
-    switch (ruleConfig.valueDefine.type) {
-      case 'boolean':
-        if (value === true) return t('page.securityEngine.yes');
-        return t('page.securityEngine.no');
-      case 'enum':
-        return ruleConfig.valueDefine.display[value as string];
-      case 'percent':
-        return `${(value as number).toFixed(2)}%`;
-      case 'int':
-        return Math.floor(value as number);
-      case 'float':
-        return (value as number).toFixed(2);
-      default:
-        return value;
-    }
-  }, [selectRule]);
-
-  const displayThreshold = useMemo(() => {
-    if (!selectRule) return '';
-    const { level, ruleConfig, value } = selectRule;
-    if (!level || !ruleConfig.enable || level === Level.ERROR) return '';
-    const threshold = {
-      ...ruleConfig.defaultThreshold,
-      ...ruleConfig.customThreshold,
-    };
-    const levelThreshold = threshold[level];
-    switch (ruleConfig.valueDefine.type) {
-      case 'boolean':
-        if (value === true) return 'Yes';
-        return 'No';
-      case 'float':
-      case 'percent':
-      case 'int': {
-        const { max: valueMax, min: valueMin } = ruleConfig.valueDefine;
-        const {
-          max,
-          min,
-          maxIncluded,
-          minIncluded,
-        } = levelThreshold as NumberDefine;
-        const arr: string[] = [];
-        if (min !== null) {
-          if (minIncluded) {
-            if (min === valueMax) {
-              arr.push(min.toString());
-            } else {
-              arr.push(
-                `≥${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
-              );
-            }
-          } else {
-            arr.push(
-              `>${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
-            );
-          }
-        }
-        if (max !== null) {
-          if (maxIncluded) {
-            if (max === valueMin) {
-              arr.push(max.toString());
-            } else {
-              arr.push(
-                `≤${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
-              );
-            }
-          } else {
-            arr.push(
-              `<${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
-            );
-          }
-        } else {
-          arr.push('∞');
-        }
-        return arr.join(' ; ');
-      }
-      case 'enum':
-        return (levelThreshold as string[])
-          .map((item) => (ruleConfig.valueDefine as EnumDefine).display[item])
-          .join(' or ');
-      default:
-        return '';
-    }
-  }, [selectRule]);
-
-  const ruleLevels = useMemo(() => {
-    if (!selectRule) return '';
-    const { ruleConfig } = selectRule;
-    const threshold = {
-      ...ruleConfig.defaultThreshold,
-      ...ruleConfig.customThreshold,
-    };
-
-    return sortBy(Object.keys(threshold), (key) => {
-      return SecurityEngineLevelOrder.findIndex((k) => k === key);
-    })
-      .map((level) => SecurityEngineLevel[level]?.text)
-      .join('/');
   }, [selectRule]);
 
   const ignoreButtonDisabled = useMemo(() => {
@@ -342,22 +241,13 @@ const RuleDrawer = ({
     onUndo(selectRule.ruleConfig.id);
   };
 
-  const handleEnableStatusChange = async (value: boolean) => {
-    if (!selectRule) return;
-    await onRuleEnableStatusChange(selectRule.ruleConfig.id, value);
-    setEnabled(value);
-    setChanged(true);
-    onClose(true);
-  };
-
   const handleClose = () => {
     onClose(changed);
   };
 
   const reset = () => {
     setChanged(false);
-    setEnabled(null);
-    setRuleDetailDrawerVisible(false);
+    resetHovering();
   };
 
   useEffect(() => {
@@ -424,7 +314,7 @@ const RuleDrawer = ({
       closable
       title={t('page.securityEngine.ruleDetailTitle')}
       isSupportDarkMode
-      bodyStyle={{ padding: 0 }}
+      bodyStyle={{ padding: 0, minHeight: '172px' }}
     >
       {selectRule && (
         <RuleDrawerWrapper
