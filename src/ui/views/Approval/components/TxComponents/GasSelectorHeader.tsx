@@ -615,7 +615,7 @@ const GasSelectorHeader = ({
   const gasCostUsdStr = `$${formatTokenAmount(
     new BigNumber(gas.gasCostUsd).toFixed(2)
   )}`;
-  console.log('chain', chain);
+
   return (
     <>
       <HeaderStyled>
