@@ -49,14 +49,6 @@ const RequestOrigin = styled.div`
     font-size: 15px;
     line-height: 18px;
   }
-  .right {
-    font-size: 12px;
-    line-height: 14px;
-    color: #707280;
-  }
-  .security-level-tag {
-    margin-top: -15px;
-  }
 `;
 
 export const OriginInfo: React.FC<Props> = ({
@@ -163,8 +155,7 @@ export const OriginInfo: React.FC<Props> = ({
               : engineResultMap['1088'].level
           }
           onClick={() => handleClickRule('1088')}
-          right="0px"
-          className="security-level-tag"
+          right="-14px"
         />
       )}
       {engineResultMap['1089'] && (
@@ -176,7 +167,7 @@ export const OriginInfo: React.FC<Props> = ({
               : engineResultMap['1089'].level
           }
           onClick={() => handleClickRule('1089')}
-          className="security-level-tag"
+          right="-14px"
         />
       )}
     </RequestOrigin>

@@ -119,8 +119,9 @@ const SecurityLevelTag = ({
   level,
   translucent,
   onClick,
-  right = '-21px',
+  right = '-28px',
   className,
+  inSubTable,
 }: {
   enable: boolean;
   level: Level | 'proceed';
@@ -128,8 +129,13 @@ const SecurityLevelTag = ({
   onClick?(): void;
   right?: string;
   className?: string;
+  // adjust position for sub table
+  inSubTable?: boolean;
 }) => {
   const [isHovering, hoverProps] = useHover();
+  if (inSubTable) {
+    right = `${parseInt(right, 10) - 12}px`;
+  }
 
   return (
     <SecurityLevelTagWrapper

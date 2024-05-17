@@ -50,7 +50,7 @@ export const SecurityListItem: React.FC<Props> = ({
             {engineResult.level === Level.FORBIDDEN && forbiddenText}
           </span>
 
-          <SecurityListItemTag id={id} engineResult={engineResult} />
+          <SecurityListItemTag inSubTable id={id} engineResult={engineResult} />
         </div>
       </SubRow>
     </SubCol>

@@ -78,9 +78,7 @@ export const ActionWrapper: React.FC<{
 }> = ({ children, isEmptyBody }) => {
   return (
     <DIV>
-      <div className={clsx(isEmptyBody ? '' : 'overflow-hidden', 'space-y-12')}>
-        {children}
-      </div>
+      <div className={clsx('space-y-12')}>{children}</div>
     </DIV>
   );
 };

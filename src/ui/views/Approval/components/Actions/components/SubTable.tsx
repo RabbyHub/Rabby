@@ -75,6 +75,7 @@ const SubColWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
+  position: relative;
 `;
 
 export const SubCol = ({

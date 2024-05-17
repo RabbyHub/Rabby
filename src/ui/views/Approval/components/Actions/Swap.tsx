@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { BigNumber } from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -229,18 +228,6 @@ const Swap = ({
                 }
               />
             </div>
-
-            {engineResultMap['1011'] && (
-              <SecurityLevelTagNoText
-                enable={engineResultMap['1011'].enable}
-                level={
-                  processedRules.includes('1011')
-                    ? 'proceed'
-                    : engineResultMap['1011'].level
-                }
-                onClick={() => handleClickRule('1011')}
-              />
-            )}
           </Row>
         </Col>
         <SubTable target="swap-min">
@@ -259,6 +246,19 @@ const Swap = ({
                 ) : (
                   <Values.Percentage value={slippageTolerance} />
                 )}
+
+                {engineResultMap['1011'] && (
+                  <SecurityLevelTagNoText
+                    inSubTable
+                    enable={engineResultMap['1011'].enable}
+                    level={
+                      processedRules.includes('1011')
+                        ? 'proceed'
+                        : engineResultMap['1011'].level
+                    }
+                    onClick={() => handleClickRule('1011')}
+                  />
+                )}
               </SubRow>
             </SubCol>
           )}
@@ -273,7 +273,6 @@ const Swap = ({
             </Col>
             <SubTable>
               <SecurityListItem
-                title={t('page.signTx.address')}
                 engineResult={engineResultMap['1069']}
                 id="1069"
                 warningText={t('page.signTx.swap.unknownAddress')}
