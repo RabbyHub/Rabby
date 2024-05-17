@@ -27,9 +27,7 @@ export const ImKeyAccount: React.FC = () => {
       case 'DISCONNECTED':
         return (
           <div className="flex justify-between w-full">
-            <div className="text-red-forbidden">
-              {t('page.signFooterBar.imKeyNotConnected')}
-            </div>
+            <div>{t('page.signFooterBar.imKeyNotConnected')}</div>
             <div
               onClick={onClickConnect}
               className={clsx(

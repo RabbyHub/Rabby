@@ -212,6 +212,8 @@ const GasStyled = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  overflow: hidden;
+  margin-right: 30px;
 `;
 
 const GasPriceDesc = styled.div`
@@ -610,11 +612,13 @@ const GasSelectorHeader = ({
     !processedRules.includes('1118') &&
     engineResultMap['1118']?.level === 'danger';
 
+  const gasCostUsdStr = `$${new BigNumber(gas.gasCostUsd).toFixed(2)}`;
+
   return (
     <>
       <HeaderStyled>
         <GasStyled>
-          <PushTypeIcon />
+          <PushTypeIcon className="flex-shrink-0" />
           <div className="gas-selector-card-content ml-4 overflow-hidden">
             {disabled ? (
               <div className="font-semibold">
@@ -636,8 +640,8 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span className="truncate">
-                    ${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  <span className="truncate" title={gasCostUsdStr}>
+                    {gasCostUsdStr}
                   </span>
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
@@ -657,7 +661,9 @@ const GasSelectorHeader = ({
               </div>
             )}
           </div>
-          <div className="ml-3 text-r-neutral-body text-12 mt-2">~12 sec</div>
+          <div className="ml-3 text-r-neutral-body text-12 mt-2 flex-shrink-0">
+            ~12 sec
+          </div>
           {engineResultMap['1118'] && (
             <SecurityLevelTagNoText
               enable={engineResultMap['1118'].enable}
