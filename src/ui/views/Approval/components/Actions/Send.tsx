@@ -94,6 +94,15 @@ const Send = ({
                 </li>
                 {requireData.name && <li>{requireData.name}</li>}
                 <SecurityListItem
+                  engineResult={engineResultMap['1142']}
+                  safeText={
+                    requireData.hasReceiverMnemonicInWallet
+                      ? t('page.signTx.send.fromMySeedPhrase')
+                      : t('page.signTx.send.fromMyPrivateKey')
+                  }
+                  id="1142"
+                />
+                <SecurityListItem
                   engineResult={engineResultMap['1016']}
                   dangerText={t('page.signTx.send.receiverIsTokenAddress')}
                   id="1016"
