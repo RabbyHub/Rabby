@@ -28,7 +28,9 @@ function mergeRules(rules: RuleConfig[], userConfig: UserRuleConfig[]) {
     if (target) {
       return {
         ...rule,
-        enable: target.enable,
+        // !IMPORTANT: In the current version, all are enabled by default and cannot be changed.
+        // enable: target.enable,
+        enable: true,
         customThreshold: target.customThreshold,
       };
     }

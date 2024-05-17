@@ -924,7 +924,7 @@
       "ruleDisabled": "安全规则已被禁用。\n为了你的安全，你可以随时将其打开",
       "understandRisk": "我理解并自行承担任何损失",
       "undo": "撤消",
-      "unknownResult": "由于安全规则不可用，结果未知",
+      "unknownResult": "结果未知，因为安全引擎目前不可用",
       "viewRiskLevel": "查看风险级别",
       "viewRules": "查看安全规则",
       "whenTheValueIs": "当值为 {{value}} 时",

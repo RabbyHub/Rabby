@@ -26,13 +26,9 @@ const Footer = styled.div`
     background: var(--r-neutral-card1, #fff);
     .rabby-checkbox__wrapper {
       .rabby-checkbox {
-        border: 1px solid var(--r-neutral-line);
-        background-color: var(--r-neutral-foot) !important;
       }
       &.checked {
         .rabby-checkbox {
-          background-color: var(--r-blue-default, #7084ff) !important;
-          border: none;
         }
       }
     }
@@ -142,6 +138,7 @@ export default ({
     bodyStyle: {
       padding: '16px 20px 0',
     },
+    isNew: true,
     content: (
       <UserListDrawer
         address={address}

@@ -33,6 +33,7 @@ const AddressMemo = ({ address }: { address: string }) => {
       title: t('component.Contact.EditModal.title'),
       isSupportDarkMode: true,
       height: 224,
+      isNew: true,
       bodyStyle: {
         padding: '0 20px',
       },
@@ -61,7 +62,7 @@ const AddressMemo = ({ address }: { address: string }) => {
             >
               <Input
                 ref={inputRef}
-                className="popup-input h-[48px]"
+                className="popup-input h-[48px] bg-r-neutral-card-1"
                 size="large"
                 placeholder="Please input address note"
                 autoFocus
