@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import clsx from 'clsx';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import IconTableArrow from 'ui/assets/sign/table-arrow.svg';
+import { ReactComponent as IconTableArrow } from 'ui/assets/sign/table-arrow.svg';
 
 const SubTableWrapper = styled.div`
   border-radius: 6px;
@@ -24,7 +24,7 @@ const SubTableWrapper = styled.div`
 }
 `;
 
-const TableArrow = styled.img`
+const TableArrow = styled(IconTableArrow)`
   position: absolute;
   top: -8px;
   left: 50%;
@@ -52,7 +52,9 @@ export const SubTable = ({
       width: 0,
     };
 
-    setLeft(elLeft - tableLeft + elWidth / 2);
+    if (elLeft) {
+      setLeft(elLeft - tableLeft + elWidth / 2);
+    }
   }, [target]);
 
   return (
@@ -60,13 +62,14 @@ export const SubTable = ({
       <SubTableWrapper ref={tableRef} className={className}>
         {children}
       </SubTableWrapper>
-      <TableArrow
-        src={IconTableArrow}
-        className="table-arrow"
-        style={{
-          left: `${left}px`,
-        }}
-      />
+      {!!left && (
+        <TableArrow
+          className="table-arrow text-r-neutral-card3"
+          style={{
+            left: `${left}px`,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -120,13 +120,13 @@ const GasLevelIcon: React.FC<{ level: string }> = ({ level }) => {
   return (
     <div>
       {level === 'slow' ? (
-        <GasLevelNormalSVG />
+        <GasLevelNormalSVG className="text-r-neutral-body" />
       ) : level === 'normal' ? (
-        <GasLevelFastSVG />
+        <GasLevelFastSVG className="text-r-neutral-body" />
       ) : level === 'fast' ? (
-        <GasLevelInstantSVG />
+        <GasLevelInstantSVG className="text-r-neutral-body" />
       ) : (
-        <GasLevelCustomSVG />
+        <GasLevelCustomSVG className="text-r-neutral-body" />
       )}
     </div>
   );

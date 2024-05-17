@@ -25,9 +25,7 @@ import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { ReactComponent as GasInstantSVG } from 'ui/assets/sign/tx/gas-instant.svg';
-import { ReactComponent as GasMevSVG } from 'ui/assets/sign/tx/gas-mev.svg';
-import { ReactComponent as GasSavingSVG } from 'ui/assets/sign/tx/gas-saving.svg';
+import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-logo-cc.svg';
 import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
@@ -588,18 +586,6 @@ const GasSelectorHeader = ({
     }
   }, [gasList, selectedGas, isReady, chainId]);
 
-  const PushTypeIcon = useMemo(() => {
-    switch (pushType) {
-      case 'mev':
-        return GasMevSVG;
-      case 'low_gas':
-        return GasSavingSVG;
-      case 'default':
-      default:
-        return GasInstantSVG;
-    }
-  }, [pushType]);
-
   if (!isReady && isFirstTimeLoad) {
     return (
       <HeaderStyled>
@@ -620,7 +606,7 @@ const GasSelectorHeader = ({
     <>
       <HeaderStyled>
         <GasStyled>
-          <PushTypeIcon className="flex-shrink-0" />
+          <GasLogoSVG className="flex-shrink-0 text-r-neutral-body" />
           <div className="gas-selector-card-content ml-4 overflow-hidden">
             {disabled ? (
               <div className="font-semibold">
