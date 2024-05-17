@@ -7,7 +7,6 @@ import React, { useEffect, useMemo } from 'react';
 import SecurityLevelTagNoText from './SecurityEngine/SecurityLevelTagNoText';
 import { ConnectedSite } from '@/background/service/permission';
 import { useWallet } from '@/ui/utils';
-import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';

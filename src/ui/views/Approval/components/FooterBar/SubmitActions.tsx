@@ -3,8 +3,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
-import { ReactComponent as IconClose } from 'ui/assets/close-white.svg';
+import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
+import styled from 'styled-components';
+
+const ButtonStyled = styled(Button)`
+  &:hover {
+    box-shadow: 0px 6px 8px 0px rgba(112, 132, 255, 0.25);
+  }
+`;
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -64,7 +71,7 @@ export const SubmitActions: React.FC<Props> = ({
             )}
             onClick={handleClickCancel}
           >
-            <IconClose />
+            <IconClose className="text-r-neutral-title-2" />
           </button>
         </div>
       ) : (
@@ -73,7 +80,7 @@ export const SubmitActions: React.FC<Props> = ({
           title={enableTooltip ? tooltipContent : null}
         >
           <GasLessAnimatedWrapper>
-            <Button
+            <ButtonStyled
               disabled={disabledProcess}
               type="primary"
               className={clsx(
@@ -85,7 +92,7 @@ export const SubmitActions: React.FC<Props> = ({
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
-            </Button>
+            </ButtonStyled>
           </GasLessAnimatedWrapper>
         </Tooltip>
       )}

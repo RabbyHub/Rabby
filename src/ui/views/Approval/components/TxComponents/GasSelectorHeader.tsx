@@ -30,6 +30,7 @@ import { ReactComponent as GasMevSVG } from 'ui/assets/sign/tx/gas-mev.svg';
 import { ReactComponent as GasSavingSVG } from 'ui/assets/sign/tx/gas-saving.svg';
 import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
+import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -203,17 +204,19 @@ const HeaderStyled = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  height: 24px;
 `;
 
 const GasStyled = styled.div`
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
 const GasPriceDesc = styled.div`
   margin-top: 20px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   font-size: 13px;
   color: var(--r-neutral-body, #3e495e);
   display: flex;
@@ -603,6 +606,10 @@ const GasSelectorHeader = ({
     );
   }
 
+  const isDanger =
+    !processedRules.includes('1118') &&
+    engineResultMap['1118']?.level === 'danger';
+
   return (
     <>
       <HeaderStyled>
@@ -621,7 +628,14 @@ const GasSelectorHeader = ({
               </>
             ) : (
               <div className="gas-selector-card-content-item">
-                <div className="gas-selector-card-amount translate-y-1 flex items-center overflow-hidden">
+                <div
+                  className={clsx(
+                    'gas-selector-card-amount translate-y-1 flex items-center overflow-hidden',
+                    {
+                      'text-red-default': isDanger,
+                    }
+                  )}
+                >
                   <span className="truncate">
                     ${new BigNumber(gas.gasCostUsd).toFixed(2)}
                   </span>
@@ -653,8 +667,8 @@ const GasSelectorHeader = ({
                   : engineResultMap['1118'].level
               }
               onClick={() => handleClickRule('1118')}
-              right="0"
-              className="relative m-0 security-level-tag"
+              right="-46px"
+              className="security-level-tag"
             />
           )}
         </GasStyled>
@@ -676,7 +690,7 @@ const GasSelectorHeader = ({
         closable
         isSupportDarkMode
       >
-        <div className="gas-selector-modal-top">
+        <div className="mb-20 -mt-4">
           {disabled ? (
             <div className="gas-selector-modal-amount">
               {t('page.signTx.noGasRequired')}
@@ -687,7 +701,8 @@ const GasSelectorHeader = ({
                 {t('page.signTx.failToFetchGasCost')}
               </div>
               {version === 'v2' && gas.error ? (
-                <div className="gas-selector-modal-error-desc mt-[4px]">
+                <div className="gas-selector-modal-error-desc mt-[8px] flex items-center justify-center">
+                  <RcIconAlert className="text-r-neutral-body mr-6 w-16" />
                   {gas.error.msg}{' '}
                   <span className="number">#{gas.error.code}</span>
                 </div>
@@ -817,8 +832,8 @@ const GasSelectorHeader = ({
           )}
         </div>
 
+        <Divide className="bg-r-neutral-line" />
         <GasPriceDesc>
-          <Divide className="bg-r-neutral-line" />
           <div>
             {t('page.signTx.myNativeTokenBalance')}
             <GasPriceBold>
