@@ -41,6 +41,7 @@ export const Card: React.FC<
             headline={headline}
             actionText={actionText}
             onAction={onAction}
+            hasAction={!!onAction || !!props.onClick || !!actionText}
           />
           {hasDivider && <Divide />}
         </>
@@ -54,6 +55,7 @@ const CardTitleDiv = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 12px 16px;
+  align-items: center;
 `;
 
 const CardHeadlineDiv = styled.span`
@@ -67,14 +69,15 @@ export const CardTitle: React.FC<{
   headline: string;
   actionText?: string;
   onAction?: () => void;
-}> = ({ headline, actionText, onAction }) => {
+  hasAction?: boolean;
+}> = ({ headline, actionText, onAction, hasAction }) => {
   return (
     <CardTitleDiv onClick={onAction}>
       <CardHeadlineDiv>{headline}</CardHeadlineDiv>
-      {(!!onAction || !!actionText) && (
+      {hasAction && (
         <div className="text-13 text-r-neutral-body cursor-pointer flex items-center">
           <span>{actionText}</span>
-          <ThemeIcon className="icon" src={RcIconArrowRight} />
+          <ThemeIcon className="icon mt-1" src={RcIconArrowRight} />
         </div>
       )}
     </CardTitleDiv>

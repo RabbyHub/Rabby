@@ -46,7 +46,7 @@ ViewRawModal.open = ({ raw, abi }: ContentProps) => {
   Popup.info({
     isNew: true,
     closable: true,
-    height: 720,
+    height: 520,
     content: <Content raw={raw} abi={abi} />,
     className: 'view-raw-detail',
   });

@@ -1,5 +1,5 @@
 import { KEYRING_CATEGORY } from '@/constant';
-import { Popup } from '@/ui/component';
+import { Checkbox, Popup } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
@@ -10,9 +10,6 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
-import { ReactComponent as SvgIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconChecked from 'ui/assets/box-checked.svg';
-import IconUnChecked from 'ui/assets/box-unchecked.svg';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
 
@@ -301,6 +298,18 @@ export const BroadcastMode = ({
 
   const selectedOption = options.find((option) => option.value === value.type);
 
+  const handleSelect = React.useCallback((option: typeof options[0]) => {
+    if (option.disabled) {
+      return;
+    }
+    onChange?.({
+      type: option.value,
+      lowGasDeadline:
+        option.value === 'low_gas' ? deadlineOptions[1]?.value : undefined,
+    });
+    setDrawerVisible(false);
+  }, []);
+
   return (
     <>
       <GlobalStyle />
@@ -383,30 +392,19 @@ export const BroadcastMode = ({
                   option.value === value.type && 'is-selected',
                   option.disabled && 'is-disabled'
                 )}
-                onClick={() => {
-                  if (option.disabled) {
-                    return;
-                  }
-                  onChange?.({
-                    type: option.value,
-                    lowGasDeadline:
-                      option.value === 'low_gas'
-                        ? deadlineOptions[1]?.value
-                        : undefined,
-                  });
-                  setDrawerVisible(false);
-                }}
+                onClick={() => handleSelect(option)}
               >
                 <div className="flex items-center gap-[4px]">
                   <div className="mr-auto">
                     <div className="option-title">{option.title}</div>
                     <div className="option-desc">{option.desc}</div>
                   </div>
-                  {option.value === value.type ? (
-                    <img src={IconChecked} alt="" />
-                  ) : (
-                    <img src={IconUnChecked} alt="" />
-                  )}
+                  <Checkbox
+                    width="20px"
+                    height="20px"
+                    checked={option.value === value.type}
+                    onChange={() => handleSelect(option)}
+                  />
                 </div>
               </div>
             </TooltipWithMagnetArrow>

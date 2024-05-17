@@ -46,6 +46,7 @@ export const SignAdvancedSettings = ({
   disabled,
   manuallyChangeGasLimit,
 }: GasSelectorProps) => {
+  const gasLimitInputRef = React.useRef<Input>(null);
   const [visible, setVisible] = React.useState(false);
   const { t } = useTranslation();
   const [afterGasLimit, setGasLimit] = useState<string | number>(
@@ -156,11 +157,19 @@ export const SignAdvancedSettings = ({
     }
   }, [isReady]);
 
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        gasLimitInputRef.current?.focus();
+      }, 50);
+    }
+  }, [visible]);
+
   return (
     <>
       <Card
         headline={t('page.signTx.advancedSettings')}
-        onAction={() => setVisible(true)}
+        onClick={() => setVisible(true)}
         hasDivider={manuallyChangeGasLimit}
       >
         {manuallyChangeGasLimit && (
@@ -209,6 +218,7 @@ export const SignAdvancedSettings = ({
                     validateStatus={validateStatus.gasLimit.status}
                   >
                     <Input
+                      ref={gasLimitInputRef}
                       className="popup-input"
                       value={afterGasLimit}
                       onChange={handleGasLimitChange}

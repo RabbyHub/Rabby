@@ -1623,8 +1623,11 @@
         position: relative;
         border-width: 1px;
         border-style: solid;
-        border-radius: 6px;
+        border-radius: 8px;
         transition: border-color 0.3s;
+        &:focus {
+          border-color: var(--r-blue-default, #7084ff);
+        }
         .ant-input-number-handler-wrap {
           display: none;
         }
@@ -1875,7 +1878,7 @@
     // font-family: 'Roboto Mono', monospace;
     color: var(--r-neutral-title-1, #192945);
     padding: 12px;
-    height: 660px;
+    height: 436px;
     overflow: auto;
     word-break: break-all;
     white-space: pre-wrap;

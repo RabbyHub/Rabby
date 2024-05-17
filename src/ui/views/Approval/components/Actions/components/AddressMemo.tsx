@@ -62,7 +62,7 @@ const AddressMemo = ({ address }: { address: string }) => {
             >
               <Input
                 ref={inputRef}
-                className="popup-input h-[48px] bg-r-neutral-card-1"
+                className="popup-input h-[52px] bg-r-neutral-card-1"
                 size="large"
                 placeholder="Please input address note"
                 autoFocus

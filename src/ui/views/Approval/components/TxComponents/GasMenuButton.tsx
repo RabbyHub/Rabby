@@ -116,18 +116,26 @@ interface Props {
   onCustom: () => void;
 }
 
-const GasLevelIcon: React.FC<{ level: string }> = ({ level }) => {
+const GasLevelIcon: React.FC<{ level: string; isActive }> = ({
+  level,
+  isActive,
+}) => {
+  const GasLevelSVG =
+    level === 'slow'
+      ? GasLevelNormalSVG
+      : level === 'normal'
+      ? GasLevelFastSVG
+      : level === 'fast'
+      ? GasLevelInstantSVG
+      : GasLevelCustomSVG;
   return (
     <div>
-      {level === 'slow' ? (
-        <GasLevelNormalSVG className="text-r-neutral-body" />
-      ) : level === 'normal' ? (
-        <GasLevelFastSVG className="text-r-neutral-body" />
-      ) : level === 'fast' ? (
-        <GasLevelInstantSVG className="text-r-neutral-body" />
-      ) : (
-        <GasLevelCustomSVG className="text-r-neutral-body" />
-      )}
+      <GasLevelSVG
+        className={clsx({
+          'text-r-neutral-body': !isActive,
+          'text-r-blue-default': isActive,
+        })}
+      />
     </div>
   );
 };
@@ -170,7 +178,7 @@ export const GasMenuButton: React.FC<Props> = ({
                     'bg-r-blue-light-1 border-r-blue-default': isSelected,
                   })}
                 >
-                  <GasLevelIcon level={gas.level} />
+                  <GasLevelIcon isActive={isSelected} level={gas.level} />
                   <LevelTextWrapStyled>
                     <LevelTextStyled>
                       {t(getGasLevelI18nKey(gas.level))}
