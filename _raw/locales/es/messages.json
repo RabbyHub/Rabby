@@ -43,7 +43,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Modifica solo cuando sea necesario",
       "gasPriceMedian": "Mediana de las últimas 100 transacciones en cadena: ",
-      "myNativeTokenBalance": "Mi saldo de {{symbol}}: {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "Mi saldo de Gas: ",
       "gasLimitEmptyAlert": "Por favor, ingresa el límite de gas",
       "gasLimitMinValueAlert": "El límite de gas debe ser mayor que 21000",
       "balanceChange": {

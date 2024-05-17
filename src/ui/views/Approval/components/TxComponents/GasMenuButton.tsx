@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { Dropdown, Menu } from 'antd';
-import { ReactComponent as GasCustomSVG } from '@/ui/assets/sign/gas-custom.svg';
-import { ReactComponent as GasFastSVG } from '@/ui/assets/sign/gas-fast.svg';
-import { ReactComponent as GasNormalSVG } from '@/ui/assets/sign/gas-normal.svg';
-import { ReactComponent as GasInstantSVG } from '@/ui/assets/sign/gas-instant.svg';
+import { ReactComponent as GasLevelCustomSVG } from '@/ui/assets/sign/gas-level-custom.svg';
+import { ReactComponent as GasLevelFastSVG } from '@/ui/assets/sign/gas-level-fast.svg';
+import { ReactComponent as GasLevelNormalSVG } from '@/ui/assets/sign/gas-level-normal.svg';
+import { ReactComponent as GasLevelInstantSVG } from '@/ui/assets/sign/gas-level-instant.svg';
 import { ReactComponent as CheckSVG } from '@/ui/assets/sign/check.svg';
 import BigNumber from 'bignumber.js';
 import { Divide } from '../Divide';
@@ -120,13 +120,13 @@ const GasLevelIcon: React.FC<{ level: string }> = ({ level }) => {
   return (
     <div>
       {level === 'slow' ? (
-        <GasNormalSVG />
+        <GasLevelNormalSVG />
       ) : level === 'normal' ? (
-        <GasFastSVG />
+        <GasLevelFastSVG />
       ) : level === 'fast' ? (
-        <GasInstantSVG />
+        <GasLevelInstantSVG />
       ) : (
-        <GasCustomSVG />
+        <GasLevelCustomSVG />
       )}
     </div>
   );

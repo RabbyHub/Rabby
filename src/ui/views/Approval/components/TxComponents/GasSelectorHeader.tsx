@@ -1,7 +1,7 @@
-import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
+import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel } from 'background/service/openapi';
+import { GasLevel, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -10,9 +10,9 @@ import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import IconInfo from 'ui/assets/infoicon.svg';
+import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatTokenAmount } from 'ui/utils/number';
@@ -21,18 +21,15 @@ import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
-import { Chain } from '@debank/common';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { ReactComponent as GasSavingSVG } from 'ui/assets/sign/tx/gas-saving.svg';
-import { ReactComponent as GasMevSVG } from 'ui/assets/sign/tx/gas-mev.svg';
 import { ReactComponent as GasInstantSVG } from 'ui/assets/sign/tx/gas-instant.svg';
+import { ReactComponent as GasMevSVG } from 'ui/assets/sign/tx/gas-mev.svg';
+import { ReactComponent as GasSavingSVG } from 'ui/assets/sign/tx/gas-saving.svg';
 import { GasMenuButton } from './GasMenuButton';
+import { Divide } from '../Divide';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -82,6 +79,7 @@ interface GasSelectorProps {
   engineResults?: Result[];
   nativeTokenBalance: string;
   gasPriceMedian: number | null;
+  pushType?: TxPushType;
 }
 
 const useExplainGas = ({
@@ -152,6 +150,7 @@ const CardBody = styled.div<{
     display: flex;
     flex-direction: column;
     border: 1px solid transparent;
+    transition: all 0.2s;
 
     .gas-level,
     .cardTitle {
@@ -212,6 +211,23 @@ const GasStyled = styled.div`
   align-items: center;
 `;
 
+const GasPriceDesc = styled.div`
+  margin-top: 20px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--r-neutral-body, #3e495e);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 16px;
+`;
+
+const GasPriceBold = styled.span`
+  font-weight: 500;
+  color: var(--r-neutral-title1, #192945);
+  font-size: 13px;
+`;
+
 const GasSelectorHeader = ({
   gasLimit,
   gas,
@@ -231,6 +247,9 @@ const GasSelectorHeader = ({
   engineResults = [],
   isCancel,
   isSpeedUp,
+  nativeTokenBalance,
+  gasPriceMedian,
+  pushType,
 }: GasSelectorProps) => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -564,6 +583,18 @@ const GasSelectorHeader = ({
     }
   }, [gasList, selectedGas, isReady, chainId]);
 
+  const PushTypeIcon = useMemo(() => {
+    switch (pushType) {
+      case 'mev':
+        return GasMevSVG;
+      case 'low_gas':
+        return GasSavingSVG;
+      case 'default':
+      default:
+        return GasInstantSVG;
+    }
+  }, [pushType]);
+
   if (!isReady && isFirstTimeLoad) {
     return (
       <HeaderStyled>
@@ -576,7 +607,7 @@ const GasSelectorHeader = ({
     <>
       <HeaderStyled>
         <GasStyled>
-          <GasInstantSVG />
+          <PushTypeIcon />
           <div className="gas-selector-card-content ml-4 overflow-hidden">
             {disabled ? (
               <div className="font-semibold">
@@ -760,7 +791,7 @@ const GasSelectorHeader = ({
                   }
                   overlayClassName="rectangle"
                 >
-                  <img src={IconInfo} className="icon icon-info" />
+                  <IconInfoSVG className="text-r-neutral-foot ml-2" />
                 </Tooltip>
               </p>
               <div className="priority-slider-body">
@@ -785,6 +816,28 @@ const GasSelectorHeader = ({
             </div>
           )}
         </div>
+
+        <GasPriceDesc>
+          <Divide className="bg-r-neutral-line" />
+          <div>
+            {t('page.signTx.myNativeTokenBalance')}
+            <GasPriceBold>
+              {formatTokenAmount(
+                new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+              )}{' '}
+              {chain.nativeTokenSymbol}
+            </GasPriceBold>
+          </div>
+          {gasPriceMedian !== null && (
+            <div>
+              {t('page.signTx.gasPriceMedian')}
+              <GasPriceBold>
+                {new BigNumber(gasPriceMedian).div(1e9).toFixed()} Gwei
+              </GasPriceBold>
+            </div>
+          )}
+        </GasPriceDesc>
+
         <div className="flex justify-center mt-32 popup-footer">
           <Button
             type="primary"

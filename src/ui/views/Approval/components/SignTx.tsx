@@ -2024,6 +2024,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <FooterBar
             Header={
               <GasSelectorHeader
+                pushType={pushInfo.type}
                 disabled={isGnosisAccount || isCoboArugsAccount}
                 isReady={isReady}
                 gasLimit={gasLimit}
