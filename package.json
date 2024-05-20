@@ -38,8 +38,8 @@
     "@keystonehq/hw-transport-webusb": "0.2.23",
     "@keystonehq/metamask-airgapped-keyring": "0.2.5-alpha.2.1",
     "@ledgerhq/devices": "8.0.7",
-    "@ledgerhq/hw-app-eth": "6.34.9",
-    "@ledgerhq/hw-transport-webhid": "6.27.20",
+    "@ledgerhq/hw-app-eth": "6.36.1",
+    "@ledgerhq/hw-transport-webhid": "6.28.6",
     "@metamask/browser-passworder": "4.1.0",
     "@metamask/eth-sig-util": "5.1.0",
     "@metamask/obs-store": "6.0.2",
@@ -143,6 +143,7 @@
     "webextension-polyfill": "0.7.0"
   },
   "devDependencies": {
+    "@ledgerhq/hw-transport": "6.30.6",
     "@sentry/webpack-plugin": "2.16.1",
     "@svgr/webpack": "5.5.0",
     "@types/chrome": "^0.0.263",
