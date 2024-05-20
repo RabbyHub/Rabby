@@ -390,12 +390,12 @@ const Transacted = ({ value }: { value: boolean }) => {
       {value ? (
         <>
           <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.transacted')}
+          {t('page.signTx.yes')}
         </>
       ) : (
         <>
           <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverTransacted')}
+          {t('page.signTx.no')}
         </>
       )}
     </span>

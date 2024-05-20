@@ -45,26 +45,35 @@ const NFTWithName = ({
   nft,
   textStyle,
   showTokenLabel = false,
+  id,
+  hasHover,
 }: {
   nft: NFTItem;
   textStyle?: React.CSSProperties;
   showTokenLabel?: boolean;
+  id?: string;
+  hasHover?: boolean;
 }) => {
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
     <>
       <Wrapper>
         <NFTAvatar
-          onPreview={() => setFocusingNFT(nft)}
+          onPreview={(e) => {
+            e.stopPropagation();
+            setFocusingNFT(nft);
+          }}
           className="nft-item-avatar"
           thumbnail
           content={nft?.content}
           type={nft?.content_type}
         />
         <div
+          id={id}
           style={textStyle}
           className={clsx('name', {
             'flex-1': !showTokenLabel,
+            'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
           })}
           title={nft?.name || '-'}
         >
@@ -88,7 +97,10 @@ const NFTWithName = ({
       {focusingNFT && (
         <ModalPreviewNFTItem
           nft={(focusingNFT as unknown) as TransferingNFTItem}
-          onCancel={() => setFocusingNFT(null)}
+          onCancel={(e) => {
+            e.stopPropagation();
+            setFocusingNFT(null);
+          }}
         />
       )}
     </>

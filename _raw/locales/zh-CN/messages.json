@@ -1373,7 +1373,8 @@
       "no": "否",
       "yes": "是",
       "address": "地址",
-      "advancedSettings": "高级设置"
+      "advancedSettings": "高级设置",
+      "amount": "数量"
     },
     "signTypedData": {
       "buyNFT": {

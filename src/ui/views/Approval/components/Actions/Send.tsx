@@ -103,6 +103,12 @@ const Send = ({
           </Row>
         </Col>
         <SubTable target="send-contract">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
+            <SubRow>
+              <Values.AddressMemo address={actionData.to} />
+            </SubRow>
+          </SubCol>
           {!!requireData.name && (
             <SubCol>
               <SubRow isTitle>{t('page.signTx.protocol')} </SubRow>
@@ -138,11 +144,13 @@ const Send = ({
                 </SubRow>
               </SubCol>
               <SecurityListItem
+                noTitle
                 engineResult={engineResultMap['1021']}
                 dangerText={t('page.signTx.send.notTopupAddress')}
                 id="1021"
               />
               <SecurityListItem
+                noTitle
                 engineResult={engineResultMap['1020']}
                 dangerText={t('page.signTx.send.tokenNotSupport', [
                   ellipsisTokenSymbol(getTokenSymbol(actionData.token)),

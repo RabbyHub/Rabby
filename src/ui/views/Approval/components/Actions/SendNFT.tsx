@@ -11,6 +11,7 @@ import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -77,102 +78,126 @@ const SendNFT = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.sendNFT.title')}</Row>
-          <Row>
-            <NFTWithName nft={actionData?.nft}></NFTWithName>
-            <ul className="desc-list">
-              {actionData?.nft?.amount > 1 && (
-                <li>Amount: {actionData?.nft?.amount}</li>
-              )}
-              <li>
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft: actionData.nft,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+          <Row className="overflow-hidden">
+            <ViewMore
+              type="nft"
+              data={{
+                nft: actionData.nft,
+                chain,
+              }}
+            >
+              <NFTWithName
+                id="send-nft"
+                hasHover
+                nft={actionData?.nft}
+              ></NFTWithName>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="send-nft">
+          {actionData?.nft?.amount > 1 && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.amount')}</SubRow>
+              <SubRow>{actionData?.nft?.amount}</SubRow>
+            </SubCol>
+          )}
+        </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.send.sendTo')}</Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.to} chain={chain} />
-              <ul className="desc-list">
-                <li>
-                  <Values.AddressMemo address={actionData.to} />
-                </li>
-                {requireData.name && <li>{requireData.name}</li>}
-                <SecurityListItem
-                  engineResult={engineResultMap['1016']}
-                  dangerText={t('page.signTx.send.receiverIsTokenAddress')}
-                  id="1016"
-                />
-                <SecurityListItem
-                  engineResult={engineResultMap['1037']}
-                  dangerText={t('page.signTx.send.contractNotOnThisChain')}
-                  id="1037"
-                />
-                {requireData.cex && (
-                  <>
-                    <li>
-                      <LogoWithText
-                        logo={requireData.cex.logo}
-                        text={requireData.cex.name}
-                        logoSize={14}
-                        textStyle={{
-                          fontSize: '13px',
-                          lineHeight: '15px',
-                          color: '#4B4D59',
-                          fontWeight: 'normal',
-                        }}
-                      />
-                    </li>
-                    <SecurityListItem
-                      engineResult={engineResultMap['1039']}
-                      dangerText={t('page.signTx.send.notTopupAddress')}
-                      id="1039"
-                    />
-                    <SecurityListItem
-                      engineResult={engineResultMap['1038']}
-                      dangerText={t('page.signTx.sendNFT.nftNotSupport')}
-                      id="1038"
-                    />
-                  </>
-                )}
-                <SecurityListItem
-                  engineResult={engineResultMap['1036']}
-                  warningText={<Values.Transacted value={false} />}
-                  id="1036"
-                />
-                <SecurityListItem
-                  engineResult={engineResultMap['1042']}
-                  safeText={t('page.signTx.send.onMyWhitelist')}
-                  id="1042"
-                />
-                <li>
-                  <ViewMore
-                    type="receiver"
-                    data={{
-                      address: actionData.to,
-                      chain,
-                      eoa: requireData.eoa,
-                      cex: requireData.cex,
-                      contract: requireData.contract,
-                      usd_value: requireData.usd_value,
-                      hasTransfer: requireData.hasTransfer,
-                      isTokenContract: requireData.isTokenContract,
-                      name: requireData.name,
-                      onTransferWhitelist: requireData.onTransferWhitelist,
-                    }}
-                  />
-                </li>
-              </ul>
-            </div>
+            <ViewMore
+              type="receiver"
+              data={{
+                address: actionData.to,
+                chain,
+                eoa: requireData.eoa,
+                cex: requireData.cex,
+                contract: requireData.contract,
+                usd_value: requireData.usd_value,
+                hasTransfer: requireData.hasTransfer,
+                isTokenContract: requireData.isTokenContract,
+                name: requireData.name,
+                onTransferWhitelist: requireData.onTransferWhitelist,
+              }}
+            >
+              <Values.Address
+                hasHover
+                id="send-nft-address"
+                address={actionData.to}
+                chain={chain}
+              />
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="send-nft-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
+            <SubRow>
+              <Values.AddressMemo address={actionData.to} />
+            </SubRow>
+          </SubCol>
+          {!!requireData.name && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.protocolTitle')}</SubRow>
+              <SubRow>{requireData.name}</SubRow>
+            </SubCol>
+          )}
+          <SecurityListItem
+            engineResult={engineResultMap['1016']}
+            dangerText={t('page.signTx.send.receiverIsTokenAddress')}
+            id="1016"
+          />
+          <SecurityListItem
+            engineResult={engineResultMap['1037']}
+            dangerText={t('page.signTx.send.contractNotOnThisChain')}
+            id="1037"
+          />
+          {requireData.cex && (
+            <>
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.send.cexAddress')}</SubRow>
+                <SubRow>
+                  {' '}
+                  <LogoWithText
+                    logo={requireData.cex.logo}
+                    text={requireData.cex.name}
+                    logoSize={14}
+                    textStyle={{
+                      fontSize: '13px',
+                      lineHeight: '15px',
+                      color: '#4B4D59',
+                      fontWeight: 'normal',
+                    }}
+                  />
+                </SubRow>
+              </SubCol>
+              <SecurityListItem
+                noTitle
+                engineResult={engineResultMap['1039']}
+                dangerText={t('page.signTx.send.notTopupAddress')}
+                id="1039"
+              />
+              <SecurityListItem
+                noTitle
+                engineResult={engineResultMap['1038']}
+                dangerText={t('page.signTx.sendNFT.nftNotSupport')}
+                id="1038"
+              />
+            </>
+          )}
+          <SecurityListItem
+            title={t('page.signTx.transacted')}
+            engineResult={engineResultMap['1036']}
+            warningText={<Values.Transacted value={false} />}
+            id="1036"
+          />
+          <SecurityListItem
+            title={t('page.signTx.send.whitelistTitle')}
+            engineResult={engineResultMap['1042']}
+            safeText={t('page.signTx.send.onMyWhitelist')}
+            id="1042"
+          />
+        </SubTable>
       </Table>
     </Wrapper>
   );

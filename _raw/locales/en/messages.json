@@ -299,7 +299,8 @@
       "no": "No",
       "hasInteraction": "Interacted before",
       "address": "Address",
-      "advancedSettings": "Advanced Settings"
+      "advancedSettings": "Advanced Settings",
+      "amount": "Amount"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

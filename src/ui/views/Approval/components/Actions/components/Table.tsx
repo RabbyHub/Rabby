@@ -43,7 +43,7 @@ const RowWrapper = styled.div`
   color: var(--r-neutral-body, #3e495e);
   white-space: nowrap;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
   &:not(.title) {
     text-align: right;
@@ -64,14 +64,14 @@ const RowWrapper = styled.div`
   }
   .desc-list {
     font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-body, #3e495e);
+    line-height: 16px;
+    color: var(--r-neutral-foot, #6a7587);
     margin: 0;
     font-weight: 400;
     li {
       padding-left: 10px;
       margin-bottom: 8px;
-      padding-right: 10px;
+      padding-right: 0;
       position: relative;
       &::before {
         content: '';
@@ -79,12 +79,12 @@ const RowWrapper = styled.div`
         left: 3px;
         width: 3px;
         height: 3px;
-        background-color: var(--r-neutral-body);
+        background-color: var(--r-neutral-foot, #6a7587);
         border-radius: 100%;
         top: 6px;
       }
       &:nth-child(1) {
-        margin-top: 8px;
+        margin-top: 4px;
       }
       &:nth-last-child(1) {
         margin-bottom: 0;

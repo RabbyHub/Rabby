@@ -8,6 +8,7 @@ import IconUnknown from 'ui/assets/token-default.svg';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   .logo {
     width: 16px;
     height: 16px;

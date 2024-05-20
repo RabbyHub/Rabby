@@ -13,6 +13,7 @@ export interface Props {
   defaultText?: string | React.ReactNode;
   forbiddenText?: string | React.ReactNode;
   title?: string;
+  noTitle?: boolean;
 }
 
 export const SecurityListItem: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const SecurityListItem: React.FC<Props> = ({
   defaultText,
   forbiddenText,
   title,
+  noTitle = false,
 }) => {
   if (!engineResult) {
     if (defaultText) {
@@ -40,7 +42,7 @@ export const SecurityListItem: React.FC<Props> = ({
 
   return (
     <SubCol>
-      <SubRow isTitle>{displayTitle}</SubRow>
+      <SubRow isTitle>{noTitle ? '' : displayTitle}</SubRow>
       <SubRow>
         <div className="text-13 leading-[15px]">
           <span>
