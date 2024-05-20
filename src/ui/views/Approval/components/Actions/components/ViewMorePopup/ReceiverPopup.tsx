@@ -84,17 +84,13 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressNote')}
-          </Row>
+          <Row>{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.address} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressTypeTitle')}
-          </Row>
+          <Row>{t('page.signTx.addressTypeTitle')}</Row>
           <Row>
             <div>
               {receiverType}
@@ -117,9 +113,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         </Col>
         {data.cex && (
           <Col>
-            <Row className="bg-r-neutral-card-3">
-              {t('page.signTx.send.cexAddress')}
-            </Row>
+            <Row>{t('page.signTx.send.cexAddress')}</Row>
             <Row>
               <div>
                 <LogoWithText logo={data.cex.logo} text={data.cex.name} />
@@ -145,16 +139,14 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
         )}
         {data.isTokenContract && (
           <Col>
-            <Row className="bg-r-neutral-card-3">
-              {t('page.signTx.send.receiverIsTokenAddress')}
-            </Row>
+            <Row>{t('page.signTx.send.receiverIsTokenAddress')}</Row>
             <Row>
               <Values.Boolean value={data.isTokenContract} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row className="bg-r-neutral-card-3">
+          <Row>
             {data.contract
               ? t('page.signTx.deployTimeTitle')
               : t('page.signTx.firstOnChain')}
@@ -164,25 +156,19 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.send.addressBalanceTitle')}
-          </Row>
+          <Row>{t('page.signTx.send.addressBalanceTitle')}</Row>
           <Row>
             <Values.USDValue value={data.usd_value} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.transacted')}
-          </Row>
+          <Row>{t('page.signTx.transacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasTransfer} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.send.whitelistTitle')}
-          </Row>
+          <Row>{t('page.signTx.send.whitelistTitle')}</Row>
           <Row>
             {data.onTransferWhitelist
               ? t('page.signTx.send.onMyWhitelist')

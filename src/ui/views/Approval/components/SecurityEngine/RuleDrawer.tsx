@@ -314,7 +314,7 @@ const RuleDrawer = ({
       closable
       title={t('page.securityEngine.ruleDetailTitle')}
       isSupportDarkMode
-      bodyStyle={{ padding: 0, minHeight: '172px' }}
+      bodyStyle={{ padding: 0, minHeight: '132px' }}
     >
       {selectRule && (
         <RuleDrawerWrapper
