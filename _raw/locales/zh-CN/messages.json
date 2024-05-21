@@ -1262,7 +1262,7 @@
       "send": {
         "addressBalanceTitle": "地址余额",
         "cexAddress": "中心化交易所地址",
-        "contractNotOnThisChain": "该合约地址不在本链上",
+        "contractNotOnThisChain": "不在这个链上",
         "notOnThisChain": "不在本链上",
         "notOnWhitelist": "不在我的白名单中",
         "notTopupAddress": "非充值地址",

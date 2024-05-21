@@ -70,18 +70,18 @@ const RowWrapper = styled.div`
     font-weight: 400;
     li {
       padding-left: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       padding-right: 0;
       position: relative;
       &::before {
         content: '';
         position: absolute;
-        left: 3px;
         width: 3px;
         height: 3px;
         background-color: var(--r-neutral-foot, #6a7587);
         border-radius: 100%;
         top: 6px;
+        margin-left: -6px;
       }
       &:nth-child(1) {
         margin-top: 4px;

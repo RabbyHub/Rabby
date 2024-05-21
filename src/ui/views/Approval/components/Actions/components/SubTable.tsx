@@ -79,17 +79,34 @@ const SubColWrapper = styled.div`
   width: 100%;
   justify-content: space-between;
   position: relative;
+
+  &.nested {
+    margin-top: -6px;
+
+    .row {
+      color: var(--r-neutral-foot, #6a7587) !important;
+      font-weight: 400 !important;
+    }
+  }
 `;
 
 export const SubCol = ({
   children,
   className,
+  nested,
 }: {
   children: ReactNode;
   className?: string;
+  nested?: boolean;
 }) => {
   return (
-    <SubColWrapper className={clsx('col', className)}>{children}</SubColWrapper>
+    <SubColWrapper
+      className={clsx('col', className, {
+        nested: nested,
+      })}
+    >
+      {children}
+    </SubColWrapper>
   );
 };
 

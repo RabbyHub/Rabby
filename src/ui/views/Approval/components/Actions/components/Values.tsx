@@ -387,17 +387,7 @@ const Transacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.yes')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.no')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };

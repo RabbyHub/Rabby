@@ -109,22 +109,34 @@ const Send = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
-          {!!requireData.name && (
+          {!!requireData.contract && (
             <SubCol>
-              <SubRow isTitle>{t('page.signTx.protocol')} </SubRow>
-              <SubRow>{requireData.name}</SubRow>
+              <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
+              <SubRow>{t('page.signTx.contract')}</SubRow>
+            </SubCol>
+          )}
+          {!!requireData.name && (
+            <SubCol nested>
+              <SubRow> </SubRow>
+              <SubRow>
+                {requireData.name.replace(/^Token: /, 'Token ') +
+                  ' contract address'}
+              </SubRow>
             </SubCol>
           )}
           <SecurityListItem
-            engineResult={engineResultMap['1016']}
-            dangerText={t('page.signTx.send.receiverIsTokenAddress')}
-            id="1016"
-          />
-          <SecurityListItem
             engineResult={engineResultMap['1019']}
             dangerText={t('page.signTx.send.contractNotOnThisChain')}
+            noTitle
             id="1019"
           />
+          <SecurityListItem
+            engineResult={engineResultMap['1016']}
+            dangerText={t('page.signTx.yes')}
+            title={t('page.signTx.send.receiverIsTokenAddress')}
+            id="1016"
+          />
+
           {requireData.cex && (
             <>
               <SubCol>

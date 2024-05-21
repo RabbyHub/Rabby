@@ -39,9 +39,10 @@ export const SecurityListItem: React.FC<Props> = ({
   }
 
   const displayTitle = title || engineResult.level;
+  const hasTitle = !!(noTitle ? '' : displayTitle);
 
   return (
-    <SubCol>
+    <SubCol nested={!hasTitle}>
       <SubRow isTitle>{noTitle ? '' : displayTitle}</SubRow>
       <SubRow>
         <div className="text-13 leading-[15px]">

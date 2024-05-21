@@ -136,28 +136,38 @@ const SendNFT = ({
               <Values.AddressMemo address={actionData.to} />
             </SubRow>
           </SubCol>
-          {!!requireData.name && (
+          {!!requireData.contract && (
             <SubCol>
-              <SubRow isTitle>{t('page.signTx.protocolTitle')}</SubRow>
-              <SubRow>{requireData.name}</SubRow>
+              <SubRow isTitle>{t('page.signTx.addressTypeTitle')}</SubRow>
+              <SubRow>{t('page.signTx.contract')}</SubRow>
             </SubCol>
           )}
+          {!!requireData.name && (
+            <SubCol nested>
+              <SubRow> </SubRow>
+              <SubRow>
+                {requireData.name.replace(/^Token: /, 'Token ') +
+                  ' contract address'}
+              </SubRow>
+            </SubCol>
+          )}
+          <SecurityListItem
+            engineResult={engineResultMap['1037']}
+            dangerText={t('page.signTx.send.contractNotOnThisChain')}
+            noTitle
+            id="1037"
+          />
           <SecurityListItem
             engineResult={engineResultMap['1016']}
             dangerText={t('page.signTx.send.receiverIsTokenAddress')}
             id="1016"
           />
-          <SecurityListItem
-            engineResult={engineResultMap['1037']}
-            dangerText={t('page.signTx.send.contractNotOnThisChain')}
-            id="1037"
-          />
+
           {requireData.cex && (
             <>
               <SubCol>
                 <SubRow isTitle>{t('page.signTx.send.cexAddress')}</SubRow>
                 <SubRow>
-                  {' '}
                   <LogoWithText
                     logo={requireData.cex.logo}
                     text={requireData.cex.name}

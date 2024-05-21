@@ -100,7 +100,7 @@
         "sendToken": "Send token",
         "sendTo": "Send to",
         "receiverIsTokenAddress": "Token address",
-        "contractNotOnThisChain": "Contract address not on this chain",
+        "contractNotOnThisChain": "Not on this chain",
         "notTopupAddress": "Not top up address",
         "tokenNotSupport": "{{0}} not supported",
         "onMyWhitelist": "On my whitelist",
@@ -300,7 +300,8 @@
       "hasInteraction": "Interacted before",
       "address": "Address",
       "advancedSettings": "Advanced Settings",
-      "amount": "Amount"
+      "amount": "Amount",
+      "contract": "Contract"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

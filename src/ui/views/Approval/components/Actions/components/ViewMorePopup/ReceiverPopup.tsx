@@ -105,7 +105,12 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
                   {data.contract && !contractOnCurrentChain && (
                     <li>{t('page.signTx.send.notOnThisChain')}</li>
                   )}
-                  {data.name && <li>{data.name}</li>}
+                  {data.name && (
+                    <li>
+                      {data.name.replace(/^Token: /, 'Token ') +
+                        ' contract address'}
+                    </li>
+                  )}
                 </ul>
               )}
             </div>
