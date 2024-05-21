@@ -27,34 +27,35 @@ export const SecurityListItem: React.FC<Props> = ({
   title,
   noTitle = false,
 }) => {
-  if (!engineResult) {
-    if (defaultText) {
-      return (
-        <li>
-          <span>{defaultText}</span>
-        </li>
-      );
-    }
+  const displayTitle = title || engineResult?.level;
+  const hasTitle = !!(noTitle ? '' : displayTitle);
+
+  if (!engineResult && !defaultText) {
     return null;
   }
-
-  const displayTitle = title || engineResult.level;
-  const hasTitle = !!(noTitle ? '' : displayTitle);
 
   return (
     <SubCol nested={!hasTitle}>
       <SubRow isTitle>{noTitle ? '' : displayTitle}</SubRow>
       <SubRow>
-        <div className="text-13 leading-[15px]">
-          <span>
-            {engineResult.level === Level.DANGER && dangerText}
-            {engineResult.level === Level.WARNING && warningText}
-            {engineResult.level === Level.SAFE && safeText}
-            {engineResult.level === Level.FORBIDDEN && forbiddenText}
-          </span>
+        {engineResult ? (
+          <div className="text-13 leading-[15px]">
+            <span>
+              {engineResult.level === Level.DANGER && dangerText}
+              {engineResult.level === Level.WARNING && warningText}
+              {engineResult.level === Level.SAFE && safeText}
+              {engineResult.level === Level.FORBIDDEN && forbiddenText}
+            </span>
 
-          <SecurityListItemTag inSubTable id={id} engineResult={engineResult} />
-        </div>
+            <SecurityListItemTag
+              inSubTable
+              id={id}
+              engineResult={engineResult}
+            />
+          </div>
+        ) : (
+          <span>{defaultText}</span>
+        )}
       </SubRow>
     </SubCol>
   );

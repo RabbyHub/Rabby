@@ -1309,12 +1309,12 @@
         "approveTo": "授权给",
         "approveToken": "授权代币",
         "contractTrustValueTip": "信任值是指授权并暴露给该合约的资产总价值，\n信任值低表示该合约存在风险或 180 天内不活跃",
-        "deployTimeLessThan": "部署时间 < {{value}} 天",
-        "eoaAddress": "EOA 地址",
+        "deployTimeLessThan": "< {{value}} 天",
+        "eoaAddress": "EOA",
         "flagByRabby": "被 Rabby 标记为风险",
         "myBalance": "我的余额",
         "title": "代币授权",
-        "trustValueLessThan": "信任值≤{{value}}"
+        "trustValueLessThan": "≤ {{value}}"
       },
       "transacted": "之前交易过",
       "trustValue": "信任值",
@@ -1374,7 +1374,8 @@
       "yes": "是",
       "address": "地址",
       "advancedSettings": "高级设置",
-      "amount": "数量"
+      "amount": "数量",
+      "trustValueTitle": "风险暴露"
     },
     "signTypedData": {
       "buyNFT": {

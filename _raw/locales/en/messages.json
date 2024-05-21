@@ -115,9 +115,9 @@
         "approveToken": "Approve token",
         "myBalance": "My balance",
         "approveTo": "Approve to",
-        "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
+        "eoaAddress": "EOA",
+        "trustValueLessThan": "≤ {{value}}",
+        "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Amount",
         "flagByRabby": "Flagged by Rabby",
         "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
@@ -301,7 +301,8 @@
       "address": "Address",
       "advancedSettings": "Advanced Settings",
       "amount": "Amount",
-      "contract": "Contract"
+      "contract": "Contract",
+      "trustValueTitle": "Risk exposure"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

@@ -31,6 +31,7 @@ const LogoWithText = ({
   textStyle = {},
   className,
   hoverToken,
+  id,
 }: {
   logo?: string;
   text: string | ReactNode;
@@ -40,6 +41,7 @@ const LogoWithText = ({
   textStyle?: React.CSSProperties;
   className?: string;
   hoverToken?: TokenItem;
+  id?: string;
 }) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
@@ -49,7 +51,7 @@ const LogoWithText = ({
   };
 
   return (
-    <Wrapper className={className}>
+    <Wrapper className={className} id={id}>
       <img
         src={logo || IconUnknown}
         className="logo"
