@@ -10,6 +10,7 @@ import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -85,25 +86,33 @@ const RevokeNFT = ({
         <Col>
           <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.spender} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-              <li>
-                <ViewMore
-                  type="nftSpender"
-                  data={{
-                    ...requireData,
-                    spender: actionData.spender,
-                    chain,
-                    isRevoke: true,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nftSpender"
+              data={{
+                ...requireData,
+                spender: actionData.spender,
+                chain,
+                isRevoke: true,
+              }}
+            >
+              <Values.Address
+                id="revoke-nft-address"
+                hasHover
+                address={actionData.spender}
+                chain={chain}
+              />
+            </ViewMore>
           </Row>
         </Col>
+
+        <SubTable target="revoke-nft-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+        </SubTable>
       </Table>
     </Wrapper>
   );

@@ -9,6 +9,7 @@ import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
+import { SubTable, SubCol, SubRow } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -86,26 +87,33 @@ const RevokeNFTCollection = ({
         <Col>
           <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.spender} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-
-              <li>
-                <ViewMore
-                  type="nftSpender"
-                  data={{
-                    ...requireData,
-                    spender: actionData.spender,
-                    chain,
-                    isRevoke: true,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nftSpender"
+              data={{
+                ...requireData,
+                spender: actionData.spender,
+                chain,
+                isRevoke: true,
+              }}
+            >
+              <Values.Address
+                id="revoke-collection-address"
+                hasHover
+                address={actionData.spender}
+                chain={chain}
+              />
+            </ViewMore>
           </Row>
         </Col>
+
+        <SubTable target="revoke-collection-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+        </SubTable>
       </Table>
     </Wrapper>
   );
