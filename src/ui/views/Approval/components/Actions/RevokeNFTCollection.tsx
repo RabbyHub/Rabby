@@ -70,18 +70,17 @@ const RevokeNFTCollection = ({
             {t('page.signTx.revokeNFTCollectionApprove.revokeCollection')}
           </Row>
           <Row>
-            {actionData?.collection?.name}
-            <ul className="desc-list">
-              <li>
-                <ViewMore
-                  type="collection"
-                  data={{
-                    collection: actionData.collection,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="collection"
+              data={{
+                collection: actionData.collection,
+                chain,
+              }}
+            >
+              <div className="cursor-pointer group-hover:underline hover:text-r-blue-default">
+                {actionData?.collection?.name}
+              </div>
+            </ViewMore>
           </Row>
         </Col>
         <Col>

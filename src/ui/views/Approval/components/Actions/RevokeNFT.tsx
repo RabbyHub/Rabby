@@ -69,18 +69,15 @@ const RevokeNFT = ({
         <Col>
           <Row isTitle>{t('page.signTx.revokeNFTApprove.revokeNFT')}</Row>
           <Row>
-            <NFTWithName nft={actionData?.nft}></NFTWithName>
-            <ul className="desc-list">
-              <li>
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft: actionData.nft,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            <ViewMore
+              type="nft"
+              data={{
+                nft: actionData.nft,
+                chain,
+              }}
+            >
+              <NFTWithName hasHover nft={actionData?.nft}></NFTWithName>
+            </ViewMore>
           </Row>
         </Col>
         <Col>
