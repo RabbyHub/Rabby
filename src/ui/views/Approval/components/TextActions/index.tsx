@@ -10,7 +10,7 @@ import IconArrowRight, {
 import CreateKey from './CreateKey';
 import VerifyAddress from './VerifyAddress';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import IconCheck, {
   ReactComponent as RcIconCheck,
@@ -21,6 +21,8 @@ import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
+import { Card } from '../Card';
+import { OriginInfo } from '../OriginInfo';
 
 const { TabPane } = Tabs;
 
@@ -104,12 +106,14 @@ const Actions = ({
   raw,
   message,
   origin,
+  originLogo,
 }: {
   data: TextActionData | null;
   engineResults: Result[];
   raw: string;
   message: string;
   origin: string;
+  originLogo?: string;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -120,7 +124,8 @@ const Actions = ({
   const handleViewRawClick = () => {
     Popup.info({
       closable: true,
-      height: 720,
+      height: 520,
+      isNew: true,
       content: (
         <Tabs defaultActiveKey="raw">
           {raw && (
@@ -138,70 +143,77 @@ const Actions = ({
 
   return (
     <>
-      <SignTitle>
-        <div className="left relative">{t('page.signText.title')}</div>
-        <div
-          className="float-right text-12 cursor-pointer flex items-center view-raw"
-          onClick={handleViewRawClick}
-        >
-          {t('page.signTx.viewRaw')}
-          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
-        </div>
-      </SignTitle>
       <ActionWrapper isEmptyBody={isUnknown}>
-        <div
-          className={clsx('action-header', {
-            'is-unknown': isUnknown,
-          })}
-        >
-          <div className="left">{actionName}</div>
-          <div className="right">
-            <TooltipWithMagnetArrow
-              placement="bottom"
-              overlayClassName="rectangle w-[max-content] decode-tooltip"
-              title={
-                isUnknown ? (
-                  <NoActionAlert
-                    data={{
-                      origin,
-                      text: message,
-                    }}
-                  />
-                ) : (
-                  <span className="flex w-[358px] p-12 items-center">
-                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
-                    {t('page.signTx.decodedTooltip')}
-                  </span>
-                )
-              }
-            >
-              {isUnknown ? (
-                <img src={IconQuestionMark} className="w-24" />
-              ) : (
-                <img
-                  src={IconRabbyDecoded}
-                  className="icon icon-rabby-decoded"
+        <Card>
+          <OriginInfo
+            origin={origin}
+            originLogo={originLogo}
+            engineResults={engineResults}
+          />
+        </Card>
+
+        <Card>
+          <div
+            className={clsx('action-header', {
+              'is-unknown': isUnknown,
+            })}
+          >
+            <div className="left">
+              <span>{actionName}</span>
+              {isUnknown && (
+                <TooltipWithMagnetArrow
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] decode-tooltip"
+                  title={
+                    <NoActionAlert
+                      data={{
+                        origin,
+                        text: message,
+                      }}
+                    />
+                  }
+                >
+                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                </TooltipWithMagnetArrow>
+              )}
+            </div>
+            <div className="right">
+              <div
+                className="float-right text-12 cursor-pointer flex items-center view-raw"
+                onClick={handleViewRawClick}
+              >
+                {t('page.signTx.viewRaw')}
+                <ThemeIcon
+                  className="icon icon-arrow-right"
+                  src={RcIconArrowRight}
+                />
+              </div>
+            </div>
+          </div>
+
+          {data && (
+            <div className="container">
+              {data.createKey && (
+                <CreateKey
+                  data={data.createKey}
+                  engineResults={engineResults}
                 />
               )}
-            </TooltipWithMagnetArrow>
-          </div>
-        </div>
-        {data && (
-          <div className="container">
-            {data.createKey && (
-              <CreateKey data={data.createKey} engineResults={engineResults} />
-            )}
-            {data.verifyAddress && (
-              <VerifyAddress
-                data={data.verifyAddress}
-                engineResults={engineResults}
-              />
-            )}
-            {data.common && (
-              <CommonAction data={data.common} engineResults={engineResults} />
-            )}
-          </div>
-        )}
+              {data.verifyAddress && (
+                <VerifyAddress
+                  data={data.verifyAddress}
+                  engineResults={engineResults}
+                />
+              )}
+              {data.common && (
+                <CommonAction
+                  data={data.common}
+                  engineResults={engineResults}
+                />
+              )}
+            </div>
+          )}
+        </Card>
       </ActionWrapper>
       <MessageWrapper
         className={clsx({
