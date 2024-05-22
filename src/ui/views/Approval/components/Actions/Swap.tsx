@@ -268,10 +268,14 @@ const Swap = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address address={receiver} chain={chain} />
+                <Values.Address
+                  id="swap-receiver"
+                  address={receiver}
+                  chain={chain}
+                />
               </Row>
             </Col>
-            <SubTable>
+            <SubTable target="swap-receiver">
               <SecurityListItem
                 engineResult={engineResultMap['1069']}
                 id="1069"

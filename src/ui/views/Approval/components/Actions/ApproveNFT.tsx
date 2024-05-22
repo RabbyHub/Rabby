@@ -164,18 +164,21 @@ const ApproveNFT = ({
           />
 
           <SecurityListItem
+            title={t('page.signTx.myMark')}
             id="1134"
             engineResult={engineResultMap['1134']}
             forbiddenText={t('page.signTx.markAsBlock')}
           />
 
           <SecurityListItem
+            title={t('page.signTx.myMark')}
             id="1136"
             engineResult={engineResultMap['1136']}
             warningText={t('page.signTx.markAsBlock')}
           />
 
           <SecurityListItem
+            title={t('page.signTx.myMark')}
             id="1133"
             engineResult={engineResultMap['1133']}
             safeText={t('page.signTx.markAsTrust')}

@@ -171,18 +171,21 @@ const ApproveNFTCollection = ({
             id="1134"
             engineResult={engineResultMap['1134']}
             forbiddenText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
           />
 
           <SecurityListItem
             id="1136"
             engineResult={engineResultMap['1136']}
             warningText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
           />
 
           <SecurityListItem
             id="1133"
             engineResult={engineResultMap['1133']}
             safeText={t('page.signTx.markAsTrust')}
+            title={t('page.signTx.myMark')}
           />
         </SubTable>
       </Table>
