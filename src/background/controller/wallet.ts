@@ -2117,10 +2117,10 @@ export class WalletController extends BaseController {
     return this._lastGetAddress;
   };
 
-  clearAddressPendingTransactions = (address: string) => {
-    transactionHistoryService.clearPendingTransactions(address);
-    transactionWatcher.clearPendingTx(address);
-    transactionBroadcastWatchService.clearPendingTx(address);
+  clearAddressPendingTransactions = (address: string, chainId?: number) => {
+    transactionHistoryService.clearPendingTransactions(address, chainId);
+    transactionWatcher.clearPendingTx(address, chainId);
+    transactionBroadcastWatchService.clearPendingTx(address, chainId);
     return;
   };
 

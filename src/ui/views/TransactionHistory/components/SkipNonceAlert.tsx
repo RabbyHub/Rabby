@@ -3,16 +3,19 @@ import { useAccount } from '@/ui/store-hooks';
 import { intToHex, useWallet } from '@/ui/utils';
 import { findChain, findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
+import { Chain } from '@debank/common';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { useRequest } from 'ahooks';
+import { message } from 'antd';
 import { CHAINS } from 'consts';
-import { flatten, maxBy } from 'lodash';
-import React from 'react';
+import dayjs from 'dayjs';
+import { flatten, groupBy, maxBy, sortBy } from 'lodash';
+import React, { useMemo } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
 
-const Wraper = styled.div`
+const Warper = styled.div`
   margin-bottom: 16px;
 
   .alert-detail {
@@ -44,7 +47,7 @@ const Wraper = styled.div`
   }
 `;
 
-const AlertDetail = ({
+const SkipAlertDetail = ({
   data,
   onSubmitTx,
 }: {
@@ -85,10 +88,53 @@ const AlertDetail = ({
   );
 };
 
+const ClearPendingAlertDetail = ({
+  data,
+  onClearPending,
+}: {
+  data: TransactionGroup[];
+  onClearPending?: (chain: Chain) => void;
+}) => {
+  const chain = findChainByID(data?.[0].chainId);
+  const chainName = chain?.name || 'Unknown';
+  const nonces = data.map((item) => `#${item.nonce}`).join('; ');
+
+  return (
+    <div className="alert-detail">
+      <img src={IconWarning} alt="" />
+      <div className="alert-detail-content">
+        <Trans
+          i18nKey="page.activities.signedTx.SkipNonceAlert.clearPendingAlert"
+          values={{
+            nonces: nonces,
+            chainName: chainName,
+          }}
+          nonces={nonces}
+          chainName={chainName}
+        >
+          Transaction ({chainName} {nonces}) has been pending for over 3
+          minutes. You can{' '}
+          <span
+            className="link"
+            onClick={() => {
+              onClearPending?.(chain!);
+            }}
+          >
+            clear pending transactions on this chain
+          </span>{' '}
+          and initiate a new one.
+        </Trans>
+      </div>
+    </div>
+  );
+};
+
 export const SkipNonceAlert = ({
   pendings,
+  onClearPending,
 }: {
   pendings: TransactionGroup[];
+  onClearPending?: () => void;
 }) => {
   const [account] = useAccount();
   const wallet = useWallet();
@@ -107,8 +153,6 @@ export const SkipNonceAlert = ({
   );
 
   const handleOnChainCancel = async (item: TransactionGroup) => {
-    // todo can cancel ?
-
     const maxGasTx = findMaxGasTx(item.txs)!;
     const maxGasPrice = Number(
       maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
@@ -143,21 +187,56 @@ export const SkipNonceAlert = ({
     window.close();
   };
 
-  if (!pendings.length || !data?.length) {
+  const handleClearPending = async (chain: Chain) => {
+    if (!chain.id) {
+      return;
+    }
+    await wallet.clearAddressPendingTransactions(account!.address, chain.id);
+    message.success('Clear pending transactions success');
+    onClearPending?.();
+  };
+
+  const needClearPendingTxs = useMemo(() => {
+    return Object.entries(groupBy(pendings, (item) => item.chainId))
+      .map(([key, value]) => {
+        return {
+          chain: key,
+          data: sortBy(value, (item) => -item.nonce),
+          needClear: value.some((item) => {
+            return dayjs(item.createdAt).isBefore(
+              dayjs().subtract(3, 'minute')
+            );
+          }),
+        };
+      })
+      .filter((item) => item.needClear);
+  }, [pendings]);
+
+  if (!data?.length && !needClearPendingTxs?.length) {
     return null;
   }
 
   return (
-    <Wraper>
+    <Warper>
       {data?.map((item) => {
         return (
-          <AlertDetail
+          <SkipAlertDetail
             key={item.nonce}
             data={item}
             onSubmitTx={handleOnChainCancel}
           />
         );
       })}
-    </Wraper>
+      {!data?.length &&
+        needClearPendingTxs?.map((item) => {
+          return (
+            <ClearPendingAlertDetail
+              key={item.chain}
+              data={item.data}
+              onClearPending={handleClearPending}
+            />
+          );
+        })}
+    </Warper>
   );
 };
