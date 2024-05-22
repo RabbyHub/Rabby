@@ -305,6 +305,7 @@ const ClaimPoints = ({
         <div className="flex flex-col gap-[16px]">
           {list.map((e, idx) => (
             <Item
+              key={e.key}
               label={e.label}
               value={snapshot?.[e.key]}
               loading={snapshotLoading || loadingNum < idx}

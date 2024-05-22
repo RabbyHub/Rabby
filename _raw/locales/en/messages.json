@@ -1859,7 +1859,9 @@
           "sign": "Sign"
         }
       },
-      "code-set-successfully": "Referral code set successfully"
+      "code-set-successfully": "Referral code set successfully",
+      "initialPointsClaimEnded": "Initial Points claim ended",
+      "firstRoundEnded": "🎉 The first round of Rabby Points has ended"
     },
     "customTestnet": {
       "title": "Custom Network",
