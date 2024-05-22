@@ -18,6 +18,7 @@ import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -117,9 +118,9 @@ const AssetOrder = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.listAsset')}</Row>
-          <div className="flex-1 overflow-hidden">
+          <div className="gap-y-6 flex flex-col">
             {actionData.payTokenList.map((token) => (
-              <Row key={token.id} className="has-bottom-border">
+              <Row key={token.id}>
                 <div className="relative">
                   <LogoWithText
                     logo={token.logo_url}
@@ -129,30 +130,19 @@ const AssetOrder = ({
                     logoRadius="100%"
                   />
                 </div>
-                <ul className="desc-list">
-                  <li>
-                    ≈
-                    {formatUsdValue(
-                      new BigNumber(token.amount).times(token.price).toFixed()
-                    )}
-                  </li>
-                </ul>
               </Row>
             ))}
             {actionData.payNFTList.map((nft) => (
-              <Row key={nft.id} className="has-bottom-border">
-                <NFTWithName nft={nft}></NFTWithName>
-                <ul className="desc-list">
-                  <li>
-                    <ViewMore
-                      type="nft"
-                      data={{
-                        nft,
-                        chain,
-                      }}
-                    />
-                  </li>
-                </ul>
+              <Row key={nft.id}>
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft,
+                    chain,
+                  }}
+                >
+                  <NFTWithName nft={nft}></NFTWithName>
+                </ViewMore>
               </Row>
             ))}
             {actionData.payNFTList.length <= 0 &&
@@ -161,9 +151,9 @@ const AssetOrder = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <div className="flex-1 overflow-hidden">
+          <div className="gap-y-6 flex flex-col">
             {actionData.receiveTokenList.map((token) => (
-              <Row key={token.id} className="has-bottom-border">
+              <Row key={token.id}>
                 <div className="relative">
                   <LogoWithText
                     logo={token.logo_url}
@@ -173,30 +163,19 @@ const AssetOrder = ({
                     logoRadius="100%"
                   />
                 </div>
-                <ul className="desc-list">
-                  <li>
-                    ≈
-                    {formatUsdValue(
-                      new BigNumber(token.amount).times(token.price).toFixed()
-                    )}
-                  </li>
-                </ul>
               </Row>
             ))}
             {actionData.receiveNFTList.map((nft) => (
-              <Row key={nft.id} className="has-bottom-border">
-                <NFTWithName nft={nft}></NFTWithName>
-                <ul className="desc-list">
-                  <li>
-                    <ViewMore
-                      type="nft"
-                      data={{
-                        nft,
-                        chain,
-                      }}
-                    />
-                  </li>
-                </ul>
+              <Row key={nft.id}>
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft,
+                    chain,
+                  }}
+                >
+                  <NFTWithName nft={nft}></NFTWithName>
+                </ViewMore>
               </Row>
             ))}
             {actionData.receiveTokenList.length <= 0 &&
@@ -223,56 +202,76 @@ const AssetOrder = ({
           </Col>
         )}
         {hasReceiver && actionData.receiver && (
-          <Col>
-            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
-            <Row>
-              <Values.Address address={actionData.receiver} chain={chain} />
-              <ul className="desc-list">
-                <SecurityListItem
-                  id="1115"
-                  engineResult={engineResultMap['1115']}
-                  dangerText={t('page.signTx.swap.notPaymentAddress')}
+          <>
+            <Col>
+              <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
+              <Row>
+                <Values.Address
+                  id="asset-order-receiver"
+                  address={actionData.receiver}
+                  chain={chain}
                 />
-              </ul>
-            </Row>
-          </Col>
+              </Row>
+            </Col>
+            <SubTable target="asset-order-receiver">
+              <SecurityListItem
+                id="1115"
+                engineResult={engineResultMap['1115']}
+                dangerText={t('page.signTx.swap.notPaymentAddress')}
+              />
+            </SubTable>
+          </>
         )}
         <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
           <Row>
-            <div>
-              <Values.Address address={requireData.id} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-
-              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
-
-              <SecurityListItem
-                id="1135"
-                engineResult={engineResultMap['1135']}
-                forbiddenText={t('page.signTx.markAsBlock')}
+            <ViewMore
+              type="contract"
+              data={{
+                ...requireData,
+                address: requireData.id,
+                chain,
+                title: t('page.signTypedData.buyNFT.listOn'),
+              }}
+            >
+              <Values.Address
+                id="asset-order-address"
+                hasHover
+                address={requireData.id}
+                chain={chain}
               />
-
-              <SecurityListItem
-                id="1137"
-                engineResult={engineResultMap['1137']}
-                warningText={t('page.signTx.markAsBlock')}
-              />
-              <li>
-                <ViewMore
-                  type="contract"
-                  data={{
-                    ...requireData,
-                    address: requireData.id,
-                    chain,
-                    title: t('page.signTypedData.buyNFT.listOn'),
-                  }}
-                />
-              </li>
-            </ul>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="asset-order-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+
+          {isInWhitelist && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+              <SubRow>{t('page.signTx.trusted')}</SubRow>
+            </SubCol>
+          )}
+
+          <SecurityListItem
+            id="1135"
+            engineResult={engineResultMap['1135']}
+            forbiddenText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+
+          <SecurityListItem
+            id="1137"
+            engineResult={engineResultMap['1137']}
+            warningText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+        </SubTable>
         <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.expireTime')}</Row>
           <Row>
