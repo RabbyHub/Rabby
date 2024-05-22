@@ -44,7 +44,7 @@ import IconArrowRight, {
   ReactComponent as RcIconArrowRight,
 } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import IconCheck, {
   ReactComponent as RcIconCheck,
@@ -162,11 +162,11 @@ const Actions = ({
           >
             <div className="left">
               <span>{actionName}</span>
-              <TooltipWithMagnetArrow
-                placement="bottom"
-                overlayClassName="rectangle w-[max-content] decode-tooltip"
-                title={
-                  isUnknown ? (
+              {isUnknown && (
+                <TooltipWithMagnetArrow
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] decode-tooltip"
+                  title={
                     <NoActionAlert
                       data={{
                         chainId: chain.serverId,
@@ -177,13 +177,11 @@ const Actions = ({
                         selector: raw.data.toString(),
                       }}
                     />
-                  ) : null
-                }
-              >
-                {isUnknown ? (
-                  <img src={IconQuestionMark} className="w-24" />
-                ) : null}
-              </TooltipWithMagnetArrow>
+                  }
+                >
+                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                </TooltipWithMagnetArrow>
+              )}
             </div>
             <div className="right">
               <div

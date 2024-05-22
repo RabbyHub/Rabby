@@ -17,30 +17,30 @@ export const DIV = styled.div`
       font-weight: 500;
       font-size: 13px;
       line-height: 16px;
+      display: flex;
+      align-items: center;
+      position: relative;
     }
     .right {
       font-size: 14px;
       line-height: 16px;
       position: relative;
-      .decode-tooltip {
-        max-width: 358px;
-        &:not(.ant-tooltip-hidden) {
-          left: -321px !important;
-          .ant-tooltip-arrow {
-            left: 333px;
-          }
-        }
-        .ant-tooltip-arrow-content {
-          background-color: var(--r-neutral-bg-1, #fff);
-        }
-        .ant-tooltip-inner {
-          background-color: var(--r-neutral-bg-1, #fff);
-          padding: 0;
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--r-neutral-body, #3e495e);
-          border-radius: 6px;
-        }
+    }
+
+    .decode-tooltip {
+      max-width: 358px;
+      &:not(.ant-tooltip-hidden) {
+      }
+      .ant-tooltip-arrow-content {
+        background-color: var(--r-neutral-bg-1, #fff);
+      }
+      .ant-tooltip-inner {
+        background-color: var(--r-neutral-bg-1, #fff);
+        padding: 0;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--r-neutral-body, #3e495e);
+        border-radius: 6px;
       }
     }
     &.is-unknown {
