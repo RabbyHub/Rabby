@@ -28,9 +28,7 @@ function mergeRules(rules: RuleConfig[], userConfig: UserRuleConfig[]) {
     if (target) {
       return {
         ...rule,
-        // !IMPORTANT: In the current version, all are enabled by default and cannot be changed.
-        // enable: target.enable,
-        enable: true,
+        enable: target.enable,
         customThreshold: target.customThreshold,
       };
     }
@@ -78,7 +76,8 @@ class SecurityEngineService {
         rules: getRuleConfigFromRules(defaultRules),
       },
     });
-    this.rules = mergeRules(defaultRules, storage.rules);
+    // this.rules = mergeRules(defaultRules, storage.rules);
+    this.rules = defaultRules;
     this.store = storage || this.store;
     this.store.rules = this.rules;
     if (!this.store.userData.contractBlacklist) {

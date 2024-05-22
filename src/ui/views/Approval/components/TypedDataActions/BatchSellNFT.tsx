@@ -17,6 +17,7 @@ import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 
 const Wrapper = styled.div`
   .header {
@@ -116,21 +117,18 @@ const BatchSellNFT = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTypedData.sellNFT.listNFT')}</Row>
-          <div className="flex-1 overflow-hidden">
+          <div className="gap-y-6 flex flex-col overflow-hidden pl-4">
             {actionData.pay_nft_list.map((nft) => (
               <Row key={nft.id} className="has-bottom-border">
-                <NFTWithName nft={nft}></NFTWithName>
-                <ul className="desc-list">
-                  <li>
-                    <ViewMore
-                      type="nft"
-                      data={{
-                        nft,
-                        chain,
-                      }}
-                    />
-                  </li>
-                </ul>
+                <ViewMore
+                  type="nft"
+                  data={{
+                    nft,
+                    chain,
+                  }}
+                >
+                  <NFTWithName hasHover nft={nft}></NFTWithName>
+                </ViewMore>
               </Row>
             ))}
           </div>
@@ -138,58 +136,46 @@ const BatchSellNFT = ({
         <Col>
           <Row isTitle>{t('page.signTypedData.sellNFT.receiveToken')}</Row>
           <Row>
-            <div className="relative">
-              <LogoWithText
-                logo={actionData.receive_token.logo_url}
-                text={`${formatAmount(
-                  actionData.receive_token.amount
-                )} ${ellipsisTokenSymbol(
-                  getTokenSymbol(actionData.receive_token)
-                )}`}
-                logoRadius="100%"
-                icon={
-                  <Values.TokenLabel
-                    isFake={actionData.receive_token.is_verified === false}
-                    isScam={
-                      actionData.receive_token.is_verified !== false &&
-                      !!actionData.receive_token.is_suspicious
-                    }
-                  />
+            <LogoWithText
+              logo={actionData.receive_token.logo_url}
+              text={`${formatAmount(
+                actionData.receive_token.amount
+              )} ${ellipsisTokenSymbol(
+                getTokenSymbol(actionData.receive_token)
+              )}`}
+              logoRadius="100%"
+              icon={
+                <Values.TokenLabel
+                  isFake={actionData.receive_token.is_verified === false}
+                  isScam={
+                    actionData.receive_token.is_verified !== false &&
+                    !!actionData.receive_token.is_suspicious
+                  }
+                />
+              }
+            />
+            {engineResultMap['1116'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1116'].enable}
+                level={
+                  processedRules.includes('1116')
+                    ? 'proceed'
+                    : engineResultMap['1116'].level
                 }
+                onClick={() => handleClickRule('1116')}
               />
-              {engineResultMap['1116'] && (
-                <SecurityLevelTagNoText
-                  enable={engineResultMap['1116'].enable}
-                  level={
-                    processedRules.includes('1116')
-                      ? 'proceed'
-                      : engineResultMap['1116'].level
-                  }
-                  onClick={() => handleClickRule('1116')}
-                />
-              )}
-              {engineResultMap['1117'] && (
-                <SecurityLevelTagNoText
-                  enable={engineResultMap['1117'].enable}
-                  level={
-                    processedRules.includes('1117')
-                      ? 'proceed'
-                      : engineResultMap['1117'].level
-                  }
-                  onClick={() => handleClickRule('1117')}
-                />
-              )}
-            </div>
-            <ul className="desc-list">
-              <li>
-                ≈
-                {formatUsdValue(
-                  new BigNumber(actionData.receive_token.amount)
-                    .times(actionData.receive_token.price)
-                    .toFixed()
-                )}
-              </li>
-            </ul>
+            )}
+            {engineResultMap['1117'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1117'].enable}
+                level={
+                  processedRules.includes('1117')
+                    ? 'proceed'
+                    : engineResultMap['1117'].level
+                }
+                onClick={() => handleClickRule('1117')}
+              />
+            )}
           </Row>
         </Col>
         <Col>
@@ -222,56 +208,75 @@ const BatchSellNFT = ({
           </Col>
         )}
         {hasReceiver && (
-          <Col>
-            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
-            <Row>
-              <Values.Address address={actionData.receiver} chain={chain} />
-              <ul className="desc-list">
-                <SecurityListItem
-                  id="1115"
-                  engineResult={engineResultMap['1115']}
-                  dangerText={t('page.signTx.swap.notPaymentAddress')}
+          <>
+            <Col>
+              <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
+              <Row>
+                <Values.Address
+                  id="batch-sell-nft-receiver"
+                  address={actionData.receiver}
+                  chain={chain}
                 />
-              </ul>
-            </Row>
-          </Col>
+              </Row>
+            </Col>
+            <SubTable target="batch-sell-nft-receiver">
+              <SecurityListItem
+                id="1115"
+                engineResult={engineResultMap['1115']}
+                dangerText={t('page.signTx.swap.notPaymentAddress')}
+              />
+            </SubTable>
+          </>
         )}
         <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
           <Row>
-            <div>
-              <Values.Address address={requireData.id} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              <ProtocolListItem protocol={requireData.protocol} />
-
-              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
-
-              <SecurityListItem
-                id="1135"
-                engineResult={engineResultMap['1135']}
-                forbiddenText={t('page.signTx.markAsBlock')}
+            <ViewMore
+              type="contract"
+              data={{
+                ...requireData,
+                address: requireData.id,
+                chain,
+                title: t('page.signTypedData.buyNFT.listOn'),
+              }}
+            >
+              <Values.Address
+                id="batch-sell-nft-address"
+                hasHover
+                address={requireData.id}
+                chain={chain}
               />
-
-              <SecurityListItem
-                id="1137"
-                engineResult={engineResultMap['1137']}
-                warningText={t('page.signTx.markAsBlock')}
-              />
-              <li>
-                <ViewMore
-                  type="contract"
-                  data={{
-                    ...requireData,
-                    address: requireData.id,
-                    chain,
-                    title: t('page.signTypedData.buyNFT.listOn'),
-                  }}
-                />
-              </li>
-            </ul>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="batch-sell-nft-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+
+          {isInWhitelist && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+              <SubRow>{t('page.signTx.trusted')}</SubRow>
+            </SubCol>
+          )}
+          <SecurityListItem
+            id="1135"
+            engineResult={engineResultMap['1135']}
+            forbiddenText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+
+          <SecurityListItem
+            id="1137"
+            engineResult={engineResultMap['1137']}
+            warningText={t('page.signTx.markAsBlock')}
+            title={t('page.signTx.myMark')}
+          />
+        </SubTable>
       </Table>
     </Wrapper>
   );

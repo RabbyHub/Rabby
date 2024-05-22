@@ -6,6 +6,7 @@ import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
 import { TypedDataActionData } from './utils';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
+import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 
 const Wrapper = styled.div``;
 
@@ -23,14 +24,24 @@ const CoboSafeCreate = ({
         <Col>
           <Row isTitle>{t('page.signTx.coboSafeCreate.safeWalletTitle')}</Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.multisig_id} />
-            </div>
-            <ul className="desc-list">
-              <li>
-                <Values.AddressMemo address={actionData.multisig_id} />
-              </li>
+            <Values.Address
+              id="cobo-safe-address"
+              address={actionData.multisig_id}
+            />
+          </Row>
+        </Col>
 
+        <SubTable target="cobo-safe-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
+            <SubRow>
+              <Values.AddressMemo address={actionData.multisig_id} />
+            </SubRow>
+          </SubCol>
+
+          <SubCol>
+            <SubRow> </SubRow>
+            <SubRow>
               <LogoWithText
                 logo={IconSafe}
                 text="Safe"
@@ -43,9 +54,10 @@ const CoboSafeCreate = ({
                   color: '#4B4D59',
                 }}
               />
-            </ul>
-          </Row>
-        </Col>
+            </SubRow>
+          </SubCol>
+        </SubTable>
+
         <Col>
           <Row isTitle>{t('page.signTx.coboSafeCreate.descriptionTitle')}</Row>
           <Row>{actionData.desc}</Row>

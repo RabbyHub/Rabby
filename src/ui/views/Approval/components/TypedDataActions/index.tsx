@@ -81,51 +81,48 @@ export const SignTitle = styled.div`
 const MessageWrapper = styled.div`
   .title {
     position: relative;
-    font-size: 14px;
-    line-height: 16px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: -20px;
-    margin-right: -20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    .title-text {
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--r-neutral-foot, #6a7587);
+      text-align: center;
+      font-weight: 500;
+      background: var(--r-neutral-bg1, #fff);
+      padding: 0 8px;
+      position: relative;
+    }
+
     &::before {
       content: '';
-      width: 40%;
+      width: 100%;
       height: 1px;
       border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
       position: absolute;
       top: 50%;
       left: 0;
     }
-    &::after {
-      content: '';
-      width: 40%;
-      height: 1px;
-      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      position: absolute;
-      top: 50%;
-      right: 0;
-    }
   }
   .content {
-    padding: 15px;
     word-break: break-all;
     white-space: pre-wrap;
     background: var(--r-neutral-card-1, #ffffff);
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-    border-radius: 6px;
     font-size: 13px;
     line-height: 16px;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--r-neutral-body, #3e495e);
     height: 320px;
     overflow-y: auto;
+    padding: 0 16px 16px;
     /* font-family: 'Roboto Mono'; */
   }
   &.no-action {
     .content {
-      background: var(--r-neutral-card-3, rgba(255, 255, 255, 0.06));
+      background: var(--r-neutral-card-1, #ffffff);
     }
   }
 `;
@@ -376,14 +373,21 @@ const Actions = ({
           )}
         </Card>
       </ActionWrapper>
-      <MessageWrapper
-        className={clsx({
-          'no-action': !data,
-        })}
-      >
-        <div className="title">Message</div>
-        <div className="content">{message}</div>
-      </MessageWrapper>
+
+      <Card className="mt-12">
+        <MessageWrapper
+          className={clsx({
+            'no-action': !data,
+          })}
+        >
+          <div className="title">
+            <span className="title-text">
+              {t('page.signTx.typedDataMessage')}
+            </span>
+          </div>
+          <div className="content">{message}</div>
+        </MessageWrapper>
+      </Card>
     </>
   );
 };

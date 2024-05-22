@@ -302,7 +302,8 @@
       "advancedSettings": "Advanced Settings",
       "amount": "Amount",
       "contract": "Contract",
-      "trustValueTitle": "Risk exposure"
+      "trustValueTitle": "Risk exposure",
+      "typedDataMessage": "Typed data message"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

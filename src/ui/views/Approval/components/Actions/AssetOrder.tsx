@@ -141,7 +141,7 @@ const AssetOrder = ({
                     chain,
                   }}
                 >
-                  <NFTWithName nft={nft}></NFTWithName>
+                  <NFTWithName hasHover nft={nft}></NFTWithName>
                 </ViewMore>
               </Row>
             ))}
