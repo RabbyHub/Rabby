@@ -45,7 +45,7 @@ const RequestOrigin = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 18px;
   }
 `;

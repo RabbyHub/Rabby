@@ -77,7 +77,7 @@ export const AccountInfo: React.FC<Props> = ({
           <Tooltip title={nickname}>
             <div
               className={clsx(
-                'text-r-neutral-body text-[15px]',
+                'text-r-neutral-body text-[16px]',
                 'max-w-[170px] overflow-ellipsis whitespace-nowrap overflow-hidden',
                 'leading-[20px]'
               )}
@@ -93,7 +93,7 @@ export const AccountInfo: React.FC<Props> = ({
         </div>
         {isTestnet ? null : (
           <div
-            className="text-13 font-normal text-r-neutral-foot"
+            className="text-14 font-normal text-r-neutral-foot"
             title={displayBalance}
           >
             ${displayBalance}

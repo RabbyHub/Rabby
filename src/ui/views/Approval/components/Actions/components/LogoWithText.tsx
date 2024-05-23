@@ -24,13 +24,12 @@ const Wrapper = styled.div`
 
 const LogoWithText = ({
   logo,
-  text,
+  text = '',
   icon,
   logoRadius = '',
   logoSize = 16,
   textStyle = {},
   className,
-  hoverToken,
   id,
 }: {
   logo?: string;
@@ -44,11 +43,6 @@ const LogoWithText = ({
   id?: string;
 }) => {
   const dispatch = useRabbyDispatch();
-  const handleClickTokenSymbol = () => {
-    if (hoverToken) {
-      dispatch.sign.openTokenDetailPopup(hoverToken);
-    }
-  };
 
   return (
     <Wrapper className={className} id={id}>
@@ -61,13 +55,7 @@ const LogoWithText = ({
           height: `${logoSize}px`,
         }}
       />
-      <div
-        className={clsx('text', {
-          'group-hover:underline hover:text-r-blue-default cursor-pointer': hoverToken,
-        })}
-        onClick={handleClickTokenSymbol}
-        style={textStyle}
-      >
+      <div className="text" style={textStyle}>
         {text}
       </div>
       {icon || null}

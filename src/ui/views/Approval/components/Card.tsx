@@ -14,7 +14,6 @@ const CardDiv = styled.div<{
     hasHover &&
     `cursor: pointer;
   &:hover {
-    border-color: var(--r-blue-default, #7084ff);
   }`}
 `;
 
@@ -60,7 +59,7 @@ const CardTitleDiv = styled.div`
 
 const CardHeadlineDiv = styled.span`
   color: var(--r-neutral-title1, #192945);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 16px;
 `;

@@ -21,7 +21,7 @@ const MenuButtonStyled = styled.div`
   border-radius: 100px;
   padding: 4px 8px;
   line-height: 16px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--r-neutral-body, #3e495e);
   font-weight: 500;
   border-width: 1px;
@@ -92,7 +92,7 @@ const MenuStyled = styled(Menu)`
 `;
 
 const MenuTitleStyled = styled.div`
-  padding: 12px 20px;
+  padding: 8px 20px 12px;
   color: var(--r-neutral-title1, #192945);
   text-align: center;
   font-size: 13px;

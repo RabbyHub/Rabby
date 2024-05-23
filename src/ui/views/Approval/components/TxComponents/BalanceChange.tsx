@@ -19,7 +19,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import styled from 'styled-components';
 
 const HeadlineStyled = styled.div`
-  font-size: 13px;
+  font-size: 14px;
   line-height: 16px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -69,20 +69,18 @@ const NFTBalanceChange = ({
   if (type === 'receive' && hasReceives) {
     return (
       <Col>
-        <Row isTitle>{t('page.signTx.nftIn')}</Row>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden space-y-10">
           {receiveNftList.map((item) => (
-            <Row
-              className="has-bottom-border"
-              key={`${item.id}-${item.inner_id}`}
-            >
+            <Row className="items-center" key={`${item.id}-${item.inner_id}`}>
               <div className="flex">
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
                   title={item.collection ? item.collection.name : item.name}
                 >
                   <span className="text-green">+ {item.amount}</span>{' '}
-                  {item.collection ? item.collection.name : item.name}
+                  <span className="text-green">
+                    {item.collection ? item.collection.name : item.name}
+                  </span>
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
@@ -101,20 +99,18 @@ const NFTBalanceChange = ({
   if (type === 'send' && hasTransferedOut) {
     return (
       <Col>
-        <Row isTitle>{t('page.signTx.balanceChange.nftOut')}</Row>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden space-y-10">
           {sendNftList.map((item) => (
-            <Row
-              className="has-bottom-border"
-              key={`${item.id}-${item.inner_id}`}
-            >
+            <Row className="items-center" key={`${item.id}-${item.inner_id}`}>
               <div className="flex">
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
                   title={item.collection ? item.collection.name : item.name}
                 >
                   <span className="text-red-forbidden">- {item.amount}</span>{' '}
-                  {item.collection ? item.collection.name : item.name}
+                  <span className="text-red-forbidden">
+                    {item.collection ? item.collection.name : item.name}
+                  </span>
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
@@ -198,7 +194,7 @@ const BalanceChange = ({
           <Table>
             <Col className="py-10">
               <Row>
-                <span className="text-13 text-r-neutral-title-1 font-medium">
+                <span className="text-14 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
                 </span>
               </Row>
@@ -214,7 +210,7 @@ const BalanceChange = ({
       <HeadlineStyled>
         <span>{t('page.signTx.balanceChange.successTitle')}</span>
         {showUsdValueDiff && (
-          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-title-1 text-right text-13 font-normal">
+          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-r-title-1 text-right text-14 font-normal">
             {`${data.usd_value_change >= 0 ? '+' : '-'} $${formatNumber(
               Math.abs(data.usd_value_change)
             )}`}
@@ -226,7 +222,7 @@ const BalanceChange = ({
           {!hasChange && isSuccess && (
             <Col className="py-10">
               <Row>
-                <span className="text-13 font-normal text-r-neutral-title-1">
+                <span className="text-16 font-normal text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>
@@ -234,7 +230,7 @@ const BalanceChange = ({
           )}
           {data.error && (
             <Col className="py-10">
-              <Row className="text-13 font-medium flex whitespace-pre-wrap text-left items-start">
+              <Row className="text-14 font-medium flex whitespace-pre-wrap text-left items-start">
                 <ThemeIcon
                   src={RcIconAlert}
                   className="w-[16px] flex-shrink-0 mr-4 text-r-neutral-foot top-[2px] relative"
@@ -247,8 +243,8 @@ const BalanceChange = ({
             </Col>
           )}
           {sendTokenList?.map((token) => (
-            <Col className="py-10" key={token.id}>
-              <Row isTitle className="text-15">
+            <Col className="py-10 items-center" key={token.id}>
+              <Row isTitle className="text-[16px]">
                 <LogoWithText
                   logoSize={24}
                   logo={token.logo_url}
@@ -259,7 +255,7 @@ const BalanceChange = ({
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="hover:underline cursor-pointer"
+                        className="hover:underline cursor-pointer text-red-forbidden"
                       >
                         {getTokenSymbol(token)}
                       </span>
@@ -276,7 +272,7 @@ const BalanceChange = ({
                   }
                 />
               </Row>
-              <Row className="text-r-neutral-body text-13 font-normal">
+              <Row className="text-r-neutral-body text-14 font-normal">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()
@@ -285,8 +281,8 @@ const BalanceChange = ({
             </Col>
           ))}
           {receiveTokenList?.map((token) => (
-            <Col className="py-10" key={token.id}>
-              <Row isTitle className="text-15">
+            <Col className="py-10 items-center" key={token.id}>
+              <Row isTitle className="text-[16px]">
                 <LogoWithText
                   logoSize={24}
                   logo={token.logo_url}
@@ -297,7 +293,7 @@ const BalanceChange = ({
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="hover:underline cursor-pointer"
+                        className="hover:underline cursor-pointer text-green"
                       >
                         {getTokenSymbol(token)}
                       </span>
@@ -315,7 +311,7 @@ const BalanceChange = ({
                 />
               </Row>
 
-              <Row className="text-r-neutral-body text-13 font-normal">
+              <Row className="text-r-neutral-body text-14 font-normal">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()

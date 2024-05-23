@@ -30,13 +30,13 @@ const Wrapper = styled(Card)`
     }
     &-title {
       color: var(--r-neutral-title-1, #192945);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
       line-height: 16px;
     }
     &-extra {
       color: var(--r-neutral-body, #3e495e);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 400;
       line-height: 16px;
 

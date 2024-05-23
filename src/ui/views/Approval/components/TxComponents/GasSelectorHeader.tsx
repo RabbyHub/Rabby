@@ -265,7 +265,7 @@ const GasSelectorHeader = ({
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(
     rawSelectedGas
   );
-  const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
+  const [maxPriorityFee, setMaxPriorityFee] = useState<number | undefined>(
     selectedGas
       ? (selectedGas.priority_price === null
           ? selectedGas.price
@@ -368,7 +368,7 @@ const GasSelectorHeader = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: selectedGas.level,
-        maxPriorityFee: maxPriorityFee * 1e9,
+        maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
       });
     } else {
       onChange({
@@ -376,7 +376,7 @@ const GasSelectorHeader = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: selectedGas.level,
-        maxPriorityFee: maxPriorityFee * 1e9,
+        maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
       });
     }
   };
@@ -481,13 +481,18 @@ const GasSelectorHeader = ({
   };
 
   const priorityFeeMax = selectedGas ? selectedGas.price / 1e9 : 0;
-  const handleMaxPriorityFeeChange = (val: number) => {
-    if (val < 0) return;
-    if (val > priorityFeeMax) {
+  const handleMaxPriorityFeeChange = (val: any) => {
+    if (val === '') {
+      setMaxPriorityFee(undefined);
+      return;
+    }
+    const number = Number(val);
+    if (number < 0) return;
+    if (number > priorityFeeMax) {
       setMaxPriorityFee(priorityFeeMax);
       return;
     }
-    if (val.toString().split('.')[1]?.length > 2) return;
+    if (val.split('.')[1]?.length > 2) return;
     setMaxPriorityFee(val);
   };
 
@@ -606,8 +611,8 @@ const GasSelectorHeader = ({
     <>
       <HeaderStyled>
         <GasStyled>
-          <GasLogoSVG className="flex-shrink-0 text-r-neutral-body" />
-          <div className="gas-selector-card-content ml-4 overflow-hidden">
+          <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
+          <div className="gas-selector-card-content overflow-hidden">
             {disabled ? (
               <div className="font-semibold">
                 {t('page.signTx.noGasRequired')}
@@ -649,7 +654,7 @@ const GasSelectorHeader = ({
               </div>
             )}
           </div>
-          <div className="ml-3 text-r-neutral-body text-12 mt-2 flex-shrink-0">
+          <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
             ~12 sec
           </div>
           {engineResultMap['1118'] && (
@@ -807,9 +812,7 @@ const GasSelectorHeader = ({
                 <Input
                   onFocus={(e) => e.target.select()}
                   value={maxPriorityFee}
-                  onChange={(e) =>
-                    handleMaxPriorityFeeChange(Number(e.target.value))
-                  }
+                  onChange={(e) => handleMaxPriorityFeeChange(e.target.value)}
                   prefixCls="priority-slider-input"
                   type="number"
                   min={0}
@@ -853,7 +856,11 @@ const GasSelectorHeader = ({
             className="w-full mx-20"
             size="large"
             onClick={handleModalConfirmGas}
-            disabled={!isReady || validateStatus.customGas.status === 'error'}
+            disabled={
+              !isReady ||
+              validateStatus.customGas.status === 'error' ||
+              maxPriorityFee === undefined
+            }
           >
             {t('global.confirm')}
           </Button>

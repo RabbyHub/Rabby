@@ -399,7 +399,7 @@ const TokenSymbol = ({ token }: { token: TokenItem }) => {
   };
   return (
     <span
-      className="hover:underline cursor-pointer"
+      className="group-hover:underline hover:text-r-blue-default cursor-pointer"
       onClick={handleClickTokenSymbol}
       title={getTokenSymbol(token)}
     >

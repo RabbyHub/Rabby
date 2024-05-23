@@ -16,8 +16,8 @@ const Wrapper = styled.div`
   .nft-item-avatar {
     margin-right: 6px;
     flex-shrink: 0;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border: none;
     .ant-image {
       img {

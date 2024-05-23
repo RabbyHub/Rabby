@@ -86,7 +86,7 @@ export const TestnetActions = ({
           {t('page.signTx.signTransactionOnChain', { chain: chain?.name })}
         </div>
         <div
-          className="float-right text-12 cursor-pointer flex items-center view-raw"
+          className="float-right text-14 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
           {t('page.signTx.viewRaw')}

@@ -38,7 +38,7 @@ const Col = ({
 const RowWrapper = styled.div`
   position: relative;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 16px;
   color: var(--r-neutral-body, #3e495e);
   white-space: nowrap;

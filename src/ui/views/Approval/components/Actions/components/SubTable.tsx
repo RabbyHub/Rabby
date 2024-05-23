@@ -111,7 +111,7 @@ export const SubCol = ({
 };
 
 const SubRowWrapper = styled.div`
-  font-size: 13px;
+  font-size: 14px;
   line-height: normal;
   color: var(--r-neutral-body, #3e495e);
   font-weight: 500;

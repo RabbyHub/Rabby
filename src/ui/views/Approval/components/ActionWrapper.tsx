@@ -15,8 +15,8 @@ export const DIV = styled.div`
 
     .left {
       font-weight: 500;
-      font-size: 13px;
-      line-height: 16px;
+      font-size: 16px;
+      line-height: 18px;
       display: flex;
       align-items: center;
       position: relative;

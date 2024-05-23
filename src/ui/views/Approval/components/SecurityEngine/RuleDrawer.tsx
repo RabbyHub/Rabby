@@ -26,7 +26,7 @@ const RuleDrawerWrapper = styled.div`
     display: flex;
     flex-direction: column;
     margin: 20px 16px 32px;
-    gap: 6px;
+    gap: 10px;
     text-align: center;
 
     .level-logo {
@@ -203,7 +203,6 @@ const RuleDrawer = ({
 
   const ignoreButtonDisabled = useMemo(() => {
     if (!selectRule) return true;
-    if (selectRule.level === Level.FORBIDDEN) return true;
     if (selectRule.ignored) {
       return !isHovering;
     }
@@ -232,7 +231,7 @@ const RuleDrawer = ({
   }, [selectRule, isHovering]);
 
   const handleIgnore = () => {
-    if (!selectRule || selectRule.level === Level.FORBIDDEN) return;
+    if (!selectRule) return;
     onIgnore(selectRule.ruleConfig.id);
   };
 
@@ -314,7 +313,7 @@ const RuleDrawer = ({
       closable
       title={t('page.securityEngine.ruleDetailTitle')}
       isSupportDarkMode
-      bodyStyle={{ padding: 0, minHeight: '132px' }}
+      bodyStyle={{ padding: 0, minHeight: '136px' }}
     >
       {selectRule && (
         <RuleDrawerWrapper
@@ -323,11 +322,6 @@ const RuleDrawer = ({
           {content()}
           {selectRule.level !== 'safe' && selectRule.level !== 'error' && (
             <div className="rule-threshold-footer">
-              {selectRule.level === Level.FORBIDDEN && (
-                <p className="forbidden-tip">
-                  {t('page.securityEngine.forbiddenCantIgnore')}
-                </p>
-              )}
               <div {...hoverProps}>
                 <Button
                   type="primary"

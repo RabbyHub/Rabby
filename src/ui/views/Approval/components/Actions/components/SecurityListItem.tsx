@@ -39,7 +39,7 @@ export const SecurityListItem: React.FC<Props> = ({
       <SubRow isTitle>{noTitle ? '' : displayTitle}</SubRow>
       <SubRow>
         {engineResult ? (
-          <div className="text-13 leading-[15px]">
+          <div className="text-14 leading-[16px]">
             <span>
               {engineResult.level === Level.DANGER && dangerText}
               {engineResult.level === Level.WARNING && warningText}

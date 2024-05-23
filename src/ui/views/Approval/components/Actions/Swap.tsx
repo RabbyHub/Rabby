@@ -112,7 +112,6 @@ const Swap = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              hoverToken={payToken}
               text={
                 <>
                   {formatAmount(payToken.amount)}{' '}
@@ -130,7 +129,6 @@ const Swap = ({
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
-                hoverToken={receiveToken}
                 text={
                   balanceChange.success && balanceChange.support ? (
                     <>
@@ -218,7 +216,6 @@ const Swap = ({
             <div id="swap-min">
               <LogoWithText
                 logo={minReceive.logo_url}
-                hoverToken={minReceive}
                 logoRadius="100%"
                 text={
                   <>
