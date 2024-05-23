@@ -32,7 +32,8 @@ export const ProcessActions: React.FC<Props> = ({
               'w-[246px] h-[48px]',
               'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
               'rounded-[8px]',
-              'before:content-none'
+              'before:content-none',
+              'text-[16px]'
             )}
             onClick={onSubmit}
           >
