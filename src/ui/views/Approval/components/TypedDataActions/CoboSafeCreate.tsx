@@ -60,7 +60,7 @@ const CoboSafeCreate = ({
 
         <Col>
           <Row isTitle>{t('page.signTx.coboSafeCreate.descriptionTitle')}</Row>
-          <Row>{actionData.desc}</Row>
+          <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
     </Wrapper>

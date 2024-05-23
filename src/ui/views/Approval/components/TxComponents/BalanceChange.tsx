@@ -133,7 +133,7 @@ const BalanceChange = ({
   data,
   version,
 }: {
-  data: IBalanceChange;
+  data?: IBalanceChange;
   isSupport?: boolean;
   isGnosis?: boolean;
   chainEnum?: CHAINS_ENUM;
@@ -142,7 +142,7 @@ const BalanceChange = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const isSuccess = data.success;
+  const isSuccess = data?.success;
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
@@ -155,6 +155,13 @@ const BalanceChange = ({
     sendTokenList,
     showUsdValueDiff,
   } = React.useMemo(() => {
+    if (!data) {
+      return {
+        receiveTokenList: [],
+        sendTokenList: [],
+        showUsdValueDiff: false,
+      };
+    }
     const receiveTokenList = data.receive_token_list;
     const sendTokenList = data.send_token_list;
     const showUsdValueDiff =
@@ -182,7 +189,7 @@ const BalanceChange = ({
     );
   }
 
-  if (version === 'v1' && data.error) {
+  if (version === 'v1' && data?.error) {
     return (
       <div className="token-balance-change">
         <HeadlineStyled>
@@ -203,6 +210,10 @@ const BalanceChange = ({
         </div>
       </div>
     );
+  }
+
+  if (!data) {
+    return null;
   }
 
   return (

@@ -33,29 +33,10 @@ import i18n from '@/i18n';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from '../TxComponents/GasSelectorHeader';
-
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
-    }
-  }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
-  }
-`;
+import { MessageWrapper } from '../TextActions';
+import { Card } from '../Card';
+import { SignAdvancedSettings } from '../SignAdvancedSettings';
+import clsx from 'clsx';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -508,6 +489,25 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleAdvancedSettingsChange = (gas: GasSelectorResponse) => {
+    const beforeNonce = realNonce || tx.nonce;
+    const afterNonce = intToHex(gas.nonce);
+    setTx({
+      ...tx,
+      gas: intToHex(gas.gasLimit),
+      nonce: afterNonce,
+    });
+    setGasLimit(intToHex(gas.gasLimit));
+
+    if (!isGnosisAccount) {
+      setRealNonce(afterNonce);
+    }
+
+    if (beforeNonce !== afterNonce) {
+      setNonceChanged(true);
+    }
+  };
+
   const handleCancel = () => {
     //  gaEvent('cancel');
     rejectApproval('User rejected the request.');
@@ -637,7 +637,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   return (
     <>
-      <div className="approval-tx">
+      <div className="approval-tx overflow-x-hidden">
         <TestnetActions
           isReady={isReady}
           chain={chain}
@@ -647,7 +647,57 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             gas: gasLimit!,
           }}
           isSpeedUp={isSpeedUp}
+          originLogo={params.session.icon}
         />
+
+        {isReady && (
+          <Card>
+            <MessageWrapper>
+              <div className="title">
+                <div className="title-text">{t('page.signText.message')}</div>
+              </div>
+              <div className="content">
+                {JSON.stringify(
+                  {
+                    ...tx,
+                    nonce: realNonce || tx.nonce,
+                    gas: gasLimit!,
+                  },
+                  null,
+                  2
+                )}
+              </div>
+            </MessageWrapper>
+          </Card>
+        )}
+
+        {isReady && (
+          <SignAdvancedSettings
+            isReady={isReady}
+            gasLimit={gasLimit}
+            recommendGasLimit={gasUsed || ''}
+            recommendNonce={recommendNonce || ''}
+            onChange={handleAdvancedSettingsChange}
+            nonce={realNonce || tx.nonce}
+            disableNonce={isSpeedUp || isCancel}
+            manuallyChangeGasLimit={false}
+          />
+        )}
+
+        {isReady && (
+          <div
+            className={clsx(
+              'w-[186px]',
+              'ml-auto mr-[-20px] mt-[-116px]',
+              'px-[16px] py-[12px] rotate-[-23deg]',
+              'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
+              'text-r-neutral-title1 text-[20px] leading-[24px]',
+              'opacity-30'
+            )}
+          >
+            Custom Network
+          </div>
+        )}
       </div>
       <FooterBar
         Header={

@@ -68,7 +68,7 @@ const CoboSafeModificationDelegatedAddress = ({
               'page.signTx.coboSafeModificationDelegatedAddress.descriptionTitle'
             )}
           </Row>
-          <Row>{actionData.desc}</Row>
+          <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
     </Wrapper>

@@ -66,7 +66,7 @@ const CoboSafeModificationTokenApproval = ({
               'page.signTx.coboSafeModificationTokenApproval.descriptionTitle'
             )}
           </Row>
-          <Row>{actionData.desc}</Row>
+          <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
     </Wrapper>

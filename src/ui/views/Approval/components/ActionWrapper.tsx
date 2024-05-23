@@ -49,10 +49,6 @@ export const DIV = styled.div`
   }
   .container {
     padding: 0 16px 12px;
-    /* border: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1)); */
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
 
     .header {
       display: flex;

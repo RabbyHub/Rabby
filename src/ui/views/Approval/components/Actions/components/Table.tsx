@@ -45,6 +45,16 @@ const RowWrapper = styled.div`
   display: flex;
   align-items: flex-start;
 
+  &.wrap {
+    white-space: normal;
+    text-align: left;
+    padding-left: 30px;
+  }
+
+  &.wrap:not(.title) {
+    text-align: left;
+  }
+
   &:not(.title) {
     text-align: right;
     text-overflow: ellipsis;
@@ -97,11 +107,13 @@ const Row = ({
   isTitle = false,
   tip,
   className,
+  wrap,
 }: {
   children: ReactNode;
   isTitle?: boolean;
   tip?: string;
   className?: string;
+  wrap?: boolean;
 }) => {
   return (
     <RowWrapper
@@ -110,6 +122,7 @@ const Row = ({
         {
           title: isTitle,
           block: tip,
+          wrap: wrap,
         },
         className
       )}

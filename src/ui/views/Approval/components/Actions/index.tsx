@@ -62,30 +62,6 @@ import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    flex: 1;
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
-    }
-  }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
-  }
-`;
-
 const Actions = ({
   data,
   requireData,
@@ -125,20 +101,6 @@ const Actions = ({
 
   return (
     <>
-      {/* TODO */}
-      {/* <SignTitle>
-        <div className="left relative">
-          {isSpeedUp && (
-            <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[max-content]"
-              title={t('page.signTx.speedUpTooltip')}
-            >
-              <img src={IconSpeedUp} className="icon icon-speedup" />
-            </TooltipWithMagnetArrow>
-          )}
-        </div>
-      
-      </SignTitle> */}
       <ActionWrapper>
         <Card>
           <OriginInfo
@@ -161,6 +123,17 @@ const Actions = ({
             })}
           >
             <div className="left">
+              {isSpeedUp && (
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  title={t('page.signTx.speedUpTooltip')}
+                >
+                  <img
+                    src={IconSpeedUp}
+                    className="icon icon-speedup mr-2 w-16 h-16"
+                  />
+                </TooltipWithMagnetArrow>
+              )}
               <span>{actionName}</span>
               {isUnknown && (
                 <TooltipWithMagnetArrow

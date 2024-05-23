@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { findChain } from '@/utils/chain';
@@ -20,6 +20,13 @@ import IconCheck, {
   ReactComponent as RcIconCheck,
 } from 'src/ui/assets/approval/icon-check.svg';
 import { NoActionAlert } from '../../NoActionAlert/NoActionAlert';
+import { Card } from '../../Card';
+import { OriginInfo } from '../../OriginInfo';
+import { Divide } from '../../Divide';
+import BalanceChange from '../../TxComponents/BalanceChange';
+import LogoWithText from '../../Actions/components/LogoWithText';
+import { MessageWrapper } from '../../TextActions';
+import { SignAdvancedSettings } from '../../SignAdvancedSettings';
 
 export const SignTitle = styled.div`
   display: flex;
@@ -51,12 +58,14 @@ export const TestnetActions = ({
   onChange,
   isSpeedUp,
   isReady,
+  originLogo,
 }: {
   chain: Chain;
   raw: Record<string, string | number>;
   onChange?(tx: Record<string, any>): void;
   isSpeedUp: boolean;
   isReady?: boolean;
+  originLogo?: string;
 }) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -73,100 +82,79 @@ export const TestnetActions = ({
 
   return (
     <div className="relative">
-      <SignTitle>
-        <div className="left relative">
-          {isSpeedUp && (
-            <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[max-content]"
-              title={t('page.signTx.speedUpTooltip')}
-            >
-              <img src={IconSpeedUp} className="icon icon-speedup" />
-            </TooltipWithMagnetArrow>
-          )}
-          {t('page.signTx.signTransactionOnChain', { chain: chain?.name })}
-        </div>
-        <div
-          className="float-right text-14 cursor-pointer flex items-center view-raw"
-          onClick={handleViewRawClick}
-        >
-          {t('page.signTx.viewRaw')}
-          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
-        </div>
-      </SignTitle>
       <ActionWrapper>
+        <Card>
+          <OriginInfo chain={chain} origin={origin} originLogo={originLogo} />
+          <Divide />
+          <BalanceChange version="v0" />
+        </Card>
+
         {/* <TestnetUnknownAction raw={raw} /> */}
-        <div
-          className={clsx('action-header', {
-            'is-unknown': isUnknown,
-          })}
-        >
-          <div className="left">{actionName}</div>
-          <div className="right">
-            <TooltipWithMagnetArrow
-              placement="bottom"
-              overlayClassName="rectangle w-[max-content] decode-tooltip"
-              title={
-                isUnknown ? (
-                  <NoActionAlert
-                    data={{
-                      origin,
-                      text: '',
-                    }}
-                  />
-                ) : (
-                  <span className="flex w-[358px] p-12 items-center">
-                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
-                    {t('page.signTx.decodedTooltip')}
-                  </span>
-                )
-              }
-            >
-              {isUnknown ? (
-                <img src={IconQuestionMark} className="w-24" />
-              ) : (
-                <img
-                  src={IconRabbyDecoded}
-                  className="icon icon-rabby-decoded"
-                />
-              )}
-            </TooltipWithMagnetArrow>
-          </div>
-        </div>
-        <div className="container">
+        <Card>
           <div
-            className="break-all whitespace-pre-wrap font-medium text-r-neutral-body text-[13px] leading-[16px]"
-            style={{
-              fontFamily: 'Roboto Mono, sans-serif',
-            }}
+            className={clsx('action-header', {
+              'is-unknown': isUnknown,
+            })}
           >
-            {JSON.stringify(raw, null, 2)}
+            <div className="left">
+              {isSpeedUp && (
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  title={t('page.signTx.speedUpTooltip')}
+                >
+                  <img
+                    src={IconSpeedUp}
+                    className="icon icon-speedup mr-2 w-16 h-16"
+                  />
+                </TooltipWithMagnetArrow>
+              )}
+              <span>{actionName}</span>
+              {isUnknown && (
+                <TooltipWithMagnetArrow
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] decode-tooltip"
+                  title={
+                    <NoActionAlert
+                      data={{
+                        origin,
+                        text: '',
+                      }}
+                    />
+                  }
+                >
+                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                </TooltipWithMagnetArrow>
+              )}
+            </div>
+            <div className="right">
+              <div
+                className="float-right text-14 cursor-pointer flex items-center view-raw"
+                onClick={handleViewRawClick}
+              >
+                {t('page.signTx.viewRaw')}
+                <ThemeIcon
+                  className="icon icon-arrow-right"
+                  src={RcIconArrowRight}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </ActionWrapper>
-      <div className="token-balance-change">
-        <div className="token-balance-change-content">
-          <Table>
+          <Divide />
+
+          <div className="px-16">
             <Col>
+              <Row isTitle>{t('page.signTx.chain')}</Row>
               <Row>
-                <span className="text-15 text-r-neutral-title-1 font-medium">
-                  {t('page.signTx.balanceChange.notSupport')}
-                </span>
+                <LogoWithText
+                  logo={chain.logo}
+                  text={chain.name}
+                  logoRadius="100%"
+                />
               </Row>
             </Col>
-          </Table>
-        </div>
-      </div>
-      <div
-        className={clsx(
-          'absolute bottom-[72px] right-0',
-          'px-[16px] py-[12px] rotate-[-23deg]',
-          'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
-          'text-r-neutral-title1 text-[20px] leading-[24px]',
-          'opacity-30'
-        )}
-      >
-        Custom Network
-      </div>
+          </div>
+        </Card>
+      </ActionWrapper>
     </div>
   );
 };

@@ -49,7 +49,7 @@ export const SignTitle = styled.div`
   }
 `;
 
-const MessageWrapper = styled.div`
+export const MessageWrapper = styled.div`
   .title {
     position: relative;
     display: flex;
