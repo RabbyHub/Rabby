@@ -49,6 +49,7 @@ const Wrapper = styled.div`
       position: sticky;
       top: -16px;
       background: var(--r-neutral-bg1, #fff);
+      z-index: 10;
     }
     .ant-tabs-tab + .ant-tabs-tab {
       margin: 0;
@@ -228,7 +229,7 @@ const RabbyPoints = () => {
     [wallet.openapi, account?.address, signature]
   );
 
-  const ended = campaignIsEnded ?? true;
+  const ended = useMemo(() => !!campaignIsEnded, [campaignIsEnded]);
 
   useEffect(() => {
     if (
@@ -289,7 +290,7 @@ const RabbyPoints = () => {
             className={clsx(
               ' relative transition-opacity',
               ended && !snapshot?.claimed
-                ? 'text-20 font-black mt-20 mb-[25px] inline-block'
+                ? 'text-20 font-bold mt-20 mb-[25px] inline-block'
                 : 'text-[40px] font-extrabold mt-[8px] mb-[12px]',
               userLoading && 'opacity-80'
             )}
@@ -361,9 +362,11 @@ const RabbyPoints = () => {
             }
             key={'1'}
           >
-            <div className="mx-20 mt-20 mb-4 flex justify-center rounded-[6px] bg-r-neutral-card-2 py-12 text-13 text-r-neutral-title-1 font-medium">
-              {t('page.rabbyPoints.firstRoundEnded')}
-            </div>
+            {ended && (
+              <div className="mx-20 mt-20 mb-4 flex justify-center rounded-[6px] bg-r-neutral-card-2 py-12 text-13 text-r-neutral-title-1 font-medium">
+                {t('page.rabbyPoints.firstRoundEnded')}
+              </div>
+            )}
             <div className="flex flex-col gap-[12px] py-[16px] px-[20px] ">
               {activitiesLoading ? (
                 <ClaimLoading />

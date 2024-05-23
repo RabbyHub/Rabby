@@ -222,6 +222,7 @@ const ResetAccountModal = ({
 
   const handleCancel = () => {
     setIsVisible(false);
+    setClearNonce(false);
     setTimeout(() => {
       onCancel();
     }, 500);
