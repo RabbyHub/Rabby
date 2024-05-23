@@ -233,7 +233,7 @@ const BalanceChange = ({
           {!hasChange && isSuccess && (
             <Col className="py-10">
               <Row>
-                <span className="text-[16px] font-normal text-r-neutral-title-1">
+                <span className="text-[16px] font-medium text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>

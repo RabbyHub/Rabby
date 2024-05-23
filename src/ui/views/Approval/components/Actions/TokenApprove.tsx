@@ -104,6 +104,12 @@ const ApproveAmountModal = ({
           value={customAmount}
           onChange={(e) => handleChange(e.target.value)}
           bordered={false}
+          className={clsx(
+            'popup-input h-[52px] flex items-center px-16',
+            'bg-r-neutral-card-1',
+            'border border-rabby-neutral-line focus-within:border-rabby-blue-default',
+            'transition-all duration-300'
+          )}
           addonAfter={
             <span title={getTokenSymbol(token)}>
               {ellipsisTokenSymbol(getTokenSymbol(token), 4)}
@@ -112,7 +118,7 @@ const ApproveAmountModal = ({
           ref={inputRef}
         />
       </Form.Item>
-      <div className="approve-amount-footer overflow-hidden gap-[8px] mb-[40px]">
+      <div className="approve-amount-footer overflow-hidden gap-[8px] mb-[32px]">
         <span
           className="est-approve-price truncate"
           title={formatUsdValue(new BigNumber(tokenPrice).toFixed(2))}
@@ -139,7 +145,7 @@ const ApproveAmountModal = ({
       </div>
       <Divide className="bg-r-neutral-line absolute left-0" />
 
-      <div className="text-center flex gap-x-16 pt-20">
+      <div className="text-center flex gap-x-16 pt-18">
         <Button
           size="large"
           type="ghost"
@@ -250,7 +256,7 @@ const TokenApprove = ({
                     </span>
                   </div>
                   <span
-                    className="text-blue-light text-12 font-medium cursor-pointer ml-4"
+                    className="text-blue-light text-13 font-medium cursor-pointer ml-4"
                     onClick={() => setEditApproveModalVisible(true)}
                   >
                     {t('global.editButton')}
@@ -277,9 +283,9 @@ const TokenApprove = ({
                 )}
                 onClick={handleClickTokenBalance}
               >
-                {formatAmount(tokenBalance)}
-              </span>{' '}
-              {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+                {formatAmount(tokenBalance)}{' '}
+                {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
+              </span>
             </SubRow>
           </SubCol>
         </SubTable>
