@@ -779,9 +779,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const triggerCustomRPCErrorModal = () => {
     Modal.error({
       className: 'modal-support-darkmode',
+      closable: true,
       title: t('page.signTx.customRPCErrorModal.title'),
       content: t('page.signTx.customRPCErrorModal.content'),
       okText: t('page.signTx.customRPCErrorModal.button'),
+      okButtonProps: {
+        className: 'w-[280px]',
+      },
       async onOk() {
         await wallet.setRPCEnable(chain.enum, false);
         location.reload();

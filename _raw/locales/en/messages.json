@@ -74,7 +74,7 @@
       "safeAdminSigned": "Signed",
       "customRPCErrorModal": {
         "title": "Custom RPC Error",
-        "content": "Your custom RPC is unavailable. You can disable it and continue signing using Rabby's official RPC",
+        "content": "Your custom RPC is unavailable now. You can disable it and continue signing using Rabby's official RPC",
         "button": "Disable Custom RPC"
       },
       "swap": {
