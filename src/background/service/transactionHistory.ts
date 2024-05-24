@@ -834,13 +834,17 @@ class TxHistory {
     // this.store.cacheExplain = copyExplain;
   }
 
-  clearPendingTransactions(address: string) {
+  clearPendingTransactions(address: string, chainId?: number) {
     const transactions = this.store.transactions[address.toLowerCase()];
     if (!transactions) return;
     this._setStoreTransaction({
       ...this.store.transactions,
       [address.toLowerCase()]: Object.values(transactions)
-        .filter((transaction) => !transaction.isPending)
+        .filter((transaction) => {
+          return chainId
+            ? !(transaction.isPending && +chainId === +transaction.chainId)
+            : !transaction.isPending;
+        })
         .reduce((res, current) => {
           return {
             ...res,

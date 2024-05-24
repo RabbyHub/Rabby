@@ -199,13 +199,18 @@ class TransactionWatcher {
     this._clearBefore(id);
   };
 
-  clearPendingTx = (address: string) => {
+  clearPendingTx = (address: string, chainId?: number) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [key, v]) => {
         // address_chain_nonce
         const [kAddress] = key.split('_');
+        const chainItem = findChainByEnum(v.chain);
+        const isSameAddr = isSameAddress(address, kAddress);
+        if (chainId ? +chainId === chainItem?.id && isSameAddr : isSameAddr) {
+          return m;
+        }
         // keep pending txs of other addresses
-        if (!isSameAddress(address, kAddress) && v) {
+        if (v) {
           m[key] = v;
         }
 
