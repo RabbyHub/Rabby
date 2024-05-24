@@ -113,7 +113,9 @@
         "cexAddress": "CEX address",
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
-        "notOnWhitelist": "Not on my whitelist"
+        "notOnWhitelist": "Not on my whitelist",
+        "fromMySeedPhrase": "From my seed phrase",
+        "fromMyPrivateKey": "From my private key"
       },
       "tokenApprove": {
         "title": "Token Approval",
