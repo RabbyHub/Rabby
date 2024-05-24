@@ -21,7 +21,7 @@ export const useRabbyPoints = () => {
   } = useAsync(async () => {
     if (account?.address) {
       const data = await wallet.openapi.getRabbyPointsCampaignIsEnded();
-      return data;
+      return data?.campaign_is_ended;
     }
     return;
   }, [account?.address]);
