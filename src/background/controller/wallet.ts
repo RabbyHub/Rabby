@@ -2124,6 +2124,11 @@ export class WalletController extends BaseController {
     return;
   };
 
+  clearAddressTransactions = (address: string) => {
+    transactionHistoryService.removeList(address);
+    return;
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');

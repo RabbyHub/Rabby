@@ -37,7 +37,7 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
-import { Field, PageHeader, Popup } from 'ui/component';
+import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import './style.less';
@@ -216,11 +216,13 @@ const ResetAccountModal = ({
   onCancel(): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [clearNonce, setClearNonce] = useState(false);
   const wallet = useWallet();
   const { t } = useTranslation();
 
   const handleCancel = () => {
     setIsVisible(false);
+    setClearNonce(false);
     setTimeout(() => {
       onCancel();
     }, 500);
@@ -229,6 +231,9 @@ const ResetAccountModal = ({
   const handleResetAccount = async () => {
     const currentAddress = (await wallet.getCurrentAccount())?.address || '';
     await wallet.clearAddressPendingTransactions(currentAddress);
+    if (clearNonce) {
+      await wallet.clearAddressTransactions(currentAddress);
+    }
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.dashboard.settings.pendingTransactionCleared'),
@@ -263,11 +268,42 @@ const ResetAccountModal = ({
         <p className="reset-account-content">
           {t('page.dashboard.settings.clearPendingTip2')}
         </p>
-        <div className="flex justify-center mt-24 popup-footer">
+        <div className="flex flex-col mt-auto popup-footer px-20 bottom-18">
+          <div className="absolute left-0 top-[40px] w-full h-0 border-solid border-t-[0.5px] border-rabby-neutral-line"></div>
+          <div className="flex justify-center mb-[38px]">
+            <Checkbox
+              checked={clearNonce}
+              unCheckBackground="transparent"
+              checkIcon={
+                clearNonce ? undefined : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M7.97578 13.7748C11.179 13.7748 13.7758 11.1781 13.7758 7.9748C13.7758 4.77155 11.179 2.1748 7.97578 2.1748C4.77253 2.1748 2.17578 4.77155 2.17578 7.9748C2.17578 11.1781 4.77253 13.7748 7.97578 13.7748Z"
+                      stroke="var(--r-neutral-body)"
+                      stroke-width="0.90625"
+                      stroke-miterlimit="10"
+                    />
+                  </svg>
+                )
+              }
+              onChange={setClearNonce}
+            >
+              <span className="text-13 text-r-neutral-body">
+                Also reset my local nonce data and signature record
+              </span>
+            </Checkbox>
+          </div>
+
           <Button
             type="primary"
             size="large"
-            className="w-[200px]"
+            block
             onClick={handleResetAccount}
           >
             {t('global.confirm')}

@@ -49,6 +49,7 @@ const Wrapper = styled.div`
       position: sticky;
       top: -16px;
       background: var(--r-neutral-bg1, #fff);
+      z-index: 10;
     }
     .ant-tabs-tab + .ant-tabs-tab {
       margin: 0;
@@ -91,6 +92,8 @@ const RabbyPoints = () => {
   >({});
 
   const {
+    campaignIsEnded,
+    campaignIsEndedLoading,
     refreshUserPoints,
     signature,
     signatureLoading,
@@ -226,9 +229,16 @@ const RabbyPoints = () => {
     [wallet.openapi, account?.address, signature]
   );
 
+  const ended = useMemo(() => !!campaignIsEnded, [campaignIsEnded]);
+
   useEffect(() => {
-    if (!initRef.current && !signatureLoading && !snapshotLoading) {
-      if (snapshot && !snapshot?.claimed) {
+    if (
+      !initRef.current &&
+      !signatureLoading &&
+      !snapshotLoading &&
+      !campaignIsEndedLoading
+    ) {
+      if (snapshot && !snapshot?.claimed && !ended) {
         setVisible(true);
         setVerifyVisible(false);
       } else if (!signature) {
@@ -278,30 +288,37 @@ const RabbyPoints = () => {
         <div>
           <span
             className={clsx(
-              'text-[40px] font-extrabold mt-[8px] mb-[12px] relative transition-opacity',
+              ' relative transition-opacity',
+              ended && !snapshot?.claimed
+                ? 'text-20 font-bold mt-20 mb-[25px] inline-block'
+                : 'text-[40px] font-extrabold mt-[8px] mb-[12px]',
               userLoading && 'opacity-80'
             )}
           >
-            <CountUp
-              start={previousPoints}
-              end={currentPoints}
-              duration={1}
-              separator=","
-              onStart={() => {
-                if (previousPoints !== currentPoints) {
-                  setDiffPoints(currentPoints - previousPoints);
-                  setShowDiffPoints(true);
-                }
-              }}
-              onEnd={() => {
-                setShowDiffPoints(false);
-              }}
-              onUpdate={() => {
-                if (previousPoints !== currentPoints) {
-                  setShowDiffPoints(true);
-                }
-              }}
-            />
+            {ended && !snapshot?.claimed ? (
+              t('page.rabbyPoints.initialPointsClaimEnded')
+            ) : (
+              <CountUp
+                start={previousPoints}
+                end={currentPoints}
+                duration={1}
+                separator=","
+                onStart={() => {
+                  if (previousPoints !== currentPoints) {
+                    setDiffPoints(currentPoints - previousPoints);
+                    setShowDiffPoints(true);
+                  }
+                }}
+                onEnd={() => {
+                  setShowDiffPoints(false);
+                }}
+                onUpdate={() => {
+                  if (previousPoints !== currentPoints) {
+                    setShowDiffPoints(true);
+                  }
+                }}
+              />
+            )}
             {showDiffPoints && (
               <span className="absolute right-0 top-[-12px] text-[14px] font-normal">
                 +{diffPoints}
@@ -318,12 +335,14 @@ const RabbyPoints = () => {
       <div className="rounded-t-[16px] bg-r-neutral-bg-1 flex-1 overflow-auto pt-[16px] flex flex-col">
         <div className="px-20">
           {!hadInvitedCode ? (
-            <SetReferralCode
-              onSetCode={setReferralCode}
-              visible={codeModalVisible}
-              onOpen={openSetCodeModal}
-              onClose={closeSetCodeModal}
-            />
+            ended ? null : (
+              <SetReferralCode
+                onSetCode={setReferralCode}
+                visible={codeModalVisible}
+                onOpen={openSetCodeModal}
+                onClose={closeSetCodeModal}
+              />
+            )
           ) : (
             <CodeAndShare
               invitedCode={invitedCode}
@@ -343,6 +362,11 @@ const RabbyPoints = () => {
             }
             key={'1'}
           >
+            {ended && (
+              <div className="mx-20 mt-20 mb-4 flex justify-center rounded-[6px] bg-r-neutral-card-2 py-12 text-13 text-r-neutral-title-1 font-medium">
+                {t('page.rabbyPoints.firstRoundEnded')}
+              </div>
+            )}
             <div className="flex flex-col gap-[12px] py-[16px] px-[20px] ">
               {activitiesLoading ? (
                 <ClaimLoading />
