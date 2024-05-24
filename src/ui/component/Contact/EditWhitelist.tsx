@@ -30,7 +30,7 @@ const ListScrollWrapper = styled.div`
 
 const ListFooterWrapper = styled.div`
   height: 80px;
-  padding: 20px 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
   position: fixed;
@@ -163,7 +163,7 @@ const EditWhitelist = ({
         <Button
           type="primary"
           size="large"
-          className="w-[215px] h-[40px] text-15"
+          className="w-[100%] h-[40px] text-15"
           onClick={handleSaveWhitelist}
         >
           {t('component.Contact.EditWhitelist.save', {
