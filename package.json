@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.70",
+  "version": "0.92.71",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
@@ -55,7 +55,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "2.1.3",
     "@rabby-wallet/eth-watch-keyring": "1.0.0",
     "@rabby-wallet/gnosis-sdk": "1.3.6",
-    "@rabby-wallet/page-provider": "0.3.4",
+    "@rabby-wallet/page-provider": "0.3.5",
     "@rabby-wallet/rabby-api": "0.7.14-beta.2",
     "@rabby-wallet/rabby-security-engine": "1.1.22",
     "@rabby-wallet/rabby-swap": "0.0.36",

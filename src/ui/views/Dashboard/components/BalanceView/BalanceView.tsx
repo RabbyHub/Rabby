@@ -232,7 +232,7 @@ const BalanceView = ({
   useEffect(() => {
     if (componentName === 'AssetList') {
       setData({
-        matteredChainBalances,
+        matteredChainBalances: chainBalancesWithValue,
         balance,
         balanceLoading,
         isEmptyAssets: !matteredChainBalances.length,
@@ -240,7 +240,8 @@ const BalanceView = ({
       });
     }
   }, [
-    matteredChainBalances,
+    chainBalancesWithValue,
+    matteredChainBalances.length,
     balance,
     balanceLoading,
     componentName,
@@ -433,7 +434,7 @@ const BalanceView = ({
               >
                 <ChainList
                   isGnosis={isGnosis}
-                  matteredChainBalances={chainBalancesWithValue}
+                  matteredChainBalances={chainBalancesWithValue.slice(0)}
                   gnosisNetworks={gnosisNetworks}
                 />
               </div>

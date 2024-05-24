@@ -72,6 +72,11 @@
       "enoughSafeSigCollected": "Enough signature collected",
       "moreSafeSigNeeded": "{{0}} more confirmation needed",
       "safeAdminSigned": "Signed",
+      "customRPCErrorModal": {
+        "title": "Custom RPC Error",
+        "content": "Your custom RPC is unavailable now. You can disable it and continue signing using Rabby's official RPC",
+        "button": "Disable Custom RPC"
+      },
       "swap": {
         "title": "Swap Token",
         "payToken": "Pay",
@@ -925,7 +930,7 @@
           "description": "Pinned DApps will remain connected",
           "title": "Disconnect recently used <strong>{{count}}</strong> DApps"
         },
-        "title": "Connected Dapp",
+        "title": "Connected Dapps",
         "pinned": "Pinned",
         "noPinnedDapps": "No pinned dapps",
         "dragToSort": "Drag to sort",
@@ -1030,7 +1035,8 @@
           "lockWallet": "Lock Wallet",
           "signatureRecord": "Signature Record",
           "manageAddress": "Manage Address",
-          "connectedDapp": "Connected Dapp"
+          "connectedDapp": "Connected Dapps",
+          "searchDapps": "Search Dapps"
         },
         "settings": {
           "label": "Settings",

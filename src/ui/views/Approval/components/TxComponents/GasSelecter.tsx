@@ -1113,7 +1113,9 @@ const GasSelectPanel = ({
           {t('page.signTx.myNativeTokenBalance', {
             symbol: chain.nativeTokenSymbol,
             amount: formatTokenAmount(
-              new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+              new BigNumber(nativeTokenBalance).div(1e18).toFixed(),
+              4,
+              true
             ),
           })}
         </li>

@@ -263,29 +263,47 @@ export class EthImKeyKeyring extends EventEmitter {
       const txChainId = getChainId(transaction.common);
       const dataHex = transaction.data.toString('hex');
 
-      const txData = {
-        to: transaction.to!.toString(),
-        value: convertToBigint(transaction.value),
-        data: dataHex === '' ? '' : `0x${dataHex}`,
-        nonce: convertToBigint(transaction.nonce),
-        gasLimit: convertToBigint(transaction.gasLimit),
-        gasPrice:
-          typeof (transaction as Transaction).gasPrice !== 'undefined'
-            ? convertToBigint((transaction as Transaction).gasPrice)
-            : convertToBigint(
-                (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
-              ),
-        chainId: txChainId,
-        path: accountDetail.hdPath,
-      };
+      const txJSON = transaction.toJSON();
+      const is1559 = is1559Tx(txJSON);
+
+      const txData = is1559
+        ? {
+            data: dataHex === '' ? '' : `0x${dataHex}`,
+            gasLimit: convertToBigint(transaction.gasLimit),
+            type: convertToBigint(transaction.type.toString()),
+            accessList: transaction.accessList,
+            maxFeePerGas: convertToBigint(transaction.maxFeePerGas),
+            maxPriorityFeePerGas: convertToBigint(
+              transaction.maxPriorityFeePerGas
+            ),
+            nonce: convertToBigint(transaction.nonce),
+            to: transaction.to!.toString(),
+            value: convertToBigint(transaction.value),
+            chainId: txChainId,
+            path: accountDetail.hdPath,
+          }
+        : {
+            to: transaction.to!.toString(),
+            value: convertToBigint(transaction.value),
+            data: dataHex === '' ? '' : `0x${dataHex}`,
+            nonce: convertToBigint(transaction.nonce),
+            gasLimit: convertToBigint(transaction.gasLimit),
+            gasPrice:
+              typeof (transaction as Transaction).gasPrice !== 'undefined'
+                ? convertToBigint((transaction as Transaction).gasPrice)
+                : convertToBigint(
+                    (transaction as FeeMarketEIP1559Transaction).maxFeePerGas
+                  ),
+            chainId: txChainId,
+            path: accountDetail.hdPath,
+          };
 
       const { signature, txHash } = await this.invokeApp('signTransaction', [
         txData,
       ]);
-      const txJSON = transaction.toJSON();
       let decoded;
 
-      if (is1559Tx(txJSON)) {
+      if (is1559) {
         decoded = ethUtil.rlp.decode('0x' + signature.substring(4), true);
 
         txJSON.r = bytesToHex(decoded.data[10]);

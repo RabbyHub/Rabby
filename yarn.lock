@@ -4611,10 +4611,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.3.4.tgz#da447472c76195e2bab2170e24271fb85ebeef3b"
-  integrity sha512-PE2lP0XtaYY/HkIy4YN+b9S6mFUzffDdW7gFvIK0/2WCixnBSFbBS2/jSGM0Iy8aPIsBWwzpuFMNeGJQnhTYHw==
+"@rabby-wallet/page-provider@0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.3.5.tgz#c839a3e2dce18a0a928eed3124379b211fa1f7e1"
+  integrity sha512-wpS56MLGZot+m4RXdArDuJ3I3hhDke9fAPAimOlPqDcjKqUSsy9NhuZhMhw6xzsTZSsuoCjwxuuw/nqv4fU9bw==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@types/chrome" "^0.0.186"
