@@ -5,12 +5,12 @@ import { findChain, findChainByID } from '@/utils/chain';
 import { findMaxGasTx } from '@/utils/tx';
 import { Chain } from '@debank/common';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest } from 'ahooks';
+import { useInterval, useRequest } from 'ahooks';
 import { message } from 'antd';
 import { CHAINS } from 'consts';
 import dayjs from 'dayjs';
 import { flatten, groupBy, maxBy, sortBy } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
@@ -196,6 +196,12 @@ export const SkipNonceAlert = ({
     onClearPending?.();
   };
 
+  const [now, setNow] = useState(dayjs());
+
+  useInterval(() => {
+    setNow(dayjs());
+  }, 1000 * 60);
+
   const needClearPendingTxs = useMemo(() => {
     return Object.entries(groupBy(pendings, (item) => item.chainId))
       .map(([key, value]) => {
@@ -203,14 +209,12 @@ export const SkipNonceAlert = ({
           chain: key,
           data: sortBy(value, (item) => -item.nonce),
           needClear: value.some((item) => {
-            return dayjs(item.createdAt).isBefore(
-              dayjs().subtract(3, 'minute')
-            );
+            return dayjs(item.createdAt).isBefore(now.subtract(3, 'minute'));
           }),
         };
       })
       .filter((item) => item.needClear);
-  }, [pendings]);
+  }, [pendings, now]);
 
   if (!data?.length && !needClearPendingTxs?.length) {
     return null;
