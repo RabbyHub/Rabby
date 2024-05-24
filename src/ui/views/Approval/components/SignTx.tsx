@@ -776,8 +776,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
     }
   };
-
+  const customRPCErrorModalRef = useRef(false);
   const triggerCustomRPCErrorModal = () => {
+    if (customRPCErrorModalRef.current) return;
+    customRPCErrorModalRef.current = true;
     Modal.error({
       className: 'modal-support-darkmode',
       closable: true,
@@ -1008,9 +1010,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           );
           setBlockInfo(block);
         } catch (e) {
-          if (await wallet.hasCustomRPC(chain.enum)) {
-            triggerCustomRPCErrorModal();
-          }
+          // NOTHING
         }
         if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
           setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
