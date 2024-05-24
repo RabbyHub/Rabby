@@ -52,7 +52,6 @@ import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -62,7 +61,6 @@ import {
   fetchActionRequiredData,
   ActionRequireData,
   formatSecurityEngineCtx,
-  getActionTypeText,
 } from '../components/Actions/utils';
 import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
@@ -620,6 +618,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     gas: {
       gas_used: 0,
       gas_limit: 0,
+      gas_ratio: 1.5,
       estimated_gas_cost_usd_value: 0,
       estimated_gas_cost_value: 0,
       estimated_gas_used: 0,
@@ -780,6 +779,23 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const triggerCustomRPCErrorModal = () => {
+    Modal.error({
+      className: 'modal-support-darkmode',
+      closable: true,
+      title: t('page.signTx.customRPCErrorModal.title'),
+      content: t('page.signTx.customRPCErrorModal.content'),
+      okText: t('page.signTx.customRPCErrorModal.button'),
+      okButtonProps: {
+        className: 'w-[280px]',
+      },
+      async onOk() {
+        await wallet.setRPCEnable(chain.enum, false);
+        location.reload();
+      },
+    });
+  };
+
   const {
     data = '0x',
     from,
@@ -918,12 +934,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
     if (!isGnosisAccount && !isCoboArugsAccount) {
-      recommendNonce = await getRecommendNonce({
-        tx,
-        wallet,
-        chainId,
-      });
-      setRecommendNonce(recommendNonce);
+      try {
+        recommendNonce = await getRecommendNonce({
+          tx,
+          wallet,
+          chainId,
+        });
+        setRecommendNonce(recommendNonce);
+      } catch (e) {
+        if (await wallet.hasCustomRPC(chain.enum)) {
+          triggerCustomRPCErrorModal();
+        }
+      }
     }
     if (updateNonce && !isGnosisAccount && !isCoboArugsAccount) {
       setRealNonce(recommendNonce);
@@ -988,14 +1010,26 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           );
           setBlockInfo(block);
         } catch (e) {
-          // DO NOTHING
+          if (await wallet.hasCustomRPC(chain.enum)) {
+            triggerCustomRPCErrorModal();
+          }
         }
         if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
           setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
         } else if (!gasLimit) {
           // use server response gas limit
-          const ratio =
-            SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+          let ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+          let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+          sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+            ? new BigNumber(0)
+            : sendNativeTokenAmount;
+          const gasNotEnough = gas
+            .times(ratio)
+            .plus(sendNativeTokenAmount.div(1e18))
+            .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
+          if (gasNotEnough) {
+            ratio = res.gas.gas_ratio;
+          }
           setRecommendGasLimitRatio(needRatio ? ratio : 1);
           let recommendGasLimit = needRatio
             ? gas.times(ratio).toFixed(0)
@@ -1634,13 +1668,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           (item) => item.type === currentAccount.type
         )
       );
-      const balance = await getNativeTokenBalance({
-        wallet,
-        chainId,
-        address: currentAccount.address,
-      });
+      try {
+        const balance = await getNativeTokenBalance({
+          wallet,
+          chainId,
+          address: currentAccount.address,
+        });
 
-      setNativeTokenBalance(balance);
+        setNativeTokenBalance(balance);
+      } catch (e) {
+        if (await wallet.hasCustomRPC(chain.enum)) {
+          triggerCustomRPCErrorModal();
+        }
+      }
 
       wallet.reportStats('createTransaction', {
         type: currentAccount.brandName,

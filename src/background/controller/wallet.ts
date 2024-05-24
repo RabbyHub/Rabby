@@ -3858,6 +3858,29 @@ export class WalletController extends BaseController {
     return res;
   };
 
+  hasPrivateKeyInWallet = async (address: string) => {
+    let pk: any = null;
+    try {
+      pk = await keyringService.getKeyringForAccount(
+        address,
+        KEYRING_TYPE.SimpleKeyring
+      );
+    } catch (e) {
+      // just ignore the error
+    }
+    let mnemonic: any = null;
+    try {
+      mnemonic = await keyringService.getKeyringForAccount(
+        address,
+        KEYRING_TYPE.HdKeyring
+      );
+    } catch (e) {
+      // just ignore the error
+    }
+    if (!pk && !mnemonic) return false;
+    return pk?.type || mnemonic?.type;
+  };
+
   syncMainnetChainList = syncChainService.syncMainnetChainList;
 }
 
