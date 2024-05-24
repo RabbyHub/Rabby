@@ -909,6 +909,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const isNotWatchAddress =
       currentAccountType !== KEYRING_TYPE.WatchAddressKeyring;
 
+    if (!isNotWalletConnect) {
+      setGasLessFailedReason(
+        t('page.signFooterBar.gasless.walletConnectUnavailableTip')
+      );
+    }
+
+    if (!isNotWatchAddress) {
+      setGasLessFailedReason(
+        t('page.signFooterBar.gasless.watchUnavailableTip')
+      );
+    }
+
     return isNotWatchAddress && isNotWalletConnect;
   }, [currentAccountType]);
 
@@ -918,6 +930,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const hasCustomRPC = async () => {
       if (chain?.enum) {
         const b = await wallet.hasCustomRPC(chain?.enum);
+        if (b) {
+          setGasLessFailedReason(
+            t('page.signFooterBar.gasless.customRpcUnavailableTip')
+          );
+        }
         setNoCustomRPC(!b);
       }
     };
@@ -926,9 +943,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const showGasLess = useMemo(() => {
     return isGasNotEnough;
-    // return (
-    //   chainSupportGasLess && isGasNotEnough && isSupportedAddr && noCustomRPC
-    // );
   }, [isGasNotEnough]);
 
   const explainTx = async (address: string) => {
