@@ -699,7 +699,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   >();
   const [gasLessLoading, setGasLessLoading] = useState(false);
   const [canUseGasLess, setCanUseGasLess] = useState(false);
-  const [chainSupportGasLess, setChainSupportGasLess] = useState(false);
+  const [gasLessFailedReason, setGasLessFailedReason] = useState<
+    string | undefined
+  >(undefined);
   const [useGasLess, setUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
@@ -1496,14 +1498,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gasUsed: txDetail?.gas?.gas_used || 0,
       });
       setCanUseGasLess(res.is_gasless);
-      setChainSupportGasLess(true);
+      setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
     } catch (error) {
-      const err = error as { message?: string };
       console.error('gasLessTxCheck error', error);
-      if (err?.message && err?.message.includes('not support')) {
-        setChainSupportGasLess(false);
-      }
+
       setGasLessLoading(false);
     }
   };
@@ -2005,6 +2004,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       {txDetail && (
         <>
           <FooterBar
+            gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}
             showGasLess={!gasLessLoading && isReady && showGasLess}
             useGasLess={showGasLess && canUseGasLess && useGasLess}
