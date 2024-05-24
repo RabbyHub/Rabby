@@ -50,6 +50,10 @@ export const DIV = styled.div`
   .container {
     padding: 0 16px 12px;
 
+    &:empty {
+      padding: 0;
+    }
+
     .header {
       display: flex;
       justify-content: space-between;

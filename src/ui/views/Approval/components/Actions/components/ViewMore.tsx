@@ -60,11 +60,6 @@ const PopupContainer = styled.div`
     }
 
     .row {
-      font-size: 13px;
-      line-height: normal;
-      color: var(--r-neutral-title1, #192945);
-      font-weight: 500;
-
       &:nth-child(1) {
         color: var(--r-neutral-body, #3e495e);
       }

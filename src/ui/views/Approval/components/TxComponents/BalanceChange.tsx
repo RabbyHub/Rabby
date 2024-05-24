@@ -71,7 +71,10 @@ const NFTBalanceChange = ({
       <Col>
         <div className="flex-1 overflow-hidden space-y-10">
           {receiveNftList.map((item) => (
-            <Row className="items-center" key={`${item.id}-${item.inner_id}`}>
+            <Row
+              className="items-center text-[16px]"
+              key={`${item.id}-${item.inner_id}`}
+            >
               <div className="flex">
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
@@ -101,7 +104,10 @@ const NFTBalanceChange = ({
       <Col>
         <div className="flex-1 overflow-hidden space-y-10">
           {sendNftList.map((item) => (
-            <Row className="items-center" key={`${item.id}-${item.inner_id}`}>
+            <Row
+              className="items-center text-[16px]"
+              key={`${item.id}-${item.inner_id}`}
+            >
               <div className="flex">
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
@@ -266,7 +272,7 @@ const BalanceChange = ({
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="hover:underline cursor-pointer text-red-forbidden"
+                        className="hover:underline hover:text-r-blue-default cursor-pointer text-red-forbidden"
                       >
                         {getTokenSymbol(token)}
                       </span>
@@ -304,7 +310,7 @@ const BalanceChange = ({
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="hover:underline cursor-pointer text-green"
+                        className="hover:underline hover:text-r-blue-default cursor-pointer text-green"
                       >
                         {getTokenSymbol(token)}
                       </span>

@@ -19,7 +19,6 @@ const Wrapper = styled.div`
   }
   span {
     display: none;
-    margin-right: 2px;
   }
   &.showText {
     padding: 0;
@@ -74,6 +73,7 @@ const SecurityLevelTagWrapper = styled.div`
     opacity: 0.7;
   }
   &.showText {
+    width: max-content;
     max-width: 170px;
     white-space: nowrap;
   }

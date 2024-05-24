@@ -22,6 +22,10 @@ const TooltipWrapStyled = styled(TooltipWrap)`
   .ant-tooltip-arrow {
     ${({ left }) => left && `left: calc(${left}px)`}
   }
+
+  .ant-tooltip-inner {
+    white-space: normal;
+  }
 `;
 
 /**
