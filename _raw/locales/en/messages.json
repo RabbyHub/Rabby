@@ -72,6 +72,11 @@
       "enoughSafeSigCollected": "Enough signature collected",
       "moreSafeSigNeeded": "{{0}} more confirmation needed",
       "safeAdminSigned": "Signed",
+      "customRPCErrorModal": {
+        "title": "Custom RPC Error",
+        "content": "Your custom RPC is unavailable now. You can disable it and continue signing using Rabby's official RPC",
+        "button": "Disable Custom RPC"
+      },
       "swap": {
         "title": "Swap Token",
         "payToken": "Pay",
