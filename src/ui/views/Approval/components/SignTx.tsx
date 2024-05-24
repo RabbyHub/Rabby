@@ -618,6 +618,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     gas: {
       gas_used: 0,
       gas_limit: 0,
+      gas_ratio: 1.5,
       estimated_gas_cost_usd_value: 0,
       estimated_gas_cost_value: 0,
       estimated_gas_used: 0,
@@ -1015,8 +1016,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
         } else if (!gasLimit) {
           // use server response gas limit
-          const ratio =
-            SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+          let ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+          let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+          sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+            ? new BigNumber(0)
+            : sendNativeTokenAmount;
+          const gasNotEnough = gas
+            .times(ratio)
+            .plus(sendNativeTokenAmount.div(1e18))
+            .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
+          if (gasNotEnough) {
+            ratio = res.gas.gas_ratio;
+          }
           setRecommendGasLimitRatio(needRatio ? ratio : 1);
           let recommendGasLimit = needRatio
             ? gas.times(ratio).toFixed(0)
