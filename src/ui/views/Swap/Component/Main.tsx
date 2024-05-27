@@ -421,12 +421,10 @@ export const Main = () => {
           <div
             className={clsx(
               'text-r-neutral-title-1',
-              !payTokenIsNativeToken && 'underline cursor-pointer'
+              'underline cursor-pointer'
             )}
             onClick={() => {
-              if (!payTokenIsNativeToken) {
-                handleBalance();
-              }
+              handleBalance();
             }}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
