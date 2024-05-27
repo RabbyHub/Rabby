@@ -57,8 +57,7 @@ export const SubmitActions: React.FC<Props> = ({
             className={clsx(
               'hover:bg-[#00000033]',
               'w-[184px] h-full',
-              'font-medium',
-              'text-[16px]'
+              'font-medium'
             )}
             onClick={handleClickConfirm}
           >
@@ -88,8 +87,7 @@ export const SubmitActions: React.FC<Props> = ({
                 gasLess && 'gasLess',
                 'w-[246px] h-[48px] rounded-[8px]',
                 'disabled:opacity-40 disabled:bg-blue-light border-transparent',
-                'before:content-none',
-                'text-[16px]'
+                'before:content-none'
               )}
               onClick={handleClickSign}
             >

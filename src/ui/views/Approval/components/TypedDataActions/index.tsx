@@ -198,7 +198,7 @@ const Actions = ({
             </div>
             <div className="right">
               <div
-                className="float-right text-14 cursor-pointer flex items-center view-raw"
+                className="float-right text-13 cursor-pointer flex items-center view-raw"
                 onClick={handleViewRawClick}
               >
                 {t('page.signTx.viewRaw')}

@@ -67,8 +67,7 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
           'rounded-[8px]',
           'before:content-none',
           'z-10',
-          'flex items-center justify-center gap-2',
-          'text-[16px]'
+          'flex items-center justify-center gap-2'
         )}
         onClick={displayPopup ? activeCancelPopup : onCancel}
       >

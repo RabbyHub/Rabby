@@ -38,9 +38,7 @@ export const CommonAccount: React.FC<Props> = ({
           {customSignal}
           {signal && <Signal isBadge color={bgColor} />}
         </div>
-        <div className="text-14 leading-[20px] w-full text-r-neutral-foot">
-          {tip}
-        </div>
+        <div className="text-13 w-full text-r-neutral-foot">{tip}</div>
         {children}
       </div>
       {footer}
