@@ -29,6 +29,7 @@ import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-logo-cc.svg'
 import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
+import { isNil } from 'lodash';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -41,6 +42,7 @@ interface GasSelectorProps {
   gas: {
     gasCostUsd: number | string | BigNumber;
     gasCostAmount: number | string | BigNumber;
+    gasEstimatedSeconds?: number;
     success?: boolean;
     error?: null | {
       msg: string;
@@ -782,9 +784,9 @@ const GasSelectorHeader = ({
                     )}
                   </div>
                   <div className="cardTime">
-                    {item.estimated_seconds
+                    {!isNil(item.estimated_seconds)
                       ? `~${item.estimated_seconds} sec`
-                      : '~12 sec'}
+                      : null}
                   </div>
                 </div>
               ))}

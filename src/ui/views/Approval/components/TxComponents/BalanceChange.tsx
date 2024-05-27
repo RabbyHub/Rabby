@@ -12,6 +12,7 @@ import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
+import { ReactComponent as NoBalanceSVG } from 'ui/assets/sign/no-balance.svg';
 import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useRabbyDispatch } from 'ui/store';
@@ -238,8 +239,9 @@ const BalanceChange = ({
         <Table>
           {!hasChange && isSuccess && (
             <Col className="py-10">
-              <Row>
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
+              <Row className="gap-6 flex">
+                <NoBalanceSVG className="text-rabby-neutral-body" />
+                <span className="text-[14px] font-medium text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}
                 </span>
               </Row>

@@ -43,8 +43,8 @@ const CoboSafeModificationDelegatedAddress = ({
             </SubRow>
           </SubCol>
 
-          <SubCol>
-            <SubRow> </SubRow>
+          <SubCol className="items-center">
+            <SubRow isTitle>公共 Note</SubRow>
             <SubRow>
               <LogoWithText
                 logo={IconSafe}
