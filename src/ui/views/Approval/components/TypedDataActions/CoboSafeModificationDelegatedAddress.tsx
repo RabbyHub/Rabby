@@ -44,7 +44,7 @@ const CoboSafeModificationDelegatedAddress = ({
           </SubCol>
 
           <SubCol className="items-center">
-            <SubRow isTitle>公共 Note</SubRow>
+            <SubRow isTitle>{t('page.signTx.label')}</SubRow>
             <SubRow>
               <LogoWithText
                 logo={IconSafe}
@@ -55,7 +55,7 @@ const CoboSafeModificationDelegatedAddress = ({
                   fontWeight: 'normal',
                   fontSize: '13px',
                   lineHeight: '15px',
-                  color: '#4B4D59',
+                  color: 'var(--r-neutral-body, #3E495E)',
                 }}
               />
             </SubRow>

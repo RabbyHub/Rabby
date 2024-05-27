@@ -6,6 +6,7 @@ import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import LogoWithText from '../LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
+import { ALIAS_ADDRESS } from '@/constant';
 
 export interface ReceiverData {
   title?: string;
@@ -72,6 +73,9 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     return null;
   }, [data]);
 
+  const isLabelAddress =
+    data.name && Object.values(ALIAS_ADDRESS).includes(data.name);
+
   return (
     <div>
       <div className="title">
@@ -107,8 +111,10 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
                   )}
                   {data.name && (
                     <li>
-                      {data.name.replace(/^Token: /, 'Token ') +
-                        ' contract address'}
+                      {isLabelAddress
+                        ? data.name
+                        : data.name.replace(/^Token: /, 'Token ') +
+                          ' contract address'}
                     </li>
                   )}
                 </ul>

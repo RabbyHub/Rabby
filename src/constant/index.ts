@@ -1211,8 +1211,8 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
 export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 
 export const ALIAS_ADDRESS = {
-  [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
-  [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
+  [GAS_TOP_UP_ADDRESS]: 'Rabby Gas Top Up',
+  [GAS_TOP_UP_PAY_ADDRESS]: 'Rabby Gas Top Up',
   [FREE_GAS_ADDRESS]: 'Free Gas',
 };
 

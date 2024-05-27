@@ -101,7 +101,7 @@
         "sendTo": "Send to",
         "receiverIsTokenAddress": "Token address",
         "contractNotOnThisChain": "Not on this chain",
-        "notTopupAddress": "Not top up address",
+        "notTopupAddress": "Not a deposit address",
         "tokenNotSupport": "{{0}} not supported",
         "onMyWhitelist": "On my whitelist",
         "notOnThisChain": "Not on this chain",
@@ -145,7 +145,7 @@
         "approveCollection": "Approve collection"
       },
       "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection Approval",
+        "title": "Revoke NFT Collection",
         "revokeCollection": "Revoke collection"
       },
       "deployContract": {
@@ -301,9 +301,10 @@
       "address": "Address",
       "advancedSettings": "Advanced Settings",
       "amount": "Amount",
-      "contract": "Contract",
+      "contract": "Smart contract",
       "trustValueTitle": "Risk exposure",
-      "typedDataMessage": "Typed data message"
+      "typedDataMessage": "Typed data message",
+      "label": "Label"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

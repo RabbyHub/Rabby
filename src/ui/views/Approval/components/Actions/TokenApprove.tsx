@@ -8,7 +8,7 @@ import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
-import { ellipsisOverflowedText } from '@/ui/utils';
+import { ellipsisOverflowedText, useHover } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
@@ -237,6 +237,8 @@ const TokenApprove = ({
     dispatch.securityEngine.init();
   }, []);
 
+  const [isHoverEdit, editHoverProps] = useHover();
+
   return (
     <Wrapper>
       <Table>
@@ -252,12 +254,16 @@ const TokenApprove = ({
                   <div className="flex flex-1 overflow-hidden">
                     <Values.TokenAmount value={actionData.token.amount} />
                     <span className="ml-2">
-                      <Values.TokenSymbol token={requireData.token} />
+                      <Values.TokenSymbol
+                        disableHover={isHoverEdit}
+                        token={requireData.token}
+                      />
                     </span>
                   </div>
                   <span
-                    className="text-blue-light text-13 font-medium cursor-pointer ml-4"
+                    className="text-blue-light text-13 font-medium cursor-pointer ml-4 hover:underline"
                     onClick={() => setEditApproveModalVisible(true)}
+                    {...editHoverProps}
                   >
                     {t('global.editButton')}
                   </span>

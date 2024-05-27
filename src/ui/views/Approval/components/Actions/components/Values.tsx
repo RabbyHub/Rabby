@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
-import { isSameAddress, useWallet } from 'ui/utils';
+import { isSameAddress, useHover, useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
@@ -319,6 +319,8 @@ const Address = ({
     e.stopPropagation();
     copyAddress(address);
   };
+  const [isHoverToolbar, hoverToolbarProps] = useHover();
+
   return (
     <AddressWrapper className="value-address relative">
       <TooltipWithMagnetArrow
@@ -327,27 +329,30 @@ const Address = ({
       >
         <span
           className={clsx({
-            'cursor-pointer group-hover:underline hover:text-r-blue-default': hasHover,
+            'cursor-pointer group-hover:underline hover:text-r-blue-default':
+              hasHover && !isHoverToolbar,
           })}
           id={id}
         >
           {ellipsis(address)}
         </span>
       </TooltipWithMagnetArrow>
-      {chain && (
-        <IconExternal
-          onClick={handleClickContractId}
+      <div className="flex" {...hoverToolbarProps}>
+        {chain && (
+          <IconExternal
+            onClick={handleClickContractId}
+            width={iconWidth}
+            height={iconWidth}
+            className="ml-6 cursor-pointer text-r-neutral-foot hover:text-r-blue-default"
+          />
+        )}
+        <IconAddressCopy
+          onClick={handleCopyContractAddress}
           width={iconWidth}
           height={iconWidth}
-          className="ml-6 cursor-pointer text-r-neutral-foot hover:text-r-blue-default"
+          className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
         />
-      )}
-      <IconAddressCopy
-        onClick={handleCopyContractAddress}
-        width={iconWidth}
-        height={iconWidth}
-        className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
-      />
+      </div>
     </AddressWrapper>
   );
 };
@@ -392,14 +397,23 @@ const Transacted = ({ value }: { value: boolean }) => {
   );
 };
 
-const TokenSymbol = ({ token }: { token: TokenItem }) => {
+const TokenSymbol = ({
+  token,
+  disableHover,
+}: {
+  token: TokenItem;
+  disableHover?: boolean;
+}) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
     dispatch.sign.openTokenDetailPopup(token);
   };
   return (
     <span
-      className="group-hover:underline hover:text-r-blue-default cursor-pointer"
+      className={clsx(
+        'hover:text-r-blue-default cursor-pointer',
+        !disableHover && 'group-hover:underline'
+      )}
       onClick={handleClickTokenSymbol}
       title={getTokenSymbol(token)}
     >

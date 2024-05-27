@@ -44,7 +44,9 @@ export const DIV = styled.div`
       }
     }
     &.is-unknown {
-      background: var(--r-neutral-card-1, #fff);
+      .left {
+        color: var(--r-neutral-foot, #6a7587);
+      }
     }
   }
   .container {

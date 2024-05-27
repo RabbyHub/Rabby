@@ -14,6 +14,8 @@ import LogoWithText from './components/LogoWithText';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import { ALIAS_ADDRESS } from '@/constant';
+import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 
 const Wrapper = styled.div`
   .header {
@@ -55,6 +57,9 @@ const Send = ({
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
+
+  const isLabelAddress =
+    requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
 
   return (
     <Wrapper>
@@ -116,11 +121,26 @@ const Send = ({
             </SubCol>
           )}
           {!!requireData.name && (
-            <SubCol nested>
-              <SubRow> </SubRow>
+            <SubCol nested={!isLabelAddress}>
+              <SubRow isTitle>
+                {isLabelAddress ? t('page.signTx.label') : ' '}
+              </SubRow>
               <SubRow>
-                {requireData.name.replace(/^Token: /, 'Token ') +
-                  ' contract address'}
+                {isLabelAddress ? (
+                  <LogoWithText
+                    text={requireData.name}
+                    logo={RabbyChainLogo}
+                    logoRadius="100%"
+                    logoSize={14}
+                    textStyle={{
+                      fontSize: '13px',
+                      color: 'var(--r-neutral-body, #3E495E)',
+                    }}
+                  />
+                ) : (
+                  requireData.name.replace(/^Token: /, 'Token ') +
+                  ' contract address'
+                )}
               </SubRow>
             </SubCol>
           )}
