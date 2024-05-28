@@ -736,7 +736,7 @@ const SendToken = () => {
     if (amount !== cacheAmount) {
       if (showGasReseved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
-      } else if (isNativeToken && !isGnosisSafe) {
+      }/*  else if (isNativeToken && !isGnosisSafe) {
         const gasCostTokenAmount = await calcGasCost();
         if (
           new BigNumber(targetToken.raw_amount_hex_str || 0)
@@ -749,7 +749,7 @@ const SendToken = () => {
         } else {
           setBalanceWarn(null);
         }
-      }
+      } */
     }
 
     if (
@@ -903,8 +903,8 @@ const SendToken = () => {
         }
       } catch (e) {
         if (!isGnosisSafe) {
-          // Gas fee reservation required
-          setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
+          // // Gas fee reservation required
+          // setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
           setShowGasReserved(false);
         }
       }
