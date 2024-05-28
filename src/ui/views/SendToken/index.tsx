@@ -600,13 +600,13 @@ const SendToken = () => {
           },
           chain.serverId
         );
-        const isContract = !!code && !(code === '0x' || code === '0x0');
+        const notContract = !!code && (code === '0x' || code === '0x0');
 
         let gasLimit = 0;
-        if (chain.needEstimateGas || isContract) {
-          gasLimit =
-            estimateGas ||
-            (!isGnosisSafe ? (await ethEstimateGas()).gasNumber : 0);
+        if (estimateGas) {
+          gasLimit = estimateGas;
+        } else if (chain.needEstimateGas && !isGnosisSafe) {
+          gasLimit = (await ethEstimateGas()).gasNumber;
         }
 
         /**
@@ -615,7 +615,7 @@ const SendToken = () => {
          */
         if (gasLimit > 0) {
           params.gas = intToHex(gasLimit);
-        } else if (!isContract && couldSpecifyIntrinsicGas) {
+        } else if (notContract && couldSpecifyIntrinsicGas) {
           params.gas = intToHex(21000);
         }
       } catch (e) {
@@ -736,7 +736,7 @@ const SendToken = () => {
     if (amount !== cacheAmount) {
       if (showGasReseved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
-      }/*  else if (isNativeToken && !isGnosisSafe) {
+      } /*  else if (isNativeToken && !isGnosisSafe) {
         const gasCostTokenAmount = await calcGasCost();
         if (
           new BigNumber(targetToken.raw_amount_hex_str || 0)
