@@ -1102,7 +1102,7 @@ const SettingsInner = ({
             </>
           ),
         },
-      ].filter(Boolean) as SettingItem[],
+      ] as SettingItem[],
     },
   };
 
@@ -1163,7 +1163,7 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className={clsx('icon')} />
+                      <ThemeIcon src={data.leftIcon} className="icon" />
                     }
                     rightIcon={
                       data.rightIcon || (
