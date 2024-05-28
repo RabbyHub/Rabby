@@ -116,6 +116,7 @@ import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
+import { IExtractFromPromise } from '@/ui/utils/type';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -172,7 +173,10 @@ export class WalletController extends BaseController {
     return whitelistService.isWhitelistEnabled();
   };
 
-  requestETHRpc = (data: { method: string; params: any }, chainId: string) => {
+  requestETHRpc = <T = any>(
+    data: { method: string; params: any },
+    chainId: string
+  ): Promise<IExtractFromPromise<T>> => {
     return providerController.ethRpc(
       {
         data,

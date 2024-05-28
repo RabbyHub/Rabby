@@ -63,7 +63,7 @@ export const AccountItem = ({
     if (!chain) {
       return;
     }
-    const balanceInWei = await wallet.requestETHRpc(
+    const balanceInWei = await wallet.requestETHRpc<any>(
       {
         method: 'eth_getBalance',
         params: [account.address, 'latest'],

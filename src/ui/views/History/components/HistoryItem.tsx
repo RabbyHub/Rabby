@@ -203,7 +203,7 @@ function useClientParseTx({
     }
 
     try {
-      const hashDetail = await wallet.requestETHRpc(
+      const hashDetail = await wallet.requestETHRpc<any>(
         {
           method: 'eth_getTransactionByHash',
           params: [data.id],

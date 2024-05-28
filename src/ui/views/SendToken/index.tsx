@@ -588,7 +588,7 @@ const SendToken = () => {
       params.value = `0x${sendValue.toString(16)}`;
 
       try {
-        const code = await wallet.requestETHRpc(
+        const code = await wallet.requestETHRpc<any>(
           {
             method: 'eth_getCode',
             params: [to, 'latest'],
@@ -816,7 +816,7 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const _gasUsed = await wallet.requestETHRpc(
+        const _gasUsed = await wallet.requestETHRpc<any>(
           {
             method: 'eth_estimateGas',
             params: [
