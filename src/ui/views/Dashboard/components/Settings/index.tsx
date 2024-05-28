@@ -33,10 +33,12 @@ import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
+import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
+// import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
+import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
+// import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
@@ -47,6 +49,7 @@ import { ReactComponent as RcIconSettingsFeatureConnectedDapps } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboard/settings/follow-us.svg';
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
+import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
@@ -521,6 +524,7 @@ type SettingItem = {
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
   onClick?: (...args: any[]) => any;
+  isDebugOnly?: boolean;
 };
 
 const SettingsInner = ({
@@ -970,6 +974,31 @@ const SettingsInner = ({
             </>
           ),
         },
+        process.env.DEBUG && {
+          isDebugOnly: true,
+          leftIcon: RcIconSettingsGitForkCC,
+          content: (
+            <span className="text-r-neutral-title2">Git Build Hash</span>
+          ),
+          onClick: () => {
+            Modal.info({
+              title: 'Dev only content',
+              content: (
+                <div>
+                  <p>I'm visible on non-production package ONLY.</p>
+                  <p>Git hash: {process.env.RABBY_BUILD_GIT_HASH}</p>
+                </div>
+              ),
+            });
+          },
+          rightIcon: (
+            <>
+              <span className="text-14 mr-[8px] text-r-neutral-title2">
+                {process.env.RABBY_BUILD_GIT_HASH}
+              </span>
+            </>
+          ),
+        },
         {
           leftIcon: RcIconSettingsAboutSupporetedChains,
           content: t('page.dashboard.settings.supportedChains'),
@@ -1052,31 +1081,47 @@ const SettingsInner = ({
             </>
           ),
         },
-      ] as SettingItem[],
+      ].filter(Boolean) as SettingItem[],
     },
   };
 
   if (process.env.DEBUG) {
     renderData.features.items.push(
       {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.backendServiceUrl'),
+        leftIcon: RcIconServerCC,
+        content: (
+          <span className="text-r-neutral-title2">
+            {t('page.dashboard.settings.backendServiceUrl')}
+          </span>
+        ),
         onClick: () => setShowOpenApiModal(true),
+        isDebugOnly: true,
         rightIcon: (
           <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
         ),
       } as typeof renderData.features.items[0],
       {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.testnetBackendServiceUrl'),
+        leftIcon: RcIconServerCC,
+        content: (
+          <span className="text-r-neutral-title2">
+            {t('page.dashboard.settings.testnetBackendServiceUrl')}
+          </span>
+        ),
         onClick: () => setShowTestnetOpenApiModal(true),
+        isDebugOnly: true,
         rightIcon: (
           <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
         ),
       } as typeof renderData.features.items[0],
       {
-        content: t('page.dashboard.settings.clearWatchMode'),
+        leftIcon: RcIconClearCC,
+        content: (
+          <span className="text-r-neutral-title2">
+            {t('page.dashboard.settings.clearWatchMode')}
+          </span>
+        ),
         onClick: handleClickClearWatchMode,
+        isDebugOnly: true,
       } as typeof renderData.features.items[0]
     );
   }
@@ -1133,7 +1178,13 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon src={data.leftIcon} className="icon" />
+                      <ThemeIcon
+                        src={data.leftIcon}
+                        className={clsx(
+                          'icon',
+                          data.isDebugOnly && 'text-r-neutral-title2'
+                        )}
+                      />
                     }
                     rightIcon={
                       data.rightIcon || (
@@ -1144,7 +1195,10 @@ const SettingsInner = ({
                       )
                     }
                     onClick={data.onClick}
-                    className={clsx(data.description ? 'has-desc' : null)}
+                    className={clsx(
+                      data.description ? 'has-desc' : null,
+                      data.isDebugOnly && 'bg-orange'
+                    )}
                   >
                     {data.content}
                     {data.description && (
