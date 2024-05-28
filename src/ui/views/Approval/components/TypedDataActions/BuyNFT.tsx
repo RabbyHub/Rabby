@@ -107,10 +107,6 @@ const BuyNFT = ({
     });
   };
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
