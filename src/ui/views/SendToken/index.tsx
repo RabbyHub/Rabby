@@ -18,6 +18,7 @@ import {
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
   CAN_ESTIMATE_L1_FEE_CHAINS,
+  CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
@@ -586,6 +587,10 @@ const SendToken = () => {
       }
 
       params.value = `0x${sendValue.toString(16)}`;
+      // L2 has extra validation fee so we can not set gasLimit as 21000 when send native token
+      const couldSpecifyIntrinsicGas = !CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS.includes(
+        chain.enum
+      );
 
       try {
         const code = await wallet.requestETHRpc<any>(
@@ -596,18 +601,29 @@ const SendToken = () => {
           chain.serverId
         );
         const isContract = !!code && !(code === '0x' || code === '0x0');
+
+        let gasLimit = 0;
+        if (chain.needEstimateGas || isContract) {
+          gasLimit =
+            estimateGas ||
+            (!isGnosisSafe ? (await ethEstimateGas()).gasNumber : 0);
+        }
+
         /**
          * we dont' need always fetch estimateGas, if no `params.gas` set below,
          * `params.gas` would be filled on Tx Page.
          */
-        if (estimateGas > 0 && (chain.needEstimateGas || isContract)) {
-          params.gas = intToHex(estimateGas);
-        } else if (!isContract) {
-          params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+        if (gasLimit > 0) {
+          params.gas = intToHex(gasLimit);
+        } else if (!isContract && couldSpecifyIntrinsicGas) {
+          params.gas = intToHex(21000);
         }
       } catch (e) {
-        params.gas = intToHex(21000);
+        if (couldSpecifyIntrinsicGas) {
+          params.gas = intToHex(21000);
+        }
       }
+
       if (
         isShowMessageDataForToken &&
         (messageDataForContractCall || messageDataForSendToEoa)
@@ -793,6 +809,47 @@ const SendToken = () => {
     loadCurrentToken(token.id, token.chain, account.address);
   };
 
+  const ethEstimateGas = useCallback(async () => {
+    const result = {
+      gasNumber: 0,
+      gasNumHex: intToHex(0),
+    };
+
+    if (!currentAccount?.address) return result;
+    if (!chainItem) return result;
+
+    const to = form.getFieldValue('to');
+
+    const _gasUsed = await wallet.requestETHRpc<string>(
+      {
+        method: 'eth_estimateGas',
+        params: [
+          {
+            from: currentAccount.address,
+            to: to && isValidAddress(to) ? to : zeroAddress(),
+            value: currentToken.raw_amount_hex_str,
+          },
+        ],
+      },
+      chainItem.serverId
+    );
+    const gasUsed = chainItem.isTestnet
+      ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
+      : _gasUsed;
+
+    result.gasNumber = Number(gasUsed);
+    result.gasNumHex =
+      typeof gasUsed === 'string' ? gasUsed : intToHex(gasUsed);
+
+    return result;
+  }, [
+    wallet,
+    currentAccount,
+    chainItem,
+    form,
+    currentToken.raw_amount_hex_str,
+  ]);
+
   const handleClickTokenBalance = async () => {
     if (!currentAccount) return;
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: true }));
@@ -816,24 +873,10 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const _gasUsed = await wallet.requestETHRpc<any>(
-          {
-            method: 'eth_estimateGas',
-            params: [
-              {
-                from: currentAccount.address,
-                to: to && isValidAddress(to) ? to : zeroAddress(),
-                value: currentToken.raw_amount_hex_str,
-              },
-            ],
-          },
-          chainItem.serverId
-        );
-        const gasUsed = chainItem.isTestnet
-          ? new BigNumber(_gasUsed).multipliedBy(1.5).integerValue().toNumber()
-          : _gasUsed;
-        setEstimateGas(Number(gasUsed));
-        let gasTokenAmount = handleGasChange(instant, false, Number(gasUsed));
+        const { gasNumber } = await ethEstimateGas();
+        setEstimateGas(gasNumber);
+
+        let gasTokenAmount = handleGasChange(instant, false, gasNumber);
         if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
           const l1GasFee = await wallet.fetchEstimatedL1Fee(
             {
