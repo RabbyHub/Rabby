@@ -524,7 +524,6 @@ type SettingItem = {
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
   onClick?: (...args: any[]) => any;
-  isDebugOnly?: boolean;
 };
 
 const SettingsInner = ({
@@ -905,6 +904,53 @@ const SettingsInner = ({
         },
       ] as SettingItem[],
     },
+    debugkits: {
+      label: 'Debug Kits (Not present on production)',
+      items: [
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.backendServiceUrl')}</span>
+          ),
+          onClick: () => setShowOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
+          ),
+          onClick: () => setShowTestnetOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearCC,
+          content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
+          onClick: handleClickClearWatchMode,
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: <span>Git Build Hash</span>,
+          rightIcon: (
+            <>
+              <span className="text-14 mr-[8px]">
+                {process.env.RABBY_BUILD_GIT_HASH}
+              </span>
+            </>
+          ),
+        },
+      ] as SettingItem[],
+    },
     about: {
       label: t('page.dashboard.settings.aboutUs'),
       items: [
@@ -971,31 +1017,6 @@ const SettingsInner = ({
                 src={RcIconArrowRight}
                 className="icon icon-arrow-right"
               />
-            </>
-          ),
-        },
-        process.env.DEBUG && {
-          isDebugOnly: true,
-          leftIcon: RcIconSettingsGitForkCC,
-          content: (
-            <span className="text-r-neutral-title2">Git Build Hash</span>
-          ),
-          onClick: () => {
-            Modal.info({
-              title: 'Dev only content',
-              content: (
-                <div>
-                  <p>I'm visible on non-production package ONLY.</p>
-                  <p>Git hash: {process.env.RABBY_BUILD_GIT_HASH}</p>
-                </div>
-              ),
-            });
-          },
-          rightIcon: (
-            <>
-              <span className="text-14 mr-[8px] text-r-neutral-title2">
-                {process.env.RABBY_BUILD_GIT_HASH}
-              </span>
             </>
           ),
         },
@@ -1085,45 +1106,9 @@ const SettingsInner = ({
     },
   };
 
-  if (process.env.DEBUG) {
-    renderData.features.items.push(
-      {
-        leftIcon: RcIconServerCC,
-        content: (
-          <span className="text-r-neutral-title2">
-            {t('page.dashboard.settings.backendServiceUrl')}
-          </span>
-        ),
-        onClick: () => setShowOpenApiModal(true),
-        isDebugOnly: true,
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0],
-      {
-        leftIcon: RcIconServerCC,
-        content: (
-          <span className="text-r-neutral-title2">
-            {t('page.dashboard.settings.testnetBackendServiceUrl')}
-          </span>
-        ),
-        onClick: () => setShowTestnetOpenApiModal(true),
-        isDebugOnly: true,
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0],
-      {
-        leftIcon: RcIconClearCC,
-        content: (
-          <span className="text-r-neutral-title2">
-            {t('page.dashboard.settings.clearWatchMode')}
-          </span>
-        ),
-        onClick: handleClickClearWatchMode,
-        isDebugOnly: true,
-      } as typeof renderData.features.items[0]
-    );
+  if (!process.env.DEBUG) {
+    // @ts-expect-error we know it's not defined on production
+    delete renderData.debugkits;
   }
 
   const lockWallet = async () => {
@@ -1178,13 +1163,7 @@ const SettingsInner = ({
                   <Field
                     key={`g-${idxl1}-item-${idxl2}`}
                     leftIcon={
-                      <ThemeIcon
-                        src={data.leftIcon}
-                        className={clsx(
-                          'icon',
-                          data.isDebugOnly && 'text-r-neutral-title2'
-                        )}
-                      />
+                      <ThemeIcon src={data.leftIcon} className={clsx('icon')} />
                     }
                     rightIcon={
                       data.rightIcon || (
@@ -1195,10 +1174,7 @@ const SettingsInner = ({
                       )
                     }
                     onClick={data.onClick}
-                    className={clsx(
-                      data.description ? 'has-desc' : null,
-                      data.isDebugOnly && 'bg-orange'
-                    )}
+                    className={clsx(data.description ? 'has-desc' : null)}
                   >
                     {data.content}
                     {data.description && (
