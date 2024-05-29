@@ -582,10 +582,6 @@ const GasSelector = ({
   }, [isReady]);
 
   useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
-  useEffect(() => {
     if (!is1559) return;
     if (selectedGas?.level === 'custom') {
       if (Number(customGas) !== maxPriorityFee) {

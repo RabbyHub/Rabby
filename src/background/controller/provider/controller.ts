@@ -100,6 +100,7 @@ interface ApprovalRes extends Tx {
   lowGasDeadline?: number;
   reqId?: string;
   isGasLess?: boolean;
+  logId?: string;
 }
 
 interface Web3WalletPermission {
@@ -361,6 +362,7 @@ class ProviderController extends BaseController {
     const lowGasDeadline = approvalRes.lowGasDeadline;
     const preReqId = approvalRes.reqId;
     const isGasLess = approvalRes.isGasLess || false;
+    const logId = approvalRes.logId || '';
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -380,6 +382,7 @@ class ProviderController extends BaseController {
     delete approvalRes.reqId;
     delete txParams.isCoboSafe;
     delete approvalRes.isGasLess;
+    delete approvalRes.logId;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -693,6 +696,7 @@ class ProviderController extends BaseController {
               req_id: preReqId || '',
               origin,
               is_gasless: isGasLess,
+              log_id: logId,
             });
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;

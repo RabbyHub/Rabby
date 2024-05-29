@@ -54,10 +54,6 @@ const Send = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   const isLabelAddress =
     requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
 

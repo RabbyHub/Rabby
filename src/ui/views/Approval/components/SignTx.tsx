@@ -39,7 +39,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { useScroll } from 'react-use';
-import { useSize } from 'ahooks';
+import { useSize, useDebounceFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -65,7 +65,10 @@ import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
-import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import {
+  Level,
+  defaultRules,
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
@@ -580,6 +583,8 @@ interface BlockInfo {
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const renderStartAt = useRef(0);
+  const securityEngineCtx = useRef<any>(null);
+  const logId = useRef('');
   const actionType = useRef('');
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
@@ -1087,6 +1092,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         addr: address,
       })
       .then(async (actionData) => {
+        logId.current = actionData.log_id;
         actionType.current = actionData?.action?.type || '';
         return preExecPromise.then(async (res) => {
           const parsed = parseAction(
@@ -1120,6 +1126,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             requireData: requiredData,
             chainId: chain.serverId,
           });
+          securityEngineCtx.current = ctx;
           const result = await executeEngine(ctx);
           setEngineResults(result);
           setActionData(parsed);
@@ -1266,6 +1273,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       pushType: pushInfo.type,
       lowGasDeadline: pushInfo.lowGasDeadline,
       reqId,
+      logId: logId.current,
     });
     wallet.clearPageStateCache();
   };
@@ -1347,7 +1355,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           requiredData: actionRequireData,
         },
       }));
-    // add isGasLess in params of resolveApproval
+
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...transaction,
@@ -1367,6 +1375,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
         isGasLess: useGasLess,
+        logId: logId.current,
       });
 
       return;
@@ -1403,6 +1412,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       pushType: pushInfo.type,
       lowGasDeadline: pushInfo.lowGasDeadline,
       reqId,
+      logId: logId.current,
     });
   };
 
@@ -1709,7 +1719,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     dispatch.securityEngine.closeRuleDrawer();
   };
 
+  const { run: reportLogId } = useDebounceFn(
+    (rules) => {
+      wallet.openapi.postActionLog({
+        id: logId.current,
+        type: 'tx',
+        rules,
+      });
+    },
+    { wait: 1000 }
+  );
+
   const init = async () => {
+    dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
     try {
       const currentAccount =
@@ -1945,6 +1967,33 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   useEffect(() => {
     executeSecurityEngine();
   }, [userData, rules]);
+
+  useEffect(() => {
+    if (logId.current && isReady && securityEngineCtx.current) {
+      try {
+        const keys = Object.keys(securityEngineCtx.current);
+        const key: any = keys[0];
+        const notTriggeredRules = defaultRules.filter((rule) => {
+          return (
+            rule.requires.includes(key) &&
+            !engineResults.some((item) => item.id === rule.id)
+          );
+        });
+        reportLogId([
+          ...notTriggeredRules.map((rule) => ({
+            id: rule.id,
+            level: null,
+          })),
+          ...engineResults.map((result) => ({
+            id: result.id,
+            level: result.level,
+          })),
+        ]);
+      } catch (e) {
+        // IGNORE
+      }
+    }
+  }, [isReady, engineResults]);
 
   useEffect(() => {
     if (scrollRef.current && scrollInfo && scrollRefSize) {

@@ -91,10 +91,6 @@ const UnWrapToken = ({
     return !isSameAddress(receiver, requireData.sender);
   }, [requireData, receiver]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

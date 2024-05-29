@@ -95,10 +95,6 @@ const CancelTx = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   const pendingTx = useMemo(() => {
     let tx: { type: string; gasPrice: number } | null = null;
     requireData.pendingTxs.forEach((group) => {
