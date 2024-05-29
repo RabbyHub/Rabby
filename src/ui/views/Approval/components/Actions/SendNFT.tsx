@@ -158,6 +158,7 @@ const SendNFT = ({
             id="1037"
           />
           <SecurityListItem
+            title={t('page.signTx.addressSource')}
             engineResult={engineResultMap['1142']}
             safeText={
               requireData.hasReceiverMnemonicInWallet

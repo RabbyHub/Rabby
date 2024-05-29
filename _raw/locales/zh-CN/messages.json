@@ -1375,7 +1375,8 @@
       "address": "地址",
       "advancedSettings": "高级设置",
       "amount": "数量",
-      "trustValueTitle": "风险暴露"
+      "trustValueTitle": "风险暴露",
+      "addressSource": "地址来源"
     },
     "signTypedData": {
       "buyNFT": {

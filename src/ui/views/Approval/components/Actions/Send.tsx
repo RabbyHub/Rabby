@@ -151,6 +151,7 @@ const Send = ({
             id="1019"
           />
           <SecurityListItem
+            title={t('page.signTx.addressSource')}
             engineResult={engineResultMap['1142']}
             safeText={
               requireData.hasReceiverMnemonicInWallet

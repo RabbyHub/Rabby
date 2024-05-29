@@ -312,7 +312,8 @@
       "contract": "Smart contract",
       "trustValueTitle": "Risk exposure",
       "typedDataMessage": "Typed data message",
-      "label": "Label"
+      "label": "Label",
+      "addressSource": "Address Source"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
