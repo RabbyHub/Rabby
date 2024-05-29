@@ -52,16 +52,6 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-
-  useEffect(() => {
-    if (!getUiType().isNotification) {
-      return;
-    }
-    window.addEventListener('beforeunload', rejectApproval);
-
-    return () => window.removeEventListener('beforeunload', rejectApproval);
-  }, []);
-
   return [getApproval, resolveApproval, rejectApproval] as const;
 };
 

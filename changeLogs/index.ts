@@ -77,6 +77,7 @@ import version09268 from './09268.md';
 import version09269 from './09269.md';
 import version09270 from './09270.md';
 import version09271 from './09271.md';
+import version09272 from './09272.md';
 
 const version = process.env.release || '0';
 const versionMap = {
@@ -160,6 +161,7 @@ const versionMap = {
   '0.92.69': version09269,
   '0.92.70': version09270,
   '0.92.71': version09271,
+  '0.92.72': version09272,
 };
 export const getUpdateContent = () => {
   return versionMap[version];

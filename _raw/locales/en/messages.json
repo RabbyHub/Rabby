@@ -72,6 +72,11 @@
       "enoughSafeSigCollected": "Enough signature collected",
       "moreSafeSigNeeded": "{{0}} more confirmation needed",
       "safeAdminSigned": "Signed",
+      "customRPCErrorModal": {
+        "title": "Custom RPC Error",
+        "content": "Your custom RPC is unavailable now. You can disable it and continue signing using Rabby's official RPC",
+        "button": "Disable Custom RPC"
+      },
       "swap": {
         "title": "Swap Token",
         "payToken": "Pay",
@@ -109,7 +114,9 @@
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
         "notOnWhitelist": "Not on my whitelist",
-        "scamAddress": "Scam address"
+        "scamAddress": "Scam address",
+        "fromMySeedPhrase": "From my seed phrase",
+        "fromMyPrivateKey": "From my private key"
       },
       "tokenApprove": {
         "title": "Token Approval",
@@ -321,10 +328,13 @@
       "ledgerConnected": "Ledger is connected",
       "signAndSubmitButton": "Sign and Create",
       "gasless": {
-        "unavailable": "Gas balance is not enough for this transaction",
+        "unavailable": "Gas is not enough and not qualify for Free Gas",
         "notEnough": "Gas balance is not enough",
         "GetFreeGasToSign": "Get Free Gas to sign",
-        "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on"
+        "rabbyPayGas": "Rabby'll pay for the gas needed – just sign on",
+        "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
+        "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
+        "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
       },
       "walletConnect": {
         "connectedButCantSign": "Connected but unable to sign.",
@@ -528,7 +538,8 @@
           "noCost": "No Gas cost"
         },
         "SkipNonceAlert": {
-          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve"
+          "alert": "Nonce #{{nonce}} skipped on {{chainName}} chain. This  may cause pending transactions ahead. <5></5> <6>Submit a tx</6> <7></7> on chain to resolve",
+          "clearPendingAlert": "{{chainName}} Transaction ({{nonces}}) has been pending for over 3 minutes. You can <5></5> <6>clear pending transactions on this chain</6> <7></7> and initiate a new one."
         },
         "PredictTime": {
           "time": "Predicted to be packed in {{time}}",
@@ -1872,7 +1883,9 @@
           "sign": "Sign"
         }
       },
-      "code-set-successfully": "Referral code set successfully"
+      "code-set-successfully": "Referral code set successfully",
+      "initialPointsClaimEnded": "Initial Points claim ended",
+      "firstRoundEnded": "🎉 The first round of Rabby Points has ended"
     },
     "customTestnet": {
       "title": "Custom Network",

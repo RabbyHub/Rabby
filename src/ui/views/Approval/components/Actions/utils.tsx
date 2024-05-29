@@ -36,7 +36,7 @@ import BigNumber from 'bignumber.js';
 import { useState, useCallback, useEffect } from 'react';
 import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
-import { ALIAS_ADDRESS, CHAINS } from 'consts';
+import { ALIAS_ADDRESS, CHAINS, KEYRING_TYPE } from 'consts';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { findChain, isTestnet } from '@/utils/chain';
 import { findChainByServerID } from '@/utils/chain';
@@ -490,6 +490,8 @@ export interface SendRequireData {
   onTransferWhitelist: boolean;
   whitelistEnable: boolean;
   receiverIsSpoofing: boolean;
+  hasReceiverPrivateKeyInWallet: boolean;
+  hasReceiverMnemonicInWallet: boolean;
 }
 
 export interface SendNFTRequireData extends SendRequireData {
@@ -856,7 +858,18 @@ export const fetchActionRequiredData = async ({
       onTransferWhitelist: false,
       whitelistEnable: false,
       receiverIsSpoofing: false,
+      hasReceiverPrivateKeyInWallet: false,
+      hasReceiverMnemonicInWallet: false,
     };
+    const hasPrivateKeyInWallet = await wallet.hasPrivateKeyInWallet(
+      actionData.send.to
+    );
+    if (hasPrivateKeyInWallet) {
+      result.hasReceiverPrivateKeyInWallet =
+        hasPrivateKeyInWallet === KEYRING_TYPE.SimpleKeyring;
+      result.hasReceiverMnemonicInWallet =
+        hasPrivateKeyInWallet === KEYRING_TYPE.HdKeyring;
+    }
     queue.add(async () => {
       const { has_transfer } = await apiProvider.hasTransfer(
         chainId,
@@ -991,7 +1004,18 @@ export const fetchActionRequiredData = async ({
       onTransferWhitelist: false,
       whitelistEnable: false,
       receiverIsSpoofing: false,
+      hasReceiverPrivateKeyInWallet: false,
+      hasReceiverMnemonicInWallet: false,
     };
+    const hasPrivateKeyInWallet = await wallet.hasPrivateKeyInWallet(
+      actionData.sendNFT.to
+    );
+    if (hasPrivateKeyInWallet) {
+      result.hasReceiverPrivateKeyInWallet =
+        hasPrivateKeyInWallet === KEYRING_TYPE.SimpleKeyring;
+      result.hasReceiverMnemonicInWallet =
+        hasPrivateKeyInWallet === KEYRING_TYPE.HdKeyring;
+    }
     queue.add(async () => {
       const { has_transfer } = await apiProvider.hasTransfer(
         chainId,
@@ -1354,6 +1378,8 @@ export const formatSecurityEngineCtx = ({
           ? data.onTransferWhitelist
           : false,
         receiverIsSpoofing: data.receiverIsSpoofing,
+        hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
+        hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },
     };
   }
@@ -1382,6 +1408,8 @@ export const formatSecurityEngineCtx = ({
           ? data.onTransferWhitelist
           : false,
         receiverIsSpoofing: data.receiverIsSpoofing,
+        hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
+        hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },
     };
   }

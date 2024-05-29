@@ -1,4 +1,4 @@
-import { findChainByID } from '@/utils/chain';
+import { findChainByEnum, findChainByID } from '@/utils/chain';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import {
   openapiService,
@@ -144,11 +144,18 @@ class TransactionBroadcastWatcher {
     }, 5000);
   };
 
-  clearPendingTx = (address: string) => {
+  clearPendingTx = (address: string, chainId?: number) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [key, v]) => {
+        if (!v) {
+          return m;
+        }
+        const isSameAddr = isSameAddress(address, v.address);
+        if (chainId ? +chainId === v.chainId && isSameAddr : isSameAddr) {
+          return m;
+        }
         // keep pending txs of other addresses
-        if (v && !isSameAddress(address, v.address)) {
+        if (v) {
           m[key] = v;
         }
 

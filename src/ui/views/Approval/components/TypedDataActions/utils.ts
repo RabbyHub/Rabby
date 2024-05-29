@@ -39,7 +39,7 @@ import {
   ApproveNFTRequireData,
   fetchNFTApproveRequiredData,
 } from '../Actions/utils';
-import { ALIAS_ADDRESS } from 'consts';
+import { ALIAS_ADDRESS, KEYRING_TYPE } from 'consts';
 import { Chain } from 'background/service/openapi';
 import {
   findChain,
@@ -614,7 +614,16 @@ const fetchReceiverRequireData = async ({
     onTransferWhitelist: false,
     whitelistEnable: false,
     receiverIsSpoofing: false,
+    hasReceiverPrivateKeyInWallet: false,
+    hasReceiverMnemonicInWallet: false,
   };
+  const hasPrivateKeyInWallet = await wallet.hasPrivateKeyInWallet(to);
+  if (hasPrivateKeyInWallet) {
+    result.hasReceiverPrivateKeyInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.SimpleKeyring;
+    result.hasReceiverMnemonicInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.HdKeyring;
+  }
   queue.add(async () => {
     const { has_transfer } = await apiProvider.hasTransfer(chainId, from, to);
     result.hasTransfer = has_transfer;
@@ -1119,6 +1128,8 @@ export const formatSecurityEngineCtx = async ({
           ? data.onTransferWhitelist
           : false,
         receiverIsSpoofing: data.receiverIsSpoofing,
+        hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
+        hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },
     };
   }

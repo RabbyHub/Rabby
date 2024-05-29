@@ -2117,10 +2117,15 @@ export class WalletController extends BaseController {
     return this._lastGetAddress;
   };
 
-  clearAddressPendingTransactions = (address: string) => {
-    transactionHistoryService.clearPendingTransactions(address);
-    transactionWatcher.clearPendingTx(address);
-    transactionBroadcastWatchService.clearPendingTx(address);
+  clearAddressPendingTransactions = (address: string, chainId?: number) => {
+    transactionHistoryService.clearPendingTransactions(address, chainId);
+    transactionWatcher.clearPendingTx(address, chainId);
+    transactionBroadcastWatchService.clearPendingTx(address, chainId);
+    return;
+  };
+
+  clearAddressTransactions = (address: string) => {
+    transactionHistoryService.removeList(address);
     return;
   };
 
@@ -3851,6 +3856,29 @@ export class WalletController extends BaseController {
       ids: chainList.join(','),
     });
     return res;
+  };
+
+  hasPrivateKeyInWallet = async (address: string) => {
+    let pk: any = null;
+    try {
+      pk = await keyringService.getKeyringForAccount(
+        address,
+        KEYRING_TYPE.SimpleKeyring
+      );
+    } catch (e) {
+      // just ignore the error
+    }
+    let mnemonic: any = null;
+    try {
+      mnemonic = await keyringService.getKeyringForAccount(
+        address,
+        KEYRING_TYPE.HdKeyring
+      );
+    } catch (e) {
+      // just ignore the error
+    }
+    if (!pk && !mnemonic) return false;
+    return pk?.type || mnemonic?.type;
   };
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;

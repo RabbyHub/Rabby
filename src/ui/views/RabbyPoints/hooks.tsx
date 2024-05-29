@@ -15,6 +15,17 @@ export const useRabbyPoints = () => {
   const [activitiesCount, refreshActivities] = useRefresh();
   const [topUsersCount, refreshTopUsers] = useRefresh();
 
+  const {
+    value: campaignIsEnded,
+    loading: campaignIsEndedLoading,
+  } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.openapi.getRabbyPointsCampaignIsEnded();
+      return data?.campaign_is_ended;
+    }
+    return;
+  }, [account?.address]);
+
   const { value: signature, loading: signatureLoading } = useAsync(async () => {
     if (account?.address) {
       const data = await wallet.getRabbyPointsSignature(account?.address);
@@ -70,6 +81,8 @@ export const useRabbyPoints = () => {
   }, [account?.address, activitiesCount]);
 
   return {
+    campaignIsEnded,
+    campaignIsEndedLoading,
     signature,
     signatureLoading,
     snapshot,
