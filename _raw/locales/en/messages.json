@@ -114,6 +114,7 @@
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
         "notOnWhitelist": "Not on my whitelist",
+        "scamAddress": "Scam address",
         "fromMySeedPhrase": "From my seed phrase",
         "fromMyPrivateKey": "From my private key"
       },
