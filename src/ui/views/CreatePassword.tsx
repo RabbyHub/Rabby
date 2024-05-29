@@ -128,7 +128,7 @@ const CreatePassword = () => {
             <p className="text-24 mb-8 mt-0 text-r-neutral-title2 text-center font-bold">
               {t('page.createPassword.title')}
             </p>
-            <p className="text-14 mb-0 text-r-neutral-title2 opacity-80 text-center">
+            <p className="text-13 mb-0 text-r-neutral-title2 opacity-80 text-center">
               It will be used to unlock your wallet and encrypt local data
             </p>
             <img src="/images/create-password-mask.png" className="mask" />

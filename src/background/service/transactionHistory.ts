@@ -1,4 +1,4 @@
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { Object as ObjectType } from 'ts-toolbelt';
@@ -834,13 +834,17 @@ class TxHistory {
     // this.store.cacheExplain = copyExplain;
   }
 
-  clearPendingTransactions(address: string) {
+  clearPendingTransactions(address: string, chainId?: number) {
     const transactions = this.store.transactions[address.toLowerCase()];
     if (!transactions) return;
     this._setStoreTransaction({
       ...this.store.transactions,
       [address.toLowerCase()]: Object.values(transactions)
-        .filter((transaction) => !transaction.isPending)
+        .filter((transaction) => {
+          return chainId
+            ? !(transaction.isPending && +chainId === +transaction.chainId)
+            : !transaction.isPending;
+        })
         .reduce((res, current) => {
           return {
             ...res,
@@ -881,10 +885,17 @@ class TxHistory {
     );
 
     const firstSigningTx = this._signingTxList.find((item) => {
-      return item.rawTx.chainId === chainId && !item.isSubmitted;
+      return (
+        item.rawTx.chainId === chainId &&
+        !item.isSubmitted &&
+        isSameAddress(item.rawTx.from, address)
+      );
     });
     const processingTx = this._signingTxList.find(
-      (item) => item.rawTx.chainId === chainId && item.isSubmitted
+      (item) =>
+        item.rawTx.chainId === chainId &&
+        item.isSubmitted &&
+        isSameAddress(item.rawTx.from, address)
     );
 
     if (!maxNonceTx) return null;
