@@ -6,6 +6,7 @@ import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import LogoWithText from '../LogoWithText';
 import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
+import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import { ALIAS_ADDRESS } from '@/constant';
 
 export interface ReceiverData {
@@ -31,6 +32,8 @@ export interface ReceiverData {
   name: string | null;
   onTransferWhitelist: boolean;
   token?: TokenItem;
+  isLabelAddress?: boolean;
+  labelAddressLogo?: string;
 }
 
 export interface Props {
@@ -74,7 +77,8 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
   }, [data]);
 
   const isLabelAddress =
-    data.name && Object.values(ALIAS_ADDRESS).includes(data.name);
+    data.isLabelAddress ||
+    !!(data.name && Object.values(ALIAS_ADDRESS).includes(data.name));
 
   return (
     <div>
@@ -109,12 +113,10 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
                   {data.contract && !contractOnCurrentChain && (
                     <li>{t('page.signTx.send.notOnThisChain')}</li>
                   )}
-                  {data.name && (
+                  {data.name && !isLabelAddress && (
                     <li>
-                      {isLabelAddress
-                        ? data.name
-                        : data.name.replace(/^Token: /, 'Token ') +
-                          ' contract address'}
+                      {data.name.replace(/^Token: /, 'Token ') +
+                        ' contract address'}
                     </li>
                   )}
                 </ul>
@@ -122,6 +124,23 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
             </div>
           </Row>
         </Col>
+        {data.name && isLabelAddress && (
+          <Col>
+            <Row>{t('page.signTx.label')}</Row>
+            <Row>
+              <LogoWithText
+                text={data.name}
+                logo={data.labelAddressLogo || RabbyChainLogo}
+                logoRadius="100%"
+                logoSize={14}
+                textStyle={{
+                  fontSize: '13px',
+                  color: 'var(--r-neutral-body, #3E495E)',
+                }}
+              />
+            </Row>
+          </Col>
+        )}
         {data.cex && (
           <Col>
             <Row>{t('page.signTx.send.cexAddress')}</Row>

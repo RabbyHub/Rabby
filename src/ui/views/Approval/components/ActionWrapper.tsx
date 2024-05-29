@@ -6,7 +6,6 @@ export const DIV = styled.div`
   .action-header {
     display: flex;
     justify-content: space-between;
-    background: var(--r-neutral-card-1, #fff);
     padding: 12px 16px;
     align-items: center;
     color: var(--r-neutral-title1, #192945);
@@ -30,6 +29,10 @@ export const DIV = styled.div`
     .decode-tooltip {
       max-width: 358px;
       &:not(.ant-tooltip-hidden) {
+        left: -19px !important;
+        .ant-tooltip-arrow {
+          left: 219px;
+        }
       }
       .ant-tooltip-arrow-content {
         background-color: var(--r-neutral-bg-1, #fff);
@@ -50,7 +53,7 @@ export const DIV = styled.div`
     }
   }
   .container {
-    padding: 0 16px 12px;
+    padding: 0 16px 0;
 
     &:empty {
       padding: 0;

@@ -337,7 +337,7 @@ const Address = ({
           {ellipsis(address)}
         </span>
       </TooltipWithMagnetArrow>
-      <div className="flex" {...hoverToolbarProps}>
+      <div className="flex items-center" {...hoverToolbarProps}>
         {chain && (
           <IconExternal
             onClick={handleClickContractId}

@@ -12,6 +12,7 @@ const SubTableWrapper = styled.div`
   row-gap: 12px;
   display: flex;
   flex-direction: column;
+  margin-bottom: 12px;
 
   &:empty {
     display: none;
@@ -117,7 +118,6 @@ const SubRowWrapper = styled.div`
   font-weight: 500;
 
   &.title {
-    color: var(--r-neutral-foot, #6a7587);
     font-weight: 400;
   }
 `;

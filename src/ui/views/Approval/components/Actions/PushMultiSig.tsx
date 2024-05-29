@@ -50,7 +50,7 @@ const PushMultiSig = ({
           </SubCol>
           {multiSigInfo && (
             <SubCol>
-              <SubRow> </SubRow>
+              <SubRow isTitle>{t('page.signTx.label')}</SubRow>
               <SubRow>
                 <LogoWithText
                   logo={multiSigInfo.logo_url}

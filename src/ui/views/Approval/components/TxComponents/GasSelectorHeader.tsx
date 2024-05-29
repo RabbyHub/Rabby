@@ -212,8 +212,7 @@ const GasStyled = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-  overflow: hidden;
-  margin-right: 30px;
+  max-width: 220px;
 `;
 
 const GasPriceDesc = styled.div`
@@ -405,6 +404,9 @@ const GasSelectorHeader = ({
       action: 'EditGas',
       label: chain?.serverId,
     });
+    setTimeout(() => {
+      customerInputRef.current?.focus();
+    }, 50);
   };
 
   const panelSelection = (e, gas: GasLevel) => {
@@ -601,10 +603,6 @@ const GasSelectorHeader = ({
     );
   }
 
-  const isDanger =
-    !processedRules.includes('1118') &&
-    engineResultMap['1118']?.level === 'danger';
-
   const gasCostUsdStr = `$${formatTokenAmount(
     new BigNumber(gas.gasCostUsd).toFixed(2)
   )}`;
@@ -631,7 +629,12 @@ const GasSelectorHeader = ({
                   className={clsx(
                     'gas-selector-card-amount translate-y-1 flex items-center overflow-hidden',
                     {
-                      'text-red-default': isDanger,
+                      'text-r-red-default':
+                        !processedRules.includes('1118') &&
+                        engineResultMap['1118']?.level === 'danger',
+                      'text-r-orange-default':
+                        !processedRules.includes('1118') &&
+                        engineResultMap['1118']?.level === 'warning',
                     }
                   )}
                 >

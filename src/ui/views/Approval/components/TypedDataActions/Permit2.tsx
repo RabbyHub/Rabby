@@ -96,7 +96,7 @@ const Permit2 = ({
             <SubRow isTitle>{t('page.signTx.tokenApprove.myBalance')}</SubRow>
             <SubRow className="flex">
               <Values.TokenAmount value={tokenBalance} />
-              <span>
+              <span className="ml-4">
                 {ellipsisTokenSymbol(getTokenSymbol(actionData.token))}
               </span>
             </SubRow>

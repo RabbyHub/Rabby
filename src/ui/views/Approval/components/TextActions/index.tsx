@@ -26,36 +26,13 @@ import { OriginInfo } from '../OriginInfo';
 
 const { TabPane } = Tabs;
 
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
-    }
-  }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
-  }
-`;
-
 export const MessageWrapper = styled.div`
   .title {
-    position: relative;
     display: flex;
     justify-content: center;
     margin-top: 12px;
     margin-bottom: 12px;
+    overflow: hidden;
 
     .title-text {
       font-size: 12px;
@@ -63,25 +40,33 @@ export const MessageWrapper = styled.div`
       color: var(--r-neutral-foot, #6a7587);
       text-align: center;
       font-weight: 500;
-      background: var(--r-neutral-bg1, #fff);
       padding: 0 8px;
       position: relative;
-    }
 
-    &::before {
-      content: '';
-      width: 100%;
-      height: 1px;
-      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      position: absolute;
-      top: 50%;
-      left: 0;
+      &::before,
+      &::after {
+        content: '';
+        width: 400px;
+        height: 1px;
+        border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+        position: absolute;
+        top: 50%;
+      }
+
+      &::before {
+        transform: translateX(-100%);
+        left: 0px;
+      }
+
+      &::after {
+        transform: translateX(100%);
+        right: 0px;
+      }
     }
   }
   .content {
     word-break: break-all;
     white-space: pre-wrap;
-    background: var(--r-neutral-card-1, #ffffff);
     font-size: 13px;
     line-height: 16px;
     font-weight: 400;
@@ -93,7 +78,6 @@ export const MessageWrapper = styled.div`
   }
   &.no-action {
     .content {
-      background: var(--r-neutral-card-1, #ffffff);
     }
   }
 `;
