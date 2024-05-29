@@ -55,6 +55,7 @@ import { Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { MessageWrapper } from '../TextActions';
+import { Divide } from '../Divide';
 
 const Actions = ({
   data,
@@ -138,6 +139,8 @@ const Actions = ({
               </div>
             </div>
           </div>
+
+          <Divide />
 
           {chain?.isTestnet ? (
             <>

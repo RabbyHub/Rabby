@@ -27,11 +27,11 @@ export const DIV = styled.div`
     }
 
     .decode-tooltip {
-      max-width: 358px;
+      max-width: 360px;
       &:not(.ant-tooltip-hidden) {
-        left: -19px !important;
+        left: -17px !important;
         .ant-tooltip-arrow {
-          left: 219px;
+          left: 212px;
         }
       }
       .ant-tooltip-arrow-content {

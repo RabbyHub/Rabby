@@ -72,13 +72,16 @@ const Permit2 = ({
   return (
     <Wrapper>
       <Table>
-        <Col>
-          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
-          <div className="gap-y-6 flex flex-col overflow-hidden pl-4">
-            {actionData.token_list.map((token) => (
-              <Row key={token.id}>
+        {actionData.token_list.map((token, index) => (
+          <>
+            <Col>
+              <Row isTitle>
+                {index === 0 ? t('page.signTx.tokenApprove.approveToken') : ''}
+              </Row>
+              <Row className="overflow-hidden pl-6">
                 <LogoWithText
                   className="overflow-hidden"
+                  id={`batch-permit2-token-${index}`}
                   logo={token.logo_url}
                   text={
                     <div className="overflow-hidden overflow-ellipsis flex">
@@ -90,21 +93,23 @@ const Permit2 = ({
                   }
                   logoRadius="100%"
                 />
-                {/* <SubTable>
-                  <SubCol nested>
-                    <SubRow isTitle>
-                      {t('page.signTx.tokenApprove.myBalance')}
-                    </SubRow>
-                    <SubRow>
-                      <Values.TokenAmount value={tokenBalanceMap[token.id]} />
-                      <span>{ellipsisTokenSymbol(getTokenSymbol(token))}</span>
-                    </SubRow>
-                  </SubCol>
-                </SubTable> */}
               </Row>
-            ))}
-          </div>
-        </Col>
+            </Col>
+            <SubTable target={`batch-permit2-token-${index}`}>
+              <SubCol>
+                <SubRow isTitle>
+                  {t('page.signTx.tokenApprove.myBalance')}
+                </SubRow>
+                <SubRow className="flex">
+                  <Values.TokenAmount value={tokenBalanceMap[token.id]} />
+                  <span className="ml-4">
+                    {ellipsisTokenSymbol(getTokenSymbol(token))}
+                  </span>
+                </SubRow>
+              </SubCol>
+            </SubTable>
+          </>
+        ))}
         <Col>
           <Row isTitle tip={t('page.signTypedData.permit2.sigExpireTimeTip')}>
             {t('page.signTypedData.permit2.sigExpireTime')}

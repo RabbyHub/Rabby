@@ -23,6 +23,7 @@ import { CommonAction } from '../CommonAction';
 import { ActionWrapper } from '../ActionWrapper';
 import { Card } from '../Card';
 import { OriginInfo } from '../OriginInfo';
+import { Divide } from '../Divide';
 
 const { TabPane } = Tabs;
 
@@ -172,6 +173,8 @@ const Actions = ({
               </div>
             </div>
           </div>
+
+          {data && <Divide />}
 
           {data && (
             <div className="container">

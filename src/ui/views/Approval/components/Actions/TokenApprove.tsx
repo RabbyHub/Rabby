@@ -343,7 +343,7 @@ const TokenApprove = ({
               value: '$10,000',
             })}
             warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$100,000',
+              value: '$50,000',
             })}
             title={t('page.signTx.trustValueTitle')}
           />
