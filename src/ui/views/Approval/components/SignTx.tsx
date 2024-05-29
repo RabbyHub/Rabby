@@ -1039,6 +1039,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             : sendNativeTokenAmount;
           const gasNotEnough = gas
             .times(ratio)
+            .times(selectedGas?.price || 0)
+            .div(1e18)
             .plus(sendNativeTokenAmount.div(1e18))
             .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
           if (gasNotEnough) {

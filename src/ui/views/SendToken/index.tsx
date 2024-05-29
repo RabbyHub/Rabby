@@ -479,47 +479,6 @@ const SendToken = () => {
     [chain]
   );
 
-  const calcGasCost = async () => {
-    const targetChain = findChain({
-      enum: chain,
-    })!;
-    const gasList = gasPriceMap[targetChain.enum]?.list;
-
-    if (!gasList) return new BigNumber(0);
-
-    const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
-      targetChain.id
-    );
-
-    let gasLevel: GasLevel;
-    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-      // use cached gasPrice if exist
-      gasLevel = {
-        level: 'custom',
-        price: lastTimeGas.gasPrice,
-        front_tx_count: 0,
-        estimated_seconds: 0,
-        base_fee: 0,
-        priority_price: null,
-      };
-    } else if (
-      lastTimeGas?.lastTimeSelect &&
-      lastTimeGas?.lastTimeSelect === 'gasLevel'
-    ) {
-      const target = gasList.find(
-        (item) => item.level === lastTimeGas?.gasLevel
-      )!;
-      gasLevel = target;
-    } else {
-      // no cache, use the fast level in gasMarket
-      gasLevel = gasList.find((item) => item.level === 'fast')!;
-    }
-    const costTokenAmount = new BigNumber(gasLevel.price)
-      .times(21000)
-      .div(1e18);
-    return costTokenAmount;
-  };
-
   const { addressType } = useCheckAddressType(formSnapshot.to, chainItem);
 
   const {
@@ -603,10 +562,9 @@ const SendToken = () => {
         const notContract = !!code && (code === '0x' || code === '0x0');
 
         let gasLimit = 0;
+
         if (estimateGas) {
           gasLimit = estimateGas;
-        } else if (chain.needEstimateGas && !isGnosisSafe) {
-          gasLimit = (await ethEstimateGas()).gasNumber;
         }
 
         /**
@@ -802,6 +760,7 @@ const SendToken = () => {
     const chainItem = findChain({ serverId: token.chain });
     setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
     setCurrentToken(token);
+    setEstimateGas(0);
     await persistPageStateCache({ currentToken: token });
     setBalanceError(null);
     setBalanceWarn(null);
@@ -944,6 +903,7 @@ const SendToken = () => {
       chain: chain.serverId,
       time_at: 0,
     });
+    setEstimateGas(0);
 
     let nextToken: TokenItem | null = null;
     try {
@@ -1128,10 +1088,6 @@ const SendToken = () => {
   const getAlianName = async () => {
     const alianName = await wallet.getAlianName(currentAccount?.address || '');
     setSendAlianName(alianName || '');
-  };
-
-  const handleClickGasReserved = () => {
-    setGasSelectorVisible(true);
   };
 
   const handleGasSelectorClose = () => {
