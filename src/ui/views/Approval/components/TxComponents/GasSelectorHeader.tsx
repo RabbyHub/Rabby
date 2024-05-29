@@ -607,6 +607,10 @@ const GasSelectorHeader = ({
     new BigNumber(gas.gasCostUsd).toFixed(2)
   )}`;
 
+  if (disabled) {
+    return null;
+  }
+
   return (
     <>
       <HeaderStyled>

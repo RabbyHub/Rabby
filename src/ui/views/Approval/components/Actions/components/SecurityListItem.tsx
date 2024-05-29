@@ -3,6 +3,7 @@ import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import React from 'react';
 import { SecurityListItemTag } from './SecurityListItemTag';
 import { SubCol, SubRow } from './SubTable';
+import { capitalize } from 'lodash';
 
 export interface Props {
   id: string;
@@ -27,7 +28,8 @@ export const SecurityListItem: React.FC<Props> = ({
   title,
   noTitle = false,
 }) => {
-  const displayTitle = title || engineResult?.level;
+  const displayTitle =
+    title || (engineResult?.level ? capitalize(engineResult.level) : '');
   const hasTitle = !!(noTitle ? '' : displayTitle);
 
   if (!engineResult && !defaultText) {
