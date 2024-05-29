@@ -1426,12 +1426,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       priority_price: gas.priority_price,
     });
     if (gas.level === 'custom') {
-      setGasList(
-        gasList.map((item) => {
-          if (item.level === 'custom') return gas;
-          return item;
-        })
-      );
+      loadGasMarket(chain, gas.price).then((res) => {
+        setSelectedGas((prev) => {
+          const newGas = res.find((item) => item.level === 'custom');
+          return newGas || prev;
+        });
+      });
     }
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);

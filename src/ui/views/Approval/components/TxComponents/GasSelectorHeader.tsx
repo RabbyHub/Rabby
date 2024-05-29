@@ -30,6 +30,7 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { isNil } from 'lodash';
+import { gasEstimationTime } from '@/utils/time';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -42,7 +43,6 @@ interface GasSelectorProps {
   gas: {
     gasCostUsd: number | string | BigNumber;
     gasCostAmount: number | string | BigNumber;
-    gasEstimatedSeconds?: number;
     success?: boolean;
     error?: null | {
       msg: string;
@@ -469,13 +469,10 @@ const GasSelectorHeader = ({
   };
 
   const customGasConfirm = (e) => {
+    const customGas = gasList.find((item) => item.level === 'custom')!;
     const gas = {
-      level: 'custom',
+      ...customGas,
       price: Number(e?.target?.value),
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-      priority_price: null,
     };
     setSelectedGas({
       ...gas,
@@ -664,7 +661,7 @@ const GasSelectorHeader = ({
             )}
           </div>
           <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
-            ~12 sec
+            {gasEstimationTime(selectedGas?.estimated_seconds)}
           </div>
           {engineResultMap['1118'] && (
             <SecurityLevelTagNoText
@@ -791,9 +788,7 @@ const GasSelectorHeader = ({
                     )}
                   </div>
                   <div className="cardTime">
-                    {!isNil(item.estimated_seconds)
-                      ? `~${item.estimated_seconds} sec`
-                      : null}
+                    {gasEstimationTime(item.estimated_seconds)}
                   </div>
                 </div>
               ))}
