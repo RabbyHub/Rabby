@@ -202,6 +202,12 @@ const SendNFT = ({
             id="1036"
           />
           <SecurityListItem
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            engineResult={engineResultMap['1143']}
+            dangerText={t('page.signTx.send.scamAddress')}
+            id="1143"
+          />
+          <SecurityListItem
             title={t('page.signTx.send.whitelistTitle')}
             engineResult={engineResultMap['1042']}
             safeText={t('page.signTx.send.onMyWhitelist')}

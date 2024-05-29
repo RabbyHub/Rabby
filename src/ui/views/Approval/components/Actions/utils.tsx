@@ -489,6 +489,7 @@ export interface SendRequireData {
   name: string | null;
   onTransferWhitelist: boolean;
   whitelistEnable: boolean;
+  receiverIsSpoofing: boolean;
 }
 
 export interface SendNFTRequireData extends SendRequireData {
@@ -854,6 +855,7 @@ export const fetchActionRequiredData = async ({
       name: null,
       onTransferWhitelist: false,
       whitelistEnable: false,
+      receiverIsSpoofing: false,
     };
     queue.add(async () => {
       const { has_transfer } = await apiProvider.hasTransfer(
@@ -909,6 +911,13 @@ export const fetchActionRequiredData = async ({
         actionData.send!.to
       );
       result.usedChains = usedChainList;
+    });
+    queue.add(async () => {
+      const { is_spoofing } = await apiProvider.checkSpoofing({
+        from: address,
+        to: actionData.send!.to,
+      });
+      result.receiverIsSpoofing = is_spoofing;
     });
     const whitelist = await wallet.getWhitelist();
     const whitelistEnable = await wallet.isWhitelistEnabled();
@@ -981,6 +990,7 @@ export const fetchActionRequiredData = async ({
       name: null,
       onTransferWhitelist: false,
       whitelistEnable: false,
+      receiverIsSpoofing: false,
     };
     queue.add(async () => {
       const { has_transfer } = await apiProvider.hasTransfer(
@@ -1032,6 +1042,13 @@ export const fetchActionRequiredData = async ({
         actionData.sendNFT!.to
       );
       result.usedChains = usedChainList;
+    });
+    queue.add(async () => {
+      const { is_spoofing } = await apiProvider.checkSpoofing({
+        from: address,
+        to: actionData.sendNFT!.to,
+      });
+      result.receiverIsSpoofing = is_spoofing;
     });
     const whitelist = await wallet.getWhitelist();
     const whitelistEnable = await wallet.isWhitelistEnabled();
@@ -1336,6 +1353,7 @@ export const formatSecurityEngineCtx = ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+        receiverIsSpoofing: data.receiverIsSpoofing,
       },
     };
   }
@@ -1363,6 +1381,7 @@ export const formatSecurityEngineCtx = ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+        receiverIsSpoofing: data.receiverIsSpoofing,
       },
     };
   }

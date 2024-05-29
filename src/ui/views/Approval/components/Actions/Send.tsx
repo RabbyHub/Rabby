@@ -198,6 +198,12 @@ const Send = ({
             id="1018"
           />
           <SecurityListItem
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            engineResult={engineResultMap['1143']}
+            dangerText={t('page.signTx.send.scamAddress')}
+            id="1143"
+          />
+          <SecurityListItem
             title={t('page.signTx.send.whitelistTitle')}
             engineResult={engineResultMap['1033']}
             safeText={t('page.signTx.send.onMyWhitelist')}

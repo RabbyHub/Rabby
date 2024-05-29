@@ -108,7 +108,8 @@
         "cexAddress": "CEX address",
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
-        "notOnWhitelist": "Not on my whitelist"
+        "notOnWhitelist": "Not on my whitelist",
+        "scamAddress": "Scam address"
       },
       "tokenApprove": {
         "title": "Token Approval",
