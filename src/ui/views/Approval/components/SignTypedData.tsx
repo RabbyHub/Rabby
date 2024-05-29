@@ -5,7 +5,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { Skeleton, message } from 'antd';
 import { useScroll } from 'react-use';
-import { useSize } from 'ahooks';
+import { useSize, useDebounceFn } from 'ahooks';
 import { underline2Camelcase } from '@/background/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -14,7 +14,6 @@ import {
   INTERNAL_REQUEST_ORIGIN,
   KEYRING_CLASS,
   KEYRING_TYPE,
-  CHAINS,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -35,10 +34,12 @@ import {
   TypedDataActionData,
   formatSecurityEngineCtx,
   normalizeTypeData,
-  getActionTypeText,
 } from './TypedDataActions/utils';
-import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { isTestnetChainId, findChainByID, findChain } from '@/utils/chain';
+import {
+  Level,
+  defaultRules,
+} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { isTestnetChainId, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
@@ -66,6 +67,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
+  const securityEngineCtx = useRef<any>(null);
+  const logId = useRef('');
   const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
@@ -421,6 +424,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         requireData,
         wallet,
       });
+      securityEngineCtx.current = ctx;
       const result = await executeEngine(ctx);
       setEngineResults(result);
     }
@@ -468,6 +472,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     dispatch.securityEngine.closeRuleDrawer();
   };
 
+  const { run: reportLogId } = useDebounceFn(
+    (rules) => {
+      wallet.openapi.postActionLog({
+        id: logId.current,
+        type: 'typed_data',
+        rules,
+      });
+    },
+    { wait: 1000 }
+  );
+
   useEffect(() => {
     executeSecurityEngine();
   }, [rules]);
@@ -476,6 +491,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
     if (!loading) {
       if (typedDataActionData) {
+        logId.current = typedDataActionData.log_id;
         actionType.current = typedDataActionData?.action?.type || '';
         const parsed = parseAction(typedDataActionData, signTypedData, sender);
         setParsedActionData(parsed);
@@ -499,8 +515,36 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, [scrollInfo, scrollRefSize]);
 
   useEffect(() => {
+    if (logId.current && !isLoading && securityEngineCtx.current) {
+      try {
+        const keys = Object.keys(securityEngineCtx.current);
+        const key: any = keys[0];
+        const notTriggeredRules = defaultRules.filter((rule) => {
+          return (
+            rule.requires.includes(key) &&
+            !engineResults.some((item) => item.id === rule.id)
+          );
+        });
+        reportLogId([
+          ...notTriggeredRules.map((rule) => ({
+            id: rule.id,
+            level: null,
+          })),
+          ...engineResults.map((result) => ({
+            id: result.id,
+            level: result.level,
+          })),
+        ]);
+      } catch (e) {
+        // IGNORE
+      }
+    }
+  }, [isLoading, engineResults]);
+
+  useEffect(() => {
     renderStartAt.current = Date.now();
     init();
+    dispatch.securityEngine.init();
     checkWachMode();
     report('createSignText');
   }, []);

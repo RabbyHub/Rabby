@@ -108,10 +108,6 @@ const AssetOrder = ({
     });
   };
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

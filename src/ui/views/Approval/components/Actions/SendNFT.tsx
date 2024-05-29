@@ -68,10 +68,6 @@ const SendNFT = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

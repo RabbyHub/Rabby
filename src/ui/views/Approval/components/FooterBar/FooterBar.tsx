@@ -233,7 +233,6 @@ export const FooterBar: React.FC<Props> = ({
     const currentAccount =
       gnosisAccount || (await wallet.syncGetCurrentAccount());
     if (currentAccount) setAccount(currentAccount);
-    dispatch.securityEngine.init();
   };
 
   useEffect(() => {

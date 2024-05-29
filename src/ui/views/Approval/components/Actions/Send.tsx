@@ -51,10 +51,6 @@ const Send = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

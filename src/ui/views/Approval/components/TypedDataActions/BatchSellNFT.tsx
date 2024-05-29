@@ -107,10 +107,6 @@ const BatchSellNFT = ({
     });
   };
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

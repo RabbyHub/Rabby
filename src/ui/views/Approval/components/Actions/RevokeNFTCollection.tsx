@@ -57,10 +57,6 @@ const RevokeNFTCollection = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

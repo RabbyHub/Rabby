@@ -88,10 +88,6 @@ const WrapToken = ({
     });
   };
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
