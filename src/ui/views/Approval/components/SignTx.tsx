@@ -255,7 +255,7 @@ const getRecommendNonce = async ({
   if (!chain) {
     throw new Error('chain not found');
   }
-  const onChainNonce = await wallet.requestETHRpc(
+  const onChainNonce = await wallet.requestETHRpc<any>(
     {
       method: 'eth_getTransactionCount',
       params: [tx.from, 'latest'],
@@ -281,7 +281,7 @@ const getNativeTokenBalance = async ({
   if (!chain) {
     throw new Error('chain not found');
   }
-  const balance = await wallet.requestETHRpc(
+  const balance = await wallet.requestETHRpc<any>(
     {
       method: 'eth_getBalance',
       params: [address, 'latest'],
@@ -1022,7 +1022,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         setRecommendGasLimit(`0x${gas.toString(16)}`);
         let block: null | BlockInfo = null;
         try {
-          block = await wallet.requestETHRpc(
+          block = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getBlockByNumber',
               params: ['latest', false],
@@ -1044,6 +1044,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             : sendNativeTokenAmount;
           const gasNotEnough = gas
             .times(ratio)
+            .times(selectedGas?.price || 0)
+            .div(1e18)
             .plus(sendNativeTokenAmount.div(1e18))
             .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
           if (gasNotEnough) {
