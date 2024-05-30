@@ -114,6 +114,7 @@
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
         "notOnWhitelist": "Not on my whitelist",
+        "scamAddress": "Scam address",
         "fromMySeedPhrase": "From my seed phrase",
         "fromMyPrivateKey": "From my private key"
       },
@@ -209,7 +210,7 @@
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
       "chain": "Chain",
-      "unknownActionType": "Unknown action type",
+      "unknownActionType": "Unknown Action Type",
       "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
       "nftCollection": "NFT Collection",
       "floorPrice": "Floor price",
@@ -311,7 +312,8 @@
       "contract": "Smart contract",
       "trustValueTitle": "Risk exposure",
       "typedDataMessage": "Typed data message",
-      "label": "Label"
+      "label": "Label",
+      "addressSource": "Address Source"
     },
     "signFooterBar": {
       "requestFrom": "Request from",

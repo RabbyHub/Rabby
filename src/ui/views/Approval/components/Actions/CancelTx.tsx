@@ -13,10 +13,6 @@ import { useRabbyDispatch } from '@/ui/store';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 const Wrapper = styled.div`
-  &:empty {
-    margin-top: -12px;
-  }
-
   .container {
     flex: 1;
     background: var(--r-blue-light-1, #eef1ff);
@@ -24,6 +20,7 @@ const Wrapper = styled.div`
     border-radius: 6px;
     padding: 12px;
     // margin-top: 14px;
+    margin-bottom: 12px;
     position: relative;
     .internal-transaction {
       padding: 0 5px;

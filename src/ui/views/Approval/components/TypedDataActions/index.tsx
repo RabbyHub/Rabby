@@ -51,15 +51,18 @@ import {
   RevokeTokenApproveRequireData,
   SendRequireData,
 } from '../Actions/utils';
-import { Chain } from '@debank/common';
+import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { MessageWrapper } from '../TextActions';
+import { Divide } from '../Divide';
+import { Col, Row } from '../Actions/components/Table';
+import LogoWithText from '../Actions/components/LogoWithText';
 
 const Actions = ({
   data,
   requireData,
-  chain,
+  chain = CHAINS[CHAINS_ENUM.ETH],
   engineResults,
   raw,
   message,
@@ -139,6 +142,8 @@ const Actions = ({
             </div>
           </div>
 
+          {data && <Divide />}
+
           {chain?.isTestnet ? (
             <>
               <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
@@ -149,6 +154,19 @@ const Actions = ({
             <>
               {(data?.actionType || data?.actionType === null) && (
                 <div className="container">
+                  {chain && (
+                    <Col>
+                      <Row isTitle>{t('page.signTx.chain')}</Row>
+                      <Row>
+                        <LogoWithText
+                          logo={chain.logo}
+                          text={chain.name}
+                          logoRadius="100%"
+                        />
+                      </Row>
+                    </Col>
+                  )}
+
                   {data.permit && (
                     <Permit
                       data={data.permit}

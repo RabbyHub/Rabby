@@ -55,6 +55,7 @@ const Send = ({
 
   const isLabelAddress =
     requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
+
   return (
     <Wrapper>
       <Table>
@@ -90,6 +91,10 @@ const Send = ({
                 isTokenContract: requireData.isTokenContract,
                 name: requireData.name,
                 onTransferWhitelist: requireData.onTransferWhitelist,
+                hasReceiverMnemonicInWallet:
+                  requireData.hasReceiverMnemonicInWallet,
+                hasReceiverPrivateKeyInWallet:
+                  requireData.hasReceiverPrivateKeyInWallet,
               }}
             >
               <Values.Address
@@ -145,6 +150,7 @@ const Send = ({
             id="1019"
           />
           <SecurityListItem
+            title={t('page.signTx.addressSource')}
             engineResult={engineResultMap['1142']}
             safeText={
               requireData.hasReceiverMnemonicInWallet
@@ -199,6 +205,12 @@ const Send = ({
             engineResult={engineResultMap['1018']}
             warningText={<Values.Transacted value={false} />}
             id="1018"
+          />
+          <SecurityListItem
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            engineResult={engineResultMap['1143']}
+            dangerText={t('page.signTx.send.scamAddress')}
+            id="1143"
           />
           <SecurityListItem
             title={t('page.signTx.send.whitelistTitle')}

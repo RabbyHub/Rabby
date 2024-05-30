@@ -154,6 +154,7 @@ const SendNFT = ({
             id="1037"
           />
           <SecurityListItem
+            title={t('page.signTx.addressSource')}
             engineResult={engineResultMap['1142']}
             safeText={
               requireData.hasReceiverMnemonicInWallet
@@ -205,6 +206,12 @@ const SendNFT = ({
             engineResult={engineResultMap['1036']}
             warningText={<Values.Transacted value={false} />}
             id="1036"
+          />
+          <SecurityListItem
+            title={t('page.signTx.tokenApprove.flagByRabby')}
+            engineResult={engineResultMap['1143']}
+            dangerText={t('page.signTx.send.scamAddress')}
+            id="1143"
           />
           <SecurityListItem
             title={t('page.signTx.send.whitelistTitle')}

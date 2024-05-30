@@ -62,6 +62,7 @@ const PopupContainer = styled.div`
     .row {
       &:nth-child(1) {
         color: var(--r-neutral-body, #3e495e);
+        justify-content: flex-start;
       }
     }
   }

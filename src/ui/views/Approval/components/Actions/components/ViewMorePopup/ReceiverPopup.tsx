@@ -34,6 +34,9 @@ export interface ReceiverData {
   token?: TokenItem;
   isLabelAddress?: boolean;
   labelAddressLogo?: string;
+  hasReceiverMnemonicInWallet?: boolean;
+  hasReceiverPrivateKeyInWallet?: boolean;
+  rank?: number;
 }
 
 export interface Props {
@@ -124,6 +127,18 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
             </div>
           </Row>
         </Col>
+        {data.hasReceiverMnemonicInWallet && (
+          <Col>
+            <Row>{t('page.signTx.addressSource')}</Row>
+            <Row>{t('page.signTx.send.fromMySeedPhrase')}</Row>
+          </Col>
+        )}
+        {data.hasReceiverPrivateKeyInWallet && (
+          <Col>
+            <Row>{t('page.signTx.addressSource')}</Row>
+            <Row>{t('page.signTx.send.fromMyPrivateKey')}</Row>
+          </Col>
+        )}
         {data.name && isLabelAddress && (
           <Col>
             <Row>{t('page.signTx.label')}</Row>

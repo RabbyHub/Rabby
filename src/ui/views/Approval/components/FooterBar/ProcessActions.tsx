@@ -1,10 +1,10 @@
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import React from 'react';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export const ProcessActions: React.FC<Props> = ({
   onSubmit,
@@ -16,7 +16,7 @@ export const ProcessActions: React.FC<Props> = ({
   const { t } = useTranslation();
   return (
     <ActionsContainer onCancel={onCancel}>
-      <Tooltip
+      <TooltipWithMagnetArrow
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
         title={tooltipContent}
       >
@@ -39,7 +39,7 @@ export const ProcessActions: React.FC<Props> = ({
             {t('page.signFooterBar.beginSigning')}
           </Button>
         </GasLessAnimatedWrapper>
-      </Tooltip>
+      </TooltipWithMagnetArrow>
     </ActionsContainer>
   );
 };

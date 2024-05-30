@@ -1,7 +1,7 @@
 import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, TxPushType } from 'background/service/openapi';
+import { Chain, GasLevel, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -9,7 +9,13 @@ import {
   L2_ENUMS,
   CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
@@ -30,6 +36,9 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { isNil } from 'lodash';
+import { calcGasEstimated } from '@/utils/time';
+import { useWallet } from '@/ui/utils';
+import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -42,7 +51,6 @@ interface GasSelectorProps {
   gas: {
     gasCostUsd: number | string | BigNumber;
     gasCostAmount: number | string | BigNumber;
-    gasEstimatedSeconds?: number;
     success?: boolean;
     error?: null | {
       msg: string;
@@ -181,6 +189,10 @@ const CardBody = styled.div<{
 
     .custom-input {
       margin: 6px auto 0;
+
+      .ant-input {
+        padding: 0;
+      }
     }
     .ant-input {
       text-align: center !important;
@@ -255,6 +267,7 @@ const GasSelectorHeader = ({
   gasPriceMedian,
   pushType,
 }: GasSelectorProps) => {
+  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -295,11 +308,23 @@ const GasSelectorHeader = ({
   const chain = findChain({
     id: chainId,
   })!;
+  const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
+
+  const loadCustomGasData = useCallback(
+    async (custom?: number): Promise<GasLevel> => {
+      const list = await wallet.openapi.gasMarket(
+        chain.serverId,
+        custom && custom > 0 ? custom : undefined
+      );
+      return list.find((item) => item.level === 'custom')!;
+    },
+    []
+  );
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -469,13 +494,10 @@ const GasSelectorHeader = ({
   };
 
   const customGasConfirm = (e) => {
+    const customGas = gasList.find((item) => item.level === 'custom')!;
     const gas = {
-      level: 'custom',
+      ...customGas,
       price: Number(e?.target?.value),
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-      priority_price: null,
     };
     setSelectedGas({
       ...gas,
@@ -512,20 +534,27 @@ const GasSelectorHeader = ({
     });
   };
 
+  const [loadingGasEstimated, setLoadingGasEstimated] = useState(false);
   useDebounce(
     () => {
-      (isReady || !isFirstTimeLoad) &&
-        setSelectedGas((gas) => ({
-          ...gas,
-          level: 'custom',
-          price: Number(customGas) * 1e9,
-          front_tx_count: 0,
-          estimated_seconds: 0,
-          priority_price: null,
-          base_fee: gasList[0].base_fee,
-        }));
+      if (isReady || !isFirstTimeLoad) {
+        setLoadingGasEstimated(true);
+        loadCustomGasData(Number(customGas) * 1e9).then((data) => {
+          if (data) setCustomGasEstimated(data.estimated_seconds);
+          setSelectedGas((gas) => ({
+            ...gas,
+            level: 'custom',
+            price: Number(customGas) * 1e9,
+            front_tx_count: 0,
+            estimated_seconds: data?.estimated_seconds ?? 0,
+            priority_price: null,
+            base_fee: data?.base_fee ?? 0,
+          }));
+          setLoadingGasEstimated(false);
+        });
+      }
     },
-    500,
+    200,
     [customGas]
   );
 
@@ -595,6 +624,13 @@ const GasSelectorHeader = ({
     }
   }, [gasList, selectedGas, isReady, chainId]);
 
+  useEffect(() => {
+    const customGas = gasList.find((item) => item.level === 'custom');
+    if (customGas) {
+      setCustomGasEstimated(customGas.estimated_seconds);
+    }
+  }, [gasList]);
+
   if (!isReady && isFirstTimeLoad) {
     return (
       <HeaderStyled>
@@ -663,9 +699,11 @@ const GasSelectorHeader = ({
               </div>
             )}
           </div>
-          <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
-            ~12 sec
-          </div>
+          {gas.success && (
+            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
+              {calcGasEstimated(selectedGas?.estimated_seconds)}
+            </div>
+          )}
           {engineResultMap['1118'] && (
             <SecurityLevelTagNoText
               enable={engineResultMap['1118'].enable}
@@ -722,7 +760,10 @@ const GasSelectorHeader = ({
                 ${modalExplainGas.gasCostUsd.toFixed(2)}
               </div>
               <div className="gas-selector-modal-usd">
-                <img src={chain.nativeTokenLogo} className="w-16 h-16" />
+                <img
+                  src={chain.nativeTokenLogo || IconUnknown}
+                  className="w-16 h-16"
+                />
                 {formatTokenAmount(
                   new BigNumber(modalExplainGas.gasCostAmount).toString(10),
                   6
@@ -791,9 +832,18 @@ const GasSelectorHeader = ({
                     )}
                   </div>
                   <div className="cardTime">
-                    {!isNil(item.estimated_seconds)
-                      ? `~${item.estimated_seconds} sec`
-                      : null}
+                    {item.level === 'custom' ? (
+                      loadingGasEstimated ? (
+                        <Skeleton.Input
+                          className="w-[44px] h-[12px] rounded"
+                          active
+                        />
+                      ) : (
+                        calcGasEstimated(customGasEstimated)
+                      )
+                    ) : (
+                      calcGasEstimated(item.estimated_seconds)
+                    )}
                   </div>
                 </div>
               ))}
@@ -814,7 +864,7 @@ const GasSelectorHeader = ({
                   }
                   overlayClassName="rectangle"
                 >
-                  <IconInfoSVG className="text-r-neutral-foot ml-2" />
+                  <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
                 </Tooltip>
               </p>
               <div className="priority-slider-body">

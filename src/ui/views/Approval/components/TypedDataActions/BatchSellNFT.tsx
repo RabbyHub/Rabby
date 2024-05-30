@@ -113,32 +113,35 @@ const BatchSellNFT = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTypedData.sellNFT.listNFT')}</Row>
-          <div className="gap-y-6 flex flex-col overflow-hidden pl-4">
+          <Row className="gap-y-6 flex flex-col overflow-hidden">
             {actionData.pay_nft_list.map((nft) => (
-              <Row key={nft.id} className="has-bottom-border">
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft,
-                    chain,
-                  }}
-                >
-                  <NFTWithName hasHover nft={nft}></NFTWithName>
-                </ViewMore>
-              </Row>
+              <ViewMore
+                key={nft.id}
+                type="nft"
+                data={{
+                  nft,
+                  chain,
+                }}
+              >
+                <NFTWithName hasHover nft={nft}></NFTWithName>
+              </ViewMore>
             ))}
-          </div>
+          </Row>
         </Col>
         <Col>
           <Row isTitle>{t('page.signTypedData.sellNFT.receiveToken')}</Row>
           <Row>
             <LogoWithText
+              className="overflow-hidden"
               logo={actionData.receive_token.logo_url}
-              text={`${formatAmount(
-                actionData.receive_token.amount
-              )} ${ellipsisTokenSymbol(
-                getTokenSymbol(actionData.receive_token)
-              )}`}
+              text={
+                <div className="overflow-hidden overflow-ellipsis flex">
+                  <Values.TokenAmount value={actionData.receive_token.amount} />
+                  <span className="ml-2">
+                    <Values.TokenSymbol token={actionData.receive_token} />
+                  </span>
+                </div>
+              }
               logoRadius="100%"
               icon={
                 <Values.TokenLabel

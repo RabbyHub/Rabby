@@ -283,9 +283,11 @@ const RuleDrawer = ({
                 className="level-icon"
                 src={SecurityEngineLevel[currentLevel].icon}
               />
-              <span className="level-text">
-                {SecurityEngineLevel[currentLevel].text}
-              </span>
+              {selectRule.level && (
+                <span className="level-text">
+                  {SecurityEngineLevel[selectRule.level].text}
+                </span>
+              )}
             </div>
           )}
           <div className="relative">

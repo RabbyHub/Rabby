@@ -17,7 +17,7 @@ export const FooterResendCancelGroup: React.FC<Props> = ({
 
   return (
     <>
-      <Divide className="bg-light-r-neutral-line" />
+      <Divide className="bg-r-neutral-line" />
 
       <div className={clsx('flex justify-between py-18 px-20 gap-16')}>
         <Button

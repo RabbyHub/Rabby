@@ -613,6 +613,7 @@ const fetchReceiverRequireData = async ({
     name: null,
     onTransferWhitelist: false,
     whitelistEnable: false,
+    receiverIsSpoofing: false,
     hasReceiverPrivateKeyInWallet: false,
     hasReceiverMnemonicInWallet: false,
   };
@@ -668,6 +669,13 @@ const fetchReceiverRequireData = async ({
   queue.add(async () => {
     const usedChainList = await apiProvider.addrUsedChainList(to);
     result.usedChains = usedChainList;
+  });
+  queue.add(async () => {
+    const { is_spoofing } = await apiProvider.checkSpoofing({
+      from,
+      to,
+    });
+    result.receiverIsSpoofing = is_spoofing;
   });
   const whitelist = await wallet.getWhitelist();
   const whitelistEnable = await wallet.isWhitelistEnabled();
@@ -1119,6 +1127,7 @@ export const formatSecurityEngineCtx = async ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+        receiverIsSpoofing: data.receiverIsSpoofing,
         hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
         hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },

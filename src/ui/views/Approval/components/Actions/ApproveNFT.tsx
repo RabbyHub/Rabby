@@ -132,18 +132,6 @@ const ApproveNFT = ({
           />
 
           <SecurityListItem
-            id="1044"
-            engineResult={engineResultMap['1044']}
-            dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$10,000',
-            })}
-            warningText={t('page.signTx.tokenApprove.trustValueLessThan', {
-              value: '$100,000',
-            })}
-            title={t('page.signTx.trustValueTitle')}
-          />
-
-          <SecurityListItem
             id="1045"
             engineResult={engineResultMap['1045']}
             warningText={t('page.signTx.tokenApprove.deployTimeLessThan', {

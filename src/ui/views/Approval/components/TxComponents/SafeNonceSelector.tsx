@@ -28,7 +28,8 @@ import { Divide } from '../Divide';
 
 const Wrapper = styled(Card)`
   .nonce-select {
-    padding: 16px;
+    padding: 0 16px 12px;
+    margin-top: -4px;
     &-label {
       color: var(--r-neutral-title-1, #192945);
       font-size: 15px;
@@ -42,7 +43,7 @@ const Wrapper = styled(Card)`
       z-index: 1;
     }
     .nonce-input {
-      height: 52px;
+      height: 40px;
       border-radius: 6px;
       border: 1px solid var(--r-neutral-line, #d3d8e0);
       /* border: 0.5px solid var(--r-neutral-line, #d3d8e0); */
@@ -239,7 +240,7 @@ export const SafeNonceSelector = ({
     );
   }
   return (
-    <Wrapper headline={t('global.Nonce')}>
+    <Wrapper hasDivider={false} headline={t('global.Nonce')}>
       <div className="nonce-select">
         <Form form={form}>
           <Form.Item

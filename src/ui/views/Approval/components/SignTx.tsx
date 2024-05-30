@@ -1429,7 +1429,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
     if (gas.level === 'custom') {
       setGasList(
-        gasList.map((item) => {
+        (gasList || []).map((item) => {
           if (item.level === 'custom') return gas;
           return item;
         })
