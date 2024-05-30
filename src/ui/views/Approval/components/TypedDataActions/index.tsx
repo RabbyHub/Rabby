@@ -56,6 +56,8 @@ import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { MessageWrapper } from '../TextActions';
 import { Divide } from '../Divide';
+import { Col, Row } from '../Actions/components/Table';
+import LogoWithText from '../Actions/components/LogoWithText';
 
 const Actions = ({
   data,
@@ -140,7 +142,7 @@ const Actions = ({
             </div>
           </div>
 
-          <Divide />
+          {data && <Divide />}
 
           {chain?.isTestnet ? (
             <>
@@ -152,6 +154,19 @@ const Actions = ({
             <>
               {(data?.actionType || data?.actionType === null) && (
                 <div className="container">
+                  {chain && (
+                    <Col>
+                      <Row isTitle>{t('page.signTx.chain')}</Row>
+                      <Row>
+                        <LogoWithText
+                          logo={chain.logo}
+                          text={chain.name}
+                          logoRadius="100%"
+                        />
+                      </Row>
+                    </Col>
+                  )}
+
                   {data.permit && (
                     <Permit
                       data={data.permit}

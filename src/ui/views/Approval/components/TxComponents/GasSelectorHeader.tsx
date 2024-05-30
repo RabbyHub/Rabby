@@ -1,7 +1,7 @@
 import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, TxPushType } from 'background/service/openapi';
+import { Chain, GasLevel, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -9,7 +9,13 @@ import {
   L2_ENUMS,
   CAN_ESTIMATE_L1_FEE_CHAINS,
 } from 'consts';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
@@ -30,7 +36,8 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { isNil } from 'lodash';
-import { gasEstimationTime } from '@/utils/time';
+import { calcGasEstimated } from '@/utils/time';
+import { useWallet } from '@/ui/utils';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -259,6 +266,7 @@ const GasSelectorHeader = ({
   gasPriceMedian,
   pushType,
 }: GasSelectorProps) => {
+  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -299,11 +307,23 @@ const GasSelectorHeader = ({
   const chain = findChain({
     id: chainId,
   })!;
+  const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
+
+  const loadCustomGasData = useCallback(
+    async (custom?: number): Promise<GasLevel> => {
+      const list = await wallet.openapi.gasMarket(
+        chain.serverId,
+        custom && custom > 0 ? custom : undefined
+      );
+      return list.find((item) => item.level === 'custom')!;
+    },
+    []
+  );
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -513,20 +533,27 @@ const GasSelectorHeader = ({
     });
   };
 
+  const [loadingGasEstimated, setLoadingGasEstimated] = useState(false);
   useDebounce(
     () => {
-      (isReady || !isFirstTimeLoad) &&
-        setSelectedGas((gas) => ({
-          ...gas,
-          level: 'custom',
-          price: Number(customGas) * 1e9,
-          front_tx_count: 0,
-          estimated_seconds: 0,
-          priority_price: null,
-          base_fee: gasList[0].base_fee,
-        }));
+      if (isReady || !isFirstTimeLoad) {
+        setLoadingGasEstimated(true);
+        loadCustomGasData(Number(customGas) * 1e9).then((data) => {
+          setCustomGasEstimated(data.estimated_seconds);
+          setSelectedGas((gas) => ({
+            ...gas,
+            level: 'custom',
+            price: Number(customGas) * 1e9,
+            front_tx_count: 0,
+            estimated_seconds: data.estimated_seconds,
+            priority_price: null,
+            base_fee: data.base_fee,
+          }));
+          setLoadingGasEstimated(false);
+        });
+      }
     },
-    500,
+    200,
     [customGas]
   );
 
@@ -595,6 +622,11 @@ const GasSelectorHeader = ({
       setMaxPriorityFee(selectedGas.price / 1e9);
     }
   }, [gasList, selectedGas, isReady, chainId]);
+
+  useEffect(() => {
+    const customGas = gasList.find((item) => item.level === 'custom')!;
+    setCustomGasEstimated(customGas.estimated_seconds);
+  }, [gasList]);
 
   if (!isReady && isFirstTimeLoad) {
     return (
@@ -666,7 +698,7 @@ const GasSelectorHeader = ({
           </div>
           {gas.success && (
             <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
-              {gasEstimationTime(selectedGas?.estimated_seconds)}
+              {calcGasEstimated(selectedGas?.estimated_seconds)}
             </div>
           )}
           {engineResultMap['1118'] && (
@@ -794,7 +826,18 @@ const GasSelectorHeader = ({
                     )}
                   </div>
                   <div className="cardTime">
-                    {gasEstimationTime(item.estimated_seconds)}
+                    {item.level === 'custom' ? (
+                      loadingGasEstimated ? (
+                        <Skeleton.Input
+                          className="w-[44px] h-[12px] rounded"
+                          active
+                        />
+                      ) : (
+                        calcGasEstimated(customGasEstimated)
+                      )
+                    ) : (
+                      calcGasEstimated(item.estimated_seconds)
+                    )}
                   </div>
                 </div>
               ))}

@@ -4,7 +4,7 @@ export const millisecondsToMinutes = (milliseconds: number) =>
   milliseconds / 1000 / 60;
 export const miniutesToMilliseconds = (minutes: number) => minutes * 60 * 1000;
 
-export const gasEstimationTime = (seconds?: number) => {
+export const calcGasEstimated = (seconds?: number) => {
   if (isNil(seconds)) {
     return undefined;
   }
