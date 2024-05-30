@@ -56,6 +56,10 @@ const ImportMnemonics = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const [needPassphrase, setNeedPassphrase] = React.useState(false);
+
+  const [isSlip39, setIsSlip39] = React.useState(false);
+  const [slip39GroupNumber, setSlip39GroupNumber] = React.useState(1);
+
   let keyringId: number | null;
 
   const onPassphrase = React.useCallback((val: boolean) => {
@@ -184,6 +188,9 @@ const ImportMnemonics = () => {
                 )}
               >
                 <WordsMatrix.MnemonicsInputs
+                  slip39GroupNumber={slip39GroupNumber}
+                  isSlip39={isSlip39}
+                  onSlip39Change={setIsSlip39}
                   onPassphrase={onPassphrase}
                   errMsgs={errMsgs}
                 />
@@ -193,7 +200,7 @@ const ImportMnemonics = () => {
                   <Input
                     type="password"
                     className={clsx(
-                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-3'
+                      'h-[44px] border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue'
                     )}
                     spellCheck={false}
                     placeholder={t('page.newAddress.seedPhrase.passphrase')}
