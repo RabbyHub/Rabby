@@ -50,6 +50,7 @@ const RowWrapper = styled.div`
     white-space: normal;
     text-align: left;
     padding-left: 30px;
+    flex: initial;
   }
 
   &.wrap:not(.title) {

@@ -639,9 +639,9 @@ const GasSelectorHeader = ({
     );
   }
 
-  const gasCostUsdStr = `$${formatTokenAmount(
-    new BigNumber(gas.gasCostUsd).toFixed(2)
-  )}`;
+  const gasCostUsdStr = new BigNumber(gas.gasCostUsd).lt(0.01)
+    ? '<$0.01'
+    : `$${formatTokenAmount(new BigNumber(gas.gasCostUsd).toFixed(2))}`;
 
   if (disabled) {
     return null;

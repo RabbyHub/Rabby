@@ -293,7 +293,7 @@ const BalanceChange = ({
                   }
                 />
               </Row>
-              <Row className="text-r-neutral-body text-14 font-normal">
+              <Row className="text-r-neutral-body text-14 font-normal flex-initial">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()
@@ -332,7 +332,7 @@ const BalanceChange = ({
                 />
               </Row>
 
-              <Row className="text-r-neutral-body text-14 font-normal">
+              <Row className="text-r-neutral-body text-14 font-normal flex-initial">
                 ≈{' '}
                 {formatUsdValue(
                   new BigNumber(token.amount).times(token.price).toFixed()
