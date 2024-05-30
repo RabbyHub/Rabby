@@ -137,7 +137,7 @@ const useSetup = ({
   const { data: baseFee } = useRequest(
     async () => {
       if (txRequest?.chain_id && isPending) {
-        return wallet.requestETHRpc(
+        return wallet.requestETHRpc<any>(
           {
             method: 'eth_baseFee',
             params: [],

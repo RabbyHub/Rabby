@@ -21,12 +21,18 @@ export function GasLessNotEnough({
   gasLessFailedReason?: string;
 }) {
   const { t } = useTranslation();
+  const [
+    hoverGasLessFailedReason,
+    setHoverGasLessFailedReason,
+  ] = React.useState(false);
   return (
     <div
       onClick={() => {
         url && openInTab(url);
       }}
       className="security-level-tip bg-r-neutral-card2 text-r-neutral-card2 mt-[15px]"
+      onMouseEnter={() => setHoverGasLessFailedReason(true)}
+      onMouseLeave={() => setHoverGasLessFailedReason(false)}
     >
       <RcIconGas
         viewBox="0 0 16 16"
@@ -38,6 +44,7 @@ export function GasLessNotEnough({
 
         {gasLessFailedReason ? (
           <TooltipWithMagnetArrow
+            visible={hoverGasLessFailedReason}
             title={gasLessFailedReason}
             className="rectangle w-[max-content]"
             placement="top"

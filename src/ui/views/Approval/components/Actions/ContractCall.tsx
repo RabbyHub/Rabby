@@ -87,10 +87,6 @@ const ContractCall = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>

@@ -43,7 +43,6 @@ const Send = ({
   engineResults: Result[];
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
   const engineResultMap = useMemo(() => {
@@ -54,13 +53,8 @@ const Send = ({
     return map;
   }, [engineResults]);
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   const isLabelAddress =
     requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
-
   return (
     <Wrapper>
       <Table>

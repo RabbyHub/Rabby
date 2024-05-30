@@ -58,10 +58,6 @@ export const CommonAction = ({
     return map;
   }, [engineResults]);
 
-  React.useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   const addressInfo = requireData
     ? (requireData as ContractCallRequireData).unexpectedAddr
     : undefined;
