@@ -92,6 +92,10 @@ const Send = ({
                 isTokenContract: requireData.isTokenContract,
                 name: requireData.name,
                 onTransferWhitelist: requireData.onTransferWhitelist,
+                hasReceiverMnemonicInWallet:
+                  requireData.hasReceiverMnemonicInWallet,
+                hasReceiverPrivateKeyInWallet:
+                  requireData.hasReceiverPrivateKeyInWallet,
               }}
             >
               <Values.Address

@@ -114,69 +114,73 @@ const AssetOrder = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.listAsset')}</Row>
-          <div className="gap-y-6 flex flex-col">
+          <Row className="gap-y-6 flex flex-col overflow-hidden">
             {actionData.payTokenList.map((token) => (
-              <Row key={token.id}>
-                <div className="relative">
-                  <LogoWithText
-                    logo={token.logo_url}
-                    text={`${formatAmount(token.amount)} ${ellipsisTokenSymbol(
-                      getTokenSymbol(token)
-                    )}`}
-                    logoRadius="100%"
-                  />
-                </div>
-              </Row>
+              <LogoWithText
+                className="overflow-hidden"
+                key={token.id}
+                logo={token.logo_url}
+                text={
+                  <div className="overflow-hidden overflow-ellipsis flex">
+                    <Values.TokenAmount value={token.amount} />
+                    <span className="ml-2">
+                      <Values.TokenSymbol token={token} />
+                    </span>
+                  </div>
+                }
+                logoRadius="100%"
+              />
             ))}
             {actionData.payNFTList.map((nft) => (
-              <Row key={nft.id}>
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft,
-                    chain,
-                  }}
-                >
-                  <NFTWithName hasHover nft={nft}></NFTWithName>
-                </ViewMore>
-              </Row>
+              <ViewMore
+                key={nft.id}
+                type="nft"
+                data={{
+                  nft,
+                  chain,
+                }}
+              >
+                <NFTWithName hasHover nft={nft}></NFTWithName>
+              </ViewMore>
             ))}
             {actionData.payNFTList.length <= 0 &&
-              actionData.payTokenList.length <= 0 && <Row>-</Row>}
-          </div>
+              actionData.payTokenList.length <= 0 && <>-</>}
+          </Row>
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <div className="gap-y-6 flex flex-col">
+          <Row className="gap-y-6 flex flex-col overflow-hidden">
             {actionData.receiveTokenList.map((token) => (
-              <Row key={token.id}>
-                <div className="relative">
-                  <LogoWithText
-                    logo={token.logo_url}
-                    text={`${formatAmount(token.amount)} ${ellipsisTokenSymbol(
-                      getTokenSymbol(token)
-                    )}`}
-                    logoRadius="100%"
-                  />
-                </div>
-              </Row>
+              <LogoWithText
+                className="overflow-hidden"
+                key={token.id}
+                logo={token.logo_url}
+                text={
+                  <div className="overflow-hidden overflow-ellipsis flex">
+                    <Values.TokenAmount value={token.amount} />
+                    <span className="ml-2">
+                      <Values.TokenSymbol token={token} />
+                    </span>
+                  </div>
+                }
+                logoRadius="100%"
+              />
             ))}
             {actionData.receiveNFTList.map((nft) => (
-              <Row key={nft.id}>
-                <ViewMore
-                  type="nft"
-                  data={{
-                    nft,
-                    chain,
-                  }}
-                >
-                  <NFTWithName nft={nft}></NFTWithName>
-                </ViewMore>
-              </Row>
+              <ViewMore
+                key={nft.id}
+                type="nft"
+                data={{
+                  nft,
+                  chain,
+                }}
+              >
+                <NFTWithName nft={nft}></NFTWithName>
+              </ViewMore>
             ))}
             {actionData.receiveTokenList.length <= 0 &&
-              actionData.receiveNFTList.length <= 0 && <Row>-</Row>}
-          </div>
+              actionData.receiveNFTList.length <= 0 && <>-</>}
+          </Row>
         </Col>
         {actionData.takers.length > 0 && (
           <Col>

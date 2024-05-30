@@ -181,6 +181,10 @@ const CardBody = styled.div<{
 
     .custom-input {
       margin: 6px auto 0;
+
+      .ant-input {
+        padding: 0;
+      }
     }
     .ant-input {
       text-align: center !important;
@@ -660,9 +664,11 @@ const GasSelectorHeader = ({
               </div>
             )}
           </div>
-          <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
-            {gasEstimationTime(selectedGas?.estimated_seconds)}
-          </div>
+          {gas.success && (
+            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
+              {gasEstimationTime(selectedGas?.estimated_seconds)}
+            </div>
+          )}
           {engineResultMap['1118'] && (
             <SecurityLevelTagNoText
               enable={engineResultMap['1118'].enable}
@@ -809,7 +815,7 @@ const GasSelectorHeader = ({
                   }
                   overlayClassName="rectangle"
                 >
-                  <IconInfoSVG className="text-r-neutral-foot ml-2" />
+                  <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
                 </Tooltip>
               </p>
               <div className="priority-slider-body">

@@ -99,7 +99,8 @@ export const TestnetActions = ({
             <div className="left">
               {isSpeedUp && (
                 <TooltipWithMagnetArrow
-                  overlayClassName="rectangle w-[max-content]"
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] speed-tooltip"
                   title={t('page.signTx.speedUpTooltip')}
                 >
                   <img

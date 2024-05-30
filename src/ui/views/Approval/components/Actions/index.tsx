@@ -61,6 +61,7 @@ import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
+import { Tooltip } from 'antd';
 
 const Actions = ({
   data,
@@ -125,7 +126,8 @@ const Actions = ({
             <div className="left">
               {isSpeedUp && (
                 <TooltipWithMagnetArrow
-                  overlayClassName="rectangle w-[max-content]"
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] speed-tooltip"
                   title={t('page.signTx.speedUpTooltip')}
                 >
                   <img

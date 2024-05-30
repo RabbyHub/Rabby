@@ -40,7 +40,7 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const { setTitle, setVisible, setHeight, closePopup } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -213,6 +213,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [sessionStatus]);
 
   React.useEffect(() => {
+    setHeight(360);
     setTitle(
       <div className="flex justify-center items-center">
         <img src={LedgerSVG} className="w-20 mr-8" />

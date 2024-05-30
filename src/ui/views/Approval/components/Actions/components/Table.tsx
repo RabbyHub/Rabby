@@ -58,6 +58,7 @@ const RowWrapper = styled.div`
   &:not(.title) {
     text-align: right;
     text-overflow: ellipsis;
+    max-width: 50%;
   }
   &:has(.desc-list) {
     padding-right: 0;
