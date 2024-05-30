@@ -762,7 +762,7 @@ const GasSelectorHeader = ({
               <div className="gas-selector-modal-usd">
                 <img
                   src={chain.nativeTokenLogo || IconUnknown}
-                  className="w-16 h-16"
+                  className="w-16 h-16 rounded-full"
                 />
                 {formatTokenAmount(
                   new BigNumber(modalExplainGas.gasCostAmount).toString(10),

@@ -86,7 +86,7 @@
         "simulationFailed": "Transaction simulation failed",
         "simulationNotSupport": "Transaction simulation not supported on this chain",
         "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Slippage tolerance fail to load",
+        "slippageFailToLoad": "Fail to load",
         "slippageTolerance": "Slippage tolerance",
         "receiver": "Receiver",
         "notPaymentAddress": "Not the payment address",

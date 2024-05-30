@@ -26,15 +26,6 @@ export const DIV = styled.div`
       position: relative;
     }
 
-    .speed-tooltip {
-      &:not(.ant-tooltip-hidden) {
-        left: -16px !important;
-        .ant-tooltip-arrow {
-          left: 24px;
-        }
-      }
-    }
-
     .decode-tooltip {
       max-width: 360px;
       &:not(.ant-tooltip-hidden) {
