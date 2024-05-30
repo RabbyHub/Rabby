@@ -119,6 +119,7 @@ const SubRowWrapper = styled.div`
 
   &.title {
     font-weight: 400;
+    white-space: nowrap;
   }
 `;
 

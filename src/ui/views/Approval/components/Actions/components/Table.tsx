@@ -44,6 +44,7 @@ const RowWrapper = styled.div`
   white-space: nowrap;
   display: flex;
   align-items: flex-start;
+  flex: 1;
 
   &.wrap {
     white-space: normal;
@@ -58,7 +59,7 @@ const RowWrapper = styled.div`
   &:not(.title) {
     text-align: right;
     text-overflow: ellipsis;
-    max-width: 50%;
+    justify-content: flex-end;
   }
   &:has(.desc-list) {
     padding-right: 0;

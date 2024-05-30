@@ -38,6 +38,7 @@ import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentco
 import { isNil } from 'lodash';
 import { calcGasEstimated } from '@/utils/time';
 import { useWallet } from '@/ui/utils';
+import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -539,15 +540,15 @@ const GasSelectorHeader = ({
       if (isReady || !isFirstTimeLoad) {
         setLoadingGasEstimated(true);
         loadCustomGasData(Number(customGas) * 1e9).then((data) => {
-          setCustomGasEstimated(data.estimated_seconds);
+          if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
             ...gas,
             level: 'custom',
             price: Number(customGas) * 1e9,
             front_tx_count: 0,
-            estimated_seconds: data.estimated_seconds,
+            estimated_seconds: data?.estimated_seconds ?? 0,
             priority_price: null,
-            base_fee: data.base_fee,
+            base_fee: data?.base_fee ?? 0,
           }));
           setLoadingGasEstimated(false);
         });
@@ -624,8 +625,10 @@ const GasSelectorHeader = ({
   }, [gasList, selectedGas, isReady, chainId]);
 
   useEffect(() => {
-    const customGas = gasList.find((item) => item.level === 'custom')!;
-    setCustomGasEstimated(customGas.estimated_seconds);
+    const customGas = gasList.find((item) => item.level === 'custom');
+    if (customGas) {
+      setCustomGasEstimated(customGas.estimated_seconds);
+    }
   }, [gasList]);
 
   if (!isReady && isFirstTimeLoad) {
@@ -757,7 +760,10 @@ const GasSelectorHeader = ({
                 ${modalExplainGas.gasCostUsd.toFixed(2)}
               </div>
               <div className="gas-selector-modal-usd">
-                <img src={chain.nativeTokenLogo} className="w-16 h-16" />
+                <img
+                  src={chain.nativeTokenLogo || IconUnknown}
+                  className="w-16 h-16"
+                />
                 {formatTokenAmount(
                   new BigNumber(modalExplainGas.gasCostAmount).toString(10),
                   6

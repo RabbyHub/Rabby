@@ -128,11 +128,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
 
   return (
     <div className={clsx('flex flex-col items-center', 'flex-1')}>
-      {sendUrl ? (
-        <div className={clsx('p-10')}>
-          <img src={sendUrl} className={'w-[140px] h-[140px]'} />
-        </div>
-      ) : null}
+      {sendUrl ? <img src={sendUrl} className={'w-[160px] h-[160px]'} /> : null}
       <div
         className={clsx(
           'text-[20px] font-medium leading-[24px]',
