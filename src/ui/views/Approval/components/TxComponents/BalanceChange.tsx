@@ -73,7 +73,8 @@ const NFTBalanceChange = ({
         <div className="flex-1 overflow-hidden space-y-10">
           {receiveNftList.map((item) => (
             <Row
-              className="items-center text-[16px]"
+              isTitle
+              className="items-center text-[16px] leading-[18px]"
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex">
@@ -106,7 +107,8 @@ const NFTBalanceChange = ({
         <div className="flex-1 overflow-hidden space-y-10">
           {sendNftList.map((item) => (
             <Row
-              className="items-center text-[16px]"
+              isTitle
+              className="items-center text-[16px] leading-[18px]"
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex">
@@ -239,7 +241,7 @@ const BalanceChange = ({
         <Table>
           {!hasChange && isSuccess && (
             <Col className="py-10">
-              <Row className="gap-6 flex">
+              <Row isTitle className="gap-6 flex">
                 <NoBalanceSVG className="text-rabby-neutral-body" />
                 <span className="text-[14px] font-medium text-r-neutral-title-1">
                   {t('page.signTx.balanceChange.noBalanceChange')}

@@ -51,7 +51,7 @@ import {
   RevokeTokenApproveRequireData,
   SendRequireData,
 } from '../Actions/utils';
-import { Chain } from '@debank/common';
+import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
 import { MessageWrapper } from '../TextActions';
@@ -62,7 +62,7 @@ import LogoWithText from '../Actions/components/LogoWithText';
 const Actions = ({
   data,
   requireData,
-  chain,
+  chain = CHAINS[CHAINS_ENUM.ETH],
   engineResults,
   raw,
   message,
