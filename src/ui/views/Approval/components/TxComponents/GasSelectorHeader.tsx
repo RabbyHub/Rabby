@@ -639,9 +639,11 @@ const GasSelectorHeader = ({
     );
   }
 
-  const gasCostUsdStr = new BigNumber(gas.gasCostUsd).lt(0.01)
+  const gasCostUsdStr = new BigNumber(modalExplainGas.gasCostUsd).lt(0.01)
     ? '<$0.01'
-    : `$${formatTokenAmount(new BigNumber(gas.gasCostUsd).toFixed(2))}`;
+    : `$${formatTokenAmount(
+        new BigNumber(modalExplainGas.gasCostUsd).toFixed(2)
+      )}`;
 
   if (disabled) {
     return null;
@@ -756,9 +758,7 @@ const GasSelectorHeader = ({
             </>
           ) : (
             <>
-              <div className="gas-selector-modal-amount">
-                ${modalExplainGas.gasCostUsd.toFixed(2)}
-              </div>
+              <div className="gas-selector-modal-amount">{gasCostUsdStr}</div>
               <div className="gas-selector-modal-usd">
                 <img
                   src={chain.nativeTokenLogo || IconUnknown}
