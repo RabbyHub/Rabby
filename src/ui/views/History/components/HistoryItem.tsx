@@ -246,7 +246,7 @@ export const HistoryItem = ({
   const account = useRabbySelector((state) => state.account.currentAccount);
 
   if (!chainItem) {
-    return null;
+    return <div></div>;
   }
 
   return (
