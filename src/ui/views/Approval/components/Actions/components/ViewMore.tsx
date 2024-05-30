@@ -101,7 +101,9 @@ const ViewMore = (
   return (
     <>
       {props.children ? (
-        <div onClick={handleClickViewMore}>{props.children}</div>
+        <div className="max-w-full" onClick={handleClickViewMore}>
+          {props.children}
+        </div>
       ) : (
         <span
           className="underline cursor-pointer"

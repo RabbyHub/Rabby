@@ -13,7 +13,6 @@ import clsx from 'clsx';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  max-width: 160px;
 
   .nft-item-avatar {
     margin-right: 6px;

@@ -894,7 +894,9 @@ const GasSelectorHeader = ({
             {t('page.signTx.myNativeTokenBalance')}
             <GasPriceBold>
               {formatTokenAmount(
-                new BigNumber(nativeTokenBalance).div(1e18).toFixed()
+                new BigNumber(nativeTokenBalance).div(1e18).toFixed(),
+                4,
+                true
               )}{' '}
               {chain.nativeTokenSymbol}
             </GasPriceBold>
