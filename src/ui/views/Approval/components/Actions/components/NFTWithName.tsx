@@ -13,6 +13,8 @@ import clsx from 'clsx';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
+  max-width: 160px;
+
   .nft-item-avatar {
     margin-right: 6px;
     flex-shrink: 0;
@@ -33,11 +35,9 @@ const Wrapper = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: var(--r-neutral-title-1, #192945);
-    flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: flex;
   }
 `;
 

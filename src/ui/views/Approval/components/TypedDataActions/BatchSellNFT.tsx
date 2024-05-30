@@ -113,7 +113,7 @@ const BatchSellNFT = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTypedData.sellNFT.listNFT')}</Row>
-          <Row className="gap-y-6 flex flex-col overflow-hidden">
+          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
             {actionData.pay_nft_list.map((nft) => (
               <ViewMore
                 key={nft.id}

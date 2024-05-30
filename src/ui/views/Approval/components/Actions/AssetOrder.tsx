@@ -114,10 +114,10 @@ const AssetOrder = ({
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.listAsset')}</Row>
-          <Row className="gap-y-6 flex flex-col overflow-hidden">
+          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
             {actionData.payTokenList.map((token) => (
               <LogoWithText
-                className="overflow-hidden"
+                className="overflow-hidden w-full"
                 key={token.id}
                 logo={token.logo_url}
                 text={
@@ -149,10 +149,10 @@ const AssetOrder = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <Row className="gap-y-6 flex flex-col overflow-hidden">
+          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
             {actionData.receiveTokenList.map((token) => (
               <LogoWithText
-                className="overflow-hidden"
+                className="overflow-hidden w-full"
                 key={token.id}
                 logo={token.logo_url}
                 text={
