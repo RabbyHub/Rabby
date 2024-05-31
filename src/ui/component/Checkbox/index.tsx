@@ -25,7 +25,7 @@ const Checkbox = ({
   onChange,
   defaultChecked = false,
   background = 'var(--r-blue-default, #7084ff)',
-  unCheckBackground = 'var(--r-neutral-line, rgba(255, 255, 255, 0.1))',
+  unCheckBackground = 'var(--r-neutral-line, #D3D8E0)',
   type = 'circle',
   width = '16px',
   height = '16px',

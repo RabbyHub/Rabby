@@ -199,6 +199,7 @@ import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
+import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 
 export { default as LANGS } from '../../_raw/locales/index.json';
 
@@ -451,7 +452,7 @@ export const INTERNAL_REQUEST_ORIGIN = location.origin;
 export const INTERNAL_REQUEST_SESSION = {
   name: 'Rabby',
   origin: INTERNAL_REQUEST_ORIGIN,
-  icon: './images/rabby-site-logo.png',
+  icon: RabbyChainLogo,
 };
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
@@ -1210,8 +1211,8 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
 export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 
 export const ALIAS_ADDRESS = {
-  [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
-  [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
+  [GAS_TOP_UP_ADDRESS]: 'Rabby Gas Top Up',
+  [GAS_TOP_UP_PAY_ADDRESS]: 'Rabby Gas Top Up',
   [FREE_GAS_ADDRESS]: 'Free Gas',
 };
 

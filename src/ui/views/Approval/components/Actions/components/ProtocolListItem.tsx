@@ -20,16 +20,14 @@ const LogoWithTextStyled = styled(LogoWithText)`
 
 export const ProtocolListItem: React.FC<Props> = ({ protocol }) => {
   if (!protocol) {
-    return null;
+    return <>-</>;
   }
 
   return (
-    <li>
-      <LogoWithTextStyled
-        logo={protocol.logo_url}
-        text={protocol.name}
-        logoRadius="100%"
-      />
-    </li>
+    <LogoWithTextStyled
+      logo={protocol.logo_url}
+      text={protocol.name}
+      logoRadius="100%"
+    />
   );
 };

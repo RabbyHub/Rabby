@@ -50,7 +50,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "必要な場合にのみ修正してください",
       "gasPriceMedian": "過去100回のオンチェーン取引の中央値：",
-      "myNativeTokenBalance": "私の{{symbol}}残高：{{amount}} {{symbol}}",
+      "myNativeTokenBalance": "私のガス残高：",
       "gasLimitEmptyAlert": "ガスリミットを入力してください",
       "gasLimitMinValueAlert": "ガスリミットは21000以上である必要があります",
       "balanceChange": {

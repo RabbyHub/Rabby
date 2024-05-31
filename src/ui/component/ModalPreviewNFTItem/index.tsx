@@ -31,7 +31,7 @@ const PreviewCard = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: var(--r-neutral-title1);
-    border-bottom: 1px solid var(--r-neutral-line);
+    border-bottom: 0.5px solid var(--r-neutral-line);
     padding-top: 16px;
     padding-bottom: 12px;
     white-space: nowrap;

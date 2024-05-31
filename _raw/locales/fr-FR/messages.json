@@ -1515,7 +1515,7 @@
       "multiSigChainNotMatch": "Les adresses multi-signatures ne font pas partie de cette chaîne et ne peuvent pas initier de transactions",
       "myMark": "Mon marquage",
       "myMarkWithContract": "Mon marquage sur le contrat sur {{chainName}}",
-      "myNativeTokenBalance": "Mon solde {{symbol}} : {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "Mon solde Gaz: ",
       "nativeTokenNotEngouthForGas": "Vous n'avez pas assez de gaz dans votre wallet",
       "neverInteracted": "Jamais interagi auparavant",
       "neverTransacted": "Jamais effectué de transaction auparavant",

@@ -1,13 +1,11 @@
 import React, { useMemo, ReactNode, useState, useEffect } from 'react';
 import { message } from 'antd';
 import styled from 'styled-components';
-import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
-import { CHAINS } from 'consts';
-import { isSameAddress, useWallet } from 'ui/utils';
+import { isSameAddress, useHover, useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
@@ -19,14 +17,16 @@ import IconEdit from 'ui/assets/editpen.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
-import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
-import IconExternal from 'ui/assets/icon-share.svg';
+import { ReactComponent as IconAddressCopy } from 'ui/assets/icon-copy-cc.svg';
+import { ReactComponent as IconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
 import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import AccountAlias from '../../AccountAlias';
 import { getAddressScanLink } from '@/utils';
 import { findChain } from '@/utils/chain';
+import clsx from 'clsx';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -268,7 +268,11 @@ const TokenLabel = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex gap-4 shrink-0 relative">
+    <div
+      className={clsx('flex gap-4 shrink-0 relative', {
+        'ml-4': isScam || isFake,
+      })}
+    >
       {isFake && (
         <TooltipWithMagnetArrow
           overlayClassName="rectangle w-[max-content]"
@@ -295,65 +299,60 @@ const AddressWrapper = styled.div`
 const Address = ({
   address,
   chain,
-  iconWidth = '12px',
+  iconWidth = '14px',
+  hasHover = false,
+  id,
 }: {
   address: string;
   chain?: Chain;
   iconWidth?: string;
+  hasHover?: boolean;
+  id?: string;
 }) => {
   const { t } = useTranslation();
-  const handleClickContractId = () => {
+  const handleClickContractId = (e) => {
+    e.stopPropagation();
     if (!chain) return;
     openInTab(getAddressScanLink(chain.scanLink, address), false);
   };
-  const handleCopyContractAddress = () => {
-    const clipboard = new ClipboardJS('.value-address', {
-      text: function () {
-        return address;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleCopyContractAddress = (e) => {
+    e.stopPropagation();
+    copyAddress(address);
   };
+  const [isHoverToolbar, hoverToolbarProps] = useHover();
+
   return (
     <AddressWrapper className="value-address relative">
       <TooltipWithMagnetArrow
         title={address}
         className="rectangle w-[max-content]"
       >
-        <span>{ellipsis(address)}</span>
+        <span
+          className={clsx({
+            'cursor-pointer group-hover:underline hover:text-r-blue-default':
+              hasHover && !isHoverToolbar,
+          })}
+          id={id}
+        >
+          {ellipsis(address)}
+        </span>
       </TooltipWithMagnetArrow>
-      {chain && (
-        <img
-          onClick={handleClickContractId}
-          src={IconExternal}
+      <div className="flex items-center" {...hoverToolbarProps}>
+        {chain && (
+          <IconExternal
+            onClick={handleClickContractId}
+            width={iconWidth}
+            height={iconWidth}
+            className="ml-6 cursor-pointer text-r-neutral-foot hover:text-r-blue-default"
+          />
+        )}
+        <IconAddressCopy
+          onClick={handleCopyContractAddress}
           width={iconWidth}
           height={iconWidth}
-          className="ml-6 cursor-pointer"
+          className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
         />
-      )}
-      <img
-        onClick={handleCopyContractAddress}
-        src={IconAddressCopy}
-        width={iconWidth}
-        height={iconWidth}
-        className="ml-6 cursor-pointer icon-copy"
-      />
+      </div>
     </AddressWrapper>
   );
 };
@@ -384,17 +383,7 @@ const Interacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.interacted')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverInteracted')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };
@@ -403,29 +392,28 @@ const Transacted = ({ value }: { value: boolean }) => {
   const { t } = useTranslation();
   return (
     <span className="flex">
-      {value ? (
-        <>
-          <img src={IconInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.transacted')}
-        </>
-      ) : (
-        <>
-          <img src={IconNotInteracted} className="mr-4 w-14" />{' '}
-          {t('page.signTx.neverTransacted')}
-        </>
-      )}
+      {value ? <>{t('page.signTx.yes')}</> : <>{t('page.signTx.no')}</>}
     </span>
   );
 };
 
-const TokenSymbol = ({ token }: { token: TokenItem }) => {
+const TokenSymbol = ({
+  token,
+  disableHover,
+}: {
+  token: TokenItem;
+  disableHover?: boolean;
+}) => {
   const dispatch = useRabbyDispatch();
   const handleClickTokenSymbol = () => {
     dispatch.sign.openTokenDetailPopup(token);
   };
   return (
     <span
-      className="hover:underline cursor-pointer"
+      className={clsx(
+        'hover:text-r-blue-default cursor-pointer',
+        !disableHover && 'group-hover:underline'
+      )}
       onClick={handleClickTokenSymbol}
       title={getTokenSymbol(token)}
     >

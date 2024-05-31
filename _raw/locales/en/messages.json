@@ -42,7 +42,7 @@
       "safeAddressNotSupportChain": "Current safe address is not supported on {{0}} chain",
       "noGasRequired": "No gas required",
       "gasSelectorTitle": "Gas",
-      "failToFetchGasCost": "Fail to fetch gas cost",
+      "failToFetchGasCost": "Fail to estimate gas",
       "gasMoreButton": "More",
       "manuallySetGasLimitAlert": "You have manually set the Gas limit to",
       "gasNotRequireForSafeTransaction": "Gas fee is not required for Safe transactions",
@@ -56,7 +56,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Modify only when necessary",
       "gasPriceMedian": "Median of last 100 on-chain transactions: ",
-      "myNativeTokenBalance": "My {{symbol}} balance: {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "My Gas balance: ",
       "gasLimitEmptyAlert": "Please input gas limit",
       "gasLimitMinValueAlert": "Gas limit should be more than 21000",
       "balanceChange": {
@@ -86,7 +86,7 @@
         "simulationFailed": "Transaction simulation failed",
         "simulationNotSupport": "Transaction simulation not supported on this chain",
         "minReceive": "Minimum Receive",
-        "slippageFailToLoad": "Slippage tolerance fail to load",
+        "slippageFailToLoad": "Fail to load",
         "slippageTolerance": "Slippage tolerance",
         "receiver": "Receiver",
         "notPaymentAddress": "Not the payment address",
@@ -105,8 +105,8 @@
         "sendToken": "Send token",
         "sendTo": "Send to",
         "receiverIsTokenAddress": "Token address",
-        "contractNotOnThisChain": "Contract address not on this chain",
-        "notTopupAddress": "Not top up address",
+        "contractNotOnThisChain": "Not on this chain",
+        "notTopupAddress": "Not a deposit address",
         "tokenNotSupport": "{{0}} not supported",
         "onMyWhitelist": "On my whitelist",
         "notOnThisChain": "Not on this chain",
@@ -114,6 +114,7 @@
         "addressBalanceTitle": "Address balance",
         "whitelistTitle": "Whitelist",
         "notOnWhitelist": "Not on my whitelist",
+        "scamAddress": "Scam address",
         "fromMySeedPhrase": "From my seed phrase",
         "fromMyPrivateKey": "From my private key"
       },
@@ -122,9 +123,9 @@
         "approveToken": "Approve token",
         "myBalance": "My balance",
         "approveTo": "Approve to",
-        "eoaAddress": "EOA address",
-        "trustValueLessThan": "Trust value ≤ {{value}}",
-        "deployTimeLessThan": "Deployed time < {{value}} days",
+        "eoaAddress": "EOA",
+        "trustValueLessThan": "≤ {{value}}",
+        "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Amount",
         "flagByRabby": "Flagged by Rabby",
         "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
@@ -152,7 +153,7 @@
         "approveCollection": "Approve collection"
       },
       "revokeNFTCollectionApprove": {
-        "title": "Revoke NFT Collection Approval",
+        "title": "Revoke NFT Collection",
         "revokeCollection": "Revoke collection"
       },
       "deployContract": {
@@ -208,7 +209,8 @@
       "decodedTooltip": "This signature is decoded by Rabby Wallet",
       "signTransactionOnChain": "Sign {{chain}} Transaction",
       "viewRaw": "View Raw",
-      "unknownActionType": "Unknown action type",
+      "chain": "Chain",
+      "unknownActionType": "Unknown Action Type",
       "sigCantDecode": "This signature can't be decoded by Rabby Wallet",
       "nftCollection": "NFT Collection",
       "floorPrice": "Floor price",
@@ -299,7 +301,19 @@
         "descTipWarningPrivacy": "Signature may verify address ownership",
         "descTipWarningAssets": "Signature may cause asset change",
         "descTipWarningBoth": "Signature may cause asset change and verify address ownership"
-      }
+      },
+      "protocol": "Protocol",
+      "yes": "Yes",
+      "no": "No",
+      "hasInteraction": "Interacted before",
+      "address": "Address",
+      "advancedSettings": "Advanced Settings",
+      "amount": "Amount",
+      "contract": "Smart contract",
+      "trustValueTitle": "Risk exposure",
+      "typedDataMessage": "Typed data message",
+      "label": "Label",
+      "addressSource": "Address Source"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -571,7 +585,7 @@
           "custom": "Custom",
           "fast": "Instant",
           "normal": "Fast",
-          "slow": "Standard"
+          "slow": "Normal"
         },
         "popupDesc": "The gas cost will be reserved from the transfer amount based on the gas price you set",
         "popupTitle": "Set Gas Price (Gwei)"
@@ -1541,14 +1555,14 @@
       "currentValueIs": "Current value is {{value}}",
       "viewRules": "View security rules",
       "undo": "Undo",
-      "riskProcessed": "Risk Processed",
+      "riskProcessed": "Risk alert have been ignored",
       "ignoreAlert": "Ignore the alert",
       "ruleDisabled": "Security rules have been disabled. For your safety, you can turn it on anytime.",
-      "unknownResult": "Unknown result because security rule is unavailable",
+      "unknownResult": "Unknown result because security engine is unavailable right now",
       "alertTriggerReason": "Alert triggered reason:",
       "understandRisk": "I understand and accept responsibility for any loss",
       "forbiddenCantIgnore": "Found forbidden risk that can't be ignored.",
-      "ruleDetailTitle": "Rule Detail",
+      "ruleDetailTitle": "Risk Detail",
       "enableRule": "Enable the rule",
       "viewRiskLevel": "View risk level"
     },
@@ -1905,6 +1919,9 @@
     "addChain": {
       "title": "Add Custom Network to Rabby",
       "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only."
+    },
+    "sign": {
+      "transactionSpeed": "Transaction Speed"
     }
   },
   "component": {

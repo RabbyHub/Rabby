@@ -183,10 +183,11 @@ export type HoverProps = Pick<
 export const useHover = ({
   mouseEnterDelayMS = 0,
   mouseLeaveDelayMS = 0,
-}: UseHoverOptions = {}): [boolean, HoverProps] => {
+}: UseHoverOptions = {}): [boolean, HoverProps, () => void] => {
   const [isHovering, setIsHovering] = useState(false);
   let mouseEnterTimer: number | undefined;
   let mouseOutTimer: number | undefined;
+
   return [
     isHovering,
     {
@@ -205,6 +206,7 @@ export const useHover = ({
         );
       },
     },
+    () => setIsHovering(false),
   ];
 };
 
