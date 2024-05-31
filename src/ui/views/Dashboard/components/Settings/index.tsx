@@ -15,8 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RcIconArrowBlueRight } from 'ui/assets/dashboard/settings/icon-right-arrow-blue.svg';
 import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
+import { ReactComponent as RcIconArrowCCRight } from 'ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
+
 import IconSettingsDeBank from 'ui/assets/dashboard/settings/debank.svg';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -48,7 +49,7 @@ import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboa
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
-import IconSettingsRabbyBadge from 'ui/assets/badge/rabby-badge-s.svg';
+import IconSettingsRabbyBadge from 'ui/assets/badge/free-gas-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 
@@ -473,14 +474,14 @@ const ClaimRabbyBadge = ({ onClick }: { onClick: () => void }) => {
           }
           rightIcon={
             <ThemeIcon
-              src={RcIconArrowBlueRight}
-              className="icon icon-arrow-right w-20 h-20"
+              src={RcIconArrowCCRight}
+              className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
             />
           }
           onClick={onClick}
-          className="text-blue-light bg-r-blue-light-1 font-medium"
+          className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
         >
-          {t('page.dashboard.settings.claimRabbyBadge')}
+          {t('page.dashboard.settings.claimFreeGasBadge')}
         </Field>
       </div>
     </div>
