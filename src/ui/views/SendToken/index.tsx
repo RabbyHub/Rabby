@@ -818,56 +818,56 @@ const SendToken = () => {
     const tokenBalance = new BigNumber(
       currentToken.raw_amount_hex_str || 0
     ).div(10 ** currentToken.decimals);
-    let amount = tokenBalance.toFixed();
+    const amount = tokenBalance.toFixed();
     const to = form.getFieldValue('to');
 
-    if (isNativeToken && !isGnosisSafe) {
-      setShowGasReserved(true);
-      try {
-        const list = await fetchGasList();
-        setGasList(list);
-        let instant = list[0];
-        for (let i = 1; i < list.length; i++) {
-          if (list[i].price > instant.price) {
-            instant = list[i];
-          }
-        }
-        const { gasNumber } = await ethEstimateGas();
-        setEstimateGas(gasNumber);
+    // if (isNativeToken && !isGnosisSafe) {
+    //   setShowGasReserved(true);
+    //   try {
+    //     const list = await fetchGasList();
+    //     setGasList(list);
+    //     let instant = list[0];
+    //     for (let i = 1; i < list.length; i++) {
+    //       if (list[i].price > instant.price) {
+    //         instant = list[i];
+    //       }
+    //     }
+    //     const { gasNumber } = await ethEstimateGas();
+    //     setEstimateGas(gasNumber);
 
-        let gasTokenAmount = handleGasChange(instant, false, gasNumber);
-        if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
-          const l1GasFee = await wallet.fetchEstimatedL1Fee(
-            {
-              txParams: {
-                chainId: chainItem.id,
-                from: currentAccount.address,
-                to: to && isValidAddress(to) ? to : zeroAddress(),
-                value: currentToken.raw_amount_hex_str,
-                gas: intToHex(21000),
-                gasPrice: `0x${new BigNumber(instant.price).toString(16)}`,
-                data: '0x',
-              },
-            },
-            chain
-          );
-          gasTokenAmount = gasTokenAmount
-            .plus(new BigNumber(l1GasFee).div(1e18))
-            .times(1.1);
-        }
-        const tokenForSend = tokenBalance.minus(gasTokenAmount);
-        amount = tokenForSend.gt(0) ? tokenForSend.toFixed() : '0';
-        if (tokenForSend.lt(0)) {
-          setShowGasReserved(false);
-        }
-      } catch (e) {
-        if (!isGnosisSafe) {
-          // // Gas fee reservation required
-          // setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
-          setShowGasReserved(false);
-        }
-      }
-    }
+    //     let gasTokenAmount = handleGasChange(instant, false, gasNumber);
+    //     if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain)) {
+    //       const l1GasFee = await wallet.fetchEstimatedL1Fee(
+    //         {
+    //           txParams: {
+    //             chainId: chainItem.id,
+    //             from: currentAccount.address,
+    //             to: to && isValidAddress(to) ? to : zeroAddress(),
+    //             value: currentToken.raw_amount_hex_str,
+    //             gas: intToHex(21000),
+    //             gasPrice: `0x${new BigNumber(instant.price).toString(16)}`,
+    //             data: '0x',
+    //           },
+    //         },
+    //         chain
+    //       );
+    //       gasTokenAmount = gasTokenAmount
+    //         .plus(new BigNumber(l1GasFee).div(1e18))
+    //         .times(1.1);
+    //     }
+    //     const tokenForSend = tokenBalance.minus(gasTokenAmount);
+    //     amount = tokenForSend.gt(0) ? tokenForSend.toFixed() : '0';
+    //     if (tokenForSend.lt(0)) {
+    //       setShowGasReserved(false);
+    //     }
+    //   } catch (e) {
+    //     if (!isGnosisSafe) {
+    //       // // Gas fee reservation required
+    //       // setBalanceWarn(t('page.sendToken.balanceWarn.gasFeeReservation'));
+    //       setShowGasReserved(false);
+    //     }
+    //   }
+    // }
 
     const values = form.getFieldsValue();
     const newValues = {
