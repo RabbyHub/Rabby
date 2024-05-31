@@ -29,8 +29,7 @@ import { useAsync, useAsyncFn } from 'react-use';
 import * as animationData from './success.json';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const RABBY_BADGE_URL =
-  'https://debank-git-feat-rbfree-debanker.vercel.app/official-badge/2';
+const RABBY_BADGE_URL = 'https://debank.com/official-badge/134';
 
 const LearnMore = 'https://x.com/Rabby_io/status/1785529719070368044';
 
