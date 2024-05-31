@@ -65,21 +65,17 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
       </div>
       <Table className="view-more-table">
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.protocolTitle')}
-          </Row>
+          <Row>{t('page.signTx.protocolTitle')}</Row>
           <Row>
             <Values.Protocol value={data.protocol} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressTypeTitle')}
-          </Row>
+          <Row>{t('page.signTx.addressTypeTitle')}</Row>
           <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
+          <Row>
             {data.isEOA
               ? t('page.signTx.firstOnChain')
               : t('page.signTx.deployTimeTitle')}
@@ -89,10 +85,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row
-            className="bg-r-neutral-card-3"
-            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
-          >
+          <Row tip={t('page.signTx.tokenApprove.contractTrustValueTip')}>
             {t('page.signTx.trustValue')}
           </Row>
           <Row>
@@ -104,9 +97,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.popularity')}
-          </Row>
+          <Row>{t('page.signTx.popularity')}</Row>
           <Row>
             {data.rank
               ? t('page.signTx.contractPopularity', [
@@ -117,33 +108,27 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.interacted')}
-          </Row>
+          <Row>{t('page.signTx.interacted')}</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>
-          <Row className="bg-r-neutral-card-3">
-            {t('page.signTx.addressNote')}
-          </Row>
+          <Row>{t('page.signTx.addressNote')}</Row>
           <Row>
             <Values.AddressMemo address={data.spender} />
           </Row>
         </Col>
         {data.isDanger && (
           <Col>
-            <Row className="bg-r-neutral-card-3">
-              {t('page.signTx.tokenApprove.flagByRabby')}
-            </Row>
+            <Row>{t('page.signTx.tokenApprove.flagByRabby')}</Row>
             <Row>
               <Values.Boolean value={!!data.isDanger} />
             </Row>
           </Col>
         )}
         <Col>
-          <Row className="bg-r-neutral-card-3">{t('page.signTx.myMark')}</Row>
+          <Row>{t('page.signTx.myMark')}</Row>
           <Row>
             <Values.AddressMark
               isContract

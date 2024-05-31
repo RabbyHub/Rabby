@@ -30,28 +30,39 @@ const ComponentConfig = {
     closeable: false,
     titleSize: '16px',
     padding: '12px 20px',
+    isNew: false,
   },
   Default: {
     title: undefined,
     closeable: true,
     titleSize: '16px',
     padding: '20px 20px 24px',
+    isNew: true,
   },
   Approval: {
     closeable: false,
-    titleSize: '16px',
+    titleSize: '15px',
     maskClosable: false,
-    padding: '20px',
+    padding: '16px',
+    isNew: true,
   },
   CancelApproval: {
     padding: '8px 20px 22px',
     titleSize: '20px',
     closeable: true,
+    isNew: true,
   },
   CancelConnect: {
     padding: '8px 20px 22px',
     titleSize: '20px',
     closeable: true,
+    isNew: true,
+  },
+  Ledger: {
+    closeable: true,
+    titleSize: '20px',
+    padding: '20px 10px 24px',
+    isNew: true,
   },
 };
 
@@ -98,6 +109,7 @@ export const CommonPopup: React.FC = () => {
         padding: config.padding,
       }}
       isSupportDarkMode
+      isNew={config.isNew}
     >
       {componentName === 'Approval' && <Approval className="h-full" />}
       {componentName === 'WalletConnect' && <ReconnectView />}

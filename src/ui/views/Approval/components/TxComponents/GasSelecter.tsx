@@ -1,3 +1,6 @@
+/**
+ * @deprecated new version is GasSelectorHeader.tsx
+ */
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';

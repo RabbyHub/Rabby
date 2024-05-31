@@ -9,17 +9,22 @@
     font-size: 20px;
     line-height: 23px;
     text-align: center;
-    color: @color-title;
+    color: var(--r-neutral-title1, #192945);
   }
   .ant-drawer-header {
     background: transparent;
   }
   .ant-drawer-content {
     flex: 1;
-    background-color: var(--r-neutral-bg-1,#fff);
-    background: var(--r-neutral-bg-1,#fff);
+    background-color: var(--r-neutral-bg-1, #fff);
     border-radius: 16px 16px 0px 0px;
     overflow: visible;
+  }
+
+  &.is-new {
+    .ant-drawer-content {
+      background: var(--r-neutral-bg2, #F2F4F7);
+    }
   }
 
   &.isConnectView {
@@ -41,7 +46,14 @@
     }
   }
   .popup-input {
-    border-radius: 6px;
+    border-radius: 8px;
+
+    input {
+      border-radius: 0;
+      &::placeholder {
+        color: var(--r-neutral-foot, #6a7587);
+        }
+    }
   }
   .popup-footer {
     position: absolute;
@@ -58,7 +70,6 @@
     padding-bottom: 18px;
     padding-top: 18px;
     border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.10));
-    background: var(--r-neutral-bg-1, rgba(255, 255, 255, 0.06));
   }
 }
 
@@ -74,6 +85,12 @@
   }
   .ant-drawer-content {
     background: var(--r-neutral-bg-1, #3D4251);
+  }
+
+  &.is-new {
+    .ant-drawer-content {
+      background: var(--r-neutral-bg2, #F2F4F7);
+    }
   }
 
   &.isConnectView {
@@ -95,10 +112,15 @@
       background: var(--r-neutral-card-2, #F2F4F7) !important;
     }
   }
-  
 
+  .ant-form-item-has-error {
+    .ant-input-affix-wrapper {
+      border-color: var(--r-red-default, #FF4D4F) !important;
+    }
+  }
+  
   .ant-input-affix-wrapper {
-    border-width: 0.5px;
+    border-width: 1px;
     &.ant-input-affix-wrapper-focused {
       border-width: 1px;
       border-color: var(--r-blue-default, #7084ff);

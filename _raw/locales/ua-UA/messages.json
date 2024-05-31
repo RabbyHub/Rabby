@@ -50,7 +50,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Змінювати лише за необхідності",
       "gasPriceMedian": "Медіана останніх 100 транзакцій у мережі: ",
-      "myNativeTokenBalance": "Мій {{symbol}} баланс: {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "Мій Газ баланс: ",
       "gasLimitEmptyAlert": "Будь ласка, введіть ліміт газу",
       "gasLimitMinValueAlert": "Ліміт газу має бути більше 21000",
       "balanceChange": {

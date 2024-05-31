@@ -20,6 +20,7 @@ const Wrapper = styled.div`
     border-radius: 6px;
     padding: 12px;
     // margin-top: 14px;
+    margin-bottom: 12px;
     position: relative;
     .internal-transaction {
       padding: 0 5px;

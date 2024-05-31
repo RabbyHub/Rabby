@@ -6,6 +6,7 @@ import { TypedDataActionData } from './utils';
 import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
+import { SubTable, SubCol, SubRow } from '../Actions/components/SubTable';
 
 const Wrapper = styled.div``;
 
@@ -25,13 +26,24 @@ const CoboSafeModificationRule = ({
             {t('page.signTx.coboSafeModificationRole.safeWalletTitle')}
           </Row>
           <Row>
-            <div>
-              <Values.Address address={actionData.multisig_id} />
-            </div>
-            <ul className="desc-list">
-              <li>
-                <Values.AddressMemo address={actionData.multisig_id} />
-              </li>
+            <Values.Address
+              id="cobo-safe-address"
+              address={actionData.multisig_id}
+            />
+          </Row>
+        </Col>
+
+        <SubTable target="cobo-safe-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
+            <SubRow>
+              <Values.AddressMemo address={actionData.multisig_id} />
+            </SubRow>
+          </SubCol>
+
+          <SubCol className="items-center">
+            <SubRow isTitle>{t('page.signTx.label')}</SubRow>
+            <SubRow>
               <LogoWithText
                 logo={IconSafe}
                 text="Safe"
@@ -41,17 +53,18 @@ const CoboSafeModificationRule = ({
                   fontWeight: 'normal',
                   fontSize: '13px',
                   lineHeight: '15px',
-                  color: '#4B4D59',
+                  color: 'var(--r-neutral-body, #3E495E)',
                 }}
               />
-            </ul>
-          </Row>
-        </Col>
+            </SubRow>
+          </SubCol>
+        </SubTable>
+
         <Col>
           <Row isTitle>
             {t('page.signTx.coboSafeModificationRole.descriptionTitle')}
           </Row>
-          <Row>{actionData.desc}</Row>
+          <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
     </Wrapper>

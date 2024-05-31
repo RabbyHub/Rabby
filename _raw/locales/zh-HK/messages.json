@@ -1217,7 +1217,7 @@
       "moreSafeSigNeeded": "還需要 {{0}} 次確認",
       "multiSigChainNotMatch": "多簽地址不在本鏈上，無法發起交易",
       "myMark": "我的標記",
-      "myNativeTokenBalance": "我的 {{symbol}} 結餘：{{amount}} {{symbol}}",
+      "myNativeTokenBalance": "我的礦工費結餘：",
       "nativeTokenNotEngouthForGas": "你的錢包里沒有足夠的 Gas",
       "neverInteracted": "之前沒有交互過",
       "neverTransacted": "之前沒有交易過",
