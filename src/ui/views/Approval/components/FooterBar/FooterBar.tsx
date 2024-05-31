@@ -36,6 +36,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   canUseGasLess?: boolean;
   Header?: React.ReactNode;
   gasLessFailedReason?: string;
+  isWatchAddr?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -138,6 +139,7 @@ export const FooterBar: React.FC<Props> = ({
   enableGasLess,
   Header,
   gasLessFailedReason,
+  isWatchAddr,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -270,7 +272,7 @@ export const FooterBar: React.FC<Props> = ({
                 enableGasLess?.();
               }}
             />
-          ) : (
+          ) : isWatchAddr ? null : (
             <GasLessNotEnough gasLessFailedReason={gasLessFailedReason} />
           ))}
       </Wrapper>

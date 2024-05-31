@@ -2170,6 +2170,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 gasPriceMedian={gasPriceMedian}
               />
             }
+            isWatchAddr={
+              currentAccountType === KEYRING_TYPE.WatchAddressKeyring
+            }
             gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}
             showGasLess={!gasLessLoading && isReady && showGasLess}
