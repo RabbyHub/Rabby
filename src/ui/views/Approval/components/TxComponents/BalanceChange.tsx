@@ -18,7 +18,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { useRabbyDispatch } from 'ui/store';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import styled from 'styled-components';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import IconNFTDefault from '@/ui/assets/nft-default.svg';
 
 const HeadlineStyled = styled.div`
   font-size: 14px;
@@ -79,11 +79,9 @@ const NFTBalanceChange = ({
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex items-center">
-                <NFTAvatar
-                  className="w-[24px] h-[24px] mr-8"
-                  thumbnail
-                  content={item?.content}
-                  type={item?.content_type}
+                <img
+                  src={IconNFTDefault}
+                  className="w-[24px] h-[24px] mr-8 rounded-sm"
                 />
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"
@@ -119,11 +117,9 @@ const NFTBalanceChange = ({
               key={`${item.id}-${item.inner_id}`}
             >
               <div className="flex items-center">
-                <NFTAvatar
-                  className="w-[24px] h-[24px] mr-8"
-                  thumbnail
-                  content={item?.content}
-                  type={item?.content_type}
+                <img
+                  src={IconNFTDefault}
+                  className="w-[24px] h-[24px] mr-8 rounded-sm"
                 />
                 <span
                   className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis"

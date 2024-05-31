@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { SecurityEngineLevel } from 'consts';
 import clsx from 'clsx';
 import { useHover } from '@/ui/utils';
-import IconError from 'ui/assets/sign/security-engine/error-big.svg';
+import { ReactComponent as IconError } from 'ui/assets/sign/security-engine/error-big.svg';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
@@ -268,7 +268,7 @@ const RuleDrawer = ({
       return (
         <div className="main">
           <div className="level-logo">
-            <img className="level-icon w-32 h-32" src={IconError} />
+            <IconError className="w-32 h-32 text-r-neutral-line" />
           </div>
           <div>{t('page.securityEngine.unknownResult')}</div>
         </div>
