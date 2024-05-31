@@ -124,7 +124,7 @@ const Row = ({
         'row relative',
         {
           title: isTitle,
-          block: tip,
+          'items-center': tip,
           wrap: wrap,
         },
         className
