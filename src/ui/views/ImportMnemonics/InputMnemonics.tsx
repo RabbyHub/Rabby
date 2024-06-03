@@ -142,6 +142,20 @@ const ImportMnemonics = () => {
     }
   }, [needPassphrase]);
 
+  const checkSlip39Mnemonics = React.useCallback(
+    async (mnemonics: string) => {
+      if (!isSlip39) return;
+      const secretShares = mnemonics.split('\n').filter((v) => v);
+      try {
+        const result = await wallet.slip39DecodeMnemonics(secretShares);
+        setSlip39GroupNumber(result.groupThreshold);
+      } catch (err) {
+        console.log('slip39DecodeMnemonics error', err);
+      }
+    },
+    [isSlip39]
+  );
+
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
 
   return (
@@ -193,6 +207,7 @@ const ImportMnemonics = () => {
                   onSlip39Change={setIsSlip39}
                   onPassphrase={onPassphrase}
                   errMsgs={errMsgs}
+                  onChange={checkSlip39Mnemonics}
                 />
               </Form.Item>
               {needPassphrase && (

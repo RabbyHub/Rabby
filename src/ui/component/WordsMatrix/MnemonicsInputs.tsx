@@ -34,6 +34,21 @@ const NumberFlag = styled.div`
   line-height: 1;
 `;
 
+const useClearClipboardToast = () => {
+  const { t } = useTranslation();
+
+  const clearClipboardToast = () => {
+    clearClipboard();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.newAddress.seedPhrase.pastedAndClear'),
+      duration: 2,
+    });
+  };
+
+  return clearClipboardToast;
+};
+
 const MatrixWrapper = styled.div.withConfig<{
   rowCount?: number;
   totalCount?: number;
@@ -357,6 +372,8 @@ function MnemonicsInputs({
     onPassphrase?.(needPassphrase);
   }, [needPassphrase]);
 
+  const clearClipboardToast = useClearClipboardToast();
+
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
       <HeadToolbar className="mb-[8px] text-r-neutral-body">
@@ -383,7 +400,7 @@ function MnemonicsInputs({
                       >
                         I have a
                         <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {count}
+                          {{ count }}
                         </b>
                         -word phrase
                       </Trans>
@@ -411,7 +428,7 @@ function MnemonicsInputs({
                       >
                         I have a
                         <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {count}
+                          {{ count }}
                         </b>
                         -word phrase and Passphrase
                       </Trans>
@@ -464,7 +481,7 @@ function MnemonicsInputs({
                   }
                   values={{ count: mnemonicsCount }}
                 >
-                  I have a <span>{mnemonicsCount}</span>-word phrase and
+                  I have a <span>{{ mnemonicsCount }}</span>-word phrase and
                   Passphrase
                 </Trans>
               ) : (
@@ -561,14 +578,7 @@ function MnemonicsInputs({
                     validateWords();
                   }}
                   onPaste={(e) => {
-                    clearClipboard();
-                    message.success({
-                      icon: (
-                        <img src={IconSuccess} className="icon icon-success" />
-                      ),
-                      content: t('page.newAddress.seedPhrase.pastedAndClear'),
-                      duration: 2,
-                    });
+                    clearClipboardToast();
                     const input = e.target as HTMLInputElement;
                     input.select();
                   }}
@@ -631,11 +641,13 @@ const SLIP39MnemonicsInput = ({
   onTextChange,
   idx,
   error,
+  onPaste,
 }: {
   value: string;
   onTextChange: (text: string) => void;
   idx: number;
   error?: boolean;
+  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
 }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
@@ -652,10 +664,11 @@ const SLIP39MnemonicsInput = ({
         style={
           !show
             ? {
-                '-webkit-text-security': 'disc',
+                WebkitTextSecurity: 'disc',
               }
             : undefined
         }
+        onPaste={onPaste}
         className={clsx(
           'min-h-[100px] p-12 border-rabby-neutral-line bg-rabby-neutral-card-1 ',
           'text-13 text-r-neutral-title-1 font-medium leading-[18px]',
@@ -701,6 +714,8 @@ export const SLIP39MnemonicsInputs = ({
   sli39values: string[];
   onSli39valuesChange: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
+  const clearClipboardToast = useClearClipboardToast();
+
   useEffect(() => {
     onSli39valuesChange((pre) =>
       Array.from({ length: number }).map((_, idx) => pre[idx] || '')
@@ -715,11 +730,26 @@ export const SLIP39MnemonicsInputs = ({
           idx={idx}
           value={sli39values[idx]}
           error={error}
+          onPaste={(e) => {
+            clearClipboardToast();
+
+            e.preventDefault();
+            const text = e.clipboardData.getData('text');
+            onSli39valuesChange((prev) => {
+              const newVal = [...prev];
+              const arr = text.split('\n').filter((t) => t);
+              for (let i = 0; i < arr.length; i++) {
+                newVal[idx + i] = arr[i];
+              }
+              onChange?.(newVal.join('\n'));
+              return newVal;
+            });
+          }}
           onTextChange={(text) => {
             onSli39valuesChange((pre) => {
               const newVal = [...pre];
               newVal[idx] = text;
-              onChange?.(newVal.join(' '));
+              onChange?.(newVal.join('\n'));
               return newVal;
             });
           }}

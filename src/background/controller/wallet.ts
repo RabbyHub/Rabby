@@ -1,8 +1,6 @@
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
-import * as bip39 from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english';
 import { ethers, Contract } from 'ethers';
 import { flatten, groupBy, keyBy, set, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
@@ -2403,7 +2401,7 @@ export class WalletController extends BaseController {
     // keep passphrase is empty string if not set
     passphrase = passphrase || '';
 
-    if (!bip39.validateMnemonic(mnemonic, wordlist)) {
+    if (!HdKeyring.validateMnemonic(mnemonic)) {
       throw new Error(t('background.error.invalidMnemonic'));
     }
     // If import twice use same keyring
@@ -2427,6 +2425,10 @@ export class WalletController extends BaseController {
     }
 
     return result;
+  };
+
+  slip39DecodeMnemonics = (secretShares: string[]) => {
+    return HdKeyring.slip39DecodeMnemonics(secretShares);
   };
 
   addKeyringToStash = (keyring) => {
