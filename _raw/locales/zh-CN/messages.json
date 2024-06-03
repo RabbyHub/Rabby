@@ -611,6 +611,7 @@
         "manageAirgap": "管理 Airgap",
         "manageCoolwallet": "管理 CoolWallet",
         "manageBitbox02": "管理 BitBox02",
+        "manageNgraveZero": "管理 NGRAVE ZERO",
         "done": "完成",
         "addressesIn": "{{0}} 中的地址",
         "addressesInRabby": "Rabby 中的地址{{0}}",

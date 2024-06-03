@@ -1485,6 +1485,7 @@
         "manageImtokenOffline": "Manage imToken",
         "manageCoolwallet": "Manage CoolWallet",
         "manageBitbox02": "Manage BitBox02",
+        "manageNgraveZero": "Manage NGRAVE ZERO",
         "done": "Done",
         "addressesIn": "Addresses in {{0}}",
         "addressesInRabby": "Addresses in Rabby{{0}}",

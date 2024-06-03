@@ -1478,6 +1478,7 @@
         "manageImtokenOffline": "Управление imToken",
         "manageCoolwallet": "Управление CoolWallet",
         "manageBitbox02": "Управление BitBox02",
+        "manageNgraveZero": "Управление NGRAVE ZERO",
         "done": "Готово",
         "addressesIn": "Адреса в {{0}}",
         "addressesInRabby": "Адреса в Rabby{{0}}",

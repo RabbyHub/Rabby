@@ -4,6 +4,7 @@ import { UR, UREncoder } from '@ngraveio/bc-ur';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button } from 'antd';
 import clsx from 'clsx';
+import { WALLET_BRAND_TYPES } from '@/constant';
 
 interface IProps {
   type: string;
@@ -37,6 +38,10 @@ const Player = ({
       clearInterval(id);
     };
   }, [urEncoder]);
+
+  if (brandName == WALLET_BRAND_TYPES.NGRAVEZERO) {
+    brandName = 'NGRAVE ZERO';
+  }
 
   return (
     <div className="flex flex-col items-center">
