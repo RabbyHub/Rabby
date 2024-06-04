@@ -34,10 +34,12 @@ import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
+import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
+// import { ReactComponent as RcIconServer } from 'ui/assets/server.svg';
+import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
+// import { ReactComponent as RcIconTestnet } from 'ui/assets/dashboard/settings/icon-testnet.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
@@ -48,6 +50,7 @@ import { ReactComponent as RcIconSettingsFeatureConnectedDapps } from 'ui/assets
 import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboard/settings/follow-us.svg';
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
+import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import IconSettingsRabbyBadge from 'ui/assets/badge/free-gas-badge-s.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
@@ -902,6 +905,53 @@ const SettingsInner = ({
         },
       ] as SettingItem[],
     },
+    debugkits: {
+      label: 'Debug Kits (Not present on production)',
+      items: [
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.backendServiceUrl')}</span>
+          ),
+          onClick: () => setShowOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconServerCC,
+          content: (
+            <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
+          ),
+          onClick: () => setShowTestnetOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearCC,
+          content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
+          onClick: handleClickClearWatchMode,
+        },
+        {
+          leftIcon: RcIconSettingsGitForkCC,
+          content: <span>Git Build Hash</span>,
+          rightIcon: (
+            <>
+              <span className="text-14 mr-[8px]">
+                {process.env.RABBY_BUILD_GIT_HASH}
+              </span>
+            </>
+          ),
+        },
+      ] as SettingItem[],
+    },
     about: {
       label: t('page.dashboard.settings.aboutUs'),
       items: [
@@ -1057,29 +1107,9 @@ const SettingsInner = ({
     },
   };
 
-  if (process.env.DEBUG) {
-    renderData.features.items.push(
-      {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.backendServiceUrl'),
-        onClick: () => setShowOpenApiModal(true),
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0],
-      {
-        leftIcon: RcIconServer,
-        content: t('page.dashboard.settings.testnetBackendServiceUrl'),
-        onClick: () => setShowTestnetOpenApiModal(true),
-        rightIcon: (
-          <ThemeIcon src={RcIconArrowRight} className="icon icon-arrow-right" />
-        ),
-      } as typeof renderData.features.items[0],
-      {
-        content: t('page.dashboard.settings.clearWatchMode'),
-        onClick: handleClickClearWatchMode,
-      } as typeof renderData.features.items[0]
-    );
+  if (!process.env.DEBUG) {
+    // @ts-expect-error we know it's not defined on production
+    delete renderData.debugkits;
   }
 
   const lockWallet = async () => {
