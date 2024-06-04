@@ -1,7 +1,7 @@
 import { Button, Input, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { Chain, GasLevel, TxPushType } from 'background/service/openapi';
+import { GasLevel, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -35,9 +35,8 @@ import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-logo-cc.svg'
 import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
-import { isNil } from 'lodash';
 import { calcGasEstimated } from '@/utils/time';
-import { useWallet } from '@/ui/utils';
+import { useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 
 export interface GasSelectorResponse extends GasLevel {
@@ -631,19 +630,38 @@ const GasSelectorHeader = ({
     }
   }, [gasList]);
 
+  const gasCostUsdStr = useMemo(() => {
+    const bn = new BigNumber(modalExplainGas?.gasCostUsd);
+    let value;
+
+    if (bn.gt(1)) {
+      value = bn.toFixed(2);
+    } else if (bn.gt(0.0001)) {
+      value = bn.toFixed(4);
+    } else {
+      value = '0.0001';
+    }
+
+    return `$${formatTokenAmount(value)}`;
+  }, [modalExplainGas?.gasCostUsd]);
+
+  const gasCostAmountStr = useMemo(() => {
+    return `${formatTokenAmount(
+      new BigNumber(modalExplainGas.gasCostAmount).toString(10),
+      6
+    )} ${chain.nativeTokenSymbol}`;
+  }, [modalExplainGas?.gasCostAmount]);
+
+  const [isGasHovering, gasHoverProps] = useHover();
+
   if (!isReady && isFirstTimeLoad) {
     return (
       <HeaderStyled>
-        <Skeleton.Input className="rounded w-[130px] h-20" active />
+        <Skeleton.Input className="rounded w-[130px] h-[20px]" active />
+        <Skeleton.Input className="rounded w-[100px] h-[20px]" active />
       </HeaderStyled>
     );
   }
-
-  const gasCostUsdStr = new BigNumber(modalExplainGas.gasCostUsd).lt(0.01)
-    ? '<$0.01'
-    : `$${formatTokenAmount(
-        new BigNumber(modalExplainGas.gasCostUsd).toFixed(2)
-      )}`;
 
   if (disabled) {
     return null;
@@ -652,7 +670,7 @@ const GasSelectorHeader = ({
   return (
     <>
       <HeaderStyled>
-        <GasStyled>
+        <GasStyled {...gasHoverProps}>
           <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
           <div className="gas-selector-card-content overflow-hidden">
             {disabled ? (
@@ -680,9 +698,21 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span className="truncate" title={gasCostUsdStr}>
-                    {gasCostUsdStr}
-                  </span>
+                  {isGasHovering ? (
+                    <span
+                      className="truncate cursor-pointer"
+                      title={gasCostAmountStr}
+                    >
+                      {gasCostAmountStr}
+                    </span>
+                  ) : (
+                    <span
+                      className="truncate cursor-pointer"
+                      title={gasCostUsdStr}
+                    >
+                      {gasCostUsdStr}
+                    </span>
+                  )}
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
@@ -764,11 +794,7 @@ const GasSelectorHeader = ({
                   src={chain.nativeTokenLogo || IconUnknown}
                   className="w-16 h-16 rounded-full"
                 />
-                {formatTokenAmount(
-                  new BigNumber(modalExplainGas.gasCostAmount).toString(10),
-                  6
-                )}{' '}
-                {chain.nativeTokenSymbol}
+                {gasCostAmountStr}
               </div>
             </>
           )}
