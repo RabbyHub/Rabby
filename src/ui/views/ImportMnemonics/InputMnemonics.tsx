@@ -208,6 +208,7 @@ const ImportMnemonics = () => {
                   onPassphrase={onPassphrase}
                   errMsgs={errMsgs}
                   onChange={checkSlip39Mnemonics}
+                  setSlip39GroupNumber={setSlip39GroupNumber}
                 />
               </Form.Item>
               {needPassphrase && (

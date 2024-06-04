@@ -229,6 +229,7 @@ function MnemonicsInputs({
   isSlip39,
   onSlip39Change,
   slip39GroupNumber,
+  setSlip39GroupNumber,
   ...props
 }: React.PropsWithChildren<{
   className?: string;
@@ -246,6 +247,7 @@ function MnemonicsInputs({
   isSlip39: boolean;
   onSlip39Change: React.Dispatch<React.SetStateAction<boolean>>;
   slip39GroupNumber: number;
+  setSlip39GroupNumber: React.Dispatch<React.SetStateAction<number>>;
 }>) {
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
     DEFAULT_MEMONICS_COUNT
@@ -305,6 +307,7 @@ function MnemonicsInputs({
     setMnemonics('');
     validateWords();
     onSli39valuesChange(['']);
+    setSlip39GroupNumber(1);
   }, [mnemonicsCount]);
 
   const onWordUpdated = React.useCallback(
