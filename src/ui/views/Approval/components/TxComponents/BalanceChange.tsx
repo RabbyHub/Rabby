@@ -274,8 +274,9 @@ const BalanceChange = ({
           )}
           {sendTokenList?.map((token) => (
             <Col className="py-10 items-center" key={token.id}>
-              <Row isTitle className="text-[16px]">
+              <Row isTitle className="text-[16px] overflow-hidden">
                 <LogoWithText
+                  className="overflow-hidden"
                   logoSize={24}
                   logo={token.logo_url}
                   text={
@@ -312,8 +313,9 @@ const BalanceChange = ({
           ))}
           {receiveTokenList?.map((token) => (
             <Col className="py-10 items-center" key={token.id}>
-              <Row isTitle className="text-[16px]">
+              <Row isTitle className="text-[16px] overflow-hidden">
                 <LogoWithText
+                  className="overflow-hidden"
                   logoSize={24}
                   logo={token.logo_url}
                   text={

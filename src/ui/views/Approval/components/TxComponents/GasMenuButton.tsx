@@ -127,8 +127,9 @@ const GweiStyled = styled.span`
 interface Props {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
-  onSelect: (e, gas: GasLevel) => void;
+  onSelect: (gas: GasLevel) => void;
   onCustom: () => void;
+  showCustomGasPrice: boolean;
 }
 
 const GasLevelIcon: React.FC<{ level: string; isActive }> = ({
@@ -160,6 +161,7 @@ export const GasMenuButton: React.FC<Props> = ({
   selectedGas,
   onSelect,
   onCustom,
+  showCustomGasPrice,
 }) => {
   const { t } = useTranslation();
   const orderedGasList = [...gasList].reverse();
@@ -184,7 +186,8 @@ export const GasMenuButton: React.FC<Props> = ({
                 <MenuItemStyled
                   key={gas.level}
                   onClick={(e) => {
-                    onSelect(e.domEvent, gas);
+                    e.domEvent.stopPropagation();
+                    onSelect(gas);
                     if (gas.level === 'custom') {
                       onCustom();
                     }
@@ -198,10 +201,12 @@ export const GasMenuButton: React.FC<Props> = ({
                     <LevelTextStyled>
                       {t(getGasLevelI18nKey(gas.level))}
                     </LevelTextStyled>
-                    <LevelPriceStyled>
-                      {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
-                      Gwei
-                    </LevelPriceStyled>
+                    {(gas.level !== 'custom' || showCustomGasPrice) && (
+                      <LevelPriceStyled>
+                        {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
+                        Gwei
+                      </LevelPriceStyled>
+                    )}
                   </LevelTextWrapStyled>
                   {isSelected && <CheckSVG className="text-r-blue-default" />}
                   {!isSelected && gas.level === 'custom' && (
@@ -217,9 +222,11 @@ export const GasMenuButton: React.FC<Props> = ({
       {selectedGas ? (
         <MenuButtonStyled>
           <span>{t(getGasLevelI18nKey(selectedGas.level ?? 'slow'))}</span>
-          <GweiStyled>
-            {new BigNumber(selectedGas.price / 1e9).toFixed().slice(0, 8)}
-          </GweiStyled>
+          {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
+            <GweiStyled>
+              {new BigNumber(selectedGas.price / 1e9).toFixed().slice(0, 8)}
+            </GweiStyled>
+          )}
           <ArrowSVG className="text-r-neutral-foot ml-2" />
         </MenuButtonStyled>
       ) : (

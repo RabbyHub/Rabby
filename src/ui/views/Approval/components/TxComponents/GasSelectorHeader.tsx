@@ -228,7 +228,6 @@ const GasStyled = styled.div`
 
 const GasPriceDesc = styled.div`
   margin-top: 20px;
-  margin-bottom: 20px;
   font-size: 13px;
   color: var(--r-neutral-body, #3e495e);
   display: flex;
@@ -274,7 +273,7 @@ const GasSelectorHeader = ({
     Number(gasLimit)
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [customGas, setCustomGas] = useState<string | number>('0');
+  const [customGas, setCustomGas] = useState<string | number | undefined>();
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(
     rawSelectedGas
   );
@@ -411,18 +410,27 @@ const GasSelectorHeader = ({
     setModalVisible(false);
   };
 
+  const [changedCustomGas, setChangedCustomGas] = useState(false);
+
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (INPUT_NUMBER_RE.test(e.target.value)) {
       setCustomGas(filterNumber(e.target.value));
+      setChangedCustomGas(e.target.value === '' ? false : true);
     }
   };
 
+  const hiddenCustomGas = useMemo(() => {
+    return customGas === '0' && !changedCustomGas;
+  }, [customGas, changedCustomGas]);
+
+  const [isSelectCustom, setIsSelectCustom] = useState(false);
   const handleClickEdit = () => {
     setModalVisible(true);
     setSelectedGas(rawSelectedGas);
     setGasLimit(Number(gasLimit));
     setCustomNonce(Number(nonce));
+    setIsSelectCustom(true);
     matomoRequestEvent({
       category: 'Transaction',
       action: 'EditGas',
@@ -433,18 +441,31 @@ const GasSelectorHeader = ({
     }, 50);
   };
 
+  const [
+    prevSelectedNotCustomGas,
+    setPrevSelectedNotCustomGas,
+  ] = useState<GasLevel | null>(null);
+
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     const target = gas;
 
-    if (gas.level === selectedGas?.level) return;
+    // if (gas.level === selectedGas?.level) return;
+    setIsSelectCustom(gas.level === 'custom');
 
     if (gas.level === 'custom') {
+      setTimeout(() => {
+        customerInputRef.current?.focus();
+      }, 50);
+
+      if (!changedCustomGas) {
+        return;
+      }
+
       setSelectedGas({
         ...target,
         level: 'custom',
       });
-      customerInputRef.current?.focus();
     } else {
       setSelectedGas({
         ...gas,
@@ -458,11 +479,11 @@ const GasSelectorHeader = ({
     return panelSelection(e, gas);
   };
 
-  const externalPanelSelection = (e, gas: GasLevel) => {
-    e.stopPropagation();
+  const externalPanelSelection = (gas: GasLevel) => {
     const target = gas;
 
     if (gas.level === 'custom') {
+      if (!changedCustomGas) return;
       onChange({
         ...target,
         level: 'custom',
@@ -532,12 +553,16 @@ const GasSelectorHeader = ({
       ignored: processedRules.includes(id),
     });
   };
-
   const [loadingGasEstimated, setLoadingGasEstimated] = useState(false);
+
+  // reset loading state when custom gas change
+  useEffect(() => {
+    setLoadingGasEstimated(true);
+  }, [customGas]);
+
   useDebounce(
     () => {
       if (isReady || !isFirstTimeLoad) {
-        setLoadingGasEstimated(true);
         loadCustomGasData(Number(customGas) * 1e9).then((data) => {
           if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
@@ -597,6 +622,8 @@ const GasSelectorHeader = ({
         setIsReal1559(false);
       }
     } else if (selectedGas) {
+      setPrevSelectedNotCustomGas(selectedGas);
+
       if (selectedGas?.price / 1e9 !== maxPriorityFee) {
         setIsReal1559(true);
       } else {
@@ -605,8 +632,16 @@ const GasSelectorHeader = ({
     }
   }, [maxPriorityFee, selectedGas, customGas, is1559]);
 
+  const isNilCustomGas = customGas === undefined || customGas === '';
+  const notSelectCustomGasAndIsNil = !isSelectCustom && isNilCustomGas;
+  const isLoadingGas = loadingGasEstimated || isNilCustomGas;
+
   useEffect(() => {
     if (isReady && selectedGas && chainId === 1) {
+      if (isSelectCustom && isNilCustomGas) {
+        setMaxPriorityFee(undefined);
+        return;
+      }
       if (selectedGas.priority_price && selectedGas.priority_price !== null) {
         setMaxPriorityFee(selectedGas.priority_price / 1e9);
       } else {
@@ -621,7 +656,7 @@ const GasSelectorHeader = ({
     } else if (selectedGas) {
       setMaxPriorityFee(selectedGas.price / 1e9);
     }
-  }, [gasList, selectedGas, isReady, chainId]);
+  }, [gasList, selectedGas, isReady, chainId, isSelectCustom, isNilCustomGas]);
 
   useEffect(() => {
     const customGas = gasList.find((item) => item.level === 'custom');
@@ -653,6 +688,13 @@ const GasSelectorHeader = ({
   }, [modalExplainGas?.gasCostAmount]);
 
   const [isGasHovering, gasHoverProps] = useHover();
+
+  const handleClosePopup = () => {
+    if (maxPriorityFee === undefined) {
+      setSelectedGas(prevSelectedNotCustomGas);
+    }
+    setModalVisible(false);
+  };
 
   if (!isReady && isFirstTimeLoad) {
     return (
@@ -755,6 +797,7 @@ const GasSelectorHeader = ({
           selectedGas={selectedGas}
           onSelect={externalPanelSelection}
           onCustom={handleClickEdit}
+          showCustomGasPrice={changedCustomGas}
         />
       </HeaderStyled>
       <Popup
@@ -763,7 +806,7 @@ const GasSelectorHeader = ({
         visible={modalVisible}
         title={t('page.signTx.gasSelectorTitle')}
         className="gas-modal"
-        onCancel={() => setModalVisible(false)}
+        onCancel={handleClosePopup}
         destroyOnClose
         closable
         isSupportDarkMode
@@ -818,7 +861,9 @@ const GasSelectorHeader = ({
                 <div
                   key={`gas-item-${item.level}-${idx}`}
                   className={clsx('card', {
-                    active: selectedGas?.level === item.level,
+                    active: isSelectCustom
+                      ? item.level === 'custom'
+                      : selectedGas?.level === item.level,
                   })}
                   onClick={(e) => handlePanelSelection(e, item)}
                 >
@@ -832,18 +877,22 @@ const GasSelectorHeader = ({
                     })}
                   >
                     {item.level === 'custom' ? (
-                      <Input
-                        value={customGas}
-                        defaultValue={customGas}
-                        onChange={handleCustomGasChange}
-                        onClick={(e) => handlePanelSelection(e, item)}
-                        onPressEnter={customGasConfirm}
-                        ref={customerInputRef}
-                        autoFocus={selectedGas?.level === item.level}
-                        min={0}
-                        bordered={false}
-                        disabled={disabled}
-                      />
+                      notSelectCustomGasAndIsNil ? (
+                        '-'
+                      ) : (
+                        <Input
+                          value={hiddenCustomGas ? '' : customGas}
+                          defaultValue={hiddenCustomGas ? '' : customGas}
+                          onChange={handleCustomGasChange}
+                          onClick={(e) => handlePanelSelection(e, item)}
+                          onPressEnter={customGasConfirm}
+                          ref={customerInputRef}
+                          autoFocus={selectedGas?.level === item.level}
+                          min={0}
+                          bordered={false}
+                          disabled={disabled}
+                        />
+                      )
                     ) : (
                       <Tooltip
                         title={new BigNumber(item.price / 1e9).toFixed()}
@@ -859,7 +908,7 @@ const GasSelectorHeader = ({
                   </div>
                   <div className="cardTime">
                     {item.level === 'custom' ? (
-                      loadingGasEstimated ? (
+                      notSelectCustomGasAndIsNil ? null : isLoadingGas ? (
                         <Skeleton.Input
                           className="w-[44px] h-[12px] rounded"
                           active
@@ -876,45 +925,7 @@ const GasSelectorHeader = ({
             </CardBody>
           </Tooltip>
         </div>
-        <div>
-          {is1559 && (
-            <div className="priority-slider">
-              <p className="priority-slider-header">
-                {t('page.signTx.maxPriorityFee')}
-                <Tooltip
-                  title={
-                    <ol className="list-decimal list-outside pl-[12px] mb-0">
-                      <li>{t('page.signTx.eip1559Desc1')}</li>
-                      <li>{t('page.signTx.eip1559Desc2')}</li>
-                    </ol>
-                  }
-                  overlayClassName="rectangle"
-                >
-                  <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
-                </Tooltip>
-              </p>
-              <div className="priority-slider-body">
-                <Input
-                  onFocus={(e) => e.target.select()}
-                  value={maxPriorityFee}
-                  onChange={(e) => handleMaxPriorityFeeChange(e.target.value)}
-                  prefixCls="priority-slider-input"
-                  type="number"
-                  min={0}
-                  max={priorityFeeMax}
-                  step={0.01}
-                />
-              </div>
-            </div>
-          )}
-          {isReal1559 && isHardware && (
-            <div className="hardware-1559-tip">
-              {t('page.signTx.hardwareSupport1559Alert')}
-            </div>
-          )}
-        </div>
 
-        <Divide className="bg-r-neutral-line" />
         <GasPriceDesc>
           <div>
             {t('page.signTx.myNativeTokenBalance')}
@@ -936,6 +947,64 @@ const GasSelectorHeader = ({
             </div>
           )}
         </GasPriceDesc>
+
+        <div>
+          {is1559 && (
+            <>
+              <Divide className="bg-r-neutral-line my-20" />
+
+              <div
+                className={clsx('priority-slider', {
+                  'opacity-50': maxPriorityFee === undefined,
+                })}
+              >
+                <p className="priority-slider-header">
+                  {t('page.signTx.maxPriorityFee')}
+                  <Tooltip
+                    title={
+                      <ol className="list-decimal list-outside pl-[12px] mb-0">
+                        <li>{t('page.signTx.eip1559Desc1')}</li>
+                        <li>{t('page.signTx.eip1559Desc2')}</li>
+                      </ol>
+                    }
+                    overlayClassName="rectangle"
+                  >
+                    <IconInfoSVG className="text-r-neutral-foot ml-2 mt-2" />
+                  </Tooltip>
+                </p>
+                <Tooltip
+                  title={
+                    maxPriorityFee === undefined
+                      ? t('page.signTx.maxPriorityFeeDisabledAlert')
+                      : undefined
+                  }
+                  overlayClassName="rectangle"
+                >
+                  <div className="priority-slider-body">
+                    <Input
+                      onFocus={(e) => e.target.select()}
+                      value={maxPriorityFee}
+                      onChange={(e) =>
+                        handleMaxPriorityFeeChange(e.target.value)
+                      }
+                      prefixCls="priority-slider-input"
+                      type="number"
+                      min={0}
+                      max={priorityFeeMax}
+                      step={0.01}
+                      disabled={maxPriorityFee === undefined}
+                    />
+                  </div>
+                </Tooltip>
+              </div>
+            </>
+          )}
+          {isReal1559 && isHardware && (
+            <div className="hardware-1559-tip">
+              {t('page.signTx.hardwareSupport1559Alert')}
+            </div>
+          )}
+        </div>
 
         <div className="flex justify-center mt-32 popup-footer">
           <Button

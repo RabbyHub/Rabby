@@ -313,7 +313,8 @@
       "trustValueTitle": "Risk exposure",
       "typedDataMessage": "Typed data message",
       "label": "Label",
-      "addressSource": "Address Source"
+      "addressSource": "Address Source",
+      "maxPriorityFeeDisabledAlert": "Please set Gas Price first"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
