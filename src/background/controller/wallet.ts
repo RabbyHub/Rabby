@@ -2431,6 +2431,10 @@ export class WalletController extends BaseController {
     return HdKeyring.slip39DecodeMnemonics(secretShares);
   };
 
+  slip39DecodeMnemonic = (secretShare: string) => {
+    return HdKeyring.slip39DecodeMnemonic(secretShare);
+  };
+
   addKeyringToStash = (keyring) => {
     const stashId = Object.values(stashKeyrings).length + 1;
     stashKeyrings[stashId] = keyring;

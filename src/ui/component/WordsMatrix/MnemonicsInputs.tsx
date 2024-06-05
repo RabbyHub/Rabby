@@ -617,6 +617,7 @@ function MnemonicsInputs({
           onChange={onChange}
           error={!!errMsgs?.[0]}
           groupNumber={slip39GroupNumber}
+          errorIndexes={errorIndexes}
         />
       )}
       {errMsgs?.[0] || invalidWords.length > 0 ? (
@@ -710,12 +711,14 @@ export const SLIP39MnemonicsInputs = ({
   error,
   sli39values,
   onSli39valuesChange,
+  errorIndexes = [],
 }: {
   error?: boolean;
   onChange?: (value: string) => any;
   groupNumber?: number;
   sli39values: string[];
   onSli39valuesChange: React.Dispatch<React.SetStateAction<string[]>>;
+  errorIndexes: number[];
 }) => {
   const clearClipboardToast = useClearClipboardToast();
 
@@ -732,7 +735,7 @@ export const SLIP39MnemonicsInputs = ({
           key={`slip39-seed-phrase-${idx}`}
           idx={idx}
           value={sli39values[idx]}
-          error={error}
+          error={error && errorIndexes.includes(idx)}
           onPaste={(e) => {
             clearClipboardToast();
 
