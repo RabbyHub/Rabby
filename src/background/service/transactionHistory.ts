@@ -741,7 +741,7 @@ class TxHistory {
   }
 
   clearExpiredTxs(address: string) {
-    // maximum keep 20 transactions in storage each address since chrome storage maximum useage 5MB
+    // maximum keep 20 transactions in storage each address since chrome storage maximum usage 5MB
     const normalizedAddress = address.toLowerCase();
     if (this.store.transactions[normalizedAddress]) {
       const txs = Object.values(this.store.transactions[normalizedAddress]);
