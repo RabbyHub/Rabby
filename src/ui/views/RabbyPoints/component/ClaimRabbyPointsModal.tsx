@@ -143,6 +143,26 @@ interface ClaimPointsProps {
   userInvitedCode?: string;
 }
 
+const LinearGradientAnimatedDiv = styled.div`
+  @keyframes gradientLoading {
+    0% {
+      background-position: 0% 0%;
+    }
+    25% {
+      background-position: 100% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    75% {
+      background-position: 0% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+`;
+
 const ClaimPoints = ({
   web3Id,
   logo,
@@ -283,19 +303,19 @@ const ClaimPoints = ({
         </div>
       </div>
 
-      <div
-        className={clsx(
-          'text-[32px] font-bold text-center mt-[44px] mx-auto ',
-          titleLoading && 'animate-pulse'
-        )}
+      <LinearGradientAnimatedDiv
+        className={clsx('text-[32px] font-bold text-center mt-[44px] mx-auto')}
         style={
           titleLoading
             ? {
                 width: 107,
                 height: 38,
                 borderRadius: 6,
-                background:
-                  'linear-gradient(114deg, #326CFF 15.26%, #AE2BFF 55.67%, #326CFF  84.74%)',
+                animation: 'gradientLoading 3s ease infinite',
+                backgroundSize: '150% 100%',
+                backgroundRepeat: 'repeat-x',
+                backgroundImage:
+                  'linear-gradient(94deg, #326CFF 14.47%, #AE2BFF 93.83%)',
               }
             : {
                 background:
@@ -307,7 +327,7 @@ const ClaimPoints = ({
         }
       >
         {titleLoading ? '' : points}
-      </div>
+      </LinearGradientAnimatedDiv>
       <div className="mt-[8px] mb-[16px] flex items-center justify-center gap-[6px] text-r-neutral-title1 text-[15px] font-medium">
         <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
         <span>{name}</span>
