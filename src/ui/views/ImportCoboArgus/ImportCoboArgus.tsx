@@ -134,7 +134,7 @@ export const ImportCoboArgus = () => {
       </div>
       <footer
         className={clsx(
-          'flex py-[18px]',
+          'flex p-[20px]',
           'absolute bottom-0 left-0 right-0',
           'border-t border-t-r-neutral-line',
           'bg-r-neutral-bg-1'
@@ -145,7 +145,7 @@ export const ImportCoboArgus = () => {
             (step === 'select-chain' && !selectedChain) ||
             (step === 'add-address' && !inputAddress)
           }
-          className="w-[200px] h-[44px] m-auto"
+          className="w-full h-[44px] m-auto"
           type="primary"
           onClick={hasImportError ? handleClose : handleNext}
           loading={isLoading}
