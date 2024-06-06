@@ -3773,7 +3773,7 @@ export class WalletController extends BaseController {
     }
 
     const msg = `0x${Buffer.from(
-      claimSnapshot ? claimText : verifyText || '',
+      claimSnapshot ? claimText : verifyText,
       'utf-8'
     ).toString('hex')}`;
 
