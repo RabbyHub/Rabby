@@ -529,8 +529,15 @@ const GasSelectorHeader = ({
     });
   };
 
-  const priorityFeeMax = selectedGas ? selectedGas.price / 1e9 : 0;
+  let priorityFeeMax = selectedGas ? selectedGas.price / 1e9 : 0;
   const handleMaxPriorityFeeChange = (val: any) => {
+    if (
+      selectedGas?.level === 'custom' &&
+      changedCustomGas &&
+      customGas !== undefined
+    ) {
+      priorityFeeMax = Number(customGas);
+    }
     if (val === '') {
       setMaxPriorityFee(undefined);
       return;
@@ -978,7 +985,7 @@ const GasSelectorHeader = ({
                 </p>
                 <Tooltip
                   title={
-                    maxPriorityFee === undefined
+                    rawSelectedGas?.level == 'custom' && isNilCustomGas
                       ? t('page.signTx.maxPriorityFeeDisabledAlert')
                       : undefined
                   }
