@@ -137,7 +137,6 @@ interface ClaimPointsProps {
     extra_bouns: number;
     claimed: boolean;
     snapshot_at: number;
-    is_new_user: boolean;
   };
   snapshotLoading?: boolean;
   userInvitedCode?: string;
