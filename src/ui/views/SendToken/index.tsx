@@ -568,7 +568,7 @@ const SendToken = () => {
         }
 
         /**
-         * we dont' need always fetch estimateGas, if no `params.gas` set below,
+         * we don't need always fetch estimateGas, if no `params.gas` set below,
          * `params.gas` would be filled on Tx Page.
          */
         if (gasLimit > 0) {
