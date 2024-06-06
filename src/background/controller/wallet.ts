@@ -3757,8 +3757,6 @@ export class WalletController extends BaseController {
     let claimText = '';
     let verifyText = '';
 
-    console.log('getRabbyClaimTextV2 pre');
-
     if (claimSnapshot) {
       claimText = (
         await wallet.openapi.getRabbyClaimTextV2({
@@ -3773,8 +3771,6 @@ export class WalletController extends BaseController {
         })
       )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
     }
-
-    console.log('getRabbyClaimTextV2 after');
 
     const msg = `0x${Buffer.from(
       claimSnapshot ? claimText : verifyText || '',
