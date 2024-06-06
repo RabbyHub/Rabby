@@ -1,6 +1,8 @@
 // import { RcIconChecked, RcIconNotChecked } from '@/ui/assets';
+import RcIconChecked from './icons/checked.svg';
+import RcIconUnchecked from './icons/unchecked.svg';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Chain } from '@debank/common';
-import { Checkbox } from 'ui/component';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -33,7 +35,11 @@ export const ChainItem: React.FC<Props> = ({ chain, checked, onChecked }) => {
         </span>
       </div>
       <div>
-        <Checkbox width="20px" height="20px" checked={checked} />
+        <ThemeIcon
+          className="w-20 h-20"
+          src={checked ? RcIconChecked : RcIconUnchecked}
+          // alt="checkbox"
+        />
       </div>
     </div>
   );

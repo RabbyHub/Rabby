@@ -11,7 +11,6 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
-import './style.less';
 
 interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;

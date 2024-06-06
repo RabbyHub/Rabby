@@ -29,9 +29,6 @@ export const AddressInput: React.FC<Props> = ({
           'bg-r-neutral-card-1',
           {
             'border-rabby-neutral-line': !error,
-          },
-          'focus-within: border border-[#7084ff]',
-          {
             'border-red': error,
           }
         )}

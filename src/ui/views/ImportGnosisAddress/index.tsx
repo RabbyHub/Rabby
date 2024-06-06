@@ -163,7 +163,7 @@ const ImportGnosisAddress = () => {
         <Button
           type="primary"
           size="large"
-          className="w-full h-[42px]"
+          className="w-[152px] h-[42px]"
           disabled={loading || !!errorMessage || !chainList?.length}
           onClick={() =>
             handleNext(

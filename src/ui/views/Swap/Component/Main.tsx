@@ -43,11 +43,9 @@ const StyledInput = styled(Input)`
   }
 
   &.ant-input-affix-wrapper,
+  &:focus,
   &:active {
     border: 1px solid transparent;
-  }
-  &:focus {
-    border: 1px solid #7084ff;
   }
   &:hover {
     border-color: var(--r-blue-default, #7084ff) !important;
