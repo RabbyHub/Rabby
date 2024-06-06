@@ -3749,14 +3749,35 @@ export class WalletController extends BaseController {
     code?: string;
     claimSnapshot?: boolean;
     claimNumber?: number;
+    // text: string;
   }) => {
     const { code, claimSnapshot } = params || {};
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const claimText = `${account?.address} Claims Rabby Points`;
-    const verifyAddr = `Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
+    let claimText = '';
+    let verifyText = '';
+
+    console.log('getRabbyClaimTextV2 pre');
+
+    if (claimSnapshot) {
+      claimText = (
+        await wallet.openapi.getRabbyClaimTextV2({
+          id: account?.address,
+          invite_code: code,
+        })
+      )?.text; //`${account?.address} Claims Rabby Points`;
+    } else {
+      verifyText = (
+        await wallet.openapi.getRabbySignatureTextV2({
+          id: account?.address,
+        })
+      )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
+    }
+
+    console.log('getRabbyClaimTextV2 after');
+
     const msg = `0x${Buffer.from(
-      claimSnapshot ? claimText : verifyAddr,
+      claimSnapshot ? claimText : verifyText || '',
       'utf-8'
     ).toString('hex')}`;
 
@@ -3768,7 +3789,7 @@ export class WalletController extends BaseController {
     this.setRabbyPointsSignature(account.address, signature);
     if (claimSnapshot) {
       try {
-        await wallet.openapi.claimRabbyPointsSnapshot({
+        await wallet.openapi.claimRabbyPointsSnapshotV2({
           id: account?.address,
           invite_code: code,
           signature,

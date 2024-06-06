@@ -1868,8 +1868,12 @@
         "rabbyUser": "Rabby Active User",
         "rabbyValuedUserBadge": "Rabby Valued User Badge",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "walletBalance": "Wallet Balance",
+        "activeStats": "Active Status",
         "referral-code": "Referral Code",
-        "invalid-code": "invalid code"
+        "invalid-code": "invalid code",
+        "cantUseOwnCode": "You cannot use your own referral code.",
+        "season2": "Season 2"
       },
       "referralCode": {
         "referral-code-cannot-be-empty": "Referral code cannot be empty",

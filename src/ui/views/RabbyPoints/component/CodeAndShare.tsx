@@ -10,7 +10,6 @@ import { ReactComponent as IconTwitter } from 'ui/assets/rabby-points/twitter-x.
 
 export const shareRabbyPointsTwitter = ({
   snapshot,
-  usedOtherInvitedCode,
   invitedCode,
 }: {
   snapshot?: ReturnType<typeof useRabbyPoints>['snapshot'];
@@ -18,56 +17,17 @@ export const shareRabbyPointsTwitter = ({
   invitedCode?: string;
 }) => {
   if (!snapshot) return;
-  const {
-    address_balance,
-    metamask_swap,
-    rabby_nadge,
-    rabby_nft,
-    rabby_old_user,
-    extra_bouns,
-  } = snapshot;
 
-  const sum =
-    address_balance +
-    metamask_swap +
-    rabby_nadge +
-    rabby_nft +
-    rabby_old_user +
-    (usedOtherInvitedCode ? extra_bouns : 0);
-  const score = formatTokenAmount(sum, 0);
+  const text = encodeURIComponent(`Even if you haven't used Rabby before, you can get points now!
 
-  let text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
+Rabby Points Season 2 is here with bigger rewards – 1 Billion points in total! 🎉 @Rabby_io
 
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
+Check your points before you claim!
 
-Ready to claim? @Rabby_io
+Use my referral code ${invitedCode} for an extra bonus!
 
 https://rabby.io/rabby-points?code=${invitedCode}
 `);
-  if (snapshot.metamask_swap) {
-    text = encodeURIComponent(`Just scored ${score} Rabby Points with a few clicks, and got extra ${formatTokenAmount(
-      snapshot.metamask_swap,
-      0
-    )} points for migrating my MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
-
-Ready to claim? @Rabby_io
-
-https://rabby.io/rabby-points?code=${invitedCode}
-`);
-  }
-
-  if (sum === 0) {
-    text = encodeURIComponent(`Claim Rabby Points with a few clicks, and you can get extra points for migrating  MetaMask wallet into Rabby!
-
-Everyone can get points, and use my referral code '${invitedCode}' for an extra bonus.   
-
-Ready to claim? @Rabby_io
-
-https://rabby.io/rabby-points?code=${invitedCode}
-`);
-  }
 
   openInTab(`https://twitter.com/intent/tweet?text=${text}`);
 };

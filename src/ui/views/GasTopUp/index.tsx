@@ -419,6 +419,13 @@ const GasBox = ({
     () => instantGasValue.gt(new BigNumber(item[0]).times(0.2).times(0.1)),
     [instantGasValue, item[0]]
   );
+  console.log('item[0]', item);
+  console.log('instantGasValue', instantGasValue.toString());
+  console.log(
+    'BigNumber',
+    new BigNumber(item[0]).times(0.2).times(0.1).toString()
+  );
+
   const chainInsufficientBalance = useMemo(
     () =>
       !chainUsdBalanceLoading &&
