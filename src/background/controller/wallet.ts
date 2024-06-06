@@ -2229,6 +2229,8 @@ export class WalletController extends BaseController {
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    await this.killWalletConnectConnector(address, brand || type, true, true);
+    
     if (removeEmptyKeyrings) {
       const keyring = await keyringService.getKeyringForAccount(address, type);
       this.removeMnemonicKeyringFromStash(keyring);
