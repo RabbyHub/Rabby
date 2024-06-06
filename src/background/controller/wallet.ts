@@ -2109,14 +2109,7 @@ export class WalletController extends BaseController {
     const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
-    this._lastGetAddress = address;
     return seedWords;
-  };
-
-  _lastGetAddress = '';
-
-  getLastGetAddress = () => {
-    return this._lastGetAddress;
   };
 
   clearAddressPendingTransactions = (address: string, chainId?: number) => {

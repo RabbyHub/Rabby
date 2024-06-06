@@ -310,7 +310,7 @@
       "advancedSettings": "Advanced Settings",
       "amount": "Amount",
       "contract": "Smart contract",
-      "trustValueTitle": "Risk exposure",
+      "trustValueTitle": "Trust value",
       "typedDataMessage": "Typed data message",
       "label": "Label",
       "addressSource": "Address Source"

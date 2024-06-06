@@ -140,7 +140,7 @@ export const SubRow = ({
         'row relative',
         {
           title: isTitle,
-          block: tip,
+          'items-center': tip,
         },
         className
       )}
