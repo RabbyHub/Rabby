@@ -31,6 +31,11 @@ const FormInputItem = styled(Form.Item)`
   &.ant-form-item-has-error {
     margin-bottom: 0;
   }
+  .ant-input {
+    &:focus {
+      border-color: var(--r-blue-default, #7084ff);
+    }
+  }
 `;
 
 function ModalConfirmAllowTransfer({

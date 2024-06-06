@@ -29,7 +29,7 @@ const Footer = styled.div`
   height: 76px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
-  padding: 18px 20px;
+  padding: 20px;
   display: flex;
   justify-content: center;
 `;

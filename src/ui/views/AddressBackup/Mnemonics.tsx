@@ -101,11 +101,11 @@ const AddressBackup = () => {
           {t('page.backupSeedPhrase.copySeedPhrase')}
         </div>
       </div>
-      <div className="footer pb-[24px]">
+      <div className="footer pb-[20px]">
         <Button
           type="primary"
+          className="w-full"
           size="large"
-          className="w-[200px]"
           onClick={() => history.goBack()}
         >
           {t('global.Done')}
