@@ -433,12 +433,12 @@ const GasSelectorHeader = ({
       setGasLimit(Number(gasLimit));
       setCustomNonce(Number(nonce));
       setIsSelectCustom(true);
-      matomoRequestEvent({
-        category: 'Transaction',
-        action: 'EditGas',
-        label: chain?.serverId,
-      });
     }
+    matomoRequestEvent({
+      category: 'Transaction',
+      action: 'EditGas',
+      label: chain?.serverId,
+    });
     setTimeout(() => {
       customerInputRef.current?.focus();
     }, 50);
