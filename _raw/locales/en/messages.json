@@ -2110,7 +2110,7 @@
       "addKeyring404": "failed to addKeyring, keyring is undefined",
       "emptyAccount": "the current account is empty",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: need at least one address",
-      "invalidPrivateKey": "the private key is invalid",
+      "invalidPrivateKey": "The private key is invalid",
       "invalidJson": "the input file is invalid",
       "invalidMnemonic": "The seed phrase is invalid, please check!",
       "notFoundKeyringByAddress": "Can't find keyring by address",
