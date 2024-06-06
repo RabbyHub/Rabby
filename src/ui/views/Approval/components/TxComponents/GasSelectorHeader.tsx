@@ -269,6 +269,7 @@ const GasSelectorHeader = ({
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
+  const hasCustomPriorityFee = useRef(false);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
     Number(gasLimit)
   );
@@ -427,15 +428,17 @@ const GasSelectorHeader = ({
   const [isSelectCustom, setIsSelectCustom] = useState(false);
   const handleClickEdit = () => {
     setModalVisible(true);
-    setSelectedGas(rawSelectedGas);
-    setGasLimit(Number(gasLimit));
-    setCustomNonce(Number(nonce));
-    setIsSelectCustom(true);
-    matomoRequestEvent({
-      category: 'Transaction',
-      action: 'EditGas',
-      label: chain?.serverId,
-    });
+    if (rawSelectedGas?.level !== 'custom') {
+      setSelectedGas(rawSelectedGas);
+      setGasLimit(Number(gasLimit));
+      setCustomNonce(Number(nonce));
+      setIsSelectCustom(true);
+      matomoRequestEvent({
+        category: 'Transaction',
+        action: 'EditGas',
+        label: chain?.serverId,
+      });
+    }
     setTimeout(() => {
       customerInputRef.current?.focus();
     }, 50);
@@ -538,7 +541,7 @@ const GasSelectorHeader = ({
       setMaxPriorityFee(priorityFeeMax);
       return;
     }
-    if (val.split('.')[1]?.length > 2) return;
+    hasCustomPriorityFee.current = true; // flag user has customized priorityFee
     setMaxPriorityFee(val);
   };
 
@@ -637,6 +640,7 @@ const GasSelectorHeader = ({
   const isLoadingGas = loadingGasEstimated || isNilCustomGas;
 
   useEffect(() => {
+    if (hasCustomPriorityFee.current) return; // use custom priorityFee if user changed custom field
     if (isReady && selectedGas && chainId === 1) {
       if (isSelectCustom && isNilCustomGas) {
         setMaxPriorityFee(undefined);
@@ -992,7 +996,9 @@ const GasSelectorHeader = ({
                       min={0}
                       max={priorityFeeMax}
                       step={0.01}
-                      disabled={maxPriorityFee === undefined}
+                      disabled={
+                        rawSelectedGas?.level == 'custom' && isNilCustomGas
+                      }
                     />
                   </div>
                 </Tooltip>
