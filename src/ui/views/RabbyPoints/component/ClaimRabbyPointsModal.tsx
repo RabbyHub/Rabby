@@ -311,7 +311,7 @@ const ClaimPoints = ({
                 width: 107,
                 height: 38,
                 borderRadius: 6,
-                animation: 'gradientLoading 3s ease infinite',
+                animation: 'gradientLoading 1s ease infinite',
                 backgroundSize: '150% 100%',
                 backgroundRepeat: 'repeat-x',
                 backgroundImage:
