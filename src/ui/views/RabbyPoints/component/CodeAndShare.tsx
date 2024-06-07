@@ -26,7 +26,7 @@ Check your points before you claim!
 
 Use my referral code ${invitedCode} for an extra bonus!
 
-https://rabby.io/rabby-points?code=${invitedCode}
+https://rabby.io/points?code=${invitedCode}
 `);
 
   openInTab(`https://twitter.com/intent/tweet?text=${text}`);
