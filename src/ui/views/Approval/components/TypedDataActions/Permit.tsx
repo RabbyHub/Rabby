@@ -157,6 +157,7 @@ const Permit = ({
           />
 
           <SecurityListItem
+            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
             id="1078"
             engineResult={engineResultMap['1078']}
             dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {

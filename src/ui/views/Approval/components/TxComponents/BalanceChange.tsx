@@ -218,7 +218,7 @@ const BalanceChange = ({
         <div className="token-balance-change-content">
           <Table>
             <Col className="py-10">
-              <Row>
+              <Row isTitle>
                 <span className="text-14 text-r-neutral-title-1 font-medium">
                   {t('page.signTx.balanceChange.errorTitle')}
                 </span>
@@ -260,7 +260,10 @@ const BalanceChange = ({
           )}
           {data.error && (
             <Col className="py-10">
-              <Row className="text-14 font-medium flex whitespace-pre-wrap text-left items-start">
+              <Row
+                isTitle
+                className="text-14 font-medium flex whitespace-pre-wrap text-left items-start"
+              >
                 <ThemeIcon
                   src={RcIconAlert}
                   className="w-[16px] flex-shrink-0 mr-4 text-r-orange-default top-[2px] relative"

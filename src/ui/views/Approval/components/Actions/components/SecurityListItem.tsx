@@ -15,6 +15,7 @@ export interface Props {
   forbiddenText?: string | React.ReactNode;
   title?: string;
   noTitle?: boolean;
+  tip?: string;
 }
 
 export const SecurityListItem: React.FC<Props> = ({
@@ -27,6 +28,7 @@ export const SecurityListItem: React.FC<Props> = ({
   forbiddenText,
   title,
   noTitle = false,
+  tip,
 }) => {
   const displayTitle =
     title || (engineResult?.level ? capitalize(engineResult.level) : '');
@@ -38,7 +40,9 @@ export const SecurityListItem: React.FC<Props> = ({
 
   return (
     <SubCol nested={!hasTitle}>
-      <SubRow isTitle>{noTitle ? '' : displayTitle}</SubRow>
+      <SubRow tip={tip} isTitle>
+        {noTitle ? '' : displayTitle}
+      </SubRow>
       <SubRow>
         {engineResult ? (
           <div className="text-14 leading-[16px]">
