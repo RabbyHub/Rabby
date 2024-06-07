@@ -21,6 +21,7 @@ import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { Divide } from '../Divide';
+import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 
 const Wrapper = styled.div`
   .header {
@@ -238,7 +239,9 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
+          <Row isTitle className="flex-none">
+            {t('page.signTx.tokenApprove.approveToken')}
+          </Row>
           <Row className="overflow-hidden pl-10">
             <LogoWithText
               id="token-approve-balance"
@@ -260,7 +263,7 @@ const TokenApprove = ({
                     onClick={() => setEditApproveModalVisible(true)}
                     {...editHoverProps}
                   >
-                    {t('global.editButton')}
+                    <IconEditPen className="text-r-blue-default" />
                   </span>
                 </div>
               }
