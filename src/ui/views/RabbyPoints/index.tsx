@@ -425,6 +425,7 @@ const RabbyPoints = () => {
         }}
         snapshot={snapshot}
         snapshotLoading={snapshotLoading}
+        userInvitedCode={userPointsDetail?.invite_code}
       />
       <ClaimRabbyVerifyModal
         visible={verifyVisible}

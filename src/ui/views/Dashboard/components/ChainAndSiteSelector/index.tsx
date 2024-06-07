@@ -119,10 +119,10 @@ export default ({
 
   const { value: claimable } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.checkRabbyPointClaimable({
+      const data = await wallet.openapi.checkClaimInfoV2({
         id: account?.address,
       });
-      return data.claimable;
+      return !!data?.claimable_points && data?.claimable_points > 0;
     }
     return false;
   }, [account?.address]);

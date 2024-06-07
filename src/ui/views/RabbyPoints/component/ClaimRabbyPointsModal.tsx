@@ -9,6 +9,9 @@ import { useInterval } from 'react-use';
 import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
 import { ReactComponent as IconInputError } from 'ui/assets/rabby-points/error.svg';
 import { ReactComponent as IconInputChecked } from 'ui/assets/rabby-points/checked.svg';
+import { ReactComponent as IconTrophy } from 'ui/assets/rabby-points/trophy.svg';
+import { ReactComponent as IconInfoCC } from 'ui/assets/info-cc.svg';
+
 import { formatTokenAmount } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
 import dayjs from 'dayjs';
@@ -129,17 +132,35 @@ interface ClaimPointsProps {
   onClaimed?: (code?: string) => void;
   snapshot?: {
     id: string;
-    address_balance: number;
-    metamask_swap: number;
-    rabby_old_user: number;
-    rabby_nadge: number;
-    rabby_nft: number;
+    wallet_balance_reward: number;
+    active_stats_reward: number;
     extra_bouns: number;
     claimed: boolean;
     snapshot_at: number;
   };
   snapshotLoading?: boolean;
+  userInvitedCode?: string;
 }
+
+const LinearGradientAnimatedDiv = styled.div`
+  @keyframes gradientLoading {
+    0% {
+      background-position: 0% 0%;
+    }
+    25% {
+      background-position: 100% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    75% {
+      background-position: 0% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+`;
 
 const ClaimPoints = ({
   web3Id,
@@ -147,6 +168,7 @@ const ClaimPoints = ({
   onClaimed,
   snapshot,
   snapshotLoading,
+  userInvitedCode,
 }: ClaimPointsProps) => {
   const { t } = useTranslation();
   const [invitedCode, setInvitedCode] = useState('');
@@ -190,24 +212,12 @@ const ClaimPoints = ({
   const fixedList = React.useMemo(
     () => [
       {
-        key: 'address_balance',
-        label: t('page.rabbyPoints.claimModal.addressBalance'),
+        key: 'wallet_balance_reward',
+        label: t('page.rabbyPoints.claimModal.walletBalance'),
       },
       {
-        key: 'metamask_swap',
-        label: t('page.rabbyPoints.claimModal.MetaMaskSwap'),
-      },
-      {
-        key: 'rabby_old_user',
-        label: t('page.rabbyPoints.claimModal.rabbyUser'),
-      },
-      {
-        key: 'rabby_nadge',
-        label: t('page.rabbyPoints.claimModal.rabbyValuedUserBadge'),
-      },
-      {
-        key: 'rabby_nft',
-        label: t('page.rabbyPoints.claimModal.rabbyDesktopGenesisNft'),
+        key: 'active_stats_reward',
+        label: t('page.rabbyPoints.claimModal.activeStats'),
       },
     ],
     [t]
@@ -229,19 +239,13 @@ const ClaimPoints = ({
   const points = useMemo(() => {
     if (snapshot) {
       const {
-        address_balance,
-        metamask_swap,
-        rabby_nadge,
-        rabby_nft,
-        rabby_old_user,
+        wallet_balance_reward,
+        active_stats_reward,
         extra_bouns,
       } = snapshot;
       return formatTokenAmount(
-        address_balance +
-          metamask_swap +
-          rabby_nadge +
-          rabby_nft +
-          rabby_old_user +
+        wallet_balance_reward +
+          active_stats_reward +
           (codeStatus?.invite_code_exist ? extra_bouns : 0),
         0
       );
@@ -262,32 +266,59 @@ const ClaimPoints = ({
     onClaimed?.(invitedCode);
   }, [onClaimed, invitedCode]);
 
+  const btdDisabled =
+    (!!userInvitedCode && !codeLoading && invitedCode === userInvitedCode) ||
+    titleLoading;
+
   return (
     <div className="relative w-[360px] bg-r-neutral-bg-1 p-[20px] pb-[24px] rounded-[8px] leading-[normal]">
-      <div className="text-r-neutral-title1 text-[20px] font-medium text-center">
-        {t('page.rabbyPoints.claimModal.title')}
-      </div>
-      <div className="mt-[12px] mb-[10px] flex items-center justify-center gap-[6px] text-r-neutral-title1 text-[15px] font-medium">
-        <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
-        <span>{name}</span>
-      </div>
       <div
-        className={clsx(
-          'text-[32px] font-bold text-center mb-[10px] mx-auto',
-          titleLoading && 'animate-pulse'
-        )}
+        className="absolute w-full top-0 left-0 px-20 py-14 flex justify-between"
+        style={{
+          background:
+            'linear-gradient(91deg, rgba(50, 108, 255, 0.10) 1.88%, rgba(174, 43, 255, 0.10) 99.85%)',
+        }}
+      >
+        <div className="text-r-neutral-title1 text-[18px] font-medium">
+          {t('page.rabbyPoints.claimModal.title')}
+        </div>
+
+        <div className="flex items-center justify-center gap-2">
+          <IconTrophy className="w-[18px] h-[18px]" />
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 510,
+              lineHeight: 'normal',
+              background:
+                'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            {t('page.rabbyPoints.claimModal.season2')}
+          </span>
+        </div>
+      </div>
+
+      <LinearGradientAnimatedDiv
+        className={clsx('text-[32px] font-bold text-center mt-[44px] mx-auto')}
         style={
           titleLoading
             ? {
                 width: 107,
                 height: 38,
                 borderRadius: 6,
-                background:
-                  'linear-gradient(114deg, #5CEBFF 15.26%, #5C42FF 55.67%, #42C6FF 84.74%)',
+                animation: 'gradientLoading 1s ease infinite',
+                backgroundSize: '150% 100%',
+                backgroundRepeat: 'repeat-x',
+                backgroundImage:
+                  'linear-gradient(94deg, #326CFF 14.47%, #AE2BFF 93.83%)',
               }
             : {
                 background:
-                  'linear-gradient(131deg, #5CEBFF 9.53%, #5C42FF 95.9%)',
+                  'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -295,7 +326,12 @@ const ClaimPoints = ({
         }
       >
         {titleLoading ? '' : points}
+      </LinearGradientAnimatedDiv>
+      <div className="mt-[8px] mb-[16px] flex items-center justify-center gap-[6px] text-r-neutral-title1 text-[15px] font-medium">
+        <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
+        <span>{name}</span>
       </div>
+
       <div className="rounded-[8px] bg-r-neutral-card-3 px-[12px] py-[16px]">
         <div className="text-center text-[10px] text-[#7c86c8] mb-[12px]">
           {t('page.rabbyPoints.claimModal.snapshotTime', {
@@ -338,9 +374,23 @@ const ClaimPoints = ({
           </div>
         )}
 
+      {userInvitedCode && !codeLoading && invitedCode === userInvitedCode && (
+        <div className="text-13 text-r-neutral-body mt-16 text-center flex items-center justify-center gap-[3px]">
+          <IconInfoCC className="w-[14px] h-[14px] text-r-neutral-body" />
+          <span>{t('page.rabbyPoints.claimModal.cantUseOwnCode')}</span>
+        </div>
+      )}
+
       <Button
         type="primary"
-        className="mt-[24px] w-full h-[48px] text-[17px] font-medium text-r-neutral-title2"
+        disabled={btdDisabled}
+        className={clsx(
+          'mt-[24px] w-full h-[48px] text-[17px] font-medium text-r-neutral-title2 border-none',
+          btdDisabled && 'opacity-50'
+        )}
+        style={{
+          background: 'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
+        }}
         onClick={onSubmit}
       >
         {t('page.rabbyPoints.claimModal.claim')}

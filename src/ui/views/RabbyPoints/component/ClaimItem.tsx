@@ -42,7 +42,16 @@ export const ClaimItem = (props: ClaimItemProps) => {
 
   const showDisabledTip = props.claimable_points <= 0 || !props.claimable;
   return (
-    <Wrapper className={clsx(props.claimable && 'bg-rabby-blue-light-1 ')}>
+    <Wrapper
+      style={
+        props.claimable
+          ? {
+              background:
+                'linear-gradient(91deg, rgba(50, 108, 255, 0.10) 1.88%, rgba(174, 43, 255, 0.10) 99.85%)',
+            }
+          : {}
+      }
+    >
       <div className="flex items-center justify-between pb-[12px] px-[16px] border-b-[0.5px] border-rabby-neutral-line">
         <div className="text-[15px] font-medium text-r-neutral-title1">
           {props.title}
@@ -63,10 +72,9 @@ export const ClaimItem = (props: ClaimItemProps) => {
         >
           <div>
             <Button
-              type="primary"
               className={clsx(
-                'min-w-[100px] h-[32px]  text-[13px] font-medium',
-                disabled
+                'min-w-[100px] h-[32px]  text-[13px] font-medium border-none',
+                !props.claimLoading && disabled
                   ? 'disabled-btn border-rabby-neutral-card-2 bg-r-neutral-card-2 text-r-neutral-foot text-opacity-50'
                   : 'text-r-neutral-title-2'
               )}
@@ -75,7 +83,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
                   ? {
                       borderRadius: '4px',
                       background:
-                        'var(--Linear, linear-gradient(131deg, #5CEBFF 9.53%, #5C42FF 95.9%))',
+                        'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
                       boxShadow: '0px 2px 8px 0px rgba(95, 124, 254, 0.16)',
                       border: 'none',
                     }
