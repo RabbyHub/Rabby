@@ -74,7 +74,7 @@ export const ClaimItem = (props: ClaimItemProps) => {
             <Button
               className={clsx(
                 'min-w-[100px] h-[32px]  text-[13px] font-medium border-none',
-                disabled
+                !props.claimLoading && disabled
                   ? 'disabled-btn border-rabby-neutral-card-2 bg-r-neutral-card-2 text-r-neutral-foot text-opacity-50'
                   : 'text-r-neutral-title-2'
               )}
