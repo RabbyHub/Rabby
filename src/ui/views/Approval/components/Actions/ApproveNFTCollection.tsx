@@ -136,6 +136,7 @@ const ApproveNFTCollection = ({
           />
 
           <SecurityListItem
+            tip={t('page.signTx.nftApprove.nftContractTrustValueTip')}
             id="1054"
             engineResult={engineResultMap['1054']}
             dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {

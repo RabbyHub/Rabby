@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { Dropdown, Menu, message } from 'antd';
+import { Dropdown, Input, Menu, message } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
 import { styid } from 'ui/utils/styled';
@@ -19,6 +19,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 
+import { ReactComponent as RcIconMnemonicsShow } from '@/ui/assets/import/mnemonics-show.svg';
+import { ReactComponent as RcIconMnemonicsHide } from '@/ui/assets/import/mnemonics-hide.svg';
+
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
@@ -30,6 +33,21 @@ const NumberFlag = styled.div`
   height: 18px;
   line-height: 1;
 `;
+
+const useClearClipboardToast = () => {
+  const { t } = useTranslation();
+
+  const clearClipboardToast = () => {
+    clearClipboard();
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('page.newAddress.seedPhrase.pastedAndClear'),
+      duration: 2,
+    });
+  };
+
+  return clearClipboardToast;
+};
 
 const MatrixWrapper = styled.div.withConfig<{
   rowCount?: number;
@@ -194,6 +212,11 @@ const NEED_PASSPHRASE_MNEMONICS_COUNTS: IMnemonicsCount[] = [
   24,
 ];
 
+const SLIP39_MNEMONICS_COUNTS: { passphrase: boolean }[] = [
+  { passphrase: false },
+  { passphrase: true },
+];
+
 function MnemonicsInputs({
   className,
   rowCount = ROW_COUNT,
@@ -203,6 +226,10 @@ function MnemonicsInputs({
   errMsgs = [],
   errorIndexes = [],
   onPassphrase,
+  isSlip39,
+  onSlip39Change,
+  slip39GroupNumber,
+  setSlip39GroupNumber,
   ...props
 }: React.PropsWithChildren<{
   className?: string;
@@ -217,6 +244,10 @@ function MnemonicsInputs({
   errMsgs?: string[];
   errorIndexes?: number[];
   onPassphrase?: (val: boolean) => any;
+  isSlip39: boolean;
+  onSlip39Change: React.Dispatch<React.SetStateAction<boolean>>;
+  slip39GroupNumber: number;
+  setSlip39GroupNumber: React.Dispatch<React.SetStateAction<number>>;
 }>) {
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
     DEFAULT_MEMONICS_COUNT
@@ -229,6 +260,8 @@ function MnemonicsInputs({
       wordPlaceHolders: Array(mnemonicsCount).fill(undefined) as undefined[],
     };
   }, [mnemonicsCount]);
+
+  const [sli39values, onSli39valuesChange] = React.useState<string[]>([]);
 
   const [focusing, setFocusing] = React.useState<{
     index: number;
@@ -273,6 +306,8 @@ function MnemonicsInputs({
     setFocusing({ ...DFLT_FOCUSING });
     setMnemonics('');
     validateWords();
+    onSli39valuesChange(['']);
+    setSlip39GroupNumber(1);
   }, [mnemonicsCount]);
 
   const onWordUpdated = React.useCallback(
@@ -340,6 +375,8 @@ function MnemonicsInputs({
     onPassphrase?.(needPassphrase);
   }, [needPassphrase]);
 
+  const clearClipboardToast = useClearClipboardToast();
+
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
       <HeadToolbar className="mb-[8px] text-r-neutral-body">
@@ -355,6 +392,7 @@ function MnemonicsInputs({
                     onClick={() => {
                       setMnemonicsCount(count);
                       setNeedPassphrase(false);
+                      onSlip39Change(false);
                     }}
                   >
                     <div className="text-wrapper">
@@ -365,7 +403,7 @@ function MnemonicsInputs({
                       >
                         I have a
                         <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {count}
+                          {{ count }}
                         </b>
                         -word phrase
                       </Trans>
@@ -382,6 +420,7 @@ function MnemonicsInputs({
                     onClick={() => {
                       setMnemonicsCount(count);
                       setNeedPassphrase(true);
+                      onSlip39Change(false);
                     }}
                   >
                     <div className="text-wrapper">
@@ -392,9 +431,39 @@ function MnemonicsInputs({
                       >
                         I have a
                         <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {count}
+                          {{ count }}
                         </b>
                         -word phrase and Passphrase
+                      </Trans>
+                    </div>
+                  </Menu.Item>
+                );
+              })}
+
+              {SLIP39_MNEMONICS_COUNTS.map(({ passphrase }) => {
+                return (
+                  <Menu.Item
+                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
+                    key={`countSelector-need-passphrase-${passphrase}`}
+                    style={{ color: 'var(--r-neutral-body)' }}
+                    onClick={() => {
+                      onSlip39Change(true);
+                      setNeedPassphrase(passphrase);
+                    }}
+                  >
+                    <div className="text-wrapper">
+                      <Trans
+                        t={t}
+                        i18nKey={
+                          passphrase
+                            ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                            : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                        }
+                        values={{ SLIP39: 'SLIP 39' }}
+                      >
+                        <b
+                          style={{ color: 'var(--r-blue-default, #7084ff)' }}
+                        ></b>
                       </Trans>
                     </div>
                   </Menu.Item>
@@ -405,22 +474,30 @@ function MnemonicsInputs({
         >
           <div className="left flex items-center cursor-pointer">
             <span>
-              {needPassphrase ? (
+              {!isSlip39 ? (
                 <Trans
                   t={t}
-                  i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
+                  i18nKey={
+                    needPassphrase
+                      ? 'page.newAddress.seedPhrase.wordPhraseAndPassphrase'
+                      : 'page.newAddress.seedPhrase.wordPhrase'
+                  }
                   values={{ count: mnemonicsCount }}
                 >
-                  I have a <span>{mnemonicsCount}</span>-word phrase and
+                  I have a <span>{{ mnemonicsCount }}</span>-word phrase and
                   Passphrase
                 </Trans>
               ) : (
                 <Trans
                   t={t}
-                  i18nKey="page.newAddress.seedPhrase.wordPhrase"
-                  values={{ count: mnemonicsCount }}
+                  i18nKey={
+                    needPassphrase
+                      ? 'page.newAddress.seedPhrase.slip39SeedPhraseWithPassphrase'
+                      : 'page.newAddress.seedPhrase.slip39SeedPhrase'
+                  }
+                  values={{ SLIP39: 'SLIP 39' }}
                 >
-                  I have a <span>{mnemonicsCount}</span>-word phrase
+                  <span />
                 </Trans>
               )}
             </span>
@@ -444,6 +521,7 @@ function MnemonicsInputs({
         className={clsx(
           'rounded-[6px] text-center',
           'border border-rabby-neutral-line border-solid',
+          isSlip39 && 'hidden',
           className
         )}
         rowCount={rowCount}
@@ -503,14 +581,7 @@ function MnemonicsInputs({
                     validateWords();
                   }}
                   onPaste={(e) => {
-                    clearClipboard();
-                    message.success({
-                      icon: (
-                        <img src={IconSuccess} className="icon icon-success" />
-                      ),
-                      content: t('page.newAddress.seedPhrase.pastedAndClear'),
-                      duration: 2,
-                    });
+                    clearClipboardToast();
                     const input = e.target as HTMLInputElement;
                     input.select();
                   }}
@@ -538,6 +609,17 @@ function MnemonicsInputs({
           );
         })}
       </MatrixWrapper>
+
+      {isSlip39 && (
+        <SLIP39MnemonicsInputs
+          sli39values={sli39values}
+          onSli39valuesChange={onSli39valuesChange}
+          onChange={onChange}
+          error={!!errMsgs?.[0]}
+          groupNumber={slip39GroupNumber}
+          errorIndexes={errorIndexes}
+        />
+      )}
       {errMsgs?.[0] || invalidWords.length > 0 ? (
         <div
           className={
@@ -557,5 +639,130 @@ function MnemonicsInputs({
     </div>
   );
 }
+
+const SLIP39MnemonicsInput = ({
+  value,
+  onTextChange,
+  idx,
+  error,
+  onPaste,
+}: {
+  value: string;
+  onTextChange: (text: string) => void;
+  idx: number;
+  error?: boolean;
+  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
+}) => {
+  const { t } = useTranslation();
+  const [show, setShow] = useState(false);
+
+  return (
+    <div className="relative ">
+      <Input.TextArea
+        key={`slip39-seed-phrase-${idx}`}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        // type="password"
+        autoSize
+        style={
+          !show
+            ? {
+                WebkitTextSecurity: 'disc',
+              }
+            : undefined
+        }
+        onPaste={onPaste}
+        className={clsx(
+          'min-h-[100px] p-12 border-rabby-neutral-line bg-rabby-neutral-card-1 ',
+          'text-13 text-r-neutral-title-1 font-medium leading-[18px]',
+          error ? 'border-rabby-red-default' : '',
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-13 focus:border-blue'
+        )}
+        spellCheck={false}
+        placeholder={t(
+          'page.newAddress.seedPhrase.slip39SeedPhrasePlaceholder',
+          { count: idx + 1, ordinal: true }
+        )}
+        value={value}
+        onChange={(e) => {
+          onTextChange(e.target.value);
+        }}
+      />
+      {value ? (
+        <div
+          className="absolute right-8 bottom-8 cursor-pointer"
+          onClick={() => setShow(!show)}
+        >
+          {show ? (
+            <RcIconMnemonicsHide viewBox="0 0 14 14" className="w-14 h-14" />
+          ) : (
+            <RcIconMnemonicsShow viewBox="0 0 14 14" className="w-14 h-14" />
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+export const SLIP39MnemonicsInputs = ({
+  onChange,
+  groupNumber: number = 1,
+  error,
+  sli39values,
+  onSli39valuesChange,
+  errorIndexes = [],
+}: {
+  error?: boolean;
+  onChange?: (value: string) => any;
+  groupNumber?: number;
+  sli39values: string[];
+  onSli39valuesChange: React.Dispatch<React.SetStateAction<string[]>>;
+  errorIndexes: number[];
+}) => {
+  const clearClipboardToast = useClearClipboardToast();
+
+  useEffect(() => {
+    onSli39valuesChange((pre) =>
+      Array.from({ length: number }).map((_, idx) => pre[idx] || '')
+    );
+  }, [number]);
+
+  return (
+    <div className="space-y-12">
+      {sli39values.map((_, idx) => (
+        <SLIP39MnemonicsInput
+          key={`slip39-seed-phrase-${idx}`}
+          idx={idx}
+          value={sli39values[idx]}
+          error={error && errorIndexes.includes(idx)}
+          onPaste={(e) => {
+            clearClipboardToast();
+
+            e.preventDefault();
+            const text = e.clipboardData.getData('text');
+            onSli39valuesChange((prev) => {
+              const newVal = [...prev];
+              const arr = text.split('\n').filter((t) => t);
+              for (let i = 0; i < arr.length; i++) {
+                newVal[idx + i] = arr[i];
+              }
+              onChange?.(newVal.join('\n'));
+              return newVal;
+            });
+          }}
+          onTextChange={(text) => {
+            onSli39valuesChange((pre) => {
+              const newVal = [...pre];
+              newVal[idx] = text;
+              onChange?.(newVal.join('\n'));
+              return newVal;
+            });
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default MnemonicsInputs;

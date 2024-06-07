@@ -337,6 +337,7 @@ const TokenApprove = ({
           />
 
           <SecurityListItem
+            tip={t('page.signTx.tokenApprove.contractTrustValueTip')}
             id="1023"
             engineResult={engineResultMap['1023']}
             dangerText={t('page.signTx.tokenApprove.trustValueLessThan', {

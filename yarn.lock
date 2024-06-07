@@ -4496,10 +4496,10 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.2.0.tgz#f0d73e1f0dd77fc36938aab7535d3705e83e5dd5"
-  integrity sha512-YG1vNDLFHApxu38P95HVUEYeu/NzTA39eaw3L8TXr9rBYwLztns0Pjm1ycBHq3Qogffbgdl+xoSoMv3XlnNiYA==
+"@rabby-wallet/eth-hd-keyring@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.3.0.tgz#69481314a159c737a548ed7cbd1c5b8222b56367"
+  integrity sha512-4RfT8FzMpZklatG6p/Nk84OYL5a8+2r/J2tl+nM5Pc1jIUo3koMFjR2g/61M+3xpwkDUqYI90deV6+UFw4oyFw==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "^4.0.0"
@@ -4507,6 +4507,7 @@
     "@scure/bip39" "^1.2.1"
     eth-sig-util "^3.0.1"
     ethereum-cryptography "^2.1.2"
+    slip39 "^0.1.9"
 
 "@rabby-wallet/eth-lattice-keyring@1.1.1":
   version "1.1.1"
@@ -16504,6 +16505,11 @@ slash@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
+
+slip39@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/slip39/-/slip39-0.1.9.tgz#fe7e1b4624be7bfe90da47ee6fc25a67b4ee321e"
+  integrity sha512-XWPeAofN5SSffrAw11HIjBWL+lcRmZMOYR/N8QPYKHh2wwAE5dVTw2EOBtl2atUojcssApsoVw0F2AvQVnGZdQ==
 
 slugify@^1.3.4, slugify@^1.6.6:
   version "1.6.6"
