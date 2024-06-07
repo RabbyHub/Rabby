@@ -36,9 +36,8 @@ export const MessageWrapper = styled.div`
     overflow: hidden;
 
     .title-text {
-      font-size: 12px;
-      line-height: 14px;
-      color: var(--r-neutral-foot, #6a7587);
+      font-size: 14px;
+      color: var(--r-blue-default, #7084ff);
       text-align: center;
       font-weight: 500;
       padding: 0 8px;
@@ -208,7 +207,7 @@ const Actions = ({
           })}
         >
           <div className="title">
-            <div className="title-text">{t('page.signText.message')}</div>
+            <div className="title-text">{t('page.signText.title')}</div>
           </div>
           <div className="content">{message}</div>
         </MessageWrapper>

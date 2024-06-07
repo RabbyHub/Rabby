@@ -224,6 +224,7 @@ const GasStyled = styled.div`
   align-items: center;
   position: relative;
   max-width: 220px;
+  flex: 1;
 `;
 
 const GasPriceDesc = styled.div`
@@ -751,21 +752,12 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  {isGasHovering ? (
-                    <span
-                      className="truncate cursor-pointer"
-                      title={gasCostAmountStr}
-                    >
-                      {gasCostAmountStr}
-                    </span>
-                  ) : (
-                    <span
-                      className="truncate cursor-pointer"
-                      title={gasCostUsdStr}
-                    >
-                      {gasCostUsdStr}
-                    </span>
-                  )}
+                  <span
+                    className="truncate cursor-pointer"
+                    title={gasCostUsdStr}
+                  >
+                    {gasCostUsdStr}
+                  </span>
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
@@ -785,8 +777,10 @@ const GasSelectorHeader = ({
             )}
           </div>
           {gas.success && (
-            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
-              {calcGasEstimated(selectedGas?.estimated_seconds)}
+            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0 cursor-pointer">
+              {isGasHovering
+                ? calcGasEstimated(selectedGas?.estimated_seconds)
+                : `~${gasCostAmountStr}`}
             </div>
           )}
           {engineResultMap['1118'] && (
@@ -985,7 +979,7 @@ const GasSelectorHeader = ({
                 </p>
                 <Tooltip
                   title={
-                    rawSelectedGas?.level == 'custom' && isNilCustomGas
+                    isSelectCustom && isNilCustomGas
                       ? t('page.signTx.maxPriorityFeeDisabledAlert')
                       : undefined
                   }
@@ -1003,9 +997,7 @@ const GasSelectorHeader = ({
                       min={0}
                       max={priorityFeeMax}
                       step={0.01}
-                      disabled={
-                        rawSelectedGas?.level == 'custom' && isNilCustomGas
-                      }
+                      disabled={isSelectCustom && isNilCustomGas}
                     />
                   </div>
                 </Tooltip>

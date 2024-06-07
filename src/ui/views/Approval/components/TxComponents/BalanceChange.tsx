@@ -263,11 +263,13 @@ const BalanceChange = ({
               <Row className="text-14 font-medium flex whitespace-pre-wrap text-left items-start">
                 <ThemeIcon
                   src={RcIconAlert}
-                  className="w-[16px] flex-shrink-0 mr-4 text-r-neutral-foot top-[2px] relative"
+                  className="w-[16px] flex-shrink-0 mr-4 text-r-orange-default top-[2px] relative"
                 />
                 <span>
-                  {t('page.signTx.balanceChange.failedTitle')} ({data.error.msg}{' '}
-                  #{data.error.code})
+                  <span className="text-r-orange-default">
+                    {t('page.signTx.balanceChange.failedTitle')}
+                  </span>{' '}
+                  ({data.error.msg} #{data.error.code})
                 </span>
               </Row>
             </Col>

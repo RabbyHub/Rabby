@@ -311,7 +311,7 @@
       "amount": "Amount",
       "contract": "Smart contract",
       "trustValueTitle": "Risk exposure",
-      "typedDataMessage": "Typed data message",
+      "typedDataMessage": "Sign Typed Data",
       "label": "Label",
       "addressSource": "Address Source",
       "maxPriorityFeeDisabledAlert": "Please set Gas Price first"
@@ -1549,7 +1549,7 @@
     },
     "signText": {
       "title": "Sign Text",
-      "message": "Message",
+      "message": "Text Message",
       "createKey": {
         "interactDapp": "Interact Dapp",
         "description": "Description"
