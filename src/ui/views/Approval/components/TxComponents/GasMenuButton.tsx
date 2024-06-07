@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, Skeleton } from 'antd';
 import { ReactComponent as GasLevelCustomSVG } from '@/ui/assets/sign/gas-level-custom.svg';
 import { ReactComponent as GasLevelFastSVG } from '@/ui/assets/sign/gas-level-fast.svg';
 import { ReactComponent as GasLevelNormalSVG } from '@/ui/assets/sign/gas-level-normal.svg';
@@ -29,7 +29,6 @@ const MenuButtonStyled = styled.div`
   border-style: solid;
   border-color: var(--r-neutral-line, #d3d8e0);
   cursor: pointer;
-  gap: 2px;
 
   &:hover {
     border-color: var(--r-blue-default, #7084ff);
@@ -109,11 +108,28 @@ const DivideStyled = styled(Divide)`
   bottom: 4px;
 }`;
 
+const GweiStyled = styled.span`
+  color: var(--r-neutral-foot, #6a7587);
+  display: flex;
+  align-items: center;
+
+  &::before {
+    content: ' ';
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: var(--r-neutral-foot, #6a7587);
+    display: block;
+    margin: 0 4px;
+  }
+`;
+
 interface Props {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
-  onSelect: (e, gas: GasLevel) => void;
+  onSelect: (gas: GasLevel) => void;
   onCustom: () => void;
+  showCustomGasPrice: boolean;
 }
 
 const GasLevelIcon: React.FC<{ level: string; isActive }> = ({
@@ -145,6 +161,7 @@ export const GasMenuButton: React.FC<Props> = ({
   selectedGas,
   onSelect,
   onCustom,
+  showCustomGasPrice,
 }) => {
   const { t } = useTranslation();
   const orderedGasList = [...gasList].reverse();
@@ -169,7 +186,8 @@ export const GasMenuButton: React.FC<Props> = ({
                 <MenuItemStyled
                   key={gas.level}
                   onClick={(e) => {
-                    onSelect(e.domEvent, gas);
+                    e.domEvent.stopPropagation();
+                    onSelect(gas);
                     if (gas.level === 'custom') {
                       onCustom();
                     }
@@ -183,7 +201,7 @@ export const GasMenuButton: React.FC<Props> = ({
                     <LevelTextStyled>
                       {t(getGasLevelI18nKey(gas.level))}
                     </LevelTextStyled>
-                    {gas.level !== 'custom' && (
+                    {(gas.level !== 'custom' || showCustomGasPrice) && (
                       <LevelPriceStyled>
                         {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
                         Gwei
@@ -201,10 +219,19 @@ export const GasMenuButton: React.FC<Props> = ({
         </MenuStyled>
       }
     >
-      <MenuButtonStyled>
-        <span>{t(getGasLevelI18nKey(selectedGas?.level ?? 'slow'))}</span>
-        <ArrowSVG className="text-r-neutral-foot" />
-      </MenuButtonStyled>
+      {selectedGas ? (
+        <MenuButtonStyled>
+          <span>{t(getGasLevelI18nKey(selectedGas.level ?? 'slow'))}</span>
+          {(selectedGas.level !== 'custom' || showCustomGasPrice) && (
+            <GweiStyled>
+              {new BigNumber(selectedGas.price / 1e9).toFixed().slice(0, 8)}
+            </GweiStyled>
+          )}
+          <ArrowSVG className="text-r-neutral-foot ml-2" />
+        </MenuButtonStyled>
+      ) : (
+        <Skeleton.Input className="rounded w-[100px] h-[20px]" active />
+      )}
     </Dropdown>
   );
 };

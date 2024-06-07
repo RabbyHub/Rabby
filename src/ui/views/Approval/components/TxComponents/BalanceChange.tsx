@@ -266,19 +266,22 @@ const BalanceChange = ({
               >
                 <ThemeIcon
                   src={RcIconAlert}
-                  className="w-[16px] flex-shrink-0 mr-4 text-r-neutral-foot top-[2px] relative"
+                  className="w-[16px] flex-shrink-0 mr-4 text-r-orange-default top-[2px] relative"
                 />
                 <span>
-                  {t('page.signTx.balanceChange.failedTitle')} ({data.error.msg}{' '}
-                  #{data.error.code})
+                  <span className="text-r-orange-default">
+                    {t('page.signTx.balanceChange.failedTitle')}
+                  </span>{' '}
+                  ({data.error.msg} #{data.error.code})
                 </span>
               </Row>
             </Col>
           )}
           {sendTokenList?.map((token) => (
             <Col className="py-10 items-center" key={token.id}>
-              <Row isTitle className="text-[16px]">
+              <Row isTitle className="text-[16px] overflow-hidden">
                 <LogoWithText
+                  className="overflow-hidden"
                   logoSize={24}
                   logo={token.logo_url}
                   text={
@@ -315,8 +318,9 @@ const BalanceChange = ({
           ))}
           {receiveTokenList?.map((token) => (
             <Col className="py-10 items-center" key={token.id}>
-              <Row isTitle className="text-[16px]">
+              <Row isTitle className="text-[16px] overflow-hidden">
                 <LogoWithText
+                  className="overflow-hidden"
                   logoSize={24}
                   logo={token.logo_url}
                   text={

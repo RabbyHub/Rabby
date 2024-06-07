@@ -68,7 +68,9 @@ const Permit2 = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTx.tokenApprove.approveToken')}</Row>
+          <Row isTitle className="flex-none">
+            {t('page.signTx.tokenApprove.approveToken')}
+          </Row>
           <Row className="overflow-hidden pl-6">
             <LogoWithText
               className="overflow-hidden"

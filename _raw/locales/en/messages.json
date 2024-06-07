@@ -311,9 +311,10 @@
       "amount": "Amount",
       "contract": "Smart contract",
       "trustValueTitle": "Trust value",
-      "typedDataMessage": "Typed data message",
+      "typedDataMessage": "Sign Typed Data",
       "label": "Label",
-      "addressSource": "Address Source"
+      "addressSource": "Address Source",
+      "maxPriorityFeeDisabledAlert": "Please set Gas Price first"
     },
     "signFooterBar": {
       "requestFrom": "Request from",
@@ -1554,7 +1555,7 @@
     },
     "signText": {
       "title": "Sign Text",
-      "message": "Message",
+      "message": "Text Message",
       "createKey": {
         "interactDapp": "Interact Dapp",
         "description": "Description"

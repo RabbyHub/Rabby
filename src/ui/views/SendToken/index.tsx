@@ -359,14 +359,14 @@ const SendToken = () => {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
-  const [{ showGasReseved, clickedMax }, setSendMaxInfo] = useState({
-    showGasReseved: false,
+  const [{ showGasReserved, clickedMax }, setSendMaxInfo] = useState({
+    showGasReserved: false,
     clickedMax: false,
   });
   const setShowGasReserved = useCallback((show: boolean) => {
     setSendMaxInfo((prev) => ({
       ...prev,
-      showGasReseved: show,
+      showGasReserved: show,
     }));
   }, []);
   const [showContactInfo, setShowContactInfo] = useState(false);
@@ -589,7 +589,7 @@ const SendToken = () => {
         delete params.gas;
       }
       setIsSubmitLoading(false);
-      if (showGasReseved) {
+      if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
       }
     }
@@ -692,7 +692,7 @@ const SendToken = () => {
     }
 
     if (amount !== cacheAmount) {
-      if (showGasReseved && Number(resultAmount) > 0) {
+      if (showGasReserved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
       } /*  else if (isNativeToken && !isGnosisSafe) {
         const gasCostTokenAmount = await calcGasCost();
@@ -746,7 +746,7 @@ const SendToken = () => {
   };
 
   const handleCurrentTokenChange = async (token: TokenItem) => {
-    if (showGasReseved) {
+    if (showGasReserved) {
       setShowGasReserved(false);
     }
     const account = (await wallet.syncGetCurrentAccount())!;
@@ -814,7 +814,7 @@ const SendToken = () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: true }));
 
     if (isLoading) return;
-    if (showGasReseved) return;
+    if (showGasReserved) return;
     const tokenBalance = new BigNumber(
       currentToken.raw_amount_hex_str || 0
     ).div(10 ** currentToken.decimals);
@@ -1352,7 +1352,7 @@ const SendToken = () => {
                   </MaxButton>
                 )}
               </div>
-              {/* {showGasReseved &&
+              {/* {showGasReserved &&
                 (selectedGasLevel ? (
                   <GasReserved
                     token={currentToken}
@@ -1362,10 +1362,10 @@ const SendToken = () => {
                 ) : (
                   <Skeleton.Input active style={{ width: 180 }} />
                 ))} */}
-              {showGasReseved && !selectedGasLevel && (
+              {showGasReserved && !selectedGasLevel && (
                 <Skeleton.Input active style={{ width: 120 }} />
               )}
-              {!showGasReseved && (balanceError || balanceWarn) ? (
+              {!showGasReserved && (balanceError || balanceWarn) ? (
                 <div className="balance-error">
                   {balanceError || balanceWarn}
                 </div>

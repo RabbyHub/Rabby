@@ -1376,7 +1376,8 @@
       "advancedSettings": "高级设置",
       "amount": "数量",
       "trustValueTitle": "信任值",
-      "addressSource": "地址来源"
+      "addressSource": "地址来源",
+      "maxPriorityFeeDisabledAlert": "请先设置 Gas Price"
     },
     "signTypedData": {
       "buyNFT": {
