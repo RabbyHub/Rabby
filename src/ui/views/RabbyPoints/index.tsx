@@ -247,7 +247,7 @@ const RabbyPoints = () => {
       }
       initRef.current = true;
     }
-  }, [snapshot, signature]);
+  }, [snapshot, signatureLoading, campaignIsEndedLoading, signature]);
 
   useEffect(() => {
     wallet.clearPageStateCache();
