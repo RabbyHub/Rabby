@@ -2020,15 +2020,19 @@ export class WalletController extends BaseController {
     resetConnect: boolean,
     silent?: boolean
   ) => {
-    const keyringType =
-      brandName === KEYRING_CLASS.Coinbase
-        ? KEYRING_CLASS.Coinbase
-        : KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
-    if (keyring) {
-      await keyring.closeConnector({ address, brandName }, silent);
-      // reset onAfterConnect
-      // if (resetConnect) keyring.resetConnect();
+    try {
+      const keyringType =
+        brandName === KEYRING_CLASS.Coinbase
+          ? KEYRING_CLASS.Coinbase
+          : KEYRING_CLASS.WALLETCONNECT;
+      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      if (keyring) {
+        await keyring.closeConnector({ address, brandName }, silent);
+        // reset onAfterConnect
+        // if (resetConnect) keyring.resetConnect();
+      }
+    } catch (e) {
+      // ignore me
     }
   };
 
