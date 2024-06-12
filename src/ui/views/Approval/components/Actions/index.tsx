@@ -2,7 +2,6 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import ApproveNFT from './ApproveNFT';
@@ -40,15 +39,9 @@ import {
   getActionTypeText,
   AssetOrderRequireData,
 } from './utils';
-import IconArrowRight, {
-  ReactComponent as RcIconArrowRight,
-} from 'ui/assets/approval/edit-arrow-right.svg';
+import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'src/ui/assets/approval/icon-check.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import clsx from 'clsx';
@@ -61,7 +54,6 @@ import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
-import { Tooltip } from 'antd';
 
 const Actions = ({
   data,
@@ -89,6 +81,34 @@ const Actions = ({
   const actionName = useMemo(() => {
     return getActionTypeText(data);
   }, [data]);
+
+  const notShowBalanceChange = useMemo(() => {
+    if (
+      data.approveNFT ||
+      data.approveNFTCollection ||
+      data.approveToken ||
+      data.cancelTx ||
+      data.deployContract ||
+      data.pushMultiSig ||
+      data.revokeNFT ||
+      data.revokeNFTCollection ||
+      data.revokeToken
+    ) {
+      const balanceChange = txDetail.balance_change;
+      if (!txDetail.pre_exec.success) return false;
+      if (
+        balanceChange.receive_nft_list.length +
+          balanceChange.receive_token_list.length +
+          balanceChange.send_nft_list.length +
+          balanceChange.send_nft_list.length <=
+        0
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }, [data, txDetail]);
+
   const { t } = useTranslation();
 
   const handleViewRawClick = () => {
@@ -111,10 +131,12 @@ const Actions = ({
             engineResults={engineResults}
           />
           <Divide />
-          <BalanceChange
-            version={txDetail.pre_exec_version}
-            data={txDetail.balance_change}
-          />
+          {!notShowBalanceChange && (
+            <BalanceChange
+              version={txDetail.pre_exec_version}
+              data={txDetail.balance_change}
+            />
+          )}
         </Card>
 
         <Card>

@@ -68,6 +68,8 @@ const RowWrapper = styled.div`
   &.title {
     flex-shrink: 0;
     flex: 1;
+    color: var(--r-neutral-title, #192945);
+    font-weight: 400;
 
     .icon-tip {
       display: inline;

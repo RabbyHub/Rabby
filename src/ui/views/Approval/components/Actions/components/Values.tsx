@@ -19,8 +19,7 @@ import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
 import { ReactComponent as IconAddressCopy } from 'ui/assets/icon-copy-cc.svg';
 import { ReactComponent as IconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import IconInteracted from 'ui/assets/sign/tx/interacted.svg';
-import IconNotInteracted from 'ui/assets/sign/tx/not-interacted.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/sign/arrow-right-lite.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import AccountAlias from '../../AccountAlias';
 import { getAddressScanLink } from '@/utils';
@@ -295,6 +294,23 @@ const TokenLabel = ({
 
 const AddressWrapper = styled.div`
   display: flex;
+  .address-box {
+    padding: 3px 6px;
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+    cursor: pointer;
+    color: var(--r-neutral-title1, #192945);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 900px;
+    display: flex;
+    .icon-arrow-right {
+      margin-left: 2px;
+    }
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff);
+      background-color: var(--r-blue-light1, #eef1ff);
+    }
+  }
 `;
 const Address = ({
   address,
@@ -309,7 +325,32 @@ const Address = ({
   hasHover?: boolean;
   id?: string;
 }) => {
-  const { t } = useTranslation();
+  return (
+    <AddressWrapper className="value-address relative">
+      <TooltipWithMagnetArrow
+        title={address}
+        className="rectangle w-[max-content]"
+      >
+        <div className="address-box" id={id}>
+          {ellipsis(address)}
+          <IconArrowRight className="icon-arrow-right" />
+        </div>
+      </TooltipWithMagnetArrow>
+    </AddressWrapper>
+  );
+};
+
+const AddressWithCopy = ({
+  address,
+  chain,
+  iconWidth = '14px',
+  hasHover = false,
+}: {
+  address: string;
+  chain?: Chain;
+  iconWidth?: string;
+  hasHover?: boolean;
+}) => {
   const handleClickContractId = (e) => {
     e.stopPropagation();
     if (!chain) return;
@@ -332,7 +373,6 @@ const Address = ({
             'cursor-pointer group-hover:underline hover:text-r-blue-default':
               hasHover && !isHoverToolbar,
           })}
-          id={id}
         >
           {ellipsis(address)}
         </span>
@@ -469,4 +509,5 @@ export {
   TokenSymbol,
   AccountAlias,
   KnownAddress,
+  AddressWithCopy,
 };
