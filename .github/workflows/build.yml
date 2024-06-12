@@ -50,9 +50,6 @@ jobs:
         with:
           token: '${{ secrets.NPM_AUTH_TOKEN }}'
 
-      - name: Set yarn version
-        run: yarn set version 1.22.22
-
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
