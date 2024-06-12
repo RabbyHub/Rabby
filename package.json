@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.74",
+  "version": "0.92.75",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
@@ -219,5 +219,6 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "yarn@1.22.22"
 }
