@@ -2426,8 +2426,8 @@ export class WalletController extends BaseController {
     return result;
   };
 
-  slip39DecodeMnemonics = (secretShares: string[]) => {
-    return HdKeyring.slip39DecodeMnemonics(secretShares);
+  slip39GetThreshold = (secretShares: string[]) => {
+    return HdKeyring.slip39GetThreshold(secretShares);
   };
 
   slip39DecodeMnemonic = (secretShare: string) => {
