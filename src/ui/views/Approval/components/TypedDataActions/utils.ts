@@ -47,6 +47,8 @@ import {
   isTestnetChainId,
 } from '@/utils/chain';
 import { ReceiverData } from '../Actions/components/ViewMorePopup/ReceiverPopup';
+import { parseNumber } from '@metamask/eth-sig-util';
+import { padStart } from 'lodash';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -1192,10 +1194,21 @@ export function normalizeValue(type: string, value: unknown): any {
   }
 
   if (type === 'address') {
+    let address = value as string;
     if (typeof value === 'string' && !/^(0x|0X)/.test(value)) {
-      return EthersBigNumber.from(value).toHexString();
+      address = EthersBigNumber.from(value).toHexString();
     } else if (isStrictHexString(value)) {
-      return add0x(value);
+      address = add0x(value);
+    }
+    try {
+      const parseAddress = padStart(
+        parseNumber(address).toString('hex'),
+        40,
+        '0'
+      );
+      return `0x${parseAddress}`;
+    } catch (e) {
+      return address;
     }
   }
 
