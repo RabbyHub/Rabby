@@ -2144,9 +2144,9 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.invalidJson'));
     }
 
-    let wallet;
+    let wallet: Wallet;
     try {
-      wallet = thirdparty.fromEtherWallet(content, password);
+      wallet = await thirdparty.fromEtherWallet(content, password);
     } catch (e) {
       wallet = await Wallet.fromV3(content, password, true);
     }
