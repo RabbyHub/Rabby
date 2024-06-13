@@ -31,6 +31,7 @@
   --rabby-light-neutral-bg-2: rgba(242, 244, 247, 1);
   --rabby-light-neutral-bg3: rgba(247, 250, 252, 1);
   --rabby-light-neutral-bg-3: rgba(247, 250, 252, 1);
+  --rabby-light-neutral-bg-4: rgba(235, 238, 247, 1);
   --rabby-light-neutral-card1: rgba(255, 255, 255, 1);
   --rabby-light-neutral-card-1: rgba(255, 255, 255, 1);
   --rabby-light-neutral-card2: rgba(242, 244, 247, 1);
@@ -67,6 +68,7 @@
   --rabby-dark-neutral-bg-2: rgba(28, 31, 43, 1);
   --rabby-dark-neutral-bg3: rgba(28, 31, 43, 1);
   --rabby-dark-neutral-bg-3: rgba(28, 31, 43, 1);
+  --rabby-dark-neutral-bg-4: rgba(32, 36, 54, 1);
   --rabby-dark-neutral-card1: rgba(255, 255, 255, 0.06);
   --rabby-dark-neutral-card-1: rgba(255, 255, 255, 0.06);
   --rabby-dark-neutral-card2: rgba(255, 255, 255, 0.06);
@@ -132,6 +134,8 @@
   --r-neutral-bg3: var(--rabby-light-neutral-bg3);
   --r-neutral-bg-3-rgb: 247, 250, 252;
   --r-neutral-bg-3: var(--rabby-light-neutral-bg-3);
+  --r-neutral-bg-4-rgb: 235, 238, 247;
+  --r-neutral-bg-4: var(--rabby-light-neutral-bg-4);
   --r-neutral-card1-rgb: 255, 255, 255;
   --r-neutral-card1: var(--rabby-light-neutral-card1);
   --r-neutral-card-1-rgb: 255, 255, 255;
@@ -206,6 +210,8 @@ html.dark, body.dark {
   --r-neutral-bg3: var(--rabby-dark-neutral-bg3);
   --r-neutral-bg-3-rgb: 28, 31, 43;
   --r-neutral-bg-3: var(--rabby-dark-neutral-bg-3);
+  --r-neutral-bg-4-rgb: 32, 36, 54;
+  --r-neutral-bg-4: var(--rabby-dark-neutral-bg-4);
   --r-neutral-card1-rgb: 255, 255, 255;
   --r-neutral-card1: var(--rabby-dark-neutral-card1);
   --r-neutral-card-1-rgb: 255, 255, 255;
