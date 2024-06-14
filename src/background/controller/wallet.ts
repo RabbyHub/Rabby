@@ -1,8 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
-import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { flatten, groupBy, keyBy, set, uniq } from 'lodash';
+import { groupBy, uniq } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -49,12 +48,7 @@ import {
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import openapi, {
-  SupportedChain,
-  TokenItem,
-  Tx,
-  testnetOpenapiService,
-} from '../service/openapi';
+import { TokenItem, Tx, testnetOpenapiService } from '../service/openapi';
 import {
   ContextActionData,
   ContractAddress,
@@ -90,13 +84,7 @@ import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
 import { isAddress } from 'web3-utils';
-import {
-  findChain,
-  findChainByEnum,
-  getChainList,
-  supportedChainToChain,
-  updateChainStore,
-} from '@/utils/chain';
+import { findChain, findChainByEnum, getChainList } from '@/utils/chain';
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
@@ -115,6 +103,7 @@ import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
+import { Wallet, thirdparty } from '@ethereumjs/wallet';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -2155,9 +2144,9 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.invalidJson'));
     }
 
-    let wallet;
+    let wallet: Wallet;
     try {
-      wallet = thirdparty.fromEtherWallet(content, password);
+      wallet = await thirdparty.fromEtherWallet(content, password);
     } catch (e) {
       wallet = await Wallet.fromV3(content, password, true);
     }
