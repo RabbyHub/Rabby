@@ -1503,7 +1503,12 @@ export const formatSecurityEngineCtx = ({
     };
   }
   if (actionData.assetOrder) {
-    const { takers, receiver } = actionData.assetOrder;
+    const {
+      takers,
+      receiver,
+      receiveNFTList,
+      receiveTokenList,
+    } = actionData.assetOrder;
     const data = requireData as AssetOrderRequireData;
     return {
       assetOrder: {
@@ -1512,6 +1517,7 @@ export const formatSecurityEngineCtx = ({
         receiver: receiver || '',
         chainId,
         id: data.id,
+        hasReceiveAssets: receiveNFTList.length + receiveTokenList.length > 0,
       },
     };
   }
