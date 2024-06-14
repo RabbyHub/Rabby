@@ -149,7 +149,7 @@ const AssetOrder = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <Row>
+          <Row className="w-0">
             <div className="gap-y-6 flex flex-col items-end overflow-hidden">
               {actionData.receiveTokenList.map((token) => (
                 <LogoWithText
