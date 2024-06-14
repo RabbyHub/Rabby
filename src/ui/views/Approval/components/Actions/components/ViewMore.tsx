@@ -63,6 +63,7 @@ const PopupContainer = styled.div`
     .row {
       &:nth-child(1) {
         color: var(--r-neutral-body, #3e495e);
+        font-weight: 400;
         justify-content: flex-start;
         align-items: center;
       }

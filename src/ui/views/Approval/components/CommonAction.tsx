@@ -140,20 +140,9 @@ export const CommonAction = ({
             {t('page.signTx.common.description')}
           </Row>
           <Row className="flex flex-row items-center gap-x-4">
-            <span className="break-all">{actionData.desc}</span>
-            {/* <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[260px]"
-              title={descTip}
-            >
-              {actionData.is_asset_changed ||
-              actionData.is_involving_privacy ? (
-                <img src={Warning2SVG} />
-              ) : null}
-              {!actionData.is_asset_changed &&
-              !actionData.is_involving_privacy ? (
-                <img src={CertifiedSVG} />
-              ) : null}
-            </TooltipWithMagnetArrow> */}
+            <span className="break-all whitespace-normal">
+              {actionData.desc}
+            </span>
           </Row>
         </Col>
         {(requireData as ContractCallRequireData)?.payNativeTokenAmount &&

@@ -777,7 +777,7 @@ const GasSelectorHeader = ({
             )}
           </div>
           {gas.success && (
-            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0 cursor-pointer">
+            <div className="text-r-neutral-body text-14 mt-2 flex-shrink-0">
               {isGasHovering
                 ? calcGasEstimated(selectedGas?.estimated_seconds)
                 : `~${gasCostAmountStr}`}
