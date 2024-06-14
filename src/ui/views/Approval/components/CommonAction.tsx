@@ -139,10 +139,8 @@ export const CommonAction = ({
           <Row className="w-[100px]" isTitle>
             {t('page.signTx.common.description')}
           </Row>
-          <Row className="flex flex-row items-center gap-x-4">
-            <span className="break-all whitespace-normal">
-              {actionData.desc}
-            </span>
+          <Row className="flex flex-row items-center gap-x-4" wrap>
+            {actionData.desc}
           </Row>
         </Col>
         {(requireData as ContractCallRequireData)?.payNativeTokenAmount &&
