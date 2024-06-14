@@ -149,37 +149,50 @@ const AssetOrder = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
-            {actionData.receiveTokenList.map((token) => (
-              <LogoWithText
-                className="overflow-hidden w-full"
-                key={token.id}
-                logo={token.logo_url}
-                text={
-                  <div className="overflow-hidden overflow-ellipsis flex">
-                    <Values.TokenAmount value={token.amount} />
-                    <span className="ml-2">
-                      <Values.TokenSymbol token={token} />
-                    </span>
-                  </div>
+          <Row className="w-0">
+            <div className="gap-y-6 flex flex-col items-end overflow-hidden">
+              {actionData.receiveTokenList.map((token) => (
+                <LogoWithText
+                  className="overflow-hidden w-full"
+                  key={token.id}
+                  logo={token.logo_url}
+                  text={
+                    <div className="overflow-hidden overflow-ellipsis flex">
+                      <Values.TokenAmount value={token.amount} />
+                      <span className="ml-2">
+                        <Values.TokenSymbol token={token} />
+                      </span>
+                    </div>
+                  }
+                  logoRadius="100%"
+                />
+              ))}
+              {actionData.receiveNFTList.map((nft) => (
+                <ViewMore
+                  key={nft.id}
+                  type="nft"
+                  data={{
+                    nft,
+                    chain,
+                  }}
+                >
+                  <NFTWithName nft={nft}></NFTWithName>
+                </ViewMore>
+              ))}
+              {actionData.receiveTokenList.length <= 0 &&
+                actionData.receiveNFTList.length <= 0 && <>-</>}
+            </div>
+            {engineResultMap['1144'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1144'].enable}
+                level={
+                  processedRules.includes('1144')
+                    ? 'proceed'
+                    : engineResultMap['1144'].level
                 }
-                logoRadius="100%"
+                onClick={() => handleClickRule('1144')}
               />
-            ))}
-            {actionData.receiveNFTList.map((nft) => (
-              <ViewMore
-                key={nft.id}
-                type="nft"
-                data={{
-                  nft,
-                  chain,
-                }}
-              >
-                <NFTWithName nft={nft}></NFTWithName>
-              </ViewMore>
-            ))}
-            {actionData.receiveTokenList.length <= 0 &&
-              actionData.receiveNFTList.length <= 0 && <>-</>}
+            )}
           </Row>
         </Col>
         {actionData.takers.length > 0 && (
