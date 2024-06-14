@@ -50,7 +50,10 @@ export const NFTPopup: React.FC<Props> = ({ data }) => {
         <Col>
           <Row>{t('page.signTx.contractAddress')}</Row>
           <Row>
-            <Values.Address address={data.nft.contract_id} chain={data.chain} />
+            <Values.AddressWithCopy
+              address={data.nft.contract_id}
+              chain={data.chain}
+            />
           </Row>
         </Col>
       </Table>

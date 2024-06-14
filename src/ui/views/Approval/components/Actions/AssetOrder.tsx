@@ -199,7 +199,10 @@ const AssetOrder = ({
           <Col>
             <Row isTitle>{t('page.signTypedData.sellNFT.specificBuyer')}</Row>
             <Row>
-              <Values.Address address={actionData.takers[0]} chain={chain} />
+              <Values.AddressWithCopy
+                address={actionData.takers[0]}
+                chain={chain}
+              />
               {engineResultMap['1114'] && (
                 <SecurityLevelTagNoText
                   enable={engineResultMap['1114'].enable}

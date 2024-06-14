@@ -345,11 +345,13 @@ const AddressWithCopy = ({
   chain,
   iconWidth = '14px',
   hasHover = false,
+  id,
 }: {
   address: string;
   chain?: Chain;
   iconWidth?: string;
   hasHover?: boolean;
+  id?: string;
 }) => {
   const handleClickContractId = (e) => {
     e.stopPropagation();
@@ -363,7 +365,7 @@ const AddressWithCopy = ({
   const [isHoverToolbar, hoverToolbarProps] = useHover();
 
   return (
-    <AddressWrapper className="value-address relative">
+    <AddressWrapper className="value-address relative" id={id}>
       <TooltipWithMagnetArrow
         title={address}
         className="rectangle w-[max-content]"

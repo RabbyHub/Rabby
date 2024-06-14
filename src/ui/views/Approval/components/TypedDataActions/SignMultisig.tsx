@@ -54,7 +54,7 @@ const PushMultiSig = ({
         <Col>
           <Row isTitle>{t('page.signTx.submitMultisig.multisigAddress')}</Row>
           <Row>
-            <Values.Address
+            <Values.AddressWithCopy
               id="multi-sign-address"
               address={data.multisig_id}
               chain={multiSigInfo?.chain}

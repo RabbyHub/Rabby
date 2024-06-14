@@ -26,7 +26,7 @@ const CoboSafeModificationRule = ({
             {t('page.signTx.coboSafeModificationRole.safeWalletTitle')}
           </Row>
           <Row>
-            <Values.Address
+            <Values.AddressWithCopy
               id="cobo-safe-address"
               address={actionData.multisig_id}
             />

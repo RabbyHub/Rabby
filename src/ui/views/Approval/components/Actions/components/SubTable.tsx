@@ -21,8 +21,6 @@ const SubTableWrapper = styled.div`
       display: none;
     }
   }
-
-}
 `;
 
 const TableArrow = styled(IconTableArrow)`
