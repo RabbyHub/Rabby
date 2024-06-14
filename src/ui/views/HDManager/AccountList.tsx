@@ -42,6 +42,7 @@ export const AccountList: React.FC<Props> = ({
 }) => {
   const wallet = useWallet();
   const [list, setList] = React.useState<Account[]>([]);
+  const [extraList, setExtraList] = React.useState<Account[]>([]);
   const infoRef = React.useRef<HTMLDivElement>(null);
   const currentAccountsRef = React.useRef<Account[]>([]);
   const [infoColumnWidth, setInfoColumnWidth] = React.useState(0);
@@ -89,10 +90,17 @@ export const AccountList: React.FC<Props> = ({
   }, []);
 
   React.useEffect(() => {
+    setList(data ?? []);
+
     if (!hiddenInfo) {
-      fetchAccountsInfo(wallet, data ?? []).then(setList);
-    } else {
-      setList(data ?? []);
+      fetchAccountsInfo(wallet, data ?? [], async (account) => {
+        await setExtraList((prev) => {
+          if (prev.find((i) => i.address === account.address)) {
+            return prev;
+          }
+          return [...prev, account];
+        });
+      });
     }
   }, [hiddenInfo, data]);
 
@@ -335,26 +343,29 @@ export const AccountList: React.FC<Props> = ({
           dataIndex="usedChains"
           key="usedChains"
           width={140}
-          render={(value, record) =>
-            hiddenInfo ? (
+          render={(value, record) => {
+            const extra = extraList.find((e) => e.address === record.address);
+            return hiddenInfo || !extra ? (
               <AccountListSkeleton width={100} />
             ) : (
-              <ChainList account={record} />
-            )
-          }
+              <ChainList account={extra} />
+            );
+          }}
         />
         <Table.Column<Account>
           title={t('page.newAddress.hd.firstTransactionTime')}
           dataIndex="firstTxTime"
           key="firstTxTime"
           width={160}
-          render={(value) =>
-            hiddenInfo ? (
+          render={(value, record) => {
+            const extra = extraList.find((e) => e.address === record.address);
+
+            return hiddenInfo || !extra ? (
               <AccountListSkeleton width={100} />
-            ) : !isNaN(value) ? (
-              dayjs.unix(value).format('YYYY-MM-DD')
-            ) : null
-          }
+            ) : extra.firstTxTime && !isNaN(extra.firstTxTime) ? (
+              dayjs.unix(extra.firstTxTime).format('YYYY-MM-DD')
+            ) : null;
+          }}
         />
         <Table.Column<Account>
           title={t('page.newAddress.hd.balance')}
@@ -362,13 +373,15 @@ export const AccountList: React.FC<Props> = ({
           key="balance"
           width={200}
           ellipsis
-          render={(balance, record) =>
-            hiddenInfo ? (
+          render={(balance, record) => {
+            const extra = extraList.find((e) => e.address === record.address);
+
+            return hiddenInfo || !extra ? (
               <AccountListSkeleton width={100} />
-            ) : record.chains?.length && balance ? (
-              `$${splitNumberByStep(balance.toFixed(2))}`
-            ) : null
-          }
+            ) : record.chains?.length && extra.balance ? (
+              `$${splitNumberByStep(extra.balance.toFixed(2))}`
+            ) : null;
+          }}
         />
       </Table.ColumnGroup>
     </Table>
