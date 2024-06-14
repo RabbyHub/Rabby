@@ -87,7 +87,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         {data.title || t('page.signTx.send.sendTo')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.address}
           chain={data.chain}
           iconWidth="14px"

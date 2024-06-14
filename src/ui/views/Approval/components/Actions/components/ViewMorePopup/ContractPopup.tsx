@@ -51,7 +51,7 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
     <div>
       <div className="title">
         {data.title || t('page.signTx.interactContract')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.address}
           chain={data.chain}
           iconWidth="14px"
