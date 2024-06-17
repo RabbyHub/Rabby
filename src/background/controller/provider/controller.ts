@@ -1047,7 +1047,7 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({
@@ -1127,13 +1127,16 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({ hex: chainId });
 
     if (!chain) {
-      throw new Error('This chain is not supported by Rabby yet.');
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+      });
     }
 
     permissionService.updateConnectSite(
