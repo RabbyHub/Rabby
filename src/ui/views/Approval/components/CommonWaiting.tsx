@@ -21,6 +21,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -179,6 +180,8 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {

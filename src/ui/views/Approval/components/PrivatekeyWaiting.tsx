@@ -23,6 +23,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -181,6 +182,8 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
