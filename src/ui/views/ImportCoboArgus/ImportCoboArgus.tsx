@@ -1,4 +1,4 @@
-import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from '@/constant';
+import { CHAINS, CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import React from 'react';
 import { ChainList } from './ChainList';
 import { AddressInput } from './AddressInput';
@@ -10,7 +10,9 @@ import { isAddress } from 'web3-utils';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatAddress';
 import { findChainByID } from '@/utils/chain';
+import '../overwrite.less';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
@@ -29,6 +31,7 @@ export const ImportCoboArgus = () => {
   const wallet = useWallet();
   const history = useHistory();
   const [hasImportError, setHasImportError] = React.useState<boolean>(false);
+  const { run: checkRepeatAddress, contextHolder } = useRepeatImportConfirm();
   const isByImportAddressEvent = !!state;
 
   const handleNext = React.useCallback(async () => {
@@ -41,12 +44,18 @@ export const ImportCoboArgus = () => {
       }
       try {
         setIsLoading(true);
-        const accountAddress = await wallet.coboSafeGetAccountAddress({
-          chainServerId: CHAINS[selectedChain!].serverId,
-          coboSafeAddress: inputAddress,
+        checkRepeatAddress({
+          address: inputAddress,
+          type: KEYRING_CLASS.CoboArgus,
+          action: async () => {
+            const accountAddress = await wallet.coboSafeGetAccountAddress({
+              chainServerId: CHAINS[selectedChain!].serverId,
+              coboSafeAddress: inputAddress,
+            });
+            setSafeAddress(accountAddress);
+            setStep('select-address');
+          },
         });
-        setSafeAddress(accountAddress);
-        setStep('select-address');
       } catch (e) {
         setError(t('page.newAddress.coboSafe.invalidAddress'));
       } finally {
@@ -101,6 +110,7 @@ export const ImportCoboArgus = () => {
 
   return (
     <section className="bg-r-neutral-bg-2 relative">
+      {contextHolder}
       <Header hasBack={!isByImportAddressEvent}>
         {step === 'select-chain' &&
           t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}

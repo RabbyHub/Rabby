@@ -2,7 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
 import { isValidAddress } from 'ethereumjs-util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,8 @@ import { useHistory } from 'react-router-dom';
 import IconBack from 'ui/assets/icon-back.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useWallet } from 'ui/utils';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatAddress';
+import '../overwrite.less';
 import './style.less';
 
 const ImportGnosisAddress = () => {
@@ -17,6 +19,7 @@ const ImportGnosisAddress = () => {
   const history = useHistory();
   const wallet = useWallet();
 
+  const { run: checkRepeatAddress, contextHolder } = useRepeatImportConfirm();
   const [errorMessage, setErrorMessage] = useState('');
 
   const [form] = useForm();
@@ -48,30 +51,48 @@ const ImportGnosisAddress = () => {
     }
   );
 
-  const { runAsync: handleNext } = useRequest(wallet.importGnosisAddress, {
-    manual: true,
-    async onSuccess(accounts) {
-      history.replace({
-        pathname: '/popup/import/success',
-        state: {
-          accounts,
-          title: t('Added successfully'),
-          editing: true,
-          importedAccount: true,
-          importedLength: (
-            await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
-          )?.[0]?.accounts?.length,
-          supportChainList: chainList,
-        },
-      });
-    },
-    onError(err) {
-      setErrorMessage(err?.message || t('Not a valid address'));
-    },
-  });
+  const { runAsync: importGnosisAddress } = useRequest(
+    wallet.importGnosisAddress,
+    {
+      manual: true,
+      async onSuccess(accounts) {
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts,
+            title: t('Added successfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: (
+              await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
+            )?.[0]?.accounts?.length,
+            supportChainList: chainList,
+          },
+        });
+      },
+      onError(err) {
+        setErrorMessage(err?.message || t('Not a valid address'));
+      },
+    }
+  );
+
+  const handleNext = () => {
+    const address = form.getFieldValue('address');
+    checkRepeatAddress({
+      address,
+      type: KEYRING_CLASS.GNOSIS,
+      action: () => {
+        importGnosisAddress(
+          address,
+          (chainList || []).map((chain) => chain.network)
+        );
+      },
+    });
+  };
 
   return (
     <div className="import-gnosis h-full relative">
+      {contextHolder}
       <header className="header h-[180px] relative dark:bg-r-blue-disable">
         <div className="rabby-container pt-[40px]">
           <img
@@ -165,12 +186,7 @@ const ImportGnosisAddress = () => {
           size="large"
           className="w-full h-[42px]"
           disabled={loading || !!errorMessage || !chainList?.length}
-          onClick={() =>
-            handleNext(
-              form.getFieldValue('address'),
-              (chainList || []).map((chain) => chain.network)
-            )
-          }
+          onClick={handleNext}
         >
           {t('global.next')}
         </Button>

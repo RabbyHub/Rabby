@@ -3,7 +3,7 @@ import { Input, Form, message } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { KEYRING_TYPE } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import IconSuccess from 'ui/assets/success.svg';
 
 import { Navbar, StrayPageWithButton } from 'ui/component';
@@ -11,6 +11,8 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import { clearClipboard } from 'ui/utils/clipboard';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatAddress';
+import './overwrite.less';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -42,6 +44,7 @@ const ImportPrivateKey = () => {
   const [importedAccountsLength, setImportedAccountsLength] = useState<number>(
     0
   );
+  const { run: checkRepeatAddress, contextHolder } = useRepeatImportConfirm();
   const isWide = useMedia('(min-width: 401px)');
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
@@ -73,6 +76,17 @@ const ImportPrivateKey = () => {
     },
   });
 
+  const handleSubmit = async (key) => {
+    const address = await wallet.getAddressByPrivateKey(key);
+    checkRepeatAddress({
+      address,
+      type: KEYRING_CLASS.PRIVATE_KEY,
+      action: () => {
+        run(key);
+      },
+    });
+  };
+
   useEffect(() => {
     (async () => {
       const importedAccounts = await wallet.getTypedAccounts(
@@ -94,11 +108,13 @@ const ImportPrivateKey = () => {
 
   return (
     <>
+      {/* holder from confirm modal */}
+      {contextHolder}
       <StrayPageWithButton
         custom={isWide}
         spinning={loading}
         form={form}
-        onSubmit={({ key }) => run(key)}
+        onSubmit={({ key }) => handleSubmit(key)}
         hasBack={false}
         hasDivider
         noPadding

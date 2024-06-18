@@ -11,15 +11,19 @@ import {
   EVENTS,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_CATEGORY,
+  KEYRING_CLASS,
 } from 'consts';
 import './style.less';
 import clsx from 'clsx';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { useBrandNameHasWallet } from '@/ui/component/WalletConnect/useBrandNameHasWallet';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatAddress';
+
 import { getOriginFromUrl } from '@/utils';
 import { ConnectedSite } from '@/background/service/permission';
 import { findChainByEnum } from '@/utils/chain';
+import '../overwrite.less';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;
 
@@ -40,6 +44,7 @@ const WalletConnectTemplate = () => {
   >();
   const [curStashId, setCurStashId] = useState<number | null>();
   const siteRef = React.useRef<ConnectedSite | null>(null);
+  const { run: checkRepeatAddress, contextHolder } = useRepeatImportConfirm();
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
@@ -86,7 +91,13 @@ const WalletConnectTemplate = () => {
         options[5] = metadata.icons?.[0];
       }
     }
-    run(...options);
+    checkRepeatAddress({
+      address: options[0],
+      type: KEYRING_CLASS.WALLETCONNECT,
+      action: () => {
+        run(...options);
+      },
+    });
   };
 
   const handleImportByWalletconnect = async () => {
@@ -200,6 +211,7 @@ const WalletConnectTemplate = () => {
 
   return (
     <div className="wallet-connect pb-0">
+      {contextHolder}
       <div className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
         <img
           src={IconBack}

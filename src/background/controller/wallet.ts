@@ -2117,6 +2117,22 @@ export class WalletController extends BaseController {
     return;
   };
 
+  getAddressByPrivateKey = (data) => {
+    const privateKey = ethUtil.stripHexPrefix(data);
+    const buffer = Buffer.from(privateKey, 'hex');
+
+    const error = new Error(t('background.error.invalidPrivateKey'));
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
+    }
+
+    return ethUtil.bufferToHex(ethUtil.privateToAddress(buffer));
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');

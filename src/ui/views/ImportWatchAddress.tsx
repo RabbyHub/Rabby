@@ -19,6 +19,8 @@ import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
 import eventBus from '@/eventBus';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatAddress';
+import './overwrite.less';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -40,6 +42,8 @@ const ImportWatchAddress = () => {
   const isWide = useMedia('(min-width: 401px)');
   const [isValidAddr, setIsValidAddr] = useState(false);
   const ModalComponent = isWide ? Modal : Popup;
+  const { run: checkRepeatAddress, contextHolder } = useRepeatImportConfirm();
+
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       setDisableKeydown(false);
@@ -169,9 +173,15 @@ const ImportWatchAddress = () => {
       setEnsResult(null);
     }
   };
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     const address = form.getFieldValue('address');
-    run(address);
+    checkRepeatAddress({
+      address,
+      type: KEYRING_CLASS.WATCH,
+      action: () => {
+        run(address);
+      },
+    });
   };
   const handleClickBack = () => {
     if (history.length > 1) {
@@ -210,6 +220,7 @@ const ImportWatchAddress = () => {
       NextButtonContent={t('global.confirm')}
       nextDisabled={!isValidAddr}
     >
+      {contextHolder}
       <header className="create-new-header create-password-header h-[264px] res dark:bg-r-blue-disable">
         <div className="rabby-container">
           <img
