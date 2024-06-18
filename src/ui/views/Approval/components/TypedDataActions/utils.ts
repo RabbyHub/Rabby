@@ -27,6 +27,7 @@ import { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rule
 import BigNumber from 'bignumber.js';
 import { getArrayType, isArrayType } from '@metamask/abi-utils/dist/parsers';
 import { BigNumber as EthersBigNumber } from 'ethers';
+import { isStrictHexString, add0x } from 'ui/utils/address';
 import i18n from '@/i18n';
 import { WalletControllerType, getTimeSpan } from '@/ui/utils';
 import {
@@ -38,7 +39,7 @@ import {
   ApproveNFTRequireData,
   fetchNFTApproveRequiredData,
 } from '../Actions/utils';
-import { CHAINS, ALIAS_ADDRESS } from 'consts';
+import { ALIAS_ADDRESS, KEYRING_TYPE } from 'consts';
 import { Chain } from 'background/service/openapi';
 import {
   findChain,
@@ -46,6 +47,8 @@ import {
   isTestnetChainId,
 } from '@/utils/chain';
 import { ReceiverData } from '../Actions/components/ViewMorePopup/ReceiverPopup';
+import { parseNumber } from '@metamask/eth-sig-util';
+import { padStart } from 'lodash';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -612,7 +615,17 @@ const fetchReceiverRequireData = async ({
     name: null,
     onTransferWhitelist: false,
     whitelistEnable: false,
+    receiverIsSpoofing: false,
+    hasReceiverPrivateKeyInWallet: false,
+    hasReceiverMnemonicInWallet: false,
   };
+  const hasPrivateKeyInWallet = await wallet.hasPrivateKeyInWallet(to);
+  if (hasPrivateKeyInWallet) {
+    result.hasReceiverPrivateKeyInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.SimpleKeyring;
+    result.hasReceiverMnemonicInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.HdKeyring;
+  }
   queue.add(async () => {
     const { has_transfer } = await apiProvider.hasTransfer(chainId, from, to);
     result.hasTransfer = has_transfer;
@@ -659,6 +672,13 @@ const fetchReceiverRequireData = async ({
     const usedChainList = await apiProvider.addrUsedChainList(to);
     result.usedChains = usedChainList;
   });
+  queue.add(async () => {
+    const { is_spoofing } = await apiProvider.checkSpoofing({
+      from,
+      to,
+    });
+    result.receiverIsSpoofing = is_spoofing;
+  });
   const whitelist = await wallet.getWhitelist();
   const whitelistEnable = await wallet.isWhitelistEnabled();
   result.whitelistEnable = whitelistEnable;
@@ -691,7 +711,7 @@ export const fetchRequireData = async (
   sender: string,
   wallet: WalletControllerType
 ): Promise<TypedDataRequireData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
@@ -928,7 +948,7 @@ export const formatSecurityEngineCtx = async ({
   requireData: TypedDataRequireData;
   wallet: WalletControllerType;
 }): Promise<ContextActionData> => {
-  let chain: Chain | undefined;
+  let chain: Chain | null | undefined;
   if (actionData?.chainId) {
     chain = findChain({
       id: Number(actionData.chainId),
@@ -1109,11 +1129,19 @@ export const formatSecurityEngineCtx = async ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+        receiverIsSpoofing: data.receiverIsSpoofing,
+        hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
+        hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },
     };
   }
   if (actionData?.assetOrder) {
-    const { takers, receiver } = actionData.assetOrder;
+    const {
+      takers,
+      receiver,
+      receiveNFTList,
+      receiveTokenList,
+    } = actionData.assetOrder;
     const data = requireData as AssetOrderRequireData;
     return {
       assetOrder: {
@@ -1122,6 +1150,7 @@ export const formatSecurityEngineCtx = async ({
         receiver: receiver || '',
         chainId: chain?.serverId,
         id: data.id,
+        hasReceiveAssets: receiveNFTList.length + receiveTokenList.length > 0,
       },
     };
   }
@@ -1171,8 +1200,21 @@ export function normalizeValue(type: string, value: unknown): any {
   }
 
   if (type === 'address') {
-    if (typeof value === 'string' && !value.startsWith('0x')) {
-      return EthersBigNumber.from(value).toHexString();
+    let address = value as string;
+    if (typeof value === 'string' && !/^(0x|0X)/.test(value)) {
+      address = EthersBigNumber.from(value).toHexString();
+    } else if (isStrictHexString(value)) {
+      address = add0x(value);
+    }
+    try {
+      const parseAddress = padStart(
+        parseNumber(address).toString('hex'),
+        40,
+        '0'
+      );
+      return `0x${parseAddress}`;
+    } catch (e) {
+      return address;
     }
   }
 

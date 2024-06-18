@@ -227,10 +227,10 @@ export const useTokenPair = (userAddress: string) => {
   );
 
   const handleBalance = useCallback(() => {
-    if (!payTokenIsNativeToken && payToken) {
+    if (payToken) {
       setPayAmount(tokenAmountBn(payToken).toString(10));
     }
-  }, [payToken, payTokenIsNativeToken]);
+  }, [payToken]);
 
   const isStableCoin = useMemo(() => {
     if (payToken?.price && receiveToken?.price) {

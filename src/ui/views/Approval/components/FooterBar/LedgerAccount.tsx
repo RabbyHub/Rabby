@@ -27,14 +27,12 @@ export const LedgerAccount: React.FC = () => {
       case 'DISCONNECTED':
         return (
           <div className="flex justify-between w-full">
-            <div className="text-red-forbidden">
-              {t('page.signFooterBar.ledgerNotConnected')}
-            </div>
+            <div>{t('page.signFooterBar.ledgerNotConnected')}</div>
             <div
               onClick={onClickConnect}
               className={clsx(
                 'underline cursor-pointer',
-                'text-13 text-r-neutral-body'
+                'text-14 text-r-neutral-body'
               )}
             >
               {t('page.signFooterBar.connectButton')}

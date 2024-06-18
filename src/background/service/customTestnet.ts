@@ -23,6 +23,7 @@ import {
   readContract,
 } from 'viem/actions';
 import { http as axios } from '../utils/http';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 export interface TestnetChainBase {
   id: number;
@@ -45,6 +46,7 @@ export interface TestnetChain extends TestnetChainBase {
   isTestnet?: boolean;
   logo: string;
   whiteLogo?: string;
+  needEstimateGas?: boolean;
 }
 
 export interface RPCItem {
@@ -128,7 +130,7 @@ class CustomTestnetService {
         return {
           error: {
             key: 'id',
-            message: 'Chain already supported by Rabby Wallet',
+            message: 'Chain already integrated by Rabby Wallet',
           },
         };
       }
@@ -168,6 +170,14 @@ class CustomTestnetService {
     };
     this.chains[chain.id] = createClientByChain(chain);
     this.syncChainList();
+
+    if (this.getList().length) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Custom Network Status',
+        value: this.getList().length,
+      });
+    }
     return this.store.customTestnet[chain.id];
   };
 
@@ -178,6 +188,13 @@ class CustomTestnetService {
     });
     delete this.chains[chainId];
     this.syncChainList();
+    if (this.getList().length) {
+      matomoRequestEvent({
+        category: 'Custom Network',
+        action: 'Custom Network Status',
+        value: this.getList().length,
+      });
+    }
   };
 
   getClient = (chainId: number) => {

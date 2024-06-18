@@ -46,18 +46,33 @@ export const TokenListSkeleton = () => {
   );
 };
 
-export const TokenListViewSkeleton: React.FC = () => {
+export const TokenListViewSkeleton: React.FC<{
+  isTestnet?: boolean;
+}> = ({ isTestnet }) => {
   return (
     <div className="mt-16">
-      <div className="flex justify-between">
+      <div className="flex">
         <Skeleton.Input
           active
-          className="bg-r-neutral-card-2 rounded-[6px] w-[160px] h-[32px]"
+          className="bg-r-neutral-card-2 rounded-[6px] w-[160px] h-[32px] mr-[auto]"
         />
-        <Skeleton.Input
-          active
-          className="bg-r-neutral-card-2 rounded-[6px] w-[100px] h-[32px]"
-        />
+        {isTestnet ? (
+          <div className="flex gap-[12px] items-center">
+            <Skeleton.Input
+              active
+              className="bg-r-neutral-card-2 rounded-[6px] w-[82px] h-[32px] "
+            />
+            <Skeleton.Input
+              active
+              className="bg-r-neutral-card-2 rounded-[6px] w-[82px] h-[32px] "
+            />
+          </div>
+        ) : (
+          <Skeleton.Input
+            active
+            className="bg-r-neutral-card-2 rounded-[6px] w-[100px] h-[32px] "
+          />
+        )}
       </div>
       <TokenListSkeleton />
     </div>

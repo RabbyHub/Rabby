@@ -5,7 +5,7 @@ import {
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, EVENTS_IN_BG } from 'consts';
 import { format, getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -135,6 +135,12 @@ class TransactionWatcher {
       method: EVENTS.TX_COMPLETED,
       params: { address, hash },
     });
+
+    eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, {
+      address,
+      hash,
+      status: txReceipt.status,
+    });
   };
 
   // fetch pending txs status every 5s
@@ -193,13 +199,18 @@ class TransactionWatcher {
     this._clearBefore(id);
   };
 
-  clearPendingTx = (address: string) => {
+  clearPendingTx = (address: string, chainId?: number) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [key, v]) => {
         // address_chain_nonce
         const [kAddress] = key.split('_');
+        const chainItem = findChainByEnum(v.chain);
+        const isSameAddr = isSameAddress(address, kAddress);
+        if (chainId ? +chainId === chainItem?.id && isSameAddr : isSameAddr) {
+          return m;
+        }
         // keep pending txs of other addresses
-        if (!isSameAddress(address, kAddress) && v) {
+        if (v) {
           m[key] = v;
         }
 

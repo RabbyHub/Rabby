@@ -23,12 +23,13 @@ import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const Footer = styled.div`
-  height: 76px;
+  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
-  padding: 16px 0;
+  padding: 20px;
   display: flex;
   justify-content: center;
 `;
@@ -61,6 +62,10 @@ export const CustomTestnet = () => {
       states: {
         ...next,
       },
+    });
+    matomoRequestEvent({
+      category: 'Custom Network',
+      action: 'Click Add Network',
     });
   };
 
@@ -164,16 +169,16 @@ export const CustomTestnet = () => {
         </div>
       )}
       <Footer>
-        <Button
-          size="large"
-          type="primary"
-          className="w-[200px]"
-          onClick={handleAddClick}
-        >
+        <Button size="large" type="primary" block onClick={handleAddClick}>
           {t('page.customTestnet.add')}
         </Button>
       </Footer>
       <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'setting',
+          },
+        }}
         visible={state.isShowModal}
         data={state.current}
         isEdit={state.isEdit}

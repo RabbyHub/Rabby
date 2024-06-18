@@ -297,6 +297,10 @@ class DisplayedPortfolio implements AbstractPortfolio {
   // static createFromHistory(h: PortfolioItem) {}
 }
 
+export function encodeProjectTokenId(token: PortfolioItemToken) {
+  return token.id + token.chain;
+}
+
 export class DisplayedToken implements AbstractPortfolioToken {
   [immerable] = true;
   id: string;
@@ -332,7 +336,7 @@ export class DisplayedToken implements AbstractPortfolioToken {
   constructor(token: PortfolioItemToken) {
     this._tokenId = token.id;
     this.amount = token.amount || 0;
-    this.id = token.id + token.chain;
+    this.id = encodeProjectTokenId(token);
     this.chain = token.chain;
     this.logo_url = token.logo_url;
     this.price = token.price || 0;

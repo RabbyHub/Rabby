@@ -15,7 +15,7 @@
 
   .list {
     &:not(:last-child) {
-      margin-bottom: 16px;
+      margin-bottom: 28px;
     }
     &-header {
       display: flex;
@@ -71,6 +71,11 @@
       border: 1px solid transparent;
       background: var(--r-neutral-card2, #f2f4f7);
       cursor: pointer;
+      .pin-website:not(.is-active) {
+        path {
+          stroke: var(--r-neutral-foot);
+        }
+      }
       .icon-close {
         width: 16px;
         height: 16px;
@@ -98,8 +103,8 @@
       &-content {
         font-weight: 500;
         color: var(--r-neutral-title1, #192945);
-        font-size: 15px;
-        line-height: 18px;
+        font-size: 13px;
+        line-height: 15px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -312,8 +317,8 @@
     justify-content: center;
 
     .ant-btn {
-      height: 40px;
-      width: 160px;
+      height: 48px;
+      width: 200px;
     }
   }
 }

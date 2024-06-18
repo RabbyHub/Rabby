@@ -360,12 +360,17 @@
     &-checked {
       margin-left: 16px;
     }
-    &:hover {
+    &:not(.select-chain-item-disabled):hover {
       background: var(--r-blue-light-1, #eef1ff);
       border: 1px solid var(--r-blue-default, #7084ff);
       &::after {
         display: none;
       }
+      .select-chain-item-star {
+        display: block;
+      }
+    }
+    &.select-chain-item-disabled:hover {
       .select-chain-item-star {
         display: block;
       }

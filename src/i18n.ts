@@ -23,6 +23,7 @@ i18n
       skipOnVariables: true,
     },
     returnNull: false,
+    returnEmptyString: false,
   });
 
 export const I18N_NS = 'translations';
@@ -41,5 +42,10 @@ addResourceBundle('en');
 i18n.on('languageChanged', function (lng) {
   addResourceBundle(lng);
 });
+
+export const changeLanguage = (locale: string) => {
+  i18n.changeLanguage(locale);
+  document.documentElement.lang = locale;
+};
 
 export default i18n;

@@ -8,7 +8,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
@@ -17,7 +17,6 @@ import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/c
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-
 interface Props {
   visible?: boolean;
   onClose?(): void;
@@ -50,6 +49,11 @@ const Wraper = styled.div`
     &:focus {
       border-color: var(--r-blue-default, #7084ff);
     }
+
+    &::placeholder {
+      font-size: 14px;
+      font-weight: 400;
+    }
   }
   .ant-input[disabled] {
     background: var(--r-neutral-card2, #f2f4f7);
@@ -72,7 +76,7 @@ const Wraper = styled.div`
 `;
 
 const Footer = styled.div`
-  height: 76px;
+  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
   padding: 16px 20px;
@@ -177,6 +181,14 @@ export const AddCustomTestnetTokenPopup = ({
     }
   }, [visible]);
 
+  const inputRef = useRef<Input>(null);
+  useLayoutEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => inputRef.current?.focus(), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
   const { isDarkTheme } = useThemeMode();
 
   return (
@@ -212,7 +224,14 @@ export const AddCustomTestnetTokenPopup = ({
                 }}
               >
                 {!chain ? (
-                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] px-[16px] py-[12px] min-h-[52px] cursor-pointer">
+                  <div
+                    className={clsx(
+                      'flex items-center bg-r-neutral-card2 rounded-[6px]',
+                      'px-[16px] py-[12px] min-h-[52px] cursor-pointer',
+                      'border-[1px] border-transparent',
+                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+                    )}
+                  >
                     <div className="text-r-neutral-title1 text-[15px] leading-[18px]">
                       {t('page.dashboard.assets.AddTestnetToken.selectChain')}
                     </div>
@@ -221,7 +240,14 @@ export const AddCustomTestnetTokenPopup = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center bg-r-neutral-card2 rounded-[6px] gap-[8px] px-[16px] py-[12px] min-h-[52px] cursor-pointer">
+                  <div
+                    className={clsx(
+                      'flex items-center bg-r-neutral-card2 rounded-[6px]',
+                      'gap-[8px] px-[16px] py-[12px] min-h-[52px] cursor-pointer',
+                      'border-[1px] border-transparent',
+                      'hover:border-rabby-blue-default hover:bg-r-blue-light1'
+                    )}
+                  >
                     <img
                       src={chain?.logo}
                       alt=""
@@ -242,6 +268,11 @@ export const AddCustomTestnetTokenPopup = ({
               name="address"
             >
               <Input
+                ref={inputRef}
+                autoFocus
+                placeholder={t(
+                  'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
+                )}
                 onChange={(e) => {
                   setTokenId(e.target.value);
                 }}
@@ -329,6 +360,7 @@ export const AddCustomTestnetTokenPopup = ({
       <ChainSelectorModal
         hideTestnetTab={false}
         hideMainnetTab={true}
+        value={chainSelectorState.chain || CHAINS_ENUM.ETH}
         visible={chainSelectorState.visible}
         onCancel={() => {
           setChainSelectorState({

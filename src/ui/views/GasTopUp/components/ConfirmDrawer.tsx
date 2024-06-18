@@ -10,7 +10,7 @@ import { ChainWrapper } from '.';
 import { Empty, TokenWithChain } from '@/ui/component';
 import { TokenItem } from '@/background/service/openapi';
 import { ReactComponent as RcIconBack } from 'ui/assets/back-cc.svg';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue } from '@/ui/utils';
 import { ReactComponent as RcIconRightArrow } from '@/ui/assets/arrow-right-cc.svg';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
@@ -58,26 +58,25 @@ export const ConfirmDrawer = ({
       style: CSSProperties;
     }) => {
       const item = data[index];
+      const disabled = new BigNumber(item.amount)
+        .times(item.price)
+        .lt(new BigNumber(cost).times(1.2));
 
       return (
         <Tooltip
           overlayClassName={clsx('rectangle')}
           placement="top"
-          visible={
-            new BigNumber(item.amount)
-              .times(item.price)
-              .lt(new BigNumber(cost).times(1.2))
-              ? undefined
-              : false
-          }
+          visible={disabled ? undefined : false}
           title={t('page.gasTopUp.InsufficientBalanceTips')}
+          align={{ targetOffset: [0, -30] }}
         >
           <div
             key={item.id}
             style={style}
             className={clsx(
-              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
+              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent  rounded-[6px]',
               'text-13 font-medium text-r-neutral-title-1',
+              !disabled && 'hover:border-blue-light',
               new BigNumber(item.amount)
                 .times(item.price)
                 .lt(new BigNumber(cost).times(1.2)) &&
@@ -96,14 +95,9 @@ export const ConfirmDrawer = ({
           >
             <Space size={12}>
               <TokenWithChain token={item} hideConer />
-              <span>
-                {splitNumberByStep(item.amount?.toFixed(4))}{' '}
-                {getTokenSymbol(item)}
-              </span>
+              <span>{getTokenSymbol(item)}</span>
             </Space>
-            <div>
-              ${splitNumberByStep((item.amount * item.price || 0)?.toFixed(2))}
-            </div>
+            <div>{formatUsdValue(item.amount * item.price || 0)}</div>
           </div>
         </Tooltip>
       );
@@ -145,7 +139,7 @@ export const ConfirmDrawer = ({
         <div className="flex items-center">
           <span className="text-12 text-r-neutral-body mr-4">
             {t('page.gasTopUp.Including-service-fee', {
-              fee: new BigNumber(cost).times(0.2).toString(10),
+              fee: '$' + new BigNumber(cost).times(0.2).toString(10),
             })}
           </span>
 
@@ -185,7 +179,7 @@ export const ConfirmDrawer = ({
 
         <Button
           style={{
-            width: 200,
+            width: 360,
             height: 44,
             marginTop: 40,
           }}
@@ -228,9 +222,7 @@ export const ConfirmDrawer = ({
             </div>
             <div className="px-20">
               <div className="flex justify-between border-b-[0.5px] border-rabby-neutral-line text-12 text-r-neutral-body pt-[24px] pb-8">
-                <div>
-                  {t('page.gasTopUp.Token')} / {t('page.gasTopUp.Balance')}
-                </div>
+                <div>{t('page.gasTopUp.Token')}</div>
                 <div>{t('page.gasTopUp.Value')}</div>
               </div>
             </div>

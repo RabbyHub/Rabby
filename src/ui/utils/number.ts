@@ -19,15 +19,23 @@ export const splitNumberByStep = (
   return n.toFormat(fmt);
 };
 
-export const formatTokenAmount = (amount: number | string, decimals = 4) => {
+export const formatTokenAmount = (
+  amount: number | string,
+  decimals = 4,
+  moreDecimalsWhenNotEnough = false // when number less then 0.0001, auto change decimals to 8
+) => {
   if (!amount) return '0';
   const bn = new BigNumber(amount);
   const str = bn.toFixed();
   const split = str.split('.');
-  if (!split[1] || split[1].length < decimals) {
+  let realDecimals = decimals;
+  if (moreDecimalsWhenNotEnough && bn.lt(0.0001) && decimals < 8) {
+    realDecimals = 8;
+  }
+  if (!split[1] || split[1].length < realDecimals) {
     return splitNumberByStep(bn.toFixed());
   }
-  return splitNumberByStep(bn.toFixed(decimals));
+  return splitNumberByStep(bn.toFixed(realDecimals));
 };
 
 export const numberWithCommasIsLtOne = (

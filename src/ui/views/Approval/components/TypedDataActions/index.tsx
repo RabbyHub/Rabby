@@ -29,7 +29,7 @@ import BatchSellNFT from './BatchSellNFT';
 import BatchPermit2 from './BatchPermit2';
 import Send from '../Actions/Send';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import IconCheck, {
   ReactComponent as RcIconCheck,
@@ -51,91 +51,23 @@ import {
   RevokeTokenApproveRequireData,
   SendRequireData,
 } from '../Actions/utils';
-import { Chain } from '@debank/common';
-
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
-    }
-  }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
-  }
-`;
-
-const MessageWrapper = styled.div`
-  .title {
-    position: relative;
-    font-size: 14px;
-    line-height: 16px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: -20px;
-    margin-right: -20px;
-    &::before {
-      content: '';
-      width: 40%;
-      height: 1px;
-      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      position: absolute;
-      top: 50%;
-      left: 0;
-    }
-    &::after {
-      content: '';
-      width: 40%;
-      height: 1px;
-      border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      position: absolute;
-      top: 50%;
-      right: 0;
-    }
-  }
-  .content {
-    padding: 15px;
-    word-break: break-all;
-    white-space: pre-wrap;
-    background: var(--r-neutral-card-1, #ffffff);
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-    border-radius: 6px;
-    font-size: 13px;
-    line-height: 16px;
-    font-weight: 500;
-    color: var(--r-neutral-body, #3e495e);
-    height: 320px;
-    overflow-y: auto;
-    /* font-family: 'Roboto Mono'; */
-  }
-  &.no-action {
-    .content {
-      background: var(--r-neutral-card-3, rgba(255, 255, 255, 0.06));
-    }
-  }
-`;
+import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
+import { OriginInfo } from '../OriginInfo';
+import { Card } from '../Card';
+import { MessageWrapper } from '../TextActions';
+import { Divide } from '../Divide';
+import { Col, Row } from '../Actions/components/Table';
+import LogoWithText from '../Actions/components/LogoWithText';
 
 const Actions = ({
   data,
   requireData,
-  chain,
+  chain = CHAINS[CHAINS_ENUM.ETH],
   engineResults,
   raw,
   message,
   origin,
+  originLogo,
 }: {
   data: TypedDataActionData | null;
   requireData: TypedDataRequireData;
@@ -144,6 +76,7 @@ const Actions = ({
   raw: Record<string, any>;
   message: string;
   origin: string;
+  originLogo?: string;
 }) => {
   const { t } = useTranslation();
 
@@ -160,238 +93,248 @@ const Actions = ({
 
   return (
     <>
-      <SignTitle>
-        <div className="left relative">
-          {t('page.signTypedData.signTypeDataOnChain', {
-            chain: chain ? chain.name : '',
-          })}
-        </div>
-        <div
-          className="float-right text-12 cursor-pointer flex items-center view-raw"
-          onClick={handleViewRawClick}
-        >
-          {t('page.signTx.viewRaw')}
-          <ThemeIcon className="icon icon-arrow-right" src={RcIconArrowRight} />
-        </div>
-      </SignTitle>
-
       <ActionWrapper>
-        <div
-          className={clsx('action-header', {
-            'is-unknown': isUnknown,
+        <Card>
+          <OriginInfo
+            chain={chain}
+            origin={origin}
+            originLogo={originLogo}
+            engineResults={engineResults}
+          />
+        </Card>
+
+        <Card>
+          <div
+            className={clsx('action-header', {
+              'is-unknown': isUnknown,
+            })}
+          >
+            <div className="left">
+              <span>{actionName}</span>
+              {isUnknown && (
+                <TooltipWithMagnetArrow
+                  placement="bottom"
+                  overlayClassName="rectangle w-[max-content] decode-tooltip"
+                  title={
+                    <NoActionAlert
+                      data={{
+                        origin,
+                        text: message,
+                      }}
+                    />
+                  }
+                >
+                  <IconQuestionMark className="w-14 text-r-neutral-foot ml-2 mt-2" />
+                </TooltipWithMagnetArrow>
+              )}
+            </div>
+            <div className="right">
+              <div
+                className="float-right text-13 cursor-pointer flex items-center view-raw"
+                onClick={handleViewRawClick}
+              >
+                {t('page.signTx.viewRaw')}
+                <ThemeIcon
+                  className="icon icon-arrow-right"
+                  src={RcIconArrowRight}
+                />
+              </div>
+            </div>
+          </div>
+
+          {data && <Divide />}
+
+          {chain?.isTestnet ? (
+            <>
+              <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
+                {JSON.stringify(raw, null, 2)}
+              </div>
+            </>
+          ) : (
+            <>
+              {(data?.actionType || data?.actionType === null) && (
+                <div className="container">
+                  {chain && (
+                    <Col>
+                      <Row isTitle>{t('page.signTx.chain')}</Row>
+                      <Row>
+                        <LogoWithText
+                          logo={chain.logo}
+                          text={chain.name}
+                          logoRadius="100%"
+                        />
+                      </Row>
+                    </Col>
+                  )}
+
+                  {data.permit && (
+                    <Permit
+                      data={data.permit}
+                      requireData={requireData as ApproveTokenRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.revokePermit && chain && (
+                    <RevokePermit2
+                      data={data.revokePermit}
+                      requireData={requireData as RevokeTokenApproveRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.permit2 && chain && (
+                    <Permit2
+                      data={data.permit2}
+                      requireData={requireData as ApproveTokenRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.approveNFT && chain && (
+                    <ApproveNFT
+                      data={data.approveNFT}
+                      requireData={requireData as ApproveNFTRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.batchPermit2 && chain && (
+                    <BatchPermit2
+                      data={data.batchPermit2}
+                      requireData={requireData as BatchApproveTokenRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.swapTokenOrder && chain && (
+                    <SwapTokenOrder
+                      data={data.swapTokenOrder}
+                      requireData={requireData as SwapTokenOrderRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.buyNFT && chain && (
+                    <BuyNFT
+                      data={data.buyNFT}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      sender={data.sender}
+                    />
+                  )}
+                  {data.batchSellNFT && chain && (
+                    <BatchSellNFT
+                      data={data.batchSellNFT}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      sender={data.sender}
+                    />
+                  )}
+                  {data.sellNFT && chain && (
+                    <SellNFT
+                      data={data.sellNFT}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      sender={data.sender}
+                    />
+                  )}
+                  {data.assetOrder && chain && (
+                    <AssetOrder
+                      data={data.assetOrder}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      sender={data.sender}
+                    />
+                  )}
+                  {data.signMultiSig && (
+                    <SignMultisig
+                      data={data.signMultiSig}
+                      requireData={requireData as MultiSigRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.send && chain && (
+                    <Send
+                      data={data.send}
+                      requireData={requireData as SendRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.createKey && (
+                    <CreateKey
+                      data={data.createKey}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.verifyAddress && (
+                    <VerifyAddress
+                      data={data.verifyAddress}
+                      engineResults={engineResults}
+                    />
+                  )}
+                  {data.contractCall && chain && (
+                    <ContractCall
+                      data={data.permit}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                      raw={raw}
+                    />
+                  )}
+                  {data.coboSafeCreate && (
+                    <CoboSafeCreate data={data.coboSafeCreate} />
+                  )}
+                  {data.coboSafeModificationRole && (
+                    <CoboSafeModificationRule
+                      data={data.coboSafeModificationRole}
+                    />
+                  )}
+                  {data.coboSafeModificationDelegatedAddress && (
+                    <CoboSafeModificationDelegatedAddress
+                      data={data.coboSafeModificationDelegatedAddress}
+                    />
+                  )}
+                  {data.coboSafeModificationTokenApproval && (
+                    <CoboSafeModificationTokenApproval
+                      data={data.coboSafeModificationTokenApproval}
+                    />
+                  )}
+                  {data.common && (
+                    <CommonAction
+                      data={data.common}
+                      requireData={requireData as ContractRequireData}
+                      chain={chain}
+                      engineResults={engineResults}
+                    />
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </Card>
+      </ActionWrapper>
+
+      <Card className="mt-12">
+        <MessageWrapper
+          className={clsx({
+            'no-action': !data,
           })}
         >
-          <div className="left flex items-center">
-            {data?.brand ? (
-              <img
-                src={data?.brand?.logo_url}
-                title={data?.brand?.name}
-                className="mr-8 w-20 h-20 rounded-full object-cover"
-              />
-            ) : null}
-            <span>{actionName}</span>
+          <div className="title">
+            <span className="title-text">
+              {t('page.signTx.typedDataMessage')}
+            </span>
           </div>
-          <div className="right">
-            <TooltipWithMagnetArrow
-              placement="bottom"
-              overlayClassName="rectangle w-[max-content] decode-tooltip"
-              title={
-                isUnknown ? (
-                  <NoActionAlert
-                    data={{
-                      origin,
-                      text: message,
-                    }}
-                  />
-                ) : (
-                  <span className="flex w-[358px] p-12 items-center">
-                    <ThemeIcon src={RcIconCheck} className="mr-4 w-12" />
-                    {t('page.signTx.decodedTooltip')}
-                  </span>
-                )
-              }
-            >
-              {isUnknown ? (
-                <img src={IconQuestionMark} className="w-24" />
-              ) : (
-                <img
-                  src={IconRabbyDecoded}
-                  className="icon icon-rabby-decoded"
-                />
-              )}
-            </TooltipWithMagnetArrow>
-          </div>
-        </div>
-        {chain?.isTestnet ? (
-          <>
-            <div className="p-[15px] whitespace-pre-wrap break-all overflow-y-auto text-[13px] leading-[16px] text-r-neutral-body h-[260px] font-medium">
-              {JSON.stringify(raw, null, 2)}
-            </div>
-          </>
-        ) : (
-          <>
-            {(data?.actionType || data?.actionType === null) && (
-              <div className="container">
-                {data.permit && (
-                  <Permit
-                    data={data.permit}
-                    requireData={requireData as ApproveTokenRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.revokePermit && chain && (
-                  <RevokePermit2
-                    data={data.revokePermit}
-                    requireData={requireData as RevokeTokenApproveRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.permit2 && chain && (
-                  <Permit2
-                    data={data.permit2}
-                    requireData={requireData as ApproveTokenRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.approveNFT && chain && (
-                  <ApproveNFT
-                    data={data.approveNFT}
-                    requireData={requireData as ApproveNFTRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.batchPermit2 && chain && (
-                  <BatchPermit2
-                    data={data.batchPermit2}
-                    requireData={requireData as BatchApproveTokenRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.swapTokenOrder && chain && (
-                  <SwapTokenOrder
-                    data={data.swapTokenOrder}
-                    requireData={requireData as SwapTokenOrderRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.buyNFT && chain && (
-                  <BuyNFT
-                    data={data.buyNFT}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                    sender={data.sender}
-                  />
-                )}
-                {data.batchSellNFT && chain && (
-                  <BatchSellNFT
-                    data={data.batchSellNFT}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                    sender={data.sender}
-                  />
-                )}
-                {data.sellNFT && chain && (
-                  <SellNFT
-                    data={data.sellNFT}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                    sender={data.sender}
-                  />
-                )}
-                {data.assetOrder && chain && (
-                  <AssetOrder
-                    data={data.assetOrder}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                    sender={data.sender}
-                  />
-                )}
-                {data.signMultiSig && (
-                  <SignMultisig
-                    data={data.signMultiSig}
-                    requireData={requireData as MultiSigRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.send && chain && (
-                  <Send
-                    data={data.send}
-                    requireData={requireData as SendRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.createKey && (
-                  <CreateKey
-                    data={data.createKey}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.verifyAddress && (
-                  <VerifyAddress
-                    data={data.verifyAddress}
-                    engineResults={engineResults}
-                  />
-                )}
-                {data.contractCall && chain && (
-                  <ContractCall
-                    data={data.permit}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                    raw={raw}
-                  />
-                )}
-                {data.coboSafeCreate && (
-                  <CoboSafeCreate data={data.coboSafeCreate} />
-                )}
-                {data.coboSafeModificationRole && (
-                  <CoboSafeModificationRule
-                    data={data.coboSafeModificationRole}
-                  />
-                )}
-                {data.coboSafeModificationDelegatedAddress && (
-                  <CoboSafeModificationDelegatedAddress
-                    data={data.coboSafeModificationDelegatedAddress}
-                  />
-                )}
-                {data.coboSafeModificationTokenApproval && (
-                  <CoboSafeModificationTokenApproval
-                    data={data.coboSafeModificationTokenApproval}
-                  />
-                )}
-                {data.common && (
-                  <CommonAction
-                    data={data.common}
-                    requireData={requireData as ContractRequireData}
-                    chain={chain}
-                    engineResults={engineResults}
-                  />
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </ActionWrapper>
-      <MessageWrapper
-        className={clsx({
-          'no-action': !data,
-        })}
-      >
-        <div className="title">Message</div>
-        <div className="content">{message}</div>
-      </MessageWrapper>
+          <div className="content">{message}</div>
+        </MessageWrapper>
+      </Card>
     </>
   );
 };

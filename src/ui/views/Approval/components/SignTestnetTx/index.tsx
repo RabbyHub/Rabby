@@ -1,18 +1,9 @@
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Account, ChainGas } from 'background/service/preference';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
-import IconQuestionMark from 'ui/assets/sign/question-mark-24.svg';
-import IconRabbyDecoded from 'ui/assets/sign/rabby-decoded.svg';
 import { findChain } from '@/utils/chain';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import { Popup } from '@/ui/component';
-import { Tabs } from 'antd';
 import { TestnetActions } from './components/TestnetActions';
-import GasSelector, { GasSelectorResponse } from '../TxComponents/GasSelecter';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
@@ -23,10 +14,12 @@ import {
 } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
+  DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
   KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
+  MINIMUM_GAS_LIMIT,
 } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -34,34 +27,155 @@ import { normalizeTxParams } from '../SignTx';
 import { isHexString, toChecksumAddress } from 'ethereumjs-util';
 import { WaitingSignComponent } from '../map';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { getAddress } from 'viem';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import i18n from '@/i18n';
+import GasSelectorHeader, {
+  GasSelectorResponse,
+} from '../TxComponents/GasSelectorHeader';
+import { MessageWrapper } from '../TextActions';
+import { Card } from '../Card';
+import { SignAdvancedSettings } from '../SignAdvancedSettings';
+import clsx from 'clsx';
 
-const { TabPane } = Tabs;
-
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
+const checkGasAndNonce = ({
+  recommendGasLimitRatio,
+  recommendGasLimit,
+  recommendNonce,
+  tx,
+  gasLimit,
+  nonce,
+  isCancel,
+  maxGasCostAmount,
+  isSpeedUp,
+  isGnosisAccount,
+  nativeTokenBalance,
+}: {
+  recommendGasLimitRatio: number;
+  nativeTokenBalance: string;
+  recommendGasLimit: number | string | BigNumber;
+  recommendNonce: number | string | BigNumber;
+  tx: Tx;
+  gasLimit: number | string | BigNumber;
+  nonce: number | string | BigNumber;
+  maxGasCostAmount: number | string | BigNumber;
+  isCancel: boolean;
+  isSpeedUp: boolean;
+  isGnosisAccount: boolean;
+}) => {
+  const errors: {
+    code: number;
+    msg: string;
+    level?: 'warn' | 'danger' | 'forbidden';
+  }[] = [];
+  if (!isGnosisAccount && new BigNumber(gasLimit).lt(MINIMUM_GAS_LIMIT)) {
+    errors.push({
+      code: 3006,
+      msg: i18n.t('page.signTx.gasLimitNotEnough'),
+      level: 'forbidden',
+    });
+  }
+  if (
+    !isGnosisAccount &&
+    new BigNumber(gasLimit).lt(
+      new BigNumber(recommendGasLimit).times(recommendGasLimitRatio)
+    ) &&
+    new BigNumber(gasLimit).gte(21000)
+  ) {
+    if (recommendGasLimitRatio === DEFAULT_GAS_LIMIT_RATIO) {
+      const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
+      if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      } else if (realRatio.lt(1)) {
+        errors.push({
+          code: 3005,
+          msg: i18n.t('page.signTx.gasLimitLessThanGasUsed'),
+          level: 'danger',
+        });
+      }
+    } else {
+      if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      }
     }
   }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
+  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+    ? new BigNumber(0)
+    : sendNativeTokenAmount;
+  if (
+    !isGnosisAccount &&
+    new BigNumber(maxGasCostAmount)
+      .plus(sendNativeTokenAmount.div(1e18))
+      .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
+  ) {
+    errors.push({
+      code: 3001,
+      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
+      level: 'forbidden',
+    });
   }
-`;
+  if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
+    errors.push({
+      code: 3003,
+      msg: i18n.t('page.signTx.nonceLowerThanExpect', [
+        new BigNumber(recommendNonce),
+      ]),
+    });
+  }
+  return errors;
+};
 
+const useCheckGasAndNonce = ({
+  recommendGasLimitRatio,
+  recommendGasLimit,
+  recommendNonce,
+  tx,
+  gasLimit,
+  nonce,
+  isCancel,
+  maxGasCostAmount,
+  isSpeedUp,
+  isGnosisAccount,
+  nativeTokenBalance,
+}: Parameters<typeof checkGasAndNonce>[0]) => {
+  return useMemo(
+    () =>
+      checkGasAndNonce({
+        recommendGasLimitRatio,
+        recommendGasLimit,
+        recommendNonce,
+        tx,
+        gasLimit,
+        nonce,
+        isCancel,
+        maxGasCostAmount,
+        isSpeedUp,
+        isGnosisAccount,
+        nativeTokenBalance,
+      }),
+    [
+      recommendGasLimit,
+      recommendNonce,
+      tx,
+      gasLimit,
+      nonce,
+      isCancel,
+      maxGasCostAmount,
+      isSpeedUp,
+      isGnosisAccount,
+      nativeTokenBalance,
+    ]
+  );
+};
 interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
@@ -232,6 +346,21 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         (item) => item.type === currentAccount.type
       )
     );
+    wallet.reportStats('createTransaction', {
+      type: currentAccount.brandName,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      chainId: chain?.serverId || '',
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    });
+
+    matomoRequestEvent({
+      category: 'Transaction',
+      action: 'init',
+      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    });
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
     }
@@ -360,6 +489,25 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleAdvancedSettingsChange = (gas: GasSelectorResponse) => {
+    const beforeNonce = realNonce || tx.nonce;
+    const afterNonce = intToHex(gas.nonce);
+    setTx({
+      ...tx,
+      gas: intToHex(gas.gasLimit),
+      nonce: afterNonce,
+    });
+    setGasLimit(intToHex(gas.gasLimit));
+
+    if (!isGnosisAccount) {
+      setRealNonce(afterNonce);
+    }
+
+    if (beforeNonce !== afterNonce) {
+      setNonceChanged(true);
+    }
+  };
+
   const handleCancel = () => {
     //  gaEvent('cancel');
     rejectApproval('User rejected the request.');
@@ -441,22 +589,22 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     //   return;
     // }
 
-    // await wallet.reportStats('signTransaction', {
-    //   type: currentAccount.brandName,
-    //   chainId: chain.serverId,
-    //   category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    //   preExecSuccess:
-    //     checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
-    //   createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-    //   source: params?.$ctx?.ga?.source || '',
-    //   trigger: params?.$ctx?.ga?.trigger || '',
-    // });
+    await wallet.reportStats('signTransaction', {
+      type: currentAccount.brandName,
+      chainId: chain?.serverId || '',
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      preExecSuccess: true,
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
+      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    });
 
-    // matomoRequestEvent({
-    //   category: 'Transaction',
-    //   action: 'Submit',
-    //   label: currentAccount.brandName,
-    // });
+    matomoRequestEvent({
+      category: 'Transaction',
+      action: 'Submit',
+      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+    });
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -467,7 +615,21 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
-  useMount(() => {});
+  const checkErrors = useCheckGasAndNonce({
+    recommendGasLimit: gasUsed || 0,
+    recommendNonce: recommendNonce || '',
+    gasLimit: Number(gasLimit),
+    nonce: Number(realNonce || tx.nonce),
+    maxGasCostAmount: new BigNumber(selectedGas?.price || 0)
+      .multipliedBy(gasLimit || 0)
+      .div(1e18),
+    isSpeedUp,
+    isCancel,
+    tx,
+    isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
+    nativeTokenBalance,
+    recommendGasLimitRatio: 1.5,
+  });
 
   if (!chain) {
     return null;
@@ -475,7 +637,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
 
   return (
     <>
-      <div className="approval-tx">
+      <div className="approval-tx overflow-x-hidden">
         <TestnetActions
           isReady={isReady}
           chain={chain}
@@ -485,49 +647,101 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
             gas: gasLimit!,
           }}
           isSpeedUp={isSpeedUp}
+          originLogo={params.session.icon}
         />
-        <GasSelector
-          disabled={false}
-          isReady={isReady}
-          gasLimit={gasLimit}
-          noUpdate={isCancel || isSpeedUp}
-          gasList={gasList || []}
-          selectedGas={selectedGas}
-          version={'v0'}
-          gas={{
-            error: null,
-            success: true,
-            gasCostUsd: 0,
-            gasCostAmount: new BigNumber(selectedGas?.price || 0)
-              .multipliedBy(gasUsed || 0)
-              .div(1e18),
-          }}
-          gasCalcMethod={async (price) => {
-            return {
-              gasCostAmount: new BigNumber(price || 0)
-                .multipliedBy(gasUsed || 0)
-                .div(1e18),
-              gasCostUsd: new BigNumber(0),
-            };
-          }}
-          recommendGasLimit={gasUsed || ''}
-          recommendNonce={recommendNonce || ''}
-          chainId={chainId}
-          onChange={handleGasChange}
-          nonce={realNonce || tx.nonce}
-          disableNonce={isSpeedUp || isCancel}
-          isSpeedUp={isSpeedUp}
-          isCancel={isCancel}
-          is1559={false}
-          isHardware={isHardware}
-          manuallyChangeGasLimit={false}
-          errors={[]}
-          engineResults={[]}
-          nativeTokenBalance={nativeTokenBalance}
-          gasPriceMedian={null}
-        />
+
+        {isReady && (
+          <Card>
+            <MessageWrapper>
+              <div className="title">
+                <div className="title-text">{t('page.signText.message')}</div>
+              </div>
+              <div className="content">
+                {JSON.stringify(
+                  {
+                    ...tx,
+                    nonce: realNonce || tx.nonce,
+                    gas: gasLimit!,
+                  },
+                  null,
+                  2
+                )}
+              </div>
+            </MessageWrapper>
+          </Card>
+        )}
+
+        {isReady && (
+          <SignAdvancedSettings
+            isReady={isReady}
+            gasLimit={gasLimit}
+            recommendGasLimit={gasUsed || ''}
+            recommendNonce={recommendNonce || ''}
+            onChange={handleAdvancedSettingsChange}
+            nonce={realNonce || tx.nonce}
+            disableNonce={isSpeedUp || isCancel}
+            manuallyChangeGasLimit={false}
+          />
+        )}
+
+        {isReady && (
+          <div
+            className={clsx(
+              'w-[186px]',
+              'ml-auto mr-[-20px] mt-[-116px]',
+              'px-[16px] py-[12px] rotate-[-23deg]',
+              'border-rabby-neutral-title1 border-[1px] rounded-[6px]',
+              'text-r-neutral-title1 text-[20px] leading-[24px]',
+              'opacity-30'
+            )}
+          >
+            Custom Network
+          </div>
+        )}
       </div>
       <FooterBar
+        Header={
+          <GasSelectorHeader
+            disabled={false}
+            isReady={isReady}
+            gasLimit={gasLimit}
+            noUpdate={isCancel || isSpeedUp}
+            gasList={gasList || []}
+            selectedGas={selectedGas}
+            version={'v0'}
+            gas={{
+              error: null,
+              success: true,
+              gasCostUsd: 0,
+              gasCostAmount: new BigNumber(selectedGas?.price || 0)
+                .multipliedBy(gasUsed || 0)
+                .div(1e18),
+            }}
+            gasCalcMethod={async (price) => {
+              return {
+                gasCostAmount: new BigNumber(price || 0)
+                  .multipliedBy(gasUsed || 0)
+                  .div(1e18),
+                gasCostUsd: new BigNumber(0),
+              };
+            }}
+            recommendGasLimit={gasUsed || ''}
+            recommendNonce={recommendNonce || ''}
+            chainId={chainId}
+            onChange={handleGasChange}
+            nonce={realNonce || tx.nonce}
+            disableNonce={isSpeedUp || isCancel}
+            isSpeedUp={isSpeedUp}
+            isCancel={isCancel}
+            is1559={false}
+            isHardware={isHardware}
+            manuallyChangeGasLimit={false}
+            errors={checkErrors}
+            engineResults={[]}
+            nativeTokenBalance={nativeTokenBalance}
+            gasPriceMedian={null}
+          />
+        }
         // hasShadow={footerShowShadow}
         origin={origin}
         originLogo={params.session.icon}
@@ -539,15 +753,23 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
         onCancel={handleCancel}
         onSubmit={handleAllow}
         onIgnoreAllRules={() => {}}
-        enableTooltip={!canProcess}
-        tooltipContent={cantProcessReason}
+        enableTooltip={
+          !canProcess ||
+          !!checkErrors.find((item) => item.level === 'forbidden')
+        }
+        tooltipContent={
+          checkErrors.find((item) => item.level === 'forbidden')
+            ? checkErrors.find((item) => item.level === 'forbidden')!.msg
+            : cantProcessReason
+        }
         disabledProcess={
           !isReady ||
           (selectedGas ? selectedGas.price < 0 : true) ||
           isGnosisAccount ||
           isCoboArugsAccount ||
           (isLedger && !hasConnectedLedgerHID) ||
-          !canProcess
+          !canProcess ||
+          !!checkErrors.find((item) => item.level === 'forbidden')
         }
       />
     </>

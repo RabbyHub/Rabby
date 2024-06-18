@@ -9,10 +9,18 @@ interface ConnectionProps {
   data?: ConnectedSite[];
   onClick?(item: ConnectedSite): void;
   onRemove?(origin: string): void;
+  onPin?(item: ConnectedSite): void;
 }
 
 const ConnectionList = memo(
-  ({ className, data = [], onClick, onRemove, empty }: ConnectionProps) => {
+  ({
+    className,
+    data = [],
+    onClick,
+    onRemove,
+    empty,
+    onPin,
+  }: ConnectionProps) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -20,6 +28,10 @@ const ConnectionList = memo(
         setVisible(true);
       });
     }, []);
+
+    if (!data?.length) {
+      return null;
+    }
     return (
       <div className={clsx('list', className)}>
         {visible && data && data.length > 0 ? (
@@ -31,6 +43,7 @@ const ConnectionList = memo(
                   item={item}
                   key={item?.origin || index}
                   onClick={() => onClick && onClick(item)}
+                  onPin={onPin}
                 />
               ))}
             </>

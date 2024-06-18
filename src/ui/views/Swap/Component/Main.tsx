@@ -43,9 +43,12 @@ const StyledInput = styled(Input)`
   }
 
   &.ant-input-affix-wrapper,
-  &:focus,
   &:active {
     border: 1px solid transparent;
+  }
+  &:focus,
+  &:focus-within {
+    border: 1px solid var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
     border-color: var(--r-blue-default, #7084ff) !important;
@@ -388,7 +391,7 @@ export const Main = () => {
             tokenRender={(p) => <TokenRender {...p} />}
           />
           <IconSwapArrow
-            className="text-r-neutral-line hover:text-r-neutral-foot text-opacity-60 hover:text-opacity-100 cursor-pointer"
+            className="text-r-neutral-foot opacity-60 hover:opacity-100 cursor-pointer"
             onClick={exchangeToken}
           />
           <TokenSelect
@@ -421,12 +424,10 @@ export const Main = () => {
           <div
             className={clsx(
               'text-r-neutral-title-1',
-              !payTokenIsNativeToken && 'underline cursor-pointer'
+              'underline cursor-pointer'
             )}
             onClick={() => {
-              if (!payTokenIsNativeToken) {
-                handleBalance();
-              }
+              handleBalance();
             }}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}

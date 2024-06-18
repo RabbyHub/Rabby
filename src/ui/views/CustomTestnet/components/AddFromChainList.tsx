@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import { CustomTestnetItem } from './CustomTestnetItem';
 import clsx from 'clsx';
-import { useInfiniteScroll, useRequest } from 'ahooks';
+import { useDebounce, useInfiniteScroll, useRequest } from 'ahooks';
 import { intToHex, useWallet } from '@/ui/utils';
 import {
   TestnetChain,
@@ -82,8 +82,9 @@ export const AddFromChainList = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [search, setSearch] = React.useState('');
+  const [_search, setSearch] = React.useState('');
   const ref = useRef<HTMLDivElement>(null);
+  const search = useDebounce(_search, { wait: 500 });
 
   const { loading, data, loadingMore } = useInfiniteScroll(
     async (data) => {
@@ -164,7 +165,7 @@ export const AddFromChainList = ({
           prefix={<img src={IconSearch} />}
           placeholder={t('page.customTestnet.AddFromChainList.search')}
           onChange={(e) => setSearch(e.target.value)}
-          value={search}
+          value={_search}
           allowClear
         />
       </div>
@@ -221,24 +222,24 @@ const CustomTestnetList = ({
         const chain = findChain({ id: item.id });
 
         return chain ? (
-          <TooltipWithMagnetArrow
-            className="rectangle w-[max-content]"
-            key={item.id + 'tooltip'}
-            trigger={['click']}
-            align={{
-              offset: [0, 30],
-            }}
-            placement="top"
-            title={
-              chain?.isTestnet
-                ? t('page.customTestnet.AddFromChainList.tips.added')
-                : t('page.customTestnet.AddFromChainList.tips.supported')
-            }
-          >
-            <div className="chain-list-item relative">
+          <div className="chain-list-item relative">
+            <TooltipWithMagnetArrow
+              className="rectangle w-[max-content]"
+              key={item.id + 'tooltip'}
+              trigger={['click']}
+              align={{
+                offset: [0, 30],
+              }}
+              placement="top"
+              title={
+                chain?.isTestnet
+                  ? t('page.customTestnet.AddFromChainList.tips.added')
+                  : t('page.customTestnet.AddFromChainList.tips.supported')
+              }
+            >
               <CustomTestnetItem item={item} disabled />
-            </div>
-          </TooltipWithMagnetArrow>
+            </TooltipWithMagnetArrow>
+          </div>
         ) : (
           <CustomTestnetItem
             item={item}

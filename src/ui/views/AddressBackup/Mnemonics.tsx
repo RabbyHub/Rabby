@@ -14,6 +14,7 @@ import WordsMatrix from '@/ui/component/WordsMatrix';
 import { useHistory, useLocation } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { Slip39TextareaContainer } from './Slip39TextAreaContainer';
 
 const AddressBackup = () => {
   const wallet = useWallet();
@@ -36,6 +37,10 @@ const AddressBackup = () => {
         duration: 0.5,
       });
     });
+  }, [data]);
+
+  const isSlip39 = React.useMemo(() => {
+    return data.split('\n').length > 1;
   }, [data]);
 
   useEffect(() => {
@@ -79,12 +84,16 @@ const AddressBackup = () => {
             className="rounded-[6px] flex items-center w-full"
             style={masked ? { filter: 'blur(3px)' } : {}}
           >
-            <WordsMatrix
-              className="w-full bg-r-neutral-card1"
-              focusable={false}
-              closable={false}
-              words={data.split(' ')}
-            />
+            {isSlip39 ? (
+              <Slip39TextareaContainer data={data} />
+            ) : (
+              <WordsMatrix
+                className="w-full bg-r-neutral-card1"
+                focusable={false}
+                closable={false}
+                words={data.split(' ')}
+              />
+            )}
           </div>
         </div>
         <div
@@ -101,11 +110,11 @@ const AddressBackup = () => {
           {t('page.backupSeedPhrase.copySeedPhrase')}
         </div>
       </div>
-      <div className="footer pb-[24px]">
+      <div className="footer pb-[20px]">
         <Button
           type="primary"
+          className="w-full"
           size="large"
-          className="w-[200px]"
           onClick={() => history.goBack()}
         >
           {t('global.Done')}

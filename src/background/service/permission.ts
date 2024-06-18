@@ -13,14 +13,10 @@ export interface ConnectedSite {
   chain: CHAINS_ENUM;
   e?: number;
   isSigned: boolean;
-  /**
-   * @deprecated
-   */
   isTop: boolean;
   order?: number;
   isConnected: boolean;
   preferMetamask?: boolean;
-  signPermission?: SIGN_PERMISSION_TYPES;
   isFavorite?: boolean;
   info?: BasicDappInfo;
 }
@@ -137,14 +133,12 @@ class PermissionService {
     icon,
     defaultChain,
     isSigned = false,
-    signPermission,
   }: {
     origin: string;
     name: string;
     icon: string;
     defaultChain: CHAINS_ENUM;
     isSigned?: boolean;
-    signPermission?: SIGN_PERMISSION_TYPES;
   }) => {
     if (!this.lruCache) return;
 
@@ -159,7 +153,6 @@ class PermissionService {
       isTop: false,
       chain: defaultChain,
       isConnected: true,
-      signPermission,
     });
     this.sync();
   };

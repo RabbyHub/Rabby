@@ -10,8 +10,24 @@
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
-    'PingFang SC', 'Microsoft Yahei', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif;
+}
+
+[lang='zh-CN'],
+[lang='zh-HK'] {
+  html&,
+  html& body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
+      'PingFang SC', 'Microsoft Yahei', sans-serif;
+  }
+}
+
+[lang='ja'] {
+  html&,
+  html& body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
+      'Noto Sans JP', sans-serif;
+  }
 }
 
 h1,

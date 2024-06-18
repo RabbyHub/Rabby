@@ -3,7 +3,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
-import { ReactComponent as IconClose } from 'ui/assets/close-white.svg';
+import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
+import { GasLessAnimatedWrapper } from './GasLessComponents';
+import styled from 'styled-components';
+
+const ButtonStyled = styled(Button)`
+  &:hover {
+    box-shadow: 0px 6px 8px 0px rgba(112, 132, 255, 0.25);
+  }
+`;
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -11,6 +19,7 @@ export const SubmitActions: React.FC<Props> = ({
   onCancel,
   tooltipContent,
   enableTooltip,
+  gasLess,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -32,7 +41,8 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light text-white',
+            'bg-blue-light',
+            'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
             'relative',
@@ -61,7 +71,7 @@ export const SubmitActions: React.FC<Props> = ({
             )}
             onClick={handleClickCancel}
           >
-            <IconClose />
+            <IconClose className="text-r-neutral-title-2" />
           </button>
         </div>
       ) : (
@@ -69,20 +79,21 @@ export const SubmitActions: React.FC<Props> = ({
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           title={enableTooltip ? tooltipContent : null}
         >
-          <div>
-            <Button
+          <GasLessAnimatedWrapper>
+            <ButtonStyled
               disabled={disabledProcess}
               type="primary"
               className={clsx(
+                gasLess && 'gasLess',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:opacity-40 disabled:bg-blue-light',
+                'disabled:opacity-40 disabled:bg-blue-light border-transparent',
                 'before:content-none'
               )}
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
-            </Button>
-          </div>
+            </ButtonStyled>
+          </GasLessAnimatedWrapper>
         </Tooltip>
       )}
     </ActionsContainer>

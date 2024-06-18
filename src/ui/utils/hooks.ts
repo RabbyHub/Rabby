@@ -52,16 +52,6 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-
-  useEffect(() => {
-    if (!getUiType().isNotification) {
-      return;
-    }
-    window.addEventListener('beforeunload', rejectApproval);
-
-    return () => window.removeEventListener('beforeunload', rejectApproval);
-  }, []);
-
   return [getApproval, resolveApproval, rejectApproval] as const;
 };
 
@@ -193,10 +183,11 @@ export type HoverProps = Pick<
 export const useHover = ({
   mouseEnterDelayMS = 0,
   mouseLeaveDelayMS = 0,
-}: UseHoverOptions = {}): [boolean, HoverProps] => {
+}: UseHoverOptions = {}): [boolean, HoverProps, () => void] => {
   const [isHovering, setIsHovering] = useState(false);
   let mouseEnterTimer: number | undefined;
   let mouseOutTimer: number | undefined;
+
   return [
     isHovering,
     {
@@ -215,6 +206,7 @@ export const useHover = ({
         );
       },
     },
+    () => setIsHovering(false),
   ];
 };
 
@@ -251,7 +243,7 @@ export const useBalance = (address: string) => {
         .getAddressCacheBalance(address)
         .then((d) => flag && setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => flag && setBalance(d.total_usd_value));
     }
     return () => {

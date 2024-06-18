@@ -70,7 +70,7 @@ export const findChain = (params: {
   serverId?: string | null;
   hex?: string | null;
   networkId?: string | null;
-}) => {
+}): Chain | TestnetChain | null | undefined => {
   const { enum: chainEnum, id, serverId, hex, networkId } = params;
   if (chainEnum && chainEnum.startsWith('CUSTOM_')) {
     return findChain({
@@ -85,6 +85,7 @@ export const findChain = (params: {
       item.hex === hex ||
       item.network === networkId
   );
+
   return chain;
 };
 
@@ -463,7 +464,7 @@ export function supportedChainToChain(item: SupportedChain): Chain {
     nativeTokenLogo: item.native_token?.logo,
     nativeTokenDecimals: item.native_token?.decimals,
     nativeTokenAddress: item.native_token?.id,
-    // needEstimateGas: item.need_estimate_gas,
+    needEstimateGas: item.need_estimate_gas,
     scanLink: `${item.explorer_host}/${
       item.id === 'heco' ? 'transaction' : 'tx'
     }/_s_`,

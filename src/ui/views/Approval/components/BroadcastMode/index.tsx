@@ -1,5 +1,5 @@
 import { KEYRING_CATEGORY } from '@/constant';
-import { Popup } from '@/ui/component';
+import { Checkbox, Popup } from '@/ui/component';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
@@ -10,9 +10,8 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled, { createGlobalStyle } from 'styled-components';
-import { ReactComponent as SvgIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
-import IconChecked from 'ui/assets/box-checked.svg';
-import IconUnChecked from 'ui/assets/box-unchecked.svg';
+import { Card } from '../Card';
+import { Divide } from '../Divide';
 
 const GlobalStyle = createGlobalStyle`
   .broadcast-mode-popup {
@@ -21,34 +20,29 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 `;
-const Wrapper = styled.div`
-  border-radius: 6px;
-  background-color: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-  padding: 0 12px;
-
+const Wrapper = styled(Card)`
   .broadcast-mode {
     &-header {
       display: flex;
-      padding: 16px 0 12px 0;
+      padding: 12px 16px;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
     }
     &-title {
       color: var(--r-neutral-title-1, #192945);
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 18px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16px;
     }
     &-extra {
-      color: var(--r-neutral-title-1, #192945);
-      font-size: 15px;
+      color: var(--r-neutral-body, #3e495e);
+      font-size: 14px;
       font-weight: 400;
-      line-height: 18px;
+      line-height: 16px;
 
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
 
       margin-left: auto;
 
@@ -61,7 +55,7 @@ const Wrapper = styled.div`
       }
     }
     &-body {
-      padding: 12px 0;
+      padding: 12px 16px;
 
       ul {
         margin-top: 0px;
@@ -128,8 +122,8 @@ const OptionList = styled.div`
   margin-bottom: -12px;
   .option {
     padding: 12px 16px;
-    border-radius: 6px;
-    background: var(--r-neutral-card-2, #f2f4f7);
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #fff);
     border: 1px solid transparent;
     cursor: pointer;
 
@@ -304,57 +298,72 @@ export const BroadcastMode = ({
 
   const selectedOption = options.find((option) => option.value === value.type);
 
+  const handleSelect = React.useCallback((option: typeof options[0]) => {
+    if (option.disabled) {
+      return;
+    }
+    onChange?.({
+      type: option.value,
+      lowGasDeadline:
+        option.value === 'low_gas' ? deadlineOptions[1]?.value : undefined,
+    });
+    setDrawerVisible(false);
+  }, []);
+
   return (
     <>
       <GlobalStyle />
-      <Wrapper className={className} style={style}>
-        <div className="broadcast-mode-header text-r-neutral-title-1">
-          <div className="broadcast-mode-title">
-            {t('page.signTx.BroadcastMode.title')}
-          </div>
-          <div
-            className="broadcast-mode-extra"
-            onClick={() => {
-              setDrawerVisible(true);
-            }}
-          >
-            {selectedOption?.title}
-            <SvgIconArrowRight />
-          </div>
-        </div>
-        <div className="broadcast-mode-body text-r-neutral-body">
-          <ul>
-            <li>{selectedOption?.desc}</li>
-            {value.type === 'low_gas' ? (
-              <li className="flex items-center gap-[6px]">
-                {t('page.signTx.BroadcastMode.lowGasDeadline.label')}
-                <div className="deadline-options">
-                  {deadlineOptions.map((item) => {
-                    return (
-                      <div
-                        key={item.value}
-                        className={clsx(
-                          'deadline-option',
-                          item.value === value.lowGasDeadline && 'is-selected'
-                        )}
-                        onClick={() => {
-                          onChange?.({
-                            type: value.type,
-                            lowGasDeadline: item.value,
-                          });
-                        }}
-                      >
-                        {item.title}
-                      </div>
-                    );
-                  })}
-                </div>
-              </li>
-            ) : null}
-          </ul>
-        </div>
+      <Wrapper
+        className={className}
+        style={style}
+        onClick={() => {
+          setDrawerVisible(true);
+        }}
+        headline={t('page.signTx.BroadcastMode.title')}
+        actionText={selectedOption?.title}
+        hasDivider={value.type !== 'default'}
+      >
+        {value.type !== 'default' && (
+          <>
+            <Divide />
+            <div className="broadcast-mode-body text-r-neutral-body">
+              <ul>
+                <li>{selectedOption?.desc}</li>
+                {value.type === 'low_gas' ? (
+                  <li className="flex items-center gap-[6px]">
+                    {t('page.signTx.BroadcastMode.lowGasDeadline.label')}
+                    <div className="deadline-options">
+                      {deadlineOptions.map((item) => {
+                        return (
+                          <div
+                            key={item.value}
+                            className={clsx(
+                              'deadline-option',
+                              item.value === value.lowGasDeadline &&
+                                'is-selected'
+                            )}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onChange?.({
+                                type: value.type,
+                                lowGasDeadline: item.value,
+                              });
+                            }}
+                          >
+                            {item.title}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          </>
+        )}
       </Wrapper>
       <Popup
+        isNew
         placement="bottom"
         height="352px"
         visible={drawerVisible}
@@ -383,30 +392,19 @@ export const BroadcastMode = ({
                   option.value === value.type && 'is-selected',
                   option.disabled && 'is-disabled'
                 )}
-                onClick={() => {
-                  if (option.disabled) {
-                    return;
-                  }
-                  onChange?.({
-                    type: option.value,
-                    lowGasDeadline:
-                      option.value === 'low_gas'
-                        ? deadlineOptions[1]?.value
-                        : undefined,
-                  });
-                  setDrawerVisible(false);
-                }}
+                onClick={() => handleSelect(option)}
               >
                 <div className="flex items-center gap-[4px]">
                   <div className="mr-auto">
                     <div className="option-title">{option.title}</div>
                     <div className="option-desc">{option.desc}</div>
                   </div>
-                  {option.value === value.type ? (
-                    <img src={IconChecked} alt="" />
-                  ) : (
-                    <img src={IconUnChecked} alt="" />
-                  )}
+                  <Checkbox
+                    width="20px"
+                    height="20px"
+                    checked={option.value === value.type}
+                    onChange={() => handleSelect(option)}
+                  />
                 </div>
               </div>
             </TooltipWithMagnetArrow>

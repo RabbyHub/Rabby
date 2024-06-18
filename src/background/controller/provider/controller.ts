@@ -99,6 +99,8 @@ interface ApprovalRes extends Tx {
   pushType?: TxPushType;
   lowGasDeadline?: number;
   reqId?: string;
+  isGasLess?: boolean;
+  logId?: string;
 }
 
 interface Web3WalletPermission {
@@ -359,6 +361,8 @@ class ProviderController extends BaseController {
     const pushType = approvalRes.pushType || 'default';
     const lowGasDeadline = approvalRes.lowGasDeadline;
     const preReqId = approvalRes.reqId;
+    const isGasLess = approvalRes.isGasLess || false;
+    const logId = approvalRes.logId || '';
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -377,6 +381,8 @@ class ProviderController extends BaseController {
     delete approvalRes.lowGasDeadline;
     delete approvalRes.reqId;
     delete txParams.isCoboSafe;
+    delete approvalRes.isGasLess;
+    delete approvalRes.logId;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -454,9 +460,12 @@ class ProviderController extends BaseController {
       preExecSuccess: cacheExplain
         ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
         : true,
-      createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+      createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
       source: options?.data?.$ctx?.ga?.source || '',
       trigger: options?.data?.$ctx?.ga?.trigger || '',
+      networkType: chainItem?.isTestnet
+        ? 'Custom Network'
+        : 'Integrated Network',
       reported: false,
     };
 
@@ -571,9 +580,12 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
-          createBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
           source: options?.data?.$ctx?.ga?.source || '',
           trigger: options?.data?.$ctx?.ga?.trigger || '',
+          networkType: chainItem?.isTestnet
+            ? 'Custom Network'
+            : 'Integrated Network',
         });
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
@@ -589,7 +601,7 @@ class ProviderController extends BaseController {
             origin,
           });
         }
-        const errMsg = e.message || JSON.stringify(e);
+        const errMsg = e.details || e.message || JSON.stringify(e);
         if (notificationService.statsData?.signMethod) {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
@@ -669,6 +681,7 @@ class ProviderController extends BaseController {
             );
 
             onTransactionCreated({ hash, reqId, pushType });
+            notificationService.setStatsData(statsData);
           } else {
             const res = await openapiService.submitTx({
               tx: {
@@ -682,6 +695,8 @@ class ProviderController extends BaseController {
               low_gas_deadline: lowGasDeadline,
               req_id: preReqId || '',
               origin,
+              is_gasless: isGasLess,
+              log_id: logId,
             });
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
@@ -719,6 +734,7 @@ class ProviderController extends BaseController {
             params: [rawTx as any],
           });
           onTransactionCreated({ hash, reqId, pushType });
+          notificationService.setStatsData(statsData);
         }
 
         return hash;
@@ -1001,10 +1017,8 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
 
       if (connected) {
-        if (
-          Number(chainParams.chainId) ===
-          findChain({ enum: connected.chain })?.id
-        ) {
+        // if rabby supported this chain, do not show popup
+        if (findChain({ id: chainParams.chainId })) {
           return true;
         }
       }
@@ -1048,11 +1062,6 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1066,7 +1075,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );
@@ -1093,14 +1101,18 @@ class ProviderController extends BaseController {
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
+        // if rabby supported this chain, do not show popup
         if (
-          Number(chainId) ===
           findChain({
-            enum: connected.chain,
-          })?.id
+            id: chainId,
+          })
         ) {
           return true;
         }
+        throw ethErrors.provider.custom({
+          code: 4902,
+          message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+        });
       }
     },
     { height: 650 },
@@ -1124,11 +1136,6 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
-    const connectSite = permissionService.getConnectedSite(origin);
-    const prev = connectSite
-      ? findChain({ enum: connectSite?.chain })
-      : undefined;
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1142,7 +1149,6 @@ class ProviderController extends BaseController {
       'rabby:chainChanged',
       {
         ...chain,
-        prev,
       },
       origin
     );

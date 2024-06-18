@@ -14,7 +14,6 @@ import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
-import browser from 'webextension-polyfill';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -25,7 +24,7 @@ const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
 
 const getScreenAvailHeight = async () => {
-  return (await browser.windows.getCurrent()).height || 1000;
+  return 1000;
 };
 
 const flow = new PromiseFlow<{
@@ -116,10 +115,7 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         connectOrigins.add(origin);
         try {
-          const {
-            defaultChain,
-            signPermission,
-          } = await notificationService.requestApproval(
+          const { defaultChain } = await notificationService.requestApproval(
             {
               params: { origin, name, icon },
               approvalComponent: 'Connect',
@@ -132,7 +128,6 @@ const flowContext = flow
             name,
             icon,
             defaultChain,
-            signPermission,
           });
         } catch (e) {
           connectOrigins.delete(origin);
@@ -305,9 +300,10 @@ function reportStatsData() {
       category: statsData?.category,
       success: statsData?.signedSuccess,
       preExecSuccess: statsData?.preExecSuccess,
-      createBy: statsData?.createBy,
+      createdBy: statsData?.createdBy,
       source: statsData?.source,
       trigger: statsData?.trigger,
+      networkType: statsData?.networkType,
     };
     if (statsData.signMethod) {
       sData.signMethod = statsData.signMethod;
@@ -321,9 +317,10 @@ function reportStatsData() {
       category: statsData?.category,
       success: statsData?.submitSuccess,
       preExecSuccess: statsData?.preExecSuccess,
-      createBy: statsData?.createBy,
+      createdBy: statsData?.createdBy,
       source: statsData?.source,
       trigger: statsData?.trigger,
+      networkType: statsData?.networkType || '',
     });
   }
 

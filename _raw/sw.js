@@ -86,3 +86,10 @@ self.addEventListener('install', () => {
   console.log('installing service worker');
   importAllScripts();
 });
+
+// In MV3, Event handler must be added on the initial evaluation of worker script.
+if (navigator?.usb) {
+  navigator.usb.addEventListener('disconnect', (device) => {
+    console.log('USB device disconnected', device);
+  });
+}

@@ -13,6 +13,8 @@ import ViewMore from './components/ViewMore';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SecurityListItem } from './components/SecurityListItem';
 import { isSameAddress } from '@/ui/utils';
+import { SubCol, SubRow, SubTable } from './components/SubTable';
+import { ProtocolListItem } from './components/ProtocolListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -88,10 +90,6 @@ const WrapToken = ({
     });
   };
 
-  useEffect(() => {
-    dispatch.securityEngine.init();
-  }, []);
-
   return (
     <Wrapper>
       <Table>
@@ -137,75 +135,101 @@ const WrapToken = ({
           </Row>
         </Col>
         {hasReceiver && (
-          <Col>
-            <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
-            <Row>
-              <Values.Address address={receiver} chain={chain} />
-              <ul className="desc-list">
-                <SecurityListItem
-                  engineResult={engineResultMap['1092']}
-                  id="1092"
-                  warningText={t('page.signTx.swap.unknownAddress')}
+          <>
+            <Col>
+              <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
+              <Row>
+                <Values.Address
+                  id="wrap-token-receiver"
+                  address={receiver}
+                  chain={chain}
                 />
-                {!engineResultMap['1092'] && (
-                  <>
-                    <li>
+              </Row>
+            </Col>
+
+            <SubTable target="wrap-token-receiver">
+              <SecurityListItem
+                engineResult={engineResultMap['1092']}
+                id="1092"
+                warningText={t('page.signTx.swap.unknownAddress')}
+              />
+              {!engineResultMap['1092'] && (
+                <>
+                  <SubCol>
+                    <SubRow isTitle>{t('page.signTx.address')}</SubRow>
+                    <SubRow>
                       <Values.AccountAlias address={receiver} />
-                    </li>
-                    <li>
+                    </SubRow>
+                  </SubCol>
+                  <SubCol>
+                    <SubRow isTitle>{t('page.addressDetail.source')}</SubRow>
+                    <SubRow>
                       <Values.KnownAddress address={receiver} />
-                    </li>
-                  </>
-                )}
-              </ul>
-            </Row>
-          </Col>
+                    </SubRow>
+                  </SubCol>
+                </>
+              )}
+            </SubTable>
+          </>
         )}
         <Col>
           <Row isTitle>{t('page.signTx.interactContract')}</Row>
           <Row>
-            <div>
-              <Values.Address address={requireData.id} chain={chain} />
-            </div>
-            <ul className="desc-list">
-              {requireData.protocol && (
-                <li>
-                  <Values.Protocol value={requireData.protocol} />
-                </li>
-              )}
-              <li>
-                <Values.Interacted value={requireData.hasInteraction} />
-              </li>
-
-              {isInWhitelist && <li>{t('page.signTx.markAsTrust')}</li>}
-
-              <SecurityListItem
-                id="1135"
-                engineResult={engineResultMap['1135']}
-                forbiddenText={t('page.signTx.markAsBlock')}
+            <ViewMore
+              type="contract"
+              data={{
+                hasInteraction: requireData.hasInteraction,
+                bornAt: requireData.bornAt,
+                protocol: requireData.protocol,
+                rank: requireData.rank,
+                address: requireData.id,
+                chain,
+              }}
+            >
+              <Values.Address
+                id="wrap-token-address"
+                hasHover
+                address={requireData.id}
+                chain={chain}
               />
-
-              <SecurityListItem
-                id="1137"
-                engineResult={engineResultMap['1137']}
-                warningText={t('page.signTx.markAsBlock')}
-              />
-              <li>
-                <ViewMore
-                  type="contract"
-                  data={{
-                    hasInteraction: requireData.hasInteraction,
-                    bornAt: requireData.bornAt,
-                    protocol: requireData.protocol,
-                    rank: requireData.rank,
-                    address: requireData.id,
-                    chain,
-                  }}
-                />
-              </li>
-            </ul>
+            </ViewMore>
           </Row>
         </Col>
+        <SubTable target="wrap-token-address">
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+            <SubRow>
+              <ProtocolListItem protocol={requireData.protocol} />
+            </SubRow>
+          </SubCol>
+          <SubCol>
+            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+            <SubRow>
+              <Values.Interacted value={requireData.hasInteraction} />
+            </SubRow>
+          </SubCol>
+
+          {isInWhitelist && (
+            <SubCol>
+              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+              <SubRow>{t('page.signTx.trusted')}</SubRow>
+            </SubCol>
+          )}
+
+          <SecurityListItem
+            title={t('page.signTx.myMark')}
+            id="1135"
+            engineResult={engineResultMap['1135']}
+            forbiddenText={t('page.signTx.markAsBlock')}
+          />
+
+          <SecurityListItem
+            title={t('page.signTx.myMark')}
+            id="1137"
+            engineResult={engineResultMap['1137']}
+            warningText={t('page.signTx.markAsBlock')}
+          />
+        </SubTable>
       </Table>
     </Wrapper>
   );

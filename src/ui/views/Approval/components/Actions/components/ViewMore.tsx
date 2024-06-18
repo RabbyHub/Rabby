@@ -31,33 +31,51 @@ type Props =
 
 const PopupContainer = styled.div`
   .title {
-    font-size: 16px;
-    line-height: 19px;
-    color: var(--r-neutral-title-1, #192945);
+    font-size: 15px;
+    line-height: 18px;
     display: flex;
-    margin-bottom: 14px;
+    margin-bottom: 17px;
+    color: var(--r-neutral-body, #3e495e);
+
     .value-address {
+      color: var(--r-neutral-title-1, #192945);
       font-weight: 500;
       margin-left: 7px;
+      display: flex;
+      align-items: center;
     }
   }
   .view-more-table {
-    .row {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      font-size: 15px;
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #fff);
+    padding: 0px 16px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 400;
 
+    .col {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .row {
       &:nth-child(1) {
-        max-width: 140px;
-        border-right: 0.5px solid var(--r-neutral-line);
-        flex-shrink: 0;
+        color: var(--r-neutral-body, #3e495e);
+        font-weight: 400;
+        justify-content: flex-start;
+        align-items: center;
       }
     }
   }
 `;
 
-const ViewMore = (props: Props) => {
+const ViewMore = (
+  props: Props & {
+    children?: React.ReactNode;
+  }
+) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const { t } = useTranslation();
 
@@ -85,14 +103,27 @@ const ViewMore = (props: Props) => {
 
   return (
     <>
-      <span className="underline cursor-pointer" onClick={handleClickViewMore}>
-        {t('page.approvals.component.ViewMore.text')}
-      </span>
+      {props.children ? (
+        <div className="max-w-full" onClick={handleClickViewMore}>
+          {props.children}
+        </div>
+      ) : (
+        <span
+          className="underline cursor-pointer"
+          onClick={handleClickViewMore}
+        >
+          {t('page.approvals.component.ViewMore.text')}
+        </span>
+      )}
       <Popup
+        isNew
         visible={popupVisible}
         closable
         onClose={() => setPopupVisible(false)}
-        height={height}
+        contentWrapperStyle={{
+          maxHeight: `${height}px`,
+          height: 'auto',
+        }}
       >
         <PopupContainer>
           {props.type === 'contract' && <ContractPopup data={props.data} />}

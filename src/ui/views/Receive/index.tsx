@@ -48,9 +48,9 @@ const useAccount = () => {
 
       wallet
         .getAddressCacheBalance(address)
-        .then((d) => setCacheBalance(d!.total_usd_value));
+        .then((d) => setCacheBalance(d?.total_usd_value || 0));
       wallet
-        .getAddressBalance(address)
+        .getInMemoryAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));
     }
   }, [address]);

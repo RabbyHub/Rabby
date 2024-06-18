@@ -52,7 +52,7 @@ import { CHAINS_ENUM, ThemeIconType } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { GasPriceBar } from '../GasPriceBar';
-import { ClaimRabbyBadgeModal } from '../ClaimRabbyBadgeModal';
+import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
@@ -83,6 +83,7 @@ export default ({
   );
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
+
   const [rabbyPointsVisible, setRabbyPointVisible] = useState(false);
 
   const [settingVisible, setSettingVisible] = useState(false);
@@ -118,10 +119,10 @@ export default ({
 
   const { value: claimable } = useAsync(async () => {
     if (account?.address) {
-      const data = await wallet.openapi.checkRabbyPointClaimable({
+      const data = await wallet.openapi.checkClaimInfoV2({
         id: account?.address,
       });
-      return data.claimable;
+      return !!data?.claimable_points && data?.claimable_points > 0;
     }
     return false;
   }, [account?.address]);
@@ -419,7 +420,7 @@ export default ({
           setSettingVisible(false);
         }}
       />
-      <ClaimRabbyBadgeModal
+      <ClaimRabbyFreeGasBadgeModal
         visible={badgeModalVisible}
         onCancel={() => {
           setBadgeModalVisible(false);
