@@ -51,13 +51,13 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
   const receiverType = useMemo(() => {
     if (data.contract) {
-      return 'Contract';
+      return t('page.signTx.contract');
     }
     if (data.eoa) {
-      return 'EOA';
+      return t('page.signTx.tokenApprove.eoaAddress');
     }
     if (data.cex) {
-      return 'EOA';
+      return t('page.signTx.tokenApprove.eoaAddress');
     }
   }, [data]);
 
