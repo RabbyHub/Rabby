@@ -245,24 +245,22 @@ const TokenApprove = ({
           <Row className="overflow-hidden pl-10">
             <LogoWithText
               id="token-approve-balance"
-              className="overflow-hidden"
+              className={clsx(
+                'rounded-[4px]',
+                'overflow-hidden py-[4px] px-[7px] cursor-pointer',
+                'border-[0.5px] border-rabby-neutral-line'
+              )}
               logo={actionData.token.logo_url}
               text={
-                <div className="overflow-hidden overflow-ellipsis flex justify-between items-center">
+                <div
+                  onClick={() => setEditApproveModalVisible(true)}
+                  {...editHoverProps}
+                  className="overflow-hidden overflow-ellipsis flex justify-between items-center"
+                >
                   <div className="flex flex-1 overflow-hidden">
                     <Values.TokenAmount value={actionData.token.amount} />
-                    <span className="ml-2">
-                      <Values.TokenSymbol
-                        disableHover={isHoverEdit}
-                        token={requireData.token}
-                      />
-                    </span>
                   </div>
-                  <span
-                    className="text-blue-light text-13 font-medium cursor-pointer ml-4 hover:underline"
-                    onClick={() => setEditApproveModalVisible(true)}
-                    {...editHoverProps}
-                  >
+                  <span className="text-blue-light text-14 font-medium ml-4 hover:underline">
                     <IconEditPen className="text-r-blue-default" />
                   </span>
                 </div>

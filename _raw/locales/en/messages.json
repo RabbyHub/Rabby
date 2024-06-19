@@ -126,7 +126,7 @@
         "eoaAddress": "EOA",
         "trustValueLessThan": "≤ {{value}}",
         "deployTimeLessThan": "< {{value}} days",
-        "amountPopupTitle": "Amount",
+        "amountPopupTitle": "Approve amount",
         "flagByRabby": "Flagged by Rabby",
         "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
       },

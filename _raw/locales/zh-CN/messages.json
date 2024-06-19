@@ -1305,7 +1305,7 @@
         "title": "兑换 & 跨链"
       },
       "tokenApprove": {
-        "amountPopupTitle": "数量",
+        "amountPopupTitle": "批准金额",
         "approveTo": "授权给",
         "approveToken": "授权代币",
         "contractTrustValueTip": "信任值是指授权并暴露给该合约的资产总价值，\n信任值低表示该合约存在风险或 180 天内不活跃",
