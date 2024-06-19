@@ -126,11 +126,13 @@ export const SubRow = ({
   isTitle = false,
   tip,
   className,
+  itemsCenter,
 }: {
   children: ReactNode;
   isTitle?: boolean;
   tip?: string;
   className?: string;
+  itemsCenter?: boolean;
 }) => {
   return (
     <SubRowWrapper
@@ -138,7 +140,7 @@ export const SubRow = ({
         'row relative',
         {
           title: isTitle,
-          'items-center': tip,
+          'items-center': itemsCenter || tip,
         },
         className
       )}

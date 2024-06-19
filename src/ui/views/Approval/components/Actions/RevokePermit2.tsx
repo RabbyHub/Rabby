@@ -61,7 +61,9 @@ const RevokePermit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.revokeTokenApprove.revokeFrom')}
+          </Row>
           <Row>
             <ViewMore
               type="spender"

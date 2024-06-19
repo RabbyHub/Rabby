@@ -200,7 +200,7 @@ const CrossSwapToken = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="cross-swap-token-receiver"
                   address={receiver}
                   chain={chain}
@@ -233,7 +233,9 @@ const CrossSwapToken = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

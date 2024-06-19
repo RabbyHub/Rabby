@@ -191,7 +191,10 @@ const BatchSellNFT = ({
           <Col>
             <Row isTitle>{t('page.signTypedData.sellNFT.specificBuyer')}</Row>
             <Row>
-              <Values.Address address={actionData.takers[0]} chain={chain} />
+              <Values.AddressWithCopy
+                address={actionData.takers[0]}
+                chain={chain}
+              />
               {engineResultMap['1114'] && (
                 <SecurityLevelTagNoText
                   enable={engineResultMap['1114'].enable}
@@ -211,7 +214,7 @@ const BatchSellNFT = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="batch-sell-nft-receiver"
                   address={actionData.receiver}
                   chain={chain}
@@ -228,7 +231,9 @@ const BatchSellNFT = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTypedData.buyNFT.listOn')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

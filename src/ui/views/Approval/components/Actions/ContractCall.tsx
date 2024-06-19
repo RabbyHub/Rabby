@@ -91,7 +91,9 @@ const ContractCall = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"
@@ -191,7 +193,7 @@ const ContractCall = ({
         {requireData.unexpectedAddr && (
           <>
             <Col>
-              <Row isTitle>
+              <Row isTitle itemsCenter>
                 {t('page.signTx.contractCall.suspectedReceiver')}
               </Row>
               <Row>
