@@ -286,12 +286,12 @@ const BalanceChange = ({
                   logo={token.logo_url}
                   text={
                     <>
-                      <span className="text-red-forbidden">
+                      <span className="text-red-forbidden font-medium">
                         - {formatAmount(token.amount)}
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="group-hover:underline cursor-pointer text-red-forbidden"
+                        className="group-hover:underline cursor-pointer text-red-forbidden font-medium"
                       >
                         {getTokenSymbol(token)}
                       </span>
@@ -325,12 +325,12 @@ const BalanceChange = ({
                   logo={token.logo_url}
                   text={
                     <>
-                      <span className="text-green">
+                      <span className="text-green font-medium">
                         + {formatAmount(token.amount)}
                       </span>{' '}
                       <span
                         onClick={() => handleClickToken(token)}
-                        className="group-hover:underline cursor-pointer text-green"
+                        className="group-hover:underline cursor-pointer text-green font-medium"
                       >
                         {getTokenSymbol(token)}
                       </span>
