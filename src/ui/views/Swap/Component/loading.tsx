@@ -22,9 +22,11 @@ export const QuoteLoading = ({
   if (isCex)
     return (
       <div
-        className={clsx('flex-1 px-16 h-[44px] flex item-center rounded-[6px]')}
+        className={clsx(
+          'flex-1 px-16 h-[44px] flex items-center rounded-[6px]'
+        )}
       >
-        <QuoteLogo isLoading={true} logo={logo} isCex loaded />
+        <QuoteLogo isLoading={true} logo={logo} />
         <span className="ml-[8px] text-13 font-medium text-r-neutral-title-1 flex items-center">
           {name}
         </span>
