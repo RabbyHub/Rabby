@@ -210,7 +210,7 @@ export const Quotes = ({
   }
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
           if (!isDex) return null;
@@ -236,7 +236,7 @@ export const Quotes = ({
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
       {!noCex && (
-        <div className="text-gray-light text-12 mt-20 mb-8">
+        <div className="text-gray-light text-12 mt-16 mb-8">
           {t('page.swap.rates-from-cex')}
         </div>
       )}
@@ -246,9 +246,10 @@ export const Quotes = ({
           if (isDex) return null;
           return (
             <CexQuoteItem
+              receiveToken={other.receiveToken}
               key={name}
               name={name}
-              data={(data as unknown) as any}
+              data={data}
               bestQuoteAmount={`${bestQuoteAmount}`}
               bestQuoteGasUsd={bestQuoteGasUsd}
               isBestQuote={idx === 0}
@@ -259,7 +260,7 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
-      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot pb-20">
+      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot pb-6">
         {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
         <span
           onClick={openSettings}
@@ -357,7 +358,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={484}
+      height={516}
       onClose={onClose}
       closable={false}
       destroyOnClose

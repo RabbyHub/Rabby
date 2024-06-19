@@ -30,19 +30,18 @@ import { Trans, useTranslation } from 'react-i18next';
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
-  /* background: #f5f6fa; */
-  border-radius: 6px;
   height: 46px;
   font-weight: 500;
   font-size: 18px;
-  /* color: #ffffff; */
   box-shadow: none;
+  border-radius: 4px;
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
+  background: var(--r-neutral-card2, #f2f4f7);
   & > .ant-input {
     font-weight: 500;
     font-size: 18px;
   }
 
-  &.ant-input-affix-wrapper,
   &:active {
     border: 1px solid transparent;
   }

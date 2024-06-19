@@ -28,6 +28,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
+import { TokenWithChain } from '@/ui/component';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
   i18n.t('page.swap.QuoteLessWarning', { receive, diff });
@@ -66,6 +67,7 @@ const ReceiveWrapper = styled.div`
   border: 1px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 4px;
   padding: 12px;
+  padding-top: 16px;
 
   color: var(--r-neutral-title-1, #192945);
   font-size: 13px;
@@ -76,10 +78,10 @@ const ReceiveWrapper = styled.div`
 
   .diffPercent {
     &.negative {
-      color: #ff7878;
+      color: var(--r-red-default, #e34935);
     }
     &.positive {
-      color: #27c193;
+      color: var(--r-green-default, #2abb7f);
     }
   }
   .column {
@@ -232,26 +234,25 @@ export const ReceiveDetails = (
 
   return (
     <ReceiveWrapper {...other}>
-      <div className="column receive-token pb-8">
+      <div className="column receive-token pb-12">
         <div className="flex items-center gap-8">
-          <div>
-            <img
-              className={clsx('rounded-full w-24 h-24 min-w-[24px]')}
-              src={
-                isWrapToken
-                  ? receiveToken?.logo_url
-                  : DEX?.[activeProvider?.name]?.logo
-              }
-            />
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 w-[108px] text-13 font-medium text-r-neutral-title-1 h-18">
-              <span>
-                {isWrapToken
-                  ? t('page.swap.wrap-contract')
-                  : DEX?.[activeProvider?.name]?.name}
-              </span>
+          <div className="flex flex-col gap-8">
+            <div className="flex items-center gap-8 w-[108px] text-15 font-medium text-r-neutral-title-1 h-18">
+              <div className="flex items-center gap-6">
+                <img
+                  className={clsx('rounded-full w-20 h-20 min-w-[20px]')}
+                  src={
+                    isWrapToken
+                      ? receiveToken?.logo_url
+                      : DEX?.[activeProvider?.name]?.logo
+                  }
+                />
+                <span>
+                  {isWrapToken
+                    ? t('page.swap.wrap-contract')
+                    : DEX?.[activeProvider?.name]?.name}
+                </span>
+              </div>
               {!!activeProvider.shouldApproveToken && (
                 <TooltipWithMagnetArrow
                   overlayClassName="rectangle w-[max-content]"
@@ -262,27 +263,31 @@ export const ReceiveDetails = (
               )}
             </div>
             {!!activeProvider?.gasUsd && (
-              <div className="flex items-center gap-2 text-12 text-r-neutral-foot font-normal">
+              <div className="flex items-center gap-4 text-12 text-r-neutral-foot font-normal">
                 <img src={ImgGas} className="w-14 h-14 relative" />
                 <span>{activeProvider?.gasUsd}</span>
               </div>
             )}
           </div>
         </div>
-        <div className="right relative flex flex-col">
+        <div className="right relative flex flex-col gap-10">
           <div className="flex items-center gap-2 text-15 font-medium text-r-neutral-title-1 h-18 ml-auto">
             <SkeletonChildren
               loading={loading}
               style={{ maxWidth: 144, height: 20, opacity: 0.5 }}
             >
+              <TokenWithChain
+                token={props.receiveToken}
+                width="16px"
+                height="16px"
+                hideChainIcon
+                hideConer
+              />
               <span
                 title={`${receiveNum} ${receiveTokenSymbol}`}
-                className="ellipsis"
+                className="ellipsis mx-6"
               >
-                {receiveNum}{' '}
-                <span className="text-r-neutral-foot">
-                  {receiveTokenSymbol}
-                </span>
+                {receiveNum}
               </span>
               <WarningOrChecked quoteWarning={quoteWarning} />
             </SkeletonChildren>
@@ -355,7 +360,7 @@ export const ReceiveDetails = (
             style={{ maxWidth: 182, height: 20, opacity: 0.5 }}
           >
             <span
-              className="cursor-pointer ellipsis max-w-[260px]"
+              className="cursor-pointer ellipsis max-w-[260px] text-13 text-r-neutral-body"
               onClick={reverseRate}
             >
               <span
