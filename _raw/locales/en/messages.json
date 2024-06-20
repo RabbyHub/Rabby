@@ -1153,7 +1153,8 @@
           "searching": "Searching Token",
           "tokenAddress": "Token Address",
           "tokenAddressPlaceholder": "Token Address",
-          "notFound": "Token not found"
+          "notFound": "Token not found",
+          "isBuiltInToken": "Token already supported"
         },
         "AddTestnetToken": {
           "title": "Add Custom Network Token",

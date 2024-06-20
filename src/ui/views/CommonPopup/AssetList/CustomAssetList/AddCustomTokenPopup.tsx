@@ -4,7 +4,12 @@ import { Popup } from '@/ui/component';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, useWallet } from '@/ui/utils';
-import { findChain, getChainList } from '@/utils/chain';
+import {
+  findChain,
+  findChainByID,
+  findChainByServerID,
+  getChainList,
+} from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useRequest, useSetState } from 'ahooks';
 import { Button, Form, Input, Spin, message } from 'antd';
@@ -196,6 +201,13 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     async () => {
       if (!token || !chain?.id || !tokenId) {
         return null;
+      }
+
+      if (token.is_core) {
+        // message.error();
+        throw new Error(
+          t('page.dashboard.assets.AddMainnetToken.isBuiltInToken')
+        );
       }
       const portofolioToken = (await addToken(token)) || null;
 
