@@ -121,6 +121,8 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
+
+  reserveGasOnSendToken?: boolean;
 }
 
 export interface AddressSortStore {
@@ -180,6 +182,7 @@ class PreferenceService {
         addressSortStore: {
           ...defaultAddressSortStore,
         },
+        reserveGasOnSendToken: true,
       },
     });
 
@@ -277,6 +280,21 @@ class PreferenceService {
       return true;
     }
     return key ? this.store[key] : { ...this.store, isShowTestnet: true };
+  };
+
+  setPreferencePartials = (data: Partial<PreferenceStore>) => {
+    Object.keys(data).forEach((k) => {
+      if (k in this.store) {
+        this.store[k] = data[k];
+      } else {
+        const err = `Preference key ${k} not found`;
+        if (process.env.DEBUG) {
+          throw new Error(err);
+        } else {
+          console.error(err);
+        }
+      }
+    });
   };
 
   getTokenApprovalChain = (address: string) => {
@@ -553,6 +571,10 @@ class PreferenceService {
 
   setThemeMode = (themeMode: DARK_MODE_TYPE) => {
     this.store.themeMode = themeMode;
+  };
+
+  isReserveGasOnSendToken = () => {
+    return this.store.reserveGasOnSendToken;
   };
 
   getHighlightedAddresses = () => {

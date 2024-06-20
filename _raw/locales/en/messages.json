@@ -650,7 +650,8 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost"
+      "GasReserved": "Reserved <1>0</1> {{ tokenName }} for gas cost",
+      "SwitchReserveGas": "Reserve Gas <1 />"
     },
     "sendNFT": {
       "header": {
