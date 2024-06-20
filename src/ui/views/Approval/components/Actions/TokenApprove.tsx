@@ -126,7 +126,7 @@ const ApproveAmountModal = ({
             </span>
           }
           addonBefore={
-            <img src={token.logo_url || IconUnknown} className="w-16 h-16" />
+            <img src={token.logo_url || IconUnknown} className="w-20 h-20" />
           }
           ref={inputRef}
         />
