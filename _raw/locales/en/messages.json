@@ -1931,6 +1931,9 @@
           "added": "You've already added this chain",
           "supported": "Chain already integrated by Rabby Wallet"
         }
+      },
+      "signTx": {
+        "title": "Transaction Data"
       }
     },
     "addChain": {
