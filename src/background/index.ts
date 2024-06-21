@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import browser from 'webextension-polyfill';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
-import { Message } from '@/utils/message';
+import { Message, sendReadyMessageToTabs } from '@/utils/message';
 import {
   CHAINS,
   CHAINS_ENUM,
@@ -99,11 +99,6 @@ async function restoreAppState() {
   await HDKeyRingLastAddAddrTimeService.init();
 
   await walletController.tryUnlock();
-  setPopupIcon(
-    walletController.isUnlocked() || !walletController.isBooted()
-      ? 'default'
-      : 'locked'
-  );
 
   rpcCache.start();
 
@@ -127,6 +122,7 @@ async function restoreAppState() {
       eventBus.emit(EVENTS_IN_BG.ON_TX_COMPLETED, { address });
     };
   }
+  await sendReadyMessageToTabs();
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {

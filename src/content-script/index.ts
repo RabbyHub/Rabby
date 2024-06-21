@@ -1,15 +1,8 @@
 import { Message } from '@/utils/message';
-import { nanoid } from 'nanoid';
+import PortMessage from '@/utils/message/portMessage';
+import browser from 'webextension-polyfill';
 
-import { v4 as uuid } from 'uuid';
-
-const channelName = nanoid();
-const isOpera = /Opera|OPR\//i.test(navigator.userAgent);
-
-localStorage.setItem('rabby:channelName', channelName);
-localStorage.setItem('rabby:isDefaultWallet', 'true');
-localStorage.setItem('rabby:uuid', uuid());
-localStorage.setItem('rabby:isOpera', isOpera.toString());
+import { EXTENSION_MESSAGES } from '@/constant/message';
 
 const injectProviderScript = (isDefaultWallet: boolean) => {
   // the script element with src won't execute immediately
@@ -24,20 +17,42 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   container.removeChild(ele);
 };
 
-const { BroadcastChannelMessage, PortMessage } = Message;
+const { BroadcastChannelMessage } = Message;
 
-const pm = new PortMessage().connect();
+let pm: PortMessage | null = new PortMessage().connect();
 
-const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
-  pm.request(data)
-);
+const bcm = new BroadcastChannelMessage({
+  name: 'rabby-content-script',
+  target: 'rabby-page-provider',
+}).listen((data) => {
+  return pm?.request(data);
+});
 
 // background notification
-pm.on('message', (data) => bcm.send('message', data));
+pm?.on('message', (data) => bcm.send('message', data));
 
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
-  pm.dispose();
+  pm?.dispose();
 });
+
+const onDisconnectDestroyStreams = (err) => {
+  pm?.port?.onDisconnect.removeListener(onDisconnectDestroyStreams);
+
+  pm?.dispose();
+  pm = null;
+};
+pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
+
+const onMessageSetUpExtensionStreams = (msg) => {
+  if (msg.name === EXTENSION_MESSAGES.READY) {
+    if (!pm) {
+      pm = new PortMessage().connect();
+    }
+    return Promise.resolve(`Rabby: handled ${EXTENSION_MESSAGES.READY}`);
+  }
+  return undefined;
+};
+browser.runtime.onMessage.addListener(onMessageSetUpExtensionStreams);
 
 injectProviderScript(false);
