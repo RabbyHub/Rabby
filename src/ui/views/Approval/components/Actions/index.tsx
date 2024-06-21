@@ -130,12 +130,14 @@ const Actions = ({
             originLogo={originLogo}
             engineResults={engineResults}
           />
-          <Divide />
           {!notShowBalanceChange && (
-            <BalanceChange
-              version={txDetail.pre_exec_version}
-              data={txDetail.balance_change}
-            />
+            <>
+              <Divide />
+              <BalanceChange
+                version={txDetail.pre_exec_version}
+                data={txDetail.balance_change}
+              />
+            </>
           )}
         </Card>
 

@@ -1934,6 +1934,9 @@
           "supported": "Chain already integrated by Rabby Wallet"
         }
       },
+      "signTx": {
+        "title": "Transaction Data"
+      },
       "ConfirmModifyRpcModal": {
         "desc": "The chain is already integrated by Rabby. Do you need to modify its RPC URL?"
       }

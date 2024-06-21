@@ -113,12 +113,14 @@ const Row = ({
   tip,
   className,
   wrap,
+  itemsCenter,
 }: {
   children: ReactNode;
   isTitle?: boolean;
   tip?: string;
   className?: string;
   wrap?: boolean;
+  itemsCenter?: boolean;
 }) => {
   return (
     <RowWrapper
@@ -126,7 +128,7 @@ const Row = ({
         'row relative',
         {
           title: isTitle,
-          'items-center': tip,
+          'items-center': itemsCenter || tip,
           wrap: wrap,
         },
         className

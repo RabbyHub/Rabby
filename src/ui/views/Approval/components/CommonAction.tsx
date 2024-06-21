@@ -73,7 +73,7 @@ export const CommonAction = ({
         {requireData && chain ? (
           <>
             <Col>
-              <Row className="w-[100px]" isTitle>
+              <Row className="w-[100px]" isTitle itemsCenter>
                 {t('page.signTx.common.interactContract')}
               </Row>
               <Row>
@@ -171,7 +171,7 @@ export const CommonAction = ({
         {hasReceiver && actionData.receiver && addressInfo && (
           <>
             <Col>
-              <Row isTitle className="w-[100px]">
+              <Row isTitle className="w-[100px]" itemsCenter>
                 {t('page.signTx.swap.receiver')}
               </Row>
               <Row>
@@ -222,7 +222,7 @@ export const CommonAction = ({
         {!hasReceiver && !actionData.receiver && addressInfo && (
           <>
             <Col>
-              <Row isTitle className="w-[100px]">
+              <Row isTitle className="w-[100px]" itemsCenter>
                 {t('page.signTx.contractCall.suspectedReceiver')}
               </Row>
               <Row>

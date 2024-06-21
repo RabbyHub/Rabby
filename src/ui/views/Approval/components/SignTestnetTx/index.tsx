@@ -654,7 +654,9 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           <Card>
             <MessageWrapper>
               <div className="title">
-                <div className="title-text">{t('page.signText.message')}</div>
+                <div className="title-text">
+                  {t('page.customTestnet.signTx.title')}
+                </div>
               </div>
               <div className="content">
                 {JSON.stringify(

@@ -139,7 +139,7 @@ const WrapToken = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="wrap-token-receiver"
                   address={receiver}
                   chain={chain}
@@ -173,7 +173,9 @@ const WrapToken = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"
