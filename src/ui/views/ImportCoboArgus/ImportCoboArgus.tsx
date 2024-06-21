@@ -1,4 +1,4 @@
-import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from '@/constant';
+import { CHAINS, CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import React from 'react';
 import { ChainList } from './ChainList';
 import { AddressInput } from './AddressInput';
@@ -11,6 +11,8 @@ import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { findChainByID } from '@/utils/chain';
+import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
+import { safeJSONParse } from '@/utils';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';
 
@@ -29,6 +31,7 @@ export const ImportCoboArgus = () => {
   const wallet = useWallet();
   const history = useHistory();
   const [hasImportError, setHasImportError] = React.useState<boolean>(false);
+  const { show, contextHolder } = useRepeatImportConfirm();
   const isByImportAddressEvent = !!state;
 
   const handleNext = React.useCallback(async () => {
@@ -75,8 +78,15 @@ export const ImportCoboArgus = () => {
         },
       });
     } catch (e) {
-      setHasImportError(true);
-      message.error(e.message);
+      if (e.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(e.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.CoboArgus,
+        });
+      } else {
+        message.error(e.message);
+      }
     }
   }, [selectedChain, safeAddress, inputAddress]);
 
@@ -101,6 +111,7 @@ export const ImportCoboArgus = () => {
 
   return (
     <section className="bg-r-neutral-bg-2 relative">
+      {contextHolder}
       <Header hasBack={!isByImportAddressEvent}>
         {step === 'select-chain' &&
           t('page.newAddress.coboSafe.whichChainIsYourCoboAddressOn')}

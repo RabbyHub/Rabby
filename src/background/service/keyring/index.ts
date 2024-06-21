@@ -426,7 +426,7 @@ export class KeyringService extends EventEmitter {
       .reduce((m, n) => m.concat(n), [] as string[])
       .map((address) => normalizeAddress(address).toLowerCase());
 
-    const isIncluded = newAccountArray.some((account) => {
+    const isIncluded = newAccountArray.find((account) => {
       return accounts.find(
         (key) =>
           key === account.toLowerCase() ||
@@ -434,8 +434,15 @@ export class KeyringService extends EventEmitter {
       );
     });
 
+    const error = new Error(
+      JSON.stringify({
+        address: isIncluded,
+        anchor: 'DuplicateAccountError',
+      })
+    );
+
     return isIncluded
-      ? Promise.reject(new Error(i18n.t('background.error.duplicateAccount')))
+      ? Promise.reject(error)
       : Promise.resolve(newAccountArray);
   }
 

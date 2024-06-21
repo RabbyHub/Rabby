@@ -1818,9 +1818,21 @@ export class WalletController extends BaseController {
   };
 
   importWatchAddress = async (address: string) => {
-    const keyring = await this.addWatchAddressOnly(address);
-
-    return this._setCurrentAccountFromKeyring(keyring, -1);
+    try {
+      const keyring = await this.addWatchAddressOnly(address);
+      return this._setCurrentAccountFromKeyring(keyring, -1);
+    } catch (error) {
+      if (error.message?.includes?.('duplicate')) {
+        throw new Error(
+          JSON.stringify({
+            address,
+            anchor: 'DuplicateAccountError',
+          })
+        );
+      } else {
+        throw error;
+      }
+    }
   };
 
   getWalletConnectStatus = (address: string, brandName: string) => {
@@ -2046,36 +2058,50 @@ export class WalletController extends BaseController {
     realBrandName?: string,
     realBrandUrl?: string
   ) => {
-    let keyring: WalletConnectKeyring, isNewKey;
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
-      keyring = this._getKeyringByType(keyringType);
-    } catch {
-      if (stashId !== null && stashId !== undefined) {
-        keyring = stashKeyrings[stashId];
-      } else {
-        const WalletConnectKeyring = keyringService.getKeyringClassForType(
-          keyringType
-        );
-        keyring = new WalletConnectKeyring(GET_WALLETCONNECT_CONFIG());
+      let keyring: WalletConnectKeyring, isNewKey;
+      const keyringType = KEYRING_CLASS.WALLETCONNECT;
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        if (stashId !== null && stashId !== undefined) {
+          keyring = stashKeyrings[stashId];
+        } else {
+          const WalletConnectKeyring = keyringService.getKeyringClassForType(
+            keyringType
+          );
+          keyring = new WalletConnectKeyring(GET_WALLETCONNECT_CONFIG());
+        }
+        isNewKey = true;
       }
-      isNewKey = true;
+
+      keyring.setAccountToAdd({
+        address,
+        brandName,
+        realBrandName,
+        realBrandUrl,
+      });
+
+      if (isNewKey) {
+        await keyringService.addKeyring(keyring);
+      }
+
+      await keyringService.addNewAccount(keyring);
+
+      this.clearPageStateCache();
+      return this._setCurrentAccountFromKeyring(keyring, -1);
+    } catch (error) {
+      if (error.message?.includes?.('duplicate')) {
+        throw new Error(
+          JSON.stringify({
+            address,
+            anchor: 'DuplicateAccountError',
+          })
+        );
+      } else {
+        throw error;
+      }
     }
-
-    keyring.setAccountToAdd({
-      address,
-      brandName,
-      realBrandName,
-      realBrandUrl,
-    });
-
-    if (isNewKey) {
-      await keyringService.addKeyring(keyring);
-    }
-
-    await keyringService.addNewAccount(keyring);
-    this.clearPageStateCache();
-    return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
   gridPlusIsConnect = () => {
