@@ -98,6 +98,7 @@ async function restoreAppState() {
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
 
+  await walletController.tryUnlock();
   setPopupIcon(
     walletController.isUnlocked() || !walletController.isBooted()
       ? 'default'
