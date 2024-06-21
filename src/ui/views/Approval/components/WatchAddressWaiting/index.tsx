@@ -17,6 +17,7 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -279,7 +280,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         }
       }
     );
-    initWalletConnect();
+    await initWalletConnect();
+    emitSignComponentAmounted();
   };
 
   useEffect(() => {

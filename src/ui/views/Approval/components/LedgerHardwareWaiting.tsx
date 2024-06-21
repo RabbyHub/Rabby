@@ -28,6 +28,7 @@ import {
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -197,6 +198,8 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
