@@ -32,12 +32,13 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
+import { TokenWithChain } from '@/ui/component';
 
 const ItemWrapper = styled.div`
   position: relative;
   height: 60px;
-  font-size: 12px;
-  padding: 0 12px;
+  font-size: 13px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   /* color: var(--r-neutral-title-1, #192945); */
@@ -62,10 +63,9 @@ const ItemWrapper = styled.div`
     border-radius: 6px;
     display: flex;
     align-items: center;
-    font-size: 12px;
     gap: 8px;
     font-weight: 400;
-    font-size: 12px;
+    font-size: 13px;
     color: #ffffff;
     pointer-events: none;
     &.active {
@@ -85,21 +85,24 @@ const ItemWrapper = styled.div`
     outline: 2px solid var(--r-blue-default, #7084ff);
   }
   &.disabled {
-    height: 56px;
     border-color: transparent;
     box-shadow: none;
     background-color: transparent;
     border-radius: 6px;
     cursor: not-allowed;
   }
-  &.error {
-  }
+
   &:not(.cex).inSufficient,
   &:not(.cex).disabled {
-    height: 60px;
     border: 1px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
     box-shadow: none;
+  }
+
+  &.dex {
+    justify-content: space-between;
+    height: auto;
+    height: 80px;
   }
 
   &.cex {
@@ -107,7 +110,7 @@ const ItemWrapper = styled.div`
     font-size: 13px;
     line-height: 15px;
     color: var(--r-neutral-title-1, #192945);
-    height: 48px;
+    height: 44px;
     background-color: transparent;
     border: none;
     outline: none;
@@ -119,20 +122,19 @@ const ItemWrapper = styled.div`
     align-items: center;
     gap: 6px;
     color: var(--r-neutral-foot, #6a7587);
-    .receiveNum {
-      font-size: 15px;
-      max-width: 130px;
-      display: inline-block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-weight: 500;
-      color: var(--r-neutral-foot, #6a7587);
-      .toToken {
-        color: var(--r-neutral-title-1, #192945);
-      }
-    }
   }
+
+  .receiveNum {
+    font-size: 16px;
+    max-width: 130px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--r-neutral-title-1, #192945);
+  }
+
   .no-price {
     color: var(--r-neutral-title-1, #192945);
   }
@@ -242,13 +244,11 @@ export const DexQuoteItem = (
     receivedTokenUsd,
     diffReceivedTokenUsd,
   ] = useMemo(() => {
-    let center: React.ReactNode = (
-      <div className="text-15 text-r-neutral-title-1 font-medium">-</div>
-    );
-    let right: React.ReactNode = '';
+    let center: React.ReactNode = null;
+    let right: React.ReactNode = null;
     let disable = false;
-    let receivedUsd = '0';
-    let diffUsd = '0';
+    let receivedUsd: React.ReactNode = null;
+    let diffUsd: React.ReactNode = null;
 
     const actualReceiveAmount = inSufficient
       ? new BigNumber(quote?.toTokenAmount || 0)
@@ -296,10 +296,7 @@ export const DexQuoteItem = (
       const receiveTokenSymbol = getTokenSymbol(receiveToken);
       center = (
         <span className="receiveNum" title={`${s} ${receiveTokenSymbol}`}>
-          <span className="toToken" title={s}>
-            {s}
-          </span>{' '}
-          {receiveTokenSymbol}
+          {s}
         </span>
       );
 
@@ -318,17 +315,13 @@ export const DexQuoteItem = (
           {t('page.swap.unable-to-fetch-the-price')}
         </div>
       );
-      center = (
-        <div className="text-15 text-r-neutral-title-1 font-medium">-</div>
-      );
+      center = null;
       disable = true;
     }
 
     if (quote?.toTokenAmount) {
       if (!preExecResult && !inSufficient) {
-        center = (
-          <div className="text-15 text-r-neutral-title-1 font-medium">-</div>
-        );
+        center = null;
         right = (
           <div className="text-r-neutral-foot text-[13px] font-normal">
             {t('page.swap.fail-to-simulate-transaction')}
@@ -340,9 +333,7 @@ export const DexQuoteItem = (
 
     if (!isSdkDataPass) {
       disable = true;
-      center = (
-        <div className="text-15 text-r-neutral-title-1 font-medium">-</div>
-      );
+      center = null;
       right = (
         <div className="text-r-neutral-foot text-[13px] font-normal">
           {t('page.swap.security-verification-failed')}
@@ -495,11 +486,6 @@ export const DexQuoteItem = (
     ]
   );
 
-  const isWrapTokensWap = useMemo(
-    () => isSwapWrapToken(payToken.id, receiveToken.id, chain),
-    [payToken, receiveToken, chain]
-  );
-
   return (
     <ItemWrapper
       onMouseEnter={() => {
@@ -512,75 +498,33 @@ export const DexQuoteItem = (
       }}
       onClick={handleClick}
       className={clsx(
+        'dex',
         active && 'active',
         (disabledTrade || disabled) && 'disabled error',
         inSufficient && !disabled && 'disabled inSufficient'
       )}
     >
-      <QuoteLogo loaded logo={quoteProviderInfo.logo} isLoading={isLoading} />
-
-      <div className="flex flex-col justify-center ml-8 flex-1">
-        <div className="flex items-center">
-          <div
-            className={clsx(
-              'flex items-center gap-2 w-[108px] max-w-[108px] text-r-neutral-title-1 text-opacity-80 relative'
-            )}
-          >
-            <span
-              className={clsx(
-                'text-13 font-medium text-r-neutral-title-1',
-                inSufficient && !disabled && 'relative top-8'
-              )}
-            >
-              {quoteProviderInfo.name}
-            </span>
-            {!!preExecResult?.shouldApproveToken && (
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
-                title={t('page.swap.need-to-approve-token-before-swap')}
-              >
-                <img src={ImgLock} className="w-14 h-14" />
-              </TooltipWithMagnetArrow>
-            )}
-          </div>
-
-          <div className="flex flex-col">
-            <div className="price relative">
-              {middleContent}
-              <CheckIcon />
-            </div>
-          </div>
-          {!isBestQuote && <div className="diff">{rightContent}</div>}
-        </div>
-
-        {!disabled && (
-          <div className="flex items-center text-12 text-r-neutral-foot">
-            <div className={clsx('flex items-center gap-2 w-[108px]')}>
-              {!inSufficient && (
-                <>
-                  <img src={ImgGas} className="w-14 h-14 relative top-[-1px]" />
-                  <span>{preExecResult?.gasUsd}</span>
-                </>
-              )}
-            </div>
-
-            <span>≈{receivedTokenUsd}</span>
-
-            {!isBestQuote && (
-              <span className="ml-auto text-right">{diffReceivedTokenUsd}</span>
-            )}
-          </div>
-        )}
-      </div>
-
-      {isBestQuote && <div className="diff">{rightContent}</div>}
+      <DEXItem
+        logo={quoteProviderInfo.logo}
+        name={quoteProviderInfo.name}
+        isLoading={isLoading}
+        shouldApproveToken={preExecResult?.shouldApproveToken}
+        disable={disabled}
+        gasUsd={preExecResult?.gasUsd}
+        receiveToken={receiveToken}
+        middleContent={middleContent}
+        statusIcon={<CheckIcon />}
+        receivedTokenUsd={receivedTokenUsd}
+        diffContent={rightContent}
+      />
 
       <div
         className={clsx('disabled-trade', disabledTradeTipsOpen && 'active')}
       >
-        <img src={ImgWhiteWarning} className="w-12 h-12" />
+        <img src={ImgWhiteWarning} className="w-12 h-12 relative top-[-10px]" />
         <span>
           {t('page.swap.this-exchange-is-not-enabled-to-trade-by-you')}
+          <br />
           <span
             className="underline-transparent underline cursor-pointer ml-4"
             onClick={(e) => {
@@ -605,6 +549,7 @@ export const CexQuoteItem = (props: {
   isBestQuote: boolean;
   isLoading?: boolean;
   inSufficient: boolean;
+  receiveToken: TokenItem;
 }) => {
   const {
     name,
@@ -619,10 +564,8 @@ export const CexQuoteItem = (props: {
   const dexInfo = useMemo(() => CEX[name as keyof typeof CEX], [name]);
   const { sortIncludeGasFee } = useSwapSettings();
   const [middleContent, rightContent] = useMemo(() => {
-    let center: React.ReactNode = (
-      <div className="text-15 text-r-neutral-title-1 font-medium">-</div>
-    );
-    let right: React.ReactNode = '';
+    let center: React.ReactNode = null;
+    let right: React.ReactNode = null;
     let disable = false;
 
     if (!data?.receive_token?.amount) {
@@ -652,11 +595,11 @@ export const CexQuoteItem = (props: {
       const receiveTokenSymbol = getTokenSymbol(receiveToken);
 
       center = (
-        <span className="receiveNum" title={`${s} ${receiveTokenSymbol}`}>
-          <span className="toToken" title={s}>
-            {s}
-          </span>{' '}
-          {receiveTokenSymbol}
+        <span
+          className="receiveNum text-13"
+          title={`${s} ${receiveTokenSymbol}`}
+        >
+          {s}
         </span>
       );
 
@@ -690,10 +633,19 @@ export const CexQuoteItem = (props: {
             <span>{dexInfo.name}</span>
           </div>
 
-          <div className="flex flex-col">
-            <div className="price">{middleContent}</div>
+          <div className="price ml-auto flex-grow-0">
+            {middleContent !== null && (
+              <TokenWithChain
+                token={props.receiveToken}
+                width="16px"
+                height="16px"
+                hideChainIcon
+                hideConer
+              />
+            )}
+            {middleContent}
           </div>
-          <div className="diff">{rightContent}</div>
+          <div className="diff ml-6">{rightContent}</div>
         </div>
       </div>
     </ItemWrapper>
@@ -728,6 +680,7 @@ export function WarningOrChecked({
   const { t } = useTranslation();
   return (
     <TooltipWithMagnetArrow
+      arrowPointAtCenter
       overlayClassName={clsx('rectangle', 'w-[max-content]')}
       title={
         quoteWarning
@@ -737,8 +690,80 @@ export function WarningOrChecked({
     >
       <img
         src={quoteWarning ? ImgWarning : ImgVerified}
-        className="w-[14px] h-[14px]"
+        className="w-[16px] h-[16px]"
       />
     </TooltipWithMagnetArrow>
+  );
+}
+
+function DEXItem(props: {
+  logo: string;
+  isLoading?: boolean;
+  name: string;
+  shouldApproveToken?: boolean;
+  disable?: boolean;
+  gasUsd?: string;
+  receiveToken: TokenItem;
+  middleContent: React.ReactNode;
+  statusIcon?: React.ReactNode;
+  receivedTokenUsd?: React.ReactNode;
+  diffContent?: React.ReactNode;
+}) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {/* left */}
+      <div className="flex flex-col gap-10">
+        <div className="flex items-center gap-8">
+          <QuoteLogo loaded logo={props.logo} isLoading={props.isLoading} />
+          <span className="text-[16px] font-medium text-r-neutral-title-1">
+            {props.name}
+          </span>
+          {!!props.shouldApproveToken && (
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
+              title={t('page.swap.need-to-approve-token-before-swap')}
+            >
+              <img src={ImgLock} className="w-16 h16" />
+            </TooltipWithMagnetArrow>
+          )}
+        </div>
+
+        {!!props?.gasUsd && (
+          <div className="flex items-center gap-4">
+            <img src={ImgGas} className="w-16 h16" />
+            <span className="text-13 text-r-neutral-foot">{props?.gasUsd}</span>
+          </div>
+        )}
+      </div>
+
+      {/* right */}
+      <div className="flex flex-col gap-12">
+        {props.middleContent !== null && (
+          <div className="flex items-center justify-end relative">
+            <TokenWithChain
+              token={props.receiveToken}
+              width="20px"
+              height="20px"
+              hideChainIcon
+              hideConer
+            />
+            <div className="ml-6 mr-4 flex items-center">
+              {props.middleContent}
+            </div>
+            {props.statusIcon}
+          </div>
+        )}
+        <div className="flex items-center gap-6 justify-end text-13 font-medium">
+          {!props.disable && (
+            <span className="text-r-neutral-foot font-normal">
+              ≈{props.receivedTokenUsd}
+            </span>
+          )}
+
+          <span className="text-r-red-default">{props.diffContent}</span>
+        </div>
+      </div>
+    </>
   );
 }

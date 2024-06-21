@@ -43,7 +43,7 @@ export const TradingSettings = ({
     <Popup
       visible={visible}
       title={t('page.swap.enable-exchanges')}
-      height={544}
+      height={458}
       onClose={onClose}
       closable
       bodyStyle={{
