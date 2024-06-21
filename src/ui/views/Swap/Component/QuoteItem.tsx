@@ -504,62 +504,6 @@ export const DexQuoteItem = (
         inSufficient && !disabled && 'disabled inSufficient'
       )}
     >
-      {/* <div className="flex flex-col justify-center ml-8 flex-1">
-        <div className="flex items-center">
-          <div
-            className={clsx(
-              'flex items-center gap-2 w-[108px] max-w-[108px] text-r-neutral-title-1 text-opacity-80 relative'
-            )}
-          >
-            <span
-              className={clsx(
-                'text-13 font-medium text-r-neutral-title-1',
-                inSufficient && !disabled && 'relative top-8'
-              )}
-            >
-              {quoteProviderInfo.name}
-            </span>
-            {!!preExecResult?.shouldApproveToken && (
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
-                title={t('page.swap.need-to-approve-token-before-swap')}
-              >
-                <img src={ImgLock} className="w-14 h-14" />
-              </TooltipWithMagnetArrow>
-            )}
-          </div>
-
-          <div className="flex flex-col">
-            <div className="price relative">
-              {middleContent}
-              <CheckIcon />
-            </div>
-          </div>
-          {!isBestQuote && <div className="diff">{rightContent}</div>}
-        </div>
-
-        {!disabled && (
-          <div className="flex items-center text-12 text-r-neutral-foot">
-            <div className={clsx('flex items-center gap-2 w-[108px]')}>
-              {!inSufficient && (
-                <>
-                  <img src={ImgGas} className="w-14 h-14 relative top-[-1px]" />
-                  <span>{preExecResult?.gasUsd}</span>
-                </>
-              )}
-            </div>
-
-            <span>≈{receivedTokenUsd}</span>
-
-            {!isBestQuote && (
-              <span className="ml-auto text-right">{diffReceivedTokenUsd}</span>
-            )}
-          </div>
-        )}
-      </div>
-
-      {isBestQuote && <div className="diff">{rightContent}</div>} */}
-
       <DEXItem
         logo={quoteProviderInfo.logo}
         name={quoteProviderInfo.name}
@@ -577,9 +521,10 @@ export const DexQuoteItem = (
       <div
         className={clsx('disabled-trade', disabledTradeTipsOpen && 'active')}
       >
-        <img src={ImgWhiteWarning} className="w-12 h-12" />
+        <img src={ImgWhiteWarning} className="w-12 h-12 relative top-[-10px]" />
         <span>
           {t('page.swap.this-exchange-is-not-enabled-to-trade-by-you')}
+          <br />
           <span
             className="underline-transparent underline cursor-pointer ml-4"
             onClick={(e) => {
@@ -650,7 +595,10 @@ export const CexQuoteItem = (props: {
       const receiveTokenSymbol = getTokenSymbol(receiveToken);
 
       center = (
-        <span className="receiveNum" title={`${s} ${receiveTokenSymbol}`}>
+        <span
+          className="receiveNum text-13"
+          title={`${s} ${receiveTokenSymbol}`}
+        >
           {s}
         </span>
       );
@@ -689,8 +637,8 @@ export const CexQuoteItem = (props: {
             {middleContent !== null && (
               <TokenWithChain
                 token={props.receiveToken}
-                width="20px"
-                height="20px"
+                width="16px"
+                height="16px"
                 hideChainIcon
                 hideConer
               />
@@ -742,7 +690,7 @@ export function WarningOrChecked({
     >
       <img
         src={quoteWarning ? ImgWarning : ImgVerified}
-        className="w-[14px] h-[14px]"
+        className="w-[16px] h-[16px]"
       />
     </TooltipWithMagnetArrow>
   );
@@ -776,14 +724,14 @@ function DEXItem(props: {
               overlayClassName="rectangle w-[max-content]"
               title={t('page.swap.need-to-approve-token-before-swap')}
             >
-              <img src={ImgLock} className="w-14 h-14" />
+              <img src={ImgLock} className="w-16 h16" />
             </TooltipWithMagnetArrow>
           )}
         </div>
 
         {!!props?.gasUsd && (
           <div className="flex items-center gap-4">
-            <img src={ImgGas} className="w-14 h-14 relative top-[-1px]" />
+            <img src={ImgGas} className="w-16 h16" />
             <span className="text-13 text-r-neutral-foot">{props?.gasUsd}</span>
           </div>
         )}
@@ -800,7 +748,7 @@ function DEXItem(props: {
               hideChainIcon
               hideConer
             />
-            <div className="ml-8 mr-4 flex items-center">
+            <div className="ml-6 mr-4 flex items-center">
               {props.middleContent}
             </div>
             {props.statusIcon}

@@ -54,7 +54,7 @@ export const WarningOrChecked = ({
     >
       <img
         src={quoteWarning ? ImgWarning : ImgVerified}
-        className="w-[14px] h-[14px]"
+        className="w-[16px] h-[16px]"
       />
     </Tooltip>
   );
@@ -110,7 +110,7 @@ const ReceiveWrapper = styled.div`
     margin-bottom: 8px;
     padding: 8px;
     font-weight: 400;
-    font-size: 12px;
+    font-size: 13px;
     color: #ffb020;
     position: relative;
     background: rgba(255, 176, 32, 0.1);
@@ -263,14 +263,14 @@ export const ReceiveDetails = (
               )}
             </div>
             {!!activeProvider?.gasUsd && (
-              <div className="flex items-center gap-4 text-12 text-r-neutral-foot font-normal">
-                <img src={ImgGas} className="w-14 h-14 relative" />
+              <div className="flex items-center gap-4 text-13 text-r-neutral-foot font-normal">
+                <img src={ImgGas} className="w-16 h-16 relative" />
                 <span>{activeProvider?.gasUsd}</span>
               </div>
             )}
           </div>
         </div>
-        <div className="right relative flex flex-col gap-10">
+        <div className="right relative flex flex-col gap-8">
           <div className="flex items-center gap-2 text-15 font-medium text-r-neutral-title-1 h-18 ml-auto">
             <SkeletonChildren
               loading={loading}
@@ -295,7 +295,7 @@ export const ReceiveDetails = (
 
           <div
             className={clsx(
-              'flex justify-end items-center gap-2 text-[13px] relative text-12 font-normal text-r-neutral-foot ml-auto',
+              'flex justify-end items-center gap-2 text-[13px] relative  font-normal text-r-neutral-foot ml-auto',
               loading && 'opacity-0'
             )}
           >
