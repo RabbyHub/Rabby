@@ -14,15 +14,14 @@ import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Popup } from 'ui/component';
 import { Table, Col, Row } from './components/Table';
-import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { Divide } from '../Divide';
-import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import IconUnknown from 'ui/assets/token-default.svg';
+import { TokenAmountItem } from './components/TokenAmountItem';
 
 const Wrapper = styled.div`
   .header {
@@ -240,37 +239,14 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle className="flex-none">
+          <Row isTitle className="flex-none items-center">
             {t('page.signTx.tokenApprove.approveToken')}
           </Row>
           <Row className="overflow-hidden pl-10">
-            <LogoWithText
-              id="token-approve-balance"
-              className={clsx(
-                'rounded-[4px]',
-                'overflow-hidden py-[4px] px-[7px] cursor-pointer',
-                'border-[0.5px] border-rabby-neutral-line',
-                'hover:border-rabby-blue-default hover:bg-r-blue-light1'
-              )}
-              logo={actionData.token.logo_url}
-              text={
-                <div
-                  onClick={() => setEditApproveModalVisible(true)}
-                  {...editHoverProps}
-                  className="overflow-hidden overflow-ellipsis flex justify-between items-center"
-                >
-                  <div className="flex flex-1 overflow-hidden">
-                    <Values.TokenAmount value={actionData.token.amount} />
-                  </div>
-                  <span className="text-blue-light text-14 font-medium ml-4 hover:underline">
-                    <IconEditPen className="text-r-blue-default" />
-                  </span>
-                </div>
-              }
-              logoRadius="100%"
-              textStyle={{
-                flex: 1,
-              }}
+            <TokenAmountItem
+              amount={actionData.token.amount}
+              logoUrl={actionData.token.logo_url}
+              onEdit={() => setEditApproveModalVisible(true)}
             />
           </Row>
         </Col>
