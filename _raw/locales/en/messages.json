@@ -1932,6 +1932,9 @@
           "added": "You've already added this chain",
           "supported": "Chain already integrated by Rabby Wallet"
         }
+      },
+      "ConfirmModifyRpcModal": {
+        "desc": "The chain is already integrated by Rabby. Do you need to modify its RPC URL?"
       }
     },
     "addChain": {
