@@ -200,7 +200,8 @@ export function useFindCustomToken(input?: {
               wallet,
             }
             // filter out core tokens
-          ).then((res) => res.filter((item) => !item.is_core));
+          );
+          // .then((res) => res.filter((item) => !item.is_core));
         } else {
           // lists.tokenList = await requestOpenApiWithChainId(
           //   (ctx) => ctx.openapi.searchToken(address, q, chainServerId),

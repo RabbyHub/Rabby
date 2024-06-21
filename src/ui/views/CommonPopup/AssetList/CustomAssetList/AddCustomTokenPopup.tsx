@@ -28,7 +28,6 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import {
   useOperateCustomToken,
   useFindCustomToken,
-  useIsTokenAddedLocally,
 } from '@/ui/hooks/useSearchToken';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
@@ -196,6 +195,13 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     async () => {
       if (!token || !chain?.id || !tokenId) {
         return null;
+      }
+
+      if (token.is_core) {
+        // message.error();
+        throw new Error(
+          t('page.dashboard.assets.AddMainnetToken.isBuiltInToken')
+        );
       }
       const portofolioToken = (await addToken(token)) || null;
 
