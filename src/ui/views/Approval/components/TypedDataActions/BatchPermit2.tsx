@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -6,15 +6,14 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { BatchApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
-import { formatAmount } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
-import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
 
 const Wrapper = styled.div`
   .header {
@@ -75,23 +74,13 @@ const Permit2 = ({
         {actionData.token_list.map((token, index) => (
           <>
             <Col>
-              <Row isTitle>
+              <Row isTitle className="flex-none items-center">
                 {index === 0 ? t('page.signTx.tokenApprove.approveToken') : ''}
               </Row>
               <Row className="overflow-hidden pl-6">
-                <LogoWithText
-                  className="overflow-hidden"
-                  id={`batch-permit2-token-${index}`}
-                  logo={token.logo_url}
-                  text={
-                    <div className="overflow-hidden overflow-ellipsis flex">
-                      <Values.TokenAmount value={token.amount} />
-                      <span className="ml-2">
-                        <Values.TokenSymbol token={token} />
-                      </span>
-                    </div>
-                  }
-                  logoRadius="100%"
+                <TokenAmountItem
+                  amount={token.amount}
+                  logoUrl={token.logo_url}
                 />
               </Row>
             </Col>
