@@ -1170,6 +1170,10 @@ export class WalletController extends BaseController {
   setThemeMode = (themeMode: DARK_MODE_TYPE) =>
     preferenceService.setThemeMode(themeMode);
 
+  isReserveGasOnSendToken = () => preferenceService.isReserveGasOnSendToken();
+  setReserveGasOnSendToken = (val: boolean) =>
+    preferenceService.setPreferencePartials({ reserveGasOnSendToken: val });
+
   getLastTimeSendToken = (address: string) =>
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>

@@ -14,6 +14,7 @@ import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -228,7 +229,12 @@ const flowContext = flow
     } = request;
     const requestDeferFn = () =>
       new Promise((resolve, reject) => {
-        return Promise.resolve(
+        let waitSignComponentPromise = Promise.resolve();
+        if (isSignApproval(approvalType) && uiRequestComponent) {
+          waitSignComponentPromise = waitSignComponentAmounted();
+        }
+
+        const invokeProviderPromise = Promise.resolve(
           providerController[mapMethod]({
             ...request,
             approvalRes,
@@ -259,6 +265,8 @@ const flowContext = flow
               });
             }
           });
+
+        return waitSignComponentPromise.then(() => invokeProviderPromise);
       });
     notificationService.setCurrentRequestDeferFn(requestDeferFn);
     const requestDefer = requestDeferFn();

@@ -56,7 +56,6 @@ import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
 import { customTestnetService } from '@/background/service/customTestnet';
 import { sendTransaction } from 'viem/actions';
-import { SIGN_TIMEOUT } from '@/constant/timeout';
 // import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
@@ -446,9 +445,6 @@ class ProviderController extends BaseController {
 
     const chainItem = findChainByEnum(chain);
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const statsData: StatsData = {
       signed: false,
       signedSuccess: false,
@@ -793,9 +789,6 @@ class ProviderController extends BaseController {
   personalSign = async ({ data, approvalRes, session }) => {
     if (!data.params) return;
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
       const [string, from] = data.params;
@@ -837,9 +830,6 @@ class ProviderController extends BaseController {
         _data = JSON.parse(data);
       }
     }
-
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
 
     return keyringService.signTypedMessage(
       keyring,
@@ -1047,7 +1037,7 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({
@@ -1127,13 +1117,16 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({ hex: chainId });
 
     if (!chain) {
-      throw new Error('This chain is not supported by Rabby yet.');
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+      });
     }
 
     permissionService.updateConnectSite(

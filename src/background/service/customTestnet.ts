@@ -124,6 +124,7 @@ class CustomTestnetService {
           error: {
             key: 'id',
             message: "You've already added this chain",
+            status: 'alreadyAdded',
           },
         };
       } else {
@@ -131,6 +132,7 @@ class CustomTestnetService {
           error: {
             key: 'id',
             message: 'Chain already integrated by Rabby Wallet',
+            status: 'alreadySupported',
           },
         };
       }

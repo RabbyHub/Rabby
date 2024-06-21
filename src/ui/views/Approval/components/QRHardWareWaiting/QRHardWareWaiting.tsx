@@ -25,7 +25,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { SIGN_TIMEOUT } from '@/constant/timeout';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -148,10 +148,9 @@ const QRHardWareWaiting = ({ params }) => {
         // rejectApproval(data.errorMsg);
       }
     });
-    // Wait for the keyring to have called the signature method
-    setTimeout(() => {
-      wallet.acquireKeystoneMemStoreData();
-    }, SIGN_TIMEOUT);
+
+    emitSignComponentAmounted();
+    wallet.acquireKeystoneMemStoreData();
   }, []);
 
   React.useEffect(() => {

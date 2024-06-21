@@ -28,6 +28,7 @@ interface PreferenceState {
   isShowTestnet: boolean;
   addressSortStore: AddressSortStore;
   themeMode: DARK_MODE_TYPE;
+  reserveGasOnSendToken: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -50,8 +51,9 @@ export const preference = createModel<RootModel>()({
     autoLockTime: 0,
     hiddenBalance: false,
     isShowTestnet: false,
-    themeMode: DARK_MODE_TYPE.system,
     addressSortStore: {} as AddressSortStore,
+    themeMode: DARK_MODE_TYPE.system,
+    reserveGasOnSendToken: false,
   } as PreferenceState,
 
   reducers: {
@@ -64,6 +66,14 @@ export const preference = createModel<RootModel>()({
         { ...state }
       );
     },
+  },
+
+  selectors: (slice) => {
+    return {
+      isReserveGasOnSendToken() {
+        return slice((preference) => preference.reserveGasOnSendToken);
+      },
+    };
   },
 
   effects: (dispatch) => ({
@@ -193,6 +203,14 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setThemeMode(themeMode);
       dispatch.preference.getPreference('themeMode');
+    },
+
+    async setIsReserveGasOnSendToken(value: boolean, store) {
+      dispatch.preference.setField({
+        reserveGasOnSendToken: value,
+      });
+      await store.app.wallet.setReserveGasOnSendToken(value);
+      dispatch.preference.getPreference('reserveGasOnSendToken');
     },
 
     async getAddressSortStoreValue(key: keyof AddressSortStore, store) {
