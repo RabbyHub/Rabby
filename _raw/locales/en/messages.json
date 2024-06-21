@@ -1714,7 +1714,10 @@
       "title": "Backup Seed Phrase",
       "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
       "clickToShow": "Click to show Seed Phrase",
-      "copySeedPhrase": "Copy seed phrase"
+      "copySeedPhrase": "Copy seed phrase",
+      "showQrCode": "Show QR Code",
+      "qrCodePopupTitle": "QR Code",
+      "qrCodePopupTips": "Never share the seed phrase QR code to anyone else. Please view it in a secure environment and keep it carefully."
     },
     "backupPrivateKey": {
       "title": "Backup Private Key",
