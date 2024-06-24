@@ -4,6 +4,22 @@ import browser from 'webextension-polyfill';
 
 import { EXTENSION_MESSAGES } from '@/constant/message';
 
+const createDefer = <T>() => {
+  let resolve: ((value: T) => void) | undefined;
+  let reject: ((reason?: any) => void) | undefined;
+
+  const promise: Promise<T> = new Promise(function (_resolve, _reject) {
+    resolve = _resolve;
+    reject = _reject;
+  });
+
+  return {
+    promise,
+    resolve,
+    reject,
+  };
+};
+
 const injectProviderScript = (isDefaultWallet: boolean) => {
   // the script element with src won't execute immediately
   // use inline script element instead!
@@ -20,12 +36,16 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
 const { BroadcastChannelMessage } = Message;
 
 let pm: PortMessage | null = new PortMessage().connect();
+let defer = createDefer<PortMessage>();
 
 const bcm = new BroadcastChannelMessage({
   name: 'rabby-content-script',
   target: 'rabby-page-provider',
 }).listen((data) => {
-  return pm?.request(data);
+  if (pm) {
+    return pm?.request(data);
+  }
+  return defer.promise.then((pm) => pm?.request(data));
 });
 
 // background notification
@@ -41,6 +61,7 @@ const onDisconnectDestroyStreams = (err) => {
 
   pm?.dispose();
   pm = null;
+  defer = createDefer<PortMessage>();
 };
 pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
 
@@ -48,6 +69,7 @@ const onMessageSetUpExtensionStreams = (msg) => {
   if (msg.name === EXTENSION_MESSAGES.READY) {
     if (!pm) {
       pm = new PortMessage().connect();
+      defer.resolve?.(pm);
     }
     return Promise.resolve(`Rabby: handled ${EXTENSION_MESSAGES.READY}`);
   }
