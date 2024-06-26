@@ -4286,7 +4286,21 @@
   resolved "https://registry.yarnpkg.com/@onekeyfe/cross-inpage-provider-types/-/cross-inpage-provider-types-0.0.17.tgz#0c88c1a2febac44ec1600e0e59da732579cbd045"
   integrity sha512-QqjIPXQHb3UG9w79ujjL5L5Qd6oCrymQ/x2J2rYICtr56G6shHTmUvRZxAvne0ZsLv8UBGqZWbepVdnPipehYQ==
 
-"@onekeyfe/hd-core@0.3.27", "@onekeyfe/hd-core@^0.3.27":
+"@onekeyfe/hd-core@0.3.48":
+  version "0.3.48"
+  resolved "https://registry.yarnpkg.com/@onekeyfe/hd-core/-/hd-core-0.3.48.tgz#347ca20c2e86046fb272f795b2eac539f66b6eaa"
+  integrity sha512-FMkYHVcuO6aO/lkaEKIijWdo3NaPkUUhHmNK6zkSYBxUao1/2oGAcLym+g61cU6vpuRa42gbHQaNg+dK9dashg==
+  dependencies:
+    "@onekeyfe/hd-shared" "^0.3.48"
+    "@onekeyfe/hd-transport" "^0.3.48"
+    axios "^0.27.2"
+    bignumber.js "^9.0.2"
+    bytebuffer "^5.0.1"
+    jszip "^3.10.1"
+    parse-uri "^1.0.7"
+    semver "^7.3.7"
+
+"@onekeyfe/hd-core@^0.3.27":
   version "0.3.27"
   resolved "https://registry.yarnpkg.com/@onekeyfe/hd-core/-/hd-core-0.3.27.tgz#c2e0ebfffa5ef3925d8bcf049095f5c688cc8208"
   integrity sha512-UzEA824apMm79l2ngTd0/PfiwjxvHlUyD2Kdo1ohP9Dc8lpv4mf/R1Ce1xAVv2lu3ZQI9CP+3/1YUkXqPVCssA==
@@ -4304,6 +4318,11 @@
   version "0.3.27"
   resolved "https://registry.yarnpkg.com/@onekeyfe/hd-shared/-/hd-shared-0.3.27.tgz#37defe9122012d44c6e1b758770437bd97167060"
   integrity sha512-3eO+IRaJIKWmtdq9RfhRfiUs6/1z6NWcKe42lon/27XRah8mwzneggfqFloLtvczjqP9lO98kLW7syM3CvOlqg==
+
+"@onekeyfe/hd-shared@^0.3.48":
+  version "0.3.48"
+  resolved "https://registry.yarnpkg.com/@onekeyfe/hd-shared/-/hd-shared-0.3.48.tgz#31bbff1e05922a04541a7916590923f4e08aa0b2"
+  integrity sha512-yWzKgBg3lKhauJW8yTBwERz51VfjaTJW8F47wNKS5jfCRbeeybPh0lMp98fJeeN3UhHeHFYZPtKvhL1hcMfSSg==
 
 "@onekeyfe/hd-transport-http@^0.3.27":
   version "0.3.27"
@@ -4326,6 +4345,15 @@
   version "0.3.27"
   resolved "https://registry.yarnpkg.com/@onekeyfe/hd-transport/-/hd-transport-0.3.27.tgz#e169ef9c6462f4850d8e23aa286bf0e0d0e66a2e"
   integrity sha512-MC1VSDifwVVKJ+wFQbg2y1kGMhXTVSq1oDNFSFr5cBoj4Vak7kN/crDssc+g/64tMEE44aN1h5tgcKexmZRKQA==
+  dependencies:
+    bytebuffer "^5.0.1"
+    long "^4.0.0"
+    protobufjs "^6.11.2"
+
+"@onekeyfe/hd-transport@^0.3.48":
+  version "0.3.48"
+  resolved "https://registry.yarnpkg.com/@onekeyfe/hd-transport/-/hd-transport-0.3.48.tgz#d0acda6b13b97093318bb54226410c9b4f580fce"
+  integrity sha512-RrX2gFCnxdz6Tp8GfKVmLz7biCYvGqVmPDxUNrnl4DkuQAKdaNzZ7oNM5npwVywzKa0aMP4za2s5A7GaQ0BYow==
   dependencies:
     bytebuffer "^5.0.1"
     long "^4.0.0"
