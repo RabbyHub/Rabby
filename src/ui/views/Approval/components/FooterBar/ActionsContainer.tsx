@@ -17,6 +17,7 @@ export interface Props {
   children?: React.ReactNode;
   chain?: Chain;
   gasLess?: boolean;
+  gasLessThemeColor?: string;
 }
 
 export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({

@@ -20,6 +20,7 @@ export const SubmitActions: React.FC<Props> = ({
   tooltipContent,
   enableTooltip,
   gasLess,
+  gasLessThemeColor,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -85,10 +86,21 @@ export const SubmitActions: React.FC<Props> = ({
               type="primary"
               className={clsx(
                 gasLess && 'gasLess',
+                gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
                 'disabled:opacity-40 disabled:bg-blue-light border-transparent',
                 'before:content-none'
               )}
+              style={
+                gasLessThemeColor
+                  ? {
+                      '--gas-theme-color': gasLessThemeColor,
+                      '--gas-bg-color': disabledProcess
+                        ? 'var(--r-blue-disable)'
+                        : 'var(--r-blue-default, #7084ff)',
+                    }
+                  : {}
+              }
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
