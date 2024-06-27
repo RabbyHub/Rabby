@@ -35,7 +35,7 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
 
 const { BroadcastChannelMessage } = Message;
 
-let pm: PortMessage | null = new PortMessage().connect();
+let pm: PortMessage | null;
 let defer = createDefer<PortMessage>();
 
 const bcm = new BroadcastChannelMessage({
@@ -49,27 +49,36 @@ const bcm = new BroadcastChannelMessage({
 });
 
 // background notification
-pm?.on('message', (data) => bcm.send('message', data));
 
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm?.dispose();
 });
 
+const handlePmMessage = (data) => bcm.send('message', data);
+
 const onDisconnectDestroyStreams = (err) => {
   pm?.port?.onDisconnect.removeListener(onDisconnectDestroyStreams);
+  pm?.off('message', handlePmMessage);
 
   pm?.dispose();
   pm = null;
   defer = createDefer<PortMessage>();
 };
-pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
+
+const setupExtensionStreams = () => {
+  pm = new PortMessage().connect();
+  pm?.on('message', handlePmMessage);
+  defer.resolve?.(pm);
+  pm?.port?.onDisconnect.addListener(onDisconnectDestroyStreams);
+};
+
+setupExtensionStreams();
 
 const onMessageSetUpExtensionStreams = (msg) => {
   if (msg.name === EXTENSION_MESSAGES.READY) {
     if (!pm) {
-      pm = new PortMessage().connect();
-      defer.resolve?.(pm);
+      setupExtensionStreams();
     }
     return Promise.resolve(`Rabby: handled ${EXTENSION_MESSAGES.READY}`);
   }
