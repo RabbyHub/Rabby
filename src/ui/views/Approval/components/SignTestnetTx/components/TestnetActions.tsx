@@ -59,6 +59,7 @@ export const TestnetActions = ({
   isSpeedUp,
   isReady,
   originLogo,
+  origin,
 }: {
   chain: Chain;
   raw: Record<string, string | number>;
@@ -66,6 +67,7 @@ export const TestnetActions = ({
   isSpeedUp: boolean;
   isReady?: boolean;
   originLogo?: string;
+  origin: string;
 }) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({

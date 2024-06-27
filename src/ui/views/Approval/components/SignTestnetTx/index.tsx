@@ -648,6 +648,7 @@ export const SignTestnetTx = ({ params, origin }: SignTxProps) => {
           }}
           isSpeedUp={isSpeedUp}
           originLogo={params.session.icon}
+          origin={params.session.origin}
         />
 
         {isReady && (
