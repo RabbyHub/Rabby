@@ -1909,7 +1909,8 @@
       },
       "code-set-successfully": "Referral code set successfully",
       "initialPointsClaimEnded": "Initial Points claim ended",
-      "firstRoundEnded": "🎉 The first round of Rabby Points has ended"
+      "firstRoundEnded": "🎉 The first round of Rabby Points has ended",
+      "secondRoundEnded": "🎉 The second round of Rabby Points has ended"
     },
     "customTestnet": {
       "title": "Custom Network",
