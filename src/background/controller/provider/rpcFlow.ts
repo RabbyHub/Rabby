@@ -234,39 +234,39 @@ const flowContext = flow
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
-        const invokeProviderPromise = Promise.resolve(
-          providerController[mapMethod]({
-            ...request,
-            approvalRes,
-          })
-        )
-          .then((result) => {
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: true,
-                  data: result,
-                },
-              });
-            }
-            return result;
-          })
-          .then(resolve)
-          .catch((e: any) => {
-            Sentry.captureException(e);
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: false,
-                  errorMsg: e?.message || JSON.stringify(e),
-                },
-              });
-            }
-          });
-
-        return waitSignComponentPromise.then(() => invokeProviderPromise);
+        return waitSignComponentPromise.then(() =>
+          Promise.resolve(
+            providerController[mapMethod]({
+              ...request,
+              approvalRes,
+            })
+          )
+            .then((result) => {
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.SIGN_FINISHED,
+                  params: {
+                    success: true,
+                    data: result,
+                  },
+                });
+              }
+              return result;
+            })
+            .then(resolve)
+            .catch((e: any) => {
+              Sentry.captureException(e);
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.SIGN_FINISHED,
+                  params: {
+                    success: false,
+                    errorMsg: e?.message || JSON.stringify(e),
+                  },
+                });
+              }
+            })
+        );
       });
     notificationService.setCurrentRequestDeferFn(requestDeferFn);
     const requestDefer = requestDeferFn();
