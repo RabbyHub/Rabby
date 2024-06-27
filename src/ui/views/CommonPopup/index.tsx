@@ -97,6 +97,7 @@ export const CommonPopup: React.FC = () => {
           </span>
         ) : null
       }
+      mask={height !== 0}
       closable={config.closeable}
       maskClosable={config.maskClosable}
       height={height}

@@ -70,6 +70,9 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
   };
+  const isSignText = /personalSign|SignTypedData/.test(
+    params?.extra?.signTextMethod
+  );
 
   const handleCancel = () => {
     rejectApproval('user cancel');
@@ -198,7 +201,11 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
           </span>
         </div>
       );
-      setHeight(208);
+      if (isSignText) {
+        setHeight(0);
+      } else {
+        setHeight(208);
+      }
       init();
     })();
   }, []);
@@ -230,6 +237,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
+        // immediate close popup when sign text
+        if (isSignText) {
+          setIsClickDone(true);
+        }
         setStatusProp('RESOLVED');
         setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
@@ -239,6 +250,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         break;
     }
   }, [connectStatus, errorMessage]);
+
+  if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
+    return null;
+  }
 
   return (
     <ApprovalPopupContainer
