@@ -315,7 +315,7 @@ export const Main = () => {
       <>
         <div className="flex justify-between">
           <span>{t('page.swap.rabby-fee')}</span>
-          <span className="font-medium text-r-neutral-title-1">0%</span>
+          <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
         </div>
         {showMEVGuardedSwitch && (
           <div className="flex justify-between">
@@ -340,7 +340,7 @@ export const Main = () => {
         )}
       </>
     ),
-    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded]
+    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded, feeRate]
   );
 
   return (
@@ -473,6 +473,12 @@ export const Main = () => {
                 <>
                   <div className="section text-13 leading-4 text-r-neutral-body mt-12">
                     <div className="subText flex flex-col gap-12">
+                      <div className="flex justify-between">
+                        <span>{t('page.swap.slippage-tolerance')}</span>
+                        <span className="font-medium text-r-neutral-title-1">
+                          {t('page.swap.no-slippage-for-wrap')}
+                        </span>
+                      </div>
                       {FeeAndMEVGuarded}
                       <div className="text-13 text-r-neutral-body">
                         {t(
