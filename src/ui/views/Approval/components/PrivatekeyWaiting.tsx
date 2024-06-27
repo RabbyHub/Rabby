@@ -201,6 +201,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
           </span>
         </div>
       );
+      // don't show popup when sign text
       if (isSignText) {
         setHeight(0);
       } else {
