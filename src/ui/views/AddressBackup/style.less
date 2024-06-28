@@ -36,10 +36,12 @@
     height: 200px;
     border-radius: 8px;
     padding: 10px;
+    border: none !important;
   }
 
   .private-key {
-    background: #ffffff;
+    background: var(--r-neutral-card1, #fff);
+    color: var(--r-neutral-body, #D3D8E0);
     border-radius: 6px;
     height: 80px;
     position: relative;
@@ -50,7 +52,6 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-    color: @color-title;
 
     .icon-copy {
       position: absolute;
@@ -65,14 +66,13 @@
         width: 20px;
         height: 20px;
         path {
-          fill: @color-comment-1;
+          fill: var(--r-neutral-body, #D3D8E0);
         }
       }
       font-weight: 400;
       font-size: 14px;
       line-height: 18px;
       text-align: center;
-      color: @color-comment-1;
 
       display: flex;
       align-items: center;
@@ -121,7 +121,7 @@
   .footer {
     width: 100%;
     padding: 20px;
-    background-color: #FFF;
+    background-color: var(--r-neutral-bg-1, #fff);
     text-align: center;
     position: fixed;
     left: 0; bottom: 0;
