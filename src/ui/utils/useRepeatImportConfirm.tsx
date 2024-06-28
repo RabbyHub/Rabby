@@ -37,7 +37,14 @@ export const useRepeatImportConfirm = () => {
 
     if (account) {
       cleanup = modal.confirm({
-        title: t('page.newAddress.privateKey.repeatImportTips'),
+        title: (
+          <div>
+            <div>{t('page.newAddress.privateKey.repeatImportTips.desc')}</div>
+            <div>
+              {t('page.newAddress.privateKey.repeatImportTips.question')}
+            </div>
+          </div>
+        ),
         content: (
           <AddressItem
             address={address}
@@ -55,6 +62,7 @@ export const useRepeatImportConfirm = () => {
         cancelText: t('global.Cancel'),
         width: 360,
         centered: true,
+        autoFocusButton: null,
         className: 'confirm-modal',
       }).destroy;
     }

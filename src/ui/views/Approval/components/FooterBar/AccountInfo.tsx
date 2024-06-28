@@ -176,6 +176,7 @@ export const AccountInfo: React.FC<Props> = ({
               KEYRING_CLASS.PRIVATE_KEY
             ]
           }
+          grayIcon
           tip={t('page.signFooterBar.addressTip.privateKey')}
         />
       )}
@@ -186,6 +187,7 @@ export const AccountInfo: React.FC<Props> = ({
               KEYRING_CLASS.MNEMONIC
             ]
           }
+          grayIcon
           tip={
             needPassphrase
               ? t('page.signFooterBar.addressTip.seedPhraseWithPassphrase')
