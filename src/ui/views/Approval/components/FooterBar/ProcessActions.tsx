@@ -13,6 +13,7 @@ export const ProcessActions: React.FC<Props> = ({
   tooltipContent,
   gasLess,
   gasLessThemeColor,
+  isGasNotEnough,
 }) => {
   const { t } = useTranslation();
   return (
@@ -41,7 +42,7 @@ export const ProcessActions: React.FC<Props> = ({
               gasLessThemeColor
                 ? {
                     '--gas-theme-color': gasLessThemeColor,
-                    '--gas-bg-color': disabledProcess
+                    '--gas-bg-color': isGasNotEnough
                       ? 'var(--r-blue-disable)'
                       : 'var(--r-blue-default, #7084ff)',
                   }

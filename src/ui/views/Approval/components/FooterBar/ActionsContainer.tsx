@@ -18,6 +18,7 @@ export interface Props {
   chain?: Chain;
   gasLess?: boolean;
   gasLessThemeColor?: string;
+  isGasNotEnough?: boolean;
 }
 
 export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({

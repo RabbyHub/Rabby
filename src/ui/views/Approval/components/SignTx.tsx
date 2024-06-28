@@ -2179,6 +2179,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             useGasLess={
               (isGasNotEnough || !!gasLessConfig) && canUseGasLess && useGasLess
             }
+            isGasNotEnough={isGasNotEnough}
             enableGasLess={() => setUseGasLess(true)}
             hasShadow={footerShowShadow}
             origin={origin}

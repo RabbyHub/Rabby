@@ -43,6 +43,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   gasLessFailedReason?: string;
   isWatchAddr?: boolean;
   gasLessConfig?: GasLessConfig;
+  isGasNotEnough?: boolean;
 }
 
 const Wrapper = styled.section`

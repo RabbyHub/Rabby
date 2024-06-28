@@ -21,6 +21,7 @@ export const SubmitActions: React.FC<Props> = ({
   enableTooltip,
   gasLess,
   gasLessThemeColor,
+  isGasNotEnough,
 }) => {
   const { t } = useTranslation();
   const [isSign, setIsSign] = React.useState(false);
@@ -88,15 +89,15 @@ export const SubmitActions: React.FC<Props> = ({
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:opacity-40 disabled:bg-blue-light border-transparent',
+                'disabled:text-opacity-40 disabled:bg-blue-light disabled:bg-opacity-40 border-transparent',
                 'before:content-none'
               )}
               style={
                 gasLessThemeColor
                   ? {
                       '--gas-theme-color': gasLessThemeColor,
-                      '--gas-bg-color': disabledProcess
-                        ? 'var(--r-blue-disable)'
+                      '--gas-bg-color': isGasNotEnough
+                        ? 'rgba(112, 132, 255,0.4)'
                         : 'var(--r-blue-default, #7084ff)',
                     }
                   : {}
