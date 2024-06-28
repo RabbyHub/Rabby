@@ -53,7 +53,15 @@ const PageHeader = ({
         <ThemeIcon
           src={RcIconClose}
           className={clsx('icon-close', invertBack && 'filter invert', closeCn)}
-          onClick={onClose || (() => history.goBack())}
+          onClick={() => {
+            if (onClose) {
+              onClose();
+            } else if (history.length > 1) {
+              history.goBack();
+            } else {
+              history.replace('/');
+            }
+          }}
         />
       )}
     </div>
