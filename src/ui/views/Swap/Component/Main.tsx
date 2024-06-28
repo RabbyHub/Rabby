@@ -468,11 +468,10 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 // loading={receiveSlippageLoading}
               />
-
-              {isWrapToken ? (
-                <>
-                  <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12">
-                    <div className="subText flex flex-col gap-12">
+              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12">
+                <div className="subText flex flex-col gap-12">
+                  {isWrapToken ? (
+                    <>
                       <div className="flex justify-between">
                         <span>{t('page.swap.slippage-tolerance')}</span>
                         <span className="font-medium text-r-neutral-title-1">
@@ -480,37 +479,34 @@ export const Main = () => {
                         </span>
                       </div>
                       {FeeAndMEVGuarded}
-                      <div className="h-6" />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="section text-13 leading-4 text-r-neutral-body mt-12">
-                  <div className="subText flex flex-col gap-12">
-                    <Slippage
-                      displaySlippage={slippage}
-                      value={slippageState}
-                      onChange={(e) => {
-                        setSlippageChanged(true);
-                        setSlippage(e);
-                      }}
-                      recommendValue={
-                        slippageValidInfo?.is_valid
-                          ? undefined
-                          : slippageValidInfo?.suggest_slippage
-                      }
-                    />
-                    <div className="flex justify-between">
-                      <span>{t('page.swap.minimum-received')}</span>
-                      <span className="font-medium text-r-neutral-title-1">
-                        {miniReceivedAmount}{' '}
-                        {receiveToken ? getTokenSymbol(receiveToken) : ''}
-                      </span>
-                    </div>
-                    {FeeAndMEVGuarded}
-                  </div>
+                    </>
+                  ) : (
+                    <>
+                      <Slippage
+                        displaySlippage={slippage}
+                        value={slippageState}
+                        onChange={(e) => {
+                          setSlippageChanged(true);
+                          setSlippage(e);
+                        }}
+                        recommendValue={
+                          slippageValidInfo?.is_valid
+                            ? undefined
+                            : slippageValidInfo?.suggest_slippage
+                        }
+                      />
+                      <div className="flex justify-between">
+                        <span>{t('page.swap.minimum-received')}</span>
+                        <span className="font-medium text-r-neutral-title-1">
+                          {miniReceivedAmount}{' '}
+                          {receiveToken ? getTokenSymbol(receiveToken) : ''}
+                        </span>
+                      </div>
+                      {FeeAndMEVGuarded}
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
             </>
           )}
       </div>
