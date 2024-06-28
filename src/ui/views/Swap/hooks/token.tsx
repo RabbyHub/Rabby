@@ -82,7 +82,7 @@ export const useSlippage = () => {
 };
 
 export interface FeeProps {
-  fee: '0.3' | '0.1' | '0';
+  fee: '0.25' | '0.1' | '0';
   symbol?: string;
 }
 
@@ -186,7 +186,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const [payAmount, setPayAmount] = useState('');
 
-  const [feeRate] = useState<FeeProps['fee']>('0');
+  const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0');
 
   const {
     slippageChanged,
@@ -271,13 +271,11 @@ export const useTokenPair = (userAddress: string) => {
   );
 
   useEffect(() => {
-    // if (isWrapToken) {
-    //   setFeeRate('0');
-    // } else if (isStableCoin) {
-    //   setFeeRate('0.1');
-    // } else {
-    //   setFeeRate('0.3');
-    // }
+    if (isWrapToken) {
+      setFeeRate('0');
+    } else {
+      setFeeRate('0.25');
+    }
 
     if (isStableCoin) {
       setSlippage('0.05');

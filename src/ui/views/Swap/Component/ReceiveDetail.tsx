@@ -237,7 +237,12 @@ export const ReceiveDetails = (
       <div className="column receive-token pb-12">
         <div className="flex items-center gap-8">
           <div className="flex flex-col gap-8">
-            <div className="flex items-center gap-8 w-[108px] text-15 font-medium text-r-neutral-title-1 h-18">
+            <div
+              className={clsx(
+                'flex items-center gap-8  text-15 font-medium text-r-neutral-title-1 h-18',
+                isWrapToken ? 'w-[130px]' : 'w-[108px]'
+              )}
+            >
               <div className="flex items-center gap-6">
                 <img
                   className={clsx('rounded-full w-20 h-20 min-w-[20px]')}

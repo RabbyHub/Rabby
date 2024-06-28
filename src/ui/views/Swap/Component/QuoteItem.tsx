@@ -33,6 +33,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { TokenWithChain } from '@/ui/component';
+import { Tooltip } from 'antd';
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -487,57 +488,70 @@ export const DexQuoteItem = (
   );
 
   return (
-    <ItemWrapper
-      onMouseEnter={() => {
-        if (disabledTrade && !inSufficient && quote && preExecResult) {
-          setDisabledTradeTipsOpen(true);
-        }
-      }}
-      onMouseLeave={() => {
-        setDisabledTradeTipsOpen(false);
-      }}
-      onClick={handleClick}
-      className={clsx(
-        'dex',
-        active && 'active',
-        (disabledTrade || disabled) && 'disabled error',
-        inSufficient && !disabled && 'disabled inSufficient'
-      )}
+    <Tooltip
+      overlayClassName="rectangle w-[max-content]"
+      placement="top"
+      title={'Insufficient balance'}
+      trigger={['click']}
+      visible={inSufficient && !disabled ? undefined : false}
+      align={{ offset: [0, 30] }}
+      arrowPointAtCenter
     >
-      <DEXItem
-        logo={quoteProviderInfo.logo}
-        name={quoteProviderInfo.name}
-        isLoading={isLoading}
-        shouldApproveToken={preExecResult?.shouldApproveToken}
-        disable={disabled}
-        gasUsd={preExecResult?.gasUsd}
-        receiveToken={receiveToken}
-        middleContent={middleContent}
-        statusIcon={<CheckIcon />}
-        receivedTokenUsd={receivedTokenUsd}
-        diffContent={rightContent}
-      />
-
-      <div
-        className={clsx('disabled-trade', disabledTradeTipsOpen && 'active')}
+      <ItemWrapper
+        onMouseEnter={() => {
+          if (disabledTrade && !inSufficient && quote && preExecResult) {
+            setDisabledTradeTipsOpen(true);
+          }
+        }}
+        onMouseLeave={() => {
+          setDisabledTradeTipsOpen(false);
+        }}
+        onClick={handleClick}
+        className={clsx(
+          'dex',
+          active && 'active',
+          (disabledTrade || disabled) && 'disabled error',
+          inSufficient && !disabled && 'disabled inSufficient'
+        )}
       >
-        <img src={ImgWhiteWarning} className="w-12 h-12 relative top-[-10px]" />
-        <span>
-          {t('page.swap.this-exchange-is-not-enabled-to-trade-by-you')}
-          <br />
-          <span
-            className="underline-transparent underline cursor-pointer ml-4"
-            onClick={(e) => {
-              e.stopPropagation();
-              openSwapSettings(true);
-              setDisabledTradeTipsOpen(false);
-            }}
-          >
-            {t('page.swap.enable-it')}
+        <DEXItem
+          logo={quoteProviderInfo.logo}
+          name={quoteProviderInfo.name}
+          isLoading={isLoading}
+          shouldApproveToken={preExecResult?.shouldApproveToken}
+          disable={disabled}
+          gasUsd={preExecResult?.gasUsd}
+          receiveToken={receiveToken}
+          middleContent={middleContent}
+          statusIcon={<CheckIcon />}
+          receivedTokenUsd={receivedTokenUsd}
+          diffContent={rightContent}
+        />
+
+        <div
+          className={clsx('disabled-trade', disabledTradeTipsOpen && 'active')}
+        >
+          <img
+            src={ImgWhiteWarning}
+            className="w-12 h-12 relative top-[-10px]"
+          />
+          <span>
+            {t('page.swap.this-exchange-is-not-enabled-to-trade-by-you')}
+            <br />
+            <span
+              className="underline-transparent underline cursor-pointer ml-4"
+              onClick={(e) => {
+                e.stopPropagation();
+                openSwapSettings(true);
+                setDisabledTradeTipsOpen(false);
+              }}
+            >
+              {t('page.swap.enable-it')}
+            </span>
           </span>
-        </span>
-      </div>
-    </ItemWrapper>
+        </div>
+      </ItemWrapper>
+    </Tooltip>
   );
 };
 

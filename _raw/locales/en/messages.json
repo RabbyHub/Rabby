@@ -809,6 +809,7 @@
       "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no slippage for this trade",
+      "no-slippage-for-wrap": "No slippage for Wrap",
       "approve-tips": "1.Approve → 2.Swap",
       "best": "Best",
       "unable-to-fetch-the-price": "Unable to fetch the price",
