@@ -33,6 +33,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { TokenWithChain } from '@/ui/component';
+import { Tooltip } from 'antd';
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -487,14 +488,14 @@ export const DexQuoteItem = (
   );
 
   return (
-    <TooltipWithMagnetArrow
-      arrowPointAtCenter
+    <Tooltip
       overlayClassName="rectangle w-[max-content]"
       placement="top"
       title={'Insufficient balance'}
       trigger={['click']}
-      visible={inSufficient ? undefined : false}
+      visible={inSufficient && !disabled ? undefined : false}
       align={{ offset: [0, 30] }}
+      arrowPointAtCenter
     >
       <ItemWrapper
         onMouseEnter={() => {
@@ -550,7 +551,7 @@ export const DexQuoteItem = (
           </span>
         </div>
       </ItemWrapper>
-    </TooltipWithMagnetArrow>
+    </Tooltip>
   );
 };
 

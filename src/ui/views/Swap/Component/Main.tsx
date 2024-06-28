@@ -356,7 +356,7 @@ export const Main = () => {
     >
       <div
         className={clsx(
-          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-10 mx-20'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-16 mx-20'
         )}
       >
         <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
@@ -471,7 +471,7 @@ export const Main = () => {
 
               {isWrapToken ? (
                 <>
-                  <div className="section text-13 leading-4 text-r-neutral-body mt-12">
+                  <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12">
                     <div className="subText flex flex-col gap-12">
                       <div className="flex justify-between">
                         <span>{t('page.swap.slippage-tolerance')}</span>
