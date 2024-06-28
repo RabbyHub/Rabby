@@ -47,6 +47,7 @@ class SwapService {
         viewList: {} as SwapServiceStore['viewList'],
         tradeList: {} as SwapServiceStore['tradeList'],
         preferMEVGuarded: false,
+        sortIncludeGasFee: true,
       },
     });
     if (storage) {
@@ -168,7 +169,7 @@ class SwapService {
   };
 
   getSwapSortIncludeGasFee = () => {
-    return this.store.sortIncludeGasFee || false;
+    return this.store.sortIncludeGasFee || true;
   };
 
   setSwapSortIncludeGasFee = (bool: boolean) => {
