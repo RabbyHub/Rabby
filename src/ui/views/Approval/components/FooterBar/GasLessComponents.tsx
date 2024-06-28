@@ -6,12 +6,22 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import LogoImage from 'ui/assets/sign/tx/rabby.svg';
+import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg';
 
 import { ReactComponent as RcIconReason } from '@/ui/assets/sign/tx/question-cc.svg';
 
-// import { ReactComponent as RcIconLink } from 'ui/assets/sign/tx/link.svg';
 import { openInTab } from '@/ui/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useThemeMode } from '@/ui/hooks/usePreference';
+
+export type GasLessConfig = {
+  button_text: string;
+  before_click_text: string;
+  after_click_text: string;
+  logo: string;
+  theme_color: string;
+  dark_color: string;
+};
 
 export function GasLessNotEnough({
   url,
@@ -122,25 +132,44 @@ const GasLessReady = styled.div`
   }
 `;
 
-function FreeGasReady() {
+function FreeGasReady({
+  freeGasText,
+  color,
+  logo,
+}: {
+  freeGasText?: string;
+  color?: string;
+  logo?: string;
+}) {
   const { t } = useTranslation();
   return (
     <span
-      className="gas-ready security-level-tip bg-transparent text-transparent py-0 pt-[18px] h-[46px]"
-      style={{
-        backgroundImage: `url(${GasLessBg})`,
-      }}
+      className={clsx(
+        'gas-ready security-level-tip text-transparent py-0 pt-[18px] h-[46px]',
+        'bg-transparent'
+      )}
+      style={
+        freeGasText
+          ? {}
+          : {
+              backgroundImage: `url(${GasLessBg})`,
+            }
+      }
     >
-      <RcIconLogo viewBox="0 0 20 20" className="w-16 h-16 mr-4 " />
+      {logo ? (
+        <img src={logo} className="w-16 h-16 mr-4" />
+      ) : (
+        <RcIconLogo viewBox="0 0 20 20" className="w-16 h-16 mr-4 " />
+      )}
       <span
         className="flex-1"
         style={{
-          color: 'var(--r-blue-default, #7084FF)',
+          color: color || 'var(--r-blue-default, #7084FF)',
           fontSize: '13px',
           fontWeight: '500',
         }}
       >
-        {t('page.signFooterBar.gasless.rabbyPayGas')}
+        {freeGasText || t('page.signFooterBar.gasless.rabbyPayGas')}
       </span>
     </span>
   );
@@ -179,6 +208,87 @@ export function GasLessToSign({
   );
 }
 
+export function GasLessActivityToSign({
+  handleFreeGas,
+  gasLessEnable,
+  gasLessConfig,
+}: {
+  handleFreeGas: () => void;
+  gasLessEnable: boolean;
+
+  gasLessConfig?: GasLessConfig;
+}) {
+  const { t } = useTranslation();
+  const { isDarkTheme } = useThemeMode();
+
+  const themeColor = isDarkTheme
+    ? gasLessConfig?.dark_color
+    : gasLessConfig?.theme_color;
+
+  return (
+    <>
+      <GasLessReady className={clsx(gasLessEnable && 'gasLess')}>
+        <FreeGasReady
+          freeGasText={gasLessConfig?.after_click_text}
+          color={themeColor}
+          logo={gasLessConfig?.logo}
+        />
+        {!!themeColor && (
+          <RcIconCCFreeGasBg
+            style={{
+              color: themeColor,
+            }}
+            className="h-[45px] w-full absolute top-[7px]"
+          />
+        )}
+        <span
+          className={clsx(
+            'gas-to-sign security-level-tip  items-center pr-6',
+            themeColor
+              ? 'bg-transparent text-transparent'
+              : 'bg-r-neutral-card2 text-r-neutral-card2'
+          )}
+        >
+          {gasLessConfig?.logo ? (
+            <img src={gasLessConfig?.logo} className="w-16 h-16 mr-4" />
+          ) : (
+            <RcIconGas
+              viewBox="0 0 16 16"
+              className="w-16 h-16 mr-4 text-r-neutral-title-1"
+            />
+          )}
+
+          <span
+            className={clsx(
+              'flex-1',
+              themeColor ? '' : 'text-r-neutral-title-1'
+            )}
+            style={{
+              color: themeColor,
+            }}
+          >
+            {gasLessConfig?.before_click_text ||
+              t('page.signFooterBar.gasless.notEnough')}
+          </span>
+
+          <LinearGradientAnimatedSpan
+            className={clsx(
+              'mr-auto px-10 py-[7px]  cursor-pointer text-r-neutral-title-2'
+            )}
+            style={{
+              background: themeColor,
+            }}
+            onClick={handleFreeGas}
+          >
+            {gasLessConfig?.button_text ||
+              t('page.signFooterBar.gasless.GetFreeGasToSign')}
+          </LinearGradientAnimatedSpan>
+        </span>
+      </GasLessReady>
+    </>
+  );
+}
+
 export const GasLessAnimatedWrapper = styled.div`
   &.gasLess,
   .gasLess {
@@ -193,6 +303,12 @@ export const GasLessAnimatedWrapper = styled.div`
     background-position-x: -12%, 200%;
     background-position-y: center;
     animation: gasLoading 0.9s linear 1 forwards, jump 0.3s linear 3 forwards;
+
+    &.gasLessConfig {
+      background-color: var(--gas-bg-color);
+      background-image: linear-gradient(transparent, transparent),
+        linear-gradient(var(--gas-theme-color), var(--gas-theme-color));
+    }
   }
 
   @keyframes gasLoading {

@@ -12,6 +12,8 @@ export const ProcessActions: React.FC<Props> = ({
   disabledProcess,
   tooltipContent,
   gasLess,
+  gasLessThemeColor,
+  isGasNotEnough,
 }) => {
   const { t } = useTranslation();
   return (
@@ -27,6 +29,7 @@ export const ProcessActions: React.FC<Props> = ({
             type="ghost"
             className={clsx(
               gasLess && 'gasLess text-r-neutral-title2',
+              gasLessThemeColor && 'gasLessConfig',
               !gasLess && 'text-blue-light',
               'border-blue-light',
               'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
@@ -35,6 +38,16 @@ export const ProcessActions: React.FC<Props> = ({
               'rounded-[8px]',
               'before:content-none'
             )}
+            style={
+              gasLessThemeColor
+                ? {
+                    '--gas-theme-color': gasLessThemeColor,
+                    '--gas-bg-color': isGasNotEnough
+                      ? 'var(--r-blue-disable)'
+                      : 'var(--r-blue-default, #7084ff)',
+                  }
+                : {}
+            }
             onClick={onSubmit}
           >
             {t('page.signFooterBar.beginSigning')}

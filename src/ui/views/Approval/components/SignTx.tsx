@@ -81,6 +81,7 @@ import { SignAdvancedSettings } from './SignAdvancedSettings';
 import GasSelectorHeader, {
   GasSelectorResponse,
 } from './TxComponents/GasSelectorHeader';
+import { GasLessConfig } from './FooterBar/GasLessComponents';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -715,6 +716,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [gasLessFailedReason, setGasLessFailedReason] = useState<
     string | undefined
   >(undefined);
+  const [gasLessConfig, setGasLessConfig] = useState<GasLessConfig | undefined>(
+    undefined
+  );
   const [useGasLess, setUseGasLess] = useState(false);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [isCoboArugsAccount, setIsCoboArugsAccount] = useState(false);
@@ -956,10 +960,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     };
     hasCustomRPC();
   }, [chain?.enum]);
-
-  const showGasLess = useMemo(() => {
-    return isGasNotEnough;
-  }, [isGasNotEnough]);
 
   const explainTx = async (address: string) => {
     let recommendNonce = '0x0';
@@ -1603,9 +1603,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setCanUseGasLess(res.is_gasless);
       setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
+      if (res.is_gasless && res?.promotion?.config) {
+        setGasLessConfig(res?.promotion?.config);
+      }
     } catch (error) {
       console.error('gasLessTxCheck error', error);
-
+      setCanUseGasLess(false);
+      setGasLessConfig(undefined);
       setGasLessLoading(false);
     }
   };
@@ -1928,14 +1932,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       !isGnosisAccount &&
       !isCoboArugsAccount
     ) {
-      let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
-      sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
-        ? new BigNumber(0)
-        : sendNativeTokenAmount;
-      const gasNotEnough = gasExplainResponse.maxGasCostAmount
-        .plus(sendNativeTokenAmount.div(1e18))
-        .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
-      if (gasNotEnough && isSupportedAddr && noCustomRPC) {
+      if (isSupportedAddr && noCustomRPC) {
         checkGasLessStatus();
       } else {
         setGasLessLoading(false);
@@ -2173,10 +2170,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
             }
+            gasLessConfig={gasLessConfig}
             gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}
-            showGasLess={!gasLessLoading && isReady && showGasLess}
-            useGasLess={showGasLess && canUseGasLess && useGasLess}
+            showGasLess={
+              !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig)
+            }
+            useGasLess={
+              (isGasNotEnough || !!gasLessConfig) && canUseGasLess && useGasLess
+            }
+            isGasNotEnough={isGasNotEnough}
             enableGasLess={() => setUseGasLess(true)}
             hasShadow={footerShowShadow}
             origin={origin}
