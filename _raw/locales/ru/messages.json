@@ -191,7 +191,7 @@
         "receiveAsset": "Receive asset"
       },
       "unknownAction": "Неизвестный тип подписи",
-      "interactContract": "Взаимодействовать с контрактом",
+      "interactContract": "Вызов контракта",
       "markAsTrust": "Отметить как доверенный",
       "markAsBlock": "Отметить как заблокированный",
       "interacted": "Ранее взаимодействовал",
@@ -313,7 +313,8 @@
         "trustValueTitle": "Уровень риска",
         "typedDataMessage": "Сообщение с типизированными данными",
         "label": "Метка",
-        "addressSource": "Источник адреса"
+        "addressSource": "Источник адреса",
+        "maxPriorityFeeDisabledAlert": "Сначала установите Цену газа"
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -649,7 +650,8 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа"
+      "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа",
+      "SwitchReserveGas": "Резерв газа <1 />"
     },
     "sendNFT": {
       "header": {
@@ -823,7 +825,7 @@
       "rates-from-cex": "Курсы из CEX",
       "edit": "Изменить",
       "tradingSettingTips": "{{viewCount}} бирж дают котировки, на {{tradeCount}} разрешен обмен",
-      "the-following-swap-rates-are-found": "Найдены следующие курсы обмена",
+      "the-following-swap-rates-are-found": "Найденные курсы обмена",
       "sort-with-gas": "Сортировка по газу",
       "est-payment": "Расч. оплата:",
       "est-receiving": "Расч. получение:",
@@ -1152,7 +1154,8 @@
           "searching": "Поиск токена",
           "tokenAddress": "Адрес токена",
           "tokenAddressPlaceholder": "Адрес токена",
-          "notFound": "Токен не найден"
+          "notFound": "Токен не найден",
+          "isBuiltInToken": "Токен уже поддерживается"
         },
         "AddTestnetToken": {
           "title": "Добавить токен тестовой сети",
@@ -1265,11 +1268,17 @@
         "fillInTheBackupSeedPhraseInOrder": "Заполните резервную секретную фразу в порядке",
         "wordPhrase": "У меня есть <1>{{count}}</1>-словная фраза",
         "wordPhraseAndPassphrase": "У меня есть сид фраза из <1>{{count}}</1> слов с паролем",
+        "slip39SeedPhrase": "У меня есть <0>{{SLIP39}}</0> Seed Phrase",
+        "slip39SeedPhraseWithPassphrase": "У меня есть <0>{{SLIP39}}</0> сид фразы с паролем",
+        "slip39SeedPhrasePlaceholder_one": "Введите {{count}}ю часть сид фразы",
+        "slip39SeedPhrasePlaceholder_two": "Введите {{count}}ю часть сид фразы",
+        "slip39SeedPhrasePlaceholder_few": "Введите {{count}}ю часть сид фразы",
+        "slip39SeedPhrasePlaceholder_other": "Введите {{count}}ю часть сид фразы",
         "clearAll": "Очистить все",
-        "pastedAndClear": "Вставлено и очищено из буфера",
-        "invalidContent": "Неверные данные",
-        "inputInvalidCount_one": "1 ввод не похож на нормальную сид фразу, проверьте.",
-        "inputInvalidCount_other": "{{count}} ввода(-ов) не похожи на нормальную сид фразу, проверьте.",
+        "pastedAndClear": "Вставлено и очищен буфер",
+        "invalidContent": "Содержимое не подходит",
+        "inputInvalidCount_one": "1 не похоже на стандартную сид фразу, проверьте.",
+        "inputInvalidCount_other": "{{count}} не похоже на стандартную сид фразу, проверьте.",
         "passphrase": "Пароль"
       },
       "metamask": {
@@ -1290,6 +1299,7 @@
           "question": "Что такое приватный ключ?",
           "answer": "Это последовательность букв и цифр, используемая для управления вашими активами."
         },
+        "repeatImportTips": "Адрес уже импортирован, хотите переключиться?",
         "isItSafeToImportItInRabby": {
           "question": "Безопасно ли импортировать его в Rabby?",
           "answer": "Да, он будет храниться локально в вашем браузере и доступен только вам."
@@ -1707,7 +1717,10 @@
       "title": "Резервное копирование секретной фразы",
       "alert": "Эта секретная фраза является учетными данными для ваших активов. НЕ теряйте ее или не раскрывайте другим, иначе вы можете навсегда потерять свои активы. Пожалуйста, просмотрите ее в безопасной среде и храните аккуратно.",
       "clickToShow": "Нажмите, чтобы показать секретную фразу",
-      "copySeedPhrase": "Скопировать секретную фразу"
+      "copySeedPhrase": "Скопировать секретную фразу",
+      "showQrCode": "Показать QR Code",
+      "qrCodePopupTitle": "QR Code",
+      "qrCodePopupTips": "Никому не показывайте QR code. Открывайте только в безопасном месте."
     },
     "backupPrivateKey": {
       "title": "Резервное копирование приватного ключа",
@@ -1868,8 +1881,12 @@
         "rabbyUser": "Активный пользователь Rabby",
         "rabbyValuedUserBadge": "Значок ценного пользователя Rabby",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "walletBalance": "Wallet Balance",
+        "activeStats": "Active Status",
         "referral-code": "Реферальный код",
-        "invalid-code": "Недействительный код"
+        "invalid-code": "Недействительный код",
+        "cantUseOwnCode": "You cannot use your own referral code.",
+        "season2": "Season 2"
       },
       "referralCode": {
         "referral-code-cannot-be-empty": "Реферальный код не может быть пустым",
@@ -1920,6 +1937,12 @@
           "added": "Вы уже добавили эту сеть",
           "supported": "Сеть уже интегрирована в кошелек Rabby"
         }
+      },
+      "signTx": {
+        "title": "Данные транзакции"
+      },
+      "ConfirmModifyRpcModal": {
+        "desc": "Эта сеть уже интегрирована в Rabby. Хотите добавить новый RPC URL?"
       }
     },
     "addChain": {
@@ -2015,8 +2038,8 @@
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
-        "mainnet": "",
-        "testnet": ""
+        "mainnet": "Встроенные сети",
+        "testnet": "Добавленные сети"
       }
     },
     "ChainSelectorModal": {
