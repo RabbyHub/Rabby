@@ -3898,7 +3898,24 @@ export class WalletController extends BaseController {
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;
 
-  tryUnlock = async () => keyringService.tryUnlock();
+  tryUnlock = async () => {
+    await keyringService.tryUnlock();
+    this.syncPopupIcon();
+  };
+
+  syncPopupIcon = () => {
+    if (this.isUnlocked()) {
+      const hasOtherProvider = preferenceService.getHasOtherProvider();
+      const isDefaultWallet = preferenceService.getIsDefaultWallet();
+      if (!hasOtherProvider) {
+        setPopupIcon('default');
+      } else {
+        setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
+      }
+    } else {
+      setPopupIcon('locked');
+    }
+  };
 }
 
 const wallet = new WalletController();
