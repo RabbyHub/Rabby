@@ -480,11 +480,7 @@ export const Main = () => {
                         </span>
                       </div>
                       {FeeAndMEVGuarded}
-                      <div className="text-13 text-r-neutral-body">
-                        {t(
-                          'page.swap.there-is-no-fee-and-slippage-for-this-trade'
-                        )}
-                      </div>
+                      <div className="h-6" />
                     </div>
                   </div>
                 </>
