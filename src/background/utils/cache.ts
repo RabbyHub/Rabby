@@ -19,7 +19,7 @@ export const cached = <T extends (...args: any[]) => Promise<any>>(
   const options =
     typeof _options === 'number' ? { timeout: _options } : _options;
 
-  const { timeout = 1000 * 60 * 5, maxSize = 0 } = options || {};
+  const { timeout = 3 * 60 * 1000, maxSize = 0 } = options || {};
 
   const cache: {
     [key: string]: {
