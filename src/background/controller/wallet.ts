@@ -101,7 +101,7 @@ import { customTestnetService } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
+import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
 
@@ -1064,7 +1064,10 @@ export class WalletController extends BaseController {
       });
       return data;
     },
-    BALANCE_LOADING_TIMES.TIMEOUT
+    {
+      timeout: BALANCE_LOADING_CONFS.TIMEOUT,
+      maxSize: BALANCE_LOADING_CONFS.CACHE_LIMIT,
+    }
   );
 
   private getTestnetTotalBalanceCached = cached(
@@ -1074,7 +1077,10 @@ export class WalletController extends BaseController {
       preferenceService.updateTestnetAddressBalance(address, testnetData);
       return testnetData;
     },
-    BALANCE_LOADING_TIMES.TIMEOUT
+    {
+      timeout: BALANCE_LOADING_CONFS.TIMEOUT,
+      maxSize: BALANCE_LOADING_CONFS.CACHE_LIMIT,
+    }
   );
 
   /**
@@ -1139,7 +1145,10 @@ export class WalletController extends BaseController {
       preferenceService.updateBalanceAboutCache(address, { curvePoints: data });
       return data;
     },
-    BALANCE_LOADING_TIMES.TIMEOUT
+    {
+      timeout: BALANCE_LOADING_CONFS.TIMEOUT,
+      maxSize: BALANCE_LOADING_CONFS.CACHE_LIMIT,
+    }
   );
 
   getInMemoryNetCurve = (address: string, force = false) => {
@@ -3766,7 +3775,7 @@ export class WalletController extends BaseController {
         return 0;
       }
     },
-    10000
+    { timeout: 10000, maxSize: 0 }
   ).fn;
 
   rabbyPointVerifyAddress = async (params?: {

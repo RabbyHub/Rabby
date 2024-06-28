@@ -5,8 +5,22 @@ import { appIsDev } from '@/utils/env';
 export const cached = <T extends (...args: any[]) => Promise<any>>(
   name: string,
   fn: T,
-  timeout = 3 * 60 * 1000
+  /**
+   * @description
+   *
+   * - if a number is passed, it will be used as the timeout
+   * - if an object is passed, it will be used as the options
+   *
+   * `timeout` is the time in milliseconds before the cache expires
+   * `maxSize` is the number of items to keep in the cache, if 0, no limit
+   */
+  _options?: number | { timeout: number; maxSize?: number }
 ) => {
+  const options =
+    typeof _options === 'number' ? { timeout: _options } : _options;
+
+  const { timeout = 1000 * 60 * 5, maxSize = 0 } = options || {};
+
   const cache: {
     [key: string]: {
       expire: number;
@@ -30,10 +44,21 @@ export const cached = <T extends (...args: any[]) => Promise<any>>(
     }
 
     const res = await fn(...args);
-    cache[key] = {
+    const item = {
       expire: now + timeout,
       value: res,
     };
+    cache[key] = item;
+
+    if (maxSize && Object.keys(cache).length > maxSize) {
+      const oldestKey = Object.keys(cache).reduce((oldest, key) => {
+        if (!oldest || cache[key].expire < cache[oldest].expire) {
+          return key;
+        }
+        return oldest;
+      }, '');
+      delete cache[oldestKey];
+    }
 
     return res;
   };
