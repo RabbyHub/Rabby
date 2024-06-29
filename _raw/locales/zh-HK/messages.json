@@ -1885,115 +1885,115 @@
         "completed": "交易已完成",
         "predictFailed": "預打包時間預測失敗",
         "skipNonce": "您的地址在以太坊鏈上存在跳過 Nonce，導致當前交易無法完成"
+      }
+    },
+    "dappSearch": {
+      "selectChain": "選擇鏈",
+      "searchResult": {
+        "foundDapps": "找到 <2>{{count}}</2> 個 Dapps",
+        "totalDapps": "共 <2>{{count}}</2> 個 Dapps"
       },
-      "dappSearch": {
-        "selectChain": "選擇鏈",
-        "searchResult": {
-          "foundDapps": "找到 <2>{{count}}</2> 個 Dapps",
-          "totalDapps": "共 <2>{{count}}</2> 個 Dapps"
-        },
-        "expand": "展開",
-        "emptyFavorite": "沒有收藏的 Dapp",
-        "favorite": "收藏",
-        "emptySearch": "未找到 Dapp",
-        "listBy": "Dapp 已列出"
+      "expand": "展開",
+      "emptyFavorite": "沒有收藏的 Dapp",
+      "favorite": "收藏",
+      "emptySearch": "未找到 Dapp",
+      "listBy": "Dapp 已列出"
+    },
+    "rabbyPoints": {
+      "title": "Rabby Points",
+      "out-of-x-current-total-points": "總分發中的 {{total}} 分",
+      "share-on": "分享至",
+      "referral-code-copied": "推薦碼已複製",
+      "earn-points": "賺取積分",
+      "top-100": "前 100 名",
+      "claimItem": {
+        "claim": "領取",
+        "disabledTip": "暫無可領取的積分",
+        "go": "前往",
+        "earnTip": "每天僅限一次。請在 UTC+0 00:00 後再次賺取積分",
+        "claimed": "已領取"
       },
-      "rabbyPoints": {
-        "title": "Rabby Points",
-        "out-of-x-current-total-points": "總分發中的 {{total}} 分",
-        "share-on": "分享至",
-        "referral-code-copied": "推薦碼已複製",
-        "earn-points": "賺取積分",
-        "top-100": "前 100 名",
-        "claimItem": {
-          "claim": "領取",
-          "disabledTip": "暫無可領取的積分",
-          "go": "前往",
-          "earnTip": "每天僅限一次。請在 UTC+0 00:00 後再次賺取積分",
-          "claimed": "已領取"
-        },
-        "claimModal": {
-          "title": "領取初始積分",
-          "snapshotTime": "快照時間：{{time}}",
-          "placeholder": "輸入推薦碼以獲得額外積分（選填）",
-          "claim": "領取",
-          "addressBalance": "錢包餘額",
-          "MetaMaskSwap": "MetaMask 交換",
-          "rabbyUser": "Rabby 活躍用戶",
-          "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
-          "rabbyDesktopGenesisNft": "Rabby 桌面起源 NFT",
-          "walletBalance": "錢包餘額",
-          "activeStats": "活動狀態",
-          "referral-code": "推薦碼",
-          "invalid-code": "無效的推薦碼",
-          "cantUseOwnCode": "您不能使用自己的推薦碼。",
-          "season2": "第 2 季"
-        },
-        "referralCode": {
-          "referral-code-cannot-be-empty": "推薦碼不能為空",
-          "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字符",
-          "referral-code-already-exists": "推薦碼已存在",
-          "referral-code-available": "推薦碼可用",
-          "my-referral-code": "我的推薦碼",
-          "refer-a-new-user-to-get-50-points": "推薦新用戶獲得 50 積分",
-          "set-my-code": "設置我的代碼",
-          "set-my-referral-code": "設置我的推薦碼",
-          "once-set-this-referral-code-is-permanent-and-cannot-change": "設置後，此推薦碼將永久不變，無法更改。",
-          "max-15-characters-use-numbers-and-letters-only": "最多 15 個字符，僅可使用數字和字母。",
-          "confirm": "確認",
-          "verifyAddressModal": {
-            "verify-address": "驗證地址",
-            "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文本消息以驗證您是該地址的所有者",
-            "cancel": "取消",
-            "sign": "簽署"
-          }
-        },
-        "code-set-successfully": "推薦碼設置成功",
-        "initialPointsClaimEnded": "初始積分領取已結束",
-        "firstRoundEnded": "🎉 Rabby Points 第一輪已結束",
-        "secondRoundEnded": "🎉 Rabby Points 第二輪已結束"
+      "claimModal": {
+        "title": "領取初始積分",
+        "snapshotTime": "快照時間：{{time}}",
+        "placeholder": "輸入推薦碼以獲得額外積分（選填）",
+        "claim": "領取",
+        "addressBalance": "錢包餘額",
+        "MetaMaskSwap": "MetaMask 交換",
+        "rabbyUser": "Rabby 活躍用戶",
+        "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
+        "rabbyDesktopGenesisNft": "Rabby 桌面起源 NFT",
+        "walletBalance": "錢包餘額",
+        "activeStats": "活動狀態",
+        "referral-code": "推薦碼",
+        "invalid-code": "無效的推薦碼",
+        "cantUseOwnCode": "您不能使用自己的推薦碼。",
+        "season2": "第 2 季"
       },
-      "customTestnet": {
-        "title": "自定義網絡",
-        "desc": "Rabby 無法驗證自定義網絡的安全性。請僅添加可信任的網絡。",
-        "add": "添加自定義網絡",
-        "empty": "沒有自定義網絡",
-        "currency": "貨幣",
-        "id": "ID",
-        "CustomTestnetForm": {
-          "id": "鏈 ID",
-          "name": "網絡名稱",
-          "rpcUrl": "RPC URL",
-          "idRequired": "請輸入鏈 ID",
-          "nameRequired": "請輸入網絡名稱",
-          "rpcUrlRequired": "請輸入 RPC URL",
-          "nativeTokenSymbol": "貨幣符號",
-          "nativeTokenSymbolRequired": "請輸入貨幣符號",
-          "blockExplorerUrl": "區塊瀏覽器 URL（選填）"
-        },
-        "AddFromChainList": {
-          "title": "從 Chainlist 快速添加",
-          "search": "搜索自定義網絡名稱或 ID",
-          "empty": "未找到鏈",
-          "tips": {
-            "added": "您已添加此鏈",
-            "supported": "Rabby 錢包已集成該鏈"
-          }
-        },
-        "signTx": {
-          "title": "交易數據"
-        },
-        "ConfirmModifyRpcModal": {
-          "desc": "該鏈已被 Rabby 集成。您是否需要修改其 RPC URL？"
+      "referralCode": {
+        "referral-code-cannot-be-empty": "推薦碼不能為空",
+        "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字符",
+        "referral-code-already-exists": "推薦碼已存在",
+        "referral-code-available": "推薦碼可用",
+        "my-referral-code": "我的推薦碼",
+        "refer-a-new-user-to-get-50-points": "推薦新用戶獲得 50 積分",
+        "set-my-code": "設置我的代碼",
+        "set-my-referral-code": "設置我的推薦碼",
+        "once-set-this-referral-code-is-permanent-and-cannot-change": "設置後，此推薦碼將永久不變，無法更改。",
+        "max-15-characters-use-numbers-and-letters-only": "最多 15 個字符，僅可使用數字和字母。",
+        "confirm": "確認",
+        "verifyAddressModal": {
+          "verify-address": "驗證地址",
+          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文本消息以驗證您是該地址的所有者",
+          "cancel": "取消",
+          "sign": "簽署"
         }
       },
-      "addChain": {
-        "title": "添加自定義網絡到 Rabby",
-        "desc": "Rabby 無法驗證自定義網絡的安全性。請僅添加可信任的網絡。"
+      "code-set-successfully": "推薦碼設置成功",
+      "initialPointsClaimEnded": "初始積分領取已結束",
+      "firstRoundEnded": "🎉 Rabby Points 第一輪已結束",
+      "secondRoundEnded": "🎉 Rabby Points 第二輪已結束"
+    },
+    "customTestnet": {
+      "title": "自定義網絡",
+      "desc": "Rabby 無法驗證自定義網絡的安全性。請僅添加可信任的網絡。",
+      "add": "添加自定義網絡",
+      "empty": "沒有自定義網絡",
+      "currency": "貨幣",
+      "id": "ID",
+      "CustomTestnetForm": {
+        "id": "鏈 ID",
+        "name": "網絡名稱",
+        "rpcUrl": "RPC URL",
+        "idRequired": "請輸入鏈 ID",
+        "nameRequired": "請輸入網絡名稱",
+        "rpcUrlRequired": "請輸入 RPC URL",
+        "nativeTokenSymbol": "貨幣符號",
+        "nativeTokenSymbolRequired": "請輸入貨幣符號",
+        "blockExplorerUrl": "區塊瀏覽器 URL（選填）"
       },
-      "sign": {
-        "transactionSpeed": "交易速度"
+      "AddFromChainList": {
+        "title": "從 Chainlist 快速添加",
+        "search": "搜索自定義網絡名稱或 ID",
+        "empty": "未找到鏈",
+        "tips": {
+          "added": "您已添加此鏈",
+          "supported": "Rabby 錢包已集成該鏈"
+        }
+      },
+      "signTx": {
+        "title": "交易數據"
+      },
+      "ConfirmModifyRpcModal": {
+        "desc": "該鏈已被 Rabby 集成。您是否需要修改其 RPC URL？"
       }
+    },
+    "addChain": {
+      "title": "添加自定義網絡到 Rabby",
+      "desc": "Rabby 無法驗證自定義網絡的安全性。請僅添加可信任的網絡。"
+    },
+    "sign": {
+      "transactionSpeed": "交易速度"
     }
   },
   "component": {
