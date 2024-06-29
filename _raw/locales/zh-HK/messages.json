@@ -819,7 +819,7 @@
           "bodyEmpty": {
             "loadingText": "加載中...",
             "noMatchText": "沒有匹配",
-            "noDataText": "No Approvals"
+            "noDataText": "無授權"
           }
         },
         "RevokeButton": {
@@ -970,9 +970,9 @@
       "sort-by-address-type": "按地址類型排序",
       "sort-by-address-note": "按地址備注排序",
       "sort-address": "地址排序",
-      "enterThePassphrase": "Enter the Passphrase",
-      "enterPassphraseTitle": "Enter Passphrase to Sign",
-      "passphraseError": "Passphrase invalid"
+      "enterThePassphrase": "輸入密碼詞",
+      "enterPassphraseTitle": "輸入密碼詞進行簽名",
+      "passphraseError": "密碼詞無效"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -1132,8 +1132,8 @@
         "seedPhrase": "助記詞地址",
         "trezor": "Trezor 地址",
         "watchAddress": "無法使用觀察地址進行簽名",
-        "coboSafe": "Cobo Argus Address",
-        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)"
+        "coboSafe": "Cobo Argus 地址",
+        "seedPhraseWithPassphrase": "種子短語地址（密碼）"
       },
       "beginSigning": "開始簽名流程",
       "connectButton": "連接",
