@@ -50,7 +50,7 @@ Please don't hesitate to reach out if you have any doubts.
 
 ### Development
 
-Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
+Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when the focus is lost).
 
 Run `yarn build:pro` to build a production package, which will be in the `dist` folder.
 
