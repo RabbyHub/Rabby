@@ -24,7 +24,7 @@ The default route of `ui` is `SortHat`(_SortHat.tsx_). This will check the walle
 
 ## Approval
 
-When a Dapp requests something which needs the user's permission, the `approval job` will be set, and this triggers the `notification page` open.
+When a Dapp requests something that needs the user's permission, the `approval job` will be set, and this triggers the `notification page` to open.
 
 Then the page will check the `approval job` status in the `SortHat` view, and navigate to the `Approval` view.(_views/Approval_)
 
