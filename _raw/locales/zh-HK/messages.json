@@ -24,8 +24,8 @@
     "scamTx": "詐騙交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "觀察模式地址",
-    "appDescription": "用於以太坊和所有 EVM 鏈的改變遊戲規則的錢包",
-    "appName": "Rabby 錢包",
+    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appName": "Rabby Wallet",
     "Deleted": "已刪除",
     "Loading": "加載中",
     "Balance": "結餘",
@@ -170,7 +170,7 @@
         "imageLabel": "Rabby Badge",
         "learnMoreOnDebank": "跳轉至 DeBank 領取",
         "noCode": "你尚未激活該地址的邀請碼",
-        "rabbyValuedUserNo": "Rabby 優質用戶 No.{{num}}",
+        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
         "swapTip": "你需要先在 Rabby Wallet 中完成一筆與知名dex的兌換",
         "title": "領取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
@@ -179,7 +179,7 @@
         "freeGasTip": "請使用免費 Gas 簽署一筆交易。當您的 Gas 不足時，'免費 Gas' 按鈕會自動出現。",
         "learnMore": "了解更多",
         "freeGasNoCode": "請先點擊下面的按鈕訪問 DeBank 並使用您的當前地址獲取申請代碼。",
-        "rabbyFreeGasUserNo": "Rabby 免費 Gas 用戶 No.{{num}}"
+        "rabbyFreeGasUserNo": "Rabby Free Gas User No.{{num}}"
       },
       "security": {
         "comingSoon": "更多功能即將推出",
@@ -248,7 +248,7 @@
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "獲取 DeBank Testnet Gas Token",
-        "claimFreeGasBadge": "申請 Rabby 免費 Gas 徽章！"
+        "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！"
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",
@@ -295,7 +295,7 @@
           "claimable": "可申領的",
           "endAt": "結束於",
           "dailyUnlock": "每日解鎖",
-          "pool": "池",
+          "pool": "POOL",
           "token": "代幣",
           "balanceValue": "餘額 / 價值",
           "percent": "百分比",
