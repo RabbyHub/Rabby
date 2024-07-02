@@ -20,7 +20,7 @@ the other data like `preference`, `chain`... will store directly in the local st
 
 ## Provider Handle Flow
 
-when message received from `runtime.onConnect`, it will be send to _rpcFlow.ts_.
+when a message is received from `runtime.onConnect`, it will be send to _rpcFlow.ts_.
 
 it will pass through multi-middlewares to check the wallet status, if it's need to `set approval`, at last it will sended to the `providerController`.
 
@@ -29,4 +29,4 @@ it will pass through multi-middlewares to check the wallet status, if it's need 
 
 in the `runtime.onConnect`, we will store the port and dapp's icon, name... as session.
 
-if we need send message to dapp, just use `port.sendMessage`.
+if we need to send message to dapp, just use `port.sendMessage`.

@@ -20,7 +20,7 @@ the `content-script` will connect `background` in the start through `runtime.con
 
 after `content-script` receive the message from dapp, it will send the message to background, using the `runtime channel`.
 
-in a nutshell, the extension can only handle **one** request at the same time for each page. before the request solved, other requests are queued to send.
+in a nutshell, the extension can only handle **one** request at the same time for each page. before the request is solved, other requests are queued to send.
 
 ## request queue
 
