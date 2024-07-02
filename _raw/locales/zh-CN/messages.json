@@ -24,8 +24,8 @@
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
-    "appDescription": "用于以太坊及所有EVM链的改变游戏规则的钱包",
-    "appName": "Rabby 钱包",
+    "appDescription": "The game-changing wallet for Ethereum and all EVM chains",
+    "appName": "Rabby Wallet",
     "Deleted": "已删除",
     "Loading": "加载中",
     "Balance": "余额",
@@ -170,7 +170,7 @@
         "imageLabel": "Rabby Badge",
         "learnMoreOnDebank": "跳转至 DeBank 领取",
         "noCode": "你尚未激活该地址的邀请码",
-        "rabbyValuedUserNo": "Rabby 尊贵用户 No.{{num}}",
+        "rabbyValuedUserNo": "Rabby Valued User No.{{num}}",
         "swapTip": "你需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
         "title": "领取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
@@ -179,7 +179,7 @@
         "freeGasTip": "请使用免费 Gas 签署交易。当您的 Gas 不足时，“免费 Gas”按钮将自动出现。",
         "learnMore": "了解更多",
         "freeGasNoCode": "请点击下方按钮访问 DeBank，并首先使用您当前的地址获取领取代码。",
-        "rabbyFreeGasUserNo": "Rabby 免费 Gas 用户 No.{{num}}"
+        "rabbyFreeGasUserNo": "Rabby Free Gas 用户 No.{{num}}"
       },
       "security": {
         "comingSoon": "更多功能即将推出",
@@ -248,7 +248,7 @@
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token",
-        "claimFreeGasBadge": "领取 Rabby 免费 Gas 徽章！"
+        "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -290,12 +290,12 @@
           "tradePair": "交易对",
           "side": "方向",
           "leverage": "杠杆",
-          "PL": "损益",
+          "PL": "P&L",
           "unsupportedPoolType": "不支持的池类型",
           "claimable": "可认领的",
           "endAt": "结束于",
           "dailyUnlock": "每日解锁",
-          "pool": "池",
+          "pool": "POOL",
           "token": "代币",
           "balanceValue": "余额 / 价值",
           "percent": "百分比",
@@ -1683,7 +1683,7 @@
       "source": "来源",
       "coboSafeErrorModule": "地址已过期，请删除并重新导入地址。",
       "importedDelegatedAddress": "导入的委托地址",
-      "safeModuleAddress": "安全模块地址"
+      "safeModuleAddress": "Safe Module Address"
     },
     "preferMetamaskDapps": {
       "title": "优先使用MetaMask连接的Dapp",
