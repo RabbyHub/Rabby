@@ -41,7 +41,7 @@ const Player = ({
   return (
     <div className="flex flex-col items-center">
       <div className="p-[5px] border border-gray-divider rounded-[8px] bg-white">
-        <QRCode value={currentQRCode.toUpperCase()} size={playerSize ?? 250} />
+        <QRCode value={currentQRCode.toUpperCase()} size={playerSize ?? 180} />
       </div>
       <p
         className={clsx(
