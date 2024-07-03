@@ -234,7 +234,7 @@ const flowContext = flow
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
-        if (approvalRes.isGnosis) return resolve(undefined);
+        if (approvalRes?.isGnosis) return resolve(undefined);
 
         return waitSignComponentPromise.then(() =>
           Promise.resolve(
