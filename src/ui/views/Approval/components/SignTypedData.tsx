@@ -305,7 +305,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
 
     if (isGnosis && params.account) {
-      if (WaitingSignMessageComponent[params.account.type]) {
+      if (
+        WaitingSignMessageComponent[params.account.type] &&
+        ![KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC].includes(
+          params.account.type as any
+        )
+      ) {
         wallet.signTypedData(
           params.account.type,
           params.account.address,
