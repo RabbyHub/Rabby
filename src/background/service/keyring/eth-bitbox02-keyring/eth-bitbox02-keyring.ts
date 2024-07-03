@@ -284,6 +284,15 @@ class BitBox02Keyring extends EventEmitter {
     });
   }
 
+  async verifyAddress(withAccount) {
+    await this.init();
+    return await this.bridge.ethAddress(
+      1,
+      this._pathFromAddress(withAccount),
+      true
+    );
+  }
+
   exportAccount(): Promise<any> {
     return Promise.reject(new Error('Not supported on this device'));
   }

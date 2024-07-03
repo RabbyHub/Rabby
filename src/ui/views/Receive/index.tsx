@@ -16,6 +16,7 @@ import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1-cc.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
+import IconEyeBlack from 'ui/assets/icon-eye-black.svg';
 import IconSuccess from 'ui/assets/icon-success-1.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/icon-warning-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
@@ -102,6 +103,14 @@ const Receive = () => {
       ].join('|'),
     });
     copyAddress(account.address!);
+  };
+
+  const handleVerifyAddress = () => {
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    return wallet.verifyAddress(
+      account.type as string,
+      account.address as string
+    );
   };
 
   const init = async () => {
@@ -233,17 +242,39 @@ const Receive = () => {
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
         <div className="qr-card-address">{account?.address}</div>
-        <button
-          type="button"
-          className="qr-card-btn"
-          onClick={handleCopyAddress}
+        <div
+          className={
+            account?.type === KEYRING_CLASS.HARDWARE.BITBOX02
+              ? 'qr-card-btn-container'
+              : ''
+          }
         >
-          <ThemeIcon
-            src={RcIconCopy}
-            className="icon-copy text-r-neutral-title-1"
-          />
-          {t('global.copyAddress')}
-        </button>
+          <button
+            type="button"
+            className="qr-card-btn"
+            onClick={handleCopyAddress}
+          >
+            <ThemeIcon
+              src={RcIconCopy}
+              className="icon-copy text-r-neutral-title-1"
+            />
+            {t('global.copyAddress')}
+          </button>
+
+          {account?.type === KEYRING_CLASS.HARDWARE.BITBOX02 && (
+            <button
+              type="button"
+              className="qr-card-btn"
+              onClick={handleVerifyAddress}
+            >
+              <ThemeIcon
+                src={IconEyeBlack}
+                className="icon-copy text-r-neutral-title-1"
+              />
+              {t('global.verifyAddress')}
+            </button>
+          )}
+        </div>
       </div>
       <div className="page-receive-footer">
         <img

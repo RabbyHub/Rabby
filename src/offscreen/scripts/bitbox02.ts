@@ -116,6 +116,15 @@ export function initBitBox02() {
             });
           break;
 
+        case BitBox02Action.ethAddress:
+          bridge
+            .ethAddress(...(msg.params as [any, any, any]))
+            .then(sendResponse)
+            .catch((err) => {
+              sendResponse({ error: err });
+            });
+          break;
+
         default:
           sendResponse({
             success: false,

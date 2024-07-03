@@ -2124,7 +2124,8 @@
     "Done": "Done",
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
-    "notSupportTesntnet": "Not supported for custom network"
+    "notSupportTesntnet": "Not supported for custom network",
+    "verifyAddress": "Verify address on device"
   },
   "background": {
     "error": {

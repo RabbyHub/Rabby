@@ -2934,6 +2934,11 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyringInstance, -1);
   };
 
+  verifyAddress = async (type: string, from: string) => {
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    return await keyringService.verifyAddress(keyring, from);
+  };
+
   getSignTextHistory = (address: string) => {
     return signTextHistoryService.getHistory(address);
   };

@@ -36,6 +36,7 @@ export enum BitBox02Action {
   ethSignMessage = 'bitbox02-sign-message',
   ethSignTypedMessage = 'bitbox02-sign-typed-message',
   ethXpub = 'bitbox02-xpub',
+  ethAddress = 'bitbox02-eth-address',
 }
 
 export enum LatticeAction {
