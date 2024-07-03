@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
+import { ReactComponent as RcIconGasTopUp } from 'ui/assets/dashboard/gas-top-up-1.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
 import { ReactComponent as RcIconArrowCCRight } from 'ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -691,6 +692,19 @@ const SettingsInner = ({
               label: 'Lock Wallet',
             });
             reportSettings('Lock Wallet');
+          },
+        },
+        {
+          leftIcon: RcIconGasTopUp,
+          content: t('page.dashboard.settings.features.gasTopUp'),
+          onClick: () => {
+            history.push('/gas-top-up');
+            matomoRequestEvent({
+              category: 'Setting',
+              action: 'clickToUse',
+              label: 'Gas Top Up',
+            });
+            reportSettings('Gas Top Up');
           },
         },
         {

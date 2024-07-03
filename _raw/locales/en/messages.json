@@ -911,7 +911,8 @@
           "rabbyPoints": "Rabby Points",
           "more": "More",
           "manageAddress": "Manage Address",
-          "nft": "NFT"
+          "nft": "NFT",
+          "ecology": "Ecology"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1063,7 +1064,8 @@
           "signatureRecord": "Signature Record",
           "manageAddress": "Manage Address",
           "connectedDapp": "Connected Dapps",
-          "searchDapps": "Search Dapps"
+          "searchDapps": "Search Dapps",
+          "gasTopUp": "Gas Top Up"
         },
         "settings": {
           "label": "Settings",
@@ -1199,6 +1201,9 @@
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
+      },
+      "echologyPopup": {
+        "title": "Ecology"
       }
     },
     "nft": {
@@ -1300,9 +1305,9 @@
           "question": "What is a private key?",
           "answer": "A string of letters and numbers used to control your assets."
         },
-        "repeatImportTips":{
-          "desc":  "This address has been imported.",
-          "question":  "Do you want to switch to this address?"
+        "repeatImportTips": {
+          "desc": "This address has been imported.",
+          "question": "Do you want to switch to this address?"
         },
         "isItSafeToImportItInRabby": {
           "question": "Is it safe to import it in Rabby?",
