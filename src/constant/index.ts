@@ -1421,6 +1421,18 @@ export const DEX = {
     name: 'ParaSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
   },
+  [DEX_ENUM.OPENOCEAN]: {
+    id: DEX_ENUM.OPENOCEAN,
+    logo: LogoOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+  [DEX_ENUM.KYBERSWAP]: {
+    id: DEX_ENUM.KYBERSWAP,
+    logo: LogoKyberSwap,
+    name: 'KyberSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
+  },
 };
 
 export const DEX_WITH_WRAP = {
