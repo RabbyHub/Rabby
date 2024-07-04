@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { EcologyNavBar } from '@/ui/component/Ecology/EcologyNavBar';
-import { DbkButton } from './components/DbkButton';
+import { DbkButton } from '../../components/DbkButton';
 import bridgeImg from '@/ui/assets/ecology/bridge-img.svg';
 import dkbNftImg from '@/ui/assets/ecology/dbk-nft.png';
 
-export const DbkChainPage = () => {
+export const DbkChainHomePage = () => {
   return (
     <div className="bg-r-neutral-bg2 h-full">
       <EcologyNavBar className="sticky top-0" />
