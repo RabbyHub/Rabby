@@ -359,7 +359,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={580}
+      height={516}
       onClose={onClose}
       closable={false}
       destroyOnClose

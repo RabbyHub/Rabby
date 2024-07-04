@@ -103,7 +103,7 @@ const ItemWrapper = styled.div`
   &.dex {
     justify-content: space-between;
     height: auto;
-    height: 72px;
+    height: 80px;
   }
 
   &.cex {
@@ -727,7 +727,7 @@ function DEXItem(props: {
   return (
     <>
       {/* left */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-10">
         <div className="flex items-center gap-8 relative">
           <QuoteLogo loaded logo={props.logo} isLoading={props.isLoading} />
           <span className="text-[16px] font-medium text-r-neutral-title-1">
@@ -753,7 +753,7 @@ function DEXItem(props: {
       </div>
 
       {/* right */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-12">
         {props.middleContent !== null && (
           <div className="flex items-center justify-end relative">
             <TokenWithChain

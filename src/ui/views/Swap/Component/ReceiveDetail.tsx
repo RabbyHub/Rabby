@@ -67,6 +67,7 @@ const ReceiveWrapper = styled.div`
   border-radius: 4px;
   padding: 12px;
   padding-top: 16px;
+  padding-bottom: 8px;
 
   color: var(--r-neutral-title-1, #192945);
   font-size: 13px;
