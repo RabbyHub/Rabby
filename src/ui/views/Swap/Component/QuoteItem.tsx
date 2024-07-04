@@ -728,13 +728,14 @@ function DEXItem(props: {
     <>
       {/* left */}
       <div className="flex flex-col gap-10">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-8 relative">
           <QuoteLogo loaded logo={props.logo} isLoading={props.isLoading} />
           <span className="text-[16px] font-medium text-r-neutral-title-1">
             {props.name}
           </span>
           {!!props.shouldApproveToken && (
             <TooltipWithMagnetArrow
+              arrowPointAtCenter
               overlayClassName="rectangle w-[max-content]"
               title={t('page.swap.need-to-approve-token-before-swap')}
             >
