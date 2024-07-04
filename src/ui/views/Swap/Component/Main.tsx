@@ -35,21 +35,28 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
-  background: var(--r-neutral-card2, #f2f4f7);
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  background: transparent !important;
   & > .ant-input {
     font-weight: 500;
     font-size: 18px;
+    border-width: 0px !important;
+    border-color: transparent;
+  }
+  &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+    border-width: 0.5px !important;
   }
 
   &:active {
-    border: 1px solid transparent;
+    border: 0.5px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border: 1px solid var(--r-blue-default, #7084ff) !important;
+    border-width: 0.5px !important;
+    border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
+    border-width: 0.5px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -65,7 +72,7 @@ const StyledInput = styled(Input)`
 `;
 
 const PreferMEVGuardSwitch = styled(Switch)`
-  min-width: 24px;
+  min-width: 20px;
   height: 12px;
 
   &.ant-switch-checked {
@@ -98,13 +105,6 @@ export const Main = () => {
   }));
 
   const dispatch = useDispatch();
-
-  const setUnlimited = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setUnlimitedAllowance(bool);
-    },
-    [dispatch.swap.setUnlimitedAllowance]
-  );
 
   const {
     chain,
@@ -205,9 +205,7 @@ export const Main = () => {
       return t('page.swap.price-expired-refresh-quote');
     }
     if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-x-symbol', {
-        symbol: getTokenSymbol(payToken),
-      });
+      return t('page.swap.approve-and-swap');
     }
     if (activeProvider?.name) {
       return t('page.swap.swap-via-x', {
@@ -242,7 +240,7 @@ export const Main = () => {
                 ? ''
                 : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
             pay_token_id: payToken.id,
-            unlimited: unlimitedAllowance,
+            unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
             postSwapParams: {
               quote: {
@@ -540,22 +538,11 @@ export const Main = () => {
 
       <div
         className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-bg-1 border border-transparent border-t-rabby-neutral-line',
-          activeProvider && activeProvider.shouldApproveToken && 'pt-16'
+          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+          'py-[13px]'
         )}
       >
-        {!expired && activeProvider && activeProvider.shouldApproveToken && (
-          <div className="flex items-center justify-between w-full self-start">
-            <div className="tips text-r-neutral-body">
-              {t('page.swap.approve-tips')}
-            </div>
-            <div className={clsx('allowance text-r-neutral-title-1')}>
-              <span>{t('page.swap.unlimited-allowance')}</span>{' '}
-              <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
-            </div>
-          </div>
-        )}
         <Button
           type="primary"
           block

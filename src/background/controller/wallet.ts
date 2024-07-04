@@ -474,7 +474,8 @@ export class WalletController extends BaseController {
           chainObj.serverId,
           pay_token_id,
           spender,
-          unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
+          // unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
+          quote.fromTokenAmount,
           {
             ga: {
               ...$ctx?.ga,
