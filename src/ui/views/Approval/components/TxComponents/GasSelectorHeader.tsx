@@ -608,6 +608,8 @@ const GasSelectorHeader = ({
     setCustomGas((e) =>
       Number(e) * 1e9 === rawSelectedGas.price ? e : rawSelectedGas.price / 1e9
     );
+    setChangedCustomGas(true);
+    setLoadingGasEstimated(false);
   }, [rawSelectedGas]);
 
   useEffect(() => {
