@@ -234,7 +234,7 @@ export const ReceiveDetails = (
 
   return (
     <ReceiveWrapper {...other}>
-      <div className="column receive-token pb-12">
+      <div className="column receive-token pb-10">
         <div className="flex items-center gap-8">
           <div className="flex flex-col gap-8">
             <div

@@ -36,7 +36,7 @@ const StyledInput = styled(Input)`
   box-shadow: none;
   border-radius: 4px;
   border: 1px solid var(--r-neutral-line, #d3d8e0);
-  background: var(--r-neutral-card2, #f2f4f7);
+  background: transparent !important;
   & > .ant-input {
     font-weight: 500;
     font-size: 18px;
@@ -65,7 +65,7 @@ const StyledInput = styled(Input)`
 `;
 
 const PreferMEVGuardSwitch = styled(Switch)`
-  min-width: 24px;
+  min-width: 20px;
   height: 12px;
 
   &.ant-switch-checked {
@@ -540,13 +540,15 @@ export const Main = () => {
 
       <div
         className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-bg-1 border border-transparent border-t-rabby-neutral-line',
-          activeProvider && activeProvider.shouldApproveToken && 'pt-16'
+          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+          activeProvider &&
+            activeProvider.shouldApproveToken &&
+            'pt-10 pb-[13px]'
         )}
       >
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
-          <div className="flex items-center justify-between w-full self-start">
+          <div className="flex items-center justify-between w-full self-start h-16">
             <div className="tips text-r-neutral-body">
               {t('page.swap.approve-tips')}
             </div>
