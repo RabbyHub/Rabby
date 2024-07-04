@@ -74,45 +74,39 @@ export const SignAdvancedSettings = ({
   };
 
   const formValidator = () => {
+    const newValue: Record<string, { status: any; message: string | null }> = {
+      ...validateStatus,
+      gasLimit: {
+        status: 'success',
+        message: null,
+      },
+      nonce: {
+        status: 'success',
+        message: null,
+      },
+    };
+
     if (!afterGasLimit) {
-      setValidateStatus({
-        ...validateStatus,
-        gasLimit: {
-          status: 'error',
-          message: t('page.signTx.gasLimitEmptyAlert'),
-        },
-      });
+      newValue.gasLimit = {
+        status: 'error',
+        message: t('page.signTx.gasLimitEmptyAlert'),
+      };
     } else if (Number(afterGasLimit) < MINIMUM_GAS_LIMIT) {
-      setValidateStatus({
-        ...validateStatus,
-        gasLimit: {
-          status: 'error',
-          message: t('page.signTx.gasLimitMinValueAlert'),
-        },
-      });
-    } else if (new BigNumber(customNonce).lt(recommendNonce) && !disableNonce) {
-      setValidateStatus({
-        ...validateStatus,
-        nonce: {
-          status: 'error',
-          message: t('page.signTx.nonceLowerThanExpect', [
-            new BigNumber(recommendNonce).toString(),
-          ]),
-        },
-      });
-    } else {
-      setValidateStatus({
-        ...validateStatus,
-        gasLimit: {
-          status: 'success',
-          message: null,
-        },
-        nonce: {
-          status: 'success',
-          message: null,
-        },
-      });
+      newValue.gasLimit = {
+        status: 'error',
+        message: t('page.signTx.gasLimitMinValueAlert'),
+      };
     }
+    if (new BigNumber(customNonce).lt(recommendNonce) && !disableNonce) {
+      newValue.nonce = {
+        status: 'error',
+        message: t('page.signTx.nonceLowerThanExpect', [
+          new BigNumber(recommendNonce).toString(),
+        ]),
+      };
+    }
+
+    setValidateStatus(newValue);
   };
 
   const handleConfirmGas = () => {
