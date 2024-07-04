@@ -45,11 +45,11 @@ export const QuoteLoading = ({
   return (
     <div
       className={clsx(
-        'h-[80px] flex items-center px-16 rounded-[6px]',
+        'h-[72px] flex items-center px-16 rounded-[6px]',
         'border-solid border border-rabby-neutral-line'
       )}
     >
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-6">
         <div className="flex items-center" gap-4>
           <QuoteLogo isLoading={true} logo={logo} loaded />
           <span className="ml-[8px] text-16 font-medium text-r-neutral-title-1">
@@ -67,7 +67,7 @@ export const QuoteLoading = ({
         />
       </div>
 
-      <div className="ml-auto gap-12 flex flex-col items-end">
+      <div className="ml-auto gap-6 flex flex-col items-end">
         <Skeleton.Input
           active
           style={{

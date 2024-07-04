@@ -35,21 +35,28 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
   background: transparent !important;
   & > .ant-input {
     font-weight: 500;
     font-size: 18px;
+    border-width: 0px !important;
+    border-color: transparent;
+  }
+  &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+    border-width: 0.5px !important;
   }
 
   &:active {
-    border: 1px solid transparent;
+    border: 0.5px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border: 1px solid var(--r-blue-default, #7084ff) !important;
+    border-width: 0.5px !important;
+    border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
+    border-width: 0.5px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -548,11 +555,11 @@ export const Main = () => {
         )}
       >
         {!expired && activeProvider && activeProvider.shouldApproveToken && (
-          <div className="flex items-center justify-between w-full self-start h-16">
+          <div className="flex items-center justify-between w-full self-start h-16 text-13">
             <div className="tips text-r-neutral-body">
               {t('page.swap.approve-tips')}
             </div>
-            <div className={clsx('allowance text-r-neutral-title-1')}>
+            <div className={clsx('allowance text-r-neutral-body text-13')}>
               <span>{t('page.swap.unlimited-allowance')}</span>{' '}
               <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
             </div>

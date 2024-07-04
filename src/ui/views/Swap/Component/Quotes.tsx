@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from '@/ui/utils/token';
 
 const CexListWrapper = styled.div`
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 6px;
   &:empty {
     display: none;
@@ -32,7 +32,7 @@ const CexListWrapper = styled.div`
       position: absolute;
       width: 328px;
       height: 0;
-      border-bottom: 1px solid var(--r-neutral-line, #d3d8e0);
+      border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
       left: 16px;
       bottom: 0;
     }
@@ -209,7 +209,7 @@ export const Quotes = ({
     );
   }
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col flex-1 w-full overflow-auto">
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
@@ -260,6 +260,7 @@ export const Quotes = ({
         })}
         <QuoteListLoading fetchedList={fetchedList} isCex />
       </CexListWrapper>
+      <div className="h-32" />
       <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot pb-6">
         {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
         <span
@@ -358,7 +359,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={516}
+      height={580}
       onClose={onClose}
       closable={false}
       destroyOnClose

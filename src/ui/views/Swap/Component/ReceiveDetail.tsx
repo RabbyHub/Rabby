@@ -62,9 +62,8 @@ export const WarningOrChecked = ({
 
 const ReceiveWrapper = styled.div`
   position: relative;
-  margin-top: 24px;
+  margin-top: 18px;
   border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 4px;
   padding: 12px;
   padding-top: 16px;
@@ -234,7 +233,7 @@ export const ReceiveDetails = (
 
   return (
     <ReceiveWrapper {...other}>
-      <div className="column receive-token pb-10">
+      <div className="column receive-token pb-[13px]">
         <div className="flex items-center gap-8">
           <div className="flex flex-col gap-8">
             <div

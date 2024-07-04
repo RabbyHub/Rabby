@@ -48,7 +48,7 @@ const ItemWrapper = styled.div`
   border-radius: 6px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 6px;
-  border: 1px solid transparent;
+  border: 0.5px solid transparent;
   cursor: pointer;
 
   .disabled-trade {
@@ -80,7 +80,7 @@ const ItemWrapper = styled.div`
 
   &:hover:not(.disabled, .inSufficient) {
     background: var(--r-blue-light-1, #eef1ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
+    border: 0.5px solid var(--r-blue-default, #7084ff);
   }
   &.active {
     outline: 2px solid var(--r-blue-default, #7084ff);
@@ -95,7 +95,7 @@ const ItemWrapper = styled.div`
 
   &:not(.cex).inSufficient,
   &:not(.cex).disabled {
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
+    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
     box-shadow: none;
   }
@@ -103,7 +103,7 @@ const ItemWrapper = styled.div`
   &.dex {
     justify-content: space-between;
     height: auto;
-    height: 80px;
+    height: 72px;
   }
 
   &.cex {
@@ -676,7 +676,7 @@ export const CexListWrapper = styled.div`
       position: absolute;
       width: 440px;
       height: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
       left: 20px;
       bottom: 0;
     }
@@ -727,7 +727,7 @@ function DEXItem(props: {
   return (
     <>
       {/* left */}
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-6">
         <div className="flex items-center gap-8 relative">
           <QuoteLogo loaded logo={props.logo} isLoading={props.isLoading} />
           <span className="text-[16px] font-medium text-r-neutral-title-1">
@@ -753,7 +753,7 @@ function DEXItem(props: {
       </div>
 
       {/* right */}
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-6">
         {props.middleContent !== null && (
           <div className="flex items-center justify-end relative">
             <TokenWithChain
