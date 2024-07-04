@@ -282,7 +282,7 @@ const Main = () => {
         <PrivateRoute exact path="/rabby-points">
           <RabbyPoints />
         </PrivateRoute>
-        <PrivateRoute exact path="/ecology/:chainId">
+        <PrivateRoute path="/ecology/:chainId">
           <Ecology />
         </PrivateRoute>
       </Switch>

@@ -11,7 +11,7 @@ import { NameAndAddress } from '@/ui/component';
 import { ActivityPopup } from './components/ActivityPopup';
 import { WithdrawConfirmPopup } from './components/WithdrawConfirmPopup ';
 
-export const DbkChainBridgePage = () => {
+export const DbkChainBridge = () => {
   const chain = findChain({
     id: 1,
   });
