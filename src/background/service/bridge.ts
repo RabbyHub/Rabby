@@ -61,7 +61,6 @@ class BridgeService {
   };
 
   setBridgeAggregators = (selectedAggregators: string[]) => {
-    console.log('setBridgeAggregators', selectedAggregators);
     this.store.selectedAggregators = [...selectedAggregators];
   };
 

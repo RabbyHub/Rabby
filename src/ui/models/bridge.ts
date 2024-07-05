@@ -43,7 +43,6 @@ export const bridge = createModel<RootModel>()({
     },
     async syncState(key: keyof BridgeServiceStore | undefined, store) {
       const data = await store.app.wallet.getBridgeData(key);
-      console.log('data', data);
       this.fetchAggregatorsList();
       this.fetchSupportedChains();
 
@@ -66,7 +65,6 @@ export const bridge = createModel<RootModel>()({
     },
 
     async setSelectedAggregators(selectedAggregators: string[], store) {
-      console.log('bridge set list');
       await store.app.wallet.setBridgeAggregators(selectedAggregators);
 
       this.setField({

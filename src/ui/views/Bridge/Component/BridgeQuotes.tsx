@@ -63,8 +63,6 @@ export const Quotes = ({
       .toString();
   }, [sortedList, other.receiveToken, sortIncludeGasFee]);
 
-  console.log('sortedList', sortedList);
-
   return (
     <div className="flex flex-col h-full w-full">
       <div className="flex flex-col gap-12 flex-1">
