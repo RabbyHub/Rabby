@@ -23,6 +23,7 @@ import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
+import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive-header.svg';
 
 import IconSuccess from 'ui/assets/success.svg';
 import { AddressViewer, Modal } from 'ui/component';
@@ -386,6 +387,18 @@ const Dashboard = () => {
                       currentAccount?.brandName,
                     ].join('|'),
                   });
+                }}
+              />
+
+              <RcIconReceive
+                className="mx-8 cursor-pointer"
+                onClick={() => {
+                  matomoRequestEvent({
+                    category: 'Front Page Click',
+                    action: 'Click',
+                    label: 'Receive',
+                  });
+                  history.push('/receive?rbisource=dashboard');
                 }}
               />
 

@@ -1,6 +1,7 @@
 import { findChainByEnum, findChainByID } from '@/utils/chain';
 import { TxRequest } from '@rabby-wallet/rabby-api/dist/types';
 import {
+  bridgeService,
   openapiService,
   swapService,
   transactionWatchService,
@@ -100,6 +101,7 @@ class TransactionBroadcastWatcher {
           const chain = findChainByID(item.signed_tx.chainId);
           if (chain) {
             swapService.postSwap(chain?.enum, item.tx_id, item.signed_tx);
+            bridgeService.postBridge(chain?.enum, item.tx_id, item.signed_tx);
           }
         }
       }
