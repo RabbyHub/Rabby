@@ -35,9 +35,19 @@ const ActivityItem = () => {
   );
 };
 
-export const ActivityPopup = () => {
+interface ActivityPopupProps {
+  visible?: boolean;
+  onClose?: () => void;
+}
+export const ActivityPopup = ({ visible, onClose }: ActivityPopupProps) => {
   return (
-    <Popup title="Activities" visible height={540} closable>
+    <Popup
+      title="Activities"
+      visible={visible}
+      height={540}
+      closable
+      onClose={onClose}
+    >
       <div className="flex flex-col h-full">
         <Virtuoso
           style={{

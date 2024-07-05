@@ -1498,4 +1498,4 @@ export const ThemeModes = [
 
 export const imKeyUSBVendorId = 0x096e;
 
-export const DBK_CHAIN_ID = 56;
+export const DBK_CHAIN_ID = 2024603;

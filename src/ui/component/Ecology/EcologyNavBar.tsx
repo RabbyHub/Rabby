@@ -3,19 +3,23 @@ import { ReactComponent as RcIconBackNew } from 'ui/assets/icon-back-1.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import clsx from 'clsx';
 import { findChain } from '@/utils/chain';
+import { useHistory } from 'react-router-dom';
 
 interface Props {
   className?: string;
   style?: React.CSSProperties;
+  chainId: number;
 }
-export const EcologyNavBar = ({ className, style }: Props) => {
+export const EcologyNavBar = ({ className, style, chainId }: Props) => {
   const chain = useMemo(
     () =>
       findChain({
-        id: 56,
+        id: chainId,
       }),
-    []
+    [chainId]
   );
+  const history = useHistory();
+
   return (
     <div
       className={clsx(
@@ -27,7 +31,17 @@ export const EcologyNavBar = ({ className, style }: Props) => {
       style={style}
     >
       <div className="flex-1">
-        <ThemeIcon src={RcIconBackNew} />
+        <ThemeIcon
+          src={RcIconBackNew}
+          className="cursor-pointer"
+          onClick={() => {
+            if (history.length > 1) {
+              history.goBack();
+            } else {
+              history.replace('/');
+            }
+          }}
+        />
       </div>
       <div className="flex-auto">
         <div className="flex items-center justify-center bg-r-neutral-bg2 rounded-full p-[6px] gap-[6px]">

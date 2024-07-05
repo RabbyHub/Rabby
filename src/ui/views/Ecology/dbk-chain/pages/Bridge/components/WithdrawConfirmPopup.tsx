@@ -2,10 +2,14 @@ import { ReactComponent as RcIconChecked } from '@/ui/assets/checked.svg';
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
 import { Popup } from '@/ui/component';
 import clsx from 'clsx';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { DbkButton } from '../../../components/DbkButton';
 
-export const WithdrawConfirmPopup = () => {
+interface Props {
+  visible?: boolean;
+  onClose?: () => void;
+}
+export const WithdrawConfirmPopup = ({ visible, onClose }: Props) => {
   const checkList = [
     {
       label:
@@ -28,6 +32,12 @@ export const WithdrawConfirmPopup = () => {
     return checkList.every((item) => checked.includes(item.value));
   }, [checkList, checked]);
 
+  useEffect(() => {
+    if (visible) {
+      setChecked([]);
+    }
+  }, [visible]);
+
   return (
     <Popup
       title={
@@ -35,9 +45,10 @@ export const WithdrawConfirmPopup = () => {
           DBK Chain Withdrawal takes ~7 days
         </div>
       }
-      visible
+      visible={visible}
       height={560}
       closable
+      onCancel={onClose}
     >
       <div className="text-r-neutral-body text-[13px] leading-[16px] text-center mb-[12px]">
         Withdrawing involves a 3-step process, requiring 1 DBK Chain transaction
