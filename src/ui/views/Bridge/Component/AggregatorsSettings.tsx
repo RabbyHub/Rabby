@@ -38,6 +38,12 @@ export const AggregatorsSettings = ({
   );
 
   useEffect(() => {
+    if (!visible) {
+      setChangedAggregator(selectedAggregators);
+    }
+  }, [visible]);
+
+  useEffect(() => {
     setChangedAggregator(selectedAggregators);
   }, [selectedAggregators]);
 
@@ -73,7 +79,7 @@ export const AggregatorsSettings = ({
           {t('page.bridge.settingModal.title')}
         </span>
       }
-      height={400}
+      height={450}
       onClose={
         forceGoHome
           ? () => {
@@ -91,21 +97,26 @@ export const AggregatorsSettings = ({
       <div className="relative flex flex-col gap-16 h-full overflow-auto">
         {aggregatorsList?.map((item) => {
           const checked = !!changedAggregator?.includes(item.id);
+          const switchChecked = () => {
+            setChangedAggregator((items) => {
+              const changedItems = items.includes(item.id)
+                ? items.filter((id) => id !== item.id)
+                : [...items, item.id];
+              if (changedItems.length === 0) {
+                return items;
+              }
+              return changedItems;
+            });
+          };
           return (
             <div
-              className="bg-r-neutral-card1 rounded-[6px] p-16 cursor-pointer"
-              onClick={() => {
-                setChangedAggregator((items) =>
-                  items.includes(item.id)
-                    ? items.filter((id) => id !== item.id)
-                    : [...items, item.id]
-                );
-              }}
+              className="bg-r-neutral-card1 rounded-[6px] p-16 cursor-pointer border border-transparent hover:border-rabby-blue-default"
+              onClick={switchChecked}
             >
               <div
                 className={clsx(
                   'flex items-center justify-between',
-                  'pb-[16px] mb-[13px] border-b border-solid border-rabby-neutral-line'
+                  'pb-[16px] mb-[13px] border-b-[0.5px] border-solid border-rabby-neutral-line'
                 )}
               >
                 <div className="flex items-center justify-between gap-[7px]">
@@ -116,13 +127,7 @@ export const AggregatorsSettings = ({
                 </div>
 
                 <Checkbox
-                  onChange={() => {
-                    setChangedAggregator((items) =>
-                      items.includes(item.id)
-                        ? items.filter((id) => id !== item.id)
-                        : [...items, item.id]
-                    );
-                  }}
+                  onChange={switchChecked}
                   checked={checked}
                   width="20px"
                   height="20px"
@@ -144,12 +149,14 @@ export const AggregatorsSettings = ({
               </div>
 
               <div className="flex items-center gap-12 flex-wrap">
-                <span>{t('page.bridge.settingModal.SupportedBridge')}</span>
+                <span className="text-12 text-rabby-neutral-foot">
+                  {t('page.bridge.settingModal.SupportedBridge')}
+                </span>
                 {item.bridge_list?.map((bridge) => {
                   return (
                     <Tooltip
                       overlayClassName="rectangle"
-                      title={bridge.name}
+                      title={`${bridge.name} Bridge`}
                       key={bridge.name}
                     >
                       <img

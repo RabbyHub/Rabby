@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { uniqBy } from 'lodash';
-import { SwapItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useWallet } from '@/ui/utils';
 
 export const useBridgeHistory = () => {
@@ -12,13 +11,13 @@ export const useBridgeHistory = () => {
   );
 
   const [refreshTxListCount, setRefreshListTx] = useState(0);
-  const refreshSwapListTx = React.useCallback(() => {
+  const refreshBridgeListTx = React.useCallback(() => {
     setRefreshListTx((e) => e + 1);
   }, []);
-  const isInSwap = true;
+  const isInBridge = true;
 
   const wallet = useWallet();
-  const getSwapList = React.useCallback(
+  const getBridgeHistoryList = React.useCallback(
     async (addr: string, start = 0, limit = 5) => {
       const data = await wallet.openapi.getBridgeHistoryList({
         user_addr: addr,
@@ -43,26 +42,26 @@ export const useBridgeHistory = () => {
     mutate,
   } = useInfiniteScroll(
     (d) =>
-      getSwapList(
+      getBridgeHistoryList(
         addr,
         d?.list?.length && d?.list?.length > 1 ? d?.list?.length : 0,
         5
       ),
     {
-      reloadDeps: [isInSwap],
+      reloadDeps: [isInBridge],
       isNoMore(data) {
         if (data) {
           return data?.list.length >= data?.totalCount;
         }
         return true;
       },
-      manual: !isInSwap || !addr,
+      manual: !isInBridge || !addr,
     }
   );
 
   const { value } = useAsync(async () => {
     if (addr) {
-      return getSwapList(addr, 0, 5);
+      return getBridgeHistoryList(addr, 0, 5);
     }
   }, [addr, refreshTxListCount]);
 
@@ -77,8 +76,8 @@ export const useBridgeHistory = () => {
           totalCount: d?.totalCount,
           list: uniqBy(
             [...(value.list || []), ...(d?.list || [])],
-            (e) => `${e.chain}-${e.tx_id}`
-          ) as SwapItem[],
+            (e) => `${e.chain}-${e.detail_url}`
+          ),
         };
       });
     }
@@ -89,27 +88,27 @@ export const useBridgeHistory = () => {
   const [inViewport] = useInViewport(ref);
 
   useEffect(() => {
-    if (!noMore && inViewport && !loadingMore && loadMore && isInSwap) {
+    if (!noMore && inViewport && !loadingMore && loadMore && isInBridge) {
       loadMore();
     }
-  }, [inViewport, loadMore, loading, loadingMore, noMore, isInSwap]);
+  }, [inViewport, loadMore, loading, loadingMore, noMore, isInBridge]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (
       !loading &&
       !loadingMore &&
-      txList?.list?.some((e) => e.status !== 'Finished') &&
-      isInSwap
+      txList?.list?.some((e) => e.status !== 'completed') &&
+      isInBridge
     ) {
-      timer = setTimeout(refreshSwapListTx, 2000);
+      timer = setTimeout(refreshBridgeListTx, 2000);
     }
     return () => {
       if (timer) {
         clearTimeout(timer);
       }
     };
-  }, [loading, loadingMore, refreshSwapListTx, txList?.list, isInSwap]);
+  }, [loading, loadingMore, refreshBridgeListTx, txList?.list, isInBridge]);
 
   return {
     loading,

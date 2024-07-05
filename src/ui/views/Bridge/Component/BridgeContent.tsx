@@ -1,8 +1,7 @@
 import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, Modal, Switch, Tooltip } from 'antd';
+import { Alert, Button, Input, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import {
   formatAmount,
@@ -12,11 +11,10 @@ import {
 } from '@/ui/utils';
 import styled from 'styled-components';
 import clsx from 'clsx';
-import { QuoteList } from './Quotes';
+import { QuoteList } from './BridgeQuotes';
 import { useQuoteVisible, useSetQuoteVisible } from '../hooks';
 import { InfoCircleFilled } from '@ant-design/icons';
-import { ReceiveDetails } from './ReceiveDetail';
-import { useDispatch } from 'react-redux';
+import { BridgeReceiveDetails } from './BridgeReceiveDetail';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -74,25 +72,6 @@ const StyledInput = styled(Input)`
   }
 `;
 
-const PreferMEVGuardSwitch = styled(Switch)`
-  min-width: 24px;
-  height: 12px;
-
-  &.ant-switch-checked {
-    background-color: var(--r-blue-default, #7084ff);
-    .ant-switch-handle {
-      left: calc(100% - 10px - 1px);
-      top: 1px;
-    }
-  }
-  .ant-switch-handle {
-    height: 10px;
-    width: 10px;
-    top: 1px;
-    left: 1px;
-  }
-`;
-
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
@@ -101,20 +80,11 @@ const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   return i18n.t('page.swap.not-supported');
 };
 
-export const Main = () => {
-  const { userAddress, unlimitedAllowance } = useRabbySelector((state) => ({
+export const BridgeContent = () => {
+  const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
     unlimitedAllowance: state.swap.unlimitedAllowance || false,
   }));
-
-  const dispatch = useDispatch();
-
-  const setUnlimited = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setUnlimitedAllowance(bool);
-    },
-    [dispatch.swap.setUnlimitedAllowance]
-  );
 
   const {
     chain,
@@ -124,54 +94,23 @@ export const Main = () => {
     setPayToken,
     receiveToken,
     setReceiveToken,
-    exchangeToken,
 
     handleAmountChange,
     handleBalance,
     payAmount,
-    payTokenIsNativeToken,
-    isWrapToken,
     inSufficient,
-    slippageChanged,
-    setSlippageChanged,
-    slippageState,
-    slippage,
-    setSlippage,
-
-    feeRate,
 
     quoteLoading,
     quoteList,
 
-    currentProvider: activeProvider,
-    setActiveProvider,
-    // slippageValidInfo,
+    selectedBridgeQuote,
+
+    setSelectedBridgeQuote,
     expired,
   } = useTokenPair(userAddress);
 
   const selectedAggregators = useRabbySelector(
     (s) => s.bridge.selectedAggregators
-  );
-
-  const allAggregators = useRabbySelector((s) => s.bridge.aggregatorsList);
-
-  console.log('allAggregators', allAggregators);
-
-  const originPreferMEVGuarded = useRabbySelector(
-    (s) => !!s.swap.preferMEVGuarded
-  );
-
-  const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
-    chain,
-  ]);
-
-  const switchPreferMEV = useCallback((bool: boolean) => {
-    dispatch.swap.setSwapPreferMEV(bool);
-  }, []);
-
-  const preferMEVGuarded = useMemo(
-    () => (chain === CHAINS_ENUM.ETH ? originPreferMEVGuarded : false),
-    [chain, originPreferMEVGuarded]
   );
 
   const inputRef = useRef<Input>();
@@ -187,23 +126,20 @@ export const Main = () => {
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
-    if (slippageChanged) {
-      return t('page.bridge.slippage-adjusted-refresh-quote');
-    }
-    if (activeProvider && expired) {
+    if (selectedBridgeQuote && expired) {
       return t('page.bridge.price-expired-refresh-route');
     }
-    if (activeProvider?.shouldApproveToken) {
+    if (selectedBridgeQuote?.shouldApproveToken) {
       return t('page.bridge.approve-and-bridge');
     }
-    if (activeProvider?.aggregator.name) {
+    if (selectedBridgeQuote?.aggregator.name) {
       return t('page.bridge.bridge-via-x', {
-        name: activeProvider?.aggregator.name,
+        name: selectedBridgeQuote?.aggregator.name,
       });
     }
 
     return t('page.bridge.getRoutes');
-  }, [slippageChanged, activeProvider, expired, payToken, isWrapToken]);
+  }, [selectedBridgeQuote, expired, t]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -211,32 +147,33 @@ export const Main = () => {
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
 
   const gotoSwap = useCallback(async () => {
-    if (!inSufficient && payToken && receiveToken && activeProvider?.tx) {
+    if (!inSufficient && payToken && receiveToken && selectedBridgeQuote?.tx) {
       try {
         wallet.bridgeToken(
           {
-            to: activeProvider.tx.to,
-            value: activeProvider.tx.value,
-            data: activeProvider.tx.data,
+            to: selectedBridgeQuote.tx.to,
+            value: selectedBridgeQuote.tx.value,
+            data: selectedBridgeQuote.tx.data,
             payTokenRawAmount: new BigNumber(payAmount)
               .times(10 ** payToken.decimals)
               .toFixed(0, 1)
               .toString(),
-            chainId: activeProvider.tx.chainId,
-            shouldApprove: !!activeProvider.shouldApproveToken,
-            shouldTwoStepApprove: !!activeProvider.shouldTwoStepApprove,
+            chainId: selectedBridgeQuote.tx.chainId,
+            shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
+            shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: payToken.id,
             payTokenChainServerId: payToken.chain,
             info: {
-              aggregator_id: activeProvider.aggregator.id,
-              bridge_id: activeProvider.bridge_id,
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
               from_chain_id: payToken.chain,
               from_token_id: payToken.id,
               from_token_amount: payAmount,
               to_chain_id: receiveToken.chain,
               to_token_id: receiveToken.id,
-              to_token_amount: activeProvider.to_token_amount,
-              tx: activeProvider.tx,
+              to_token_amount: selectedBridgeQuote.to_token_amount,
+              tx: selectedBridgeQuote.tx,
+              rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
             },
           },
           {
@@ -247,20 +184,24 @@ export const Main = () => {
             },
           }
         );
+        window.close();
       } catch (error) {
         console.error(error);
       }
     }
   }, [
-    preferMEVGuarded,
     inSufficient,
     payToken,
-    unlimitedAllowance,
-    wallet?.dexSwap,
-    activeProvider?.shouldApproveToken,
-    activeProvider?.shouldTwoStepApprove,
-    activeProvider?.bridge_id,
-    activeProvider?.aggregator?.id,
+    receiveToken,
+    selectedBridgeQuote?.tx,
+    selectedBridgeQuote?.shouldApproveToken,
+    selectedBridgeQuote?.shouldTwoStepApprove,
+    selectedBridgeQuote?.aggregator.id,
+    selectedBridgeQuote?.bridge_id,
+    selectedBridgeQuote?.to_token_amount,
+    wallet,
+    payAmount,
+    rbiSource,
   ]);
 
   const twoStepApproveCn = useCss({
@@ -289,11 +230,7 @@ export const Main = () => {
     <div
       className={clsx(
         'flex-1 overflow-auto page-has-ant-input',
-        isWrapToken
-          ? ''
-          : activeProvider?.shouldApproveToken
-          ? 'pb-[130px]'
-          : 'pb-[110px]'
+        selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
       )}
     >
       <div
@@ -377,13 +314,13 @@ export const Main = () => {
         />
 
         {payAmount &&
-          activeProvider &&
-          activeProvider?.to_token_amount &&
+          selectedBridgeQuote &&
+          selectedBridgeQuote?.to_token_amount &&
           payToken &&
           receiveToken && (
             <>
-              <ReceiveDetails
-                activeProvider={activeProvider}
+              <BridgeReceiveDetails
+                activeProvider={selectedBridgeQuote}
                 className="section"
                 payAmount={payAmount}
                 payToken={payToken}
@@ -405,7 +342,7 @@ export const Main = () => {
                               Protocol Fee:{' '}
                               {formatTokenAmount(
                                 new BigNumber(
-                                  activeProvider.protocol_fee.usd_value
+                                  selectedBridgeQuote.protocol_fee.usd_value
                                 )
                                   .div(receiveToken.price)
                                   .toString()
@@ -413,7 +350,7 @@ export const Main = () => {
                               {getTokenSymbol(receiveToken)} ≈{' '}
                               {formatTokenAmount(
                                 new BigNumber(
-                                  activeProvider.protocol_fee.usd_value
+                                  selectedBridgeQuote.protocol_fee.usd_value
                                 )
                                   .div(payToken.price)
                                   .toString()
@@ -424,13 +361,17 @@ export const Main = () => {
                             <p>
                               Gas Fee:{' '}
                               {formatTokenAmount(
-                                new BigNumber(activeProvider.gas_fee.usd_value)
+                                new BigNumber(
+                                  selectedBridgeQuote.gas_fee.usd_value
+                                )
                                   .div(receiveToken.price)
                                   .toString()
                               )}{' '}
                               {getTokenSymbol(receiveToken)} ≈
                               {formatTokenAmount(
-                                new BigNumber(activeProvider.gas_fee.usd_value)
+                                new BigNumber(
+                                  selectedBridgeQuote.gas_fee.usd_value
+                                )
                                   .div(payToken.price)
                                   .toString()
                               )}{' '}
@@ -441,7 +382,7 @@ export const Main = () => {
                               Rabby Fee:{' '}
                               {formatTokenAmount(
                                 new BigNumber(
-                                  activeProvider.rabby_fee.usd_value
+                                  selectedBridgeQuote.rabby_fee.usd_value
                                 )
                                   .div(receiveToken.price)
                                   .toString()
@@ -449,7 +390,7 @@ export const Main = () => {
                               {getTokenSymbol(receiveToken)} ≈
                               {formatTokenAmount(
                                 new BigNumber(
-                                  activeProvider.rabby_fee.usd_value
+                                  selectedBridgeQuote.rabby_fee.usd_value
                                 )
                                   .div(payToken.price)
                                   .toString()
@@ -467,9 +408,9 @@ export const Main = () => {
                     </div>
                     <span className="font-medium text-r-neutral-title-1">
                       {formatTokenAmount(
-                        new BigNumber(activeProvider.gas_fee.usd_value)
-                          .plus(activeProvider.rabby_fee.usd_value)
-                          .plus(activeProvider.protocol_fee.usd_value)
+                        new BigNumber(selectedBridgeQuote.gas_fee.usd_value)
+                          .plus(selectedBridgeQuote.rabby_fee.usd_value)
+                          .plus(selectedBridgeQuote.protocol_fee.usd_value)
                           .div(payToken.price)
                           .toString()
                       )}{' '}
@@ -529,11 +470,11 @@ export const Main = () => {
           size="large"
           className="h-[48px] text-white text-[16px] font-medium"
           onClick={() => {
-            if (!activeProvider || expired || slippageChanged) {
+            if (!selectedBridgeQuote || expired) {
               setVisible(true);
               return;
             }
-            if (activeProvider?.shouldTwoStepApprove) {
+            if (selectedBridgeQuote?.shouldTwoStepApprove) {
               return Modal.confirm({
                 width: 360,
                 closable: true,
@@ -581,7 +522,7 @@ export const Main = () => {
           payAmount={payAmount}
           receiveToken={receiveToken}
           inSufficient={inSufficient}
-          setActiveProvider={setActiveProvider}
+          setSelectedBridgeQuote={setSelectedBridgeQuote}
         />
       ) : null}
     </div>

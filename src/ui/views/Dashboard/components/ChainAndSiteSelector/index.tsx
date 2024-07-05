@@ -208,7 +208,6 @@ export default ({
       eventKey: 'Bridge',
       content: t('page.dashboard.home.panel.bridge'),
       onClick: () => {
-        // setIsShowReceiveModal(true);
         history.push('/bridge');
       },
     } as IPanelItem,

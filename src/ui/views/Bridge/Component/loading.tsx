@@ -1,4 +1,3 @@
-import { CEX, DEX } from '@/constant';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';

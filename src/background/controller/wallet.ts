@@ -105,6 +105,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
+import { BridgeRecord } from '../service/bridge';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -547,7 +548,7 @@ export class WalletController extends BaseController {
       payTokenChainServerId: string;
       payTokenRawAmount: string;
       gasPrice?: number;
-      info: any;
+      info: BridgeRecord;
     },
     $ctx?: any
   ) => {

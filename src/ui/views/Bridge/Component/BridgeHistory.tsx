@@ -6,8 +6,7 @@ import { formatAmount, formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import ImgPending from 'ui/assets/swap/pending.svg';
-import ImgCompleted from 'ui/assets/swap/completed.svg';
-import ImgEmpty from 'ui/assets/swap/empty.svg';
+import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 
 import { ReactComponent as RcIconSwapArrow } from 'ui/assets/swap/arrow-right.svg';
 
@@ -202,11 +201,11 @@ const HistoryList = () => {
   if (!loading && (!txList || !txList?.list?.length)) {
     return (
       <div className="w-full h-full flex flex-col items-center">
-        <img
-          src={ImgEmpty}
-          className="w-[52px] h-[52px] mx-auto mt-[112px] mb-24"
+        <RCIconCCEmpty
+          viewBox="0 0 52 52"
+          className="w-[52px] h-[52px] mx-auto mt-[112px] mb-24 text-r-neutral-body"
         />
-        <p className="text-center text-r-neutral-foot text-14">
+        <p className="text-center text-r-neutral-body text-14">
           {t('page.bridge.no-transaction-records')}
         </p>
       </div>

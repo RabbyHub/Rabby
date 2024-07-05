@@ -5,7 +5,7 @@ import { PageHeader } from '@/ui/component';
 import React, { useCallback, useEffect, useState } from 'react';
 import { AggregatorsSettings } from './AggregatorsSettings';
 import { useSetSettingVisible, useSettingVisible } from '../hooks';
-import { BridgeTxHistory } from './History';
+import { BridgeTxHistory } from './BridgeHistory';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
 

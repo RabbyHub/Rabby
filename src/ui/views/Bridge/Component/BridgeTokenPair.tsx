@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { Drawer, DrawerProps, Skeleton } from 'antd';
+import { Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -61,45 +61,54 @@ const TokenPairDrawer = (
           {!loading &&
             value?.map((tokenPair, i) => {
               return (
-                <div
-                  key={i}
-                  onClick={() => {
-                    if (tokenPair.from_token_amount) {
-                      props.onSelectTokenPair({
-                        from: {
-                          ...tokenPair.from_token,
-                          amount: tokenPair.from_token_amount,
-                          raw_amount_hex_str:
-                            tokenPair.from_token_raw_amount_hex_str,
-                        },
-                        to: tokenPair.to_token,
-                      });
-                    }
-                  }}
-                  className={clsx(
-                    'px-20 min-h-[56px] cursor-pointer',
-                    'flex items-center justify-between',
-                    'border border-solid border-transparent rounded-md',
-                    'hover:border-rabby-blue-default',
-                    !tokenPair.from_token_amount &&
-                      'opacity-40 cursor-not-allowed'
-                  )}
+                <Tooltip
+                  overlayClassName={clsx('rectangle')}
+                  placement="top"
+                  visible={!tokenPair.from_token_amount ? undefined : false}
+                  trigger={['hover', 'click']}
+                  mouseEnterDelay={3}
+                  title={t('page.gasTopUp.InsufficientBalanceTips')}
+                  align={{ targetOffset: [0, -30] }}
                 >
-                  <div className="flex items-center text-[15px] font-medium text-r-neutral-title1">
-                    <TokenWithChain
-                      width="24px"
-                      height="24px"
-                      token={tokenPair.from_token}
-                    />
-                    <span className="ml-12">
-                      {getTokenSymbol(tokenPair.from_token)}
-                    </span>
-                    <span className="text-r-neutral-foot mx-6">→</span>
-                    <span>{getTokenSymbol(tokenPair.to_token)}</span>
-                  </div>
+                  <div
+                    key={i}
+                    onClick={() => {
+                      if (tokenPair.from_token_amount) {
+                        props.onSelectTokenPair({
+                          from: {
+                            ...tokenPair.from_token,
+                            amount: tokenPair.from_token_amount,
+                            raw_amount_hex_str:
+                              tokenPair.from_token_raw_amount_hex_str,
+                          },
+                          to: tokenPair.to_token,
+                        });
+                      }
+                    }}
+                    className={clsx(
+                      'px-20 min-h-[56px] cursor-pointer',
+                      'flex items-center justify-between',
+                      'border border-solid border-transparent rounded-md',
+                      'hover:border-rabby-blue-default',
+                      !tokenPair.from_token_amount &&
+                        'opacity-40 cursor-not-allowed'
+                    )}
+                  >
+                    <div className="flex items-center text-[15px] font-medium text-r-neutral-title1">
+                      <TokenWithChain
+                        width="24px"
+                        height="24px"
+                        token={tokenPair.from_token}
+                      />
+                      <span className="ml-12">
+                        {getTokenSymbol(tokenPair.from_token)}
+                      </span>
+                      <span className="text-r-neutral-foot mx-6">→</span>
+                      <span>{getTokenSymbol(tokenPair.to_token)}</span>
+                    </div>
 
-                  <div className="text-[15px] font-medium text-r-neutral-title1">
-                    {/* {formatUsdValue(
+                    <div className="text-[15px] font-medium text-r-neutral-title1">
+                      {/* {formatUsdValue(
                       new BigNumber(
                         tokenPair.from_token.raw_amount_hex_str || '0'
                       )
@@ -107,13 +116,14 @@ const TokenPairDrawer = (
                         .times(tokenPair.from_token.price)
                         .toString()
                     )} */}
-                    {formatUsdValue(
-                      new BigNumber(tokenPair.from_token_amount || '0')
-                        .times(tokenPair.from_token.price)
-                        .toString()
-                    )}
+                      {formatUsdValue(
+                        new BigNumber(tokenPair.from_token_amount || '0')
+                          .times(tokenPair.from_token.price)
+                          .toString()
+                      )}
+                    </div>
                   </div>
-                </div>
+                </Tooltip>
               );
             })}
 

@@ -8,7 +8,7 @@ import { CHAINS_ENUM } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
 import { BridgeQuote, TokenItem } from '@/background/service/openapi';
-import { BridgeQuoteItem } from './QuoteItem';
+import { BridgeQuoteItem } from './BridgeQuoteItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import MatchImage from 'ui/assets/match.svg';
 
@@ -24,7 +24,7 @@ interface QuotesProps {
   visible: boolean;
   onClose: () => void;
   payAmount: string;
-  setActiveProvider: React.Dispatch<
+  setSelectedBridgeQuote: React.Dispatch<
     React.SetStateAction<SelectedBridgeQuote | undefined>
   >;
 }
@@ -77,7 +77,7 @@ export const Quotes = ({
               bestQuoteUsd={bestQuoteUsd}
               payToken={other.payToken}
               receiveToken={other.receiveToken}
-              setActiveProvider={other.setActiveProvider}
+              setSelectedBridgeQuote={other.setSelectedBridgeQuote}
               payAmount={other.payAmount}
               inSufficient={inSufficient}
             />

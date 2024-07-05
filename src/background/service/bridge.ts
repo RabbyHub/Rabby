@@ -5,17 +5,17 @@ import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { openapiService } from 'background/service';
 import { TokenItem } from './openapi';
 
-type BridgeRecord = {
+export type BridgeRecord = {
   aggregator_id: string;
   bridge_id: string;
-  user_addr: string;
   from_chain_id: string;
   from_token_id: string;
-  from_token_amount: string;
+  from_token_amount: string | number;
   to_chain_id: string;
   to_token_id: string;
-  to_token_amount: string;
-  tx_id: string;
+  to_token_amount: string | number;
+  tx: Partial<Tx>;
+  rabby_fee: number;
 };
 
 export type BridgeServiceStore = {

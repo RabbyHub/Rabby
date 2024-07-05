@@ -7,8 +7,8 @@ import ImgSwitch from '@/ui/assets/swap/switch.svg';
 import React from 'react';
 import { useSetQuoteVisible } from '../hooks';
 import { useTranslation } from 'react-i18next';
-import { SelectedBridgeQuote } from '../../Bridge/hooks';
-import { BridgeQuoteItem } from '../../Bridge/Component/QuoteItem';
+import { SelectedBridgeQuote } from '../hooks';
+import { BridgeQuoteItem } from './BridgeQuoteItem';
 
 const ReceiveWrapper = styled.div`
   position: relative;
@@ -110,7 +110,7 @@ interface ReceiveDetailsProps {
   activeProvider: SelectedBridgeQuote;
   // isWrapToken?: boolean;
 }
-export const ReceiveDetails = (
+export const BridgeReceiveDetails = (
   props: ReceiveDetailsProps & InsHTMLAttributes<HTMLDivElement>
 ) => {
   const { t } = useTranslation();

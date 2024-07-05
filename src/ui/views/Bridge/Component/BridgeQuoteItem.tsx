@@ -21,7 +21,7 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   isBestQuote?: boolean;
   bestQuoteUsd: string;
   sortIncludeGasFee: boolean;
-  setActiveProvider?: React.Dispatch<
+  setSelectedBridgeQuote?: React.Dispatch<
     React.SetStateAction<SelectedBridgeQuote | undefined>
   >;
   onlyShow?: boolean;
@@ -66,7 +66,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     if (props.inSufficient) {
       return;
     }
-    props?.setActiveProvider?.(props);
+    props?.setSelectedBridgeQuote?.(props);
     openSwapQuote(false);
   };
   return (
@@ -86,7 +86,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             ? 'bg-transparent h-auto'
             : props.inSufficient
             ? 'h-80 px-16 bg-transparent border-[0.5px] border-solid border-rabby-neutral-line'
-            : 'h-80 px-16 cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-light-r-blue-light1  hover:border-rabby-blue-default'
+            : 'h-80 px-16 cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-rabby-blue-light1  hover:border-rabby-blue-default'
         )}
         style={
           props.onlyShow
@@ -98,7 +98,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         onClick={handleClick}
       >
         <div className="flex items-center justify-between">
-          <div className="flex gap-6  items-center ">
+          <div className="flex gap-6  items-center relative">
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
@@ -117,6 +117,8 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               <TooltipWithMagnetArrow
                 overlayClassName="rectangle w-[max-content]"
                 title={t('page.bridge.need-to-approve-token-before-bridge')}
+                arrowPointAtCenter
+                placement="top"
               >
                 <img src={ImgLock} className="w-16 h16" />
               </TooltipWithMagnetArrow>
@@ -131,7 +133,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               hideChainIcon
               hideConer
             />
-            <span className="text-[16px] font-medium overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <span className="text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap">
               {formatTokenAmount(props.payAmount || '')}
             </span>
           </div>
