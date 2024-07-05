@@ -194,7 +194,7 @@ export const Main = () => {
       return t('page.bridge.price-expired-refresh-route');
     }
     if (activeProvider?.shouldApproveToken) {
-      return t('page.bridge.pprove-and-bridge');
+      return t('page.bridge.approve-and-bridge');
     }
     if (activeProvider?.aggregator.name) {
       return t('page.bridge.bridge-via-x', {
