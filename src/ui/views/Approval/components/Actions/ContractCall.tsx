@@ -150,12 +150,9 @@ const ContractCall = ({
         </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
-          <Row>
+          <Row wrap>
             <div className="relative flex items-center">
-              <span
-                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
-                title={requireData.call.func}
-              >
+              <span className="break-all" title={requireData.call.func}>
                 {requireData.call.func || '-'}
               </span>
               <TooltipWithMagnetArrow

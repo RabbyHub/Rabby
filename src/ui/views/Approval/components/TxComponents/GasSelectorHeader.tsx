@@ -755,10 +755,7 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span
-                    className="truncate cursor-pointer"
-                    title={gasCostUsdStr}
-                  >
+                  <span className="truncate" title={gasCostUsdStr}>
                     {gasCostUsdStr}
                   </span>
                   {L2_ENUMS.includes(chain.enum) &&
