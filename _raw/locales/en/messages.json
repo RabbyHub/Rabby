@@ -445,10 +445,10 @@
         "specificBuyer": "Specific buyer"
       },
       "signMultiSig": {
-        "title": "Confirm Transaction"
+        "title": "ยืนยันธุรกรรม"
       },
       "createKey": {
-        "title": "Create Key"
+        "title": "สร้าง Key"
       },
       "verifyAddress": {
         "title": "Verify Address"
@@ -1128,7 +1128,7 @@
           "leverage": "Leverage",
           "PL": "P&L",
           "unsupportedPoolType": "Unsupported pool type",
-          "claimable": "Claimable",
+          "claimable": "เคลมได้",
           "endAt": "End at",
           "dailyUnlock": "Daily unlock",
           "pool": "POOL",
@@ -1137,7 +1137,7 @@
           "percent": "Percent",
           "summaryTips": "Asset value divided by total net worth",
           "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
-          "noMatch": "No Match",
+          "noMatch": "ไม่พบ",
           "lowValueDescription": "Low value assets will be shown here",
           "lowValueAssets": "{{count}} low value assets"
         },
