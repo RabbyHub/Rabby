@@ -376,7 +376,7 @@ const Dashboard = () => {
               </div>
 
               <RcIconCopy
-                className="copyAddr headerIcon"
+                className="copyAddr actionIcon"
                 onClick={() => {
                   copyAddress(currentAccount.address);
                   matomoRequestEvent({
@@ -391,7 +391,7 @@ const Dashboard = () => {
               />
 
               <RcIconReceive
-                className="mx-8 cursor-pointer headerIcon"
+                className="mx-8 cursor-pointer actionIcon"
                 onClick={() => {
                   matomoRequestEvent({
                     category: 'Front Page Click',
