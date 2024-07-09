@@ -153,7 +153,7 @@ const ContractCall = ({
           <Row>
             <div className="relative flex items-center">
               <span
-                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
+                className="break-all whitespace-normal"
                 title={requireData.call.func}
               >
                 {requireData.call.func || '-'}
