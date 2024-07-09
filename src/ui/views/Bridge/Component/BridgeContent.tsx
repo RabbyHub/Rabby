@@ -234,9 +234,7 @@ export const BridgeContent = () => {
       )}
     >
       <div
-        className={clsx(
-          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-10 mx-20'
-        )}
+        className={clsx('bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 mx-20')}
       >
         <div className={clsx(tipsClassName)}>{t('page.bridge.bridgeTo')}</div>
         <ChainSelectorInForm

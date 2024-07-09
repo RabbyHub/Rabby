@@ -39,7 +39,7 @@ export const Quotes = ({
   const sortIncludeGasFee = useRabbySelector((s) => s.bridge.sortIncludeGasFee);
 
   const sortedList = useMemo(() => {
-    return list?.sort((a, b) => {
+    return list?.sort((b, a) => {
       return new BigNumber(a.to_token_amount)
         .times(other.receiveToken.price || 1)
         .minus(sortIncludeGasFee ? a.gas_fee.usd_value : 0)
