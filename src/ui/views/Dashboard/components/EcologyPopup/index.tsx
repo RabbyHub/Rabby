@@ -9,13 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 
-const chainList = [DBK_CHAIN_ID]
-  .map((chainId) => {
-    return findChain({
-      id: chainId,
-    });
-  })
-  .filter((chain): chain is Chain => !!chain);
 interface Props {
   visible?: boolean;
   onClose?(): void;
@@ -23,6 +16,14 @@ interface Props {
 export const EcologyPopup = ({ visible, onClose }: Props) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const chainList = [DBK_CHAIN_ID]
+    .map((chainId) => {
+      return findChain({
+        id: chainId,
+      });
+    })
+    .filter((chain): chain is Chain => !!chain);
+
   return (
     <Popup
       visible={visible}

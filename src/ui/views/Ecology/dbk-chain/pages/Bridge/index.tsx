@@ -1,22 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 
+import { ReactComponent as RcIconArrow } from '@/ui/assets/ecology/icon-arrow-right-cc.svg';
+import { ReactComponent as RcIconHistory } from '@/ui/assets/ecology/icon-history-cc.svg';
 import { NameAndAddress } from '@/ui/component';
-import { findChain } from '@/utils/chain';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
+import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import styled from 'styled-components';
 import { DbkButton } from '../../components/DbkButton';
 import { ActivityPopup } from './components/ActivityPopup';
 import { WithdrawConfirmPopup } from './components/WithdrawConfirmPopup';
-import { ReactComponent as RcIconHistory } from '@/ui/assets/ecology/icon-history-cc.svg';
-import { ReactComponent as RcIconArrow } from '@/ui/assets/ecology/icon-arrow-right-cc.svg';
-import { Loading3QuartersOutlined } from '@ant-design/icons';
-import styled from 'styled-components';
-import { DBK_CHAIN_ID } from '@/constant';
-import { useRequest } from 'ahooks';
-import { formatAmount, formatUsdValue, useWallet } from '@/ui/utils';
-import { getTokenSymbol } from '@/ui/utils/token';
-import BigNumber from 'bignumber.js';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useDbkChainBridge } from './hooks/useDbkChainBridge';
+import { useMemoizedFn } from 'ahooks';
+import { InfoCircleFilled } from '@ant-design/icons';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -57,35 +56,24 @@ export const DbkChainBridge = () => {
     'deposit'
   );
 
-  const fromChain = findChain({
-    id: 1,
-  });
+  const {
+    fromChain,
+    targetChain,
+    payAmount,
+    setPayAmount,
+    payToken,
+    extraInfo,
+    handleDeposit,
+    handleWithdraw,
+  } = useDbkChainBridge({ action: activeTab });
 
-  const targetChain = findChain({
-    id: DBK_CHAIN_ID,
-  });
-
-  const wallet = useWallet();
-
-  const account = useCurrentAccount();
-
-  const { data: payToken } = useRequest(async () => {
-    if (!account?.address || !fromChain?.serverId) {
-      return;
+  const handleSubmit = useMemoizedFn(() => {
+    if (activeTab === 'deposit') {
+      handleDeposit();
+    } else {
+      setIsShowWithdrawConfirmPopup(true);
     }
-    return wallet.openapi.getToken(account.address, fromChain.serverId, 'eth');
   });
-
-  const [payAmount, setPayAmount] = useState('');
-
-  const extraInfo = {
-    toAddress: account?.address,
-    receiveAmount: payAmount,
-    receiveTokenSymbol: payToken ? getTokenSymbol(payToken) : '',
-    completeTime: '~ 10 minutes',
-    // todo
-    gasFee: '$10',
-  };
 
   return (
     <Warper className="bg-r-neutral-bg2">
@@ -255,14 +243,38 @@ export const DbkChainBridge = () => {
                 <div className="text-[13px] text-r-neutral-body leading-[16px flex-shrink-0]">
                   Gas fee
                 </div>
-                <div className="ml-auto min-w-0">{extraInfo.gasFee}</div>
+                <div className="ml-auto min-w-0">
+                  {extraInfo.gasFee != null
+                    ? formatUsdValue(extraInfo.gasFee)
+                    : '--'}
+                </div>
               </div>
             </div>
           </div>
         </div>
+        {payAmount > (payToken?.amount || 0) ? (
+          <div className="flex items-center gap-[4px] mt-[12px]">
+            <InfoCircleFilled
+              className={clsx(
+                'self-start transform rotate-180 origin-center text-[16px]',
+                'text-r-red-default'
+              )}
+            />
+
+            <div className="text-r-red-default font-medium text-[13px] leading-[16px]">
+              Insufficient balance
+            </div>
+          </div>
+        ) : null}
       </div>
       <footer className="fixed bottom-0 left-0 right-0 px-[20px] py-[18px] bg-r-neutral-bg-1 border-t-[0.5px] border-rabby-neutral-line">
-        <DbkButton className="w-full h-[44px]">
+        <DbkButton
+          className="w-full h-[44px]"
+          onClick={handleSubmit}
+          disabled={
+            (+payAmount || 0) <= 0 || payAmount > (payToken?.amount || 0)
+          }
+        >
           {activeTab === 'deposit' ? 'Deposit' : 'Withdraw'}
         </DbkButton>
       </footer>
@@ -276,6 +288,10 @@ export const DbkChainBridge = () => {
         visible={isShowWithdrawConfirmPopup}
         onClose={() => {
           setIsShowWithdrawConfirmPopup(false);
+        }}
+        onSubmit={() => {
+          setIsShowWithdrawConfirmPopup(false);
+          handleWithdraw();
         }}
       />
     </Warper>

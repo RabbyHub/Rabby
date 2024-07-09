@@ -8,8 +8,9 @@ import { DbkButton } from '../../../components/DbkButton';
 interface Props {
   visible?: boolean;
   onClose?: () => void;
+  onSubmit?: () => void;
 }
-export const WithdrawConfirmPopup = ({ visible, onClose }: Props) => {
+export const WithdrawConfirmPopup = ({ visible, onClose, onSubmit }: Props) => {
   const checkList = [
     {
       label:
@@ -48,6 +49,11 @@ export const WithdrawConfirmPopup = ({ visible, onClose }: Props) => {
       visible={visible}
       height={560}
       closable
+      style={{ fontFamily: "'Lato', sans-serif" }}
+      bodyStyle={{
+        paddingTop: 8,
+        paddingBottom: 80,
+      }}
       onCancel={onClose}
     >
       <div className="text-r-neutral-body text-[13px] leading-[16px] text-center mb-[12px]">
@@ -101,20 +107,22 @@ export const WithdrawConfirmPopup = ({ visible, onClose }: Props) => {
                   <RcIconUnCheckedCC />
                 )}
               </div>
-              <div className="min-w-0 text-[13px] leading-[17px] font-semibold text-r-neutral-title1">
+              <div className="min-w-0 text-[12px] leading-[17px] font-semibold text-r-neutral-title1">
                 {item.label}
               </div>
             </div>
           );
         })}
       </div>
-      <div className="h-[80px]">
-        <footer className="fixed left-0 right-0 bottom-0 px-[20px] py-[18px] border-t-[0.5px] border-rabby-neutral-line bg-r-neutral-card1">
-          <DbkButton className="w-full h-[44px]" disabled={!isCheckedAll}>
-            Withdraw
-          </DbkButton>
-        </footer>
-      </div>
+      <footer className="fixed left-0 right-0 bottom-0 px-[20px] py-[18px] border-t-[0.5px] border-rabby-neutral-line bg-r-neutral-card1">
+        <DbkButton
+          className="w-full h-[44px]"
+          disabled={!isCheckedAll}
+          onClick={onSubmit}
+        >
+          Withdraw
+        </DbkButton>
+      </footer>
     </Popup>
   );
 };

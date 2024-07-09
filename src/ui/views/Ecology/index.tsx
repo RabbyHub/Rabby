@@ -9,5 +9,6 @@ export const Ecology = () => {
 
   const { chainId } = useParams<{ chainId: string }>();
 
+  // todo
   return <DbkChainEntry />;
 };

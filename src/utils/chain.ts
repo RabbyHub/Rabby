@@ -77,32 +77,7 @@ export const findChain = (params: {
       id: +chainEnum.replace('CUSTOM_', ''),
     });
   }
-  const chain = [
-    ...store.mainnetList,
-    ...store.testnetList,
-    {
-      eip: {
-        '1559': true,
-      },
-      enum: 'ETH',
-      hex: '0x1ee49b',
-      id: 2024603,
-      logo:
-        'https://static.debank.com/image/chain/logo_url/eth/42ba589cd077e7bdd97db6480b0ff61d.png',
-      name: 'DBK Chain',
-      nativeTokenAddress: 'eth',
-      nativeTokenDecimals: 18,
-      nativeTokenLogo:
-        'https://static.debank.com/image/coin/logo_url/eth/6443cdccced33e204d90cb723c632917.png',
-      nativeTokenSymbol: 'ETH',
-      needEstimateGas: false,
-      network: '2024603',
-      scanLink: 'https://scan.dbkchain.io/tx/_s_',
-      serverId: 'eth',
-      whiteLogo:
-        'https://static.debank.com/image/chain/white_logo_url/eth/561dda8f1ed8f0b2f46474bde3f02d0b.png',
-    } as any,
-  ].find(
+  const chain = [...store.mainnetList, ...store.testnetList].find(
     (item) =>
       item.enum === chainEnum ||
       (id && +item.id === +id) ||

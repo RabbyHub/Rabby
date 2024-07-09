@@ -47,6 +47,7 @@ export const ActivityPopup = ({ visible, onClose }: ActivityPopupProps) => {
       height={540}
       closable
       onClose={onClose}
+      style={{ fontFamily: "'Lato', sans-serif" }}
     >
       <div className="flex flex-col h-full">
         <Virtuoso

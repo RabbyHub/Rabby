@@ -12,7 +12,12 @@ export const DbkChainEntry = () => {
   const { chainId } = useParams<{ chainId: string }>();
 
   return (
-    <div className="bg-r-neutral-bg2 h-full">
+    <div
+      className="bg-r-neutral-bg2 h-full"
+      style={{
+        fontFamily: "'Lato', sans-serif",
+      }}
+    >
       <EcologyNavBar className="sticky top-0" chainId={+chainId} />
       <Switch>
         <Route exact path={path}>
