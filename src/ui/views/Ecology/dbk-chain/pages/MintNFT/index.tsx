@@ -1,8 +1,14 @@
 import React from 'react';
 import MintNFTIcon from 'ui/assets/ecology/dbk-genesis-nft.png';
 import { DbkButton } from '../../components/DbkButton';
+import { useWallet } from '@/ui/utils';
 
 export const DbkChainMintNFT: React.FC = () => {
+  const wallet = useWallet();
+  const handleMintNFT = async () => {
+    const res = await wallet.mintDBKChainNFT();
+    console.log('DBK_CHAIN_ID-logger: ', res);
+  };
   return (
     <div className="p-[20px] ">
       <div className="bg-r-neutral-card1 flex flex-col items-center rounded-[8px]">
@@ -40,6 +46,7 @@ export const DbkChainMintNFT: React.FC = () => {
             width: '100%',
             height: '44px',
           }}
+          onClick={handleMintNFT}
         >
           Mint
         </DbkButton>
