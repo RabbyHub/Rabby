@@ -16,11 +16,15 @@ import {
 import { mainnet } from 'viem/chains';
 import {
   chainConfig,
+  getWithdrawals,
   publicActionsL1,
   publicActionsL2,
   walletActionsL1,
   walletActionsL2,
 } from 'viem/op-stack';
+import { useCreateViemClient } from './useCreateViemClient';
+import { DbkBridgeStatus } from '../../../utils';
+import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export const dbk = defineChain({
   ...chainConfig,
@@ -74,8 +78,12 @@ export const dbk = defineChain({
 
 export const useDbkChainBridge = ({
   action,
+  clientL1,
+  clientL2,
 }: {
   action: 'deposit' | 'withdraw';
+  clientL1: ReturnType<typeof useCreateViemClient>['clientL1'];
+  clientL2: ReturnType<typeof useCreateViemClient>['clientL2'];
 }) => {
   const ethChain = findChain({
     id: 1,
@@ -90,72 +98,13 @@ export const useDbkChainBridge = ({
 
   const wallet = useWallet();
 
-  const createViemClient = useMemoizedFn(
-    ({
-      chainId,
-      viemChain,
-    }: {
-      chainId: number;
-      viemChain: NonNullable<Parameters<typeof createWalletClient>[0]['chain']>;
-    }) => {
-      const chain = findChain({
-        id: chainId,
-      })!;
-      console.log(chain);
-      return createWalletClient({
-        chain: viemChain,
-        transport: custom({
-          async request({ method, params }) {
-            console.log(method, params, chainId);
-            if (
-              method === 'eth_sendTransaction' &&
-              params[0] &&
-              !('chainId' in params[0])
-            ) {
-              params[0].chainId = chainId;
-            }
-            if (method === 'eth_sendTransaction') {
-              return wallet.sendRequest<any>({
-                method,
-                params,
-              });
-            } else {
-              return wallet.requestETHRpc<any>(
-                {
-                  method,
-                  params,
-                },
-                chain.serverId
-              );
-            }
-          },
-        }),
-      });
-    }
-  );
-
-  const createL1Client = useMemoizedFn(({ chainId }: { chainId: number }) => {
-    return createViemClient({ chainId, viemChain: mainnet })
-      .extend(walletActionsL1())
-      .extend(publicActionsL1())
-      .extend(publicActions);
-  });
-
-  const createL2Client = useMemoizedFn(({ chainId }: { chainId: number }) => {
-    return createViemClient({ chainId, viemChain: dbk })
-      .extend(walletActionsL2())
-      .extend(publicActionsL2())
-      .extend(publicActions);
-  });
-
-  const clientL1 = useMemo(() => createL1Client({ chainId: 1 }), []);
-
-  const clientL2 = useMemo(() => createL2Client({ chainId: DBK_CHAIN_ID }), []);
-
   const [payAmount, setPayAmount] = useState('');
   const account = useCurrentAccount();
 
   const handleDeposit = useMemoizedFn(async () => {
+    if (!account?.address) {
+      return;
+    }
     try {
       const args = await clientL2.buildDepositTransaction({
         account: (account!.address as unknown) as `0x${string}`,
@@ -164,8 +113,18 @@ export const useDbkChainBridge = ({
       });
 
       const hash = await clientL1.depositTransaction(args);
-
+      if (hash) {
+        await wallet.openapi.createDbkBridgeHistory({
+          user_addr: account.address,
+          from_chain_id: fromChain.serverId,
+          // todo
+          to_chain_id: 'dbk',
+          tx_id: hash,
+          from_token_amount: +payAmount,
+        });
+      }
       console.log(hash);
+      window.close();
 
       // const receipt = await clientL1.waitForTransactionReceipt({ hash });
 
@@ -181,14 +140,74 @@ export const useDbkChainBridge = ({
   });
 
   const handleWithdraw = useMemoizedFn(async () => {
+    if (!account?.address) {
+      return;
+    }
     const args = await clientL1.buildInitiateWithdrawal({
       account: account!.address as any,
       to: account!.address as any,
       value: parseEther(payAmount),
     });
     const hash = await clientL2.initiateWithdrawal(args);
+    if (hash) {
+      await wallet.openapi.createDbkBridgeHistory({
+        user_addr: account.address,
+        // todo
+        from_chain_id: 'dbk',
+        to_chain_id: 'eth',
+        tx_id: hash,
+        from_token_amount: +payAmount,
+      });
+    }
     console.log(hash);
+    window.close();
   });
+
+  const handleWithdrawStep = useMemoizedFn(
+    async (item: DbkBridgeHistoryItem, status: DbkBridgeStatus) => {
+      if (status === 'ready-to-prove') {
+        const l2Hash = item.tx_id;
+        const receipt = await clientL2.getTransactionReceipt({
+          hash: l2Hash as `0x${string}`,
+        });
+        const { output, withdrawal } = await clientL1.waitToProve({
+          receipt,
+          targetChain: clientL2.chain as any,
+        });
+
+        // 2. Build parameters to prove the withdrawal on the L2.
+        const args = await clientL2.buildProveWithdrawal({
+          account: (account!.address as unknown) as `0x${string}`,
+          output,
+          withdrawal,
+        });
+
+        console.log(args);
+
+        // 3. Prove the withdrawal on the L1.
+        const hash = await clientL1.proveWithdrawal(args as any);
+
+        window.close();
+      } else if (status === 'ready-to-finalize') {
+        const l2Hash = item.tx_id as `0x${string}`;
+        const receipt = await clientL2.getTransactionReceipt({
+          hash: l2Hash,
+        });
+
+        // (Shortcut) Get withdrawals from receipt in Step 3.
+        const [withdrawal] = getWithdrawals(receipt);
+
+        // 2. Finalize the withdrawal.
+        const hash = await clientL1.finalizeWithdrawal({
+          account: (account!.address as unknown) as `0x${string}`,
+          targetChain: clientL2.chain as any,
+          withdrawal,
+        });
+
+        window.close();
+      }
+    }
+  );
 
   const handleSubmit = useMemoizedFn(() => {
     if (action === 'deposit') {
@@ -276,5 +295,6 @@ export const useDbkChainBridge = ({
     payAmount,
     payToken,
     setPayAmount,
+    handleWithdrawStep,
   };
 };

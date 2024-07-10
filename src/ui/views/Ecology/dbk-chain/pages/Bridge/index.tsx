@@ -16,6 +16,9 @@ import { WithdrawConfirmPopup } from './components/WithdrawConfirmPopup';
 import { useDbkChainBridge } from './hooks/useDbkChainBridge';
 import { useMemoizedFn } from 'ahooks';
 import { InfoCircleFilled } from '@ant-design/icons';
+import { useCreateViemClient } from './hooks/useCreateViemClient';
+import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
+import { useCheckBridgeStatus } from './hooks/useCheckBridgeStatus';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -42,6 +45,18 @@ export const DbkChainBridge = () => {
     setIsShowWithdrawConfirmPopup,
   ] = React.useState(false);
 
+  const { clientL1, clientL2 } = useCreateViemClient();
+
+  const { data: bridgeHistory } = useQueryDbkBridgeHistory();
+
+  const { data: statusRes } = useCheckBridgeStatus({
+    clientL1,
+    clientL2,
+    list: bridgeHistory?.list || [],
+  });
+
+  console.log(statusRes);
+
   const tabs = [
     {
       key: 'deposit' as const,
@@ -65,7 +80,8 @@ export const DbkChainBridge = () => {
     extraInfo,
     handleDeposit,
     handleWithdraw,
-  } = useDbkChainBridge({ action: activeTab });
+    handleWithdrawStep,
+  } = useDbkChainBridge({ action: activeTab, clientL1, clientL2 });
 
   const handleSubmit = useMemoizedFn(() => {
     if (activeTab === 'deposit') {
@@ -109,13 +125,16 @@ export const DbkChainBridge = () => {
                 setIsShowActivityPopup(true);
               }}
             >
-              <RcIconHistory />
-              <div className="text-r-orange-DBK relative cursor-pointer">
-                <Loading3QuartersOutlined className="text-[18px] animate-spin block" />
-                <div className="text-[13px] leading-[13px] absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center">
-                  1
+              {statusRes?.pendingCount ? (
+                <div className="text-r-orange-DBK relative cursor-pointer">
+                  <Loading3QuartersOutlined className="text-[18px] animate-spin block" />
+                  <div className="text-[13px] leading-[13px] absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center">
+                    {statusRes.pendingCount}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <RcIconHistory />
+              )}
             </div>
           </div>
           <div className="rounded-[8px] border-[0.5px] border-rabby-neutral-line p-[12px] flex items-center justify-between mb-[16px]">
@@ -279,7 +298,10 @@ export const DbkChainBridge = () => {
         </DbkButton>
       </footer>
       <ActivityPopup
+        data={bridgeHistory?.list || []}
+        statusDict={statusRes?.dict || {}}
         visible={isShowActivityPopup}
+        onWithdrawStep={handleWithdrawStep}
         onClose={() => {
           setIsShowActivityPopup(false);
         }}

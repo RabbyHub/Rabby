@@ -19,6 +19,7 @@ interface Props {
   style?: React.CSSProperties;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
+  size?: 'small' | 'medium';
 }
 export const DbkButton = ({
   children,
@@ -26,13 +27,17 @@ export const DbkButton = ({
   style,
   onClick,
   disabled,
+  size = 'medium',
 }: Props) => {
   return (
     <Button
       type="button"
       className={clsx(
-        'rounded-full bg-r-orange-DBK py-[9px] px-[18px]',
-        'text-r-neutral-title2 text-[15px] leading-[18px] font-semibold',
+        'rounded-full bg-r-orange-DBK',
+        'text-r-neutral-title2 font-semibold',
+        size === 'small'
+          ? 'text-[13px] leading-[16px] py-[6px] px-[16px]'
+          : 'py-[9px] px-[18px] text-[15px] leading-[18px]',
         className
       )}
       style={style}
