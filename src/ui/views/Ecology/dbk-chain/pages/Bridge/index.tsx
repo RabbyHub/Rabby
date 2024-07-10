@@ -271,7 +271,7 @@ export const DbkChainBridge = () => {
             </div>
           </div>
         </div>
-        {payAmount > (payToken?.amount || 0) ? (
+        {+payAmount > (payToken?.amount || 0) ? (
           <div className="flex items-center gap-[4px] mt-[12px]">
             <InfoCircleFilled
               className={clsx(
@@ -291,7 +291,7 @@ export const DbkChainBridge = () => {
           className="w-full h-[44px]"
           onClick={handleSubmit}
           disabled={
-            (+payAmount || 0) <= 0 || payAmount > (payToken?.amount || 0)
+            (+payAmount || 0) <= 0 || +payAmount > (payToken?.amount || 0)
           }
         >
           {activeTab === 'deposit' ? 'Deposit' : 'Withdraw'}

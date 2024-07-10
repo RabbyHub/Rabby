@@ -222,20 +222,12 @@ export const useDbkChainBridge = ({
       if (!account?.address || !fromChain?.serverId) {
         return;
       }
-      if (fromChain.isTestnet) {
-        // todo
-        return wallet.getCustomTestnetToken({
-          chainId: fromChain.id,
-          address: account.address,
-          tokenId: fromChain.nativeTokenAddress,
-        }) as any;
-      } else {
-        return wallet.openapi.getToken(
-          account.address,
-          fromChain.serverId,
-          'eth'
-        );
-      }
+
+      return wallet.openapi.getToken(
+        account.address,
+        fromChain.serverId,
+        fromChain.nativeTokenAddress
+      );
     },
     {
       refreshDeps: [fromChain.serverId],
