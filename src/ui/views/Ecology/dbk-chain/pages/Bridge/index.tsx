@@ -14,7 +14,7 @@ import { DbkButton } from '../../components/DbkButton';
 import { ActivityPopup } from './components/ActivityPopup';
 import { WithdrawConfirmPopup } from './components/WithdrawConfirmPopup';
 import { useDbkChainBridge } from './hooks/useDbkChainBridge';
-import { useMemoizedFn } from 'ahooks';
+import { useInterval, useMemoizedFn } from 'ahooks';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { useCreateViemClient } from './hooks/useCreateViemClient';
 import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
@@ -49,11 +49,22 @@ export const DbkChainBridge = () => {
 
   const { data: bridgeHistory } = useQueryDbkBridgeHistory();
 
-  const { data: statusRes } = useCheckBridgeStatus({
+  const {
+    data: statusRes,
+    refreshAsync: runCheckBridgeStatus,
+  } = useCheckBridgeStatus({
     clientL1,
     clientL2,
     list: bridgeHistory?.list || [],
   });
+
+  useInterval(
+    () => {
+      runCheckBridgeStatus();
+    },
+    30 * 1000,
+    { immediate: false }
+  );
 
   console.log(statusRes);
 

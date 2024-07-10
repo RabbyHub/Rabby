@@ -73,7 +73,7 @@ const ActivityBridgeStatus = ({
         <RcIconJump className="text-r-green-default" />
       </div>
       {status === 'waiting-to-prove' ? (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between w-full">
           <div
             className={clsx(
               'inline-flex items-center gap-[6px]',
