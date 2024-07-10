@@ -44,8 +44,8 @@ import {
   INTERNAL_REQUEST_SESSION,
   DARK_MODE_TYPE,
   KEYRING_CLASS,
-  DBK_CHAIN_BRIDGE_CONTRACT,
   DBK_CHAIN_ID,
+  DBK_NFT_CONTRACT_ADDRESS,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -673,7 +673,7 @@ export class WalletController extends BaseController {
       params: [
         {
           from: account.address,
-          to: DBK_CHAIN_BRIDGE_CONTRACT,
+          to: DBK_NFT_CONTRACT_ADDRESS,
           chainId: DBK_CHAIN_ID,
           data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
             {
