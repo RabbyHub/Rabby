@@ -1,14 +1,11 @@
 import React from 'react';
 import MintNFTIcon from 'ui/assets/ecology/dbk-genesis-nft.png';
 import { DbkButton } from '../../components/DbkButton';
-import { useWallet } from '@/ui/utils';
+import { useMintNFT } from '../Bridge/hooks/useDBKNFT';
 
 export const DbkChainMintNFT: React.FC = () => {
-  const wallet = useWallet();
-  const handleMintNFT = async () => {
-    const res = await wallet.mintDBKChainNFT();
-    console.log('DBK_CHAIN_ID-logger: ', res);
-  };
+  const { mintNFT, totalMinted, userMinted } = useMintNFT();
+
   return (
     <div className="p-[20px] ">
       <div className="bg-r-neutral-card1 flex flex-col items-center rounded-[8px]">
@@ -21,7 +18,7 @@ export const DbkChainMintNFT: React.FC = () => {
         <div className="flex flex-row mt-[20px] justify-center text-center ">
           <div className="w-[164px] h-[64px] flex flex-col">
             <div className="text-r-green-default text-[20px] leading-[24px] font-[700]">
-              3990
+              {totalMinted}
             </div>
             <div className="text-r-neutral-foot text-[13px] mt-[4px]">
               Minted
@@ -29,7 +26,7 @@ export const DbkChainMintNFT: React.FC = () => {
           </div>
           <div className="w-[164px] h-[64px] flex flex-col">
             <div className="text-r-green-default text-[20px] leading-[24px] font-[700]">
-              0
+              {userMinted}
             </div>
             <div className="text-r-neutral-foot text-[13px] mt-[4px]">
               My Balance
@@ -46,7 +43,7 @@ export const DbkChainMintNFT: React.FC = () => {
             width: '100%',
             height: '44px',
           }}
-          onClick={handleMintNFT}
+          onClick={mintNFT}
         >
           Mint
         </DbkButton>
