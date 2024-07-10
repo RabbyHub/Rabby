@@ -15,6 +15,7 @@ import { Chain } from '@/types/chain';
 import { getTxScanLink } from '@/utils';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { DbkButton } from '../../../components/DbkButton';
+import { DBK_CHAIN_ID } from '@/constant';
 
 const ActivityBridgeStatus = ({
   item,
@@ -273,8 +274,14 @@ const ActivityItem = ({
   status: DbkBridgeStatus;
   onWithdrawStep(status: DbkBridgeStatus): void;
 }) => {
-  const fromChain = findChain({ serverId: item.from_chain_id });
-  const targetChain = findChain({ serverId: item.to_chain_id });
+  const fromChain =
+    findChain({ serverId: item.from_chain_id }) ||
+    // todo remove
+    findChain({ id: DBK_CHAIN_ID });
+  const targetChain =
+    findChain({ serverId: item.to_chain_id }) ||
+    // todo remove
+    findChain({ id: DBK_CHAIN_ID });
   return (
     <div
       className={clsx(
