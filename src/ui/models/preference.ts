@@ -29,6 +29,7 @@ interface PreferenceState {
   addressSortStore: AddressSortStore;
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
+  isHideEcologyNotice: boolean;
 }
 
 export const preference = createModel<RootModel>()({
@@ -54,6 +55,7 @@ export const preference = createModel<RootModel>()({
     addressSortStore: {} as AddressSortStore,
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
+    isHideEcologyNotice: false,
   } as PreferenceState,
 
   reducers: {
@@ -172,6 +174,13 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setAutoLockTime(time);
       dispatch.preference.getPreference('autoLockTime');
+    },
+    async setIsHideEcologyNotice(v: boolean, store) {
+      dispatch.preference.setField({
+        isHideEcologyNotice: v,
+      });
+      await store.app.wallet.setIsHideEcologyNotice(v);
+      dispatch.preference.getPreference('isHideEcologyNotice');
     },
     async setHiddenBalance(hidden: boolean, store) {
       dispatch.preference.setField({

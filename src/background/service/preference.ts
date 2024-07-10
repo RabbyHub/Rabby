@@ -123,6 +123,7 @@ export interface PreferenceStore {
   addressSortStore: AddressSortStore;
 
   reserveGasOnSendToken?: boolean;
+  isHideEcologyNotice?: boolean;
 }
 
 export interface AddressSortStore {
@@ -183,6 +184,7 @@ class PreferenceService {
           ...defaultAddressSortStore,
         },
         reserveGasOnSendToken: true,
+        isHideEcologyNotice: false,
       },
     });
 
@@ -838,6 +840,9 @@ class PreferenceService {
       ...this.store.addressSortStore,
       [key]: value,
     };
+  };
+  setIsHideEcologyNotice = (v: boolean) => {
+    this.store.isHideEcologyNotice = v;
   };
 }
 

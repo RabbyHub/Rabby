@@ -3963,6 +3963,8 @@ export class WalletController extends BaseController {
   };
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;
+
+  setIsHideEcologyNotice = preferenceService.setIsHideEcologyNotice;
 }
 
 const wallet = new WalletController();
