@@ -4,7 +4,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DBK_CHAIN_ID, DBK_NFT_CONTRACT_ADDRESS } from '@/constant';
 
 import { useMemoizedFn } from 'ahooks';
-import { createPublicClient, http, custom, defineChain } from 'viem';
+import { createPublicClient, http, defineChain, hexToNumber } from 'viem';
 
 import { chainConfig } from 'viem/op-stack';
 
@@ -37,7 +37,7 @@ const NFT_ABI = [
   },
   {
     inputs: [],
-    name: 'getCurrentTokenId',
+    name: 'tokenIdCounter',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
@@ -80,7 +80,7 @@ export const useMintNFT = () => {
         publicClient.readContract({
           address: DBK_NFT_CONTRACT_ADDRESS,
           abi: NFT_ABI,
-          functionName: 'getCurrentTokenId',
+          functionName: 'tokenIdCounter',
         }),
         publicClient.readContract({
           address: DBK_NFT_CONTRACT_ADDRESS,
@@ -90,8 +90,8 @@ export const useMintNFT = () => {
         }),
       ]);
 
-      setTotalMinted(Number(currentTokenId));
-      setUserMinted(Number(userBalance));
+      setTotalMinted(hexToNumber(currentTokenId as `0x${string}`));
+      setUserMinted(hexToNumber(userBalance as `0x${string}`));
     } catch (error) {
       console.error('Failed to update mint counts:', error);
     }
