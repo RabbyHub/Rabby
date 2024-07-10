@@ -1,7 +1,13 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, Modal } from 'antd';
+import { Alert, Button, Input, message, Modal, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import {
   formatAmount,
@@ -28,6 +34,7 @@ import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 
 import { ReactComponent as RcIconQuestion } from '@/ui/assets/bridge/question-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import pRetry from 'p-retry';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
 
@@ -83,7 +90,6 @@ const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
 export const BridgeContent = () => {
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
-    unlimitedAllowance: state.swap.unlimitedAllowance || false,
   }));
 
   const {
@@ -109,8 +115,8 @@ export const BridgeContent = () => {
     expired,
   } = useTokenPair(userAddress);
 
-  const selectedAggregators = useRabbySelector(
-    (s) => s.bridge.selectedAggregators
+  const aggregatorIds = useRabbySelector(
+    (s) => s.bridge.aggregatorsList.map((e) => e.id) || []
   );
 
   const inputRef = useRef<Input>();
@@ -130,7 +136,9 @@ export const BridgeContent = () => {
       return t('page.bridge.price-expired-refresh-route');
     }
     if (selectedBridgeQuote?.shouldApproveToken) {
-      return t('page.bridge.approve-and-bridge');
+      return t('page.bridge.approve-and-bridge', {
+        name: selectedBridgeQuote?.aggregator.name || '',
+      });
     }
     if (selectedBridgeQuote?.aggregator.name) {
       return t('page.bridge.bridge-via-x', {
@@ -145,20 +153,44 @@ export const BridgeContent = () => {
   const rbiSource = useRbiSource();
 
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
+  const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
 
-  const gotoSwap = useCallback(async () => {
-    if (!inSufficient && payToken && receiveToken && selectedBridgeQuote?.tx) {
+  const gotoBridge = useCallback(async () => {
+    if (
+      !inSufficient &&
+      payToken &&
+      receiveToken &&
+      selectedBridgeQuote?.bridge_id
+    ) {
       try {
+        setFetchingBridgeQuote(true);
+        const { tx } = await pRetry(
+          () =>
+            wallet.openapi.getBridgeQuote({
+              aggregator_id: selectedBridgeQuote.aggregator.id,
+              bridge_id: selectedBridgeQuote.bridge_id,
+              from_token_id: payToken.id,
+              user_addr: userAddress,
+              from_chain_id: payToken.chain,
+              from_token_raw_amount: new BigNumber(payAmount)
+                .times(10 ** payToken.decimals)
+                .toFixed(0, 1)
+                .toString(),
+              to_chain_id: receiveToken.chain,
+              to_token_id: receiveToken.id,
+            }),
+          { retries: 1 }
+        );
         wallet.bridgeToken(
           {
-            to: selectedBridgeQuote.tx.to,
-            value: selectedBridgeQuote.tx.value,
-            data: selectedBridgeQuote.tx.data,
+            to: tx.to,
+            value: tx.value,
+            data: tx.data,
             payTokenRawAmount: new BigNumber(payAmount)
               .times(10 ** payToken.decimals)
               .toFixed(0, 1)
               .toString(),
-            chainId: selectedBridgeQuote.tx.chainId,
+            chainId: tx.chainId,
             shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
             shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
             payTokenId: payToken.id,
@@ -172,7 +204,7 @@ export const BridgeContent = () => {
               to_chain_id: receiveToken.chain,
               to_token_id: receiveToken.id,
               to_token_amount: selectedBridgeQuote.to_token_amount,
-              tx: selectedBridgeQuote.tx,
+              tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
             },
           },
@@ -186,7 +218,10 @@ export const BridgeContent = () => {
         );
         window.close();
       } catch (error) {
+        message.error(error?.message || String(error));
         console.error(error);
+      } finally {
+        setFetchingBridgeQuote(false);
       }
     }
   }, [
@@ -266,7 +301,7 @@ export const BridgeContent = () => {
                   : undefined,
               [payToken, receiveToken]
             )}
-            aggregatorIds={selectedAggregators || []}
+            aggregatorIds={aggregatorIds || []}
             chain={chain}
           />
         </div>
@@ -282,7 +317,8 @@ export const BridgeContent = () => {
           <div
             className={clsx(
               'text-r-neutral-title-1',
-              'underline cursor-pointer'
+              'underline cursor-pointer',
+              !payToken && 'hidden'
             )}
             onClick={() => {
               handleBalance();
@@ -325,8 +361,8 @@ export const BridgeContent = () => {
                 receiveToken={receiveToken}
               />
 
-              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12 relative">
-                <div className="subText flex flex-col gap-12">
+              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12 ">
+                <div className="subText flex flex-col gap-12 relative">
                   <div className="flex justify-between">
                     <div className="inline-flex gap-4 items-center">
                       <span>{t('page.bridge.bridge-cost')}</span>
@@ -337,79 +373,52 @@ export const BridgeContent = () => {
                         title={
                           <div>
                             <p>
-                              Protocol Fee:{' '}
+                              {selectedBridgeQuote?.aggregator?.name} Fee:{' '}
                               {formatTokenAmount(
                                 new BigNumber(
-                                  selectedBridgeQuote.protocol_fee.usd_value
+                                  selectedBridgeQuote.protocol_fee.raw_amount_hex_str
                                 )
-                                  .div(receiveToken.price)
-                                  .toString()
+                                  .div(10 ** (receiveToken?.decimals || 18))
+                                  .toString(),
+                                4,
+                                true
                               )}{' '}
-                              {getTokenSymbol(receiveToken)} ≈{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.protocol_fee.usd_value
-                                )
-                                  .div(payToken.price)
-                                  .toString()
-                              )}{' '}
-                              {getTokenSymbol(payToken)}
-                            </p>
-
-                            <p>
-                              Gas Fee:{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.gas_fee.usd_value
-                                )
-                                  .div(receiveToken.price)
-                                  .toString()
-                              )}{' '}
-                              {getTokenSymbol(receiveToken)} ≈
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.gas_fee.usd_value
-                                )
-                                  .div(payToken.price)
-                                  .toString()
-                              )}{' '}
-                              {getTokenSymbol(payToken)}
+                              {getTokenSymbol(receiveToken)}
                             </p>
 
                             <p>
                               Rabby Fee:{' '}
                               {formatTokenAmount(
                                 new BigNumber(
-                                  selectedBridgeQuote.rabby_fee.usd_value
+                                  selectedBridgeQuote.rabby_fee.raw_amount_hex_str
                                 )
-                                  .div(receiveToken.price)
-                                  .toString()
+                                  .div(10 ** (receiveToken?.decimals || 18))
+                                  .toString(),
+                                4,
+                                true
                               )}{' '}
-                              {getTokenSymbol(receiveToken)} ≈
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.rabby_fee.usd_value
-                                )
-                                  .div(payToken.price)
-                                  .toString()
-                              )}{' '}
-                              {getTokenSymbol(payToken)}
+                              {getTokenSymbol(receiveToken)}
                             </p>
                           </div>
                         }
                       >
-                        <RcIconQuestion
-                          viewBox="0 0 14 14"
-                          className="w-14 h-14"
-                        />
+                        <span className="w-14 h-14">
+                          <RcIconQuestion
+                            viewBox="0 0 14 14"
+                            className="w-14 h-14"
+                          />
+                        </span>
                       </TooltipWithMagnetArrow>
                     </div>
                     <span className="font-medium text-r-neutral-title-1">
                       {formatTokenAmount(
-                        new BigNumber(selectedBridgeQuote.gas_fee.usd_value)
-                          .plus(selectedBridgeQuote.rabby_fee.usd_value)
-                          .plus(selectedBridgeQuote.protocol_fee.usd_value)
-                          .div(payToken.price)
+                        new BigNumber(
+                          selectedBridgeQuote.rabby_fee.raw_amount_hex_str
+                        )
+                          .plus(
+                            selectedBridgeQuote.protocol_fee.raw_amount_hex_str
+                          )
+                          .div(10 ** (receiveToken?.decimals || 18))
                           .toString()
                       )}{' '}
                       {receiveToken ? getTokenSymbol(receiveToken) : ''}
@@ -463,11 +472,13 @@ export const BridgeContent = () => {
         )}
       >
         <Button
+          loading={fetchingBridgeQuote}
           type="primary"
           block
           size="large"
           className="h-[48px] text-white text-[16px] font-medium"
           onClick={() => {
+            if (fetchingBridgeQuote) return;
             if (!selectedBridgeQuote || expired) {
               setVisible(true);
               return;
@@ -492,12 +503,13 @@ export const BridgeContent = () => {
                   </>
                 ),
                 okText: 'Proceed with two step approve',
+
                 onOk() {
-                  gotoSwap();
+                  gotoBridge();
                 },
               });
             }
-            gotoSwap();
+            gotoBridge();
           }}
           disabled={
             !payToken || !receiveToken || !payAmount || Number(payAmount) === 0

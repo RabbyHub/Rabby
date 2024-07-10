@@ -7,10 +7,10 @@ import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
-import { BridgeQuote, TokenItem } from '@/background/service/openapi';
+import { TokenItem } from '@/background/service/openapi';
 import { BridgeQuoteItem } from './BridgeQuoteItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import MatchImage from 'ui/assets/match.svg';
+import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 
 interface QuotesProps {
   chain: CHAINS_ENUM;
@@ -19,7 +19,7 @@ interface QuotesProps {
   inSufficient: boolean;
   payToken: TokenItem;
   receiveToken: TokenItem;
-  list?: BridgeQuote[];
+  list?: SelectedBridgeQuote[];
   activeName?: string;
   visible: boolean;
   onClose: () => void;
@@ -65,10 +65,11 @@ export const Quotes = ({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex flex-col gap-12 flex-1">
+      <div className="flex flex-col gap-12 flex-1 pb-12">
         {sortedList?.map((item, idx) => {
           return (
             <BridgeQuoteItem
+              key={item.aggregator.id + item.bridge_id}
               {...item}
               sortIncludeGasFee={!!sortIncludeGasFee}
               isBestQuote={idx === 0}
@@ -83,13 +84,13 @@ export const Quotes = ({
         })}
         {other.loading &&
           !sortedList?.length &&
-          Array.from({ length: 5 }).map((_, idx) => <QuoteLoading key={idx} />)}
+          Array.from({ length: 4 }).map((_, idx) => <QuoteLoading key={idx} />)}
 
         {!other.loading && !sortedList?.length && (
-          <div className="h-full flex flex-col justify-center items-center gap-12">
-            <img className="w-40 h-40" src={MatchImage} />
+          <div className="h-full flex flex-col justify-center items-center gap-12 mb-20">
+            <RCIconCCEmpty className="w-40 h-40 text-rabby-neutral-foot" />
             <span className="text-14 text-r-neutral-foot">
-              {t('page.bridge.noData')}
+              {t('page.bridge.no-route-found')}
             </span>
           </div>
         )}
@@ -185,7 +186,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={516}
+      height={440}
       onClose={onClose}
       closable={false}
       destroyOnClose

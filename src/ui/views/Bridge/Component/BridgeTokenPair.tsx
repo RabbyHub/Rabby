@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { Drawer, DrawerProps, Skeleton, Tooltip } from 'antd';
+import { Drawer, DrawerProps, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
@@ -13,6 +13,7 @@ import { useAsync } from 'react-use';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { TokenPairLoading } from './loading';
 import MatchImage from 'ui/assets/match.svg';
+import { SvgIconCross } from '@/ui/assets';
 
 const TokenPairDrawer = (
   props: DrawerProps & {
@@ -173,6 +174,14 @@ const RenderWrapper = styled.div`
         font-size: 16px;
         font-weight: 500;
         color: var(--r-neutral-title1, #192945);
+
+        .token-symbol {
+          max-width: 90px;
+          display: inline-block;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
 
@@ -214,13 +223,20 @@ export const BridgeTokenPair = (props: {
           <div className="pair">
             <div className="token">
               <TokenWithChain width="24px" height="24px" token={value?.from} />
-              <span>{getTokenSymbol(value?.from)}</span>
+              <span
+                className="token-symbol"
+                title={getTokenSymbol(value?.from)}
+              >
+                {getTokenSymbol(value?.from)}
+              </span>
             </div>
             <span className="text-r-neutral-foot">→</span>
 
             <div className="token">
               <TokenWithChain width="24px" height="24px" token={value?.to} />
-              <span>{getTokenSymbol(value?.from)}</span>
+              <span className="token-symbol" title={getTokenSymbol(value?.to)}>
+                {getTokenSymbol(value?.to)}
+              </span>
             </div>
           </div>
         )}
@@ -233,8 +249,10 @@ export const BridgeTokenPair = (props: {
         aggregatorIds={props.aggregatorIds}
         chain={props.chain}
         visible={visible}
+        closeIcon={
+          <SvgIconCross className="w-14 fill-current text-r-neutral-foot mt-[3px]" />
+        }
         onClose={() => setVisible(false)}
-        closable={false}
         title={t('page.bridge.tokenPairDrawer.title')}
       />
     </>

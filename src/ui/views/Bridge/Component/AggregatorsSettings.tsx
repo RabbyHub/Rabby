@@ -2,13 +2,11 @@ import { Checkbox, Modal, Popup } from '@/ui/component';
 import React, { useEffect, useState } from 'react';
 import { useSetSettingVisible } from '../hooks';
 import clsx from 'clsx';
-import { Button, Tooltip } from 'antd';
+import { Button, Switch, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/cc-check.svg';
-import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 
 import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
-import { useHistory } from 'react-router-dom';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export const AggregatorsSettings = ({
   visible,
@@ -18,14 +16,13 @@ export const AggregatorsSettings = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const dispatch = useRabbyDispatch();
 
   const setVisible = useSetSettingVisible();
 
-  const [forceGoHome, setForceGoHome] = useState(false);
+  const dispatch = useRabbyDispatch();
 
   const aggregatorsList = useRabbySelector((s) => s.bridge.aggregatorsList);
+
   const aggregatorsListInit = useRabbySelector(
     (s) => s.bridge.aggregatorsListInit
   );
@@ -33,19 +30,20 @@ export const AggregatorsSettings = ({
     (s) => s.bridge.selectedAggregators || []
   );
 
-  const [changedAggregator, setChangedAggregator] = useState(
-    selectedAggregators
-  );
+  const [willChangedAggregatorId, setSillChangedAggregatorId] = useState('');
 
-  useEffect(() => {
-    if (!visible) {
-      setChangedAggregator(selectedAggregators);
+  const [open, setOpen] = useState(false);
+
+  const onConfirm = async () => {
+    if (willChangedAggregatorId) {
+      const changedItems = selectedAggregators.includes(willChangedAggregatorId)
+        ? selectedAggregators.filter((id) => id !== willChangedAggregatorId)
+        : [...selectedAggregators, willChangedAggregatorId];
+
+      dispatch.bridge.setSelectedAggregators(changedItems);
+      setOpen(false);
     }
-  }, [visible]);
-
-  useEffect(() => {
-    setChangedAggregator(selectedAggregators);
-  }, [selectedAggregators]);
+  };
 
   useEffect(() => {
     if (aggregatorsListInit && aggregatorsList.length) {
@@ -54,62 +52,44 @@ export const AggregatorsSettings = ({
       });
       if (!availableAggregators) {
         setVisible(true);
-        setForceGoHome(true);
-      } else {
-        setForceGoHome(false);
       }
     }
   }, [aggregatorsList, aggregatorsListInit, selectedAggregators]);
-
-  const [open, setOpen] = useState(false);
-
-  const onConfirm = async () => {
-    if (changedAggregator.length) {
-      await dispatch.bridge.setSelectedAggregators(changedAggregator);
-      setOpen(false);
-      onClose();
-    }
-  };
 
   return (
     <Popup
       visible={visible}
       title={
-        <span className="text-[16px] font-medium text-r-neutral-title1">
+        <span className="text-[17px] font-medium text-r-neutral-title1 relative -top-2">
           {t('page.bridge.settingModal.title')}
         </span>
       }
-      height={450}
-      onClose={
-        forceGoHome
-          ? () => {
-              setVisible(false);
-              history.replace('/dashboard');
-            }
-          : onClose
-      }
+      height={400}
+      onClose={onClose}
       bodyStyle={{
         paddingTop: 16,
       }}
+      closable
       isSupportDarkMode
       isNew
     >
       <div className="relative flex flex-col gap-16 h-full overflow-auto">
         {aggregatorsList?.map((item) => {
-          const checked = !!changedAggregator?.includes(item.id);
+          const checked = !!selectedAggregators?.includes(item.id);
+
           const switchChecked = () => {
-            setChangedAggregator((items) => {
-              const changedItems = items.includes(item.id)
-                ? items.filter((id) => id !== item.id)
-                : [...items, item.id];
-              if (changedItems.length === 0) {
-                return items;
-              }
-              return changedItems;
-            });
+            if (!checked) {
+              setSillChangedAggregatorId(item.id);
+              setOpen(true);
+            }
+            dispatch.bridge.setSelectedAggregators(
+              selectedAggregators.filter((id) => id !== item.id)
+            );
           };
+
           return (
             <div
+              key={item.id}
               className="bg-r-neutral-card1 rounded-[6px] p-16 cursor-pointer border border-transparent hover:border-rabby-blue-default"
               onClick={switchChecked}
             >
@@ -121,67 +101,37 @@ export const AggregatorsSettings = ({
               >
                 <div className="flex items-center justify-between gap-[7px]">
                   <img src={item.logo_url} className="w-24 h-24 rounded-full" />
-                  <span className="text-16 font-medium text-r-neutral-title1">
+                  <span className="text-[16px] font-medium text-r-neutral-title1">
                     {item.name}
                   </span>
                 </div>
 
-                <Checkbox
-                  onChange={switchChecked}
-                  checked={checked}
-                  width="20px"
-                  height="20px"
-                  unCheckBackground="transparent"
-                  checkIcon={
-                    checked ? (
-                      <RcIconChecked
-                        viewBox="0 0 20 20"
-                        className="text-r-blue-default"
-                      />
-                    ) : (
-                      <RcIconCheck
-                        viewBox="0 0 20 20"
-                        className="text-r-neutral-foot"
-                      />
-                    )
-                  }
-                />
+                <Switch checked={checked} onChange={switchChecked} />
               </div>
 
-              <div className="flex items-center gap-12 flex-wrap">
+              <div className="flex items-center gap-12 flex-wrap relative">
                 <span className="text-12 text-rabby-neutral-foot">
                   {t('page.bridge.settingModal.SupportedBridge')}
                 </span>
                 {item.bridge_list?.map((bridge) => {
                   return (
-                    <Tooltip
-                      overlayClassName="rectangle"
+                    <TooltipWithMagnetArrow
+                      overlayClassName="rectangle w-[max-content]"
                       title={`${bridge.name} Bridge`}
                       key={bridge.name}
+                      arrowPointAtCenter
                     >
                       <img
                         src={bridge?.logo_url}
                         className="w-16 h-16 rounded-full"
                       />
-                    </Tooltip>
+                    </TooltipWithMagnetArrow>
                   );
                 })}
               </div>
             </div>
           );
         })}
-
-        <div className="min-h-[82px]" />
-        <div className="fixed bottom-0 w-full ml-[-20px]  px-20 py-18 border-t-[0.5px] border-solid border-rabby-neutral-line bg-r-neutral-bg2">
-          <Button
-            onClick={() => setOpen(true)}
-            type="primary"
-            className="h-[44px] w-full text-[15px] font-medium text-r-neutral-title2"
-            disabled={changedAggregator?.length === 0}
-          >
-            {t('page.bridge.settingModal.confirm')}
-          </Button>
-        </div>
       </div>
       <Modal
         bodyStyle={{
@@ -226,7 +176,7 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
           type="primary"
           block
           disabled={!checked}
-          className="h-[40px] w-[188px] text-13 font-medium mx-auto"
+          className="h-[40px] text-13 font-medium mx-auto"
           onClick={onConfirm}
         >
           {t('page.bridge.settingModal.confirm')}

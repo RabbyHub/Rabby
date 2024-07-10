@@ -134,7 +134,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             <span>{!isPending && sinceTime(time)}</span>
           </div>
           <div className="flex items-center gap-4">
-            <img src={data.aggregator.logo_url} className="w-16 h-16" />
+            <img
+              src={data.aggregator.logo_url}
+              className="w-16 h-16 rounded-full"
+            />
             <span className="text-13 font-medium text-r-neutral-title1 rounded-full">
               {data.aggregator.name}
             </span>
@@ -202,7 +205,7 @@ const HistoryList = () => {
     return (
       <div className="w-full h-full flex flex-col items-center">
         <RCIconCCEmpty
-          viewBox="0 0 52 52"
+          viewBox="0 0 40 40"
           className="w-[52px] h-[52px] mx-auto mt-[112px] mb-24 text-r-neutral-body"
         />
         <p className="text-center text-r-neutral-body text-14">

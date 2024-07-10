@@ -16,6 +16,7 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { BridgeQuote } from '@/background/service/openapi';
+import stats from '@/stats';
 
 const useTokenInfo = ({
   userAddress,
@@ -57,10 +58,11 @@ const useTokenInfo = ({
   return [token, setToken] as const;
 };
 
-export interface SelectedBridgeQuote extends BridgeQuote {
+export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
   shouldTwoStepApprove?: boolean;
   loading?: boolean;
+  tx?: BridgeQuote['tx'];
 }
 
 export const useTokenPair = (userAddress: string) => {
@@ -211,15 +213,6 @@ export const useTokenPair = (userAddress: string) => {
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
   );
-  const selectedAggregators = useRabbySelector(
-    (s) => s.bridge.selectedAggregators || []
-  );
-
-  const availableSelectedAggregators = useMemo(() => {
-    return selectedAggregators?.filter((e) =>
-      aggregatorsList.some((item) => item.id === e)
-    );
-  }, [selectedAggregators, aggregatorsList]);
 
   const fetchIdRef = useRef(0);
   const wallet = useWallet();
@@ -232,7 +225,7 @@ export const useTokenPair = (userAddress: string) => {
       receiveToken &&
       chain &&
       payAmount &&
-      availableSelectedAggregators.length > 0
+      aggregatorsList.length > 0
     ) {
       fetchIdRef.current += 1;
       const currentFetchId = fetchIdRef.current;
@@ -247,9 +240,9 @@ export const useTokenPair = (userAddress: string) => {
         return e?.map((e) => ({ ...e, loading: true }));
       });
 
-      const data = await wallet.openapi
+      const originData = await wallet.openapi
         .getBridgeQuoteList({
-          aggregator_ids: availableSelectedAggregators.join(','),
+          aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
           from_token_id: payToken.id,
           user_addr: userAddress,
           from_chain_id: payToken.chain,
@@ -260,85 +253,176 @@ export const useTokenPair = (userAddress: string) => {
           to_chain_id: receiveToken.chain,
           to_token_id: receiveToken.id,
         })
-        .finally(() => {
-          // enableSwapBySlippageChanged(currentFetchId);
+        .catch((e) => {
+          if (currentFetchId === fetchIdRef.current) {
+            stats.report('bridgeQuoteResult', {
+              aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
+              from_chain_id: payToken.chain,
+              from_token_id: payToken.id,
+              to_token_id: receiveToken.id,
+              to_chain_id: receiveToken.chain,
+              status: 'fail',
+            });
+          }
+        })
+        .finally(() => {});
+
+      const data = originData?.filter(
+        (quote) =>
+          !!quote?.bridge &&
+          !!quote?.bridge?.id &&
+          !!quote?.bridge?.logo_url &&
+          !!quote.bridge.name
+      );
+
+      if (currentFetchId === fetchIdRef.current) {
+        stats.report('bridgeQuoteResult', {
+          aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
+          from_chain_id: payToken.chain,
+          from_token_id: payToken.id,
+          to_token_id: receiveToken.id,
+          to_chain_id: receiveToken.chain,
+          status: data ? 'success' : 'fail',
         });
+      }
 
       if (data && currentFetchId === fetchIdRef.current) {
-        await Promise.allSettled(
-          data.map((e) =>
-            wallet.openapi
-              .getBridgeQuote({
-                aggregator_id: e.aggregator.id,
-                bridge_id: e.bridge.id,
-                from_token_id: payToken.id,
-                user_addr: userAddress,
-                from_chain_id: payToken.chain,
-                from_token_raw_amount: new BigNumber(payAmount)
-                  .times(10 ** payToken.decimals)
-                  .toFixed(0, 1)
-                  .toString(),
-                to_chain_id: receiveToken.chain,
-                to_token_id: receiveToken.id,
-              })
-              .then(async (data) => {
-                if (currentFetchId !== fetchIdRef.current) {
-                  return;
-                }
-                let tokenApproved = false;
-                let allowance = '0';
-                const fromChain = findChain({ serverId: payToken?.chain });
-                if (payToken?.id === fromChain?.nativeTokenAddress) {
-                  tokenApproved = true;
-                } else {
-                  allowance = await wallet.getERC20Allowance(
-                    payToken.chain,
-                    payToken.id,
-                    data.tx.to
-                  );
-                  tokenApproved = new BigNumber(allowance).gte(
-                    new BigNumber(payAmount).times(10 ** payToken.decimals)
-                  );
-                }
-                let shouldTwoStepApprove = false;
-                if (
-                  fromChain?.enum === CHAINS_ENUM.ETH &&
-                  isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
-                  Number(allowance) !== 0 &&
-                  !tokenApproved
-                ) {
-                  shouldTwoStepApprove = true;
-                }
+        if (!isEmpty) {
+          setQuotesList(data.map((e) => ({ ...e, loading: true })));
+        }
 
-                if (isEmpty) {
-                  result.push({
-                    ...data,
-                    shouldTwoStepApprove,
-                    shouldApproveToken: !tokenApproved,
-                  });
-                } else {
-                  if (currentFetchId === fetchIdRef.current) {
-                    setQuotesList((e) => {
-                      const filteredArr = e.filter(
-                        (item) =>
-                          item.aggregator.id !== data.aggregator.id ||
-                          item.bridge.id !== data.bridge.id
-                      );
-                      return [
-                        ...filteredArr,
-                        {
-                          ...data,
-                          loading: false,
-                          shouldTwoStepApprove,
-                          shouldApproveToken: !tokenApproved,
-                        },
-                      ];
-                    });
-                  }
-                }
-              })
-          )
+        await Promise.allSettled(
+          data.map(async (quote) => {
+            if (currentFetchId !== fetchIdRef.current) {
+              return;
+            }
+            let tokenApproved = false;
+            let allowance = '0';
+            const fromChain = findChain({ serverId: payToken?.chain });
+            if (payToken?.id === fromChain?.nativeTokenAddress) {
+              tokenApproved = true;
+            } else {
+              allowance = await wallet.getERC20Allowance(
+                payToken.chain,
+                payToken.id,
+                quote.approve_contract_id
+              );
+              tokenApproved = new BigNumber(allowance).gte(
+                new BigNumber(payAmount).times(10 ** payToken.decimals)
+              );
+            }
+            let shouldTwoStepApprove = false;
+            if (
+              fromChain?.enum === CHAINS_ENUM.ETH &&
+              isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
+              Number(allowance) !== 0 &&
+              !tokenApproved
+            ) {
+              shouldTwoStepApprove = true;
+            }
+
+            if (isEmpty) {
+              result.push({
+                ...quote,
+                shouldTwoStepApprove,
+                shouldApproveToken: !tokenApproved,
+              });
+            } else {
+              if (currentFetchId === fetchIdRef.current) {
+                setQuotesList((e) => {
+                  const filteredArr = e.filter(
+                    (item) =>
+                      item.aggregator.id !== quote.aggregator.id ||
+                      item.bridge.id !== quote.bridge.id
+                  );
+                  return [
+                    ...filteredArr,
+                    {
+                      ...quote,
+                      loading: false,
+                      shouldTwoStepApprove,
+                      shouldApproveToken: !tokenApproved,
+                    },
+                  ];
+                });
+              }
+            }
+          })
         );
+        // await Promise.allSettled(
+        //   data.map((e) =>
+        //     wallet.openapi
+        //       .getBridgeQuote({
+        //         aggregator_id: e.aggregator.id,
+        //         bridge_id: e.bridge_id,
+        //         from_token_id: payToken.id,
+        //         user_addr: userAddress,
+        //         from_chain_id: payToken.chain,
+        //         from_token_raw_amount: new BigNumber(payAmount)
+        //           .times(10 ** payToken.decimals)
+        //           .toFixed(0, 1)
+        //           .toString(),
+        //         to_chain_id: receiveToken.chain,
+        //         to_token_id: receiveToken.id,
+        //       })
+        //       .then(async (data) => {
+        //         if (currentFetchId !== fetchIdRef.current) {
+        //           return;
+        //         }
+        //         let tokenApproved = false;
+        //         let allowance = '0';
+        //         const fromChain = findChain({ serverId: payToken?.chain });
+        //         if (payToken?.id === fromChain?.nativeTokenAddress) {
+        //           tokenApproved = true;
+        //         } else {
+        //           allowance = await wallet.getERC20Allowance(
+        //             payToken.chain,
+        //             payToken.id,
+        //             data.tx.to
+        //           );
+        //           tokenApproved = new BigNumber(allowance).gte(
+        //             new BigNumber(payAmount).times(10 ** payToken.decimals)
+        //           );
+        //         }
+        //         let shouldTwoStepApprove = false;
+        //         if (
+        //           fromChain?.enum === CHAINS_ENUM.ETH &&
+        //           isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
+        //           Number(allowance) !== 0 &&
+        //           !tokenApproved
+        //         ) {
+        //           shouldTwoStepApprove = true;
+        //         }
+
+        //         if (isEmpty) {
+        //           result.push({
+        //             ...data,
+        //             shouldTwoStepApprove,
+        //             shouldApproveToken: !tokenApproved,
+        //           });
+        //         } else {
+        //           if (currentFetchId === fetchIdRef.current) {
+        //             setQuotesList((e) => {
+        //               const filteredArr = e.filter(
+        //                 (item) =>
+        //                   item.aggregator.id !== data.aggregator.id ||
+        //                   item.bridge.id !== data.bridge.id
+        //               );
+        //               return [
+        //                 ...filteredArr,
+        //                 {
+        //                   ...data,
+        //                   loading: false,
+        //                   shouldTwoStepApprove,
+        //                   shouldApproveToken: !tokenApproved,
+        //                 },
+        //               ];
+        //             });
+        //           }
+        //         }
+        //       })
+        //   )
+        // );
 
         if (isEmpty && currentFetchId === fetchIdRef.current) {
           setQuotesList(result);
@@ -347,7 +431,7 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [
     visible,
-    availableSelectedAggregators,
+    aggregatorsList,
     refreshId,
     userAddress,
     payToken?.id,
