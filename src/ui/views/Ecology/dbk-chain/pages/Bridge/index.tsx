@@ -47,7 +47,10 @@ export const DbkChainBridge = () => {
 
   const { clientL1, clientL2 } = useCreateViemClient();
 
-  const { data: bridgeHistory } = useQueryDbkBridgeHistory();
+  const {
+    data: bridgeHistory,
+    loadMore: loadMoreHistory,
+  } = useQueryDbkBridgeHistory();
 
   const {
     data: statusRes,
@@ -316,6 +319,7 @@ export const DbkChainBridge = () => {
         onClose={() => {
           setIsShowActivityPopup(false);
         }}
+        loadMore={loadMoreHistory}
       />
       <WithdrawConfirmPopup
         visible={isShowWithdrawConfirmPopup}

@@ -331,6 +331,7 @@ interface ActivityPopupProps {
       status: DbkBridgeStatus;
     }
   >;
+  loadMore: () => void;
 }
 export const ActivityPopup = ({
   visible,
@@ -338,6 +339,7 @@ export const ActivityPopup = ({
   data,
   statusDict,
   onWithdrawStep,
+  loadMore,
 }: ActivityPopupProps) => {
   return (
     <Popup
@@ -367,7 +369,7 @@ export const ActivityPopup = ({
               />
             );
           }}
-          // endReached={loadMore}
+          endReached={loadMore}
           components={{
             Footer: () => {
               // if (loadingMore) {
