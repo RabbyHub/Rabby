@@ -152,4 +152,22 @@ export default class BitBox02OffscreenBridge
         });
     });
   };
+
+  ethAddress: BitBox02BridgeInterface['ethAddress'] = async (...params) => {
+    return new Promise((resolve, reject) => {
+      browser.runtime
+        .sendMessage({
+          target: OffscreenCommunicationTarget.bitbox02Offscreen,
+          action: BitBox02Action.ethAddress,
+          params,
+        })
+        .then((res) => {
+          if (res?.error) {
+            reject(res.error);
+          } else {
+            resolve(res);
+          }
+        });
+    });
+  };
 }

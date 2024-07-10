@@ -737,6 +737,18 @@ export class KeyringService extends EventEmitter {
   }
 
   /**
+   * Show address on device
+   * Display receive address on hardware device for verification
+   *
+   * @param {Object} msgParams - The account parameters.
+   * @returns {Promise<string>} The account address.
+   */
+  verifyAddress(keyring, from) {
+    const address = normalizeAddress(from);
+    return keyring.verifyAddress(address);
+  }
+
+  /**
    * Persist All Keyrings
    *
    * Iterates the current `keyrings` array,

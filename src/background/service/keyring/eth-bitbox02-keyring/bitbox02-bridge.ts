@@ -127,4 +127,15 @@ export default class BitBox02Bridge implements BitBox02BridgeInterface {
     }
     return this.app.ethSignTypedMessage(BigInt(chainId), keypath, message);
   };
+
+  ethAddress: BitBox02BridgeInterface['ethAddress'] = async (
+    chainId,
+    keypath,
+    display = true
+  ) => {
+    if (!this.app) {
+      throw new Error('Device not initialized');
+    }
+    return this.app.ethAddress(BigInt(chainId), keypath, display);
+  };
 }

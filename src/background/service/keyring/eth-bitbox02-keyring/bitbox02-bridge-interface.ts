@@ -25,4 +25,9 @@ export interface BitBox02BridgeInterface {
     keypath: string,
     msg: string
   ) => ReturnType<PairedBitBox['ethSignTypedMessage']>;
+  ethAddress: (
+    chainId: number,
+    keypath: string,
+    display: boolean
+  ) => ReturnType<PairedBitBox['ethAddress']>;
 }
