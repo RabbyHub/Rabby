@@ -483,6 +483,8 @@ export const useQuoteMethods = () => {
 
   const swapViewList = useRabbySelector((s) => s.swap.viewList);
 
+  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+
   const getAllQuotes = React.useCallback(
     async (
       params: Omit<getDexQuoteParams, 'dexId'> & {
@@ -503,8 +505,8 @@ export const useQuoteMethods = () => {
       }
 
       return Promise.all([
-        ...(Object.keys(DEX).filter(
-          (e) => swapViewList?.[e] !== false
+        ...(supportedDEXList.filter(
+          (e) => DEX[e] && swapViewList?.[e] !== false
         ) as DEX_ENUM[]).map((dexId) => getDexQuote({ ...params, dexId })),
         ...Object.keys(CEX)
           .filter((e) => swapViewList?.[e] !== false)

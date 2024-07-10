@@ -7,6 +7,7 @@ import { TradingSettings } from './TradingSettings';
 import { useSetSettingVisible, useSettingVisible } from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
+import { useRabbyDispatch } from '@/ui/store';
 
 export const Header = () => {
   const visible = useSettingVisible();
@@ -14,6 +15,11 @@ export const Header = () => {
 
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
+
+  const dispath = useRabbyDispatch();
+  React.useEffect(() => {
+    dispath.swap.getSwapSupportedDEXList();
+  }, []);
 
   return (
     <>
