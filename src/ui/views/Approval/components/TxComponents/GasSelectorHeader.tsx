@@ -765,6 +765,7 @@ const GasSelectorHeader = ({
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
                         <TooltipWithMagnetArrow
+                          inApproval
                           title={t('page.signTx.l2GasEstimateTooltip')}
                           className="rectangle w-[max-content]"
                         >

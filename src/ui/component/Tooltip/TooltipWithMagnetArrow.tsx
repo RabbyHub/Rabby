@@ -41,13 +41,15 @@ const TooltipWrapStyled = styled(TooltipWrap)`
  *
  * New feature:
  * - viewportOffset: [top, right, bottom, left], offset of the tooltip to the viewport
+ * - inApproval: if in approval page, the tooltip will have a viewportOffset of [0, -16, 0, 16]
  */
 export const TooltipWithMagnetArrow = React.forwardRef<
   any,
   TooltipProps & {
     viewportOffset?: [number, number, number, number];
+    inApproval?: boolean;
   }
->(({ viewportOffset = [0, 0, 0, 0], ...props }, ref) => {
+>(({ viewportOffset, inApproval, ...props }, ref) => {
   const [left, setLeft] = React.useState(0);
 
   const getPopupContainer = (trigger) => {
@@ -80,11 +82,19 @@ export const TooltipWithMagnetArrow = React.forwardRef<
 
   const tooltipRef = React.useRef(null);
 
+  const currentViewportOffset = React.useMemo(() => {
+    if (!viewportOffset) {
+      return inApproval ? [0, -16, 0, 16] : [0, 0, 0, 0];
+    }
+
+    return viewportOffset;
+  }, [viewportOffset]);
+
   return (
     <TooltipWrapStyled
       align={
         {
-          viewportOffset,
+          viewportOffset: currentViewportOffset,
         } as any
       }
       {...props}

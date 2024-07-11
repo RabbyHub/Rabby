@@ -414,6 +414,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
               {t('global.cancelButton')}
             </Button>
             <TooltipWithMagnetArrow
+              inApproval
               overlayClassName="rectangle w-[max-content]"
               title={addButtonStatus.reason}
             >

@@ -159,6 +159,7 @@ const ContractCall = ({
                 {requireData.call.func || '-'}
               </span>
               <TooltipWithMagnetArrow
+                inApproval
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   requireData.call.func

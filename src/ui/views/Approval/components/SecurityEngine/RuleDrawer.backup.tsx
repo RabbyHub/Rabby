@@ -520,6 +520,7 @@ const RuleDrawer = ({
               {selectRule.ruleConfig.valueDescription}
               {valueTooltip ? (
                 <TooltipWithMagnetArrow
+                  inApproval
                   className="rectangle w-[max-content] max-w-[355px]"
                   title={valueTooltip}
                 >
