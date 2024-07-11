@@ -806,7 +806,7 @@
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
       "hidden-no-quote-rates_one": "Hidden {{count}} no-quote rate",
-      "hidden-no-quote-rates_others": "Hidden {{count}} no-quote rates",
+      "hidden-no-quote-rates_other": "Hidden {{count}} no-quote rates",
 
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
