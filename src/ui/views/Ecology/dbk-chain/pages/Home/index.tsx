@@ -3,10 +3,12 @@ import { DbkButton } from '../../components/DbkButton';
 import bridgeImg from '@/ui/assets/ecology/bridge-img.svg';
 import dkbNftImg from '@/ui/assets/ecology/dbk-nft.png';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const DbkChainHome = () => {
   const history = useHistory();
   const { url } = useRouteMatch();
+  const { t } = useTranslation();
 
   return (
     <div className="px-[20px] py-[40px] flex flex-col gap-[28px]">
@@ -18,12 +20,14 @@ export const DbkChainHome = () => {
         }}
       >
         <div className="text-r-neutral-title1 font-semibold text-[20px] leading-[24px] mb-[8px]">
-          Bridge To DBK Chain
+          {t('page.ecology.dbk.home.bridge')}
         </div>
         <div className="text-r-neutral-foot text-[13px] leading-[16px] mb-[28px]">
-          Powered by OP Superchain
+          {t('page.ecology.dbk.home.bridgePoweredBy')}
         </div>
-        <DbkButton className="w-[100px]">Bridge</DbkButton>
+        <DbkButton className="w-[100px]">
+          {t('page.ecology.dbk.home.bridgeBtn')}
+        </DbkButton>
 
         <img
           src={bridgeImg}
@@ -39,12 +43,14 @@ export const DbkChainHome = () => {
         }}
       >
         <div className="text-r-neutral-title1 font-semibold text-[20px] leading-[24px] mb-[8px]">
-          Mint DBK Genesis NFT
+          {t('page.ecology.dbk.home.mintNFT')}
         </div>
         <div className="text-r-neutral-foot text-[13px] leading-[16px] mb-[28px]">
-          Be a witness of DBK Chain
+          {t('page.ecology.dbk.home.mintNFTDesc')}
         </div>
-        <DbkButton className="w-[100px]">Mint</DbkButton>
+        <DbkButton className="w-[100px]">
+          {t('page.ecology.dbk.home.mintNFTBtn')}
+        </DbkButton>
 
         <img
           src={dkbNftImg}

@@ -3,8 +3,10 @@ import MintNFTIcon from 'ui/assets/ecology/dbk-genesis-nft.png';
 import { DbkButton } from '../../components/DbkButton';
 import { useMintNFT } from '../Bridge/hooks/useDBKNFT';
 import { numberWithCommasIsLtOne } from 'ui/utils';
+import { useTranslation } from 'react-i18next';
 export const DbkChainMintNFT: React.FC = () => {
   const { mintNFT, totalMinted, userMinted } = useMintNFT();
+  const { t } = useTranslation();
 
   return (
     <div className="p-[20px] " style={{ fontFamily: "'Lato', sans-serif" }}>
@@ -26,7 +28,7 @@ export const DbkChainMintNFT: React.FC = () => {
               {numberWithCommasIsLtOne(totalMinted, 0)}
             </div>
             <div className="text-r-neutral-foot text-[13px] mt-[4px]">
-              Minted
+              {t('page.ecology.dbk.minNFT.minted')}
             </div>
           </div>
           <div className="w-[164px] h-[89px] flex flex-col">
@@ -34,7 +36,7 @@ export const DbkChainMintNFT: React.FC = () => {
               {numberWithCommasIsLtOne(userMinted, 0)}
             </div>
             <div className="text-r-neutral-foot text-[13px] mt-[4px]">
-              My Balance
+              {t('page.ecology.dbk.minNFT.myBalance')}
             </div>
           </div>
         </div>
@@ -50,7 +52,7 @@ export const DbkChainMintNFT: React.FC = () => {
           }}
           onClick={mintNFT}
         >
-          Mint
+          {t('page.ecology.dbk.minNFT.mintBtn')}
         </DbkButton>
       </footer>
     </div>

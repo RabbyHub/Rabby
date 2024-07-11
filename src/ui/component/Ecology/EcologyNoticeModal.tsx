@@ -53,12 +53,10 @@ export const EcologyNoticeModal = ({
       }}
     >
       <div className="text-center text-[20px] leading-[24px] font-medium mb-[12px] text-r-neutral-title-1">
-        Notice
+        {t('component.EcologyNoticeModal.title')}
       </div>
       <div className="text-[13px] leading-[18px] text-r-neutral-body mb-[20px]">
-        The following services will be provided directly by third party Ecology
-        Partner. Rabby Wallet does not assume responsibility for the security of
-        these services.
+        {t('component.EcologyNoticeModal.desc')}
       </div>
       <div
         className="flex items-center gap-[6px] justify-center cursor-pointer mb-[20px]"
@@ -72,7 +70,7 @@ export const EcologyNoticeModal = ({
           <RcIconChecked className="text-r-neutral-line" />
         )}
         <div className="text-[13px] leading-[16px] text-r-neutral-body">
-          Don't remind me again
+          {t('component.EcologyNoticeModal.notRemind')}
         </div>
       </div>
       <footer className="flex justify-center">
@@ -83,7 +81,7 @@ export const EcologyNoticeModal = ({
             onConfirm?.(isChecked);
           }}
         >
-          Confirm
+          {t('global.Confirm')}
         </Button>
       </footer>
     </StyledModal>

@@ -19,6 +19,7 @@ import { InfoCircleFilled } from '@ant-design/icons';
 import { useCreateViemClient } from './hooks/useCreateViemClient';
 import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
 import { useCheckBridgeStatus } from './hooks/useCheckBridgeStatus';
+import { useTranslation } from 'react-i18next';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -44,6 +45,8 @@ export const DbkChainBridge = () => {
     isShowWithdrawConfirmPopup,
     setIsShowWithdrawConfirmPopup,
   ] = React.useState(false);
+
+  const { t } = useTranslation();
 
   const { clientL1, clientL2 } = useCreateViemClient();
 
@@ -74,11 +77,11 @@ export const DbkChainBridge = () => {
   const tabs = [
     {
       key: 'deposit' as const,
-      label: 'Deposit',
+      label: t('page.ecology.dbk.bridge.tabs.deposit'),
     },
     {
       key: 'withdraw' as const,
-      label: 'Withdraw',
+      label: t('page.ecology.dbk.bridge.tabs.withdraw'),
     },
   ];
   const [activeTab, setActiveTab] = React.useState<'deposit' | 'withdraw'>(
@@ -163,7 +166,7 @@ export const DbkChainBridge = () => {
                 />
                 <div className="min-w-0">
                   <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot mb-[2px]">
-                    From
+                    {t('page.ecology.dbk.bridge.labelFrom')}
                   </div>
                   <div className="text-[15px] leading-[18px] font-bold truncate text-r-neutral-title-1">
                     {fromChain?.name}
@@ -183,7 +186,7 @@ export const DbkChainBridge = () => {
                 />
                 <div className="min-w-0">
                   <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot mb-[2px]">
-                    To
+                    {t('page.ecology.dbk.bridge.labelTo')}
                   </div>
                   <div className="text-[15px] leading-[18px] font-bold truncate text-r-neutral-title-1">
                     {targetChain?.name}
@@ -243,7 +246,7 @@ export const DbkChainBridge = () => {
                   setPayAmount((payToken?.amount || 0).toString());
                 }}
               >
-                Balance: {formatAmount(payToken?.amount || 0)}
+                {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
               </div>
             </div>
           </div>
@@ -251,7 +254,7 @@ export const DbkChainBridge = () => {
             <div className="flex flex-col gap-[12px]">
               <div className="flex items-center gap-[12px]">
                 <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
-                  To address
+                  {t('page.ecology.dbk.bridge.info.toAddress')}
                 </div>
                 <div className="ml-auto min-w-0">
                   <NameAndAddress
@@ -264,7 +267,9 @@ export const DbkChainBridge = () => {
               </div>
               <div className="flex items-center gap-[12px]">
                 <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
-                  Receive on {targetChain?.name}
+                  {t('page.ecology.dbk.bridge.info.receiveOn', {
+                    chainName: targetChain?.name,
+                  })}
                 </div>
                 <div className="ml-auto  min-w-0">
                   <div className="text-[13px] leading-[16px] text-r-neutral-title-1 font-semibold">
@@ -275,7 +280,7 @@ export const DbkChainBridge = () => {
               </div>
               <div className="flex items-center gap-[12px]">
                 <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
-                  Completion time
+                  {t('page.ecology.dbk.bridge.info.completeTime')}
                 </div>
                 <div className="ml-auto  min-w-0">
                   <div className="text-[13px] leading-[16px] text-r-neutral-title-1 font-semibold truncate">
@@ -285,7 +290,7 @@ export const DbkChainBridge = () => {
               </div>
               <div className="flex items-center gap-[12px]">
                 <div className="text-[13px] text-r-neutral-body leading-[16px flex-shrink-0]">
-                  Gas fee
+                  {t('page.ecology.dbk.bridge.info.gasFee')}
                 </div>
                 <div className="ml-auto min-w-0">
                   <div className="text-[13px] leading-[16px] text-r-neutral-title-1 font-semibold truncate">
@@ -308,7 +313,7 @@ export const DbkChainBridge = () => {
             />
 
             <div className="text-r-red-default font-medium text-[13px] leading-[16px]">
-              Insufficient balance
+              {t('page.ecology.dbk.bridge.error.notEnoughBalance')}
             </div>
           </div>
         ) : null}
