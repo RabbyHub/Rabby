@@ -67,8 +67,6 @@ export const useMintNFT = () => {
   );
 
   const mintNFT = () => {
-    console.log('mint');
-
     wallet.mintDBKChainNFT();
   };
 
