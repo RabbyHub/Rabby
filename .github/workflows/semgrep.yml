@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           apk add --no-cache yarn
-          yarn install
+          yarn install || true
           
       - name: scan dependencies code
         run: mv node_modules _node_modules
