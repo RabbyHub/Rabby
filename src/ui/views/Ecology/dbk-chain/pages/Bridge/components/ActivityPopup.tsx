@@ -89,7 +89,7 @@ const ActivityBridgeStatus = ({
           <div className="inline-flex items-center gap-[2px] px-[10px] py-[6px] rounded-full bg-r-neutral-card-2">
             <RcIconAlarm className="text-r-neutral-foot" />{' '}
             <div className="text-r-neutral-body text-[13px] leading-[16px] font-medium">
-              ~ 10 mins
+              ~ 1 hour
             </div>
           </div>
         </div>

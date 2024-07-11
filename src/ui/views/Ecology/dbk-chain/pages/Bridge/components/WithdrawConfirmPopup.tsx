@@ -73,7 +73,7 @@ export const WithdrawConfirmPopup = ({ visible, onClose, onSubmit }: Props) => {
           <div>$6.91</div>
         </div>
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-          Wait ~10 mins
+          Wait ~7 days
         </div>
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
           <div>Claim on Ethereum</div>
@@ -104,10 +104,10 @@ export const WithdrawConfirmPopup = ({ visible, onClose, onSubmit }: Props) => {
                 {isChecked ? (
                   <RcIconChecked width={20} height={20} viewBox="0 0 24 24" />
                 ) : (
-                  <RcIconUnCheckedCC />
+                  <RcIconUnCheckedCC className="text-r-neutral-body" />
                 )}
               </div>
-              <div className="min-w-0 text-[12px] leading-[17px] font-semibold text-r-neutral-title1">
+              <div className="min-w-0 text-[13px] leading-[17px] font-semibold text-r-neutral-title1">
                 {item.label}
               </div>
             </div>

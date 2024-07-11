@@ -7,6 +7,14 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
+import styled from 'styled-components';
+
+const StyledModal = styled(Modal)`
+  .ant-modal-close-x {
+    width: 64px;
+    height: 64px;
+  }
+`;
 
 export const EcologyNoticeModal = ({
   visible,
@@ -30,7 +38,7 @@ export const EcologyNoticeModal = ({
   }, [visible]);
 
   return (
-    <Modal
+    <StyledModal
       visible={visible}
       centered
       width={360}
@@ -70,7 +78,7 @@ export const EcologyNoticeModal = ({
       <footer className="flex justify-center">
         <Button
           type="primary"
-          className="w-[200px] h-[44px]"
+          className="w-full h-[44px]"
           onClick={() => {
             onConfirm?.(isChecked);
           }}
@@ -78,6 +86,6 @@ export const EcologyNoticeModal = ({
           Confirm
         </Button>
       </footer>
-    </Modal>
+    </StyledModal>
   );
 };

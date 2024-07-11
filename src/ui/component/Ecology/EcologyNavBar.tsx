@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
-import { ReactComponent as RcIconBackNew } from 'ui/assets/icon-back-1.svg';
-import ThemeIcon from '../ThemeMode/ThemeIcon';
-import clsx from 'clsx';
 import { findChain } from '@/utils/chain';
+import clsx from 'clsx';
+import React, { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+import { ReactComponent as RcIconBack } from 'ui/assets/icon-back-cc.svg';
 
 interface Props {
   className?: string;
@@ -31,9 +30,8 @@ export const EcologyNavBar = ({ className, style, chainId }: Props) => {
       style={style}
     >
       <div className="flex-1">
-        <ThemeIcon
-          src={RcIconBackNew}
-          className="cursor-pointer"
+        <RcIconBack
+          className="cursor-pointer text-r-neutral-title1"
           onClick={() => {
             if (history.length > 1) {
               history.goBack();
@@ -41,12 +39,12 @@ export const EcologyNavBar = ({ className, style, chainId }: Props) => {
               history.replace('/');
             }
           }}
-        />
+        ></RcIconBack>
       </div>
       <div className="flex-auto">
-        <div className="flex items-center justify-center bg-r-neutral-bg2 rounded-full p-[6px] gap-[6px]">
+        <div className="flex items-center justify-center bg-r-neutral-card2 rounded-full p-[6px] gap-[6px]">
           <img src={chain?.logo} alt="" className="w-[16px] h-[16px]" />
-          <div className="text-neutral-body text-[13px] leading-[16px]">
+          <div className="text-neutral-body text-[13px] leading-[16px] text-r-neutral-body">
             Provided by {chain?.name}
           </div>
         </div>

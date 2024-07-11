@@ -95,6 +95,8 @@ export const DbkChainBridge = () => {
     handleDeposit,
     handleWithdraw,
     handleWithdrawStep,
+    isDepositSubmitting,
+    isWithdrawSubmitting,
   } = useDbkChainBridge({ action: activeTab, clientL1, clientL2 });
 
   const handleSubmit = useMemoizedFn(() => {
@@ -120,7 +122,7 @@ export const DbkChainBridge = () => {
                       setActiveTab(item.key);
                     }}
                     className={clsx(
-                      'rounded-full min-h-[28px] min-w-[88px] cursor-pointer',
+                      'rounded-full min-h-[28px] min-w-[108px] cursor-pointer',
                       'p-[6px] text-center',
                       'text-[13px] leading-[16px]  font-bold',
                       isActive
@@ -163,7 +165,7 @@ export const DbkChainBridge = () => {
                   <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot mb-[2px]">
                     From
                   </div>
-                  <div className="text-[15px] leading-[18px] font-bold truncate">
+                  <div className="text-[15px] leading-[18px] font-bold truncate text-r-neutral-title-1">
                     {fromChain?.name}
                   </div>
                 </div>
@@ -183,14 +185,21 @@ export const DbkChainBridge = () => {
                   <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot mb-[2px]">
                     To
                   </div>
-                  <div className="text-[15px] leading-[18px] font-bold truncate">
+                  <div className="text-[15px] leading-[18px] font-bold truncate text-r-neutral-title-1">
                     {targetChain?.name}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="rounded-[8px] bg-r-neutral-card-2 p-[12px] mb-[16px]">
+          <div
+            className={clsx(
+              'rounded-[8px] bg-r-neutral-card-2 p-[12px] mb-[16px]',
+              'border-[1px] border-transparent',
+              'hover:border-rabby-orange-DBK',
+              'focus-within:border-rabby-orange-DBK'
+            )}
+          >
             <div className="flex items-center justify-between mb-[4px] gap-[6px]">
               <Input
                 type="number"
@@ -246,6 +255,8 @@ export const DbkChainBridge = () => {
                 </div>
                 <div className="ml-auto min-w-0">
                   <NameAndAddress
+                    nameClass="text-[13px] leading-[16px]"
+                    addressClass="text-[13px] leading-[16px]"
                     address={extraInfo.toAddress || ''}
                     copyIcon={false}
                   ></NameAndAddress>
@@ -277,9 +288,11 @@ export const DbkChainBridge = () => {
                   Gas fee
                 </div>
                 <div className="ml-auto min-w-0">
-                  {extraInfo.gasFee != null
-                    ? formatUsdValue(extraInfo.gasFee)
-                    : '--'}
+                  <div className="text-[13px] leading-[16px] text-r-neutral-title-1 font-semibold truncate">
+                    {extraInfo.gasFee != null
+                      ? formatUsdValue(extraInfo.gasFee)
+                      : '--'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -307,6 +320,7 @@ export const DbkChainBridge = () => {
           disabled={
             (+payAmount || 0) <= 0 || +payAmount > (payToken?.amount || 0)
           }
+          loading={isDepositSubmitting || isWithdrawSubmitting}
         >
           {activeTab === 'deposit' ? 'Deposit' : 'Withdraw'}
         </DbkButton>

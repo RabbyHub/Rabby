@@ -101,7 +101,7 @@ export const useDbkChainBridge = ({
   const [payAmount, setPayAmount] = useState('');
   const account = useCurrentAccount();
 
-  const handleDeposit = useMemoizedFn(async () => {
+  const _handleDeposit = useMemoizedFn(async () => {
     if (!account?.address) {
       return;
     }
@@ -117,8 +117,7 @@ export const useDbkChainBridge = ({
         await wallet.openapi.createDbkBridgeHistory({
           user_addr: account.address,
           from_chain_id: fromChain.serverId,
-          // todo
-          to_chain_id: 'dbk',
+          to_chain_id: targetChain.serverId,
           tx_id: hash,
           from_token_amount: +payAmount,
         });
@@ -139,7 +138,7 @@ export const useDbkChainBridge = ({
     }
   });
 
-  const handleWithdraw = useMemoizedFn(async () => {
+  const _handleWithdraw = useMemoizedFn(async () => {
     if (!account?.address) {
       return;
     }
@@ -152,15 +151,27 @@ export const useDbkChainBridge = ({
     if (hash) {
       await wallet.openapi.createDbkBridgeHistory({
         user_addr: account.address,
-        // todo
-        from_chain_id: 'dbk',
-        to_chain_id: 'eth',
+        from_chain_id: fromChain.serverId,
+        to_chain_id: targetChain.serverId,
         tx_id: hash,
         from_token_amount: +payAmount,
       });
     }
     console.log(hash);
     window.close();
+  });
+
+  const { runAsync: handleDeposit, loading: isDepositSubmitting } = useRequest(
+    _handleDeposit,
+    {
+      manual: true,
+    }
+  );
+  const {
+    runAsync: handleWithdraw,
+    loading: isWithdrawSubmitting,
+  } = useRequest(_handleWithdraw, {
+    manual: true,
   });
 
   const handleWithdrawStep = useMemoizedFn(
@@ -255,7 +266,11 @@ export const useDbkChainBridge = ({
 
   const gasFee = useMemo(() => {
     if (gasPrice != null && payToken?.price != null) {
-      return (gasPrice * 21000 * payToken.price) / 1e9;
+      if (action === 'deposit') {
+        return (gasPrice * 63274 * payToken.price) / 1e9;
+      } else {
+        return (gasPrice * 59992 * payToken.price) / 1e9;
+      }
     }
   }, [gasPrice, payToken]);
 
@@ -263,9 +278,11 @@ export const useDbkChainBridge = ({
     if (action === 'deposit') {
       setTargetChain(dbkChain);
       setFromChain(ethChain);
+      setPayAmount('');
     } else {
       setTargetChain(ethChain);
       setFromChain(dbkChain);
+      setPayAmount('');
     }
   }, [action]);
 
@@ -288,5 +305,7 @@ export const useDbkChainBridge = ({
     payToken,
     setPayAmount,
     handleWithdrawStep,
+    isDepositSubmitting,
+    isWithdrawSubmitting,
   };
 };

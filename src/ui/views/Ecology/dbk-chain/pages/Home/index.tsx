@@ -9,10 +9,13 @@ export const DbkChainHome = () => {
   const { url } = useRouteMatch();
 
   return (
-    <div className="px-[20px] py-[40px] flex flex-col gap-[20px]">
+    <div className="px-[20px] py-[40px] flex flex-col gap-[28px]">
       <div
-        className="rounded-[8px] bg-r-neutral-card1 p-[24px] relative"
+        className="rounded-[8px] bg-r-neutral-card1 p-[24px] relative cursor-pointer"
         style={{ boxShadow: '0px 8px 24px 0px rgba(0, 0, 0, 0.08)' }}
+        onClick={() => {
+          history.push(`${url}/bridge`);
+        }}
       >
         <div className="text-r-neutral-title1 font-semibold text-[20px] leading-[24px] mb-[8px]">
           Bridge To DBK Chain
@@ -20,24 +23,20 @@ export const DbkChainHome = () => {
         <div className="text-r-neutral-foot text-[13px] leading-[16px] mb-[28px]">
           Powered by OP Superchain
         </div>
-        <DbkButton
-          className="w-[100px]"
-          onClick={() => {
-            history.push(`${url}/bridge`);
-          }}
-        >
-          Bridge
-        </DbkButton>
+        <DbkButton className="w-[100px]">Bridge</DbkButton>
 
         <img
           src={bridgeImg}
           alt=""
-          className="absolute bottom-[12px] right-[12px]"
+          className="absolute bottom-[18px] right-[12px]"
         />
       </div>
       <div
-        className="rounded-[8px] bg-r-neutral-card1 p-[24px] relative"
+        className="rounded-[8px] bg-r-neutral-card1 p-[24px] relative cursor-pointer"
         style={{ boxShadow: '0px 8px 24px 0px rgba(0, 0, 0, 0.08)' }}
+        onClick={() => {
+          history.push(`${url}/mintNft`);
+        }}
       >
         <div className="text-r-neutral-title1 font-semibold text-[20px] leading-[24px] mb-[8px]">
           Mint DBK Genesis NFT
@@ -45,14 +44,7 @@ export const DbkChainHome = () => {
         <div className="text-r-neutral-foot text-[13px] leading-[16px] mb-[28px]">
           Be a witness of DBK Chain
         </div>
-        <DbkButton
-          className="w-[100px]"
-          onClick={() => {
-            history.push(`${url}/mintNft`);
-          }}
-        >
-          Mint
-        </DbkButton>
+        <DbkButton className="w-[100px]">Mint</DbkButton>
 
         <img
           src={dkbNftImg}
