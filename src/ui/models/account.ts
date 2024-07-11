@@ -198,8 +198,17 @@ export const account = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    init() {
-      return this.getCurrentAccountAsync();
+    async init() {
+      const account: Account = await dispatch.account.getCurrentAccountAsync();
+      try {
+        // trigger once when account fetched;
+        await dispatch.account.getMatteredChainBalance();
+      } catch (error) {
+        console.debug('error on getMatteredChainBalance');
+        console.error(error);
+      }
+
+      return account;
     },
     async getCurrentAccountAsync(_: void, store) {
       const account: Account = await store.app.wallet.getCurrentAccount<Account>();

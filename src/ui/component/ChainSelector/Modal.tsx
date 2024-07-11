@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { Button, Drawer, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
@@ -96,7 +98,15 @@ const useChainSeletorList = ({
       matteredList: searchKw ? [] : result.matteredList,
       unmatteredList: searchKw ? [] : result.unmatteredList,
     };
-  }, [search, pinned, supportChains, chainBalances, netTabKey]);
+  }, [
+    mainnetList,
+    testnetList,
+    search,
+    pinned,
+    supportChains,
+    chainBalances,
+    netTabKey,
+  ]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
@@ -179,7 +189,7 @@ const ChainSelectorModal = ({
       // })();
       rDispatch.account.getMatteredChainBalance();
     }
-  }, [visible, rDispatch]);
+  }, [visible, rDispatch, setSearch]);
 
   return (
     <>
