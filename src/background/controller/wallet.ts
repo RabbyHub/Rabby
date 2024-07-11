@@ -3964,7 +3964,7 @@ export class WalletController extends BaseController {
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;
 
-  setIsHideEcologyNotice = preferenceService.setIsHideEcologyNotice;
+  setIsHideEcologyNoticeDict = preferenceService.setIsHideEcologyNoticeDict;
 }
 
 const wallet = new WalletController();

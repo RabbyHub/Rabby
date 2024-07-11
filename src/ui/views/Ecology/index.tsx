@@ -11,10 +11,12 @@ export const Ecology = () => {
 
   const { chainId } = useParams<{ chainId: string }>();
 
-  const isHideEcologyNotice = useRabbySelector(
-    (state) => state.preference.isHideEcologyNotice
+  const isHideEcologyNoticeDict = useRabbySelector(
+    (state) => state.preference.isHideEcologyNoticeDict
   );
-  const [isShowNotice, setIsShowNotice] = React.useState(!isHideEcologyNotice);
+  const [isShowNotice, setIsShowNotice] = React.useState(
+    !isHideEcologyNoticeDict[chainId]
+  );
   const dispatch = useRabbyDispatch();
 
   return (
@@ -27,7 +29,7 @@ export const Ecology = () => {
         }}
         onConfirm={(v) => {
           if (v) {
-            dispatch.preference.setIsHideEcologyNotice(v);
+            dispatch.preference.setIsHideEcologyNoticeDict({ [chainId]: true });
           }
           setIsShowNotice(false);
         }}

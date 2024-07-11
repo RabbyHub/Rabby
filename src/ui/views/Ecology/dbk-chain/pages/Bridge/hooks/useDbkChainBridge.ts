@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { DBK_CHAIN_ID } from '@/constant';
@@ -25,6 +26,8 @@ import {
 import { useCreateViemClient } from './useCreateViemClient';
 import { DbkBridgeStatus } from '../../../utils';
 import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
+import BigNumber from 'bignumber.js';
+import { message } from 'antd';
 
 export const dbk = defineChain({
   ...chainConfig,
@@ -135,6 +138,7 @@ export const useDbkChainBridge = ({
     } catch (e) {
       console.log('????');
       console.error(e);
+      message.error(e.message);
     }
   });
 
@@ -142,23 +146,28 @@ export const useDbkChainBridge = ({
     if (!account?.address) {
       return;
     }
-    const args = await clientL1.buildInitiateWithdrawal({
-      account: account!.address as any,
-      to: account!.address as any,
-      value: parseEther(payAmount),
-    });
-    const hash = await clientL2.initiateWithdrawal(args);
-    if (hash) {
-      await wallet.openapi.createDbkBridgeHistory({
-        user_addr: account.address,
-        from_chain_id: fromChain.serverId,
-        to_chain_id: targetChain.serverId,
-        tx_id: hash,
-        from_token_amount: +payAmount,
+    try {
+      const args = await clientL1.buildInitiateWithdrawal({
+        account: account!.address as any,
+        to: account!.address as any,
+        value: parseEther(payAmount),
       });
+      const hash = await clientL2.initiateWithdrawal(args);
+      if (hash) {
+        await wallet.openapi.createDbkBridgeHistory({
+          user_addr: account.address,
+          from_chain_id: fromChain.serverId,
+          to_chain_id: targetChain.serverId,
+          tx_id: hash,
+          from_token_amount: +payAmount,
+        });
+      }
+      console.log(hash);
+      window.close();
+    } catch (e) {
+      console.error(e);
+      message.error(e.message);
     }
-    console.log(hash);
-    window.close();
   });
 
   const { runAsync: handleDeposit, loading: isDepositSubmitting } = useRequest(
@@ -245,34 +254,82 @@ export const useDbkChainBridge = ({
     }
   );
 
-  const { data: gasPrice } = useRequest(
+  const fetchGasPrice = useMemoizedFn(async (serverId: string) => {
+    const marketGas = await wallet.openapi.gasMarket(serverId);
+    const selectedGasPice = marketGas.find((item) => item.level === 'slow')
+      ?.price;
+    if (selectedGasPice) {
+      return Number(selectedGasPice / 1e9);
+    }
+  });
+
+  const { data: l1GasPrice } = useRequest(() =>
+    fetchGasPrice(ethChain.serverId)
+  );
+
+  const { data: l2GasPrice } = useRequest(() =>
+    fetchGasPrice(dbkChain.serverId)
+  );
+
+  const { data: l1DepositGas } = useRequest(
     async () => {
-      const chain = fromChain;
-      const marketGas = chain?.isTestnet
-        ? await wallet.getCustomTestnetGasMarket({
-            chainId: chain?.id,
-          })
-        : await wallet.openapi.gasMarket(chain.serverId);
-      const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-        ?.price;
-      if (selectedGasPice) {
-        return Number(selectedGasPice / 1e9);
-      }
+      const gas = await clientL1.estimateDepositTransactionGas({
+        account: account!.address as any,
+        request: {
+          gas: 21_000n,
+          mint: parseEther(payAmount || '0'),
+          to: (account!.address as unknown) as `0x${string}`,
+        },
+        targetChain: dbk,
+      });
+      return gas;
     },
     {
-      refreshDeps: [fromChain.serverId],
+      debounceWait: 500,
+      refreshDeps: [payAmount],
     }
   );
 
-  const gasFee = useMemo(() => {
-    if (gasPrice != null && payToken?.price != null) {
-      if (action === 'deposit') {
-        return (gasPrice * 63274 * payToken.price) / 1e9;
-      } else {
-        return (gasPrice * 59992 * payToken.price) / 1e9;
-      }
+  const { data: l2WithdrawGas } = useRequest(
+    async () => {
+      const gas = await clientL2.estimateInitiateWithdrawalGas({
+        account: account!.address as any,
+        request: {
+          gas: 21_000n,
+          to: account!.address as any,
+          value: parseEther(payAmount || '0'),
+        },
+      });
+      return gas;
+    },
+    {
+      debounceWait: 500,
+      refreshDeps: [payAmount],
     }
-  }, [gasPrice, payToken]);
+  );
+
+  const depositGasFee = useMemo(() => {
+    if (!l1GasPrice || !l1DepositGas || !payToken?.price) {
+      return;
+    }
+    console.log(l1GasPrice, l1DepositGas);
+    return new BigNumber(l1GasPrice)
+      .multipliedBy(l1DepositGas.toString())
+      .multipliedBy(payToken.price)
+      .dividedBy(1e9)
+      .toNumber();
+  }, [l1DepositGas, l1GasPrice, payToken?.price]);
+
+  const withdrawGasFee1 = useMemo(() => {
+    if (!l2GasPrice || !l2WithdrawGas || !payToken?.price) {
+      return;
+    }
+    return new BigNumber(l2GasPrice)
+      .multipliedBy(l2WithdrawGas.toString())
+      .multipliedBy(payToken.price)
+      .dividedBy(1e9)
+      .toNumber();
+  }, [l2GasPrice, l2WithdrawGas, payToken?.price]);
 
   useEffect(() => {
     if (action === 'deposit') {
@@ -291,7 +348,7 @@ export const useDbkChainBridge = ({
     receiveAmount: payAmount,
     receiveTokenSymbol: payToken ? getTokenSymbol(payToken) : '',
     completeTime: action === 'deposit' ? '~ 10 minutes' : '~ 7 days',
-    gasFee: gasFee,
+    gasFee: action === 'deposit' ? depositGasFee : withdrawGasFee1,
   };
 
   return {

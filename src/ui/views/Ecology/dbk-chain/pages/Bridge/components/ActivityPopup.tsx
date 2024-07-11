@@ -15,7 +15,7 @@ import { Chain } from '@/types/chain';
 import { getTxScanLink } from '@/utils';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { DbkButton } from '../../../components/DbkButton';
-import { DBK_CHAIN_ID } from '@/constant';
+import ImgEmpty from 'ui/assets/swap/empty.svg';
 
 const ActivityBridgeStatus = ({
   item,
@@ -341,6 +341,7 @@ export const ActivityPopup = ({
   onWithdrawStep,
   loadMore,
 }: ActivityPopupProps) => {
+  const isEmpty = !data?.length;
   return (
     <Popup
       title="Activities"
@@ -351,34 +352,46 @@ export const ActivityPopup = ({
       style={{ fontFamily: "'Lato', sans-serif" }}
     >
       <div className="flex flex-col h-full">
-        <Virtuoso
-          style={{
-            height: '100%',
-          }}
-          data={data || []}
-          itemContent={(_, item) => {
-            const key = `${item.from_chain_id}:${item.tx_id}`;
-            const status = statusDict[key]?.status;
-            return (
-              <ActivityItem
-                item={item}
-                status={status}
-                onWithdrawStep={(status) => {
-                  onWithdrawStep(item, status);
-                }}
-              />
-            );
-          }}
-          endReached={loadMore}
-          components={{
-            Footer: () => {
-              // if (loadingMore) {
-              //   return <Loading count={4} active />;
-              // }
-              return null;
-            },
-          }}
-        ></Virtuoso>
+        {isEmpty ? (
+          <div className="w-full h-full flex flex-col items-center">
+            <img
+              src={ImgEmpty}
+              className="w-[52px] h-[52px] mx-auto mt-[112px] mb-24"
+            />
+            <p className="text-center text-r-neutral-foot text-14">
+              No activities yet
+            </p>
+          </div>
+        ) : (
+          <Virtuoso
+            style={{
+              height: '100%',
+            }}
+            data={data || []}
+            itemContent={(_, item) => {
+              const key = `${item.from_chain_id}:${item.tx_id}`;
+              const status = statusDict[key]?.status;
+              return (
+                <ActivityItem
+                  item={item}
+                  status={status}
+                  onWithdrawStep={(status) => {
+                    onWithdrawStep(item, status);
+                  }}
+                />
+              );
+            }}
+            endReached={loadMore}
+            components={{
+              Footer: () => {
+                // if (loadingMore) {
+                //   return <Loading count={4} active />;
+                // }
+                return null;
+              },
+            }}
+          ></Virtuoso>
+        )}
       </div>
     </Popup>
   );

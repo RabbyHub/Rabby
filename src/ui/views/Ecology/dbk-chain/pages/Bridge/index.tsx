@@ -255,7 +255,7 @@ export const DbkChainBridge = () => {
                 </div>
                 <div className="ml-auto min-w-0">
                   <NameAndAddress
-                    nameClass="text-[13px] leading-[16px]"
+                    nameClass="text-[13px] leading-[16px] font-semibold"
                     addressClass="text-[13px] leading-[16px]"
                     address={extraInfo.toAddress || ''}
                     copyIcon={false}
