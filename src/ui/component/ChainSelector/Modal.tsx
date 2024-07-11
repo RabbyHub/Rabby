@@ -3,7 +3,7 @@
 import { Button, Drawer, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
@@ -26,6 +26,7 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
+import { LoadingBalances } from './LoadingBalances';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -177,16 +178,14 @@ const ChainSelectorModal = ({
   }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
-  const wallet = useWallet();
+  const isLoading = useRabbyGetter(
+    (s) => s.account.isLoadingMateeredChainBalances
+  );
 
   useEffect(() => {
     if (!visible) {
       setSearch('');
     } else {
-      // (async () => {
-      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
-      //   rDispatch.account.getMatteredChainBalance();
-      // })();
       rDispatch.account.getMatteredChainBalance();
     }
   }, [visible, rDispatch, setSearch]);
@@ -204,6 +203,7 @@ const ChainSelectorModal = ({
         className={clsx(
           'custom-popup is-support-darkmode',
           'chain-selector__modal',
+          isLoading && 'disable-body-scroll',
           connection && 'connection',
           className
         )}
@@ -277,6 +277,7 @@ const ChainSelectorModal = ({
             </div>
           ) : null}
         </div>
+        <LoadingBalances loading={isLoading} className="rounded-t-[14px]" />
       </Drawer>
     </>
   );

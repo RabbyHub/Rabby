@@ -406,6 +406,11 @@ textarea {
   .ant-drawer-close:hover {
     color: var(--r-neutral-body);
   }
+  &.disable-body-scroll {
+    .ant-drawer-wrapper-body, .ant-drawer-body {
+      overflow: hidden;
+    }
+  }
 }
 .ant-drawer-bottom.ant-drawer-open .ant-drawer-content-wrapper {
   box-shadow: none;

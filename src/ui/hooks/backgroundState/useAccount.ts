@@ -1,3 +1,4 @@
+/* eslint-enable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 
 import {
@@ -54,4 +55,27 @@ export function useCurrentAccount(options?: {
   }, [currentAccount, onChanged]);
 
   return currentAccount;
+}
+
+export function useSubscribeCurrentAccountChanged() {
+  const dispatch = useRabbyDispatch();
+
+  useEffect(() => {
+    const onAccountsChanged = (
+      account: BROADCAST_TO_UI_EVENTS_PAYLOAD['accountsChanged']
+    ) => {
+      dispatch.account.onAccountChanged(account.address);
+    };
+
+    const disposes = [
+      onBroadcastToUI(
+        BROADCAST_TO_UI_EVENTS.accountsChanged,
+        onAccountsChanged
+      ),
+    ];
+
+    return () => {
+      runBroadcastDispose(disposes);
+    };
+  }, []);
 }

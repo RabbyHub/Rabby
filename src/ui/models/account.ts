@@ -11,7 +11,7 @@ import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
 import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
-import { coerceFloat, isSameAddress } from '../utils';
+import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
 
@@ -50,6 +50,8 @@ export interface AccountState {
   };
 
   mnemonicAccounts: DisplayedKeryring[];
+
+  [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
 }
 
 /**
@@ -64,6 +66,11 @@ export function isChainMattered(chainUsdValue: number, totalUsdValue: number) {
   );
 }
 
+type MatteredChainBalancesResult = {
+  mainnet: TotalBalanceResponse | null;
+  testnet: TotalBalanceResponse | null;
+};
+const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
 export const account = createModel<RootModel>()({
   name: 'account',
 
@@ -94,11 +101,14 @@ export const account = createModel<RootModel>()({
       customize: [],
       blocked: [],
     },
+
+    [symLoaderMatteredBalance]: null,
   } as AccountState,
 
   reducers: {
+    // TODO: abstract this method and apply to all models
     setField(state, payload: Partial<typeof state>) {
-      return Object.keys(payload).reduce(
+      return Reflect.ownKeys(payload).reduce(
         (accu, key) => {
           accu[key] = payload[key];
           return accu;
@@ -194,21 +204,33 @@ export const account = createModel<RootModel>()({
           };
         });
       },
+      isLoadingMateeredChainBalances() {
+        return slice((account) => !!account[symLoaderMatteredBalance]);
+      },
     };
   },
 
   effects: (dispatch) => ({
-    async init() {
+    async init(_?, store?) {
       const account: Account = await dispatch.account.getCurrentAccountAsync();
+
+      dispatch.account.onAccountChanged(account.address);
+
+      return account;
+    },
+    async onAccountChanged(currentAccountAddress?: string, store?) {
       try {
+        currentAccountAddress =
+          currentAccountAddress || store?.account.currentAccount?.address;
         // trigger once when account fetched;
-        await dispatch.account.getMatteredChainBalance();
+        await dispatch.account.getMatteredChainBalance({
+          currentAccountAddress,
+          leastLoadingTime: true,
+        });
       } catch (error) {
         console.debug('error on getMatteredChainBalance');
         console.error(error);
       }
-
-      return account;
     },
     async getCurrentAccountAsync(_: void, store) {
       const account: Account = await store.app.wallet.getCurrentAccount<Account>();
@@ -445,7 +467,10 @@ export const account = createModel<RootModel>()({
     },
 
     async getMatteredChainBalance(
-      options: { isTestnet?: boolean } | void,
+      options: {
+        currentAccountAddress?: string;
+        leastLoadingTime?: boolean;
+      } | void,
       store
     ): Promise<{
       matteredChainBalances: AccountState['matteredChainBalances'];
@@ -454,40 +479,62 @@ export const account = createModel<RootModel>()({
       const wallet = store!.app.wallet;
       const isShowTestnet = store.preference.isShowTestnet;
 
-      const currentAccountAddr = store.account.currentAccount?.address;
+      const { currentAccountAddress = '', leastLoadingTime } = options || {};
+      const currentAccountAddr =
+        currentAccountAddress || store.account.currentAccount?.address;
 
-      const result = await requestOpenApiMultipleNets<
-        TotalBalanceResponse | null,
-        {
-          mainnet: TotalBalanceResponse | null;
-          testnet: TotalBalanceResponse | null;
-        }
-      >(
-        (ctx) => {
-          if (ctx.isTestnetTask) {
-            return null;
-          }
+      const pendingPromise = store.account[symLoaderMatteredBalance];
+      let result: MatteredChainBalancesResult = {
+        mainnet: null,
+        testnet: null,
+      };
+      try {
+        const promise =
+          pendingPromise ||
+          Promise.all([
+            leastLoadingTime ? sleep(500) : null,
+            requestOpenApiMultipleNets<
+              TotalBalanceResponse | null,
+              MatteredChainBalancesResult
+            >(
+              (ctx) => {
+                if (ctx.isTestnetTask) {
+                  return null;
+                }
 
-          return wallet.getAddressCacheBalance(
-            currentAccountAddr,
-            ctx.isTestnetTask
-          );
-        },
-        {
-          wallet,
-          needTestnetResult: isShowTestnet,
-          processResults: ({ mainnet, testnet }) => {
-            return {
-              mainnet: mainnet,
-              testnet: testnet,
-            };
-          },
-          fallbackValues: {
-            mainnet: null,
-            testnet: null,
-          },
-        }
-      );
+                return wallet.getAddressCacheBalance(
+                  currentAccountAddr,
+                  ctx.isTestnetTask
+                );
+              },
+              {
+                wallet,
+                needTestnetResult: isShowTestnet,
+                processResults: ({ mainnet, testnet }) => {
+                  return {
+                    mainnet: mainnet,
+                    testnet: testnet,
+                  };
+                },
+                fallbackValues: {
+                  mainnet: null,
+                  testnet: null,
+                },
+              }
+            ),
+          ]).then(([_, r]) => r);
+
+        dispatch.account.setField({
+          [symLoaderMatteredBalance]: promise,
+        });
+        result = await promise;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        dispatch.account.setField({
+          [symLoaderMatteredBalance]: null,
+        });
+      }
 
       const mainnetTotalUsdValue = (result.mainnet?.chain_list || []).reduce(
         (accu, cur) => accu + coerceFloat(cur.usd_value),
