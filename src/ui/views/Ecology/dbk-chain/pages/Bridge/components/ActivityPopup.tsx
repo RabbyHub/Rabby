@@ -366,7 +366,7 @@ export const ActivityPopup = ({
   const { t } = useTranslation();
   return (
     <Popup
-      title="Activities"
+      title={t('page.ecology.dbk.bridge.ActivityPopup.title')}
       visible={visible}
       height={540}
       closable

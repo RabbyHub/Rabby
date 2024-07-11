@@ -2004,7 +2004,8 @@
               "claimed": "Claimed"
             },
             "proveBtn": "Prove",
-            "claimBtn": "Claim"
+            "claimBtn": "Claim",
+            "title": "Activities"
           }
         },
         "minNFT": {
