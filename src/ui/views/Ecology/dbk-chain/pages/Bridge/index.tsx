@@ -72,8 +72,6 @@ export const DbkChainBridge = () => {
     { immediate: false }
   );
 
-  console.log(statusRes);
-
   const tabs = [
     {
       key: 'deposit' as const,
