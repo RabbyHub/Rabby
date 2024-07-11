@@ -4,13 +4,24 @@ import { Popup } from '@/ui/component';
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { DbkButton } from '../../../components/DbkButton';
+import { formatUsdValue } from '@/ui/utils';
 
 interface Props {
   visible?: boolean;
   onClose?: () => void;
   onSubmit?: () => void;
+  gasFees: {
+    withdrawFinalizeGasFee?: number;
+    withdrawGasFee1?: number;
+    withdrawProveGasFee?: number;
+  };
 }
-export const WithdrawConfirmPopup = ({ visible, onClose, onSubmit }: Props) => {
+export const WithdrawConfirmPopup = ({
+  visible,
+  onClose,
+  onSubmit,
+  gasFees,
+}: Props) => {
   const checkList = [
     {
       label:
@@ -63,21 +74,34 @@ export const WithdrawConfirmPopup = ({ visible, onClose, onSubmit }: Props) => {
       <div className="rounded-[8px] border-[0.5px] border-rabby-neutral-line p-[16px] space-y-[16px] mb-[12px]">
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
           <div>Initiate withdrawal</div>
-          <div>$0.0006</div>
+          <div>
+            {gasFees?.withdrawGasFee1
+              ? formatUsdValue(gasFees.withdrawGasFee1)
+              : '--'}
+          </div>
         </div>
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
           Wait ~10 mins
         </div>
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
           <div>Prove on Ethereum</div>
-          <div>$6.91</div>
+          <div>
+            {gasFees?.withdrawProveGasFee
+              ? formatUsdValue(gasFees.withdrawProveGasFee)
+              : '--'}
+          </div>
         </div>
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
           Wait ~7 days
         </div>
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
           <div>Claim on Ethereum</div>
-          <div>$8.91</div>
+          <div>
+            {' '}
+            {gasFees?.withdrawFinalizeGasFee
+              ? formatUsdValue(gasFees.withdrawFinalizeGasFee)
+              : '--'}
+          </div>
         </div>
       </div>
       <div className="space-y-[10px]">

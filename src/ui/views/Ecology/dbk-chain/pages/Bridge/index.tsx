@@ -100,6 +100,9 @@ export const DbkChainBridge = () => {
     handleWithdrawStep,
     isDepositSubmitting,
     isWithdrawSubmitting,
+    withdrawFinalizeGasFee,
+    withdrawGasFee1,
+    withdrawProveGasFee,
   } = useDbkChainBridge({ action: activeTab, clientL1, clientL2 });
 
   const handleSubmit = useMemoizedFn(() => {
@@ -342,6 +345,11 @@ export const DbkChainBridge = () => {
       />
       <WithdrawConfirmPopup
         visible={isShowWithdrawConfirmPopup}
+        gasFees={{
+          withdrawFinalizeGasFee,
+          withdrawGasFee1,
+          withdrawProveGasFee,
+        }}
         onClose={() => {
           setIsShowWithdrawConfirmPopup(false);
         }}

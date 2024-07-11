@@ -9,7 +9,7 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Virtuoso } from 'react-virtuoso';
 import { DbkBridgeStatus } from '../../../utils';
 import React from 'react';
-import { formatAmount, openInTab } from '@/ui/utils';
+import { formatAmount, openInTab, sinceTime } from '@/ui/utils';
 import clsx from 'clsx';
 import { Chain } from '@/types/chain';
 import { getTxScanLink } from '@/utils';
@@ -304,11 +304,16 @@ const ActivityItem = ({
           : 'border-rabby-neutral-line'
       )}
     >
-      <div className="flex items-center justify-between mb-[8px]">
-        <div className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
-          {item.is_deposit
-            ? t('page.ecology.dbk.bridge.ActivityPopup.deposit')
-            : t('page.ecology.dbk.bridge.ActivityPopup.withdraw')}
+      <div className="flex items-end justify-between mb-[8px]">
+        <div className="flex items-end gap-[8px]">
+          <div className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
+            {item.is_deposit
+              ? t('page.ecology.dbk.bridge.ActivityPopup.deposit')
+              : t('page.ecology.dbk.bridge.ActivityPopup.withdraw')}
+          </div>
+          <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
+            {sinceTime(item.create_at)}
+          </div>
         </div>
         <div className="text-[15px] leading-[18px] font-bold text-r-neutral-title-1">
           {formatAmount(item.from_token_amount)} ETH

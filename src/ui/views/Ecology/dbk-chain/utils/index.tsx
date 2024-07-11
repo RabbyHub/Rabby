@@ -75,12 +75,10 @@ export const createViemClient = ({
   const chain = findChain({
     id: chainId,
   })!;
-  console.log(chain);
   return createWalletClient({
     chain: viemChain,
     transport: custom({
       async request({ method, params }) {
-        console.log(method, params, chainId);
         if (
           method === 'eth_sendTransaction' &&
           params[0] &&
