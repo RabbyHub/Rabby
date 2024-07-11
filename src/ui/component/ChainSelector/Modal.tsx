@@ -203,7 +203,7 @@ const ChainSelectorModal = ({
         className={clsx(
           'custom-popup is-support-darkmode',
           'chain-selector__modal',
-          isLoading && 'disable-body-scroll',
+          // isLoading && 'disable-body-scroll',
           connection && 'connection',
           className
         )}
@@ -231,53 +231,58 @@ const ChainSelectorModal = ({
             />
           )}
         </header>
-        <div className="chain-selector__modal-content">
-          <SelectChainList
-            supportChains={supportChains}
-            data={matteredList}
-            sortable={false /* !supportChains */}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onSort={handleSort}
-            onChange={handleChange}
-            value={value}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
-          <SelectChainList
-            supportChains={supportChains}
-            data={unmatteredList}
-            value={value}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onChange={handleChange}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
+        {isLoading ? (
+          <div className="chain-selector__modal-content">
+            <LoadingBalances loading={isLoading} />
+          </div>
+        ) : (
+          <div className="chain-selector__modal-content">
+            <SelectChainList
+              supportChains={supportChains}
+              data={matteredList}
+              sortable={false /* !supportChains */}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onSort={handleSort}
+              onChange={handleChange}
+              value={value}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
+            <SelectChainList
+              supportChains={supportChains}
+              data={unmatteredList}
+              value={value}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onChange={handleChange}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
 
-          {matteredList.length === 0 && unmatteredList.length === 0 ? (
-            <div className="select-chain-list pt-[70px] bg-transparent">
-              <Empty>
-                {/* No chains */}
-                {t('component.ChainSelectorModal.noChains')}
-              </Empty>
-              {selectedTab === 'testnet' ? (
-                <div className="text-center mt-[50px]">
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      history.push('/custom-testnet');
-                    }}
-                    className="w-[200px] h-[44px]"
-                  >
-                    {t('component.ChainSelectorModal.addTestnet')}
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
-        <LoadingBalances loading={isLoading} className="rounded-t-[14px]" />
+            {matteredList.length === 0 && unmatteredList.length === 0 ? (
+              <div className="select-chain-list pt-[70px] bg-transparent">
+                <Empty>
+                  {/* No chains */}
+                  {t('component.ChainSelectorModal.noChains')}
+                </Empty>
+                {selectedTab === 'testnet' ? (
+                  <div className="text-center mt-[50px]">
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        history.push('/custom-testnet');
+                      }}
+                      className="w-[200px] h-[44px]"
+                    >
+                      {t('component.ChainSelectorModal.addTestnet')}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        )}
       </Drawer>
     </>
   );

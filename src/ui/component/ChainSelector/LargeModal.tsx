@@ -182,7 +182,7 @@ export const ChainSelectorLargeModal = ({
       className={clsx(
         'custom-popup is-support-darkmode',
         'chain-selector-large-modal',
-        isLoading && 'disable-body-scroll',
+        // isLoading && 'disable-body-scroll',
         connection && 'connection',
         className
       )}
@@ -208,39 +208,44 @@ export const ChainSelectorLargeModal = ({
           allowClear
         />
       </header>
-      <div className="chain-selector-large-modal-content">
-        <SelectChainList
-          supportChains={supportChains}
-          data={matteredList}
-          sortable={false /* !supportChains */}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onSort={handleSort}
-          onChange={handleChange}
-          value={value}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        <SelectChainList
-          supportChains={supportChains}
-          data={unmatteredList}
-          value={value}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onChange={handleChange}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        {matteredList.length === 0 && unmatteredList.length === 0 ? (
-          <div className="select-chain-list pt-[70px] pb-[120px]">
-            <Empty>
-              {/* No chains */}
-              {t('component.ChainSelectorModal.noChains')}
-            </Empty>
-          </div>
-        ) : null}
-      </div>
-      <LoadingBalances loading={isLoading} className="rounded-t-[8px]" />
+      {isLoading ? (
+        <div className="chain-selector-large-modal-content">
+          <LoadingBalances loading={isLoading} />
+        </div>
+      ) : (
+        <div className="chain-selector-large-modal-content">
+          <SelectChainList
+            supportChains={supportChains}
+            data={matteredList}
+            sortable={false /* !supportChains */}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onSort={handleSort}
+            onChange={handleChange}
+            value={value}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          <SelectChainList
+            supportChains={supportChains}
+            data={unmatteredList}
+            value={value}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onChange={handleChange}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          {matteredList.length === 0 && unmatteredList.length === 0 ? (
+            <div className="select-chain-list pt-[70px] pb-[120px]">
+              <Empty>
+                {/* No chains */}
+                {t('component.ChainSelectorModal.noChains')}
+              </Empty>
+            </div>
+          ) : null}
+        </div>
+      )}
     </Modal>
   );
 };
