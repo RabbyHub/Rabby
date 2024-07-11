@@ -2006,6 +2006,17 @@
             "proveBtn": "Prove",
             "claimBtn": "Claim",
             "title": "Activities"
+          },
+          "WithdrawConfirmPopup": {
+            "question1": "I understand it will take ~7 days until my funds are claimable on Ethereum after I prove my withdrawal",
+            "question2": "I understand once a withdrawal is initiated it cannot be sped up or cancelled",
+            "question3": "I understand network fees are approximate and will change",
+            "title": "DBK Chain Withdrawal takes ~7 days",
+            "tips": "Withdrawing involves a 3-step process, requiring 1 DBK Chain transaction and 2 Ethereum transactions",
+            "step1": "Initiate withdrawal",
+            "step2": "Prove on Ethereum",
+            "step3": "Claim on Ethereum",
+            "btn": "Withdraw"
           }
         },
         "minNFT": {

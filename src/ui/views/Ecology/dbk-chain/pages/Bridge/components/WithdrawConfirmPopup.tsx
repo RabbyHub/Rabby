@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { DbkButton } from '../../../components/DbkButton';
 import { formatUsdValue } from '@/ui/utils';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   visible?: boolean;
@@ -22,19 +23,18 @@ export const WithdrawConfirmPopup = ({
   onSubmit,
   gasFees,
 }: Props) => {
+  const { t } = useTranslation();
   const checkList = [
     {
-      label:
-        'I understand it will take ~7 days until my funds are claimable on Ethereum after I prove my withdrawal',
+      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question1'),
       value: 1,
     },
     {
-      label:
-        'I understand once a withdrawal is initiated it cannot be sped up or cancelled',
+      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question2'),
       value: 2,
     },
     {
-      label: 'I understand network fees are approximate and will change',
+      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question3'),
       value: 3,
     },
   ];
@@ -54,7 +54,7 @@ export const WithdrawConfirmPopup = ({
     <Popup
       title={
         <div className="text-r-neutral-title-1 text-[16px] font-semibold">
-          DBK Chain Withdrawal takes ~7 days
+          {t('page.ecology.dbk.bridge.WithdrawConfirmPopup.title')}
         </div>
       }
       visible={visible}
@@ -68,12 +68,11 @@ export const WithdrawConfirmPopup = ({
       onCancel={onClose}
     >
       <div className="text-r-neutral-body text-[13px] leading-[16px] text-center mb-[12px]">
-        Withdrawing involves a 3-step process, requiring 1 DBK Chain transaction
-        and 2 Ethereum transactions
+        {t('page.ecology.dbk.bridge.WithdrawConfirmPopup.tips')}
       </div>
       <div className="rounded-[8px] border-[0.5px] border-rabby-neutral-line p-[16px] space-y-[16px] mb-[12px]">
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
-          <div>Initiate withdrawal</div>
+          <div>{t('page.ecology.dbk.bridge.WithdrawConfirmPopup.step1')}</div>
           <div>
             {gasFees?.withdrawGasFee1
               ? formatUsdValue(gasFees.withdrawGasFee1)
@@ -84,7 +83,7 @@ export const WithdrawConfirmPopup = ({
           Wait ~10 mins
         </div>
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
-          <div>Prove on Ethereum</div>
+          <div>{t('page.ecology.dbk.bridge.WithdrawConfirmPopup.step2')}</div>
           <div>
             {gasFees?.withdrawProveGasFee
               ? formatUsdValue(gasFees.withdrawProveGasFee)
@@ -95,7 +94,7 @@ export const WithdrawConfirmPopup = ({
           Wait ~7 days
         </div>
         <div className="flex items-center justify-between text-r-neutral-title-1 text-[13px] leading-[16px] font-semibold">
-          <div>Claim on Ethereum</div>
+          <div>{t('page.ecology.dbk.bridge.WithdrawConfirmPopup.step3')}</div>
           <div>
             {' '}
             {gasFees?.withdrawFinalizeGasFee
@@ -144,7 +143,7 @@ export const WithdrawConfirmPopup = ({
           disabled={!isCheckedAll}
           onClick={onSubmit}
         >
-          Withdraw
+          {t('page.ecology.dbk.bridge.WithdrawConfirmPopup.btn')}
         </DbkButton>
       </footer>
     </Popup>
