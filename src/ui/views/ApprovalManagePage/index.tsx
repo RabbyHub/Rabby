@@ -66,7 +66,7 @@ import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
 import { useTitle } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 
@@ -1042,13 +1042,8 @@ function TableByAssetSpenders({
 
 const ApprovalManagePage = () => {
   useTitle('Approvals - Rabby Wallet');
-  useCurrentAccount({
-    onChanged: useCallback((ctx) => {
-      if (ctx.reason === 'currentAccount') {
-        window.location.reload();
-      }
-    }, []),
-  });
+
+  useReloadPageOnCurrentAccountChanged();
 
   const { t } = useTranslation();
 
