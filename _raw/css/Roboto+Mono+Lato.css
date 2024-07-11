@@ -1532,7 +1532,7 @@
 
 /* latin-ext */
 @font-face {
-  font-family: 'Lato';
+  font-family: 'Lato700';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -1541,7 +1541,7 @@
 }
 /* latin */
 @font-face {
-  font-family: 'Lato';
+  font-family: 'Lato700';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
