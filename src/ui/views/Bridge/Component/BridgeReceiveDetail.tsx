@@ -14,7 +14,6 @@ const ReceiveWrapper = styled.div`
   position: relative;
   margin-top: 24px;
   border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
   border-radius: 4px;
   padding: 12px;
   padding-top: 16px;

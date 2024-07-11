@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import { QuoteLogo } from './QuoteLogo';
 import BigNumber from 'bignumber.js';
 import ImgLock from '@/ui/assets/swap/lock.svg';
-import ImgGas from '@/ui/assets/swap/gas.svg';
+import { ReactComponent as RcIconGasCC } from '@/ui/assets/swap/gas-cc.svg';
 import ImgWarning from '@/ui/assets/swap/warn.svg';
 import ImgVerified from '@/ui/assets/swap/verified.svg';
 import ImgWhiteWarning from '@/ui/assets/swap/warning-white.svg';
@@ -33,6 +33,8 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { TokenWithChain } from '@/ui/component';
 import { Tooltip } from 'antd';
+
+const GAS_USE_AMOUNT_LIMIT = 2_000_000;
 
 const ItemWrapper = styled.div`
   position: relative;
@@ -425,7 +427,18 @@ export const DexQuoteItem = (
 
   const [disabledTradeTipsOpen, setDisabledTradeTipsOpen] = useState(false);
 
+  const gasFeeTooHight = useMemo(() => {
+    return (
+      new BigNumber(preExecResult?.swapPreExecTx?.gas?.gas_used || 0).gte(
+        GAS_USE_AMOUNT_LIMIT
+      ) && chain === CHAINS_ENUM.ETH
+    );
+  }, [preExecResult, chain]);
+
   const handleClick = useCallback(() => {
+    if (gasFeeTooHight) {
+      return;
+    }
     if (disabledTrade) {
       // setDisabledTradeTipsOpen(true);
       return;
@@ -460,6 +473,7 @@ export const DexQuoteItem = (
     quote,
     preExecResult,
     quoteWarning,
+    gasFeeTooHight,
   ]);
 
   useDebounce(
@@ -527,15 +541,28 @@ export const DexQuoteItem = (
     <Tooltip
       overlayClassName="rectangle w-[max-content]"
       placement="top"
-      title={'Insufficient balance'}
+      title={
+        gasFeeTooHight
+          ? t('page.swap.Gas-fee-too-high')
+          : t('page.swap.insufficient-balance')
+      }
       trigger={['click']}
-      visible={inSufficient && !disabled ? undefined : false}
+      visible={
+        gasFeeTooHight || (inSufficient && !disabled) ? undefined : false
+      }
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
     >
       <ItemWrapper
         onMouseEnter={() => {
-          if (disabledTrade && !inSufficient && quote && preExecResult) {
+          if (
+            isSdkDataPass &&
+            !gasFeeTooHight &&
+            disabledTrade &&
+            !inSufficient &&
+            quote &&
+            preExecResult
+          ) {
             setDisabledTradeTipsOpen(true);
           }
         }}
@@ -548,7 +575,9 @@ export const DexQuoteItem = (
           active && 'active',
           (disabledTrade || disabled) && 'disabled',
           isErrorQuote && 'error',
-          inSufficient && !disabled && 'disabled inSufficient'
+
+          inSufficient && !disabled && 'disabled inSufficient',
+          gasFeeTooHight && 'disabled gasFeeTooHight'
         )}
       >
         <DEXItem
@@ -563,6 +592,8 @@ export const DexQuoteItem = (
           statusIcon={<CheckIcon />}
           receivedTokenUsd={receivedTokenUsd}
           diffContent={rightContent}
+          gasFeeTooHight={gasFeeTooHight}
+          isSdkDataPass={isSdkDataPass}
         />
 
         <div
@@ -629,6 +660,8 @@ function DEXItem(props: {
   statusIcon?: React.ReactNode;
   receivedTokenUsd?: React.ReactNode;
   diffContent?: React.ReactNode;
+  gasFeeTooHight?: boolean;
+  isSdkDataPass?: boolean;
 }) {
   const { t } = useTranslation();
   return (
@@ -651,10 +684,34 @@ function DEXItem(props: {
           )}
         </div>
 
-        {!!props?.gasUsd && (
-          <div className="flex items-center gap-4">
-            <img src={ImgGas} className="w-16 h16" />
-            <span className="text-13 text-r-neutral-foot">{props?.gasUsd}</span>
+        {!!props?.gasUsd && props.isSdkDataPass && (
+          <div className={clsx('flex items-center')}>
+            <div
+              className={clsx(
+                'inline-flex items-center gap-4 px-4',
+                props.gasFeeTooHight && 'bg-r-red-light'
+              )}
+            >
+              <RcIconGasCC
+                className={clsx(
+                  'text-r-neutral-foot w-16 h-16',
+                  props.gasFeeTooHight
+                    ? 'text-rabby-red-default'
+                    : 'text-r-neutral-foot'
+                )}
+                viewBox="0 0 16 16"
+              />
+              <span
+                className={clsx(
+                  'text-13',
+                  props.gasFeeTooHight
+                    ? 'text-rabby-red-default'
+                    : 'text-r-neutral-foot'
+                )}
+              >
+                {props?.gasUsd}
+              </span>
+            </div>
           </div>
         )}
       </div>

@@ -2,10 +2,10 @@ import { Checkbox, Modal, Popup } from '@/ui/component';
 import React, { useEffect, useState } from 'react';
 import { useSetSettingVisible } from '../hooks';
 import clsx from 'clsx';
-import { Button, Switch, Tooltip } from 'antd';
+import { Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export const AggregatorsSettings = ({
@@ -64,7 +64,7 @@ export const AggregatorsSettings = ({
           {t('page.bridge.settingModal.title')}
         </span>
       }
-      height={400}
+      height={462}
       onClose={onClose}
       bodyStyle={{
         paddingTop: 16,
@@ -132,6 +132,16 @@ export const AggregatorsSettings = ({
             </div>
           );
         })}
+
+        <Button
+          block
+          type="primary"
+          size="large"
+          onClick={onClose}
+          className="mt-auto h-[48px]"
+        >
+          {t('global.Done')}
+        </Button>
       </div>
       <Modal
         bodyStyle={{

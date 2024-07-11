@@ -805,6 +805,10 @@
       "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
+      "hidden-no-quote-rates_one": "Hidden {{count}} no-quote rate",
+      "hidden-no-quote-rates_others": "Hidden {{count}} no-quote rates",
+
+      "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "Prefer MEV Guarded",
       "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",

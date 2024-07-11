@@ -4,14 +4,18 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { BridgeServiceStore } from '@/background/service/bridge';
 import { BridgeAggregator } from '@/background/service/openapi';
+import {
+  DEFAULT_BRIDGE_AGGREGATOR,
+  DEFAULT_BRIDGE_SUPPORTED_CHAIN,
+} from '@/constant/bridge';
 
 export const bridge = createModel<RootModel>()({
   name: 'bridge',
 
   state: {
-    supportedChains: [],
+    supportedChains: DEFAULT_BRIDGE_SUPPORTED_CHAIN,
     aggregatorsListInit: false,
-    aggregatorsList: [],
+    aggregatorsList: DEFAULT_BRIDGE_AGGREGATOR,
     selectedAggregators: [],
     selectedDex: null,
     selectedChain: null,

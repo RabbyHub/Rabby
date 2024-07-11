@@ -1,15 +1,14 @@
 import { Checkbox, Popup } from '@/ui/component';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { QuoteListLoading, QuoteLoading } from './loading';
-import styled from 'styled-components';
 import { IconRefresh } from './IconRefresh';
 import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
 import {
   TCexQuoteData,
   TDexQuoteData,
   isSwapWrapToken,
+  useQuoteViewDexIdList,
   useSetRefreshId,
-  useSetSettingVisible,
   useSwapSettings,
 } from '../hooks';
 import BigNumber from 'bignumber.js';
@@ -46,8 +45,6 @@ export const Quotes = ({
 }: QuotesProps) => {
   const { t } = useTranslation();
   const { sortIncludeGasFee } = useSwapSettings();
-
-  const setSettings = useSetSettingVisible();
 
   const sortedList = useMemo(
     () => [
@@ -125,7 +122,7 @@ export const Quotes = ({
   const [hiddenError, setHiddenError] = useState(true);
   const [errorQuoteDEXs, setErrorQuoteDEXs] = useState<string[]>([]);
 
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const viewListLength = useQuoteViewDexIdList().length;
 
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
@@ -198,27 +195,29 @@ export const Quotes = ({
       </div>
       <div
         className={clsx(
-          'flex items-center justify-center my-8 mt-24 cursor-pointer',
+          'flex items-center justify-center my-8 mt-24 cursor-pointer gap-4',
           errorQuoteDEXs.length === 0 ||
-            errorQuoteDEXs?.length === supportedDEXList?.length
+            errorQuoteDEXs?.length === viewListLength
             ? 'hidden'
             : 'mb-12'
         )}
         onClick={() => setHiddenError((e) => !e)}
       >
         <span className="text-13 text-rabby-neutral-foot gap-4 ">
-          Hidden {errorQuoteDEXs.length} no-quote rates
+          {t('page.swap.hidden-no-quote-rates', {
+            count: errorQuoteDEXs.length,
+          })}
         </span>
         <RcIconHiddenArrow
           viewBox="0 0 14 14"
-          className={clsx('w-14 h-14', !hiddenError && '-rotate-90')}
+          className={clsx('w-14 h-14', !hiddenError && '-rotate-180')}
         />
       </div>
       <div
         className={clsx(
           'flex flex-col gap-8 transition overflow-hidden',
           hiddenError &&
-            errorQuoteDEXs?.length !== supportedDEXList?.length &&
+            errorQuoteDEXs?.length !== viewListLength &&
             'max-h-0 h-0',
           errorQuoteDEXs.length === 0 && 'hidden'
         )}
@@ -270,13 +269,13 @@ export const QuoteList = (props: QuotesProps) => {
 
   const { sortIncludeGasFee, setSwapSortIncludeGasFee } = useSwapSettings();
 
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const viewList = useQuoteViewDexIdList();
 
   const height = useMemo(() => {
-    const min = 334;
-    const max = 518;
+    const min = 333;
+    const max = 540;
 
-    const h = 45 + 24 + supportedDEXList.length * 92;
+    const h = 45 + 24 + viewList.length * 92;
 
     if (h < min) {
       return min;
@@ -285,7 +284,7 @@ export const QuoteList = (props: QuotesProps) => {
       return max;
     }
     return h;
-  }, [supportedDEXList.length]);
+  }, [viewList.length]);
 
   return (
     <Popup

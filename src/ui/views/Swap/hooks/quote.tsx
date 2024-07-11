@@ -535,6 +535,7 @@ export const useQuoteMethods = () => {
     getDexQuote,
     getAllQuotes,
     swapViewList,
+    supportedDEXList,
   };
 };
 

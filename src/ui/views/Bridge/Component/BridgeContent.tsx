@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, message, Modal, Tooltip } from 'antd';
+import { Alert, Button, Input, message, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import {
   formatAmount,
@@ -372,7 +372,7 @@ export const BridgeContent = () => {
                         overlayClassName="rectangle w-[max-content] "
                         title={
                           <div>
-                            <p>
+                            <p className="pt-12">
                               {selectedBridgeQuote?.aggregator?.name} Fee:{' '}
                               {formatTokenAmount(
                                 new BigNumber(

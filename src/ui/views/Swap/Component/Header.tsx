@@ -4,10 +4,15 @@ import { ReactComponent as RcIconSwapHistory } from '@/ui/assets/swap/history.sv
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useState } from 'react';
 import { TradingSettings } from './TradingSettings';
-import { useSetSettingVisible, useSettingVisible } from '../hooks';
+import {
+  usePollSwapPendingNumber,
+  useSetSettingVisible,
+  useSettingVisible,
+} from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
+import { PendingTx } from '../../Bridge/Component/PendingTx';
 
 export const Header = () => {
   const visible = useSettingVisible();
@@ -15,6 +20,12 @@ export const Header = () => {
 
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
+
+  const loadingNumber = usePollSwapPendingNumber(5000);
+
+  const openHistory = useCallback(() => {
+    setHistoryVisible(true);
+  }, []);
 
   const dispath = useRabbyDispatch();
   React.useEffect(() => {
@@ -28,12 +39,15 @@ export const Header = () => {
         forceShowBack
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">
-            <RcIconSwapHistory
-              className="cursor-pointer"
-              onClick={useCallback(() => {
-                setHistoryVisible(true);
-              }, [])}
-            />
+            {loadingNumber ? (
+              <PendingTx number={loadingNumber} onClick={openHistory} />
+            ) : (
+              <RcIconSwapHistory
+                className="cursor-pointer"
+                onClick={openHistory}
+              />
+            )}
+
             <RcIconSwapSettings
               className="cursor-pointer"
               onClick={useCallback(() => {

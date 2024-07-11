@@ -32,3 +32,13 @@ export const useSwapSettings = () => {
     ...methods,
   };
 };
+
+export const useQuoteViewDexIdList = () => {
+  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const originSwapViewList = useRabbySelector((s) => s.swap.viewList);
+  return useMemo(() => {
+    return supportedDEXList.filter((e) => {
+      return originSwapViewList?.[e] !== false;
+    });
+  }, [supportedDEXList, originSwapViewList]);
+};
