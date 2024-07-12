@@ -365,7 +365,7 @@ textarea {
     display: none;
   }
   &.rectangle {
-    max-width: 330px;
+    max-width: 340px;
     .ant-tooltip-inner {
       border-radius: 2px;
     }
@@ -418,6 +418,11 @@ textarea {
   .ant-drawer-close:focus,
   .ant-drawer-close:hover {
     color: var(--r-neutral-body);
+  }
+  &.disable-body-scroll {
+    .ant-drawer-wrapper-body, .ant-drawer-body {
+      overflow: hidden;
+    }
   }
 }
 .ant-drawer-bottom.ant-drawer-open .ant-drawer-content-wrapper {

@@ -113,6 +113,7 @@ const Actions = ({
               <span>{actionName}</span>
               {isUnknown && (
                 <TooltipWithMagnetArrow
+                  inApproval
                   placement="bottom"
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={

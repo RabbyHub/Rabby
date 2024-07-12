@@ -137,6 +137,7 @@ export const OriginInfo: React.FC<Props> = ({
             height="24px"
           />
           <TooltipWithMagnetArrow
+            inApproval
             className="rectangle w-[max-content]"
             title={currentChain.name}
           >

@@ -19,6 +19,7 @@ export const ProcessActions: React.FC<Props> = ({
   return (
     <ActionsContainer onCancel={onCancel}>
       <TooltipWithMagnetArrow
+        inApproval
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
         title={tooltipContent}
         viewportOffset={[20, -20, -20, 20]}

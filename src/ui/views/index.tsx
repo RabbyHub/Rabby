@@ -17,6 +17,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useMount } from 'react-use';
 import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
+import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
 const useAutoLock = () => {
@@ -63,6 +64,7 @@ const useAutoLock = () => {
 const Main = () => {
   useAutoLock();
   useThemeModeOnMain();
+  useSubscribeCurrentAccountChanged();
 
   return (
     <>
