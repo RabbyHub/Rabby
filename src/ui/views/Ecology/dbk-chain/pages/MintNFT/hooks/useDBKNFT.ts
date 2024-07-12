@@ -1,31 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useMemoizedFn } from 'ahooks';
+import { hexToNumber } from 'viem';
+
 import { useWallet } from '@/ui/utils';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DBK_CHAIN_ID, DBK_NFT_CONTRACT_ADDRESS } from '@/constant';
-
-import { useMemoizedFn } from 'ahooks';
-import { createPublicClient, http, defineChain, hexToNumber } from 'viem';
-
-import { chainConfig } from 'viem/op-stack';
-
-const dbkChain = defineChain({
-  ...chainConfig,
-  id: DBK_CHAIN_ID,
-  name: 'DBK Chain',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.mainnet.dbkchain.io/'],
-    },
-  },
-  contracts: {
-    ...chainConfig.contracts,
-  },
-});
+import { createL2Client } from '../../../utils';
 
 const NFT_ABI = [
   {
@@ -57,12 +37,8 @@ export const useMintNFT = () => {
   const [totalMinted, setTotalMinted] = useState(0);
   const [userMinted, setUserMinted] = useState(0);
 
-  const publicClient = useMemo(
-    () =>
-      createPublicClient({
-        chain: dbkChain,
-        transport: http(),
-      }),
+  const clientL2 = useMemo(
+    () => createL2Client({ chainId: DBK_CHAIN_ID, wallet }),
     []
   );
 
@@ -75,12 +51,12 @@ export const useMintNFT = () => {
 
     try {
       const [currentTokenId, userBalance] = await Promise.all([
-        publicClient.readContract({
+        clientL2.readContract({
           address: DBK_NFT_CONTRACT_ADDRESS,
           abi: NFT_ABI,
           functionName: 'tokenIdCounter',
         }),
-        publicClient.readContract({
+        clientL2.readContract({
           address: DBK_NFT_CONTRACT_ADDRESS,
           abi: NFT_ABI,
           functionName: 'balanceOf',

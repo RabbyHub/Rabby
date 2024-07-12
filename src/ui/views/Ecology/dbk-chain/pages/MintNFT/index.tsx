@@ -1,7 +1,7 @@
 import React from 'react';
 import MintNFTIcon from 'ui/assets/ecology/dbk-genesis-nft.png';
 import { DbkButton } from '../../components/DbkButton';
-import { useMintNFT } from '../Bridge/hooks/useDBKNFT';
+import { useMintNFT } from './hooks/useDBKNFT';
 import { numberWithCommasIsLtOne } from 'ui/utils';
 import { useTranslation } from 'react-i18next';
 export const DbkChainMintNFT: React.FC = () => {
@@ -14,7 +14,7 @@ export const DbkChainMintNFT: React.FC = () => {
         <div className="flex flex-col pt-[32px] pb-[30px] items-center text-center">
           <img className="block w-[200px] h-[200px]" src={MintNFTIcon} alt="" />
           <div className="mt-[20px] text-gradient text-[24px] leading-[28.8px] font-bold">
-            DBK Genesis
+            {t('page.ecology.dbk.minNFT.title')}
           </div>
         </div>
         <div

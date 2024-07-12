@@ -2020,6 +2020,7 @@
           }
         },
         "minNFT": {
+          "title": "DBK Genesis",
           "minted": "Minted",
           "myBalance": " My Balance",
           "mintBtn": "Mint"
