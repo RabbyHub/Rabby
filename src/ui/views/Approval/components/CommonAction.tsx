@@ -219,55 +219,6 @@ export const CommonAction = ({
             </SubTable>
           </>
         )}
-        {!hasReceiver && !actionData.receiver && addressInfo && (
-          <>
-            <Col>
-              <Row isTitle className="w-[100px]" itemsCenter>
-                {t('page.signTx.contractCall.suspectedReceiver')}
-              </Row>
-              <Row>
-                <ViewMore
-                  type="receiver"
-                  data={{
-                    title: t('page.signTx.contractCall.suspectedReceiver'),
-                    address: addressInfo.address,
-                    chain: addressInfo.chain,
-                    eoa: addressInfo.eoa,
-                    cex: addressInfo.cex,
-                    contract: addressInfo.contract,
-                    usd_value: addressInfo.usd_value,
-                    hasTransfer: addressInfo.hasTransfer,
-                    isTokenContract: addressInfo.isTokenContract,
-                    name: addressInfo.name,
-                    onTransferWhitelist: addressInfo.onTransferWhitelist,
-                  }}
-                >
-                  <Values.Address
-                    id="common-action-expect-receiver"
-                    hasHover
-                    address={addressInfo.address}
-                    chain={chain}
-                  />
-                </ViewMore>
-              </Row>
-            </Col>
-            <SubTable target="common-action-expect-receiver">
-              <SubCol>
-                <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
-                <SubRow>
-                  <Values.AddressMemo address={addressInfo.address} />
-                </SubRow>
-              </SubCol>
-
-              {addressInfo.name && (
-                <SubCol>
-                  <SubRow> </SubRow>
-                  <SubRow>{addressInfo.name}</SubRow>
-                </SubCol>
-              )}
-            </SubTable>
-          </>
-        )}
       </Table>
     </div>
   );

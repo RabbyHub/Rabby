@@ -116,8 +116,8 @@ export class WalletController extends BaseController {
   testnetOpenapi = testnetOpenapiService;
 
   /* wallet */
-  boot = (password) => {
-    keyringService.boot(password);
+  boot = async (password) => {
+    await keyringService.boot(password);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     const isDefaultWallet = preferenceService.getIsDefaultWallet();
     if (!hasOtherProvider) {
@@ -476,7 +476,8 @@ export class WalletController extends BaseController {
           chainObj.serverId,
           pay_token_id,
           spender,
-          unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
+          // unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
+          quote.fromTokenAmount,
           {
             ga: {
               ...$ctx?.ga,

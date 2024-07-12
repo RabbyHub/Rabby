@@ -234,6 +234,8 @@ const flowContext = flow
           waitSignComponentPromise = waitSignComponentAmounted();
         }
 
+        if (approvalRes?.isGnosis) return resolve(undefined);
+
         return waitSignComponentPromise.then(() =>
           Promise.resolve(
             providerController[mapMethod]({

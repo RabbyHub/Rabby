@@ -795,6 +795,7 @@
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
       "price-expired-refresh-quote": "Price expired. Refresh quote.",
       "approve-x-symbol": "Approve {{symbol}}",
+      "approve-and-swap": "Approve and Swap",
       "swap-via-x": "Swap via {{name}}",
       "get-quotes": "Get quotes",
       "chain": "Chain",
