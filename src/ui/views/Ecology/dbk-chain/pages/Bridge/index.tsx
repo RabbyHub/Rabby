@@ -263,7 +263,11 @@ export const DbkChainBridge = () => {
                 onClick={() => {
                   setPayAmount(
                     new BigNumber(payToken?.raw_amount_hex_str || 0)
-                      .div(10 ** (payToken?.decimals || 18))
+                      .div(
+                        new BigNumber(10).exponentiatedBy(
+                          payToken?.decimals || 18
+                        )
+                      )
                       .toString()
                   );
                 }}
