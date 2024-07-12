@@ -55,6 +55,7 @@ import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
+import { EcologyPopup } from './components/EcologyPopup';
 
 const Dashboard = () => {
   const history = useHistory();

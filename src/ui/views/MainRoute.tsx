@@ -60,6 +60,7 @@ import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
+import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 
 declare global {
@@ -285,6 +286,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/rabby-points">
           <RabbyPoints />
+        </PrivateRoute>
+        <PrivateRoute path="/ecology/:chainId">
+          <Ecology />
         </PrivateRoute>
       </Switch>
 

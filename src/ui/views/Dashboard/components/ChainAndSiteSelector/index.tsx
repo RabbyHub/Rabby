@@ -33,6 +33,7 @@ import IconAddresses, {
 } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconClaimableRabbyPoints } from 'ui/assets/dashboard/claimable-points.svg';
 import { ReactComponent as RcIconUnclaimableRabbyPoints } from 'ui/assets/dashboard/unclaimable-points.svg';
+import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
 import IconMoreSettings, {
   ReactComponent as RcIconMoreSettings,
@@ -53,6 +54,7 @@ import { GasPriceBar } from '../GasPriceBar';
 import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { EcologyPopup } from '../EcologyPopup';
 
 export default ({
   gnosisPendingCount,
@@ -93,6 +95,8 @@ export default ({
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
+
+  const [isShowEcology, setIsShowEcologyModal] = useState(false);
 
   const wallet = useWallet();
 
@@ -278,6 +282,14 @@ export default ({
         history.push('/nft');
       },
     } as IPanelItem,
+    ecology: {
+      icon: RcIconEco,
+      eventKey: 'Ecology',
+      content: t('page.dashboard.home.panel.ecology'),
+      onClick: () => {
+        setIsShowEcologyModal(true);
+      },
+    } as IPanelItem,
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
@@ -290,9 +302,9 @@ export default ({
       'nft',
       // 'queue',
       'transactions',
-      'gasTopUp',
-      'security',
       'feedback',
+      'security',
+      'ecology',
       'more',
     ];
   } else {
@@ -302,9 +314,9 @@ export default ({
       'receive',
       'nft',
       'transactions',
-      'gasTopUp',
-      'security',
       'feedback',
+      'security',
+      'ecology',
       'more',
     ];
   }
@@ -409,6 +421,11 @@ export default ({
         onCancel={() => {
           setBadgeModalVisible(false);
         }}
+      />
+
+      <EcologyPopup
+        visible={isShowEcology}
+        onClose={() => setIsShowEcologyModal(false)}
       />
     </div>
   );

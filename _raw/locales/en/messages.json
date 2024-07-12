@@ -973,6 +973,7 @@
           "more": "More",
           "manageAddress": "Manage Address",
           "nft": "NFT",
+          "ecology": "Ecology",
           "bridge": "Bridge"
         },
         "comingSoon": "Coming soon",
@@ -1125,7 +1126,8 @@
           "signatureRecord": "Signature Record",
           "manageAddress": "Manage Address",
           "connectedDapp": "Connected Dapps",
-          "searchDapps": "Search Dapps"
+          "searchDapps": "Search Dapps",
+          "gasTopUp": "Gas Top Up"
         },
         "settings": {
           "label": "Settings",
@@ -1265,6 +1267,9 @@
       },
       "GnosisWrongChainAlertBar": {
         "warning": "Safe address does not support {{chain}}"
+      },
+      "echologyPopup": {
+        "title": "Ecology"
       }
     },
     "nft": {
@@ -2022,6 +2027,71 @@
     },
     "sign": {
       "transactionSpeed": "Transaction Speed"
+    },
+    "ecology": {
+      "dbk": {
+        "home": {
+          "bridge": "Bridge To DBK Chain",
+          "bridgePoweredBy": "Powered by OP Superchain",
+          "bridgeBtn": "Bridge",
+          "mintNFT": "Mint DBK Genesis NFT",
+          "mintNFTDesc": "Be a witness of DBK Chain",
+          "mintNFTBtn": "Mint"
+        },
+        "bridge": {
+          "tabs": {
+            "deposit": "Deposit",
+            "withdraw": "Withdraw"
+          },
+          "labelFrom": "From",
+          "labelTo": "To",
+          "info": {
+            "toAddress": "To address",
+            "receiveOn": "Receive on {{chainName}}",
+            "completeTime": "Completion time",
+            "gasFee": "Gas fee"
+          },
+          "error": {
+            "notEnoughBalance": "Insufficient balance"
+          },
+          "ActivityPopup": {
+            "empty": "No activities yet",
+            "deposit": "Deposit",
+            "withdraw": "Withdraw",
+            "status": {
+              "deposit": "Deposit",
+              "withdraw": "Withdraw",
+              "waitingToProve": "State root published",
+              "rootPublished": "State root published",
+              "readyToProve": "Ready to prove",
+              "proved": "Proved",
+              "challengePeriod": "Challenge period",
+              "readyToClaim": "Ready to claim",
+              "claimed": "Claimed"
+            },
+            "proveBtn": "Prove",
+            "claimBtn": "Claim",
+            "title": "Activities"
+          },
+          "WithdrawConfirmPopup": {
+            "question1": "I understand it will take ~7 days until my funds are claimable on Ethereum after I prove my withdrawal",
+            "question2": "I understand once a withdrawal is initiated it cannot be sped up or cancelled",
+            "question3": "I understand network fees are approximate and will change",
+            "title": "DBK Chain Withdrawal takes ~7 days",
+            "tips": "Withdrawing involves a 3-step process, requiring 1 DBK Chain transaction and 2 Ethereum transactions",
+            "step1": "Initiate withdrawal",
+            "step2": "Prove on Ethereum",
+            "step3": "Claim on Ethereum",
+            "btn": "Withdraw"
+          }
+        },
+        "minNFT": {
+          "title": "DBK Genesis",
+          "minted": "Minted",
+          "myBalance": " My Balance",
+          "mintBtn": "Mint"
+        }
+      }
     }
   },
   "component": {
@@ -2154,6 +2224,14 @@
     },
     "testnetCheckModal": {
       "title": "Please turn on \"Enable Testnets\" under \"More\" before sign on testnets"
+    },
+    "EcologyNavBar": {
+      "providedBy": "Provided by {{chainName}}"
+    },
+    "EcologyNoticeModal": {
+      "title": "Notice",
+      "desc": "The following services will be provided directly by third party Ecology Partner. Rabby Wallet does not assume responsibility for the security of these services.",
+      "notRemind": "Don't remind me again"
     }
   },
   "global": {

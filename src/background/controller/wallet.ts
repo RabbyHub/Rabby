@@ -45,6 +45,8 @@ import {
   INTERNAL_REQUEST_SESSION,
   DARK_MODE_TYPE,
   KEYRING_CLASS,
+  DBK_CHAIN_ID,
+  DBK_NFT_CONTRACT_ADDRESS,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -777,6 +779,31 @@ export class WalletController extends BaseController {
     });
 
     return res;
+  };
+
+  mintDBKChainNFT = async () => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    await this.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: account.address,
+          to: DBK_NFT_CONTRACT_ADDRESS,
+          chainId: DBK_CHAIN_ID,
+          data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+            {
+              name: 'mint',
+              inputs: [],
+              outputs: [],
+              stateMutability: 'nonpayable',
+              type: 'function',
+            },
+            []
+          ),
+        },
+      ],
+    });
   };
 
   transferNFT = async (
@@ -4064,6 +4091,8 @@ export class WalletController extends BaseController {
   };
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;
+
+  setIsHideEcologyNoticeDict = preferenceService.setIsHideEcologyNoticeDict;
 }
 
 const wallet = new WalletController();

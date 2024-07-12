@@ -1510,3 +1510,10 @@ export const ThemeModes = [
 ];
 
 export const imKeyUSBVendorId = 0x096e;
+
+export const DBK_CHAIN_ID = 20240603;
+
+export const DBK_CHAIN_BRIDGE_CONTRACT =
+  '0x28f1b9F457CB51E0af56dff1d11CD6CEdFfD1977';
+export const DBK_NFT_CONTRACT_ADDRESS =
+  '0x633b7472E1641D59334886a7692107D6332B1ff0';
