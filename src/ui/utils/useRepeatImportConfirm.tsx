@@ -51,6 +51,7 @@ export const useRepeatImportConfirm = () => {
             type={account.type}
             brandName={account.type}
             balance={account.balance}
+            className="confirm-address-item"
           />
         ),
         onOk: () => {

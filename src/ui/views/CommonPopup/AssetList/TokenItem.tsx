@@ -22,7 +22,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
 
   return (
     <TCell className="py-8 flex gap-12 w-[160px] items-center">
-      <div className="relative">
+      <div className="relative h-[24px]">
         <Image
           className="w-24 h-24 rounded-full"
           src={item.logo_url || IconUnknown}
