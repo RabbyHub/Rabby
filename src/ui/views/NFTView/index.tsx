@@ -20,7 +20,7 @@ const TabsStyled = styled(Tabs)`
     border-radius: 4px;
     color: var(--r-neutral-body, #3e495e);
     font-size: 12px;
-    transition: all 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out;
     margin: 0 !important;
     width: 100px;
     height: 28px;

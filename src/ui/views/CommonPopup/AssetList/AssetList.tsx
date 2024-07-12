@@ -94,7 +94,11 @@ export const AssetList = ({
             </div>
           ) : (
             <SpecialTokenListPopup
-              label={t('page.dashboard.tokenDetail.customizedButton')}
+              label={
+                tokens?.length > 1
+                  ? t('page.dashboard.tokenDetail.customizedButtons')
+                  : t('page.dashboard.tokenDetail.customizedButton')
+              }
               buttonText={t('page.dashboard.assets.customButtonText')}
               description={t('page.dashboard.assets.customDescription')}
               onClickButton={() => {
