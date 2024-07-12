@@ -47,7 +47,7 @@ export const EcologyNavBar = ({ className, style, chainId }: Props) => {
       <div className="flex-auto">
         <div className="flex items-center justify-center bg-r-neutral-card2 rounded-full p-[6px] gap-[6px]">
           <img src={chain?.logo} alt="" className="w-[16px] h-[16px]" />
-          <div className="text-neutral-body text-[13px] leading-[16px] text-r-neutral-body font-medium">
+          <div className="text-neutral-body text-[13px] leading-[16px] text-r-neutral-body font-bold">
             {t('component.EcologyNavBar.providedBy', {
               chainName: chain?.name,
             })}

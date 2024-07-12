@@ -400,6 +400,7 @@ export const ActivityPopup = ({
       closable
       onClose={onClose}
       style={{ fontFamily: "'Lato', sans-serif" }}
+      bodyStyle={{ paddingBottom: 0 }}
     >
       <div className="flex flex-col h-full">
         {isEmpty ? (
@@ -426,7 +427,7 @@ export const ActivityPopup = ({
                   item={item}
                   status={status}
                   onWithdrawStep={(status) => {
-                    onWithdrawStep(item, status);
+                    return onWithdrawStep(item, status);
                   }}
                 />
               );
@@ -437,7 +438,7 @@ export const ActivityPopup = ({
                 // if (loadingMore) {
                 //   return <Loading count={4} active />;
                 // }
-                return null;
+                return <div className="h-[4px]"></div>;
               },
             }}
           ></Virtuoso>

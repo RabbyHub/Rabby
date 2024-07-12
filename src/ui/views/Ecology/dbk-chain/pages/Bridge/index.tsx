@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { ReactComponent as RcIconArrow } from '@/ui/assets/ecology/icon-arrow-right-cc.svg';
 import { ReactComponent as RcIconHistory } from '@/ui/assets/ecology/icon-history-cc.svg';
@@ -20,6 +20,7 @@ import { useCreateViemClient } from './hooks/useCreateViemClient';
 import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
 import { useCheckBridgeStatus } from './hooks/useCheckBridgeStatus';
 import { useTranslation } from 'react-i18next';
+import { sortBy } from 'lodash';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -63,6 +64,21 @@ export const DbkChainBridge = () => {
     clientL2,
     list: bridgeHistory?.list || [],
   });
+
+  const historyList = useMemo(() => {
+    const list = bridgeHistory?.list || [];
+    const dict = statusRes?.dict || {};
+    return sortBy(
+      list,
+      (item) => {
+        const key = `${item.from_chain_id}:${item.tx_id}`;
+        const status = dict[key]?.status;
+        const isPending = status !== 'finalized';
+        return isPending ? 0 : 1;
+      },
+      (item) => -item.create_at
+    );
+  }, [bridgeHistory?.list, statusRes?.dict]);
 
   useInterval(
     () => {
@@ -333,7 +349,7 @@ export const DbkChainBridge = () => {
         </DbkButton>
       </footer>
       <ActivityPopup
-        data={bridgeHistory?.list || []}
+        data={historyList || []}
         statusDict={statusRes?.dict || {}}
         visible={isShowActivityPopup}
         onWithdrawStep={handleWithdrawStep}
