@@ -16,7 +16,7 @@ const injectProviderScript = (isDefaultWallet: boolean) => {
   // use inline script element instead!
   const container = document.head || document.documentElement;
   const ele = document.createElement('script');
-  // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+  // in prevent of webpack optimized code do some magic(e.g. double/single quote wrap),
   // separate content assignment to two line
   // use AssetReplacePlugin to replace pageprovider content
   ele.setAttribute('src', chrome.runtime.getURL('pageProvider.js'));
