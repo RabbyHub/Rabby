@@ -204,20 +204,6 @@ const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useBridgeHistory();
   const { t } = useTranslation();
 
-  console.log(
-    '123',
-    txList?.list?.sort((a, b) => {
-      let aIndex = 0,
-        bIndex = 0;
-      if (a.status === 'pending') {
-        aIndex = 1;
-      }
-      if (b.status === 'pending') {
-        bIndex = 1;
-      }
-      return bIndex - aIndex;
-    })
-  );
   if (!loading && (!txList || !txList?.list?.length)) {
     return (
       <div className="w-full h-full flex flex-col items-center">
