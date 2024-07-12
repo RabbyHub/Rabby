@@ -54,6 +54,7 @@ export function GasLessNotEnough({
 
         {gasLessFailedReason ? (
           <TooltipWithMagnetArrow
+            inApproval
             visible={hoverGasLessFailedReason}
             title={gasLessFailedReason}
             className="rectangle w-[max-content]"

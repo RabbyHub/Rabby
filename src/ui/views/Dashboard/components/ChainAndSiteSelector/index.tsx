@@ -17,9 +17,8 @@ import IconSendToken, {
 import IconSwap, {
   ReactComponent as RcIconSwap,
 } from 'ui/assets/dashboard/swap.svg';
-import IconReceive, {
-  ReactComponent as RcIconReceive,
-} from 'ui/assets/dashboard/receive.svg';
+
+import { ReactComponent as RcIconBridge } from 'ui/assets/dashboard/bridge.svg';
 import IconGasTopUp, {
   ReactComponent as RcIconGasTopUp,
 } from 'ui/assets/dashboard/gas-top-up.svg';
@@ -46,7 +45,6 @@ import {
   useWallet,
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
-import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM, ThemeIconType } from '@/constant';
@@ -97,10 +95,9 @@ export default ({
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
-  const [isShowReceiveModal, setIsShowReceiveModal] = useState(
-    trigger === 'receive' && showChainsModal
-  );
+
   const [isShowEcology, setIsShowEcologyModal] = useState(false);
+
   const wallet = useWallet();
 
   const account = useRabbySelector((state) => state.account.currentAccount);
@@ -211,11 +208,11 @@ export default ({
       onClick: () => history.push('/send-token?rbisource=dashboard'),
     } as IPanelItem,
     receive: {
-      icon: RcIconReceive,
-      eventKey: 'Receive',
-      content: t('page.dashboard.home.panel.receive'),
+      icon: RcIconBridge,
+      eventKey: 'Bridge',
+      content: t('page.dashboard.home.panel.bridge'),
       onClick: () => {
-        setIsShowReceiveModal(true);
+        history.push('/bridge');
       },
     } as IPanelItem,
     gasTopUp: {
@@ -408,18 +405,6 @@ export default ({
               chain,
             });
           }
-        }}
-      />
-      <ChainSelectorModal
-        className="receive-chain-select-modal"
-        value={CHAINS_ENUM.ETH}
-        visible={isShowReceiveModal}
-        onChange={(chain) => {
-          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
-          setIsShowReceiveModal(false);
-        }}
-        onCancel={() => {
-          setIsShowReceiveModal(false);
         }}
       />
 

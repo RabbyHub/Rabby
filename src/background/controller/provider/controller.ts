@@ -30,6 +30,7 @@ import {
   swapService,
   transactionBroadcastWatchService,
   notificationService,
+  bridgeService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -503,6 +504,7 @@ class ProviderController extends BaseController {
 
         if (hash) {
           swapService.postSwap(chain, hash, other);
+          bridgeService.postBridge(chain, hash, other);
         }
 
         statsData.submit = true;

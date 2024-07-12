@@ -17,13 +17,14 @@ import {
 import { Input } from 'antd';
 import clsx from 'clsx';
 import { keyBy, range } from 'lodash';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConnectedSite } from '@/background/service/permission';
+import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -208,6 +209,8 @@ export const DappSearchPage = () => {
       action: 'Dapps_Search_Enter',
     });
   });
+
+  useReloadPageOnCurrentAccountChanged();
 
   const total = splitNumberByStep(data?.page?.total || 0);
 

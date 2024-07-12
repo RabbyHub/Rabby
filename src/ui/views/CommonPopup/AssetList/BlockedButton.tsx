@@ -18,7 +18,11 @@ export const BlockedButton: React.FC<Props> = ({ onClickLink, isTestnet }) => {
 
   return (
     <TokenButton
-      label={t('page.dashboard.tokenDetail.blockedButton')}
+      label={
+        list?.length > 1
+          ? t('page.dashboard.tokenDetail.blockedButtons')
+          : t('page.dashboard.tokenDetail.blockedButton')
+      }
       tokens={list}
       linkText={t('page.dashboard.assets.blockLinkText')}
       description={t('page.dashboard.assets.blockDescription')}

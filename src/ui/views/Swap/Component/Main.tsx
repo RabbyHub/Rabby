@@ -205,7 +205,7 @@ export const Main = () => {
       return t('page.swap.price-expired-refresh-quote');
     }
     if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-and-swap');
+      return t('page.swap.approve-and-swap', { name: DexDisplayName });
     }
     if (activeProvider?.name) {
       return t('page.swap.swap-via-x', {
@@ -421,7 +421,8 @@ export const Main = () => {
           <div
             className={clsx(
               'text-r-neutral-title-1',
-              'underline cursor-pointer'
+              'underline cursor-pointer',
+              !payToken && 'hidden'
             )}
             onClick={() => {
               handleBalance();

@@ -755,16 +755,14 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span
-                    className="truncate cursor-pointer"
-                    title={gasCostUsdStr}
-                  >
+                  <span className="truncate" title={gasCostUsdStr}>
                     {gasCostUsdStr}
                   </span>
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
                         <TooltipWithMagnetArrow
+                          inApproval
                           title={t('page.signTx.l2GasEstimateTooltip')}
                           className="rectangle w-[max-content]"
                         >
