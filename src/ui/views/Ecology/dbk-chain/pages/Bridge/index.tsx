@@ -261,7 +261,11 @@ export const DbkChainBridge = () => {
               <div
                 className="text-r-neutral-foot text-[13px] leading-[16px] font-medium underline cursor-pointer min-w-0 truncate"
                 onClick={() => {
-                  setPayAmount((payToken?.amount || 0).toString());
+                  setPayAmount(
+                    new BigNumber(payToken?.raw_amount_hex_str || 0)
+                      .div(10 ** (payToken?.decimals || 18))
+                      .toString()
+                  );
                 }}
               >
                 {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
