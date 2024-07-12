@@ -137,6 +137,7 @@ const Row = ({
       {children}
       {tip && (
         <TooltipWithMagnetArrow
+          inApproval
           title={tip}
           overlayClassName="rectangle w-[max-content] max-w-[355px]"
         >
