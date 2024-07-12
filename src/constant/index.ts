@@ -1403,12 +1403,6 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
-  [DEX_ENUM.ONEINCH]: {
-    id: DEX_ENUM.ONEINCH,
-    logo: Logo1inch,
-    name: '1inch',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
-  },
   [DEX_ENUM.ZEROXAPI]: {
     id: DEX_ENUM.ZEROXAPI,
     logo: Logo0X,
@@ -1420,6 +1414,25 @@ export const DEX = {
     logo: LogoParaswap,
     name: 'ParaSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
+  },
+  [DEX_ENUM.ONEINCH]: {
+    id: DEX_ENUM.ONEINCH,
+    logo: Logo1inch,
+    name: '1inch',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
+  },
+
+  [DEX_ENUM.OPENOCEAN]: {
+    id: DEX_ENUM.OPENOCEAN,
+    logo: LogoOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+  [DEX_ENUM.KYBERSWAP]: {
+    id: DEX_ENUM.KYBERSWAP,
+    logo: LogoKyberSwap,
+    name: 'KyberSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
   },
 };
 
@@ -1433,21 +1446,21 @@ export const DEX_WITH_WRAP = {
 };
 
 export const CEX = {
-  binance: {
-    id: 'binance',
-    name: 'Binance',
-    logo: LogoBinance,
-  },
-  coinbase: {
-    id: 'coinbase',
-    name: 'Coinbase',
-    logo: LogoCoinbase,
-  },
-  okex: {
-    id: 'okex',
-    name: 'OKX',
-    logo: LogoOkx,
-  },
+  // binance: {
+  //   id: 'binance',
+  //   name: 'Binance',
+  //   logo: LogoBinance,
+  // },
+  // coinbase: {
+  //   id: 'coinbase',
+  //   name: 'Coinbase',
+  //   logo: LogoCoinbase,
+  // },
+  // okex: {
+  //   id: 'okex',
+  //   name: 'OKX',
+  //   logo: LogoOkx,
+  // },
 };
 
 export const SWAP_SUPPORT_CHAINS = Array.from(

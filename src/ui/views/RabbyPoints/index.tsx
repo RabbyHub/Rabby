@@ -229,7 +229,7 @@ const RabbyPoints = () => {
     [wallet.openapi, account?.address, signature]
   );
 
-  const ended = useMemo(() => !!campaignIsEnded, [campaignIsEnded]);
+  const ended = useMemo(() => true, [campaignIsEnded]);
 
   useEffect(() => {
     if (

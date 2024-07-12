@@ -273,6 +273,19 @@
 ---------------------*/
 .ant-switch {
   background: #b4bdcc;
+
+  &.ant-switch-small {
+    height: 14px;
+    line-height: 14px;
+    .ant-switch-handle {
+      top: 1px;
+      left: 1px;
+    }
+
+    &.ant-switch-checked .ant-switch-handle {
+      left: calc(100% - 12px - 1px);
+    }
+  }
 }
 
 .ant-switch-disabled {

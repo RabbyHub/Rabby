@@ -795,7 +795,7 @@
       "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh quote.",
       "price-expired-refresh-quote": "Price expired. Refresh quote.",
       "approve-x-symbol": "Approve {{symbol}}",
-      "approve-and-swap": "Approve and Swap",
+      "approve-and-swap": "Approve and Swap via {{name}}",
       "swap-via-x": "Swap via {{name}}",
       "get-quotes": "Get quotes",
       "chain": "Chain",
@@ -805,6 +805,10 @@
       "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
+      "hidden-no-quote-rates_one": "Hidden {{count}} no-quote rate",
+      "hidden-no-quote-rates_other": "Hidden {{count}} no-quote rates",
+
+      "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "Prefer MEV Guarded",
       "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
@@ -854,6 +858,62 @@
       "estimate": "Estimate:",
       "actual": "Actual:"
     },
+    "bridge": {
+      "title": "Bridge",
+      "history": "Bridge history",
+      "the-following-bridge-route-are-found": "Found following bridge route",
+      "no-transaction-records": "No transaction records",
+      "pendingTip": "Tx submitted. If the tx is pending for long hours, you can try to clear pending in settings.",
+      "Pending": "Pending",
+      "completedTip": "Transaction on chain, decoding data to generate record",
+      "Completed": "Completed",
+      "estimate": "Estimate:",
+      "actual": "Actual:",
+      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-x-price": "Gas price: {{price}} Gwei.",
+      "detail-tx": "Detail",
+      "unlimited-allowance": "Unlimited allowance",
+      "insufficient-balance": "Insufficient balance",
+      "bridgeTo": "Bridge To",
+      "BridgeTokenPair": "Bridge Token Pair",
+      "tokenPairPlaceholder": "Select Token Pair",
+      "Amount": "Amount",
+      "getRoutes": "Get routes",
+      "slippage-adjusted-refresh-quote": "Slippage adjusted. Refresh route.",
+      "price-expired-refresh-route": "Price expired. Refresh route.",
+      "approve-x-symbol": "Approve {{symbol}}",
+      "approve-and-bridge": "Approve and Bridge on {{name}}",
+      "need-to-approve-token-before-bridge": "Need to approve token before bridge",
+      "via-bridge": "via {{bridge}}",
+      "duration": "{{duration}} min",
+      "estimated-value": "≈ {{value}}",
+      "best": "Best",
+      "bridge-cost": "Bridge cost",
+      "rabby-fee": "Rabby fee",
+      "bridge-via-x": "Bridge on {{name}}",
+      "no-route-found": "No route found",
+      "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
+      "enable-it": "Enable it",
+
+      "settingModal": {
+        "title": "Enable Bridge Aggregators to trade",
+        "confirm": "Confirm",
+        "SupportedBridge": "Supported Bridge:",
+        "confirmModal": {
+          "title": "Enable Trading with this Aggregator",
+          "tip1": "1. Once enabled, you will interact directly with the contract from this aggregator.",
+          "tip2": "2. Rabby is not liable for any risks arising from the contract of this aggregator",
+          "i-understand-and-accept-it": "I understand and accept it"
+        }
+      },
+      "tokenPairDrawer": {
+        "title": "Select from supported token pair",
+        "tokenPair": "Token Pair",
+        "balance": "Balance Value",
+        "noData": "No Supported Token Pair"
+      }
+    },
+
     "manageAddress": {
       "no-address": "No address",
       "no-match": "No match",
@@ -912,7 +972,8 @@
           "rabbyPoints": "Rabby Points",
           "more": "More",
           "manageAddress": "Manage Address",
-          "nft": "NFT"
+          "nft": "NFT",
+          "bridge": "Bridge"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
