@@ -9,7 +9,7 @@ export const DbkChainMintNFT: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="p-[20px] " style={{ fontFamily: "'Lato700', sans-serif" }}>
+    <div className="p-[20px] " style={{ fontFamily: "'Lato', sans-serif" }}>
       <div className="bg-r-neutral-card1 flex flex-col items-center rounded-[8px]">
         <div className="flex flex-col pt-[32px] pb-[30px] items-center text-center">
           <img className="block w-[200px] h-[200px]" src={MintNFTIcon} alt="" />
@@ -26,7 +26,7 @@ export const DbkChainMintNFT: React.FC = () => {
           <div className="w-[164px] h-[89px] flex flex-col">
             <div
               className="text-r-green-default text-[20px] leading-[24px] font-bold"
-              style={{ fontFamily: "'Lato700', sans-serif" }}
+              style={{ fontFamily: "'Lato', sans-serif" }}
             >
               {numberWithCommasIsLtOne(totalMinted, 0)}
             </div>
@@ -37,7 +37,7 @@ export const DbkChainMintNFT: React.FC = () => {
           <div className="w-[164px] h-[89px] flex flex-col">
             <div
               className="text-r-green-default text-[20px] leading-[24px] font-bold"
-              style={{ fontFamily: "'Lato700', sans-serif" }}
+              style={{ fontFamily: "'Lato', sans-serif" }}
             >
               {numberWithCommasIsLtOne(userMinted, 0)}
             </div>
