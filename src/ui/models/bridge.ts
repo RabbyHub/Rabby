@@ -22,6 +22,7 @@ export const bridge = createModel<RootModel>()({
     unlimitedAllowance: false,
     sortIncludeGasFee: true,
     $$initialSelectedChain: null,
+    firstOpen: true,
   } as Partial<BridgeServiceStore> & {
     $$initialSelectedChain: CHAINS_ENUM | null;
     aggregatorsList: BridgeAggregator[];
@@ -144,6 +145,13 @@ export const bridge = createModel<RootModel>()({
           supportedChains: chains.map((item) => mappings[item]),
         });
       }
+    },
+
+    async setBridgeSettingFirstOpen(bool: boolean, store) {
+      await store.app.wallet.setBridgeSettingFirstOpen(bool);
+      this.setField({
+        firstOpen: bool,
+      });
     },
   }),
 });

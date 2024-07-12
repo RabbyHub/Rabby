@@ -26,6 +26,7 @@ export type BridgeServiceStore = {
   unlimitedAllowance: boolean;
   sortIncludeGasFee?: boolean;
   txQuotes?: Record<string, BridgeRecord>;
+  firstOpen: boolean;
 };
 
 class BridgeService {
@@ -36,6 +37,7 @@ class BridgeService {
     selectedAggregators: undefined,
     unlimitedAllowance: false,
     sortIncludeGasFee: true,
+    firstOpen: true,
   };
 
   init = async () => {
@@ -46,6 +48,7 @@ class BridgeService {
         unlimitedAllowance: false,
         sortIncludeGasFee: true,
         txQuotes: {},
+        firstOpen: true,
       },
     });
 
@@ -100,6 +103,10 @@ class BridgeService {
 
   setBridgeSortIncludeGasFee = (bool: boolean) => {
     this.store.sortIncludeGasFee = bool;
+  };
+
+  setBridgeSettingFirstOpen = (bool: boolean) => {
+    this.store.firstOpen = bool;
   };
 
   txQuotes: Record<string, BridgeRecord> = {};

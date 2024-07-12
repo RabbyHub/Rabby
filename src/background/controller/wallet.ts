@@ -1368,6 +1368,7 @@ export class WalletController extends BaseController {
   setBridgeSelectedToToken = bridgeService.setSelectedToToken;
   getBridgeSortIncludeGasFee = bridgeService.getBridgeSortIncludeGasFee;
   setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
+  setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
 
   setCustomRPC = RPCService.setRPC;
   removeCustomRPC = RPCService.removeCustomRPC;

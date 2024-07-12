@@ -29,7 +29,9 @@ export const AggregatorsSettings = ({
   const selectedAggregators = useRabbySelector(
     (s) => s.bridge.selectedAggregators || []
   );
-
+  const aggregatorsSettingFirstOpen = useRabbySelector(
+    (s) => s.bridge.firstOpen ?? true
+  );
   const [willChangedAggregatorId, setSillChangedAggregatorId] = useState('');
 
   const [open, setOpen] = useState(false);
@@ -50,11 +52,18 @@ export const AggregatorsSettings = ({
       const availableAggregators = aggregatorsList.some((item) => {
         return selectedAggregators?.includes(item.id);
       });
-      if (!availableAggregators) {
+      if (!availableAggregators && aggregatorsSettingFirstOpen) {
         setVisible(true);
+        dispatch.bridge.setBridgeSettingFirstOpen(false);
       }
+      dispatch.bridge.setBridgeSettingFirstOpen(false);
     }
-  }, [aggregatorsList, aggregatorsListInit, selectedAggregators]);
+  }, [
+    aggregatorsList,
+    aggregatorsListInit,
+    selectedAggregators,
+    aggregatorsSettingFirstOpen,
+  ]);
 
   return (
     <Popup
@@ -64,12 +73,11 @@ export const AggregatorsSettings = ({
           {t('page.bridge.settingModal.title')}
         </span>
       }
-      height={462}
+      height={412}
       onClose={onClose}
       bodyStyle={{
         paddingTop: 16,
       }}
-      closable
       isSupportDarkMode
       isNew
     >

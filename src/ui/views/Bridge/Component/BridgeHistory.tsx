@@ -142,7 +142,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
               {data.aggregator.name}
             </span>
             <span>
-              {t('page.bridge.via-bridge', { bridge: data.bridge.name })}
+              {t('page.bridge.via-bridge', {
+                bridge: data?.bridge?.name || '',
+              })}
             </span>
           </div>
         </div>
