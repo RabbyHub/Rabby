@@ -298,7 +298,7 @@ const ActivityItem = ({
   return (
     <div
       className={clsx(
-        'mb-[20px] p-[16px] rounded-[8px] border-[1px]',
+        'mb-[20px] p-[16px] rounded-[8px] border-[0.5px]',
         status && status !== 'finalized'
           ? 'border-rabby-orange-DBK'
           : 'border-rabby-neutral-line'
@@ -371,7 +371,11 @@ export const ActivityPopup = ({
   const { t } = useTranslation();
   return (
     <Popup
-      title={t('page.ecology.dbk.bridge.ActivityPopup.title')}
+      title={
+        <div className="font-semibold">
+          {t('page.ecology.dbk.bridge.ActivityPopup.title')}
+        </div>
+      }
       visible={visible}
       height={540}
       closable

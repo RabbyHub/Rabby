@@ -216,6 +216,7 @@ export const DbkChainBridge = () => {
                   setPayAmount(v);
                 }}
                 className="min-w-0 flex-1"
+                autoFocus
                 placeholder="0"
               ></Input>
               {payToken ? (
