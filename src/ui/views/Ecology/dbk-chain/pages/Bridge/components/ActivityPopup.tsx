@@ -102,7 +102,7 @@ const ActivityBridgeStatus = ({
             className={clsx(
               'inline-flex items-center gap-[6px]',
               'px-[10px] py-[6px] rounded-full',
-              'bg-[rgba(255,124,96,0.10)] text-r-orange-DBK cursor-pointer'
+              'bg-[rgba(255,124,96,0.10)] text-r-orange-DBK'
             )}
           >
             <Loading3QuartersOutlined className="text-[14px] animate-spin block" />
