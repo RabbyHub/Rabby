@@ -1,30 +1,18 @@
 export const DEFAULT_BRIDGE_SUPPORTED_CHAIN = [
-  'eth',
-  'mobm',
-  'base',
-  'movr',
-  'linea',
-  'matic',
-  'op',
-  'mode',
-  'mnt',
-  'rsk',
-  'boba',
   'arb',
-  'blast',
-  'bsc',
-  'metis',
+  'matic',
   'era',
-  'pze',
-  'scrl',
-  'aurora',
+  'base',
+  'op',
+  'linea',
   'xdai',
+  'eth',
+  'mnt',
+  'mode',
+  'bsc',
+  'scrl',
   'avax',
-  'ftm',
-  'celo',
   'zora',
-  'fuse',
-  'frax',
 ];
 
 export const DEFAULT_BRIDGE_AGGREGATOR = [
@@ -38,73 +26,73 @@ export const DEFAULT_BRIDGE_AGGREGATOR = [
         id: 'base-bridge',
         name: 'Base',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/e514b104d82e3a0cb5537681d6845c6b/e514b104d82e3a0cb5537681d6845c6b.png',
+          'https://static.debank.com/image/bridge/logo_url/cc84a9e0457f1049b1d15dadfd2a7ee9/cc84a9e0457f1049b1d15dadfd2a7ee9.png',
       },
       {
         id: 'mantle-native-bridge',
         name: 'Mantle Native',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/d7683a5b68c00fd90828709dc7d08fdb/d7683a5b68c00fd90828709dc7d08fdb.png',
+          'https://static.debank.com/image/bridge/logo_url/46f1a95cb0823639f037383dfc19115b/46f1a95cb0823639f037383dfc19115b.png',
       },
       {
         id: 'cctp',
         name: 'Circle CCTP',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/17197a58a50ed6e294a725dda3fad872/17197a58a50ed6e294a725dda3fad872.png',
+          'https://static.debank.com/image/bridge/logo_url/cd1a5ceb398d491dd03836c43dddc471/cd1a5ceb398d491dd03836c43dddc471.png',
       },
       {
         id: 'zora-bridge',
         name: 'Zora',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/d1a5c2ccd94a45c844d1eafc43bc6202/d1a5c2ccd94a45c844d1eafc43bc6202.png',
+          'https://static.debank.com/image/bridge/logo_url/5414b373d9c2111ea48c73294626b8a0/5414b373d9c2111ea48c73294626b8a0.png',
       },
       {
         id: 'arbitrum-bridge',
         name: 'Arbitrum',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/67237107afb53d176754926ec81e5a1c/67237107afb53d176754926ec81e5a1c.png',
+          'https://static.debank.com/image/bridge/logo_url/d7dbe968da9ad5ea006808e5372c8618/d7dbe968da9ad5ea006808e5372c8618.png',
       },
       {
         id: 'across',
         name: 'Across',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/82cb74da444862e7262ef3b6143cbcb4/82cb74da444862e7262ef3b6143cbcb4.png',
+          'https://static.debank.com/image/bridge/logo_url/cc446f8ac61966c9640852aa0ad53468/cc446f8ac61966c9640852aa0ad53468.png',
       },
       {
         id: 'gnosis-native-bridge',
         name: 'Gnosis Native',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/e303cef874ceb6d7b0112dd5650e5bf1/e303cef874ceb6d7b0112dd5650e5bf1.png',
+          'https://static.debank.com/image/bridge/logo_url/7c6461546fbf750179eeb5fa1fc06be8/7c6461546fbf750179eeb5fa1fc06be8.png',
       },
       {
         id: 'hyphen',
         name: 'Hyphen',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/c23e9bda45a45b043d7238b533439018/c23e9bda45a45b043d7238b533439018.png',
+          'https://static.debank.com/image/bridge/logo_url/7ed84e73706f779af2b022ceb3c1cb95/7ed84e73706f779af2b022ceb3c1cb95.png',
       },
       {
         id: 'optimism-bridge',
         name: 'Optimism',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/7a18168471ca584bc0162c8806392b76/7a18168471ca584bc0162c8806392b76.png',
+          'https://static.debank.com/image/bridge/logo_url/b10597a12fbe424bf2f519f31d3962ad/b10597a12fbe424bf2f519f31d3962ad.png',
       },
       {
         id: 'mode-native-bridge',
         name: 'Mode Native',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/c91a2e28e7ba67c6d95f16a16e1f6ffe/c91a2e28e7ba67c6d95f16a16e1f6ffe.png',
+          'https://static.debank.com/image/bridge/logo_url/358cc95c7825ab21c98fff5fac1fa759/358cc95c7825ab21c98fff5fac1fa759.png',
       },
       {
         id: 'scroll-native-bridge',
         name: 'Scroll Native',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/9e583479dc65b95460c9790e2cc909b9/9e583479dc65b95460c9790e2cc909b9.png',
+          'https://static.debank.com/image/bridge/logo_url/abe9a451211ce2a158b54b79c98d2ea3/abe9a451211ce2a158b54b79c98d2ea3.png',
       },
       {
         id: 'polygon-bridge',
         name: 'Polygon POS',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/36b3e9e58e16beab418b0332fd0accfd/36b3e9e58e16beab418b0332fd0accfd.png',
+          'https://static.debank.com/image/bridge/logo_url/c364ee023349579f28c0f7c176bc3fac/c364ee023349579f28c0f7c176bc3fac.png',
       },
       {
         id: 'refuel-bridge',
@@ -116,7 +104,7 @@ export const DEFAULT_BRIDGE_AGGREGATOR = [
         id: 'zksync-native',
         name: 'ZkSync',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/2e46e772be0b0c3715958a3c4c934792/2e46e772be0b0c3715958a3c4c934792.png',
+          'https://static.debank.com/image/bridge/logo_url/fc0fcd6e93a6c02e2aa2772fb38465ae/fc0fcd6e93a6c02e2aa2772fb38465ae.png',
       },
     ],
   },
@@ -130,43 +118,43 @@ export const DEFAULT_BRIDGE_AGGREGATOR = [
         id: 'hyphen',
         name: 'Hyphen',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/4f08b730ca9c62f9bfd5fcb737680dfb/4f08b730ca9c62f9bfd5fcb737680dfb.png',
+          'https://static.debank.com/image/bridge/logo_url/7ed84e73706f779af2b022ceb3c1cb95/7ed84e73706f779af2b022ceb3c1cb95.png',
       },
       {
         id: 'gnosis',
         name: 'Gnosis Bridge',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/796e87d181abdf433aca922613384ad8/796e87d181abdf433aca922613384ad8.png',
+          'https://static.debank.com/image/bridge/logo_url/7c6461546fbf750179eeb5fa1fc06be8/7c6461546fbf750179eeb5fa1fc06be8.png',
       },
       {
         id: 'arbitrum',
         name: 'Arbitrum Bridge',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/325af805bf8f830f3bacd15ba97d0652/325af805bf8f830f3bacd15ba97d0652.png',
+          'https://static.debank.com/image/bridge/logo_url/d7dbe968da9ad5ea006808e5372c8618/d7dbe968da9ad5ea006808e5372c8618.png',
       },
       {
         id: 'celercircle',
         name: 'Circle CCTP',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/58dc0ae7627e0f7f12eb4bc8a259bcde/58dc0ae7627e0f7f12eb4bc8a259bcde.png',
+          'https://static.debank.com/image/bridge/logo_url/cd1a5ceb398d491dd03836c43dddc471/cd1a5ceb398d491dd03836c43dddc471.png',
       },
       {
         id: 'optimism',
         name: 'Optimism Gateway',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/7d0de3c35bc9699a7ca1a178af7102ff/7d0de3c35bc9699a7ca1a178af7102ff.png',
+          'https://static.debank.com/image/bridge/logo_url/b10597a12fbe424bf2f519f31d3962ad/b10597a12fbe424bf2f519f31d3962ad.png',
       },
       {
         id: 'omni',
         name: 'Omni Bridge',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/7f4c137cd1fd03dd8ea99801b1214ae9/7f4c137cd1fd03dd8ea99801b1214ae9.png',
+          'https://static.debank.com/image/bridge/logo_url/0638c112ea4c235061e82c57dc092673/0638c112ea4c235061e82c57dc092673.png',
       },
       {
         id: 'across',
         name: 'Across',
         logo_url:
-          'https://static.debank.com/image/bridge/logo_url/82cb74da444862e7262ef3b6143cbcb4/82cb74da444862e7262ef3b6143cbcb4.png',
+          'https://static.debank.com/image/bridge/logo_url/cc446f8ac61966c9640852aa0ad53468/cc446f8ac61966c9640852aa0ad53468.png',
       },
     ],
   },
