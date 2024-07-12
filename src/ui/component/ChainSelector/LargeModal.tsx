@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
@@ -29,6 +29,7 @@ import NetSwitchTabs, {
   useSwitchNetTab,
 } from '../PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
+import { LoadingBalances } from './LoadingBalances';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -160,15 +161,14 @@ export const ChainSelectorLargeModal = ({
   }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
+  const isLoading = useRabbyGetter(
+    (s) => s.account.isLoadingMateeredChainBalances
+  );
 
   useEffect(() => {
     if (!visible) {
       setSearch('');
     } else {
-      // (async () => {
-      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
-      //   rDispatch.account.getMatteredChainBalance();
-      // })();
       rDispatch.account.getMatteredChainBalance();
     }
   }, [visible, rDispatch]);
@@ -180,7 +180,9 @@ export const ChainSelectorLargeModal = ({
       visible={visible}
       onCancel={handleCancel}
       className={clsx(
+        'custom-popup is-support-darkmode',
         'chain-selector-large-modal',
+        // isLoading && 'disable-body-scroll',
         connection && 'connection',
         className
       )}
@@ -206,38 +208,44 @@ export const ChainSelectorLargeModal = ({
           allowClear
         />
       </header>
-      <div className="chain-selector-large-modal-content">
-        <SelectChainList
-          supportChains={supportChains}
-          data={matteredList}
-          sortable={false /* !supportChains */}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onSort={handleSort}
-          onChange={handleChange}
-          value={value}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        <SelectChainList
-          supportChains={supportChains}
-          data={unmatteredList}
-          value={value}
-          pinned={pinned as CHAINS_ENUM[]}
-          onStarChange={handleStarChange}
-          onChange={handleChange}
-          disabledTips={disabledTips}
-          showRPCStatus={showRPCStatus}
-        ></SelectChainList>
-        {matteredList.length === 0 && unmatteredList.length === 0 ? (
-          <div className="select-chain-list pt-[70px] pb-[120px]">
-            <Empty>
-              {/* No chains */}
-              {t('component.ChainSelectorModal.noChains')}
-            </Empty>
-          </div>
-        ) : null}
-      </div>
+      {isLoading ? (
+        <div className="chain-selector-large-modal-content">
+          <LoadingBalances loading={isLoading} />
+        </div>
+      ) : (
+        <div className="chain-selector-large-modal-content">
+          <SelectChainList
+            supportChains={supportChains}
+            data={matteredList}
+            sortable={false /* !supportChains */}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onSort={handleSort}
+            onChange={handleChange}
+            value={value}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          <SelectChainList
+            supportChains={supportChains}
+            data={unmatteredList}
+            value={value}
+            pinned={pinned as CHAINS_ENUM[]}
+            onStarChange={handleStarChange}
+            onChange={handleChange}
+            disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
+          ></SelectChainList>
+          {matteredList.length === 0 && unmatteredList.length === 0 ? (
+            <div className="select-chain-list pt-[70px] pb-[120px]">
+              <Empty>
+                {/* No chains */}
+                {t('component.ChainSelectorModal.noChains')}
+              </Empty>
+            </div>
+          ) : null}
+        </div>
+      )}
     </Modal>
   );
 };
