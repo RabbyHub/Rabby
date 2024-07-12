@@ -227,6 +227,21 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useSwapHistory();
   const { t } = useTranslation();
+
+  console.log(
+    '123',
+    txList?.list?.sort((a, b) => {
+      let aIndex = 0,
+        bIndex = 0;
+      if (a.status === 'Pending') {
+        aIndex = 1;
+      }
+      if (b.status === 'Pending') {
+        bIndex = 1;
+      }
+      return bIndex - aIndex;
+    })
+  );
   if (!loading && (!txList || !txList?.list?.length)) {
     return (
       <div className="w-full h-full flex flex-col items-center">
@@ -243,13 +258,25 @@ const HistoryList = () => {
 
   return (
     <div className="overflow-y-auto max-h-[434px] space-y-[12px] pb-20">
-      {txList?.list?.map((swap, idx) => (
-        <Transaction
-          ref={txList?.list.length - 1 === idx ? ref : undefined}
-          key={`${swap.tx_id}-${swap.chain}`}
-          data={swap}
-        />
-      ))}
+      {txList?.list
+        ?.sort((a, b) => {
+          let aIndex = 0,
+            bIndex = 0;
+          if (a.status === 'Pending') {
+            aIndex = 1;
+          }
+          if (b.status === 'Pending') {
+            bIndex = 1;
+          }
+          return bIndex - aIndex;
+        })
+        ?.map((swap, idx) => (
+          <Transaction
+            ref={txList?.list.length - 1 === idx ? ref : undefined}
+            key={`${swap.tx_id}-${swap.chain}`}
+            data={swap}
+          />
+        ))}
       {((loading && !txList) || loadingMore) && (
         <>
           <SkeletonInput className="w-full h-[168px] rounded-[6px]" active />
