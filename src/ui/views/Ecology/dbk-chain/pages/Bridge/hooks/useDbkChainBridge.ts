@@ -50,7 +50,10 @@ export const useDbkChainBridge = ({
         to: (account!.address as unknown) as `0x${string}`,
       });
 
-      const hash = await clientL1.depositTransaction(args);
+      const hash = await clientL1.depositTransaction({
+        ...args,
+        gas: null,
+      });
       if (hash) {
         await wallet.openapi.createDbkBridgeHistory({
           user_addr: account.address,
@@ -85,7 +88,10 @@ export const useDbkChainBridge = ({
         to: account!.address as any,
         value: parseEther(payAmount),
       });
-      const hash = await clientL2.initiateWithdrawal(args);
+      const hash = await clientL2.initiateWithdrawal({
+        ...args,
+        gas: null,
+      });
       if (hash) {
         await wallet.openapi.createDbkBridgeHistory({
           user_addr: account.address,
@@ -137,7 +143,11 @@ export const useDbkChainBridge = ({
           });
 
           // 3. Prove the withdrawal on the L1.
-          const hash = await clientL1.proveWithdrawal(args as any);
+          const hash = await clientL1.proveWithdrawal({
+            // todo: check why ts error
+            ...(args as any),
+            gas: null,
+          });
 
           window.close();
         } else if (status === 'ready-to-finalize') {
@@ -154,6 +164,7 @@ export const useDbkChainBridge = ({
             account: (account!.address as unknown) as `0x${string}`,
             targetChain: clientL2.chain as any,
             withdrawal,
+            gas: null,
           });
 
           window.close();

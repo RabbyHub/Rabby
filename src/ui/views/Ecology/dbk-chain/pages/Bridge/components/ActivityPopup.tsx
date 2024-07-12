@@ -17,6 +17,7 @@ import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { DbkButton } from '../../../components/DbkButton';
 import ImgEmpty from 'ui/assets/swap/empty.svg';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 
 const ActivityBridgeStatus = ({
   item,
@@ -30,6 +31,25 @@ const ActivityBridgeStatus = ({
   onWithdrawStep(status: DbkBridgeStatus): void;
 }) => {
   const { t } = useTranslation();
+
+  const { runAsync: runProve, loading: isSubmittingProve } = useRequest(
+    async () => {
+      await onWithdrawStep('ready-to-prove');
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const { runAsync: runClaim, loading: isSubmittingClaim } = useRequest(
+    async () => {
+      await onWithdrawStep('ready-to-finalize');
+    },
+    {
+      manual: true,
+    }
+  );
+
   if (!status || status === 'finalized') {
     return null;
   }
@@ -133,7 +153,7 @@ const ActivityBridgeStatus = ({
             className={clsx(
               'inline-flex items-center gap-[6px]',
               'px-[10px] py-[6px] rounded-full',
-              'bg-[rgba(255,124,96,0.10)] text-r-orange-DBK cursor-pointer'
+              'bg-[rgba(255,124,96,0.10)] text-r-orange-DBK'
             )}
           >
             <Loading3QuartersOutlined className="text-[14px] animate-spin block" />
@@ -144,9 +164,8 @@ const ActivityBridgeStatus = ({
           <DbkButton
             className="h-[28px]"
             size="small"
-            onClick={() => {
-              onWithdrawStep(status);
-            }}
+            loading={isSubmittingProve}
+            onClick={runProve}
           >
             {t('page.ecology.dbk.bridge.ActivityPopup.proveBtn')}
           </DbkButton>
@@ -247,9 +266,8 @@ const ActivityBridgeStatus = ({
           <DbkButton
             className="h-[28px]"
             size="small"
-            onClick={() => {
-              onWithdrawStep(status);
-            }}
+            loading={isSubmittingClaim}
+            onClick={runClaim}
           >
             {t('page.ecology.dbk.bridge.ActivityPopup.claimBtn')}
           </DbkButton>
@@ -295,6 +313,7 @@ const ActivityItem = ({
   const fromChain = findChain({ serverId: item.from_chain_id });
   const targetChain = findChain({ serverId: item.to_chain_id });
   const { t } = useTranslation();
+
   return (
     <div
       className={clsx(
