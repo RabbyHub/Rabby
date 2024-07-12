@@ -35,6 +35,7 @@ import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 import { ReactComponent as RcIconQuestion } from '@/ui/assets/bridge/question-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import pRetry from 'p-retry';
+import stats from '@/stats';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
 
@@ -181,6 +182,15 @@ export const BridgeContent = () => {
             }),
           { retries: 1 }
         );
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: tx ? 'success' : 'fail',
+        });
         wallet.bridgeToken(
           {
             to: tx.to,
@@ -219,6 +229,15 @@ export const BridgeContent = () => {
         window.close();
       } catch (error) {
         message.error(error?.message || String(error));
+        stats.report('bridgeQuoteResult', {
+          aggregatorIds: selectedBridgeQuote.aggregator.id,
+          bridgeId: selectedBridgeQuote.bridge_id,
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
+          status: 'fail',
+        });
         console.error(error);
       } finally {
         setFetchingBridgeQuote(false);

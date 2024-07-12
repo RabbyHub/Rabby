@@ -256,11 +256,11 @@ export const useTokenPair = (userAddress: string) => {
         .catch((e) => {
           if (currentFetchId === fetchIdRef.current) {
             stats.report('bridgeQuoteResult', {
-              aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
-              from_chain_id: payToken.chain,
-              from_token_id: payToken.id,
-              to_token_id: receiveToken.id,
-              to_chain_id: receiveToken.chain,
+              aggregatorIds: aggregatorsList.map((e) => e.id).join(','),
+              fromChainId: payToken.chain,
+              fromTokenId: payToken.id,
+              toTokenId: receiveToken.id,
+              toChainId: receiveToken.chain,
               status: 'fail',
             });
           }
@@ -277,11 +277,11 @@ export const useTokenPair = (userAddress: string) => {
 
       if (currentFetchId === fetchIdRef.current) {
         stats.report('bridgeQuoteResult', {
-          aggregator_ids: aggregatorsList.map((e) => e.id).join(','),
-          from_chain_id: payToken.chain,
-          from_token_id: payToken.id,
-          to_token_id: receiveToken.id,
-          to_chain_id: receiveToken.chain,
+          aggregatorIds: aggregatorsList.map((e) => e.id).join(','),
+          fromChainId: payToken.chain,
+          fromTokenId: payToken.id,
+          toTokenId: receiveToken.id,
+          toChainId: receiveToken.chain,
           status: data ? 'success' : 'fail',
         });
       }
