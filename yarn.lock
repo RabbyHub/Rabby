@@ -4702,10 +4702,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@rabby-wallet/rabby-swap@0.0.38-beta.1":
-  version "0.0.38-beta.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.38-beta.1.tgz#e4d6ddd530b2ccf840dfbe01eea4c1c0f96288d3"
-  integrity sha512-NkWyQmEJj3Q5IBeCUhYqeGU9w+Z9Kj+7i/gWFiILsEJlxhSQvMwwJONKz1sG/oK896PmEIiyIBg+RfDx09N2eg==
+"@rabby-wallet/rabby-swap@0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.38.tgz#ab4dc145e8f52add9153d131574febf6283f6e39"
+  integrity sha512-4bQgy/AYIKFD+0o0jDBcXM1x/+dnBt9vVbH8M0zwJtU4jxZmwuMy9QKcFgeZK6WiSWTXFS6+u6RJgRlEGDUOCw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
