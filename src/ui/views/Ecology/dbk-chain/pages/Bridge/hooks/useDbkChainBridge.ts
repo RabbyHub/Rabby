@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { DBK_CHAIN_ID } from '@/constant';
+import { DBK_CHAIN_BRIDGE_CONTRACT, DBK_CHAIN_ID } from '@/constant';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
@@ -9,10 +9,11 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
-import { parseEther } from 'viem';
+import { getContract, parseEther } from 'viem';
 import { getWithdrawals } from 'viem/op-stack';
 import { DbkBridgeStatus, dbk } from '../../../utils';
 import { useCreateViemClient } from './useCreateViemClient';
+import { l1StandardBridgeABI } from '@eth-optimism/contracts-ts';
 
 export const useDbkChainBridge = ({
   action,
@@ -49,11 +50,20 @@ export const useDbkChainBridge = ({
         mint: parseEther(payAmount),
         to: (account!.address as unknown) as `0x${string}`,
       });
-
-      const hash = await clientL1.depositTransaction({
-        ...args,
-        gas: null,
+      const contract = getContract({
+        abi: l1StandardBridgeABI,
+        address: DBK_CHAIN_BRIDGE_CONTRACT,
+        client: clientL1,
       });
+      const hash = await contract.write.depositETH(
+        [Number(args.request.gas), '0x'],
+        {
+          account: account.address as `0x${string}`,
+          value: parseEther(payAmount),
+          gas: undefined,
+        }
+      );
+
       if (hash) {
         await wallet.openapi.createDbkBridgeHistory({
           user_addr: account.address,
@@ -64,13 +74,6 @@ export const useDbkChainBridge = ({
         });
       }
       window.close();
-
-      // const receipt = await clientL1.waitForTransactionReceipt({ hash });
-
-      // const [l2Hash] = getL2TransactionHashes(receipt);
-      // const l2Receipt = await clientL2.waitForTransactionReceipt({
-      //   hash: l2Hash,
-      // });
     } catch (e) {
       console.error(e);
       const msg = 'details' in e ? e.details : e.message;
