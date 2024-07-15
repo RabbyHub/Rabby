@@ -30,27 +30,33 @@ import { Trans, useTranslation } from 'react-i18next';
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
-  /* background: #f5f6fa; */
-  border-radius: 6px;
   height: 46px;
   font-weight: 500;
   font-size: 18px;
-  /* color: #ffffff; */
   box-shadow: none;
+  border-radius: 4px;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  background: transparent !important;
   & > .ant-input {
     font-weight: 500;
     font-size: 18px;
+    border-width: 0px !important;
+    border-color: transparent;
+  }
+  &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+    border-width: 0.5px !important;
   }
 
-  &.ant-input-affix-wrapper,
   &:active {
-    border: 1px solid transparent;
+    border: 0.5px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border: 1px solid var(--r-blue-default, #7084ff) !important;
+    border-width: 0.5px !important;
+    border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
+    border-width: 0.5px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -66,7 +72,7 @@ const StyledInput = styled(Input)`
 `;
 
 const PreferMEVGuardSwitch = styled(Switch)`
-  min-width: 24px;
+  min-width: 20px;
   height: 12px;
 
   &.ant-switch-checked {
@@ -99,13 +105,6 @@ export const Main = () => {
   }));
 
   const dispatch = useDispatch();
-
-  const setUnlimited = useCallback(
-    (bool: boolean) => {
-      dispatch.swap.setUnlimitedAllowance(bool);
-    },
-    [dispatch.swap.setUnlimitedAllowance]
-  );
 
   const {
     chain,
@@ -206,9 +205,7 @@ export const Main = () => {
       return t('page.swap.price-expired-refresh-quote');
     }
     if (activeProvider?.shouldApproveToken) {
-      return t('page.swap.approve-x-symbol', {
-        symbol: getTokenSymbol(payToken),
-      });
+      return t('page.swap.approve-and-swap', { name: DexDisplayName });
     }
     if (activeProvider?.name) {
       return t('page.swap.swap-via-x', {
@@ -243,7 +240,7 @@ export const Main = () => {
                 ? ''
                 : DEX_SPENDER_WHITELIST[activeProvider.name][chain],
             pay_token_id: payToken.id,
-            unlimited: unlimitedAllowance,
+            unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
             postSwapParams: {
               quote: {
@@ -316,7 +313,7 @@ export const Main = () => {
       <>
         <div className="flex justify-between">
           <span>{t('page.swap.rabby-fee')}</span>
-          <span className="font-medium text-r-neutral-title-1">0%</span>
+          <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
         </div>
         {showMEVGuardedSwitch && (
           <div className="flex justify-between">
@@ -341,7 +338,7 @@ export const Main = () => {
         )}
       </>
     ),
-    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded]
+    [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded, feeRate]
   );
 
   return (
@@ -357,7 +354,7 @@ export const Main = () => {
     >
       <div
         className={clsx(
-          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-10 mx-20'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-16 mx-20'
         )}
       >
         <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
@@ -424,7 +421,8 @@ export const Main = () => {
           <div
             className={clsx(
               'text-r-neutral-title-1',
-              'underline cursor-pointer'
+              'underline cursor-pointer',
+              !payToken && 'hidden'
             )}
             onClick={() => {
               handleBalance();
@@ -469,47 +467,45 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 // loading={receiveSlippageLoading}
               />
-
-              {isWrapToken ? (
-                <>
-                  <div className="section text-13 leading-4 text-r-neutral-body mt-12">
-                    <div className="subText flex flex-col gap-12">
-                      {FeeAndMEVGuarded}
-                      <div className="text-13 text-r-neutral-body">
-                        {t(
-                          'page.swap.there-is-no-fee-and-slippage-for-this-trade'
-                        )}
+              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12">
+                <div className="subText flex flex-col gap-12">
+                  {isWrapToken ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span>{t('page.swap.slippage-tolerance')}</span>
+                        <span className="font-medium text-r-neutral-title-1">
+                          {t('page.swap.no-slippage-for-wrap')}
+                        </span>
                       </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="section text-13 leading-4 text-r-neutral-body mt-12">
-                  <div className="subText flex flex-col gap-12">
-                    <Slippage
-                      displaySlippage={slippage}
-                      value={slippageState}
-                      onChange={(e) => {
-                        setSlippageChanged(true);
-                        setSlippage(e);
-                      }}
-                      recommendValue={
-                        slippageValidInfo?.is_valid
-                          ? undefined
-                          : slippageValidInfo?.suggest_slippage
-                      }
-                    />
-                    <div className="flex justify-between">
-                      <span>{t('page.swap.minimum-received')}</span>
-                      <span className="font-medium text-r-neutral-title-1">
-                        {miniReceivedAmount}{' '}
-                        {receiveToken ? getTokenSymbol(receiveToken) : ''}
-                      </span>
-                    </div>
-                    {FeeAndMEVGuarded}
-                  </div>
+                      {FeeAndMEVGuarded}
+                    </>
+                  ) : (
+                    <>
+                      <Slippage
+                        displaySlippage={slippage}
+                        value={slippageState}
+                        onChange={(e) => {
+                          setSlippageChanged(true);
+                          setSlippage(e);
+                        }}
+                        recommendValue={
+                          slippageValidInfo?.is_valid
+                            ? undefined
+                            : slippageValidInfo?.suggest_slippage
+                        }
+                      />
+                      <div className="flex justify-between">
+                        <span>{t('page.swap.minimum-received')}</span>
+                        <span className="font-medium text-r-neutral-title-1">
+                          {miniReceivedAmount}{' '}
+                          {receiveToken ? getTokenSymbol(receiveToken) : ''}
+                        </span>
+                      </div>
+                      {FeeAndMEVGuarded}
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
             </>
           )}
       </div>
@@ -543,22 +539,11 @@ export const Main = () => {
 
       <div
         className={clsx(
-          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
-          'bg-r-neutral-bg-1 border border-transparent border-t-rabby-neutral-line',
-          activeProvider && activeProvider.shouldApproveToken && 'pt-16'
+          'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
+          'bg-r-neutral-bg-1 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+          'py-[13px]'
         )}
       >
-        {!expired && activeProvider && activeProvider.shouldApproveToken && (
-          <div className="flex items-center justify-between w-full self-start">
-            <div className="tips text-r-neutral-body">
-              {t('page.swap.approve-tips')}
-            </div>
-            <div className={clsx('allowance text-r-neutral-title-1')}>
-              <span>{t('page.swap.unlimited-allowance')}</span>{' '}
-              <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
-            </div>
-          </div>
-        )}
         <Button
           type="primary"
           block

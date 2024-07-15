@@ -28,7 +28,7 @@ const CoboSafeModificationDelegatedAddress = ({
             )}
           </Row>
           <Row>
-            <Values.Address
+            <Values.AddressWithCopy
               id="cobo-safe-address"
               address={actionData.multisig_id}
             />

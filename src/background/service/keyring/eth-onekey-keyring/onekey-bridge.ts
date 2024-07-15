@@ -9,7 +9,7 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
       debug: false,
       // The official iframe page deployed by OneKey
       // of course you can also deploy it yourself
-      connectSrc: 'https://jssdk.onekey.so/0.3.27/',
+      connectSrc: 'https://jssdk.onekey.so/0.3.48/',
     });
     HardwareWebSdk.on(UI_EVENT, (e) => {
       switch (e.type) {

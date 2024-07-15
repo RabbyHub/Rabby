@@ -87,7 +87,9 @@ const ApproveNFT = ({
         </Col>
 
         <Col>
-          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.tokenApprove.approveTo')}
+          </Row>
           <Row>
             <ViewMore
               type="nftSpender"

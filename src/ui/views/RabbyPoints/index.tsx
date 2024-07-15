@@ -229,7 +229,7 @@ const RabbyPoints = () => {
     [wallet.openapi, account?.address, signature]
   );
 
-  const ended = useMemo(() => !!campaignIsEnded, [campaignIsEnded]);
+  const ended = useMemo(() => true, [campaignIsEnded]);
 
   useEffect(() => {
     if (
@@ -247,7 +247,7 @@ const RabbyPoints = () => {
       }
       initRef.current = true;
     }
-  }, [snapshot, signature]);
+  }, [snapshot, signatureLoading, campaignIsEndedLoading, signature]);
 
   useEffect(() => {
     wallet.clearPageStateCache();
@@ -364,7 +364,7 @@ const RabbyPoints = () => {
           >
             {ended && (
               <div className="mx-20 mt-20 mb-4 flex justify-center rounded-[6px] bg-r-neutral-card-2 py-12 text-13 text-r-neutral-title-1 font-medium">
-                {t('page.rabbyPoints.firstRoundEnded')}
+                {t('page.rabbyPoints.secondRoundEnded')}
               </div>
             )}
             <div className="flex flex-col gap-[12px] py-[16px] px-[20px] ">

@@ -147,7 +147,7 @@ export function useRefreshHomeBalanceView(options: {
   // useInterval(async () => {
   //   const expiration = await isExpired();
   //   onRefresh(expiration);
-  // }, BALANCE_LOADING_TIMES.CHECK_INTERVAL);
+  // }, BALANCE_LOADING_CONFS.CHECK_INTERVAL);
 
   return {
     onRefresh,

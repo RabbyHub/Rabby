@@ -23,6 +23,7 @@ import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
+import { ReactComponent as RcIconReceive } from 'ui/assets/dashboard/receive-header.svg';
 
 import IconSuccess from 'ui/assets/success.svg';
 import { AddressViewer, Modal } from 'ui/component';
@@ -54,6 +55,7 @@ import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
 import { useGnosisPendingTxs } from '@/ui/hooks/useGnosisPendingTxs';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useHomeBalanceViewOuterPrefetch } from './components/BalanceView/useHomeBalanceView';
+import { EcologyPopup } from './components/EcologyPopup';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -375,7 +377,7 @@ const Dashboard = () => {
               </div>
 
               <RcIconCopy
-                className="copyAddr"
+                className="copyAddr actionIcon"
                 onClick={() => {
                   copyAddress(currentAccount.address);
                   matomoRequestEvent({
@@ -386,6 +388,18 @@ const Dashboard = () => {
                       currentAccount?.brandName,
                     ].join('|'),
                   });
+                }}
+              />
+
+              <RcIconReceive
+                className="mx-8 cursor-pointer actionIcon"
+                onClick={() => {
+                  matomoRequestEvent({
+                    category: 'Front Page Click',
+                    action: 'Click',
+                    label: 'Receive',
+                  });
+                  history.push('/receive?rbisource=dashboard');
                 }}
               />
 
@@ -536,7 +550,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="qrcode-container">
-              <QRCode value={currentAccount?.address ?? ''} size={100} />
+              <QRCode value={currentAccount?.address || ''} size={100} />
             </div>
           </div>
         </div>

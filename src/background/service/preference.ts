@@ -121,6 +121,9 @@ export interface PreferenceStore {
   isShowTestnet?: boolean;
   themeMode?: DARK_MODE_TYPE;
   addressSortStore: AddressSortStore;
+
+  reserveGasOnSendToken?: boolean;
+  isHideEcologyNoticeDict?: Record<string | number, boolean>;
 }
 
 export interface AddressSortStore {
@@ -180,6 +183,8 @@ class PreferenceService {
         addressSortStore: {
           ...defaultAddressSortStore,
         },
+        reserveGasOnSendToken: true,
+        isHideEcologyNoticeDict: {},
       },
     });
 
@@ -267,6 +272,9 @@ class PreferenceService {
         ...defaultAddressSortStore,
       };
     }
+    if (!this.store.isHideEcologyNoticeDict) {
+      this.store.isHideEcologyNoticeDict = {};
+    }
   };
 
   getPreference = (key?: string) => {
@@ -277,6 +285,21 @@ class PreferenceService {
       return true;
     }
     return key ? this.store[key] : { ...this.store, isShowTestnet: true };
+  };
+
+  setPreferencePartials = (data: Partial<PreferenceStore>) => {
+    Object.keys(data).forEach((k) => {
+      if (k in this.store) {
+        this.store[k] = data[k];
+      } else {
+        const err = `Preference key ${k} not found`;
+        if (process.env.DEBUG) {
+          throw new Error(err);
+        } else {
+          console.error(err);
+        }
+      }
+    });
   };
 
   getTokenApprovalChain = (address: string) => {
@@ -555,6 +578,10 @@ class PreferenceService {
     this.store.themeMode = themeMode;
   };
 
+  isReserveGasOnSendToken = () => {
+    return this.store.reserveGasOnSendToken;
+  };
+
   getHighlightedAddresses = () => {
     return (this.store.highligtedAddresses || []).filter(
       (item) => !!item.brandName && !!item.address
@@ -816,6 +843,9 @@ class PreferenceService {
       ...this.store.addressSortStore,
       [key]: value,
     };
+  };
+  setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
+    this.store.isHideEcologyNoticeDict = v;
   };
 }
 

@@ -45,10 +45,12 @@ export const ChainRender = ({
   chain,
   readonly,
   className,
+  arrowDownComponent,
   ...other
 }: {
   chain: CHAINS_ENUM;
   readonly: boolean;
+  arrowDownComponent?: React.ReactNode;
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
 
@@ -82,7 +84,12 @@ export const ChainRender = ({
       />
       <span className="name">{chainInfo?.name}</span>
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
-      {!readonly && <RcImgArrowDown className="down" />}
+      {!readonly &&
+        (arrowDownComponent ? (
+          arrowDownComponent
+        ) : (
+          <RcImgArrowDown className="down" />
+        ))}
     </ChainWrapper>
   );
 };
@@ -96,6 +103,8 @@ interface ChainSelectorProps {
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
   title?: React.ReactNode;
+  chainRenderClassName?: string;
+  arrowDownComponent?: React.ReactNode;
 }
 export default function ChainSelectorInForm({
   value,
@@ -105,6 +114,8 @@ export default function ChainSelectorInForm({
   disabledTips,
   title,
   supportChains,
+  chainRenderClassName,
+  arrowDownComponent,
 }: ChainSelectorProps) {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -130,6 +141,8 @@ export default function ChainSelectorInForm({
         chain={value}
         onClick={handleClickSelector}
         readonly={readonly}
+        className={chainRenderClassName}
+        arrowDownComponent={arrowDownComponent}
       />
       {!readonly && (
         <ChainSelectorModal

@@ -1,7 +1,7 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { ChainGas } from 'background/service/preference';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, DEX } from 'consts';
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -10,6 +10,7 @@ export const swap = createModel<RootModel>()({
   name: 'swap',
 
   state: {
+    supportedDEXList: Object.keys(DEX),
     selectedDex: null,
     selectedChain: null,
     gasPriceCache: {},
@@ -21,6 +22,7 @@ export const swap = createModel<RootModel>()({
     $$initialSelectedChain: null,
   } as Partial<SwapServiceStore> & {
     $$initialSelectedChain: CHAINS_ENUM | null;
+    supportedDEXList: string[];
   },
 
   reducers: {
@@ -58,6 +60,8 @@ export const swap = createModel<RootModel>()({
             (data as SwapServiceStore).selectedChain || null,
         });
       }
+
+      await this.getSwapSupportedDEXList();
     },
 
     async getSwapGasCache(chain: CHAINS_ENUM, store) {
@@ -179,6 +183,15 @@ export const swap = createModel<RootModel>()({
     async setSwapPreferMEV(bool: boolean, store) {
       await store.app.wallet.setSwapPreferMEVGuarded(bool);
       this.getSwapPreferMEV();
+    },
+
+    async getSwapSupportedDEXList(_: void, store) {
+      const data = await store.app.wallet.openapi.getSupportedDEXList();
+      if (data.dex_list) {
+        this.setField({
+          supportedDEXList: data.dex_list,
+        });
+      }
     },
   }),
 });

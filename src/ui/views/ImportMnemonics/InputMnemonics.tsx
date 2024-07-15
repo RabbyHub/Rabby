@@ -169,13 +169,13 @@ const ImportMnemonics = () => {
 
       setSecretShares(_secretShares);
       try {
-        const result = await wallet.slip39DecodeMnemonics(_secretShares);
-        setSlip39GroupNumber(result.groupThreshold);
+        const groupThreshold = await wallet.slip39GetThreshold(_secretShares);
+        setSlip39GroupNumber(groupThreshold);
         form.setFieldsValue({
-          mnemonics: _secretShares.slice(0, result.groupThreshold).join('\n'),
+          mnemonics: _secretShares.slice(0, groupThreshold).join('\n'),
         });
       } catch (err) {
-        console.log('slip39DecodeMnemonics error', err);
+        console.log('slip39GetThreshold error', err);
       }
     },
     [isSlip39]

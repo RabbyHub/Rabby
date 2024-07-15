@@ -51,6 +51,7 @@ const RowWrapper = styled.div`
     text-align: left;
     padding-left: 30px;
     flex: initial;
+    word-break: break-all;
   }
 
   &.wrap:not(.title) {
@@ -68,6 +69,8 @@ const RowWrapper = styled.div`
   &.title {
     flex-shrink: 0;
     flex: 1;
+    color: var(--r-neutral-title-1, #192945);
+    font-weight: 400;
 
     .icon-tip {
       display: inline;
@@ -111,12 +114,14 @@ const Row = ({
   tip,
   className,
   wrap,
+  itemsCenter,
 }: {
   children: ReactNode;
   isTitle?: boolean;
   tip?: string;
   className?: string;
   wrap?: boolean;
+  itemsCenter?: boolean;
 }) => {
   return (
     <RowWrapper
@@ -124,7 +129,7 @@ const Row = ({
         'row relative',
         {
           title: isTitle,
-          'items-center': tip,
+          'items-center': itemsCenter || tip,
           wrap: wrap,
         },
         className
@@ -133,6 +138,7 @@ const Row = ({
       {children}
       {tip && (
         <TooltipWithMagnetArrow
+          inApproval
           title={tip}
           overlayClassName="rectangle w-[max-content] max-w-[355px]"
         >

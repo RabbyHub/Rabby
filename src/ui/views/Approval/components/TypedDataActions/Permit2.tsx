@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
@@ -6,15 +6,14 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ApproveTokenRequireData, TypedDataActionData } from './utils';
 import { ellipsisTokenSymbol, getTokenSymbol } from 'ui/utils/token';
-import { formatAmount } from '@/ui/utils/number';
 import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
-import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
 import ViewMore from '../Actions/components/ViewMore';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
+import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
 
 const Wrapper = styled.div`
   .header {
@@ -68,23 +67,13 @@ const Permit2 = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle className="flex-none">
+          <Row isTitle className="flex-none items-center">
             {t('page.signTx.tokenApprove.approveToken')}
           </Row>
           <Row className="overflow-hidden pl-6">
-            <LogoWithText
-              className="overflow-hidden"
-              id="permit2-token"
-              logo={actionData.token.logo_url}
-              text={
-                <div className="overflow-hidden overflow-ellipsis flex">
-                  <Values.TokenAmount value={actionData.token.amount} />
-                  <span className="ml-2">
-                    <Values.TokenSymbol token={actionData.token} />
-                  </span>
-                </div>
-              }
-              logoRadius="100%"
+            <TokenAmountItem
+              amount={actionData.token.amount}
+              logoUrl={actionData.token.logo_url}
             />
           </Row>
         </Col>
@@ -124,7 +113,9 @@ const Permit2 = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTx.tokenApprove.approveTo')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.tokenApprove.approveTo')}
+          </Row>
           <Row>
             <ViewMore
               type="spender"

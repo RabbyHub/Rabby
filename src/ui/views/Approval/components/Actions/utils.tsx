@@ -1181,77 +1181,6 @@ export const fetchActionRequiredData = async ({
       );
       result.hasInteraction = hasInteraction.has_interaction;
     });
-    queue.add(async () => {
-      let addr = actionData.common?.receiver;
-
-      if (!addr) {
-        const unexpectedAddrList = await apiProvider.unexpectedAddrList({
-          chainId,
-          tx,
-          origin: origin || '',
-          addr: address,
-        });
-        addr = unexpectedAddrList[0]?.id;
-      }
-
-      if (addr) {
-        result.receiverInWallet = await wallet.hasAddress(addr);
-        const receiverData: ReceiverData = {
-          address: addr,
-          chain: chain!,
-          eoa: null,
-          cex: null,
-          contract: null,
-          usd_value: 0,
-          hasTransfer: false,
-          isTokenContract: false,
-          name: null,
-          onTransferWhitelist: false,
-        };
-
-        const { has_transfer } = await apiProvider.hasTransfer(
-          chainId,
-          address,
-          addr
-        );
-        receiverData.hasTransfer = has_transfer;
-
-        const { desc } = await apiProvider.addrDesc(addr);
-        if (desc.cex?.id) {
-          receiverData.cex = {
-            id: desc.cex.id,
-            logo: desc.cex.logo_url,
-            name: desc.cex.name,
-            bornAt: desc.born_at,
-            isDeposit: desc.cex.is_deposit,
-          };
-        }
-        if (desc.contract && Object.keys(desc.contract).length > 0) {
-          receiverData.contract = desc.contract;
-        }
-        if (!receiverData.cex && !receiverData.contract) {
-          receiverData.eoa = {
-            id: addr,
-            bornAt: desc.born_at,
-          };
-        }
-        receiverData.usd_value = desc.usd_value;
-        if (result.contract) {
-          const { is_token } = await apiProvider.isTokenContract(chainId, addr);
-          receiverData.isTokenContract = is_token;
-        }
-        receiverData.name = desc.name;
-        if (ALIAS_ADDRESS[addr.toLowerCase()]) {
-          receiverData.name = ALIAS_ADDRESS[addr.toLowerCase()];
-        }
-
-        const whitelist = await wallet.getWhitelist();
-        receiverData.onTransferWhitelist = whitelist.includes(
-          addr.toLowerCase()
-        );
-        result.unexpectedAddr = receiverData;
-      }
-    });
     await waitQueueFinished(queue);
     return result;
   }
@@ -1503,7 +1432,12 @@ export const formatSecurityEngineCtx = ({
     };
   }
   if (actionData.assetOrder) {
-    const { takers, receiver } = actionData.assetOrder;
+    const {
+      takers,
+      receiver,
+      receiveNFTList,
+      receiveTokenList,
+    } = actionData.assetOrder;
     const data = requireData as AssetOrderRequireData;
     return {
       assetOrder: {
@@ -1512,6 +1446,7 @@ export const formatSecurityEngineCtx = ({
         receiver: receiver || '',
         chainId,
         id: data.id,
+        hasReceiveAssets: receiveNFTList.length + receiveTokenList.length > 0,
       },
     };
   }

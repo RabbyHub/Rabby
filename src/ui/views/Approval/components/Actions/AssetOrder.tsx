@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ContractRequireData } from '../TypedDataActions/utils';
 import { ParsedActionData } from './utils';
 import { isSameAddress } from 'ui/utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from '../Actions/components/Table';
 import NFTWithName from '../Actions/components/NFTWithName';
@@ -16,7 +14,6 @@ import { SecurityListItem } from '../Actions/components/SecurityListItem';
 import ViewMore from '../Actions/components/ViewMore';
 import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import LogoWithText from '../Actions/components/LogoWithText';
-import { ellipsisTokenSymbol, getTokenSymbol } from '@/ui/utils/token';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 
@@ -149,44 +146,60 @@ const AssetOrder = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.receiveAsset')}</Row>
-          <Row className="gap-y-6 flex flex-col overflow-hidden items-end">
-            {actionData.receiveTokenList.map((token) => (
-              <LogoWithText
-                className="overflow-hidden w-full"
-                key={token.id}
-                logo={token.logo_url}
-                text={
-                  <div className="overflow-hidden overflow-ellipsis flex">
-                    <Values.TokenAmount value={token.amount} />
-                    <span className="ml-2">
-                      <Values.TokenSymbol token={token} />
-                    </span>
-                  </div>
+          <Row className="w-0">
+            <div className="gap-y-6 flex flex-col items-end overflow-hidden">
+              {actionData.receiveTokenList.map((token) => (
+                <LogoWithText
+                  className="overflow-hidden w-full"
+                  key={token.id}
+                  logo={token.logo_url}
+                  text={
+                    <div className="overflow-hidden overflow-ellipsis flex">
+                      <Values.TokenAmount value={token.amount} />
+                      <span className="ml-2">
+                        <Values.TokenSymbol token={token} />
+                      </span>
+                    </div>
+                  }
+                  logoRadius="100%"
+                />
+              ))}
+              {actionData.receiveNFTList.map((nft) => (
+                <ViewMore
+                  key={nft.id}
+                  type="nft"
+                  data={{
+                    nft,
+                    chain,
+                  }}
+                >
+                  <NFTWithName nft={nft}></NFTWithName>
+                </ViewMore>
+              ))}
+              {actionData.receiveTokenList.length <= 0 &&
+                actionData.receiveNFTList.length <= 0 && <>-</>}
+            </div>
+            {engineResultMap['1144'] && (
+              <SecurityLevelTagNoText
+                enable={engineResultMap['1144'].enable}
+                level={
+                  processedRules.includes('1144')
+                    ? 'proceed'
+                    : engineResultMap['1144'].level
                 }
-                logoRadius="100%"
+                onClick={() => handleClickRule('1144')}
               />
-            ))}
-            {actionData.receiveNFTList.map((nft) => (
-              <ViewMore
-                key={nft.id}
-                type="nft"
-                data={{
-                  nft,
-                  chain,
-                }}
-              >
-                <NFTWithName nft={nft}></NFTWithName>
-              </ViewMore>
-            ))}
-            {actionData.receiveTokenList.length <= 0 &&
-              actionData.receiveNFTList.length <= 0 && <>-</>}
+            )}
           </Row>
         </Col>
         {actionData.takers.length > 0 && (
           <Col>
             <Row isTitle>{t('page.signTypedData.sellNFT.specificBuyer')}</Row>
             <Row>
-              <Values.Address address={actionData.takers[0]} chain={chain} />
+              <Values.AddressWithCopy
+                address={actionData.takers[0]}
+                chain={chain}
+              />
               {engineResultMap['1114'] && (
                 <SecurityLevelTagNoText
                   enable={engineResultMap['1114'].enable}
@@ -206,7 +219,7 @@ const AssetOrder = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="asset-order-receiver"
                   address={actionData.receiver}
                   chain={chain}
@@ -223,7 +236,9 @@ const AssetOrder = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTypedData.buyNFT.listOn')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

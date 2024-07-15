@@ -80,7 +80,9 @@ const RevokeNFTCollection = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeFrom')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.revokeTokenApprove.revokeFrom')}
+          </Row>
           <Row>
             <ViewMore
               type="nftSpender"

@@ -57,7 +57,7 @@ export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
         {data.isRevoke
           ? t('page.signTx.revokeTokenApprove.revokeFrom')
           : t('page.signTx.tokenApprove.approveTo')}{' '}
-        <Values.Address
+        <Values.AddressWithCopy
           address={data.spender}
           chain={data.chain}
           iconWidth="14px"

@@ -73,7 +73,7 @@ export const CommonAction = ({
         {requireData && chain ? (
           <>
             <Col>
-              <Row className="w-[100px]" isTitle>
+              <Row className="w-[100px]" isTitle itemsCenter>
                 {t('page.signTx.common.interactContract')}
               </Row>
               <Row>
@@ -139,21 +139,8 @@ export const CommonAction = ({
           <Row className="w-[100px]" isTitle>
             {t('page.signTx.common.description')}
           </Row>
-          <Row className="flex flex-row items-center gap-x-4">
-            <span className="break-all">{actionData.desc}</span>
-            {/* <TooltipWithMagnetArrow
-              overlayClassName="rectangle w-[260px]"
-              title={descTip}
-            >
-              {actionData.is_asset_changed ||
-              actionData.is_involving_privacy ? (
-                <img src={Warning2SVG} />
-              ) : null}
-              {!actionData.is_asset_changed &&
-              !actionData.is_involving_privacy ? (
-                <img src={CertifiedSVG} />
-              ) : null}
-            </TooltipWithMagnetArrow> */}
+          <Row className="flex flex-row items-center gap-x-4" wrap>
+            {actionData.desc}
           </Row>
         </Col>
         {(requireData as ContractCallRequireData)?.payNativeTokenAmount &&
@@ -184,7 +171,7 @@ export const CommonAction = ({
         {hasReceiver && actionData.receiver && addressInfo && (
           <>
             <Col>
-              <Row isTitle className="w-[100px]">
+              <Row isTitle className="w-[100px]" itemsCenter>
                 {t('page.signTx.swap.receiver')}
               </Row>
               <Row>
@@ -229,55 +216,6 @@ export const CommonAction = ({
                   <Values.KnownAddress address={actionData.receiver} />
                 }
               />
-            </SubTable>
-          </>
-        )}
-        {!hasReceiver && !actionData.receiver && addressInfo && (
-          <>
-            <Col>
-              <Row isTitle className="w-[100px]">
-                {t('page.signTx.contractCall.suspectedReceiver')}
-              </Row>
-              <Row>
-                <ViewMore
-                  type="receiver"
-                  data={{
-                    title: t('page.signTx.contractCall.suspectedReceiver'),
-                    address: addressInfo.address,
-                    chain: addressInfo.chain,
-                    eoa: addressInfo.eoa,
-                    cex: addressInfo.cex,
-                    contract: addressInfo.contract,
-                    usd_value: addressInfo.usd_value,
-                    hasTransfer: addressInfo.hasTransfer,
-                    isTokenContract: addressInfo.isTokenContract,
-                    name: addressInfo.name,
-                    onTransferWhitelist: addressInfo.onTransferWhitelist,
-                  }}
-                >
-                  <Values.Address
-                    id="common-action-expect-receiver"
-                    hasHover
-                    address={addressInfo.address}
-                    chain={chain}
-                  />
-                </ViewMore>
-              </Row>
-            </Col>
-            <SubTable target="common-action-expect-receiver">
-              <SubCol>
-                <SubRow isTitle>{t('page.signTx.addressNote')}</SubRow>
-                <SubRow>
-                  <Values.AddressMemo address={addressInfo.address} />
-                </SubRow>
-              </SubCol>
-
-              {addressInfo.name && (
-                <SubCol>
-                  <SubRow> </SubRow>
-                  <SubRow>{addressInfo.name}</SubRow>
-                </SubCol>
-              )}
             </SubTable>
           </>
         )}

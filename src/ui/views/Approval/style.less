@@ -187,7 +187,7 @@
     flex: 1;
     overflow: auto;
     // background-color: var(--r-neutral-bg-1, #fff);
-    background: var(--r-neutral-bg-2, #F2F4F7);
+    background: var(--r-neutral-bg-4, #F2F4F7);
 
     .view-raw {
       line-height: 16px !important;
@@ -641,7 +641,7 @@
     padding: 15px 18px 25px;
     display: flex;
     flex-direction: column;
-    background: var(--r-neutral-bg-2, #3D4251);
+    background: var(--r-neutral-bg-4, #3D4251);
     flex: 1;
     margin-bottom: -10px;
     row-gap: 12px;
@@ -1905,21 +1905,27 @@
   }
   .approve-amount-footer {
     display: flex;
-    margin-top: 12px;
+    margin-top: 16px;
+    justify-content: center;
   }
   .est-approve-price {
     color: var(--r-neutral-foot);
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 13px;
+    line-height: 16px;
     margin-right: auto;
   }
   .token-approve-balance {
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 15px;
+    line-height: 18px;
     text-align: right;
     text-decoration-line: underline;
-    color: var(--r-neutral-foot);
+    color: var(--r-neutral-body);
     cursor: pointer;
+  }
+  .ant-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .ant-input-group-wrapper {
     position: relative;
@@ -1928,9 +1934,10 @@
       background: transparent !important;
       font-size: 15px;
       padding: 0;
-      width: 264px;
+      width: auto;
       border-radius: 0;
      line-height: 18px;
+     flex: 1;
     }
     .ant-input-group-addon {
       background: transparent;
@@ -1939,6 +1946,9 @@
       color: var(--r-neutral-foot);
       padding-right: 0;
      line-height: 18px;
+     width: auto;
+     padding: 0;
+     text-align: right;
     }
     &::after {
       display: none;

@@ -60,6 +60,8 @@ import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
+import { Ecology } from './Ecology';
+import { Bridge } from './Bridge';
 
 declare global {
   interface Window {
@@ -238,6 +240,10 @@ const Main = () => {
           <Receive />
         </PrivateRoute>
 
+        <PrivateRoute exact path="/bridge">
+          <Bridge />
+        </PrivateRoute>
+
         <PrivateRoute exact path="/gas-top-up">
           <GasTopUp />
         </PrivateRoute>
@@ -280,6 +286,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/rabby-points">
           <RabbyPoints />
+        </PrivateRoute>
+        <PrivateRoute path="/ecology/:chainId">
+          <Ecology />
         </PrivateRoute>
       </Switch>
 

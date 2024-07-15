@@ -30,7 +30,7 @@ import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
-import { BALANCE_LOADING_TIMES } from '@/constant/timeout';
+import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 
@@ -54,7 +54,7 @@ const BalanceView = ({
     if (!initHasCacheRef?.current) return;
     const timer = setTimeout(() => {
       setAccountBalanceUpdateNonce((prev) => prev + 1);
-    }, BALANCE_LOADING_TIMES.TIMEOUT);
+    }, BALANCE_LOADING_CONFS.TIMEOUT);
 
     return () => {
       clearTimeout(timer);

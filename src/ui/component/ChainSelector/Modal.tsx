@@ -1,7 +1,9 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import { Button, Drawer, Input } from 'antd';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
@@ -24,6 +26,7 @@ import {
   SelectChainList,
   SelectChainListProps,
 } from './components/SelectChainList';
+import { LoadingBalances } from './LoadingBalances';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -96,7 +99,15 @@ const useChainSeletorList = ({
       matteredList: searchKw ? [] : result.matteredList,
       unmatteredList: searchKw ? [] : result.unmatteredList,
     };
-  }, [search, pinned, supportChains, chainBalances, netTabKey]);
+  }, [
+    mainnetList,
+    testnetList,
+    search,
+    pinned,
+    supportChains,
+    chainBalances,
+    netTabKey,
+  ]);
 
   useEffect(() => {
     dispatch.preference.getPreference('pinnedChain');
@@ -167,19 +178,17 @@ const ChainSelectorModal = ({
   }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
-  const wallet = useWallet();
+  const isLoading = useRabbyGetter(
+    (s) => s.account.isLoadingMateeredChainBalances
+  );
 
   useEffect(() => {
     if (!visible) {
       setSearch('');
     } else {
-      // (async () => {
-      //   // await rDispatch.account.triggerFetchBalanceOnBackground();
-      //   rDispatch.account.getMatteredChainBalance();
-      // })();
       rDispatch.account.getMatteredChainBalance();
     }
-  }, [visible, rDispatch]);
+  }, [visible, rDispatch, setSearch]);
 
   return (
     <>
@@ -194,6 +203,7 @@ const ChainSelectorModal = ({
         className={clsx(
           'custom-popup is-support-darkmode',
           'chain-selector__modal',
+          // isLoading && 'disable-body-scroll',
           connection && 'connection',
           className
         )}
@@ -221,52 +231,58 @@ const ChainSelectorModal = ({
             />
           )}
         </header>
-        <div className="chain-selector__modal-content">
-          <SelectChainList
-            supportChains={supportChains}
-            data={matteredList}
-            sortable={false /* !supportChains */}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onSort={handleSort}
-            onChange={handleChange}
-            value={value}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
-          <SelectChainList
-            supportChains={supportChains}
-            data={unmatteredList}
-            value={value}
-            pinned={pinned as CHAINS_ENUM[]}
-            onStarChange={handleStarChange}
-            onChange={handleChange}
-            disabledTips={disabledTips}
-            showRPCStatus={showRPCStatus}
-          ></SelectChainList>
+        {isLoading ? (
+          <div className="chain-selector__modal-content">
+            <LoadingBalances loading={isLoading} />
+          </div>
+        ) : (
+          <div className="chain-selector__modal-content">
+            <SelectChainList
+              supportChains={supportChains}
+              data={matteredList}
+              sortable={false /* !supportChains */}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onSort={handleSort}
+              onChange={handleChange}
+              value={value}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
+            <SelectChainList
+              supportChains={supportChains}
+              data={unmatteredList}
+              value={value}
+              pinned={pinned as CHAINS_ENUM[]}
+              onStarChange={handleStarChange}
+              onChange={handleChange}
+              disabledTips={disabledTips}
+              showRPCStatus={showRPCStatus}
+            ></SelectChainList>
 
-          {matteredList.length === 0 && unmatteredList.length === 0 ? (
-            <div className="select-chain-list pt-[70px] bg-transparent">
-              <Empty>
-                {/* No chains */}
-                {t('component.ChainSelectorModal.noChains')}
-              </Empty>
-              {selectedTab === 'testnet' ? (
-                <div className="text-center mt-[50px]">
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      history.push('/custom-testnet');
-                    }}
-                    className="w-[200px] h-[44px]"
-                  >
-                    {t('component.ChainSelectorModal.addTestnet')}
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+            {matteredList.length === 0 && unmatteredList.length === 0 ? (
+              <div className="select-chain-list pt-[70px] bg-transparent">
+                <Empty>
+                  {/* No chains */}
+                  {t('component.ChainSelectorModal.noChains')}
+                </Empty>
+                {selectedTab === 'testnet' ? (
+                  <div className="text-center mt-[50px]">
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        history.push('/custom-testnet');
+                      }}
+                      className="w-[200px] h-[44px]"
+                    >
+                      {t('component.ChainSelectorModal.addTestnet')}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        )}
       </Drawer>
     </>
   );

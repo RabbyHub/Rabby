@@ -51,6 +51,7 @@ const PopupContainer = styled.div`
     padding: 0px 16px;
     display: flex;
     flex-direction: column;
+    font-weight: 400;
 
     .col {
       display: flex;
@@ -59,9 +60,14 @@ const PopupContainer = styled.div`
       padding: 12px 0;
     }
 
+    .text {
+      color: var(--r-neutral-body, #3e495e);
+    }
+
     .row {
       &:nth-child(1) {
         color: var(--r-neutral-body, #3e495e);
+        font-weight: 400;
         justify-content: flex-start;
         align-items: center;
       }

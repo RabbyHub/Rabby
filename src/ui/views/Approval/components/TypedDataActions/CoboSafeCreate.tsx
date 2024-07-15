@@ -24,7 +24,7 @@ const CoboSafeCreate = ({
         <Col>
           <Row isTitle>{t('page.signTx.coboSafeCreate.safeWalletTitle')}</Row>
           <Row>
-            <Values.Address
+            <Values.AddressWithCopy
               id="cobo-safe-address"
               address={actionData.multisig_id}
             />

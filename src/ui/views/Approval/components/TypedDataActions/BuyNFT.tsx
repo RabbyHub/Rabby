@@ -180,7 +180,7 @@ const BuyNFT = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="buy-nft-receiver"
                   address={actionData.receiver}
                   chain={chain}
@@ -197,7 +197,9 @@ const BuyNFT = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTypedData.buyNFT.listOn')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

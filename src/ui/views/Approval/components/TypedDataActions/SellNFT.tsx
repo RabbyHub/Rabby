@@ -184,7 +184,10 @@ const ApproveNFT = ({
           <Col>
             <Row isTitle>{t('page.signTypedData.sellNFT.specificBuyer')}</Row>
             <Row>
-              <Values.Address address={actionData.takers[0]} chain={chain} />
+              <Values.AddressWithCopy
+                address={actionData.takers[0]}
+                chain={chain}
+              />
               {engineResultMap['1081'] && (
                 <SecurityLevelTagNoText
                   enable={engineResultMap['1081'].enable}
@@ -204,7 +207,7 @@ const ApproveNFT = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="sell-nft-receiver"
                   address={actionData.receiver}
                   chain={chain}
@@ -221,7 +224,9 @@ const ApproveNFT = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTypedData.buyNFT.listOn')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

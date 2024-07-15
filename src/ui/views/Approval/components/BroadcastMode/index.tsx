@@ -377,6 +377,7 @@ export const BroadcastMode = ({
         <OptionList>
           {options.map((option) => (
             <TooltipWithMagnetArrow
+              inApproval
               title={option.tips || ''}
               className="rectangle w-[max-content]"
               align={{
