@@ -148,10 +148,14 @@ export const SubRow = ({
       {children}
       {tip && (
         <TooltipWithMagnetArrow
+          inApproval
           title={tip}
           overlayClassName="rectangle w-[max-content] max-w-[355px]"
         >
-          <img src={IconQuestionMark} className="icon icon-tip ml-6 inline" />
+          <img
+            src={IconQuestionMark}
+            className="icon icon-tip ml-6 inline -mt-2"
+          />
         </TooltipWithMagnetArrow>
       )}
     </SubRowWrapper>

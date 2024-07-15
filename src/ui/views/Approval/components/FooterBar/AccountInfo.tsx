@@ -74,7 +74,10 @@ export const AccountInfo: React.FC<Props> = ({
     >
       <div className={clsx('flex items-center justify-between', 'h-18')}>
         <div className="space-x-6 flex items-center">
-          <Tooltip title={nickname}>
+          <Tooltip
+            overlayClassName="rectangle w-[max-content]"
+            title={nickname}
+          >
             <div
               className={clsx(
                 'text-r-neutral-body text-[15px]',

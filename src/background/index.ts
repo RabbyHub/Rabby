@@ -31,6 +31,7 @@ import {
   securityEngineService,
   transactionBroadcastWatchService,
   HDKeyRingLastAddAddrTimeService,
+  bridgeService,
 } from './service';
 import { providerController, walletController } from './controller';
 import { getOriginFromUrl } from '@/utils';
@@ -97,6 +98,7 @@ async function restoreAppState() {
   await securityEngineService.init();
   await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
+  await bridgeService.init();
 
   setPopupIcon(
     walletController.isUnlocked() || !walletController.isBooted()

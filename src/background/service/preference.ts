@@ -123,6 +123,7 @@ export interface PreferenceStore {
   addressSortStore: AddressSortStore;
 
   reserveGasOnSendToken?: boolean;
+  isHideEcologyNoticeDict?: Record<string | number, boolean>;
 }
 
 export interface AddressSortStore {
@@ -183,6 +184,7 @@ class PreferenceService {
           ...defaultAddressSortStore,
         },
         reserveGasOnSendToken: true,
+        isHideEcologyNoticeDict: {},
       },
     });
 
@@ -269,6 +271,9 @@ class PreferenceService {
       this.store.addressSortStore = {
         ...defaultAddressSortStore,
       };
+    }
+    if (!this.store.isHideEcologyNoticeDict) {
+      this.store.isHideEcologyNoticeDict = {};
     }
   };
 
@@ -838,6 +843,9 @@ class PreferenceService {
       ...this.store.addressSortStore,
       [key]: value,
     };
+  };
+  setIsHideEcologyNoticeDict = (v: Record<string | number, boolean>) => {
+    this.store.isHideEcologyNoticeDict = v;
   };
 }
 

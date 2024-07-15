@@ -608,6 +608,8 @@ const GasSelectorHeader = ({
     setCustomGas((e) =>
       Number(e) * 1e9 === rawSelectedGas.price ? e : rawSelectedGas.price / 1e9
     );
+    setChangedCustomGas(true);
+    setLoadingGasEstimated(false);
   }, [rawSelectedGas]);
 
   useEffect(() => {
@@ -625,6 +627,9 @@ const GasSelectorHeader = ({
   }, []);
 
   useEffect(() => {
+    if (selectedGas) {
+      setPrevSelectedNotCustomGas(selectedGas);
+    }
     if (!is1559) return;
     if (selectedGas?.level === 'custom') {
       if (Number(customGas) !== maxPriorityFee) {
@@ -633,8 +638,6 @@ const GasSelectorHeader = ({
         setIsReal1559(false);
       }
     } else if (selectedGas) {
-      setPrevSelectedNotCustomGas(selectedGas);
-
       if (selectedGas?.price / 1e9 !== maxPriorityFee) {
         setIsReal1559(true);
       } else {
@@ -752,16 +755,14 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span
-                    className="truncate cursor-pointer"
-                    title={gasCostUsdStr}
-                  >
+                  <span className="truncate" title={gasCostUsdStr}>
                     {gasCostUsdStr}
                   </span>
                   {L2_ENUMS.includes(chain.enum) &&
                     !CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum) && (
                       <span className="relative ml-6">
                         <TooltipWithMagnetArrow
+                          inApproval
                           title={t('page.signTx.l2GasEstimateTooltip')}
                           className="rectangle w-[max-content]"
                         >

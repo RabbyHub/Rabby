@@ -165,6 +165,7 @@ const ContractCall = ({
                 {operation || '-'}
               </span>
               <TooltipWithMagnetArrow
+                inApproval
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   operation

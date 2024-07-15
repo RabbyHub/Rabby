@@ -66,7 +66,7 @@ const useAccount = () => {
 const useReceiveTitle = (search: string) => {
   const { t } = useTranslation();
   const qs = useMemo(() => query2obj(search), [search]);
-  const chain = findChainByEnum(qs.chain)?.name || 'Ethereum';
+  const chain = findChainByEnum(qs.chain)?.name || 'EVM chains';
   const token = qs.token || t('global.assets');
 
   return t('page.receive.title', {
@@ -232,7 +232,7 @@ const Receive = () => {
         <div className="qr-card-img">
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
-        <div className="qr-card-address">{account?.address}</div>
+        <div className="qr-card-address text-13">{account?.address}</div>
         <button
           type="button"
           className="qr-card-btn"

@@ -60,6 +60,10 @@ const PopupContainer = styled.div`
       padding: 12px 0;
     }
 
+    .text {
+      color: var(--r-neutral-body, #3e495e);
+    }
+
     .row {
       &:nth-child(1) {
         color: var(--r-neutral-body, #3e495e);

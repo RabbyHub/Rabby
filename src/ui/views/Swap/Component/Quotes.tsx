@@ -1,45 +1,24 @@
 import { Checkbox, Popup } from '@/ui/component';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { QuoteListLoading, QuoteLoading } from './loading';
-import styled from 'styled-components';
 import { IconRefresh } from './IconRefresh';
-import { CexQuoteItem, DexQuoteItem, QuoteItemProps } from './QuoteItem';
+import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
 import {
   TCexQuoteData,
   TDexQuoteData,
   isSwapWrapToken,
+  useQuoteViewDexIdList,
   useSetRefreshId,
-  useSetSettingVisible,
   useSwapSettings,
 } from '../hooks';
 import BigNumber from 'bignumber.js';
-import { CEX, DEX, DEX_WITH_WRAP } from '@/constant';
+import { DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from '@/ui/utils/token';
-
-const CexListWrapper = styled.div`
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
-  border-radius: 6px;
-  &:empty {
-    display: none;
-  }
-
-  & > div:not(:last-child) {
-    position: relative;
-    &:not(:last-child):before {
-      content: '';
-      position: absolute;
-      width: 328px;
-      height: 0;
-      border-bottom: 1px solid var(--r-neutral-line, #d3d8e0);
-      left: 16px;
-      bottom: 0;
-    }
-  }
-`;
-
-const exchangeCount = Object.keys(DEX).length + Object.keys(CEX).length;
+import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
+import clsx from 'clsx';
+import { useRabbySelector } from '@/ui/store';
 
 interface QuotesProps
   extends Omit<
@@ -65,32 +44,8 @@ export const Quotes = ({
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
-  const { swapViewList, swapTradeList, sortIncludeGasFee } = useSwapSettings();
+  const { sortIncludeGasFee } = useSwapSettings();
 
-  const viewCount = useMemo(() => {
-    if (swapViewList) {
-      return (
-        exchangeCount -
-        Object.values(swapViewList).filter((e) => e === false).length
-      );
-    }
-    return exchangeCount;
-  }, [swapViewList]);
-
-  const tradeCount = useMemo(() => {
-    if (swapTradeList) {
-      const TradeDexList = Object.keys(DEX);
-      return Object.entries(swapTradeList).filter(
-        ([name, enable]) => enable === true && TradeDexList.includes(name)
-      ).length;
-    }
-    return 0;
-  }, [swapTradeList]);
-
-  const setSettings = useSetSettingVisible();
-  const openSettings = React.useCallback(() => {
-    setSettings(true);
-  }, []);
   const sortedList = useMemo(
     () => [
       ...(list?.sort((a, b) => {
@@ -164,10 +119,11 @@ export const Quotes = ({
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
 
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
+  const [hiddenError, setHiddenError] = useState(true);
+  const [errorQuoteDEXs, setErrorQuoteDEXs] = useState<string[]>([]);
 
-  const noCex = useMemo(() => {
-    return Object.keys(CEX).every((e) => swapViewList?.[e] === false);
-  }, [swapViewList]);
+  const viewListLength = useQuoteViewDexIdList().length;
+
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
@@ -209,13 +165,14 @@ export const Quotes = ({
     );
   }
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col flex-1 w-full overflow-auto">
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
           if (!isDex) return null;
           return (
             <DexQuoteItem
+              onErrQuote={setErrorQuoteDEXs}
               key={name}
               inSufficient={inSufficient}
               preExecResult={params.preExecResult}
@@ -233,41 +190,63 @@ export const Quotes = ({
             />
           );
         })}
+
         <QuoteListLoading fetchedList={fetchedList} />
       </div>
-      {!noCex && (
-        <div className="text-gray-light text-12 mt-16 mb-8">
-          {t('page.swap.rates-from-cex')}
-        </div>
-      )}
-      <CexListWrapper>
+      <div
+        className={clsx(
+          'flex items-center justify-center my-8 mt-24 cursor-pointer gap-4',
+          errorQuoteDEXs.length === 0 ||
+            errorQuoteDEXs?.length === viewListLength
+            ? 'hidden'
+            : 'mb-12'
+        )}
+        onClick={() => setHiddenError((e) => !e)}
+      >
+        <span className="text-13 text-rabby-neutral-foot gap-4 ">
+          {t('page.swap.hidden-no-quote-rates', {
+            count: errorQuoteDEXs.length,
+          })}
+        </span>
+        <RcIconHiddenArrow
+          viewBox="0 0 14 14"
+          className={clsx('w-14 h-14', !hiddenError && '-rotate-180')}
+        />
+      </div>
+      <div
+        className={clsx(
+          'flex flex-col gap-8 transition overflow-hidden',
+          hiddenError &&
+            errorQuoteDEXs?.length !== viewListLength &&
+            'max-h-0 h-0',
+          errorQuoteDEXs.length === 0 && 'hidden'
+        )}
+      >
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
-          if (isDex) return null;
+
+          if (!isDex) return null;
           return (
-            <CexQuoteItem
-              receiveToken={other.receiveToken}
+            <DexQuoteItem
+              onErrQuote={setErrorQuoteDEXs}
+              onlyShowErrorQuote
               key={name}
+              inSufficient={inSufficient}
+              preExecResult={params.preExecResult}
+              quote={(data as unknown) as any}
               name={name}
-              data={data}
+              isBestQuote={idx === 0}
               bestQuoteAmount={`${bestQuoteAmount}`}
               bestQuoteGasUsd={bestQuoteGasUsd}
-              isBestQuote={idx === 0}
+              active={activeName === name}
               isLoading={params.loading}
-              inSufficient={inSufficient}
+              quoteProviderInfo={
+                DEX_WITH_WRAP[name as keyof typeof DEX_WITH_WRAP]
+              }
+              {...other}
             />
           );
         })}
-        <QuoteListLoading fetchedList={fetchedList} isCex />
-      </CexListWrapper>
-      <div className="flex items-center justify-center fixed left-0 bottom-0 h-32 text-13 w-full bg-r-neutral-bg-2 text-r-neutral-foot pb-6">
-        {t('page.swap.tradingSettingTips', { viewCount, tradeCount })}
-        <span
-          onClick={openSettings}
-          className="cursor-pointer pl-4 text-blue-light underline underline-blue-light"
-        >
-          {t('page.swap.edit')}
-        </span>
       </div>
     </div>
   );
@@ -289,6 +268,23 @@ export const QuoteList = (props: QuotesProps) => {
   const { t } = useTranslation();
 
   const { sortIncludeGasFee, setSwapSortIncludeGasFee } = useSwapSettings();
+
+  const viewList = useQuoteViewDexIdList();
+
+  const height = useMemo(() => {
+    const min = 333;
+    const max = 540;
+
+    const h = 45 + 24 + viewList.length * 92;
+
+    if (h < min) {
+      return min;
+    }
+    if (h > max) {
+      return max;
+    }
+    return h;
+  }, [viewList.length]);
 
   return (
     <Popup
@@ -358,7 +354,7 @@ export const QuoteList = (props: QuotesProps) => {
           </Checkbox>
         </div>
       }
-      height={516}
+      height={height}
       onClose={onClose}
       closable={false}
       destroyOnClose
