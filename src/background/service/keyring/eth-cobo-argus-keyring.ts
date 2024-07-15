@@ -83,7 +83,13 @@ export default class CoboArgusKeyring extends EventEmitter {
         (acct) => acct.toLowerCase() === prefixedAddress.toLowerCase()
       )
     ) {
-      throw new Error(t('page.newAddress.walletConnect.status.duplicate'));
+      const error = new Error(
+        JSON.stringify({
+          address: prefixedAddress,
+          anchor: 'DuplicateAccountError',
+        })
+      );
+      throw error;
     }
 
     this.accounts.push(prefixedAddress.toLowerCase());

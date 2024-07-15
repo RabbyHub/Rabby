@@ -130,12 +130,14 @@ const Actions = ({
             originLogo={originLogo}
             engineResults={engineResults}
           />
-          <Divide />
           {!notShowBalanceChange && (
-            <BalanceChange
-              version={txDetail.pre_exec_version}
-              data={txDetail.balance_change}
-            />
+            <>
+              <Divide />
+              <BalanceChange
+                version={txDetail.pre_exec_version}
+                data={txDetail.balance_change}
+              />
+            </>
           )}
         </Card>
 
@@ -148,6 +150,7 @@ const Actions = ({
             <div className="left">
               {isSpeedUp && (
                 <TooltipWithMagnetArrow
+                  inApproval
                   placement="bottom"
                   overlayClassName="rectangle w-[max-content]"
                   title={t('page.signTx.speedUpTooltip')}
@@ -162,6 +165,7 @@ const Actions = ({
               <span>{actionName}</span>
               {isUnknown && (
                 <TooltipWithMagnetArrow
+                  inApproval
                   placement="bottom"
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={

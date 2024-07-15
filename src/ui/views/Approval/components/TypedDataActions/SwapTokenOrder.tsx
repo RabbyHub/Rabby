@@ -195,7 +195,7 @@ const Permit = ({
             <Col>
               <Row isTitle>{t('page.signTx.swap.receiver')}</Row>
               <Row>
-                <Values.Address
+                <Values.AddressWithCopy
                   id="swap-token-order-receiver"
                   address={receiver}
                   chain={chain}
@@ -228,7 +228,9 @@ const Permit = ({
           </>
         )}
         <Col>
-          <Row isTitle>{t('page.signTypedData.buyNFT.listOn')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTypedData.buyNFT.listOn')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"

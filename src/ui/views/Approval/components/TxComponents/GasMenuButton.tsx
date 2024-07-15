@@ -165,6 +165,7 @@ export const GasMenuButton: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const orderedGasList = [...gasList].reverse();
+  const customGasInfo = gasList.find((g) => g.level === 'custom')!;
 
   return (
     <Dropdown
@@ -203,7 +204,13 @@ export const GasMenuButton: React.FC<Props> = ({
                     </LevelTextStyled>
                     {(gas.level !== 'custom' || showCustomGasPrice) && (
                       <LevelPriceStyled>
-                        {new BigNumber(gas.price / 1e9).toFixed().slice(0, 8)}{' '}
+                        {new BigNumber(
+                          (gas.level === 'custom'
+                            ? customGasInfo.price
+                            : gas.price) / 1e9
+                        )
+                          .toFixed()
+                          .slice(0, 8)}{' '}
                         Gwei
                       </LevelPriceStyled>
                     )}

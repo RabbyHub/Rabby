@@ -17,7 +17,12 @@ import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { findChain } from '@/utils/chain';
-import { GasLessToSign, GasLessNotEnough } from './GasLessComponents';
+import {
+  GasLessToSign,
+  GasLessNotEnough,
+  GasLessActivityToSign,
+  GasLessConfig,
+} from './GasLessComponents';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -37,6 +42,8 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   Header?: React.ReactNode;
   gasLessFailedReason?: string;
   isWatchAddr?: boolean;
+  gasLessConfig?: GasLessConfig;
+  isGasNotEnough?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -140,6 +147,7 @@ export const FooterBar: React.FC<Props> = ({
   Header,
   gasLessFailedReason,
   isWatchAddr,
+  gasLessConfig,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -231,6 +239,9 @@ export const FooterBar: React.FC<Props> = ({
           {...props}
           disabledProcess={useGasLess ? false : props.disabledProcess}
           enableTooltip={useGasLess ? false : props.enableTooltip}
+          gasLessThemeColor={
+            isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color
+          }
         />
         {securityLevel && hasUnProcessSecurityResult && (
           <div
@@ -266,11 +277,12 @@ export const FooterBar: React.FC<Props> = ({
         {showGasLess &&
           (!securityLevel || !hasUnProcessSecurityResult) &&
           (canUseGasLess ? (
-            <GasLessToSign
+            <GasLessActivityToSign
               gasLessEnable={useGasLess}
               handleFreeGas={() => {
                 enableGasLess?.();
               }}
+              gasLessConfig={gasLessConfig}
             />
           ) : isWatchAddr ? null : (
             <GasLessNotEnough gasLessFailedReason={gasLessFailedReason} />

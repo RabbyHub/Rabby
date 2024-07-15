@@ -14,6 +14,7 @@ import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import { findChain } from '@/utils/chain';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -228,37 +229,46 @@ const flowContext = flow
     } = request;
     const requestDeferFn = () =>
       new Promise((resolve, reject) => {
-        return Promise.resolve(
-          providerController[mapMethod]({
-            ...request,
-            approvalRes,
-          })
-        )
-          .then((result) => {
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: true,
-                  data: result,
-                },
-              });
-            }
-            return result;
-          })
-          .then(resolve)
-          .catch((e: any) => {
-            Sentry.captureException(e);
-            if (isSignApproval(approvalType)) {
-              eventBus.emit(EVENTS.broadcastToUI, {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: false,
-                  errorMsg: e?.message || JSON.stringify(e),
-                },
-              });
-            }
-          });
+        let waitSignComponentPromise = Promise.resolve();
+        if (isSignApproval(approvalType) && uiRequestComponent) {
+          waitSignComponentPromise = waitSignComponentAmounted();
+        }
+
+        if (approvalRes?.isGnosis) return resolve(undefined);
+
+        return waitSignComponentPromise.then(() =>
+          Promise.resolve(
+            providerController[mapMethod]({
+              ...request,
+              approvalRes,
+            })
+          )
+            .then((result) => {
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.SIGN_FINISHED,
+                  params: {
+                    success: true,
+                    data: result,
+                  },
+                });
+              }
+              return result;
+            })
+            .then(resolve)
+            .catch((e: any) => {
+              Sentry.captureException(e);
+              if (isSignApproval(approvalType)) {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.SIGN_FINISHED,
+                  params: {
+                    success: false,
+                    errorMsg: e?.message || JSON.stringify(e),
+                  },
+                });
+              }
+            })
+        );
       });
     notificationService.setCurrentRequestDeferFn(requestDeferFn);
     const requestDefer = requestDeferFn();

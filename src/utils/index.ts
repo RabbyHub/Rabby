@@ -71,3 +71,11 @@ export const getTxScanLink = (scankLink: string, hash: string) => {
     ? `${scankLink}tx/${hash}`
     : `${scankLink}/tx/${hash}`;
 };
+
+export const safeJSONParse = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    return null;
+  }
+};

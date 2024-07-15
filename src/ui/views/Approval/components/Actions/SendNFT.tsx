@@ -99,7 +99,9 @@ const SendNFT = ({
           )}
         </SubTable>
         <Col>
-          <Row isTitle>{t('page.signTx.send.sendTo')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.send.sendTo')}
+          </Row>
           <Row>
             <ViewMore
               type="receiver"

@@ -19,7 +19,7 @@ import {
 } from '../Popup/ApprovalPopupContainer';
 
 type Valueof<T> = T[keyof T];
-const INIT_SENDING_COUNTER = 30;
+const INIT_SENDING_COUNTER = 60;
 
 const Process = ({
   status,

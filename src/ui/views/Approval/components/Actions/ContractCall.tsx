@@ -91,7 +91,9 @@ const ContractCall = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>{t('page.signTx.interactContract')}</Row>
+          <Row isTitle itemsCenter>
+            {t('page.signTx.interactContract')}
+          </Row>
           <Row>
             <ViewMore
               type="contract"
@@ -148,15 +150,13 @@ const ContractCall = ({
         </SubTable>
         <Col>
           <Row isTitle>{t('page.signTx.contractCall.operation')}</Row>
-          <Row>
+          <Row wrap>
             <div className="relative flex items-center">
-              <span
-                className="overflow-ellipsis whitespace-nowrap overflow-hidden"
-                title={requireData.call.func}
-              >
+              <span className="break-all" title={requireData.call.func}>
                 {requireData.call.func || '-'}
               </span>
               <TooltipWithMagnetArrow
+                inApproval
                 overlayClassName="rectangle w-[max-content]"
                 title={
                   requireData.call.func
@@ -191,7 +191,7 @@ const ContractCall = ({
         {requireData.unexpectedAddr && (
           <>
             <Col>
-              <Row isTitle>
+              <Row isTitle itemsCenter>
                 {t('page.signTx.contractCall.suspectedReceiver')}
               </Row>
               <Row>

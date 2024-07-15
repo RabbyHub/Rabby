@@ -59,6 +59,7 @@ export const TestnetActions = ({
   isSpeedUp,
   isReady,
   originLogo,
+  origin,
 }: {
   chain: Chain;
   raw: Record<string, string | number>;
@@ -66,6 +67,7 @@ export const TestnetActions = ({
   isSpeedUp: boolean;
   isReady?: boolean;
   originLogo?: string;
+  origin: string;
 }) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -99,6 +101,7 @@ export const TestnetActions = ({
             <div className="left">
               {isSpeedUp && (
                 <TooltipWithMagnetArrow
+                  inApproval
                   placement="bottom"
                   overlayClassName="rectangle w-[max-content]"
                   title={t('page.signTx.speedUpTooltip')}
@@ -113,6 +116,7 @@ export const TestnetActions = ({
               <span>{actionName}</span>
               {isUnknown && (
                 <TooltipWithMagnetArrow
+                  inApproval
                   placement="bottom"
                   overlayClassName="rectangle w-[max-content] decode-tooltip"
                   title={

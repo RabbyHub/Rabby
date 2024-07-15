@@ -32,7 +32,8 @@
     "Done": "完成",
     "nonce": "nonce",
     "Nonce": "Nonce",
-    "tryAgain": "再试一次"
+    "tryAgain": "再试一次",
+    "notSupportTesntnet": "不支持自定义网络"
   },
   "page": {
     "transactions": {
@@ -105,7 +106,8 @@
           "feedback": "反馈",
           "more": "更多",
           "manageAddress": "管理地址",
-          "nft": "NFT"
+          "nft": "NFT",
+          "rabbyPoints": "Rabby Points"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -141,14 +143,18 @@
         "disconnectAll": "全部断开",
         "disconnectRecentlyUsed": {
           "title": "断开最近使用的 <strong>{{count}}</strong> 个Dapp",
-          "description": "置顶的 DApp 将保持连接"
+          "description": "置顶的 DApp 将保持连接",
+          "title_one": "断开<strong>{{count}}</strong>个已连接的 Dapp",
+          "title_other": "断开<strong>{{count}}</strong>个已连接的 Dapps"
         },
         "title": "已连接的 Dapp",
         "pinned": "已置顶",
         "noPinnedDapps": "没有置顶的 dapp",
         "dragToSort": "拖动排序",
         "noRecentlyConnectedDapps": "没有最近连接的 Dapp",
-        "recentlyConnected": "最近连接"
+        "recentlyConnected": "最近连接",
+        "noConnectedDapps": "没有已连接的 Dapps",
+        "dapps": "Dapps"
       },
       "contacts": {
         "noData": "没有数据",
@@ -168,7 +174,12 @@
         "swapTip": "你需要先在 Rabby Wallet 中完成一笔与知名dex的兑换",
         "title": "领取 Rabby Badge",
         "viewOnDebank": "在 DeBank 上查看",
-        "viewYourClaimCode": "查看你的邀请码"
+        "viewYourClaimCode": "查看你的邀请码",
+        "freeGasTitle": "领取免费 Gas 徽章",
+        "freeGasTip": "请使用免费 Gas 签署交易。当您的 Gas 不足时，“免费 Gas”按钮将自动出现。",
+        "learnMore": "了解更多",
+        "freeGasNoCode": "请点击下方按钮访问 DeBank，并首先使用您当前的地址获取领取代码。",
+        "rabbyFreeGasUserNo": "Rabby Free Gas 用户 No.{{num}}"
       },
       "security": {
         "comingSoon": "更多功能即将推出",
@@ -232,10 +243,12 @@
         "updateVersion": {
           "content": "检测到 Rabby Wallet 更新版本\n点击查看如何手动更新",
           "okText": "查看教程",
-          "successTip": "你正在使用最新版本"
+          "successTip": "你正在使用最新版本",
+          "title": "有更新可用"
         },
         "warning": "警告",
-        "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token"
+        "requestDeBankTestnetGasToken": "获取 DeBank Testnet Gas Token",
+        "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！"
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -264,30 +277,30 @@
           "subTitle": "该列表中的代币不会计算到总余额中"
         },
         "table": {
-          "assetAmount": "Asset / Amount",
-          "price": "Price",
-          "useValue": "USD Value",
-          "healthRate": "Health rate",
-          "debtRatio": "Debt Ratio",
-          "unlockAt": "Unlock at",
-          "lentAgainst": "LENT AGAINST",
-          "type": "Type",
-          "strikePrice": "Strike price",
-          "exerciseEnd": "Exercise end",
-          "tradePair": "Trade pair",
-          "side": "Side",
-          "leverage": "Leverage",
+          "assetAmount": "资产 / 数量",
+          "price": "价格",
+          "useValue": "美元价值",
+          "healthRate": "健康率",
+          "debtRatio": "债务比率",
+          "unlockAt": "解锁于",
+          "lentAgainst": "借出抵押",
+          "type": "类型",
+          "strikePrice": "行使价格",
+          "exerciseEnd": "行使结束",
+          "tradePair": "交易对",
+          "side": "方向",
+          "leverage": "杠杆",
           "PL": "P&L",
-          "unsupportedPoolType": "Unsupported pool type",
-          "claimable": "Claimable",
-          "endAt": "End at",
-          "dailyUnlock": "Daily unlock",
+          "unsupportedPoolType": "不支持的池类型",
+          "claimable": "可认领的",
+          "endAt": "结束于",
+          "dailyUnlock": "每日解锁",
           "pool": "POOL",
-          "token": "Token",
-          "balanceValue": "Balance / Value",
-          "percent": "Percent",
-          "summaryTips": "Asset value divided by total net worth",
-          "summaryDescription": "All assets in protocols (e.g. LP tokens) are resolved to the underlying assets for statistical calculations",
+          "token": "代币",
+          "balanceValue": "余额 / 价值",
+          "percent": "百分比",
+          "summaryTips": "资产价值除以总净值",
+          "summaryDescription": "协议中的所有资产（例如 LP 代币）都将解析为统计计算所需的基础资产",
           "noMatch": "没有匹配",
           "lowValueDescription": "低价值资产将显示在这里",
           "lowValueAssets": "{{count}} 个低价值资产"
@@ -300,7 +313,31 @@
         "customLinkText": "搜索代币地址，添加代币",
         "customDescription": "你手动添加的代币将显示在此处",
         "comingSoon": "即将推出...",
-        "searchPlaceholder": "代币"
+        "searchPlaceholder": "代币",
+        "customButtonText": "添加自定义代币",
+        "AddMainnetToken": {
+          "title": "添加自定义代币",
+          "selectChain": "选择链",
+          "searching": "搜索代币",
+          "tokenAddress": "代币地址",
+          "tokenAddressPlaceholder": "代币地址",
+          "notFound": "未找到代币",
+          "isBuiltInToken": "已支持的代币"
+        },
+        "AddTestnetToken": {
+          "title": "添加自定义网络代币",
+          "selectChain": "选择链",
+          "searching": "搜索代币",
+          "tokenAddress": "代币地址",
+          "tokenAddressPlaceholder": "代币地址",
+          "notFound": "未找到代币"
+        },
+        "TestnetAssetListContainer": {
+          "add": "代币",
+          "addTestnet": "网络"
+        },
+        "noTestnetAssets": "没有自定义网络资产",
+        "addTokenEntryText": "代币"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -404,7 +441,18 @@
         "clearAll": "全部清除",
         "wordPhrase": "我有一个 <1>{{count}}</1> 词的助记词",
         "pastedAndClear": "已粘贴并清空剪切板",
-        "inputInvalidCount": "有{{count}}处输入内容不符合助记词规范，请检查"
+        "inputInvalidCount": "有{{count}}处输入内容不符合助记词规范，请检查",
+        "wordPhraseAndPassphrase": "我有一个包含 <1>{{count}}</1> 个词的短语和密码",
+        "slip39SeedPhrase": "我有一个 <0>{{SLIP39}}</0> 种子短语",
+        "slip39SeedPhraseWithPassphrase": "我有一个带密码的 <0>{{SLIP39}}</0> 种子短语",
+        "slip39SeedPhrasePlaceholder_one": "在这里输入你的第 {{count}} 个种子短语份额",
+        "slip39SeedPhrasePlaceholder_two": "在这里输入你的第 {{count}} 个种子短语份额",
+        "slip39SeedPhrasePlaceholder_few": "在这里输入你的第 {{count}} 个种子短语份额",
+        "slip39SeedPhrasePlaceholder_other": "在这里输入你的第 {{count}} 个种子短语份额",
+        "invalidContent": "内容无效",
+        "inputInvalidCount_one": "1 个输入不符合种子短语规范，请检查。",
+        "inputInvalidCount_other": "{{count}} 个输入不符合种子短语规范，请检查。",
+        "passphrase": "密码"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥  <br/><1>查看操作指南<1/></1>",
@@ -414,7 +462,8 @@
         "step": "步骤",
         "importSeedPhrase": "导入助记词或私钥",
         "importSeedPhraseTips": "它只会存储在本地浏览器上。 \nRabby 永远不会访问你的私人信息。",
-        "tipsDesc": "你的私钥和助记词不属于MetaMask或者某个具体钱包，它只属于你自己。"
+        "tipsDesc": "你的私钥和助记词不属于MetaMask或者某个具体钱包，它只属于你自己。",
+        "tips": "Tips:"
       },
       "privateKey": {
         "required": "请输入私钥",
@@ -431,7 +480,11 @@
           "question": "可以导入 KeyStore 吗？",
           "answer": "是的，你可以在此处<1>导入 KeyStore</1>。"
         },
-        "notAValidPrivateKey": "无效私钥"
+        "notAValidPrivateKey": "无效私钥",
+        "repeatImportTips": {
+          "desc": "此地址已导入。",
+          "question": "是否要切换到此地址？"
+        }
       },
       "importedSuccessfully": "导入成功",
       "ledger": {
@@ -633,12 +686,12 @@
         }
       },
       "coboSafe": {
-        "addCoboArgusAddress": "Add Cobo Argus address",
-        "findTheAssociatedSafeAddress": "Find the associated safe address",
-        "import": "Import",
-        "inputSafeModuleAddress": "Input Safe Module address",
-        "invalidAddress": "Invalid address",
-        "whichChainIsYourCoboAddressOn": "Which chain is your cobo address on"
+        "addCoboArgusAddress": "添加 Cobo Argus 地址",
+        "findTheAssociatedSafeAddress": "查找关联的安全地址",
+        "import": "导入",
+        "inputSafeModuleAddress": "输入安全模块地址",
+        "invalidAddress": "地址无效",
+        "whichChainIsYourCoboAddressOn": "您的 Cobo 地址位于哪条链上"
       },
       "imkey": {
         "title": "连接 imKey"
@@ -702,7 +755,8 @@
         },
         "MempoolList": {
           "empty": "未发现包含这笔交易的节点",
-          "reBroadcastBtn": "重新广播"
+          "reBroadcastBtn": "重新广播",
+          "title": "Appeared in {{count}} RPC nodes"
         },
         "message": {
           "broadcastSuccess": "已广播",
@@ -724,7 +778,16 @@
           }
         },
         "SkipNonceAlert": {
-          "alert": "当前 {{chainName}} 链因快捷取消导致 Nonce#{{nonce}} 被跳过, 导致后续 Pending 交易无法完成, 可 <5></5><6>发起一笔链上交易</6><7></7>来填充"
+          "alert": "当前 {{chainName}} 链因快捷取消导致 Nonce#{{nonce}} 被跳过, 导致后续 Pending 交易无法完成, 可 <5></5><6>发起一笔链上交易</6><7></7>来填充",
+          "clearPendingAlert": "{{chainName}} 事务（{{nonces}}）已挂起超过3分钟。您可以在此链上 <5></5> <6>清除挂起的交易</6> <7></7> 并发起新交易。"
+        },
+        "gas": {
+          "noCost": "无 Gas 费用"
+        },
+        "PredictTime": {
+          "time": "预计将在 {{time}} 内打包",
+          "noTime": "正在预测打包时间",
+          "failed": "打包时间预测失败"
         }
       },
       "title": "签名记录"
@@ -755,7 +818,8 @@
         "table": {
           "bodyEmpty": {
             "loadingText": "加载中...",
-            "noMatchText": "没有匹配"
+            "noMatchText": "没有匹配",
+            "noDataText": "无授权"
           }
         },
         "RevokeButton": {
@@ -905,7 +969,10 @@
       "sort-by-balance": "按地址金额排序",
       "sort-by-address-type": "按地址类型排序",
       "sort-by-address-note": "按地址备注排序",
-      "sort-address": "地址排序"
+      "sort-address": "地址排序",
+      "enterThePassphrase": "输入密码",
+      "enterPassphraseTitle": "输入密码以签名",
+      "passphraseError": "密码无效"
     },
     "receive": {
       "title": "在 {{chain}} 上接收{{token}}",
@@ -1050,7 +1117,8 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费"
+      "GasReserved": "预留 <1>0</1> {{ tokenName }} 用于 矿工费",
+      "SwitchReserveGas": "预留 Gas <1 />"
     },
     "signFooterBar": {
       "addressTip": {
@@ -1064,7 +1132,8 @@
         "seedPhrase": "助记词地址",
         "trezor": "Trezor 地址",
         "watchAddress": "无法使用观察地址进行签名",
-        "coboSafe": "Cobo Argus Address"
+        "coboSafe": "Cobo Argus 地址",
+        "seedPhraseWithPassphrase": "种子短语地址（密码）"
       },
       "beginSigning": "开始签名流程",
       "connectButton": "连接",
@@ -1099,7 +1168,7 @@
         "notSupport": "暂不支持 {{0}}"
       },
       "ledger": {
-        "blindSigTutorial": "Blind Signature Tutorial from Ledger",
+        "blindSigTutorial": "Ledger 的盲签名教程",
         "notConnected": "你的钱包未连接，请重新连接",
         "resent": "重试",
         "siging": "签名请求发送中",
@@ -1108,13 +1177,14 @@
         "txRejectedByLedger": "Ledger 上已拒绝该交易",
         "unlockAlert": "请插入并解锁你的 Ledger 设备，打开 Ethereum 应用程序",
         "updateFirmwareAlert": "请更新你的 Ledger 固件版本及 Ethereum 应用程序",
-        "submitting": "已签名，交易正在提交"
+        "submitting": "已签名，交易正在提交",
+        "resubmited": "重新提交"
       },
       "qrcode": {
         "afterSignDesc": "签名确认后，请将 {{brand}} 的二维码放置于你的电脑摄像头前",
-        "failedToGetExplain": "Failed to get explain",
+        "failedToGetExplain": "获取说明失败",
         "getSig": "获取签名",
-        "misMatchSignId": "Incongruent transaction data. Please check the transaction details.",
+        "misMatchSignId": "交易数据不一致。请检查交易详情。",
         "qrcodeDesc": "请使用你的 {{brand}} 扫码签名。<br></br>签名后，点击下方按钮获取签名。",
         "sigCompleted": "交易已提交",
         "sigReceived": "签名已获取",
@@ -1139,7 +1209,23 @@
       "testnet": "测试网",
       "mainnet": "主网",
       "imKeyNotConnected": "imKey 未连接",
-      "imKeyConnected": "imKey 已连接"
+      "imKeyConnected": "imKey 已连接",
+      "gasless": {
+        "unavailable": "Gas不足且不符合免费Gas条件",
+        "notEnough": "Gas余额不足",
+        "GetFreeGasToSign": "获取免费Gas进行签名",
+        "rabbyPayGas": "Rabby将支付所需Gas费用 - 只需签名即可",
+        "customRpcUnavailableTip": "不支持免费Gas的自定义RPC",
+        "walletConnectUnavailableTip": "通过WalletConnect连接的移动钱包不支持免费Gas",
+        "watchUnavailableTip": "观察钱包地址不支持免费Gas"
+      },
+      "cancelTransaction": "取消交易",
+      "detectedMultipleRequestsFromThisDapp": "检测到来自此Dapp的多个请求",
+      "cancelCurrentTransaction": "取消当前交易",
+      "cancelAll": "取消此Dapp的所有{{count}}个请求",
+      "blockDappFromSendingRequests": "阻止Dapp在1分钟内发送请求",
+      "cancelConnection": "取消连接",
+      "cancelCurrentConnection": "取消当前连接"
     },
     "signText": {
       "createKey": {
@@ -1176,7 +1262,9 @@
         "operationABIDesc": "操作从 ABI 解码",
         "operationCantDecode": "操作未解码",
         "payNativeToken": "支付{{symbol}}",
-        "title": "合约调用"
+        "title": "合约调用",
+        "suspectedReceiver": "异常地址",
+        "receiver": "接收者地址"
       },
       "crossChain": {
         "title": "跨链"
@@ -1272,7 +1360,10 @@
         "sendToken": "发送代币",
         "title": "发送代币",
         "tokenNotSupport": "不支持 {{0}}",
-        "whitelistTitle": "白名单"
+        "whitelistTitle": "白名单",
+        "scamAddress": "诈骗地址",
+        "fromMySeedPhrase": "使用我的种子短语",
+        "fromMyPrivateKey": "使用我的私钥"
       },
       "sendNFT": {
         "nftNotSupport": "不支持 NFT",
@@ -1305,7 +1396,7 @@
         "title": "兑换 & 跨链"
       },
       "tokenApprove": {
-        "amountPopupTitle": "数量",
+        "amountPopupTitle": "批准金额",
         "approveTo": "授权给",
         "approveToken": "授权代币",
         "contractTrustValueTip": "信任值是指授权并暴露给该合约的资产总价值，\n信任值低表示该合约存在风险或 180 天内不活跃",
@@ -1325,8 +1416,8 @@
       "viewRaw": "查看原始数据",
       "wrapToken": "Wrap 代币",
       "contractPopularity": "No.{{0}} on {{1}}",
-      "myMarkWithContract": "My mark on {{chainName}} contract",
-      "coboSafeNotPermission": "This delegate address does not have permission to initiate this transaction",
+      "myMarkWithContract": "我在 {{chainName}} 合约上的标记",
+      "coboSafeNotPermission": "此委托地址无权发起此交易",
       "l2GasEstimateTooltip": "该L2链的交易Gas预估值不包括L1的验证费用，实际的Gas消耗比当前预估值要多",
       "BroadcastMode": {
         "instant": {
@@ -1348,8 +1439,12 @@
           "notSupported": "不支持该模式"
         },
         "lowGasDeadline": {
-          "label": "最长等待时间"
-        }
+          "label": "最长等待时间",
+          "1h": "1h",
+          "4h": "4h",
+          "24h": "24h"
+        },
+        "title": "广播模式"
       },
       "SafeNonceSelector": {
         "optionGroup": {
@@ -1358,6 +1453,14 @@
         },
         "error": {
           "pendingList": "Pending列表获取失败, <1/><2>重试</2>"
+        },
+        "explain": {
+          "contractCall": "合约调用",
+          "send": "发送代币",
+          "unknown": "未知交易"
+        },
+        "option": {
+          "new": "新交易"
         }
       },
       "common": {
@@ -1365,7 +1468,8 @@
         "descTipSafe": "该签名不涉及资产变动和身份验证权限",
         "descTipWarningPrivacy": "签名可能涉及身份验证权限",
         "descTipWarningAssets": "签名可能涉及资产变动",
-        "descTipWarningBoth": "该签名不涉及资产变动和身份验证权限"
+        "descTipWarningBoth": "该签名不涉及资产变动和身份验证权限",
+        "interactContract": "交互合约"
       },
       "chain": "链",
       "protocol": "协议",
@@ -1377,7 +1481,45 @@
       "amount": "数量",
       "trustValueTitle": "信任值",
       "addressSource": "地址来源",
-      "maxPriorityFeeDisabledAlert": "请先设置 Gas Price"
+      "maxPriorityFeeDisabledAlert": "请先设置 Gas Price",
+      "customRPCErrorModal": {
+        "title": "自定义RPC错误",
+        "content": "您的自定义RPC当前不可用。您可以禁用它，并继续使用Rabby的官方RPC进行签名。",
+        "button": "禁用自定义RPC"
+      },
+      "revokePermit": {
+        "title": "撤销许可令牌批准"
+      },
+      "assetOrder": {
+        "title": "资产顺序",
+        "listAsset": "列出资产",
+        "receiveAsset": "接收资产"
+      },
+      "importedDelegatedAddress": "导入的委托地址",
+      "noDelegatedAddress": "没有导入的委托地址",
+      "coboSafeCreate": {
+        "safeWalletTitle": "安全{钱包}",
+        "descriptionTitle": "描述",
+        "title": "创建 Cobo Safe"
+      },
+      "coboSafeModificationRole": {
+        "title": "提交安全角色修改",
+        "safeWalletTitle": "安全{钱包}",
+        "descriptionTitle": "描述"
+      },
+      "coboSafeModificationDelegatedAddress": {
+        "title": "提交委托地址修改",
+        "safeWalletTitle": "安全{钱包}",
+        "descriptionTitle": "描述"
+      },
+      "coboSafeModificationTokenApproval": {
+        "title": "提交代币批准修改",
+        "safeWalletTitle": "安全{钱包}",
+        "descriptionTitle": "描述"
+      },
+      "contract": "智能合约",
+      "typedDataMessage": "签署类型数据",
+      "label": "标签"
     },
     "signTypedData": {
       "buyNFT": {
@@ -1411,7 +1553,7 @@
       "signMultiSig": {
         "title": "确认交易"
       },
-      "signTypeDataOnChain": "Sign {{chain}} Typed Data",
+      "signTypeDataOnChain": "在 {{chain}} 上签署类型数据",
       "swapTokenOrder": {
         "title": "代币订单"
       },
@@ -1491,12 +1633,22 @@
       "wrap-contract": "Wrap 合约",
       "actual": "实际：",
       "gas-fee": "矿工费：{{gasUsed}}",
-      "estimate": "预估："
+      "estimate": "预估：",
+      "no-slippage-for-wrap": "Wrap 无滑点"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持请求的链",
       "title": "",
-      "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接"
+      "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接",
+      "chainNotSupportYet": "Rabby尚未支持请求的链",
+      "chainId": "链 ID：",
+      "unknownChain": "未知链",
+      "requestsReceived": "收到1个请求",
+      "requestsReceivedPlural": "收到{{count}}个请求",
+      "requestRabbyToSupport": "请求Rabby提供支持",
+      "chainNotSupportAddChain": "Rabby尚未集成请求的链。您可以将其添加为自定义测试网络",
+      "addChain": "添加测试网络",
+      "desc": "请求的网络尚未被Rabby集成。您可以手动将其添加为自定义网络"
     },
     "unlock": {
       "btn": {
@@ -1529,8 +1681,8 @@
       "please-input-address-note": "请输入地址备注",
       "qr-code": "二维码",
       "source": "来源",
-      "coboSafeErrorModule": "Address has expired, please delete and import the address again.",
-      "importedDelegatedAddress": "Imported Delegated address",
+      "coboSafeErrorModule": "地址已过期，请删除并重新导入地址。",
+      "importedDelegatedAddress": "导入的委托地址",
       "safeModuleAddress": "Safe Module Address"
     },
     "preferMetamaskDapps": {
@@ -1554,6 +1706,10 @@
         "title": "",
         "rpcUrl": "RPC URL",
         "rpcUrlPlaceholder": "输入 RPC URL"
+      },
+      "EditCustomTestnetModal": {
+        "title": "添加自定义网络",
+        "quickAdd": "从 Chainlist 快速添加"
       }
     },
     "requestDebankTestnetGasToken": {
@@ -1580,7 +1736,8 @@
       "approvalExplain": "授权 {{count}} {{token}} 给 {{protocol}}",
       "unlimited": "无限额度",
       "action": {
-        "send": "发送"
+        "send": "发送",
+        "cancel": "取消挂起交易"
       },
       "viewBtn": "查看",
       "replaceBtn": "替换",
@@ -1599,16 +1756,19 @@
       "gnosisChainDesc": "该地址部署于  {{count}} 条链上"
     },
     "backupPrivateKey": {
-      "alert": "This Private Key is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "此私钥是您资产的凭证。请勿丢失或泄露给他人，否则可能永远失去您的资产。请在安全环境中查看并小心保管。",
       "clickToShowQr": "点击展示私钥二维码",
       "clickToShow": "点击展示私钥",
       "title": "备份私钥"
     },
     "backupSeedPhrase": {
-      "alert": "This Seed Phrase is the credential to your assets. DO NOT lose it or         reveal it to others, otherwise you might lose your assets forever.         Please view it in a secure environment and keep it carefully.",
+      "alert": "此种子短语是您资产的凭证。请勿丢失或泄露给他人，否则可能永远失去您的资产。请在安全环境中查看并小心保管。",
       "clickToShow": "点击展示助记词",
       "copySeedPhrase": "复制助记词",
-      "title": "备份助记词"
+      "title": "备份助记词",
+      "showQrCode": "显示二维码",
+      "qrCodePopupTitle": "二维码",
+      "qrCodePopupTips": "永远不要与任何其他人分享种子短语的二维码。请在安全的环境中查看并小心保管。"
     },
     "ethSign": {
       "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
@@ -1625,13 +1785,13 @@
     },
     "welcome": {
       "step2": {
-        "title": "Self-custodial",
-        "desc": "Private keys are stored locally with sole access to you",
-        "btnText": "Get Started"
+        "title": "自托管",
+        "desc": "私钥存储在本地，只有您能访问",
+        "btnText": "开始使用"
       },
       "step1": {
-        "title": "Access All Dapps",
-        "desc": "Rabby connects to all Dapps that MetaMask supports"
+        "title": "访问所有 Dapp",
+        "desc": "Rabby 可连接到 MetaMask 支持的所有 Dapp"
       }
     },
     "importQrBase": {
@@ -1647,6 +1807,193 @@
       "loading": "正在查询地址部署链",
       "placeholder": "请输入地址",
       "title": "添加 Safe 地址"
+    },
+    "pendingDetail": {
+      "Header": {
+        "predictTime": "预计打包时间"
+      },
+      "TxStatus": {
+        "completed": "已完成",
+        "pendingBroadcasted": "待处理：已广播",
+        "pendingBroadcast": "待处理：待广播",
+        "reBroadcastBtn": "重新广播"
+      },
+      "TxHash": {
+        "hash": "交易哈希"
+      },
+      "TxTimeline": {
+        "pending": "正在检查状态...",
+        "created": "交易已创建",
+        "broadcasted": "最近已广播",
+        "broadcastedCount_ordinal_one": "{{count}}次广播",
+        "broadcastedCount_ordinal_two": "{{count}}次广播",
+        "broadcastedCount_ordinal_few": "{{count}}次广播",
+        "broadcastedCount_ordinal_other": "{{count}}次广播"
+      },
+      "MempoolList": {
+        "col": {
+          "nodeName": "节点名称",
+          "nodeOperator": "节点操作者",
+          "txStatus": "交易状态"
+        },
+        "txStatus": {
+          "appeared": "已出现",
+          "appearedOnce": "仅出现一次",
+          "notFound": "未找到"
+        },
+        "title": "出现在 {{count}} 个RPC节点中"
+      },
+      "PendingTxList": {
+        "title": "所有待处理交易中的Gas价格排名 #{{rank}}",
+        "titleNotFound": "所有待处理交易中无排名",
+        "filterBaseFee": {
+          "label": "仅满足基础费用要求",
+          "tooltip": "仅显示Gas价格符合区块基础费用要求的交易"
+        },
+        "col": {
+          "gasPrice": "Gas 价格",
+          "action": "交易操作",
+          "balanceChange": "余额变动",
+          "actionType": "操作类型",
+          "interact": "与之交互"
+        },
+        "titleSame": "与当前相同Gas价格排名 #{{rank}}",
+        "titleSameNotFound": "当前Gas价格无排名"
+      },
+      "Empty": {
+        "noData": "未找到数据"
+      },
+      "PrePackInfo": {
+        "col": {
+          "prePackContent": "预打包内容",
+          "expectations": "期望",
+          "prePackResults": "预打包结果",
+          "difference": "检查结果"
+        },
+        "type": {
+          "pay": "支付",
+          "receive": "接收"
+        },
+        "noLoss": "未发现损失",
+        "noError": "未发现错误",
+        "title": "预打包检查",
+        "error": "{{count}} 个错误发现",
+        "loss": "{{lossCount}} 个损失发现",
+        "desc": "在最新区块中执行的模拟，更新于 {{time}}"
+      },
+      "Predict": {
+        "completed": "交易已完成",
+        "predictFailed": "打包时间预测失败",
+        "skipNonce": "您的地址在以太坊链上的Nonce已跳过，导致当前交易无法完成"
+      }
+    },
+    "dappSearch": {
+      "selectChain": "选择链",
+      "searchResult": {
+        "foundDapps": "找到 <2>{{count}}</2> 个Dapp",
+        "totalDapps": "总共 <2>{{count}}</2> 个Dapp"
+      },
+      "expand": "展开",
+      "emptyFavorite": "没有收藏的Dapp",
+      "favorite": "收藏",
+      "emptySearch": "未找到Dapp",
+      "listBy": "Dapp已由以下列表"
+    },
+    "rabbyPoints": {
+      "title": "Rabby 积分",
+      "out-of-x-current-total-points": "在{{total}}总分发积分中",
+      "share-on": "分享到",
+      "referral-code-copied": "已复制推荐码",
+      "earn-points": "赚取积分",
+      "top-100": "前100名",
+      "claimItem": {
+        "claim": "认领",
+        "disabledTip": "当前无法认领积分",
+        "go": "前往",
+        "earnTip": "每天限制一次。请在UTC+0时区00:00后再赚取积分",
+        "claimed": "已认领"
+      },
+      "claimModal": {
+        "title": "认领初始积分",
+        "snapshotTime": "快照时间：{{time}}",
+        "placeholder": "输入推荐码获取额外积分（可选）",
+        "claim": "认领",
+        "addressBalance": "钱包余额",
+        "MetaMaskSwap": "MetaMask 交换",
+        "rabbyUser": "Rabby 活跃用户",
+        "rabbyValuedUserBadge": "Rabby 重要用户徽章",
+        "rabbyDesktopGenesisNft": "Rabby 桌面起源NFT",
+        "walletBalance": "钱包余额",
+        "activeStats": "活跃状态",
+        "referral-code": "推荐码",
+        "invalid-code": "无效的推荐码",
+        "cantUseOwnCode": "您不能使用自己的推荐码。",
+        "season2": "第二季"
+      },
+      "referralCode": {
+        "referral-code-cannot-be-empty": "推荐码不能为空",
+        "referral-code-cannot-exceed-15-characters": "推荐码不能超过15个字符",
+        "referral-code-already-exists": "推荐码已存在",
+        "referral-code-available": "推荐码可用",
+        "my-referral-code": "我的推荐码",
+        "refer-a-new-user-to-get-50-points": "推荐新用户获取50积分",
+        "set-my-code": "设置我的推荐码",
+        "set-my-referral-code": "设置我的推荐码",
+        "once-set-this-referral-code-is-permanent-and-cannot-change": "一旦设置，此推荐码将永久不变。",
+        "max-15-characters-use-numbers-and-letters-only": "最多15个字符，只能使用数字和字母。",
+        "confirm": "确认",
+        "verifyAddressModal": {
+          "verify-address": "验证地址",
+          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "请签署此文本消息以验证您是此地址的所有者",
+          "cancel": "取消",
+          "sign": "签名"
+        }
+      },
+      "code-set-successfully": "推荐码设置成功",
+      "initialPointsClaimEnded": "初始积分认领已结束",
+      "firstRoundEnded": "🎉 第一轮Rabby积分已结束",
+      "secondRoundEnded": "🎉 第二轮Rabby积分已结束"
+    },
+    "customTestnet": {
+      "title": "自定义网络",
+      "desc": "Rabby 无法验证自定义网络的安全性，请仅添加信任的网络。",
+      "add": "添加自定义网络",
+      "empty": "没有自定义网络",
+      "currency": "货币",
+      "id": "ID",
+      "CustomTestnetForm": {
+        "id": "链ID",
+        "name": "网络名称",
+        "rpcUrl": "RPC URL",
+        "idRequired": "请输入链ID",
+        "nameRequired": "请输入网络名称",
+        "rpcUrlRequired": "请输入RPC URL",
+        "nativeTokenSymbol": "货币符号",
+        "nativeTokenSymbolRequired": "请输入货币符号",
+        "blockExplorerUrl": "区块浏览器URL（可选）"
+      },
+      "AddFromChainList": {
+        "title": "从Chainlist快速添加",
+        "search": "搜索自定义网络名称或ID",
+        "empty": "未找到链",
+        "tips": {
+          "added": "您已经添加了此链",
+          "supported": "该链已被Rabby钱包集成"
+        }
+      },
+      "signTx": {
+        "title": "交易数据"
+      },
+      "ConfirmModifyRpcModal": {
+        "desc": "该链已被Rabby集成。您是否需要修改其RPC URL？"
+      }
+    },
+    "addChain": {
+      "title": "将自定义网络添加到Rabby",
+      "desc": "Rabby 无法验证自定义网络的安全性，请仅添加信任的网络。"
+    },
+    "sign": {
+      "transactionSpeed": "交易速度"
     }
   },
   "component": {
@@ -1714,7 +2061,7 @@
       "loadingData": "加载数据..."
     },
     "MultiSelectAddressList": {
-      "imported": "Imported"
+      "imported": "已导入"
     },
     "NFTNumberInput": {
       "erc1155Tips": "你持有数量为 {{amount}}",
@@ -1740,7 +2087,8 @@
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "搜索链",
-      "noChains": "无匹配"
+      "noChains": "无匹配",
+      "addTestnet": "添加自定义网络"
     },
     "TokenSelector": {
       "listTableHead": {
@@ -1782,7 +2130,7 @@
   },
   "background": {
     "error": {
-      "noCurrentAccount": "No current account",
+      "noCurrentAccount": "当前账户不存在",
       "invalidChainId": "无效的 chain id",
       "notFindChain": "无法找到 {{chain}} 链",
       "unknownAbi": "未知的合约 abi",
@@ -1795,10 +2143,10 @@
       "invalidPrivateKey": "私钥无效",
       "invalidJson": "输入的文件无效",
       "invalidMnemonic": "助记词无效，请检查！",
-      "notFoundKeyringByAddress": "Can't find keyring by address",
+      "notFoundKeyringByAddress": "无法找到与地址对应的密钥环",
       "txPushFailed": "交易推送失败",
       "unlock": "你需要先解锁钱包",
-      "canNotUnlock": "Cannot unlock without a previous vault",
+      "canNotUnlock": "无法在没有先前保险库的情况下解锁",
       "duplicateAccount": "地址已导入"
     },
     "transactionWatcher": {
@@ -1825,6 +2173,7 @@
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "主网和测试网",
       "TESTNET": "仅限测试网"
-    }
+    },
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "通过助记词（密码）导入"
   }
 }

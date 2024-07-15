@@ -135,6 +135,8 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     data?.tx ? { ...data?.tx, chainId: CHAINS[chain].id } : undefined
   );
 
+  console.log('dexId', dexId, { routerPass, spenderPass, callDataPass });
+
   return {
     isSdkDataPass: routerPass && spenderPass && callDataPass,
   };

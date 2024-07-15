@@ -126,11 +126,13 @@ export const SubRow = ({
   isTitle = false,
   tip,
   className,
+  itemsCenter,
 }: {
   children: ReactNode;
   isTitle?: boolean;
   tip?: string;
   className?: string;
+  itemsCenter?: boolean;
 }) => {
   return (
     <SubRowWrapper
@@ -138,7 +140,7 @@ export const SubRow = ({
         'row relative',
         {
           title: isTitle,
-          'items-center': tip,
+          'items-center': itemsCenter || tip,
         },
         className
       )}
@@ -146,10 +148,14 @@ export const SubRow = ({
       {children}
       {tip && (
         <TooltipWithMagnetArrow
+          inApproval
           title={tip}
           overlayClassName="rectangle w-[max-content] max-w-[355px]"
         >
-          <img src={IconQuestionMark} className="icon icon-tip ml-6 inline" />
+          <img
+            src={IconQuestionMark}
+            className="icon icon-tip ml-6 inline -mt-2"
+          />
         </TooltipWithMagnetArrow>
       )}
     </SubRowWrapper>

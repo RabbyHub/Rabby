@@ -274,6 +274,7 @@ const TokenLabel = ({
     >
       {isFake && (
         <TooltipWithMagnetArrow
+          inApproval
           overlayClassName="rectangle w-[max-content]"
           title={t('page.signTx.fakeTokenAlert')}
         >
@@ -282,6 +283,7 @@ const TokenLabel = ({
       )}
       {isScam && (
         <TooltipWithMagnetArrow
+          inApproval
           overlayClassName="rectangle w-[max-content]"
           title={t('page.signTx.scamTokenAlert')}
         >
@@ -305,6 +307,7 @@ const AddressWrapper = styled.div`
     display: flex;
     .icon-arrow-right {
       margin-left: 2px;
+      color: var(--r-neutral-foot, #6a7587);
     }
     &:hover {
       border-color: var(--r-blue-default, #7084ff);
@@ -328,6 +331,7 @@ const Address = ({
   return (
     <AddressWrapper className="value-address relative">
       <TooltipWithMagnetArrow
+        inApproval
         title={address}
         className="rectangle w-[max-content]"
       >
@@ -367,6 +371,7 @@ const AddressWithCopy = ({
   return (
     <AddressWrapper className="value-address relative" id={id}>
       <TooltipWithMagnetArrow
+        inApproval
         title={address}
         className="rectangle w-[max-content]"
       >
