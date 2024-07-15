@@ -8,6 +8,7 @@ import { openInternalPageInTab, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 import Progress from '@/ui/component/Progress';
+import { WALLET_BRAND_TYPES } from '@/constant';
 
 const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
   const { t } = useTranslation();
@@ -50,6 +51,10 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
     });
     openInternalPageInTab('request-permission?type=camera');
   };
+
+  if (brandName == WALLET_BRAND_TYPES.NGRAVEZERO) {
+    brandName = 'NGRAVE ZERO';
+  }
 
   return (
     <div>
