@@ -40,29 +40,59 @@ export const useDbkChainBridge = ({
   const [payAmount, setPayAmount] = useState('');
   const account = useCurrentAccount();
 
-  const _handleDeposit = useMemoizedFn(async () => {
-    if (!account?.address) {
-      return;
+  const buildInitiateWithdrawal = useMemoizedFn(async () => {
+    try {
+      const args = await clientL1.buildInitiateWithdrawal({
+        account: account!.address as any,
+        to: account!.address as any,
+        value: parseEther(payAmount),
+      });
+      return args;
+    } catch (e) {
+      console.error(e);
+      return {
+        account: account!.address as any,
+        request: {
+          data: undefined,
+          // https://github.com/superbridgeapp/superbridge-app/blob/main/apps/bridge/hooks/use-transaction-args/withdraw-args/use-optimism-withdraw-args.ts#L58
+          gas: BigInt(200_000),
+          to: account!.address as any,
+          value: parseEther(payAmount),
+        },
+      };
     }
+  });
+
+  const buildDepositTransactionGas = useMemoizedFn(async () => {
     try {
       const args = await clientL2.buildDepositTransaction({
         account: (account!.address as unknown) as `0x${string}`,
         mint: parseEther(payAmount),
         to: (account!.address as unknown) as `0x${string}`,
       });
+      return args.request.gas;
+    } catch (e) {
+      console.error(e);
+      return BigInt(200_000);
+    }
+  });
+
+  const _handleDeposit = useMemoizedFn(async () => {
+    if (!account?.address) {
+      return;
+    }
+    try {
+      const l2Gas = await buildDepositTransactionGas();
       const contract = getContract({
         abi: l1StandardBridgeABI,
         address: DBK_CHAIN_BRIDGE_CONTRACT,
         client: clientL1,
       });
-      const hash = await contract.write.depositETH(
-        [Number(args.request.gas), '0x'],
-        {
-          account: account.address as `0x${string}`,
-          value: parseEther(payAmount),
-          gas: undefined,
-        }
-      );
+      const hash = await contract.write.depositETH([Number(l2Gas), '0x'], {
+        account: account.address as `0x${string}`,
+        value: parseEther(payAmount),
+        gas: undefined,
+      });
 
       if (hash) {
         await wallet.openapi.createDbkBridgeHistory({
@@ -86,11 +116,7 @@ export const useDbkChainBridge = ({
       return;
     }
     try {
-      const args = await clientL1.buildInitiateWithdrawal({
-        account: account!.address as any,
-        to: account!.address as any,
-        value: parseEther(payAmount),
-      });
+      const args = await buildInitiateWithdrawal();
       const hash = await clientL2.initiateWithdrawal({
         ...args,
         gas: null,
