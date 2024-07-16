@@ -2,7 +2,7 @@ const path = require('path');
 const { prompt, BooleanPrompt } = require('enquirer');
 const fs = require('fs-extra');
 const shell = require('shelljs');
-const zipdir = require('zip-dir');
+const pkg = require('../package.json');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -30,10 +30,16 @@ async function release([version, isDebug, isRelease]) {
 }
 
 async function bundle() {
+  const oldVersion = pkg.version;
+  const plus1Version = oldVersion
+    .split('.')
+    .map((v, i) => (i === 2 ? +v + 1 : v))
+    .join('.');
   const { version } = await prompt({
     type: 'input',
     name: 'version',
     message: '[Rabby] Please input the release version:',
+    initial: plus1Version,
   });
 
   const isMV3 = await new BooleanPrompt({
@@ -61,11 +67,12 @@ async function bundle() {
   shell.rm('-rf', './dist/*.js.map');
   return [version, isDebug, isRelease];
 }
-
 async function packed([version, isDebug]) {
-  const distPath = path.resolve(PROJECT_ROOT, 'dist');
-  return zipdir(distPath, {
-    saveTo: `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`,
+  import('./zip.mjs').then((re) => {
+    re.createZipTask(
+      'dist/**',
+      `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`
+    );
   });
 }
 
