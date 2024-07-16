@@ -282,7 +282,7 @@ export const useTokenPair = (userAddress: string) => {
           fromTokenId: payToken.id,
           toTokenId: receiveToken.id,
           toChainId: receiveToken.chain,
-          status: data ? 'success' : 'fail',
+          status: data ? (data?.length === 0 ? 'none' : 'success') : 'fail',
         });
       }
 
