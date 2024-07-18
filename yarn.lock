@@ -11693,14 +11693,14 @@ gulp-plugin-extras@^0.3.0:
     chalk "^5.3.0"
     easy-transform-stream "^1.0.1"
 
-gulp-sort@^2.0.0:
+gulp-sort@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/gulp-sort/-/gulp-sort-2.0.0.tgz#c6762a2f1f0de0a3fc595a21599d3fac8dba1aca"
   integrity sha512-MyTel3FXOdh1qhw1yKhpimQrAmur9q1X0ZigLmCOxouQD+BD3za9/89O+HfbgBQvvh4igEbp0/PUWO+VqGYG1g==
   dependencies:
     through2 "^2.0.1"
 
-gulp-zip@^6.0.0:
+gulp-zip@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/gulp-zip/-/gulp-zip-6.0.0.tgz#17089abf9ec0823492c0e3696ba68caf7094cc6c"
   integrity sha512-fPGvNve2dBoZxGKcviTU7mOa77eQibyhwgGLTxnF+ZCKX8RFaTZKkPbdPnmw0r4TNPRjPCkQB/0VuP+MzgkEYg==
@@ -11710,7 +11710,7 @@ gulp-zip@^6.0.0:
     vinyl "^3.0.0"
     yazl "^2.5.1"
 
-gulp@^5.0.0:
+gulp@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/gulp/-/gulp-5.0.0.tgz#78f4b8ac48a0bf61b354d39e5be844de2c5cc3f3"
   integrity sha512-S8Z8066SSileaYw1S2N1I64IUc/myI2bqe2ihOBzO6+nKpvNSg7ZcWJt/AwF8LC/NVN+/QZ560Cb/5OPsyhkhg==
