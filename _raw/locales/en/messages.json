@@ -1615,7 +1615,8 @@
       "title": "Add custom token to Rabby",
       "balance": "Balance",
       "tokenOnMultiChains": "Token address on multiple chains. Please choose one",
-      "noTokenFoundOnThisChain": "No token found on this chain"
+      "noTokenFoundOnThisChain": "No token found on this chain",
+      "hasAdded": "You have been added this token."
     },
     "switchChain": {
       "title": "Add Custom Network to Rabby",

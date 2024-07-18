@@ -55,7 +55,10 @@ import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
-import { customTestnetService } from '@/background/service/customTestnet';
+import {
+  CustomTestnetTokenBase,
+  customTestnetService,
+} from '@/background/service/customTestnet';
 import { sendTransaction } from 'viem/actions';
 // import { customTestnetService } from '@/background/service/customTestnet';
 
@@ -1162,13 +1165,25 @@ class ProviderController extends BaseController {
   walletWatchAsset = ({
     approvalRes,
   }: {
-    approvalRes: { id: string; chain: string };
+    approvalRes: { id: string; chain: string } & CustomTestnetTokenBase;
   }) => {
-    const { id, chain } = approvalRes;
-    preferenceService.addCustomizedToken({
-      address: id,
-      chain,
+    const { id, chain, chainId, symbol, decimals } = approvalRes;
+    const chainInfo = findChain({
+      serverId: chain,
     });
+    if (chainInfo?.isTestnet) {
+      customTestnetService.addToken({
+        chainId,
+        symbol,
+        decimals,
+        id,
+      });
+    } else {
+      preferenceService.addCustomizedToken({
+        address: id,
+        chain,
+      });
+    }
   };
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
