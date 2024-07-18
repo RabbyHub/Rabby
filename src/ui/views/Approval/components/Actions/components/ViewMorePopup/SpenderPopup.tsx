@@ -84,7 +84,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
-        {/* <Col>
+        <Col>
           <Row tip={t('page.signTx.tokenApprove.contractTrustValueTip')}>
             {t('page.signTx.trustValue')}
           </Row>
@@ -95,7 +95,7 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
               <Values.USDValue value={data.riskExposure} />
             )}
           </Row>
-        </Col> */}
+        </Col>
         <Col>
           <Row>{t('page.signTx.popularity')}</Row>
           <Row>
