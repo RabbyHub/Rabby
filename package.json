@@ -29,6 +29,7 @@
     "@dnd-kit/sortable": "6.0.0",
     "@dnd-kit/utilities": "3.0.2",
     "@eth-optimism/contracts": "0.5.32",
+    "@eth-optimism/contracts-ts": "0.17.2",
     "@ethereumjs/common": "2.5.0",
     "@ethereumjs/tx": "3.3.2",
     "@ethereumjs/util": "9.0.3",
