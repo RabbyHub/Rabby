@@ -239,7 +239,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 400,
+      width: 420,
     },
     // Contract Trust value
     {
@@ -835,20 +835,21 @@ function getColumnsForAsset({
                       'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
                     )}
                   />
-                  {spender.$assetContract?.type === 'contract' && (
-                    <Permit2Badge
-                      className="ml-[8px]"
-                      contractSpender={spender as SpenderInTokenApproval}
-                    />
-                  )}
                 </>
               }
+              tooltipAliasName
               openExternal={false}
             />
+            {spender.$assetContract?.type === 'contract' && (
+              <Permit2Badge
+                className="ml-[8px]"
+                contractSpender={spender as SpenderInTokenApproval}
+              />
+            )}
           </div>
         );
       },
-      width: 380,
+      width: 400,
     },
     // My Approval Time
     {
