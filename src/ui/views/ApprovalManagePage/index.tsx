@@ -39,6 +39,7 @@ import {
   ApprovalSpenderItemToBeRevoked,
   compareAssetSpenderByAmount,
   compareAssetSpenderByType,
+  SpenderInTokenApproval,
 } from '@/utils/approval';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
@@ -69,6 +70,7 @@ import { useTranslation } from 'react-i18next';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
 import { useTitle } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { Permit2Badge } from './components/Badges';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -237,7 +239,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 320,
+      width: 400,
     },
     // Contract Trust value
     {
@@ -833,6 +835,12 @@ function getColumnsForAsset({
                       'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
                     )}
                   />
+                  {spender.$assetContract?.type === 'contract' && (
+                    <Permit2Badge
+                      className="ml-[8px]"
+                      contractSpender={spender as SpenderInTokenApproval}
+                    />
+                  )}
                 </>
               }
               openExternal={false}
@@ -840,7 +848,7 @@ function getColumnsForAsset({
           </div>
         );
       },
-      width: 300,
+      width: 380,
     },
     // My Approval Time
     {

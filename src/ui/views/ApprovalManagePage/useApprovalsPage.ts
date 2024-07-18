@@ -313,7 +313,8 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
         try {
           const data = await openapiClient.tokenAuthorizedList(
             userAddress,
-            e.id
+            e.id,
+            { restfulPrefix: 'v2' }
           );
           if (data.length) {
             data.forEach((token) => {

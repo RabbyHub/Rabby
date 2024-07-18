@@ -753,7 +753,8 @@
         "subTitleContract": "Approved to the following Contracts",
         "selectAll": "Select All",
         "confirm": "Confirm {{ selectedCount }}",
-        "title": "Approvals"
+        "title": "Approvals",
+        "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
       }
     },
     "gasTopUp": {

@@ -2,7 +2,7 @@
 
 @radius-value: 6px;
 
-@main-w: 1060px;
+@main-w: 1120px;
 
 @page-pt-without-switchnet-tabs: 40px;
 
@@ -353,6 +353,10 @@
     &.column-cell-J_key-approveSpender > .am-virtual-table-cell-inner {
       padding-right: 4px;
     }
+    
+    &.column-cell-J_key-approveSpender > .am-virtual-table-cell-inner .name-and-address .name {
+      max-width: 50px;
+    }
 
     &.column-cell-J_key-assetApproveTime > .am-virtual-table-cell-inner {
       padding-left: 20px;
@@ -491,7 +495,7 @@
 
 .J-risk-cell__tooltip,
 .J-table__tooltip,
-.J-modal-item__tooltip {
+.J_permit2-tooltip {
   color: #fff;
   font-size: 12px;
   font-weight: 400;
@@ -508,6 +512,10 @@
   &.tip-column-contract-trust-value .ant-tooltip-inner {
     width: 350px;
   }
+}
+
+.J_permit2-tooltip .ant-tooltip-content {
+  width: 370px;
 }
 
 .J-modal-item__tooltip.min-width-limit {

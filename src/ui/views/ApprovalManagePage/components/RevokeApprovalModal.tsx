@@ -17,7 +17,6 @@ import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
-  SpenderInNFTApproval,
   getSpenderApprovalAmount,
 } from '@/utils/approval';
 import styled from 'styled-components';
@@ -33,10 +32,9 @@ import { Chain } from '@debank/common';
 
 import { ReactComponent as RcIconClose } from 'ui/assets/swap/modal-close.svg';
 import { ReactComponent as RcIconExternal } from '../icons/icon-share-cc.svg';
-import { ReactComponent as RcIconBadgeCollection } from '../icons/modal-badge-collection.svg';
-import { ReactComponent as RcIconBadgeNFT } from '../icons/modal-badge-nft.svg';
 import { ensureSuffix } from '@/utils/string';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { NFTItemBadge, Permit2Badge } from './Badges';
 
 const BOTTOM_BUTTON_AREA = 76;
 const ModalStyled = styled(Modal)`
@@ -49,49 +47,6 @@ const ModalStyled = styled(Modal)`
     padding-bottom: ${BOTTOM_BUTTON_AREA}px;
   }
 `;
-
-function NFTItemBadge({
-  className,
-  contract,
-  contractListItem,
-}: {
-  className?: string;
-  contract: ContractApprovalItem;
-  contractListItem: ContractApprovalItem['list'][number];
-}) {
-  const { isNFTToken, isNFTCollection } = useMemo(() => {
-    const result = {
-      isNFTToken: false,
-      isNFTCollection: false,
-    };
-
-    if ('spender' in contractListItem) {
-      const maybeNFTSpender = contractListItem.spender as SpenderInNFTApproval;
-
-      result.isNFTCollection = !!maybeNFTSpender.$assetParent?.nftContract;
-      result.isNFTToken =
-        !result.isNFTCollection && !!maybeNFTSpender.$assetParent?.nftToken;
-    }
-
-    return result;
-  }, [contract, contractListItem]);
-
-  if (isNFTCollection) {
-    return (
-      <div className={className}>
-        <ThemeIcon className="w-[54px] h-[13px]" src={RcIconBadgeCollection} />
-      </div>
-    );
-  } else if (isNFTToken) {
-    return (
-      <div className={className}>
-        <ThemeIcon className="w-[26px] h-[13px]" src={RcIconBadgeNFT} />
-      </div>
-    );
-  }
-
-  return null;
-}
 
 function ApprovalAmountInfo({
   className,
@@ -230,7 +185,11 @@ export const RevokeApprovalModal = (props: {
           ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
           : e.contract_name || 'Unknown';
 
-        // non-token type contract
+        /**
+         * @description
+         * 1. In general, the items from [host].spenders have same properties about nft/nft-collection/permit2, so we just need to check the first of them
+         * 2. It must not be non-token type contract
+         */
         const spender =
           'spender' in e ? e.spender : 'spenders' in e ? e.spenders?.[0] : null;
 
@@ -307,16 +266,15 @@ export const RevokeApprovalModal = (props: {
                       />
                     )}
                   </div>
-                  <NFTItemBadge
-                    className="mt-2"
-                    contractListItem={e}
-                    contract={item as ContractApprovalItem}
-                  />
+                  <NFTItemBadge className="mt-2" contractListItem={e} />
                 </div>
               ) : (
                 <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
                   {e.symbol}
                 </div>
+              )}
+              {spender && (
+                <Permit2Badge className="ml-[9px]" contractSpender={spender} />
               )}
 
               <div className="ml-auto flex items-center justify-between flex-shrink-0">
