@@ -26,6 +26,7 @@ const SortHat = () => {
       return;
     }
 
+    await wallet.tryUnlock();
     if (!(await wallet.isUnlocked())) {
       setTo('/unlock');
       return;
