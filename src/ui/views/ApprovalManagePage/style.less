@@ -326,15 +326,22 @@
         border-bottom-right-radius: @radius-value;
       }
     }
+  }
 
-    &.is-contract-row__risky > .am-virtual-table-cell-inner,
-    &.is-contract-row__danger > .am-virtual-table-cell-inner {
-      background: #fefafa;
-    }
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__risky > .am-virtual-table-cell-inner,
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__danger > .am-virtual-table-cell-inner {
+    background: #fefafa;
+  }
+  & .am-virtual-table-cell.is-contract-row__risky > .am-virtual-table-cell-inner,
+  & .am-virtual-table-cell.is-contract-row__danger > .am-virtual-table-cell-inner {
+    background: #3d3b46;
+  }
 
-    &.is-contract-row__warning > .am-virtual-table-cell-inner {
-      background: #fffdf8;
-    }
+  &:not(.dark) .am-virtual-table-cell.is-contract-row__warning > .am-virtual-table-cell-inner {
+    background: #fffdf8;
+  }
+  &.dark .am-virtual-table-cell.is-contract-row__warning > .am-virtual-table-cell-inner {
+    background: #3d3b46;
   }
 
   &.J_table_by_contracts .am-virtual-table-cell {
