@@ -32,27 +32,20 @@ fi
 cd $project_dir;
 cp $TARGET_FILE $project_dir/tmp/RabbyDebug-latest.zip
 
-DOWNLOAD_URL="https://download.rabby.io/autobuild/RabbyDebug-v${VERSION}-${RABBYX_GIT_HASH}.zip"
-
 # upload to storage
 if [ -z $NO_UPLOAD ]; then
-    INVALIDATION_BASE="/autobuild/RabbyDebug-v${VERSION}-${RABBYX_GIT_HASH}*"
-    JSON="{'Paths': {'Quantity': 2,'Items': ['$INVALIDATION_BASE', '/autobuild/RabbyDebug-latest.zip']}, 'CallerReference': 'cli-rabbyx-${VERSION}-${RABBYX_GIT_HASH}-${CURRENT_TIME}'}"
-    echo $(node -e "console.log(JSON.stringify($JSON, null, 2))") > "$project_dir/tmp/inv-batch.json"
+    DOWNLOAD_URL="https://download.rabby.io/autobuild/RabbyDebug-$CURRENT_TIME/RabbyDebug-v${VERSION}-${RABBYX_GIT_HASH}.zip"
 
     if [ ! -z $CI ]; then
         QUIET_PARASM="--quiet"
     else
         QUIET_PARASM=""
     fi
-    aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/ --recursive --exclude="*" --include "*.zip" --acl public-read
+    aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
     if [ ! -z $CI ]; then
         node ./scripts/notify-lark.js "$DOWNLOAD_URL"
-    else
-        aws cloudfront create-invalidation $QUIET_PARASM --distribution-id E1F7UQCCQWLXXZ --invalidation-batch file://./tmp/inv-batch.json
-        echo "[pack] invalidation finished.";
     fi
 fi
 
