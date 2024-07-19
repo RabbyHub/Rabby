@@ -58,7 +58,7 @@ async function bundle() {
 
   updateManifestVersion(version, 'mv3');
   updateManifestVersion(version, 'mv2');
-  shell.env['sourcemap'] = true;
+  // shell.env['sourcemap'] = true;
   if (isMV3) {
     shell.exec(`cross-env VERSION=${version} yarn ${buildStr}`);
   } else {
