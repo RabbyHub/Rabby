@@ -87,13 +87,18 @@
   }
   .ant-input {
     border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    background: var(--r-neutral-card-2, #f5f6fa);
+    background: transparent;
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
     color: var(--r-neutral-title-1, #192945);
+
+    &::placeholder {
+      color: var(--r-neutral-foot);
+      font-weight: 400;
+    }
   }
   .ant-form-item {
     margin: 0;
