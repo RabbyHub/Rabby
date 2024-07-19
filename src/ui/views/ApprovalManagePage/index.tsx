@@ -238,7 +238,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 320,
+      width: 420,
     },
     // Contract Trust value
     {
@@ -841,7 +841,7 @@ function getColumnsForAsset({
           </div>
         );
       },
-      width: 300,
+      width: 400,
     },
     // My Approval Time
     {

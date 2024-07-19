@@ -90,6 +90,17 @@ const PreferMEVGuardSwitch = styled(Switch)`
   }
 `;
 
+const MaxButton = styled.div`
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 5px;
+  cursor: pointer;
+  user-select: nonce;
+  margin-left: 6px;
+  background-color: rgba(134, 151, 255, 0.1);
+  color: #8697ff;
+`;
+
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
@@ -420,13 +431,17 @@ export const Main = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1',
-              !payTokenIsNativeToken && 'underline cursor-pointer',
+              'text-r-neutral-title-1 flex items-center',
+              // !payTokenIsNativeToken && 'underline cursor-pointer',
               !payToken && 'hidden'
             )}
-            onClick={handleBalance}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
+            {!payTokenIsNativeToken && (
+              <MaxButton onClick={handleBalance}>
+                {t('page.swap.max')}
+              </MaxButton>
+            )}
           </div>
         </div>
         <StyledInput
