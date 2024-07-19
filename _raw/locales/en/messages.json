@@ -973,7 +973,7 @@
           "more": "More",
           "manageAddress": "Manage Address",
           "nft": "NFT",
-          "ecology": "Ecology",
+          "ecology": "Ecosystem",
           "bridge": "Bridge"
         },
         "comingSoon": "Coming soon",
@@ -1269,7 +1269,7 @@
         "warning": "Safe address does not support {{chain}}"
       },
       "echologyPopup": {
-        "title": "Ecology"
+        "title": "Ecosystem"
       }
     },
     "nft": {
@@ -2231,7 +2231,7 @@
     },
     "EcologyNoticeModal": {
       "title": "Notice",
-      "desc": "The following services will be provided directly by third party Ecology Partner. Rabby Wallet does not assume responsibility for the security of these services.",
+      "desc": "The following services will be provided directly by third party Ecosystem Partner. Rabby Wallet does not assume responsibility for the security of these services.",
       "notRemind": "Don't remind me again"
     }
   },
