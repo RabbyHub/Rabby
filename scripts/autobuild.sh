@@ -5,10 +5,10 @@ script_dir="$( cd "$( dirname "$0"  )" && pwd  )"
 project_dir=$(dirname "$script_dir")
 
 export VERSION=$(node --eval="process.stdout.write(require('./package.json').version)");
-export RABBYX_GIT_HASH=$(git rev-parse --short HEAD);
+export RABBY_GIT_HASH=$(git rev-parse --short HEAD);
 export CURRENT_TIME=$(date +%Y%m%d%H%M%S);
 
-TARGET_FILE=$project_dir/tmp/RabbyDebug-v${VERSION}-${RABBYX_GIT_HASH}.zip;
+TARGET_FILE=$project_dir/tmp/RabbyDebug-v${VERSION}-${RABBY_GIT_HASH}.zip;
 
 echo "[pack] VERSION is $VERSION";
 
@@ -34,7 +34,7 @@ cp $TARGET_FILE $project_dir/tmp/RabbyDebug-latest.zip
 
 # upload to storage
 if [ -z $NO_UPLOAD ]; then
-    DOWNLOAD_URL="https://download.rabby.io/autobuild/RabbyDebug-$CURRENT_TIME/RabbyDebug-v${VERSION}-${RABBYX_GIT_HASH}.zip"
+    DOWNLOAD_URL="https://download.rabby.io/autobuild/RabbyDebug-$CURRENT_TIME/RabbyDebug-v${VERSION}-${RABBY_GIT_HASH}.zip"
 
     if [ ! -z $CI ]; then
         QUIET_PARASM="--quiet"
