@@ -135,7 +135,11 @@ export const getTokenName = async (
   }
 };
 
-export const getTokenSymbol = (token?: TokenItem) => {
+export const getTokenSymbol = (
+  token?: Partial<
+    Pick<TokenItem, 'display_symbol' | 'symbol' | 'optimized_symbol'>
+  >
+) => {
   if (!token) return '';
 
   return token.display_symbol || token.symbol || token.optimized_symbol || '';
