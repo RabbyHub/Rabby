@@ -320,10 +320,6 @@ export const HARDWARE_KEYRING_TYPES = {
     type: 'imKey Hardware',
     brandName: 'imKey',
   },
-  NgraveZero: {
-    type: 'QR Hardware Wallet Device',
-    brandName: 'NGRAVE ZERO',
-  },
 } as const;
 
 export enum TX_TYPE_ENUM {
