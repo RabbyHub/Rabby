@@ -51,10 +51,6 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
     openInternalPageInTab('request-permission?type=camera');
   };
 
-  if (brandName == WALLET_BRAND_TYPES.NGRAVEZERO) {
-    brandName = 'NGRAVE ZERO';
-  }
-
   return (
     <div>
       <div className="p-[10px] border border-gray-divider rounded-[8px] m-auto w-[222px] h-[222px]">
