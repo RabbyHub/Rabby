@@ -4098,7 +4098,9 @@ export class WalletController extends BaseController {
   };
 
   syncPopupIcon = () => {
-    if (this.isUnlocked()) {
+    if (!this.isBooted()) {
+      setPopupIcon('default');
+    } else if (this.isUnlocked()) {
       const hasOtherProvider = preferenceService.getHasOtherProvider();
       const isDefaultWallet = preferenceService.getIsDefaultWallet();
       if (!hasOtherProvider) {
