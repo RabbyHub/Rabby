@@ -321,7 +321,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
           const target = findChain({
             serverId: token.chain,
           });
-          return setCurrentChain(target || CHAINS[CHAINS_ENUM.ETH]);
+          setCurrentChain(target || CHAINS[CHAINS_ENUM.ETH]);
         }
       }
       setCustomTokens(customTokens);
