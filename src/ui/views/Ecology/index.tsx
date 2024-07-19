@@ -11,29 +11,9 @@ export const Ecology = () => {
 
   const { chainId } = useParams<{ chainId: string }>();
 
-  const isHideEcologyNoticeDict = useRabbySelector(
-    (state) => state.preference.isHideEcologyNoticeDict
-  );
-  const [isShowNotice, setIsShowNotice] = React.useState(
-    !isHideEcologyNoticeDict[chainId]
-  );
-  const dispatch = useRabbyDispatch();
-
   return (
     <>
       <DbkChainEntry />
-      <EcologyNoticeModal
-        visible={isShowNotice}
-        onCancel={() => {
-          setIsShowNotice(false);
-        }}
-        onConfirm={(v) => {
-          if (v) {
-            dispatch.preference.setIsHideEcologyNoticeDict({ [chainId]: true });
-          }
-          setIsShowNotice(false);
-        }}
-      />
     </>
   );
 };
