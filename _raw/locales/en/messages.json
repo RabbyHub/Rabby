@@ -856,7 +856,8 @@
       "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "Estimate:",
-      "actual": "Actual:"
+      "actual": "Actual:",
+      "max": "MAX"
     },
     "bridge": {
       "title": "Bridge",
