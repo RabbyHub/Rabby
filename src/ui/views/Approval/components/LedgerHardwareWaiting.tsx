@@ -86,6 +86,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
+    emitSignComponentAmounted();
   };
 
   // const handleClickResult = () => {

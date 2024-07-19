@@ -71,6 +71,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
+    emitSignComponentAmounted();
   };
 
   const handleCancel = () => {
