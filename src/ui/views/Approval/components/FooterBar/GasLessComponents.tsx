@@ -303,7 +303,8 @@ export const GasLessAnimatedWrapper = styled.div`
     background-size: 10%, 200%;
     background-position-x: -12%, 200%;
     background-position-y: center;
-    animation: gasLoading 0.9s linear 1 forwards, jump 0.3s linear 3 forwards;
+    animation: gasLessLoading 0.9s linear 1 forwards,
+      gasLessJump 0.3s linear 3 forwards;
 
     &.gasLessConfig {
       background-color: var(--gas-bg-color);
@@ -312,7 +313,7 @@ export const GasLessAnimatedWrapper = styled.div`
     }
   }
 
-  @keyframes gasLoading {
+  @keyframes gasLessLoading {
     0% {
       background-position-x: -12%, 212%;
     }
@@ -329,7 +330,7 @@ export const GasLessAnimatedWrapper = styled.div`
     }
   }
 
-  @keyframes jump {
+  @keyframes gasLessJump {
     0% {
       background-position-y: 100%, 200%;
     }

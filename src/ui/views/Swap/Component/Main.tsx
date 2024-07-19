@@ -311,12 +311,12 @@ export const Main = () => {
   const FeeAndMEVGuarded = useMemo(
     () => (
       <>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span>{t('page.swap.rabby-fee')}</span>
           <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
         </div>
         {showMEVGuardedSwitch && (
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Tooltip
               placement={'topLeft'}
               overlayClassName={clsx('rectangle', 'max-w-[312px]')}
@@ -469,7 +469,7 @@ export const Main = () => {
                 <div className="subText flex flex-col gap-12">
                   {isWrapToken ? (
                     <>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>{t('page.swap.slippage-tolerance')}</span>
                         <span className="font-medium text-r-neutral-title-1">
                           {t('page.swap.no-slippage-for-wrap')}
@@ -492,7 +492,7 @@ export const Main = () => {
                             : slippageValidInfo?.suggest_slippage
                         }
                       />
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>{t('page.swap.minimum-received')}</span>
                         <span className="font-medium text-r-neutral-title-1">
                           {miniReceivedAmount}{' '}
