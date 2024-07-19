@@ -533,7 +533,7 @@ export enum WALLET_BRAND_TYPES {
   MPCVault = 'MPCVault',
   Coinbase = 'Coinbase',
   IMKEY = 'IMKEY',
-  NGRAVEZERO = 'NGRAVE',
+  NGRAVEZERO = 'NGRAVE ZERO',
   Utila = 'Utila',
 }
 
