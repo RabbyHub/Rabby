@@ -86,10 +86,7 @@ const QRHardWareWaiting = ({ params }) => {
         <img src={icon} className="w-20 mr-8" />
         <span>
           {t('page.signFooterBar.qrcode.signWith', {
-            brand:
-              account.brandName == WALLET_BRAND_TYPES.NGRAVEZERO
-                ? 'NGRAVE ZERO'
-                : account.brandName,
+            brand: account.brandName,
           })}
         </span>
       </div>
