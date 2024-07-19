@@ -90,6 +90,7 @@ export const ImKeyHardwareWaiting = ({
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
+    emitSignComponentAmounted();
   };
 
   // const handleClickResult = () => {

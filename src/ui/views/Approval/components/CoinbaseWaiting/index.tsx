@@ -84,6 +84,7 @@ const CoinbaseWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectError(null);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
+    emitSignComponentAmounted();
   };
 
   const init = async () => {

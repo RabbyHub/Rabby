@@ -69,6 +69,7 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
+    emitSignComponentAmounted();
   };
   const isSignText = /personalSign|SignTypedData/.test(
     params?.extra?.signTextMethod
