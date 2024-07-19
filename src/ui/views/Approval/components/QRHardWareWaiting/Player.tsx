@@ -39,10 +39,6 @@ const Player = ({
     };
   }, [urEncoder]);
 
-  if (brandName == WALLET_BRAND_TYPES.NGRAVEZERO) {
-    brandName = 'NGRAVE ZERO';
-  }
-
   return (
     <div className="flex flex-col items-center">
       <div className="p-[5px] border border-gray-divider rounded-[8px] bg-white">
