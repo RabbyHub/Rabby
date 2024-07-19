@@ -35,7 +35,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.16.1'
+          node-version: '18.20.4'
 
       - name: Use NPM Token with organization read access
         uses: heisenberg-2077/use-npm-token-action@v1
