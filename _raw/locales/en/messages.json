@@ -806,8 +806,8 @@
       "amount-in": "Amount in {{symbol}}",
       "unlimited-allowance": "Unlimited allowance",
       "insufficient-balance": "Insufficient balance",
-      "hidden-no-quote-rates_one": "Hidden {{count}} no-quote rate",
-      "hidden-no-quote-rates_other": "Hidden {{count}} no-quote rates",
+      "hidden-no-quote-rates_one": "{{count}} rate unavailable",
+      "hidden-no-quote-rates_other": "{{count}} rates unavailable",
 
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
@@ -857,7 +857,8 @@
       "tradingSettingTip2": "2. Rabby is not liable for any risks arising from the contract of the exchanges",
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "Estimate:",
-      "actual": "Actual:"
+      "actual": "Actual:",
+      "max": "MAX"
     },
     "bridge": {
       "title": "Bridge",
@@ -974,7 +975,7 @@
           "more": "More",
           "manageAddress": "Manage Address",
           "nft": "NFT",
-          "ecology": "Ecology",
+          "ecology": "Ecosystem",
           "bridge": "Bridge"
         },
         "comingSoon": "Coming soon",
@@ -1270,7 +1271,7 @@
         "warning": "Safe address does not support {{chain}}"
       },
       "echologyPopup": {
-        "title": "Ecology"
+        "title": "Ecosystem"
       }
     },
     "nft": {
@@ -2232,7 +2233,7 @@
     },
     "EcologyNoticeModal": {
       "title": "Notice",
-      "desc": "The following services will be provided directly by third party Ecology Partner. Rabby Wallet does not assume responsibility for the security of these services.",
+      "desc": "The following services will be provided directly by third party Ecosystem Partner. Rabby Wallet does not assume responsibility for the security of these services.",
       "notRemind": "Don't remind me again"
     }
   },

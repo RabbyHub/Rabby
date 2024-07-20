@@ -79,7 +79,6 @@ export const bridgeQuoteEstimatedValueBn = (
 
 export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const { t } = useTranslation();
-  const [disabledTipsOpen, setDisabledTipsOpen] = useState(false);
 
   const openSwapQuote = useSetQuoteVisible();
 
@@ -170,11 +169,26 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             <span className="text-[16px] font-medium text-r-neutral-title1">
               {props.aggregator.name}
             </span>
-            <span className="text-13 text-r-neutral-foot">
-              {t('page.bridge.via-bridge', {
+            <TooltipWithMagnetArrow
+              title={t('page.bridge.via-bridge', {
                 bridge: props.bridge.name,
               })}
-            </span>
+              className="rectangle w-[max-content]"
+              arrowPointAtCenter
+              visible={props.onlyShow ? undefined : false}
+            >
+              <span
+                className={clsx(
+                  'text-13 text-r-neutral-foot',
+                  props.onlyShow &&
+                    'max-w-[66px] overflow-hidden overflow-ellipsis whitespace-nowrap'
+                )}
+              >
+                {t('page.bridge.via-bridge', {
+                  bridge: props.bridge.name,
+                })}
+              </span>
+            </TooltipWithMagnetArrow>
             {/* {props.shouldApproveToken &&  */}
             {props.shouldApproveToken && (
               <TooltipWithMagnetArrow

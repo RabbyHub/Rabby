@@ -90,6 +90,17 @@ const PreferMEVGuardSwitch = styled(Switch)`
   }
 `;
 
+const MaxButton = styled.div`
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 5px;
+  cursor: pointer;
+  user-select: nonce;
+  margin-left: 6px;
+  background-color: rgba(134, 151, 255, 0.1);
+  color: #8697ff;
+`;
+
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
 
@@ -311,12 +322,12 @@ export const Main = () => {
   const FeeAndMEVGuarded = useMemo(
     () => (
       <>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span>{t('page.swap.rabby-fee')}</span>
           <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
         </div>
         {showMEVGuardedSwitch && (
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Tooltip
               placement={'topLeft'}
               overlayClassName={clsx('rectangle', 'max-w-[312px]')}
@@ -420,15 +431,17 @@ export const Main = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1',
-              'underline cursor-pointer',
+              'text-r-neutral-title-1 flex items-center',
+              // !payTokenIsNativeToken && 'underline cursor-pointer',
               !payToken && 'hidden'
             )}
-            onClick={() => {
-              handleBalance();
-            }}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
+            {!payTokenIsNativeToken && (
+              <MaxButton onClick={handleBalance}>
+                {t('page.swap.max')}
+              </MaxButton>
+            )}
           </div>
         </div>
         <StyledInput
@@ -471,7 +484,7 @@ export const Main = () => {
                 <div className="subText flex flex-col gap-12">
                   {isWrapToken ? (
                     <>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>{t('page.swap.slippage-tolerance')}</span>
                         <span className="font-medium text-r-neutral-title-1">
                           {t('page.swap.no-slippage-for-wrap')}
@@ -494,7 +507,7 @@ export const Main = () => {
                             : slippageValidInfo?.suggest_slippage
                         }
                       />
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>{t('page.swap.minimum-received')}</span>
                         <span className="font-medium text-r-neutral-title-1">
                           {miniReceivedAmount}{' '}

@@ -480,15 +480,13 @@ export const RevokeApprovalModal = (props: {
       </div>
       <div
         className={clsx(
-          'absolute flex flex-col items-center justify-center bg-r-neutral-card1 left-0 bottom-0 w-full z-[99999] border-t border-rabby-neutral-line'
+          'absolute flex flex-col items-center justify-center bg-r-neutral-card1 left-0 bottom-0 w-full z-[99999] border-t border-rabby-neutral-line',
+          'px-[16px]'
         )}
         style={{ height: BOTTOM_BUTTON_AREA }}
       >
         <Button
-          style={{
-            width: 172,
-            height: 44,
-          }}
+          className="min-w-[172px] w-full h-[44px]"
           type="primary"
           size="large"
           onClick={handleRevoke}

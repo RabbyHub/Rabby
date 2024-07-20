@@ -30,7 +30,7 @@ import buildinProvider, {
 } from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
-import { DisplayedKeryring } from 'background/service/keyring';
+import { DisplayedKeryring, KeyringService } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -1132,7 +1132,7 @@ export class WalletController extends BaseController {
       setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
     }
   };
-  isUnlocked = () => keyringService.memStore.getState().isUnlocked;
+  isUnlocked = () => keyringService.isUnlocked();
 
   lockWallet = async () => {
     await keyringService.setLocked();
@@ -4092,6 +4092,26 @@ export class WalletController extends BaseController {
 
   syncMainnetChainList = syncChainService.syncMainnetChainList;
 
+  tryUnlock = async () => {
+    await keyringService.tryUnlock();
+    this.syncPopupIcon();
+  };
+
+  syncPopupIcon = () => {
+    if (!this.isBooted()) {
+      setPopupIcon('default');
+    } else if (this.isUnlocked()) {
+      const hasOtherProvider = preferenceService.getHasOtherProvider();
+      const isDefaultWallet = preferenceService.getIsDefaultWallet();
+      if (!hasOtherProvider) {
+        setPopupIcon('default');
+      } else {
+        setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
+      }
+    } else {
+      setPopupIcon('locked');
+    }
+  };
   setIsHideEcologyNoticeDict = preferenceService.setIsHideEcologyNoticeDict;
 }
 

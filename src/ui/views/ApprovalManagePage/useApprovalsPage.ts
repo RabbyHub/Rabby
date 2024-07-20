@@ -27,6 +27,7 @@ import { groupBy, sortBy, flatten, debounce } from 'lodash';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 /**
  * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
@@ -359,7 +360,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
                     chain: e.id,
                     risk_level: 'safe',
                     id: token.id,
-                    name: token.symbol,
+                    name: getTokenSymbol(token),
                     logo_url: token.logo_url || IconUnknownToken,
                     type: 'token',
                     $riskAboutValues: makeComputedRiskAboutValues(

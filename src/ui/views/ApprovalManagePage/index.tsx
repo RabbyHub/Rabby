@@ -71,6 +71,7 @@ import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState
 import { useTitle } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Permit2Badge } from './components/Badges';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -901,6 +902,7 @@ const getCellClassName = (
 };
 
 type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
+  isDarkTheme?: boolean;
   isLoading: boolean;
   emptyStatus?: 'none' | 'no-matched' | false;
   dataSource: T[];
@@ -911,6 +913,7 @@ type PageTableProps<T extends ContractApprovalItem | AssetApprovalSpender> = {
   className?: string;
 };
 function TableByContracts({
+  isDarkTheme,
   isLoading,
   emptyStatus,
   dataSource,
@@ -972,7 +975,7 @@ function TableByContracts({
     <VirtualTable<ContractApprovalItem>
       loading={isLoading}
       vGridRef={vGridRef}
-      className={clsx(className, 'J_table_by_contracts')}
+      className={clsx(className, 'J_table_by_contracts', isDarkTheme && 'dark')}
       markHoverRow={false}
       columns={columnsForContracts}
       sortedInfo={sortedInfo}
@@ -1057,6 +1060,8 @@ const ApprovalManagePage = () => {
   const { t } = useTranslation();
 
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+
+  const { isDarkTheme } = useThemeMode();
 
   const {
     isLoading,
@@ -1231,6 +1236,7 @@ const ApprovalManagePage = () => {
 
               <div className="approvals-manager__table-wrapper">
                 <TableByContracts
+                  isDarkTheme={isDarkTheme}
                   isLoading={isLoading}
                   className={filterType === 'contract' ? '' : 'hidden'}
                   vGridRef={vGridRefContracts}

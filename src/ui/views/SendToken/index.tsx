@@ -1574,7 +1574,7 @@ const SendToken = () => {
               type="primary"
               htmlType="submit"
               size="large"
-              className="w-[100%] h-[48px]"
+              className="w-[100%] h-[48px] text-[16px]"
               loading={isSubmitLoading}
             >
               {t('page.sendToken.sendButton')}
