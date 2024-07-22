@@ -10,4 +10,4 @@ initLattice();
 
 setInterval(() => {
   chrome.runtime.sendMessage({ type: 'ping' });
-}, 1000);
+}, 10000);
