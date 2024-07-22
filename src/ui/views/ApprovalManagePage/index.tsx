@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Alert, Input, Tooltip } from 'antd';
+import { Alert, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { formatUsdValue, openInTab, useWallet } from 'ui/utils';
+import { formatUsdValue, useWallet } from 'ui/utils';
 import './style.less';
-import eventBus from '@/eventBus';
 
 import { Chain } from '@debank/common';
-import { findChainByServerID, makeTokenFromChain } from '@/utils/chain';
+import { findChainByServerID } from '@/utils/chain';
 
 import {
   HandleClickTableRow,
@@ -29,7 +28,12 @@ import { ReactComponent as RcIconCheckboxUnchecked } from './icons/check-uncheck
 import { ReactComponent as RcIconExternal } from './icons/icon-share-cc.svg';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/dashboard/asset-empty.svg';
 
-import { useApprovalsPage, useTableScrollableHeight } from './useApprovalsPage';
+import {
+  IHandleChangeSelectedSpenders,
+  useApprovalsPage,
+  useSelectSpendersToRevoke,
+  useTableScrollableHeight,
+} from './useApprovalsPage';
 import {
   ApprovalItem,
   ContractApprovalItem,
@@ -78,11 +82,6 @@ function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
   return currentSort === 'ascend' ? 'descend' : ('ascend' as const);
 }
 const DEFAULT_SORT_ORDER_TUPLE = ['descend', 'ascend'] as const;
-
-type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
-  approvalItem: T;
-  selectedRevokeItems: ApprovalSpenderItemToBeRevoked[];
-}) => any;
 
 function getColumnsForContract({
   sortedInfo,
@@ -1088,83 +1087,44 @@ const ApprovalManagePage = () => {
   const { yValue } = useTableScrollableHeight({ isShowTestnet });
 
   const [visibleRevokeModal, setVisibleRevokeModal] = React.useState(false);
-  const [selectedItem, setSelectedItem] = React.useState<ApprovalItem>();
+  const [
+    selectedContract,
+    setSelectedContract,
+  ] = React.useState<ApprovalItem>();
+  const selectedContractKey = useMemo(() => {
+    return selectedContract ? encodeRevokeItemIndex(selectedContract) : '';
+  }, [selectedContract]);
   const handleClickContractRow: HandleClickTableRow<ApprovalItem> = React.useCallback(
     (ctx) => {
-      setSelectedItem(ctx.record);
+      setSelectedContract(ctx.record);
       setVisibleRevokeModal(true);
     },
     []
   );
-  const [assetRevokeList, setAssetRevokeList] = React.useState<
-    ApprovalSpenderItemToBeRevoked[]
-  >([]);
-  const handleClickAssetRow: HandleClickTableRow<AssetApprovalSpender> = React.useCallback(
-    (ctx) => {
-      const record = ctx.record;
-      const index = findIndexRevokeList(
-        assetRevokeList,
-        record.$assetContract!,
-        record.$assetToken!
-      );
-      if (index > -1) {
-        setAssetRevokeList((prev) => prev.filter((item, i) => i !== index));
-      } else {
-        const revokeItem = toRevokeItem(
-          record.$assetContract!,
-          record.$assetToken!
-        );
-        if (revokeItem) {
-          setAssetRevokeList((prev) => [...prev, revokeItem]);
-        }
-      }
-    },
-    [assetRevokeList]
-  );
 
-  const [contractRevokeMap, setContractRevokeMap] = React.useState<
-    Record<string, ApprovalSpenderItemToBeRevoked[]>
-  >({});
-  const contractRevokeList = useMemo(() => {
-    return Object.values(contractRevokeMap).flat();
-  }, [contractRevokeMap]);
-
-  const selectedItemKey = useMemo(() => {
-    return selectedItem ? encodeRevokeItemIndex(selectedItem) : '';
-  }, [selectedItem]);
-
-  const currentRevokeList =
-    filterType === 'contract'
-      ? contractRevokeList
-      : filterType === 'assets'
-      ? assetRevokeList
-      : [];
+  const {
+    handleClickAssetRow,
+    contractRevokeMap,
+    contractRevokeList,
+    assetRevokeList,
+    revokeSummary,
+    patchContractRevokeMap,
+    clearRevoke,
+    onChangeSelectedContractSpenders,
+  } = useSelectSpendersToRevoke(filterType);
 
   const wallet = useWallet();
   const handleRevoke = React.useCallback(() => {
     wallet
-      .revoke({ list: currentRevokeList })
+      .revoke({ list: revokeSummary.currentRevokeList })
       .then(() => {
         setVisibleRevokeModal(false);
-        setContractRevokeMap({});
-        setAssetRevokeList([]);
+        clearRevoke();
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [currentRevokeList]);
-
-  const onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem> = useCallback(
-    (ctx) => {
-      const selectedItemKey = encodeRevokeItemIndex(ctx.approvalItem);
-
-      setContractRevokeMap((prev) => ({
-        ...prev,
-        [selectedItemKey]: ctx.selectedRevokeItems,
-      }));
-    },
-    []
-  );
+  }, [revokeSummary.currentRevokeList]);
 
   return (
     <div
@@ -1261,26 +1221,23 @@ const ApprovalManagePage = () => {
                   onClickRow={handleClickAssetRow}
                 />
               </div>
-              {selectedItem ? (
+              {selectedContract ? (
                 <RevokeApprovalModal
-                  item={selectedItem}
+                  item={selectedContract}
                   visible={visibleRevokeModal}
                   onClose={() => {
                     setVisibleRevokeModal(false);
                   }}
                   onConfirm={(list) => {
-                    setContractRevokeMap((prev) => ({
-                      ...prev,
-                      [selectedItemKey]: list,
-                    }));
+                    patchContractRevokeMap(selectedContractKey, list);
                   }}
-                  revokeList={contractRevokeMap[selectedItemKey]}
+                  revokeList={contractRevokeMap[selectedContractKey]}
                 />
               ) : null}
             </main>
             <div className="sticky-footer">
               <RevokeButton
-                revokeList={currentRevokeList}
+                revokeStatics={revokeSummary.statics}
                 onRevoke={handleRevoke}
               />
             </div>

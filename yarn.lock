@@ -4738,7 +4738,7 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@0.7.24-alpha.1":
+"@rabby-wallet/rabby-api@^0.7.24-alpha.1":
   version "0.7.24-alpha.1"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.24-alpha.1.tgz#912fddb38e6ec07333dd6704789fb5b64a5b3bc5"
   integrity sha512-9vS23WHlI+S2vckjr1UZ7LpcHinx3KX9RH0GFfm/m6MCNd3D+a7nawwv12MUx4DpDWOlc5iMRV4pT2ZSK5hM9g==

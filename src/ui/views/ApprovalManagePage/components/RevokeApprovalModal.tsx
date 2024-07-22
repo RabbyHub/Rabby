@@ -16,13 +16,13 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import {
   ApprovalItem,
   ApprovalSpenderItemToBeRevoked,
-  ContractApprovalItem,
   getSpenderApprovalAmount,
 } from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
   findIndexRevokeList,
+  getFirstSpender,
   maybeNFTLikeItem,
   openScanLinkFromChainItem,
   toRevokeItem,
@@ -190,8 +190,7 @@ export const RevokeApprovalModal = (props: {
          * 1. In general, the items from [host].spenders have same properties about nft/nft-collection/permit2, so we just need to check the first of them
          * 2. It must not be non-token type contract
          */
-        const spender =
-          'spender' in e ? e.spender : 'spenders' in e ? e.spenders?.[0] : null;
+        const spender = getFirstSpender(e);
 
         const spenderValues = spender
           ? getSpenderApprovalAmount(spender)

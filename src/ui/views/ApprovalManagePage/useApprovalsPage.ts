@@ -12,9 +12,11 @@ import PQueue from 'p-queue';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { CHAINS_ENUM } from '@debank/common';
 import {
+  ApprovalItem,
+  ApprovalSpenderItemToBeRevoked,
   AssetApprovalItem,
+  AssetApprovalSpender,
   ContractApprovalItem,
   NftApprovalItem,
   TokenApprovalItem,
@@ -28,6 +30,12 @@ import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownToken from 'ui/assets/token-default.svg';
 import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { HandleClickTableRow } from './components/Table';
+import {
+  encodeRevokeItemIndex,
+  findIndexRevokeList,
+  toRevokeItem,
+} from './utils';
 
 /**
  * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
@@ -529,5 +537,129 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       return false as const;
     }, [sortedAssetstList, displaySortedAssetsList]),
     displaySortedAssetsList,
+  };
+}
+
+export type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
+  approvalItem: T;
+  selectedRevokeItems: ApprovalSpenderItemToBeRevoked[];
+}) => any;
+export type RevokeSummary = {
+  revokeList: ApprovalSpenderItemToBeRevoked[];
+  statics: {
+    general: ApprovalSpenderItemToBeRevoked[];
+    permit2: Record<string, ApprovalSpenderItemToBeRevoked[]>;
+    txCount: number;
+  };
+};
+export function useSelectSpendersToRevoke(
+  filterType: keyof typeof FILTER_TYPES
+) {
+  const [assetRevokeList, setAssetRevokeList] = React.useState<
+    ApprovalSpenderItemToBeRevoked[]
+  >([]);
+  const handleClickAssetRow: HandleClickTableRow<AssetApprovalSpender> = React.useCallback(
+    (ctx) => {
+      const record = ctx.record;
+      const index = findIndexRevokeList(
+        assetRevokeList,
+        record.$assetContract!,
+        record.$assetToken!
+      );
+      if (index > -1) {
+        setAssetRevokeList((prev) => prev.filter((item, i) => i !== index));
+      } else {
+        const revokeItem = toRevokeItem(
+          record.$assetContract!,
+          record.$assetToken!
+        );
+        if (revokeItem) {
+          setAssetRevokeList((prev) => [...prev, revokeItem]);
+        }
+      }
+    },
+    [assetRevokeList]
+  );
+
+  const [contractRevokeMap, setContractRevokeMap] = React.useState<
+    Record<string, ApprovalSpenderItemToBeRevoked[]>
+  >({});
+  const contractRevokeList = useMemo(() => {
+    return Object.values(contractRevokeMap).flat();
+  }, [contractRevokeMap]);
+
+  const currentRevokeList =
+    filterType === 'contract'
+      ? contractRevokeList
+      : filterType === 'assets'
+      ? assetRevokeList
+      : [];
+
+  const clearRevoke = React.useCallback(() => {
+    setContractRevokeMap({});
+    setAssetRevokeList([]);
+  }, []);
+
+  const patchContractRevokeMap = React.useCallback(
+    (key: string, list: ApprovalSpenderItemToBeRevoked[]) => {
+      setContractRevokeMap((prev) => ({
+        ...prev,
+        [key]: list,
+      }));
+    },
+    [setContractRevokeMap]
+  );
+
+  const onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem> = React.useCallback(
+    (ctx) => {
+      const selectedItemKey = encodeRevokeItemIndex(ctx.approvalItem);
+
+      setContractRevokeMap((prev) => ({
+        ...prev,
+        [selectedItemKey]: ctx.selectedRevokeItems,
+      }));
+    },
+    []
+  );
+
+  const revokeSummary = useMemo(() => {
+    const statics = currentRevokeList.reduce(
+      (accu, cur, idx) => {
+        if ('permit2Id' in cur && cur.permit2Id) {
+          if (!accu.permit2[cur.permit2Id]) {
+            accu.txCount += 1;
+            accu.permit2[cur.permit2Id] = [];
+          }
+
+          accu.permit2[cur.permit2Id].push(cur);
+        } else {
+          accu.txCount += 1;
+          accu.general.push(cur);
+        }
+
+        return accu;
+      },
+      <RevokeSummary['statics']>{
+        general: [],
+        permit2: {},
+        txCount: 0,
+      }
+    );
+
+    return {
+      currentRevokeList,
+      statics,
+    };
+  }, [currentRevokeList]);
+
+  return {
+    handleClickAssetRow,
+    contractRevokeMap,
+    contractRevokeList,
+    assetRevokeList,
+    revokeSummary,
+    clearRevoke,
+    patchContractRevokeMap,
+    onChangeSelectedContractSpenders,
   };
 }

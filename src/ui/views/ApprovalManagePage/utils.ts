@@ -75,6 +75,20 @@ export function encodeRevokeItemIndex(approval: ApprovalItem) {
   return `${approval.chain}:${approval.id}`;
 }
 
+export function getFirstSpender(spenderHost: ApprovalItem['list'][number]) {
+  if ('spender' in spenderHost) return spenderHost.spender;
+
+  if ('spenders' in spenderHost) return spenderHost.spenders[0];
+
+  return undefined;
+}
+
+export function getPermit2IdFromSpenderHost(
+  spenderHost: ApprovalItem['list'][number]
+) {
+  return getFirstSpender(spenderHost)?.permit2_id || undefined;
+}
+
 export const findIndexRevokeList = <
   T extends ApprovalItem['list'][number] = ApprovalItem['list'][number]
 >(
@@ -88,6 +102,7 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === token.contract_id &&
           revoke.spender === token.spender.id &&
+          // revoke.permit2Id === getFirstSpender(token)?.permit2_id &&
           revoke.tokenId === token.inner_id &&
           revoke.chainServerId === token.chain
         ) {
@@ -119,6 +134,7 @@ export const findIndexRevokeList = <
     return list.findIndex((revoke) => {
       if (
         revoke.spender === (token as Spender).id &&
+        revoke.permit2Id === getFirstSpender(token)?.permit2_id &&
         revoke.id === item.id &&
         revoke.chainServerId === item.chain
       ) {
@@ -156,6 +172,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
       return {
         chainServerId: token?.chain,
         contractId: token?.contract_id,
+        permit2Id: getFirstSpender(token)?.permit2_id,
         spender: token?.spender?.id,
         abi,
         tokenId: token?.inner_id,
@@ -170,6 +187,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
       return {
         chainServerId: token?.chain,
         contractId: token?.contract_id,
+        permit2Id: getFirstSpender(token)?.permit2_id,
         spender: token?.spender?.id,
         tokenId: null,
         abi,
@@ -178,6 +196,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
     } else {
       return {
         chainServerId: item.chain,
+        permit2Id: getFirstSpender(token)?.permit2_id,
         id: token?.id,
         spender: item.id,
       };
@@ -187,6 +206,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
   if (item.type === 'token') {
     return {
       chainServerId: item.chain,
+      permit2Id: getFirstSpender(token)?.permit2_id,
       id: item.id,
       spender: (token as Spender).id,
     };
@@ -203,6 +223,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
     return {
       chainServerId: item?.chain,
       contractId: nftInfo?.contract_id || '',
+      permit2Id: getFirstSpender(token)?.permit2_id,
       spender: (token as Spender).id,
       tokenId: (nftInfo as NFTApproval)?.inner_id || null,
       abi,

@@ -22,6 +22,7 @@ export type ApprovalSpenderItemToBeRevoked = {
       abi: 'ERC721' | 'ERC1155' | '';
       tokenId: string | null | undefined;
       isApprovedForAll: boolean;
+      permit2Id?: string;
     }
   | {
       id: TokenApproval['id'] | Spender['id'];
