@@ -93,7 +93,7 @@ import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
-import { getWeb3Provider } from './utils';
+import { getWeb3Provider, web3AbiCoder } from './utils';
 import { CoboSafeAccount } from '@/utils/cobo-agrus-sdk/cobo-agrus-sdk';
 import CoboArgusKeyring from '../service/keyring/eth-cobo-argus-keyring';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
@@ -108,6 +108,12 @@ import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
 import { BridgeRecord } from '../service/bridge';
+import { TokenSpenderPair } from '@/types/permit2';
+import {
+  summarizeRevoke,
+  ApprovalSpenderItemToBeRevoked,
+} from '@/utils-isomorphic/approve';
+import { appIsProd } from '@/utils/env';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -753,6 +759,72 @@ export class WalletController extends BaseController {
     });
   };
 
+  lockdownPermit2 = async (input: {
+    id: string;
+    chainServerId: string;
+    tokenSpenders: TokenSpenderPair[];
+    $ctx?: any;
+    gasPrice?: number;
+  }) => {
+    const {
+      chainServerId,
+      id,
+      tokenSpenders: _tokenSpenders,
+      $ctx,
+      gasPrice,
+    } = input;
+
+    const tokenSpenders = JSON.parse(JSON.stringify(_tokenSpenders));
+
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const chainId = findChain({
+      serverId: chainServerId,
+    })?.id;
+    if (!chainId) throw new Error(t('background.error.invalidChainId'));
+    const tx: any = {
+      from: account.address,
+      to: id,
+      chainId: chainId,
+      data: web3AbiCoder.encodeFunctionCall(
+        {
+          constant: false,
+          inputs: [
+            {
+              name: 'approvals',
+              type: 'tuple[]',
+              internalType: 'tuple[]',
+              components: [
+                { type: 'address', name: 'token' },
+                { type: 'address', name: 'spender' },
+              ],
+            },
+          ],
+          name: 'lockdown',
+          outputs: [
+            {
+              name: '',
+              type: 'bool',
+            },
+          ],
+          payable: false,
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+        [tokenSpenders] as any
+      ),
+    };
+    if (gasPrice) {
+      tx.gasPrice = gasPrice;
+    }
+
+    await this.sendRequest({
+      $ctx,
+      method: 'eth_sendTransaction',
+      params: [tx],
+    });
+  };
+
   fetchEstimatedL1Fee = async (
     txMeta: Record<string, any> & {
       txParams: any;
@@ -857,7 +929,7 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId] as any
+              [account.address, to, tokenId]
             ),
           },
         ],
@@ -921,7 +993,7 @@ export class WalletController extends BaseController {
       contractId,
       spender,
       abi,
-      tokenId,
+      nftTokenId,
       isApprovedForAll,
     }: {
       chainServerId: string;
@@ -929,7 +1001,7 @@ export class WalletController extends BaseController {
       spender: string;
       abi: 'ERC721' | 'ERC1155' | '';
       isApprovedForAll: boolean;
-      tokenId: string | null | undefined;
+      nftTokenId?: string | null | undefined;
     },
     $ctx?: any
   ) => {
@@ -999,7 +1071,10 @@ export class WalletController extends BaseController {
                   stateMutability: 'nonpayable',
                   type: 'function',
                 },
-                ['0x0000000000000000000000000000000000000000', tokenId] as any
+                [
+                  '0x0000000000000000000000000000000000000000',
+                  nftTokenId,
+                ] as any
               ),
             },
           ],
@@ -3457,34 +3532,50 @@ export class WalletController extends BaseController {
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
 
-  revoke = async ({
-    list,
-  }: {
-    list: import('@/utils/approval').ApprovalSpenderItemToBeRevoked[];
-  }) => {
+  revoke = async ({ list }: { list: ApprovalSpenderItemToBeRevoked[] }) => {
     const queue = new PQueue({
       autoStart: true,
       concurrency: 1,
       timeout: undefined,
     });
 
-    const revokeList = list.map((e) => async () => {
-      try {
-        if ('tokenId' in e) {
-          await this.revokeNFTApprove(e);
-        } else {
-          await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
-            ga: {
-              category: 'Security',
-              source: 'tokenApproval',
-            },
-          });
+    const revokeSummary = summarizeRevoke(list);
+
+    const revokeList: (() => Promise<void>)[] = [
+      ...revokeSummary.generalRevokes.map((e) => async () => {
+        try {
+          if ('nftTokenId' in e) {
+            await this.revokeNFTApprove(e);
+          } else {
+            await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
+              },
+            });
+          }
+        } catch (error) {
+          queue.clear();
+          if (!appIsProd) console.error(error);
+          console.error('revoke error', e);
         }
-      } catch (error) {
-        queue.clear();
-        console.error('revoke error', e);
-      }
-    });
+      }),
+      ...Object.entries(revokeSummary.permit2Revokes).map(
+        ([permit2Id, item]) => async () => {
+          try {
+            await this.lockdownPermit2({
+              id: permit2Id,
+              chainServerId: item.chainServerId,
+              tokenSpenders: item.tokenSpenders,
+            });
+          } catch (error) {
+            queue.clear();
+            if (!appIsProd) console.error(error);
+            console.error('batch revoke permit2 error', item);
+          }
+        }
+      ),
+    ];
 
     try {
       await queue.addAll(revokeList);

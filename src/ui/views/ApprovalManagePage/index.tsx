@@ -40,11 +40,11 @@ import {
   AssetApprovalSpender,
   getSpenderApprovalAmount,
   RiskNumMap,
-  ApprovalSpenderItemToBeRevoked,
   compareAssetSpenderByAmount,
   compareAssetSpenderByType,
   SpenderInTokenApproval,
 } from '@/utils/approval';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
 import {
@@ -1237,7 +1237,7 @@ const ApprovalManagePage = () => {
             </main>
             <div className="sticky-footer">
               <RevokeButton
-                revokeStatics={revokeSummary.statics}
+                revokeTxCount={revokeSummary.statics.txCount}
                 onRevoke={handleRevoke}
               />
             </div>

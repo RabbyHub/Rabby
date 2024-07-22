@@ -13,11 +13,8 @@ import clsx from 'clsx';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import {
-  ApprovalItem,
-  ApprovalSpenderItemToBeRevoked,
-  getSpenderApprovalAmount,
-} from '@/utils/approval';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {

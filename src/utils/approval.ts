@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 import {
   NFTApproval,
   NFTApprovalContract,
@@ -10,24 +12,7 @@ import {
   formatNumber,
   splitNumberByStep,
 } from '@/ui/utils';
-import BigNumber from 'bignumber.js';
 import { appIsDev, appIsProd } from './env';
-
-export type ApprovalSpenderItemToBeRevoked = {
-  chainServerId: ApprovalItem['chain'];
-  spender: Spender['id'];
-} & (
-  | {
-      contractId: NFTInfoHost['contract_id'];
-      abi: 'ERC721' | 'ERC1155' | '';
-      tokenId: string | null | undefined;
-      isApprovedForAll: boolean;
-      permit2Id?: string;
-    }
-  | {
-      id: TokenApproval['id'] | Spender['id'];
-    }
-);
 
 export type ApprovalItem =
   | ContractApprovalItem

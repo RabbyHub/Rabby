@@ -7,11 +7,11 @@ dayjs.extend(updateLocale);
 
 import {
   ApprovalItem,
-  ApprovalSpenderItemToBeRevoked,
   ContractApprovalItem,
   RiskNumMap,
   compareContractApprovalItemByRiskLevel,
 } from '@/utils/approval';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { SorterResult } from 'antd/lib/table/interface';
 import {
   NFTApproval,
@@ -170,12 +170,13 @@ export const toRevokeItem = <T extends ApprovalItem>(
         ? 'ERC1155'
         : '';
       return {
+        // hostType: 'contract',
         chainServerId: token?.chain,
         contractId: token?.contract_id,
         permit2Id: getFirstSpender(token)?.permit2_id,
         spender: token?.spender?.id,
         abi,
-        tokenId: token?.inner_id,
+        nftTokenId: token?.inner_id,
         isApprovedForAll: false,
       } as const;
     } else if ('contract_name' in token) {
@@ -189,7 +190,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
         contractId: token?.contract_id,
         permit2Id: getFirstSpender(token)?.permit2_id,
         spender: token?.spender?.id,
-        tokenId: null,
+        nftTokenId: null,
         abi,
         isApprovedForAll: true,
       } as const;
@@ -197,6 +198,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
       return {
         chainServerId: item.chain,
         permit2Id: getFirstSpender(token)?.permit2_id,
+        tokenId: token?.id,
         id: token?.id,
         spender: item.id,
       };
@@ -207,6 +209,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
     return {
       chainServerId: item.chain,
       permit2Id: getFirstSpender(token)?.permit2_id,
+      tokenId: (token as Spender).id,
       id: item.id,
       spender: (token as Spender).id,
     };
@@ -221,11 +224,12 @@ export const toRevokeItem = <T extends ApprovalItem>(
       ? 'ERC1155'
       : '';
     return {
+      // hostType: item.type,
       chainServerId: item?.chain,
       contractId: nftInfo?.contract_id || '',
       permit2Id: getFirstSpender(token)?.permit2_id,
       spender: (token as Spender).id,
-      tokenId: (nftInfo as NFTApproval)?.inner_id || null,
+      nftTokenId: (nftInfo as NFTApproval)?.inner_id || null,
       abi,
       isApprovedForAll: nftInfo && 'inner_id' in nftInfo ? false : true,
     };

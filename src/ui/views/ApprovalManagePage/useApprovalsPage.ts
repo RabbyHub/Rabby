@@ -12,9 +12,9 @@ import PQueue from 'p-queue';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import {
   ApprovalItem,
-  ApprovalSpenderItemToBeRevoked,
   AssetApprovalItem,
   AssetApprovalSpender,
   ContractApprovalItem,
@@ -36,6 +36,7 @@ import {
   findIndexRevokeList,
   toRevokeItem,
 } from './utils';
+import { summarizeRevoke } from '@/utils-isomorphic/approve';
 
 /**
  * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
@@ -544,14 +545,6 @@ export type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
   approvalItem: T;
   selectedRevokeItems: ApprovalSpenderItemToBeRevoked[];
 }) => any;
-export type RevokeSummary = {
-  revokeList: ApprovalSpenderItemToBeRevoked[];
-  statics: {
-    general: ApprovalSpenderItemToBeRevoked[];
-    permit2: Record<string, ApprovalSpenderItemToBeRevoked[]>;
-    txCount: number;
-  };
-};
 export function useSelectSpendersToRevoke(
   filterType: keyof typeof FILTER_TYPES
 ) {
@@ -623,32 +616,11 @@ export function useSelectSpendersToRevoke(
   );
 
   const revokeSummary = useMemo(() => {
-    const statics = currentRevokeList.reduce(
-      (accu, cur, idx) => {
-        if ('permit2Id' in cur && cur.permit2Id) {
-          if (!accu.permit2[cur.permit2Id]) {
-            accu.txCount += 1;
-            accu.permit2[cur.permit2Id] = [];
-          }
-
-          accu.permit2[cur.permit2Id].push(cur);
-        } else {
-          accu.txCount += 1;
-          accu.general.push(cur);
-        }
-
-        return accu;
-      },
-      <RevokeSummary['statics']>{
-        general: [],
-        permit2: {},
-        txCount: 0,
-      }
-    );
+    const summary = summarizeRevoke(currentRevokeList);
 
     return {
       currentRevokeList,
-      statics,
+      statics: summary.statics,
     };
   }, [currentRevokeList]);
 
