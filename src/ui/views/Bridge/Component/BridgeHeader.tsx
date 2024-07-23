@@ -1,9 +1,7 @@
-import { ReactComponent as RcIconSettings } from '@/ui/assets/swap/settings.svg';
 import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history.svg';
 
 import { PageHeader } from '@/ui/component';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { AggregatorsSettings } from './AggregatorsSettings';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   usePollBridgePendingNumber,
   useSetSettingVisible,
@@ -13,22 +11,25 @@ import { BridgeTxHistory } from './BridgeHistory';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
 import { PendingTx } from './PendingTx';
+import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
 
 export const Header = () => {
-  const visible = useSettingVisible();
-  const setVisible = useSetSettingVisible();
+  const feePopupVisible = useSettingVisible();
+  const setFeePopupVisible = useSetSettingVisible();
 
   const [historyVisible, setHistoryVisible] = useState(false);
   const { t } = useTranslation();
 
   const dispath = useRabbyDispatch();
 
-  // const loadingNumber = 0;
-
   const loadingNumber = usePollBridgePendingNumber();
 
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
+  }, []);
+
+  const closeFeePopup = useCallback(() => {
+    setFeePopupVisible(false);
   }, []);
 
   useEffect(() => {
@@ -48,28 +49,21 @@ export const Header = () => {
             ) : (
               <RcIconHistory className="cursor-pointer" onClick={openHistory} />
             )}
-            <RcIconSettings
-              className="cursor-pointer"
-              onClick={useCallback(() => {
-                setVisible(true);
-              }, [])}
-            />
           </div>
         }
       >
         {t('page.bridge.title')}
       </PageHeader>
-      <AggregatorsSettings
-        visible={visible}
-        onClose={useCallback(() => {
-          setVisible(false);
-        }, [])}
-      />
       <BridgeTxHistory
         visible={historyVisible}
         onClose={useCallback(() => {
           setHistoryVisible(false);
         }, [])}
+      />
+      <RabbyFeePopup
+        type="bridge"
+        visible={feePopupVisible}
+        onClose={closeFeePopup}
       />
     </>
   );

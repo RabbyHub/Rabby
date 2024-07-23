@@ -1,16 +1,9 @@
 import { Checkbox, Popup } from '@/ui/component';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { QuoteListLoading, QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
-import {
-  TCexQuoteData,
-  TDexQuoteData,
-  isSwapWrapToken,
-  useQuoteViewDexIdList,
-  useSetRefreshId,
-  useSwapSettings,
-} from '../hooks';
+import { TDexQuoteData, isSwapWrapToken, useSetRefreshId } from '../hooks';
 import BigNumber from 'bignumber.js';
 import { DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
@@ -31,7 +24,7 @@ interface QuotesProps
     | 'isBestQuote'
     | 'quoteProviderInfo'
   > {
-  list?: (TCexQuoteData | TDexQuoteData)[];
+  list?: TDexQuoteData[];
   activeName?: string;
   visible: boolean;
   onClose: () => void;
@@ -41,47 +34,41 @@ export const Quotes = ({
   list,
   activeName,
   inSufficient,
+  sortIncludeGasFee,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
-  const { sortIncludeGasFee } = useSwapSettings();
 
   const sortedList = useMemo(
     () => [
       ...(list?.sort((a, b) => {
         const getNumber = (quote: typeof a) => {
           const price = other.receiveToken.price ? other.receiveToken.price : 1;
-          if (quote.isDex) {
-            if (inSufficient) {
-              return new BigNumber(quote.data?.toTokenAmount || 0)
-                .div(
-                  10 **
-                    (quote.data?.toTokenDecimals || other.receiveToken.decimals)
-                )
-                .times(price);
-            }
-            if (!quote.preExecResult) {
-              return new BigNumber(Number.MIN_SAFE_INTEGER);
-            }
-
-            if (sortIncludeGasFee) {
-              return new BigNumber(
-                quote?.preExecResult.swapPreExecTx.balance_change
-                  .receive_token_list?.[0]?.amount || 0
+          if (inSufficient) {
+            return new BigNumber(quote.data?.toTokenAmount || 0)
+              .div(
+                10 **
+                  (quote.data?.toTokenDecimals || other.receiveToken.decimals)
               )
-                .times(price)
-                .minus(quote?.preExecResult?.gasUsdValue || 0);
-            }
+              .times(price);
+          }
+          if (!quote.preExecResult) {
+            return new BigNumber(Number.MIN_SAFE_INTEGER);
+          }
 
+          if (sortIncludeGasFee) {
             return new BigNumber(
               quote?.preExecResult.swapPreExecTx.balance_change
                 .receive_token_list?.[0]?.amount || 0
-            ).times(price);
+            )
+              .times(price)
+              .minus(quote?.preExecResult?.gasUsdValue || 0);
           }
 
-          return quote?.data?.receive_token
-            ? new BigNumber(quote?.data?.receive_token?.amount).times(price)
-            : new BigNumber(Number.MIN_SAFE_INTEGER);
+          return new BigNumber(
+            quote?.preExecResult.swapPreExecTx.balance_change
+              .receive_token_list?.[0]?.amount || 0
+          ).times(price);
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),
@@ -99,21 +86,17 @@ export const Quotes = ({
     const bestQuote = sortedList?.[0];
 
     return [
-      (bestQuote?.isDex
-        ? inSufficient
-          ? new BigNumber(bestQuote.data?.toTokenAmount || 0)
-              .div(
-                10 **
-                  (bestQuote?.data?.toTokenDecimals ||
-                    other.receiveToken.decimals ||
-                    1)
-              )
-              .toString(10)
-          : bestQuote?.preExecResult?.swapPreExecTx.balance_change
-              .receive_token_list[0]?.amount
-        : new BigNumber(bestQuote?.data?.receive_token.amount || '0').toString(
-            10
-          )) || '0',
+      inSufficient
+        ? new BigNumber(bestQuote.data?.toTokenAmount || 0)
+            .div(
+              10 **
+                (bestQuote?.data?.toTokenDecimals ||
+                  other.receiveToken.decimals ||
+                  1)
+            )
+            .toString(10)
+        : bestQuote?.preExecResult?.swapPreExecTx.balance_change
+            .receive_token_list[0]?.amount,
       bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || '0' : '0',
     ];
   }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
@@ -122,7 +105,7 @@ export const Quotes = ({
   const [hiddenError, setHiddenError] = useState(true);
   const [errorQuoteDEXs, setErrorQuoteDEXs] = useState<string[]>([]);
 
-  const viewListLength = useQuoteViewDexIdList().length;
+  const dexListLength = useRabbySelector((s) => s.swap.supportedDEXList.length);
 
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
@@ -141,12 +124,12 @@ export const Quotes = ({
                 .receive_token_list[0]?.amount || '0'
             }`}
             bestQuoteGasUsd={bestQuoteGasUsd}
-            active={activeName === dex?.name}
             isLoading={dex.loading}
             quoteProviderInfo={{
               name: t('page.swap.wrap-contract'),
               logo: other?.receiveToken?.logo_url,
             }}
+            sortIncludeGasFee={sortIncludeGasFee}
             {...other}
           />
         ) : (
@@ -181,11 +164,11 @@ export const Quotes = ({
               isBestQuote={idx === 0}
               bestQuoteAmount={`${bestQuoteAmount}`}
               bestQuoteGasUsd={bestQuoteGasUsd}
-              active={activeName === name}
               isLoading={params.loading}
               quoteProviderInfo={
                 DEX_WITH_WRAP[name as keyof typeof DEX_WITH_WRAP]
               }
+              sortIncludeGasFee={sortIncludeGasFee}
               {...other}
             />
           );
@@ -197,7 +180,7 @@ export const Quotes = ({
         className={clsx(
           'flex items-center justify-center my-8 mt-24 cursor-pointer gap-4',
           errorQuoteDEXs.length === 0 ||
-            errorQuoteDEXs?.length === viewListLength
+            errorQuoteDEXs?.length === dexListLength
             ? 'hidden'
             : 'mb-12'
         )}
@@ -217,7 +200,7 @@ export const Quotes = ({
         className={clsx(
           'flex flex-col gap-8 transition overflow-hidden',
           hiddenError &&
-            errorQuoteDEXs?.length !== viewListLength &&
+            errorQuoteDEXs?.length !== dexListLength &&
             'max-h-0 h-0',
           errorQuoteDEXs.length === 0 && 'hidden'
         )}
@@ -238,11 +221,11 @@ export const Quotes = ({
               isBestQuote={idx === 0}
               bestQuoteAmount={`${bestQuoteAmount}`}
               bestQuoteGasUsd={bestQuoteGasUsd}
-              active={activeName === name}
               isLoading={params.loading}
               quoteProviderInfo={
                 DEX_WITH_WRAP[name as keyof typeof DEX_WITH_WRAP]
               }
+              sortIncludeGasFee={sortIncludeGasFee}
               {...other}
             />
           );
@@ -257,7 +240,7 @@ const bodyStyle = {
   paddingBottom: 0,
 };
 
-export const QuoteList = (props: QuotesProps) => {
+export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
   const { visible, onClose } = props;
   const refresh = useSetRefreshId();
 
@@ -267,15 +250,15 @@ export const QuoteList = (props: QuotesProps) => {
 
   const { t } = useTranslation();
 
-  const { sortIncludeGasFee, setSwapSortIncludeGasFee } = useSwapSettings();
+  const [sortIncludeGasFee, setSortIncludeGasFee] = useState(true);
 
-  const viewList = useQuoteViewDexIdList();
+  const dexList = useRabbySelector((s) => s.swap.supportedDEXList);
 
   const height = useMemo(() => {
     const min = 333;
     const max = 540;
 
-    const h = 45 + 24 + viewList.length * 92;
+    const h = 45 + 24 + dexList.length * 100;
 
     if (h < min) {
       return min;
@@ -284,7 +267,13 @@ export const QuoteList = (props: QuotesProps) => {
       return max;
     }
     return h;
-  }, [viewList.length]);
+  }, [dexList.length]);
+
+  useEffect(() => {
+    if (!visible) {
+      setSortIncludeGasFee(true);
+    }
+  }, [visible]);
 
   return (
     <Popup
@@ -308,7 +297,7 @@ export const QuoteList = (props: QuotesProps) => {
 
           <Checkbox
             checked={!!sortIncludeGasFee}
-            onChange={setSwapSortIncludeGasFee}
+            onChange={setSortIncludeGasFee}
             className="text-12 text-rabby-neutral-body"
             width="14px"
             height="14px"
@@ -362,7 +351,7 @@ export const QuoteList = (props: QuotesProps) => {
       bodyStyle={bodyStyle}
       isSupportDarkMode
     >
-      <Quotes {...props} />
+      <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
     </Popup>
   );
 };

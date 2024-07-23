@@ -36,6 +36,7 @@ import { ReactComponent as RcIconQuestion } from '@/ui/assets/bridge/question-cc
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import pRetry from 'p-retry';
 import stats from '@/stats';
+import { BestQuoteLoading } from '../../Swap/Component/loading';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
 
@@ -107,9 +108,11 @@ export const BridgeContent = () => {
     payAmount,
     inSufficient,
 
+    openQuotesList,
     quoteLoading,
     quoteList,
 
+    bestQuoteId,
     selectedBridgeQuote,
 
     setSelectedBridgeQuote,
@@ -366,20 +369,32 @@ export const BridgeContent = () => {
           }
         />
 
-        {payAmount &&
+        {quoteLoading && !selectedBridgeQuote?.manualClick && (
+          <BestQuoteLoading />
+        )}
+
+        {payToken &&
+          receiveToken &&
+          Number(payAmount) > 0 &&
+          (!quoteLoading || selectedBridgeQuote?.manualClick) && (
+            <BridgeReceiveDetails
+              openQuotesList={openQuotesList}
+              activeProvider={selectedBridgeQuote}
+              className="section"
+              payAmount={payAmount}
+              payToken={payToken}
+              receiveToken={receiveToken}
+              bestQuoteId={bestQuoteId}
+            />
+          )}
+
+        {Number(payAmount) > 0 &&
           selectedBridgeQuote &&
           selectedBridgeQuote?.to_token_amount &&
           payToken &&
-          receiveToken && (
+          receiveToken &&
+          bestQuoteId && (
             <>
-              <BridgeReceiveDetails
-                activeProvider={selectedBridgeQuote}
-                className="section"
-                payAmount={payAmount}
-                payToken={payToken}
-                receiveToken={receiveToken}
-              />
-
               <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12 ">
                 <div className="subText flex flex-col gap-12 relative">
                   <div className="flex justify-between">

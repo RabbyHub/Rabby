@@ -3,22 +3,22 @@ import { Header } from './Component/Header';
 import { Main } from './Component/Main';
 import {
   QuoteVisibleProvider,
+  RabbyFeeVisibleProvider,
   RefreshIdProvider,
-  SettingVisibleProvider,
 } from './hooks';
 
 const Swap = () => {
   return (
-    <SettingVisibleProvider>
-      <RefreshIdProvider>
-        <QuoteVisibleProvider>
+    <RefreshIdProvider>
+      <QuoteVisibleProvider>
+        <RabbyFeeVisibleProvider>
           <div className="px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col">
             <Header />
             <Main />
           </div>
-        </QuoteVisibleProvider>
-      </RefreshIdProvider>
-    </SettingVisibleProvider>
+        </RabbyFeeVisibleProvider>
+      </QuoteVisibleProvider>
+    </RefreshIdProvider>
   );
 };
 export default Swap;

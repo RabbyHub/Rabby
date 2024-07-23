@@ -18,38 +18,11 @@ import {
 } from '../hooks';
 import { Tooltip } from 'antd';
 import { useRabbySelector } from '@/ui/store';
-import ImgWhiteWarning from '@/ui/assets/swap/warning-white.svg';
 import styled from 'styled-components';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 
 const ItemWrapper = styled.div`
   position: relative;
-
-  .disabled-trade {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translateY(-20px);
-    opacity: 0;
-    width: 100%;
-    height: 0;
-    padding-left: 16px;
-    background: #000000;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 400;
-    font-size: 13px;
-    color: #ffffff;
-    pointer-events: none;
-  }
-  &.enabledAggregator:hover .disabled-trade {
-    cursor: pointer;
-    pointer-events: auto;
-    height: 100%;
-    transform: translateY(0);
-    opacity: 1;
-  }
 `;
 
 interface QuoteItemProps extends SelectedBridgeQuote {
@@ -82,7 +55,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
 
   const openSwapQuote = useSetQuoteVisible();
 
-  const openSettings = useSetSettingVisible();
+  const openFeePopup = useSetSettingVisible();
 
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
@@ -127,7 +100,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     if (!enabledAggregator) {
       return;
     }
-    props?.setSelectedBridgeQuote?.(props);
+    props?.setSelectedBridgeQuote?.({ ...props, manualClick: true });
     openSwapQuote(false);
   };
   return (
@@ -142,13 +115,13 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     >
       <ItemWrapper
         className={clsx(
-          ' flex flex-col gap-10  justify-center rounded-md',
+          ' flex flex-col gap-12  justify-center rounded-md',
           !props.inSufficient && !enabledAggregator && 'enabledAggregator',
           props.onlyShow
             ? 'bg-transparent h-auto'
             : props.inSufficient || !enabledAggregator
-            ? 'h-80 px-16 bg-transparent border-[0.5px] border-solid border-rabby-neutral-line'
-            : 'h-80 px-16 cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-rabby-blue-light1  hover:border-rabby-blue-default'
+            ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line'
+            : 'h-[88px] p-16 pt-[20px] cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-rabby-blue-light1  hover:border-rabby-blue-default'
         )}
         style={
           props.onlyShow || props.inSufficient || !enabledAggregator
@@ -164,7 +137,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
-              isLoading={props.loading}
+              isLoading={props.onlyShow ? false : props.loading}
             />
             <span className="text-[16px] font-medium text-r-neutral-title1">
               {props.aggregator.name}
@@ -240,39 +213,28 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
                 ),
               })}
             </span>
-            {!props.onlyShow && (
-              <span
-                className={clsx(
-                  props.isBestQuote
-                    ? 'text-r-green-default'
-                    : 'text-r-red-default'
-                )}
-              >
-                {props.isBestQuote ? t('page.bridge.best') : diffPercent}
-              </span>
-            )}
+            <RcIconInfo
+              className="text-rabby-neutral-foot w-14 h-14"
+              onClick={(e) => {
+                e.stopPropagation();
+                openFeePopup(true);
+              }}
+            />
           </div>
         </div>
 
-        {!props.inSufficient && !enabledAggregator && (
+        {!props.onlyShow && (
           <div
-            className={clsx('disabled-trade')}
-            onClick={(e) => {
-              e.stopPropagation();
-              openSettings(true);
-            }}
+            className={clsx(
+              'absolute top-0 left-0',
+              'rounded-tl-[4px] rounded-br-[4px] px-[6px] py-[1px]',
+              'text-12 font-medium',
+              props.isBestQuote
+                ? 'text-r-green-default bg-r-green-light'
+                : 'text-r-red-default bg-red-light'
+            )}
           >
-            <img
-              src={ImgWhiteWarning}
-              className="w-12 h-12 relative top-[-10px]"
-            />
-            <span>
-              {t('page.bridge.aggregator-not-enabled')}
-              <br />
-              <span className="underline-transparent underline cursor-pointer ml-4">
-                {t('page.bridge.enable-it')}
-              </span>
-            </span>
+            {props.isBestQuote ? t('page.bridge.best') : diffPercent}
           </div>
         )}
       </ItemWrapper>

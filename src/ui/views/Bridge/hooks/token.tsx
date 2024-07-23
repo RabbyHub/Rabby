@@ -9,6 +9,7 @@ import { useAsync, useDebounce } from 'react-use';
 import {
   useQuoteVisible,
   useRefreshId,
+  useSetQuoteVisible,
   useSetRefreshId,
   useSettingVisible,
 } from './context';
@@ -63,6 +64,7 @@ export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldTwoStepApprove?: boolean;
   loading?: boolean;
   tx?: BridgeQuote['tx'];
+  manualClick?: boolean;
 }
 
 export const useTokenPair = (userAddress: string) => {
@@ -186,7 +188,8 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount]);
+    setSelectedBridgeQuote(undefined);
+  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
 
   const visible = useQuoteVisible();
   const settingVisible = useSettingVisible();
@@ -218,13 +221,13 @@ export const useTokenPair = (userAddress: string) => {
   const wallet = useWallet();
   const { loading: quoteLoading, error: quotesError } = useAsync(async () => {
     if (
-      visible &&
+      !inSufficient &&
       userAddress &&
       payToken?.id &&
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      payAmount &&
+      Number(payAmount) > 0 &&
       aggregatorsList.length > 0
     ) {
       fetchIdRef.current += 1;
@@ -239,6 +242,8 @@ export const useTokenPair = (userAddress: string) => {
         }
         return e?.map((e) => ({ ...e, loading: true }));
       });
+
+      setSelectedBridgeQuote(undefined);
 
       const originData = await wallet.openapi
         .getBridgeQuoteList({
@@ -430,7 +435,7 @@ export const useTokenPair = (userAddress: string) => {
       }
     }
   }, [
-    visible,
+    inSufficient,
     aggregatorsList,
     refreshId,
     userAddress,
@@ -439,6 +444,52 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     payAmount,
   ]);
+
+  const [bestQuoteId, setBestQuoteId] = useState<
+    | {
+        bridgeId: string;
+        aggregatorId: string;
+      }
+    | undefined
+  >(undefined);
+
+  const openQuote = useSetQuoteVisible();
+
+  const openQuotesList = useCallback(() => {
+    setQuotesList([]);
+    setRefreshId((e) => e + 1);
+    openQuote(true);
+  }, []);
+
+  useEffect(() => {
+    if (!quoteLoading && receiveToken && quoteList.every((e) => !e.loading)) {
+      const sortedList = quoteList?.sort((b, a) => {
+        return new BigNumber(a.to_token_amount)
+          .times(receiveToken.price || 1)
+          .minus(a.gas_fee.usd_value)
+          .minus(
+            new BigNumber(b.to_token_amount)
+              .times(receiveToken.price || 1)
+              .minus(b.gas_fee.usd_value)
+          )
+          .toNumber();
+      });
+      if (
+        sortedList[0] &&
+        sortedList[0]?.bridge_id &&
+        sortedList[0]?.aggregator?.id
+      ) {
+        setBestQuoteId({
+          bridgeId: sortedList[0]?.bridge_id,
+          aggregatorId: sortedList[0]?.aggregator?.id,
+        });
+
+        setSelectedBridgeQuote((preItem) =>
+          preItem?.manualClick ? preItem : sortedList[0]
+        );
+      }
+    }
+  }, [quoteList, quoteLoading, receiveToken]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
@@ -468,6 +519,9 @@ export const useTokenPair = (userAddress: string) => {
     quoteList,
     selectedBridgeQuote,
     setSelectedBridgeQuote,
+    openQuotesList,
+
+    bestQuoteId,
 
     expired,
   };
