@@ -206,6 +206,7 @@ export const ChainSelectorLargeModal = ({
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           allowClear
+          className="bg-r-neutral-card-1"
         />
       </header>
       {isLoading ? (
