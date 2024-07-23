@@ -231,7 +231,7 @@ export const useDbkChainBridge = ({
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
@@ -252,7 +252,7 @@ export const useDbkChainBridge = ({
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
@@ -265,7 +265,7 @@ export const useDbkChainBridge = ({
       .multipliedBy(payToken.price)
       .dividedBy(1e18)
       .toNumber();
-  }, [l1DepositGas, l1GasLevel, payToken?.price]);
+  }, [l1DepositGas, l1GasLevel?.price, payToken?.price]);
 
   const withdrawGasFee1 = useMemo(() => {
     if (!l2GasLevel?.price || !l2WithdrawGas || !payToken?.price) {
@@ -279,7 +279,7 @@ export const useDbkChainBridge = ({
   }, [l2GasLevel?.price, l2WithdrawGas, payToken?.price]);
 
   const withdrawProveGasFee = useMemo(() => {
-    if (!l1GasLevel || !payToken?.price) {
+    if (!l1GasLevel?.price || !payToken?.price) {
       return;
     }
     return new BigNumber(l1GasLevel.price)
@@ -294,7 +294,7 @@ export const useDbkChainBridge = ({
       return;
     }
     return new BigNumber(l1GasLevel?.price)
-      .multipliedBy(455939)
+      .multipliedBy(270_000)
       .multipliedBy(payToken.price)
       .dividedBy(1e18)
       .toNumber();
