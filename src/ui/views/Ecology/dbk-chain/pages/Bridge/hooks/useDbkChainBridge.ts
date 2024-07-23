@@ -217,14 +217,13 @@ export const useDbkChainBridge = ({
 
   const { data: l1DepositGas } = useRequest(
     async () => {
-      const gas = await clientL1.estimateDepositTransactionGas({
-        account: account!.address as any,
-        request: {
-          gas: 21_000n,
-          mint: parseEther(payAmount || '0'),
-          to: (account!.address as unknown) as `0x${string}`,
-        },
-        targetChain: dbk,
+      const gas = await clientL1.estimateContractGas({
+        abi: l1StandardBridgeABI,
+        address: DBK_CHAIN_BRIDGE_CONTRACT,
+        functionName: 'depositETH',
+        args: [200_000, '0x'],
+        account: account!.address as `0x${string}`,
+        value: parseEther(payAmount),
       });
       return gas;
     },
