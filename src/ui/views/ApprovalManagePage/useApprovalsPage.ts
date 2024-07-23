@@ -620,7 +620,7 @@ export function useSelectSpendersToRevoke(
 
     return {
       currentRevokeList,
-      statics: summary.statics,
+      ...summary,
     };
   }, [currentRevokeList]);
 

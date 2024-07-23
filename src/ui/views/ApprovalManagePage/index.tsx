@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Alert, Tooltip } from 'antd';
+import { Alert, Modal, Tooltip } from 'antd';
 import type { ColumnType, TableProps } from 'antd/lib/table';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
@@ -1237,7 +1237,7 @@ const ApprovalManagePage = () => {
             </main>
             <div className="sticky-footer">
               <RevokeButton
-                revokeTxCount={revokeSummary.statics.txCount}
+                revokeSummary={revokeSummary}
                 onRevoke={handleRevoke}
               />
             </div>

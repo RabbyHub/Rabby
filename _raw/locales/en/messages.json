@@ -708,7 +708,12 @@
         "RevokeButton": {
           "btnText_zero": "Revoke",
           "btnText_one": "Revoke ({{count}})",
-          "btnText_other": "Revoke ({{count}})"
+          "btnText_other": "Revoke ({{count}})",
+          "permit2Batch": {
+            "modalContent": "Revoking the Permit2 contract has been simplified to require only one signature.",
+            "modalTitle_one": "A total of <1>{{count}}</1> signature is required",
+            "modalTitle_other": "A total of <1>{{count}}</1> signatures is required"
+          }
         },
         "ViewMore": {
           "text": "View more"
@@ -808,7 +813,6 @@
       "insufficient-balance": "Insufficient balance",
       "hidden-no-quote-rates_one": "{{count}} rate unavailable",
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
-
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "Prefer MEV Guarded",
@@ -896,7 +900,6 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
-
       "settingModal": {
         "title": "Enable Bridge Aggregators to trade",
         "confirm": "Confirm",
@@ -915,7 +918,6 @@
         "noData": "No Supported Token Pair"
       }
     },
-
     "manageAddress": {
       "no-address": "No address",
       "no-match": "No match",
