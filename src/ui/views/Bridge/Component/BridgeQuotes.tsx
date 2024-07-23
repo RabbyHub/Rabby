@@ -1,5 +1,5 @@
 import { Checkbox, Popup } from '@/ui/component';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { SelectedBridgeQuote, useSetRefreshId } from '../hooks';
@@ -115,6 +115,12 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
   const { t } = useTranslation();
 
   const [sortIncludeGasFee, setSortIncludeGasFee] = useState(true);
+
+  useEffect(() => {
+    if (!visible) {
+      setSortIncludeGasFee(true);
+    }
+  }, [visible]);
 
   return (
     <Popup

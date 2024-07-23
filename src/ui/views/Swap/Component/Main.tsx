@@ -26,7 +26,7 @@ import { findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-import { BestQuoteLoading, LottieLoading } from './loading';
+import { BestQuoteLoading, SwapQuoteLoading } from './loading';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
@@ -411,7 +411,7 @@ export const Main = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1 flex items-center',
+              'text-r-neutral-body flex items-center',
               // !payTokenIsNativeToken && 'underline cursor-pointer',
               !payToken && 'hidden'
             )}
@@ -443,10 +443,7 @@ export const Main = () => {
           }
         />
 
-        {quoteLoading && !activeProvider?.manualClick && <LottieLoading />}
-        {/* {true && <BestQuoteLoading />} */}
-
-        {/* {true && <LottieLoading />} */}
+        {quoteLoading && !activeProvider?.manualClick && <SwapQuoteLoading />}
 
         {Number(payAmount) > 0 &&
           (!quoteLoading || (activeProvider && !!activeProvider.manualClick)) &&

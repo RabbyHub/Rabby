@@ -2,19 +2,12 @@ import { DEX } from '@/constant';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
-import { useSwapSettings } from '../hooks';
 import { useRabbySelector } from '@/ui/store';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import * as animationData from './lottie/light.json';
-import * as animationDataDark from './lottie/dark.json';
 
-import Lottie from 'lottie-react';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-
-import lightLoop from './lottie/light.mp4';
-import darkLoop from './lottie/dark.mp4';
 
 type QuoteListLoadingProps = {
   fetchedList?: string[];
@@ -212,64 +205,6 @@ export const BestQuoteLoading = () => {
   );
 };
 
-const HideControlsVideo = styled.video`
-  &::-webkit-media-controls {
-    display: none;
-  }
-
-  &::-webkit-media-controls-enclosure {
-    display: none;
-  }
-
-  &::-webkit-media-controls-panel {
-    display: none;
-  }
-`;
-
-export const LottieLoading = () => {
-  const { t } = useTranslation();
-
-  const { isDarkTheme } = useThemeMode();
-
-  return (
-    <div>
-      {/* <Lottie
-        animationData={isDarkTheme ? animationDataDark : animationData}
-        loop
-        height={360}
-        width={360}
-      /> */}
-      {/* <StyledLoading>
-        <SvgComponent className="item item-1" />
-        <SvgComponent className="item item-2" />
-        <SvgComponent className="item item-3" />
-      </StyledLoading> */}
-
-      <HideControlsVideo
-        src={isDarkTheme ? darkLoop : lightLoop}
-        autoPlay
-        muted
-        loop
-        className="w-full h-full object-cover"
-        hidden-controls
-      />
-      <div className="mt-18 flex items-center justify-center gap-4">
-        <img src={ImgRabbyWallet} className="w-14 h-14 rounded-full" />
-        <span className="text-12 text-r-neutral-foot">
-          {t('page.swap.fetch-best-quote')}
-        </span>
-        <Dots />
-      </div>
-    </div>
-  );
-};
-
-// const styledLoadingItem = styled.div`
-//   width: 239.918px;
-//   height: 54.175px;
-//   border:0.5px solid
-// `;
-
 const SvgComponent = (props: SVGProps<SVGSVGElement>) => {
   const { isDarkTheme } = useThemeMode();
 
@@ -354,10 +289,11 @@ const StyledLoading = styled.div`
 
   .item {
     position: absolute;
-    left: 16px;
-    top: 41px;
+    left: 50%;
+    top: 30px;
     animation: 3s infinite;
-    filter: drop-shadow(0px 6.414px 12.828px rgba(0, 0, 0, 0.1));
+    width: 300px;
+    height: 100px;
   }
   .item-1 {
     animation-name: loopingLoad1;
@@ -374,19 +310,19 @@ const StyledLoading = styled.div`
     14.28%,
     85.71%,
     100% {
-      transform: translateY(0) scale(1);
+      transform: translateX(-50%) translateY(0) scale(1);
       opacity: 1;
       z-index: 2;
     }
     28.57%,
     42.85% {
-      transform: translateY(-26px) scale(0.741);
+      transform: translateX(-50%) translateY(-32px) scale(0.741);
       opacity: 0.5;
       z-index: 1;
     }
     57.14%,
     71.42% {
-      transform: translateY(41px) scale(0.741);
+      transform: translateX(-50%) translateY(30px) scale(0.741);
       opacity: 0.5;
       z-index: 1;
     }
@@ -396,19 +332,19 @@ const StyledLoading = styled.div`
     14.28%,
     85.71%,
     100% {
-      transform: translateY(-26px) scale(0.741);
+      transform: translateX(-50%) translateY(-32px) scale(0.741);
       opacity: 0.5;
       z-index: 1;
     }
     28.57%,
     42.85% {
-      transform: translateY(41px) scale(0.741);
+      transform: translateX(-50%) translateY(30px) scale(0.741);
       opacity: 0.5;
       z-index: 1;
     }
     57.14%,
     71.42% {
-      transform: translateY(0) scale(1);
+      transform: translateX(-50%) translateY(0) scale(1);
       opacity: 1;
       z-index: 2;
     }
@@ -419,21 +355,43 @@ const StyledLoading = styled.div`
     14.28%,
     85.71%,
     100% {
-      transform: translateY(41px) scale(0.74);
+      transform: translateX(-50%) translateY(30px) scale(0.74);
       opacity: 0.5;
       z-index: 1;
     }
     28.57%,
     42.85% {
-      transform: translateY(0) scale(1);
+      transform: translateX(-50%) translateY(0) scale(1);
       opacity: 1;
       z-index: 2;
     }
     57.14%,
     71.42% {
-      transform: translateY(-26px) scale(0.74);
+      transform: translateX(-50%) translateY(-32px) scale(0.74);
       opacity: 0.5;
       z-index: 1;
     }
   }
 `;
+
+export const SwapQuoteLoading = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      <StyledLoading>
+        <SvgComponent className="item item-1" />
+        <SvgComponent className="item item-2" />
+        <SvgComponent className="item item-3" />
+      </StyledLoading>
+
+      <div className="mt-18 flex items-center justify-center gap-4">
+        <img src={ImgRabbyWallet} className="w-14 h-14 rounded-full" />
+        <span className="text-12 text-r-neutral-foot">
+          {t('page.swap.fetch-best-quote')}
+        </span>
+        <Dots />
+      </div>
+    </div>
+  );
+};
