@@ -128,7 +128,7 @@
         "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Approve amount",
         "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "contractTrustValueTip": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeTokenApprove": {
         "title": "Revoke Token Approval",
@@ -142,7 +142,7 @@
       "nftApprove": {
         "title": "NFT Approval",
         "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "nftContractTrustValueTip": "Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeNFTApprove": {
         "title": "Revoke NFT Approval",
@@ -180,7 +180,10 @@
         "receiver": "Receiver Address"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
+        "title": "Revoke Permit2 Approval"
+      },
+      "batchRevokePermit2": {
+        "title": "Batch Revoke Permit2 Approval"
       },
       "revokePermit": {
         "title": "Revoke Permit Token Approval"

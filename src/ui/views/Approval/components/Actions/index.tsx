@@ -54,6 +54,7 @@ import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
+import { BatchRevokePermit2 } from './BatchRevokePermit2';
 
 const Actions = ({
   data,
@@ -369,6 +370,14 @@ const Actions = ({
               <CommonAction
                 data={data.common}
                 requireData={requireData as ContractCallRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.permit2BatchRevokeToken && (
+              <BatchRevokePermit2
+                data={data.permit2BatchRevokeToken}
+                requireData={requireData as RevokeTokenApproveRequireData}
                 chain={chain}
                 engineResults={engineResults}
               />
