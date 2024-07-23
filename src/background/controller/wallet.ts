@@ -112,6 +112,7 @@ import { TokenSpenderPair } from '@/types/permit2';
 import {
   summarizeRevoke,
   ApprovalSpenderItemToBeRevoked,
+  decodePermit2GroupKey,
 } from '@/utils-isomorphic/approve';
 import { appIsProd } from '@/utils/env';
 
@@ -3561,10 +3562,19 @@ export class WalletController extends BaseController {
         }
       }),
       ...Object.entries(revokeSummary.permit2Revokes).map(
-        ([permit2Id, item]) => async () => {
+        ([permit2Key, item]) => async () => {
           try {
+            const { chainServerId, permit2ContractId } = decodePermit2GroupKey(
+              permit2Key
+            );
+            if (!permit2ContractId) return;
+            if (chainServerId !== item.chainServerId) {
+              console.warn(`chainServerId ${chainServerId} not match`, item);
+              return;
+            }
+
             await this.lockdownPermit2({
-              id: permit2Id,
+              id: permit2ContractId,
               chainServerId: item.chainServerId,
               tokenSpenders: item.tokenSpenders,
             });

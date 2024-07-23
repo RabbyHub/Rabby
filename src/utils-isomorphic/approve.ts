@@ -1,6 +1,8 @@
 import type { Spender, TokenApproval } from '@/background/service/openapi';
 import type { ApprovalItem, NFTInfoHost } from '../utils/approval';
 import { TokenSpenderPair } from '@/types/permit2';
+import { obj2query, query2obj } from '@/ui/utils/url';
+import { safeJSONParse } from '@/utils';
 
 export type ApprovalSpenderItemToBeRevoked = {
   chainServerId: ApprovalItem['chain'];
@@ -37,13 +39,29 @@ export type RevokeSummary = {
   };
 };
 
+export function encodePermit2GroupKey(
+  chainServerId: string,
+  permit2ContractId: string
+) {
+  return obj2query({ chainServerId, permit2ContractId });
+}
+
+export function decodePermit2GroupKey(key: string) {
+  const { chainServerId, permit2ContractId } = (query2obj(key) || {}) as {
+    chainServerId?: string;
+    permit2ContractId?: string;
+  };
+  return { chainServerId, permit2ContractId };
+}
+
 export function summarizeRevoke(revokeList: ApprovalSpenderItemToBeRevoked[]) {
   const { statics, permit2Revokes, generalRevokes } = revokeList.reduce(
     (accu, cur) => {
       if ('permit2Id' in cur && cur.permit2Id) {
         const permit2Id = cur.permit2Id;
-        if (!accu.permit2Revokes[permit2Id]) {
-          accu.permit2Revokes[permit2Id] = accu.permit2Revokes[permit2Id] || {
+        const permit2Key = encodePermit2GroupKey(cur.chainServerId, permit2Id);
+        if (!accu.permit2Revokes[permit2Key]) {
+          accu.permit2Revokes[permit2Key] = accu.permit2Revokes[permit2Key] || {
             chainServerId: cur.chainServerId,
             // contractId: cur.contractId,
             permit2Id,
@@ -52,12 +70,12 @@ export function summarizeRevoke(revokeList: ApprovalSpenderItemToBeRevoked[]) {
         }
 
         if ('tokenId' in cur && cur.tokenId) {
-          accu.permit2Revokes[permit2Id].tokenSpenders.push({
+          accu.permit2Revokes[permit2Key].tokenSpenders.push({
             spender: cur.spender,
             token: cur.tokenId,
           });
         }
-        // accu.permit2Revokes[permit2Id].push(cur);
+        // accu.permit2Revokes[permit2Key].push(cur);
       } else {
         accu.generalRevokes.push(cur);
       }
