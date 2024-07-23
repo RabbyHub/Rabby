@@ -200,7 +200,7 @@ export const useDbkChainBridge = ({
 
   const fetchGasPrice = useMemoizedFn(async (serverId: string) => {
     const marketGas = await wallet.openapi.gasMarket(serverId);
-    const selectedGasPice = marketGas.find((item) => item.level === 'slow');
+    const selectedGasPice = marketGas.find((item) => item.level === 'normal');
     return selectedGasPice;
   });
 
