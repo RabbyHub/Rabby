@@ -93,7 +93,8 @@ const Actions = ({
       data.pushMultiSig ||
       data.revokeNFT ||
       data.revokeNFTCollection ||
-      data.revokeToken
+      data.revokeToken ||
+      data.permit2BatchRevokeToken
     ) {
       const balanceChange = txDetail.balance_change;
       if (!txDetail.pre_exec.success) return false;
