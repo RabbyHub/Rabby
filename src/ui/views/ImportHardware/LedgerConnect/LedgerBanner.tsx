@@ -10,7 +10,11 @@ export const LedgerBanner: React.FC<Props> = ({ className }) => {
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <a className={className} href="https://www.ledger.com/" target="_blank">
+    <a
+      className={className}
+      href="https://shop.ledger.com/?r=e801a108d26a"
+      target="_blank"
+    >
       <div
         className={clsx(
           'bg-r-neutral-card-2 rounded-[12px]',
