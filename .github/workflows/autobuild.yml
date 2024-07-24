@@ -21,7 +21,7 @@ jobs:
     name: prepare build
     runs-on: [self-hosted, X64, Linux, webextension, builder]
     env:
-      NODE_OPTIONS: '--max_old_space_size=8192'
+      NODE_OPTIONS: '--max_old_space_size=4096'
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
     runs-on: [self-hosted, X64, Linux, webextension, builder]
     needs: setup
     env:
-      NODE_OPTIONS: '--max_old_space_size=8192'
+      NODE_OPTIONS: '--max_old_space_size=4096'
     steps:
       - name: checkout
         uses: actions/checkout@v3
