@@ -714,8 +714,8 @@
           "btnText_other": "Revoke ({{count}})",
           "permit2Batch": {
             "modalContent": "Revoking the Permit2 contract has been simplified to require only one signature.",
-            "modalTitle_one": "A total of <1>{{count}}</1> signature is required",
-            "modalTitle_other": "A total of <1>{{count}}</1> signatures is required"
+            "modalTitle_one": "A total of <2>{{count}}</1> signature is required",
+            "modalTitle_other": "A total of <2>{{count}}</2> signatures is required"
           }
         },
         "ViewMore": {
