@@ -1,4 +1,10 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -26,7 +32,8 @@ import { findChainByServerID } from '@/utils/chain';
 import type { SelectChainItemProps } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-import { BestQuoteLoading, SwapQuoteLoading } from './loading';
+import { BestQuoteLoading } from './loading';
+import { MaxButton } from '../../SendToken/components/MaxButton';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
@@ -36,7 +43,7 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
   background: transparent !important;
   & > .ant-input {
     font-weight: 500;
@@ -45,19 +52,19 @@ const StyledInput = styled(Input)`
     border-color: transparent;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
   }
 
   &:active {
-    border: 0.5px solid transparent;
+    border: 1px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -89,17 +96,6 @@ const PreferMEVGuardSwitch = styled(Switch)`
     top: 1px;
     left: 1px;
   }
-`;
-
-const MaxButton = styled.div`
-  font-size: 12px;
-  line-height: 1;
-  padding: 4px 5px;
-  cursor: pointer;
-  user-select: nonce;
-  margin-left: 6px;
-  background-color: rgba(134, 151, 255, 0.1);
-  color: #8697ff;
 `;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
@@ -309,10 +305,6 @@ export const Main = () => {
   const FeeAndMEVGuarded = useMemo(
     () => (
       <>
-        <div className="flex justify-between items-center">
-          <span>{t('page.swap.rabby-fee')}</span>
-          <span className="font-medium text-r-neutral-title-1">{feeRate}%</span>
-        </div>
         {showMEVGuardedSwitch && (
           <div className="flex justify-between items-center">
             <Tooltip
@@ -338,6 +330,8 @@ export const Main = () => {
     ),
     [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded, feeRate]
   );
+
+  const [slippageWarning, setSlippageWarning] = useState(false);
 
   return (
     <div
@@ -443,9 +437,12 @@ export const Main = () => {
           }
         />
 
-        {quoteLoading && !activeProvider?.manualClick && <SwapQuoteLoading />}
+        {quoteLoading && !inSufficient && !activeProvider?.manualClick && (
+          <BestQuoteLoading />
+        )}
 
         {Number(payAmount) > 0 &&
+          !inSufficient &&
           (!quoteLoading || (activeProvider && !!activeProvider.manualClick)) &&
           payToken &&
           receiveToken && (
@@ -462,6 +459,7 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 chain={chain}
                 openQuotesList={openQuotesList}
+                slippageWarning={slippageWarning}
               />
             </>
           )}
@@ -487,6 +485,7 @@ export const Main = () => {
                 ) : (
                   <>
                     <Slippage
+                      onSlippageWarning={setSlippageWarning}
                       displaySlippage={slippage}
                       value={slippageState}
                       onChange={(e) => {

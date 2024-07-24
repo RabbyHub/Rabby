@@ -17,14 +17,15 @@ import { ReactComponent as IconQuoteSwitchCC } from '@/ui/assets/swap/switch-cc.
 
 import clsx from 'clsx';
 import React from 'react';
-import { formatAmount } from '@/ui/utils';
-import { QuoteProvider, useSetQuoteVisible } from '../hooks';
+import { formatAmount, formatUsdValue } from '@/ui/utils';
+import { isSwapWrapToken, QuoteProvider, useSetQuoteVisible } from '../hooks';
 import { CHAINS_ENUM, DEX, DEX_WITH_WRAP } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconEmptyCC } from '@/ui/assets/empty-cc.svg';
 import { DexQuoteItem } from './QuoteItem';
+import { QuoteReceiveWrapper } from './ReceiveWrapper';
 
 const getQuoteLessWarning = ([receive, diff]: [string, string]) =>
   i18n.t('page.swap.QuoteLessWarning', { receive, diff });
@@ -56,51 +57,6 @@ export const WarningOrChecked = ({
   );
 };
 
-const ReceiveWrapper = styled.div`
-  position: relative;
-  margin-top: 18px;
-  border: 0.5px solid var(--r-blue-default, #7084ff);
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
-  height: 92px;
-  padding: 12px 16px;
-  padding-top: 24px;
-
-  &.bestQuote {
-    border: 0.5px solid var(--r-green-default, #2abb7f);
-  }
-
-  .quote-select {
-    position: absolute;
-    top: -12px;
-    left: 12px;
-    height: 20px;
-    padding: 4px 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    font-size: 13px;
-    cursor: pointer;
-
-    color: var(--r-blue-default, #d3d8e0);
-    background: var(--r-blue-light-2);
-    border-radius: 4px;
-    border: 0.5px solid var(--r-blue-default, #7084ff);
-    /* &:hover {
-      border: 1px solid var(--r-neutral-line, #d3d8e0);
-    } */
-
-    &.best {
-      border: 0.5px solid var(--r-green-default, #2abb7f);
-      color: var(--r-green-default, #2abb7f);
-      background: var(--r-green-light, #d8f2e7);
-    }
-  }
-`;
-
 interface ReceiveDetailsProps {
   payAmount: string;
   receiveRawAmount: string | number;
@@ -114,6 +70,7 @@ interface ReceiveDetailsProps {
   bestQuoteDex: string;
   chain: CHAINS_ENUM;
   openQuotesList: () => void;
+  slippageWarning?: boolean;
 }
 
 export const ReceiveDetails = (
@@ -132,6 +89,7 @@ export const ReceiveDetails = (
     bestQuoteDex,
     chain,
     openQuotesList,
+    slippageWarning,
     ...other
   } = props;
 
@@ -140,11 +98,6 @@ export const ReceiveDetails = (
   const reverseRate = useCallback(() => {
     setReverse((e) => !e);
   }, []);
-
-  const isBestQuote = useMemo(() => activeProvider?.name === bestQuoteDex, [
-    bestQuoteDex,
-    activeProvider?.name,
-  ]);
 
   useEffect(() => {
     if (payToken && receiveToken) {
@@ -160,6 +113,7 @@ export const ReceiveDetails = (
     diff,
     sign,
     showLoss,
+    lossUsd,
   } = useMemo(() => {
     const pay = new BigNumber(payAmount).times(payToken.price || 0);
     const receiveAll = new BigNumber(receiveAmount);
@@ -168,30 +122,46 @@ export const ReceiveDetails = (
     const rateBn = new BigNumber(reverse ? payAmount : receiveAll).div(
       reverse ? receiveAll : payAmount
     );
+    const lossUsd = formatUsdValue(receive.minus(pay).abs().toString());
 
     return {
       receiveNum: formatAmount(receiveAll.toString(10)),
-      payUsd: formatAmount(pay.toString(10)),
-      receiveUsd: formatAmount(receive.toString(10)),
+      payUsd: formatUsdValue(pay.toString(10)),
+      receiveUsd: formatUsdValue(receive.toString(10)),
       rate: rateBn.lt(0.0001)
         ? new BigNumber(rateBn.toPrecision(1, 0)).toString(10)
         : formatAmount(rateBn.toString(10)),
       sign: cut.eq(0) ? '' : cut.lt(0) ? '-' : '+',
       diff: cut.abs().toFixed(2),
-      showLoss: cut.lte(-5),
+      showLoss: cut.lte(-10),
+      lossUsd,
     };
   }, [payAmount, payToken.price, receiveAmount, receiveToken.price, reverse]);
 
-  const payTokenSymbol = getTokenSymbol(payToken);
-  const receiveTokenSymbol = getTokenSymbol(receiveToken);
+  const isBestQuote = useMemo(
+    () =>
+      !slippageWarning && !showLoss && activeProvider?.name === bestQuoteDex,
+    [bestQuoteDex, activeProvider?.name, showLoss, slippageWarning]
+  );
+
+  const payTokenSymbol = useMemo(() => getTokenSymbol(payToken), [payToken]);
+  const receiveTokenSymbol = useMemo(() => getTokenSymbol(receiveToken), [
+    receiveToken,
+  ]);
+
+  const isWrapTokens = useMemo(
+    () => isSwapWrapToken(payToken.id, receiveToken.id, chain),
+    [payToken, receiveToken, chain]
+  );
+
   if (!activeProvider) {
     return (
-      <ReceiveWrapper
+      <QuoteReceiveWrapper
         {...other}
         className={clsx(
           other.className,
           isBestQuote && 'bestQuote',
-          'p-0 justify-center items-center'
+          'empty-quote'
         )}
         onClick={openQuotesList}
       >
@@ -215,13 +185,13 @@ export const ReceiveDetails = (
             className={clsx('w-14 h-14')}
           />
         </div>
-      </ReceiveWrapper>
+      </QuoteReceiveWrapper>
     );
   }
 
   return (
     <>
-      <ReceiveWrapper
+      <QuoteReceiveWrapper
         {...other}
         className={clsx(other.className, isBestQuote && 'bestQuote')}
         onClick={openQuotesList}
@@ -240,7 +210,14 @@ export const ReceiveDetails = (
           userAddress={''}
           slippage={''}
           fee={''}
-          quoteProviderInfo={DEX_WITH_WRAP[activeProvider.name]}
+          quoteProviderInfo={
+            isWrapTokens
+              ? {
+                  name: t('page.swap.wrap-contract'),
+                  logo: receiveToken?.logo_url,
+                }
+              : DEX_WITH_WRAP[activeProvider.name]
+          }
           inSufficient={false}
           sortIncludeGasFee={true}
           preExecResult={activeProvider.preExecResult}
@@ -262,7 +239,7 @@ export const ReceiveDetails = (
             />
           </div>
         ) : null}
-      </ReceiveWrapper>
+      </QuoteReceiveWrapper>
       {showLoss && (
         <div className="px-12  leading-4 mt-16 text-13 text-r-neutral-body">
           <div className="flex justify-between">
@@ -285,15 +262,14 @@ export const ReceiveDetails = (
                   <div className="flex flex-col gap-4 py-[5px] text-13">
                     <div>
                       {t('page.swap.est-payment')} {payAmount}
-                      {payTokenSymbol} ≈ ${payUsd}
+                      {payTokenSymbol} ≈ {payUsd}
                     </div>
                     <div>
                       {t('page.swap.est-receiving')} {receiveNum}
-                      {receiveTokenSymbol} ≈ ${receiveUsd}
+                      {receiveTokenSymbol} ≈ {receiveUsd}
                     </div>
                     <div>
-                      {t('page.swap.est-difference')} {sign}
-                      {diff}%
+                      {t('page.swap.est-difference')} -{lossUsd}
                     </div>
                   </div>
                 }
@@ -303,9 +279,9 @@ export const ReceiveDetails = (
             </span>
           </div>
           <div className="mt-[8px] rounded-[4px] bg-r-orange-light p-8 text-12 font-normal text-r-orange-default">
-            {t(
-              'page.swap.selected-offer-differs-greatly-from-current-rate-may-cause-big-losses'
-            )}
+            {t('page.swap.loss-tips', {
+              usd: lossUsd,
+            })}
           </div>
         </div>
       )}

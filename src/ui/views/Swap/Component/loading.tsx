@@ -133,78 +133,6 @@ const Dots: React.FC = () => {
   );
 };
 
-export const BestQuoteLoading = () => {
-  const { t } = useTranslation();
-  return (
-    <div>
-      <div
-        className={clsx(
-          'flex flex-col gap-10',
-          'rounded-[6px] px-16 py-[15px] mt-12',
-          'border-[0.5px] border-rabby-neutral-line'
-        )}
-      >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <Skeleton.Avatar
-              active
-              size={24}
-              shape="circle"
-              // style={{
-              //   background:
-              //     'linear-gradient(90deg, #F7FAFC 0%, #F1F5FA 45.89%)',
-              // }}
-            />
-            <Skeleton.Input
-              active
-              style={{
-                borderRadius: '2px',
-                width: 70,
-                height: 18,
-              }}
-            />
-          </div>
-          <Skeleton.Input
-            active
-            style={{
-              borderRadius: '2px',
-              width: 132,
-              height: 18,
-            }}
-          />
-        </div>
-
-        <div className="flex justify-between items-center">
-          <Skeleton.Input
-            active
-            style={{
-              borderRadius: '2px',
-              width: 90,
-              height: 16,
-            }}
-          />
-          <Skeleton.Input
-            active
-            style={{
-              borderRadius: '2px',
-              width: 90,
-              height: 16,
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-18 flex items-center justify-center gap-4">
-        <img src={ImgRabbyWallet} className="w-14 h-14 rounded-full" />
-        <span className="text-12 text-r-neutral-foot">
-          {t('page.swap.fetch-best-quote')}
-        </span>
-        <Dots />
-      </div>
-    </div>
-  );
-};
-
 const SvgComponent = (props: SVGProps<SVGSVGElement>) => {
   const { isDarkTheme } = useThemeMode();
 
@@ -374,7 +302,7 @@ const StyledLoading = styled.div`
   }
 `;
 
-export const SwapQuoteLoading = () => {
+export const BestQuoteLoading = () => {
   const { t } = useTranslation();
 
   return (

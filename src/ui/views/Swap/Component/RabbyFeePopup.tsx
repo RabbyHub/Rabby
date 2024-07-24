@@ -60,6 +60,7 @@ export const RabbyFeePopup = ({
       title={null}
       height={type === 'swap' ? 478 : 428}
       isSupportDarkMode
+      isNew
       onCancel={onClose}
       bodyStyle={{
         paddingTop: 24,
@@ -75,7 +76,9 @@ export const RabbyFeePopup = ({
       </div>
 
       <div className="text-14 text-center  text-rabby-neutral-body leading-[150%]">
-        {t('page.swap.rabbyFee.desc')}
+        {type === 'swap'
+          ? t('page.swap.rabbyFee.swapDesc')
+          : t('page.swap.rabbyFee.bridgeDesc')}
       </div>
 
       <div

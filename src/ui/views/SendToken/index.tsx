@@ -81,19 +81,9 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { copyAddress } from '@/ui/utils/clipboard';
 import SwitchReserveGas from './components/SwitchReserveGas';
+import { MaxButton } from './components/MaxButton';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
-
-const MaxButton = styled.div`
-  font-size: 12px;
-  line-height: 1;
-  padding: 4px 5px;
-  cursor: pointer;
-  user-select: nonce;
-  margin-left: 6px;
-  background-color: rgba(134, 151, 255, 0.1);
-  color: #8697ff;
-`;
 
 type SendTokenMessageForEoAProps = {
   active: boolean;

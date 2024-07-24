@@ -5,6 +5,8 @@ import {
   useCallback,
   ChangeEventHandler,
   useState,
+  useEffect,
+  useRef,
 } from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
@@ -80,6 +82,7 @@ interface SlippageProps {
   displaySlippage: string;
   onChange: (n: string) => void;
   recommendValue?: number;
+  onSlippageWarning: (bool: boolean) => void;
 }
 export const Slippage = memo((props: SlippageProps) => {
   const { t } = useTranslation();
@@ -88,6 +91,9 @@ export const Slippage = memo((props: SlippageProps) => {
   const [isCustom, setIsCustom] = useToggle(false);
 
   const [slippageOpen, setSlippageOpen] = useState(false);
+
+  const [inputValue, setInputValue] = useState(value);
+  // const delayInputValue =
 
   const [isLow, isHigh] = useMemo(() => {
     return [
@@ -142,22 +148,75 @@ export const Slippage = memo((props: SlippageProps) => {
     return null;
   }, [isHigh, isLow, recommendValue, setRecommendValue]);
 
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      props.onSlippageWarning(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    props.onSlippageWarning(!!tips);
+  }, [tips]);
+
   const onInputFocus: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      e.target?.select?.();
+      // e.target?.select?.();
     },
     []
   );
+
+  const timerRef = useRef<NodeJS.Timeout>();
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const v = e.target.value;
       if (/^\d*(\.\d*)?$/.test(v)) {
-        onChange(Number(v) > 50 ? '50' : v);
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        const val = Number(v) > 50 ? '50' : v;
+        setInputValue(val);
+        timerRef.current = setTimeout(() => {
+          onChange(val);
+        }, 2000);
       }
     },
-    [onChange]
+    [setInputValue, onChange]
   );
+
+  const onOnInputBlur: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      const v = e.target.value;
+      if (/^\d*(\.\d*)?$/.test(v)) {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        const val = Number(v) > 50 ? '50' : v;
+        setInputValue(val);
+        onChange(val);
+      }
+    },
+    [setInputValue, onChange]
+  );
+  useEffect(() => {
+    if (!isCustom) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    }
+  }, [isCustom]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div>
@@ -211,9 +270,10 @@ export const Slippage = memo((props: SlippageProps) => {
             <Input
               className={clsx('input')}
               bordered={false}
-              value={value}
+              value={inputValue}
               onFocus={onInputFocus}
               onChange={onInputChange}
+              onBlur={onOnInputBlur}
               placeholder="0.1"
               suffix={<div>%</div>}
             />

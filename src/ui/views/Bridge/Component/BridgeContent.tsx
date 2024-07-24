@@ -18,7 +18,7 @@ import {
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
-import { useQuoteVisible, useSetQuoteVisible } from '../hooks';
+import { useQuoteVisible, useSetQuoteVisible, useSetRefreshId } from '../hooks';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { BridgeReceiveDetails } from './BridgeReceiveDetail';
 import { useRbiSource } from '@/ui/utils/ga-event';
@@ -32,8 +32,6 @@ import { useTranslation } from 'react-i18next';
 import { BridgeTokenPair } from './BridgeTokenPair';
 import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 
-import { ReactComponent as RcIconQuestion } from '@/ui/assets/bridge/question-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import pRetry from 'p-retry';
 import stats from '@/stats';
 import { BestQuoteLoading } from '../../Swap/Component/loading';
@@ -46,7 +44,7 @@ const StyledInput = styled(Input)`
   font-size: 18px;
   box-shadow: none;
   border-radius: 4px;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
   background: transparent !important;
   & > .ant-input {
     font-weight: 500;
@@ -55,18 +53,18 @@ const StyledInput = styled(Input)`
     border-color: transparent;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
   }
   &:active {
-    border: 0.5px solid transparent;
+    border: 1px solid transparent;
   }
   &:focus,
   &:focus-within {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
   }
   &:hover {
-    border-width: 0.5px !important;
+    border-width: 1px !important;
     border-color: var(--r-blue-default, #7084ff) !important;
     box-shadow: none;
   }
@@ -132,7 +130,11 @@ export const BridgeContent = () => {
   }, [payToken?.id, receiveToken?.id]);
 
   const visible = useQuoteVisible();
+
   const setVisible = useSetQuoteVisible();
+
+  const refresh = useSetRefreshId();
+
   const { t } = useTranslation();
 
   const btnText = useMemo(() => {
@@ -150,7 +152,7 @@ export const BridgeContent = () => {
       });
     }
 
-    return t('page.bridge.getRoutes');
+    return t('page.bridge.title');
   }, [selectedBridgeQuote, expired, t]);
 
   const wallet = useWallet();
@@ -369,11 +371,12 @@ export const BridgeContent = () => {
           }
         />
 
-        {quoteLoading && !selectedBridgeQuote?.manualClick && (
+        {quoteLoading && !inSufficient && !selectedBridgeQuote?.manualClick && (
           <BestQuoteLoading />
         )}
 
         {payToken &&
+          !inSufficient &&
           receiveToken &&
           Number(payAmount) > 0 &&
           (!quoteLoading || selectedBridgeQuote?.manualClick) && (
@@ -386,88 +389,6 @@ export const BridgeContent = () => {
               receiveToken={receiveToken}
               bestQuoteId={bestQuoteId}
             />
-          )}
-
-        {Number(payAmount) > 0 &&
-          selectedBridgeQuote &&
-          selectedBridgeQuote?.to_token_amount &&
-          payToken &&
-          receiveToken &&
-          bestQuoteId && (
-            <>
-              <div className="section text-13 leading-4 text-r-neutral-body mt-12 px-12 ">
-                <div className="subText flex flex-col gap-12 relative">
-                  <div className="flex justify-between">
-                    <div className="inline-flex gap-4 items-center">
-                      <span>{t('page.bridge.bridge-cost')}</span>
-
-                      <TooltipWithMagnetArrow
-                        arrowPointAtCenter
-                        overlayClassName="rectangle w-[max-content] "
-                        title={
-                          <div>
-                            <p className="pt-12">
-                              {selectedBridgeQuote?.aggregator?.name} Fee:{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.protocol_fee.raw_amount_hex_str
-                                )
-                                  .div(10 ** (receiveToken?.decimals || 18))
-                                  .toString(),
-                                4,
-                                true
-                              )}{' '}
-                              {getTokenSymbol(receiveToken)}
-                            </p>
-
-                            <p>
-                              Rabby Fee:{' '}
-                              {formatTokenAmount(
-                                new BigNumber(
-                                  selectedBridgeQuote.rabby_fee.raw_amount_hex_str
-                                )
-                                  .div(10 ** (receiveToken?.decimals || 18))
-                                  .toString(),
-                                4,
-                                true
-                              )}{' '}
-                              {getTokenSymbol(receiveToken)}
-                            </p>
-                          </div>
-                        }
-                      >
-                        <span className="w-14 h-14">
-                          <RcIconQuestion
-                            viewBox="0 0 14 14"
-                            className="w-14 h-14"
-                          />
-                        </span>
-                      </TooltipWithMagnetArrow>
-                    </div>
-                    <span className="font-medium text-r-neutral-title-1">
-                      {formatTokenAmount(
-                        new BigNumber(
-                          selectedBridgeQuote.rabby_fee.raw_amount_hex_str
-                        )
-                          .plus(
-                            selectedBridgeQuote.protocol_fee.raw_amount_hex_str
-                          )
-                          .div(10 ** (receiveToken?.decimals || 18))
-                          .toString()
-                      )}{' '}
-                      {receiveToken ? getTokenSymbol(receiveToken) : ''}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>{t('page.bridge.rabby-fee')}</span>
-                    <span className="font-medium text-r-neutral-title-1">
-                      0.25%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </>
           )}
       </div>
 
@@ -514,7 +435,8 @@ export const BridgeContent = () => {
           onClick={() => {
             if (fetchingBridgeQuote) return;
             if (!selectedBridgeQuote || expired) {
-              setVisible(true);
+              refresh((e) => e + 1);
+
               return;
             }
             if (selectedBridgeQuote?.shouldTwoStepApprove) {

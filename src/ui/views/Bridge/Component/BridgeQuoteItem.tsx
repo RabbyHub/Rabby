@@ -70,10 +70,6 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     );
   }, [selectedAggregators, aggregatorsList]);
 
-  const enabledAggregator = useMemo(() => {
-    return availableSelectedAggregators.includes(props?.aggregator?.id);
-  }, [props?.aggregator?.id, availableSelectedAggregators]);
-
   const diffPercent = React.useMemo(() => {
     if (props.onlyShow || props.isBestQuote) {
       return '';
@@ -97,9 +93,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     if (props.inSufficient) {
       return;
     }
-    if (!enabledAggregator) {
-      return;
-    }
+
     props?.setSelectedBridgeQuote?.({ ...props, manualClick: true });
     openSwapQuote(false);
   };
@@ -116,15 +110,19 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
       <ItemWrapper
         className={clsx(
           ' flex flex-col gap-12  justify-center rounded-md',
-          !props.inSufficient && !enabledAggregator && 'enabledAggregator',
+          !props.inSufficient && 'enabledAggregator',
           props.onlyShow
             ? 'bg-transparent h-auto'
-            : props.inSufficient || !enabledAggregator
-            ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[0.5px] border-solid border-rabby-neutral-line'
-            : 'h-[88px] p-16 pt-[20px] cursor-pointer bg-r-neutral-card1 border-[0.5px] border-solid border-transparent hover:bg-rabby-blue-light1  hover:border-rabby-blue-default'
+            : props.inSufficient
+            ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[1px] border-solid border-rabby-neutral-line'
+            : clsx(
+                'h-[88px] p-16 pt-[20px] cursor-pointer',
+                'bg-r-neutral-card1 border-[1px] border-solid border-transparent hover:bg-rabby-blue-light1',
+                ' hover:after:absolute hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default'
+              )
         )}
         style={
-          props.onlyShow || props.inSufficient || !enabledAggregator
+          props.onlyShow || props.inSufficient
             ? {}
             : {
                 boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.05)',
@@ -226,12 +224,12 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         {!props.onlyShow && (
           <div
             className={clsx(
-              'absolute top-0 left-0',
+              'absolute top-[-1px] left-[-1px]',
               'rounded-tl-[4px] rounded-br-[4px] px-[6px] py-[1px]',
               'text-12 font-medium',
               props.isBestQuote
                 ? 'text-r-green-default bg-r-green-light'
-                : 'text-r-red-default bg-red-light'
+                : 'text-r-red-default bg-r-red-light'
             )}
           >
             {props.isBestQuote ? t('page.bridge.best') : diffPercent}
