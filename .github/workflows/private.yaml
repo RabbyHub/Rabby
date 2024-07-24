@@ -17,7 +17,7 @@ jobs:
       sha1: ${{ steps.generate-private-info.outputs.sha1 }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Generate The Private Build Info
@@ -42,7 +42,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_BUILD_BOT_APP_SECRET }}
           repository: "DeBankDeFi/rabby-mainfest"
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: "DeBankDeFi/rabby-mainfest"
           token: ${{ steps.generate-token.outputs.token }}
