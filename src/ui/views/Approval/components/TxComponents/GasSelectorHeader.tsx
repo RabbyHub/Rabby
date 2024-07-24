@@ -652,7 +652,7 @@ const GasSelectorHeader = ({
 
   useEffect(() => {
     if (hasCustomPriorityFee.current) return; // use custom priorityFee if user changed custom field
-    if (isReady && selectedGas && chainId === 1) {
+    if (isReady && selectedGas) {
       if (isSelectCustom && isNilCustomGas) {
         setMaxPriorityFee(undefined);
         return;

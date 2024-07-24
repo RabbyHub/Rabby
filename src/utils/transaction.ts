@@ -62,7 +62,7 @@ export const calcMaxPriorityFee = (
   chainId: number,
   useMaxFee: boolean
 ) => {
-  if (chainId !== 1 || useMaxFee) {
+  if (useMaxFee) {
     return target.price;
   }
   if (target.priority_price && target.priority_price !== null) {
