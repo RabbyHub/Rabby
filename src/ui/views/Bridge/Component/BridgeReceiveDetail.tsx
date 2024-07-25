@@ -31,6 +31,7 @@ export const BridgeReceiveDetails = (
 
   const isBestQuote = useMemo(
     () =>
+      !!bestQuoteId?.bridgeId &&
       activeProvider?.bridge_id === bestQuoteId?.bridgeId &&
       activeProvider?.aggregator.id === bestQuoteId?.aggregatorId,
     [activeProvider, bestQuoteId]
@@ -40,11 +41,7 @@ export const BridgeReceiveDetails = (
     return (
       <QuoteReceiveWrapper
         {...other}
-        className={clsx(
-          other.className,
-          isBestQuote && 'bestQuote',
-          'empty-quote'
-        )}
+        className={clsx(other.className, 'empty-quote')}
         onClick={openQuotesList}
       >
         <div className="flex items-center justify-center gap-[8px]">
@@ -57,11 +54,7 @@ export const BridgeReceiveDetails = (
           </div>
         </div>
 
-        <div
-          className={clsx('quote-select', isBestQuote && 'best')}
-          onClick={openQuotesList}
-        >
-          {isBestQuote ? <span>{t('page.swap.best')}</span> : null}
+        <div className={clsx('quote-select')} onClick={openQuotesList}>
           <IconQuoteSwitchCC
             viewBox="0 0 14 14"
             className={clsx('w-14 h-14')}

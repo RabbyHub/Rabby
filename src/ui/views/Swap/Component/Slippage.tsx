@@ -5,8 +5,6 @@ import {
   useCallback,
   ChangeEventHandler,
   useState,
-  useEffect,
-  useRef,
 } from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
@@ -17,16 +15,12 @@ import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
 
-export const SlippageItem = styled.div<{
-  active?: boolean;
-  error?: boolean;
-  hasAmount?: boolean;
-}>`
+export const SlippageItem = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid transparent;
+  border: 0.5px solid transparent;
   cursor: pointer;
   border-radius: 6px;
   width: 52px;
@@ -35,9 +29,12 @@ export const SlippageItem = styled.div<{
   font-size: 12px;
   background: var(--r-neutral-card-2, #f2f4f7);
   border-radius: 4px;
-  &:hover {
-    /* background: rgba(134, 151, 255, 0.2); */
-    background: var(--r-neutral-card-3, #f7fafc);
+  overflow: hidden;
+
+  &:hover,
+  &.active {
+    background: var(--r-blue-light1, #eef1ff);
+    border-color: var(--r-blue-default, #7084ff);
   }
 `;
 
@@ -53,9 +50,9 @@ const Wrapper = styled.section`
   .input {
     font-weight: 500;
     font-size: 12px;
-    /* background: #f5f6fa;
-    border: 1px solid #e5e9ef; */
+    border: none;
     border-radius: 4px;
+    background: transparent;
 
     &:placeholder-shown {
       color: #707280;
@@ -82,18 +79,14 @@ interface SlippageProps {
   displaySlippage: string;
   onChange: (n: string) => void;
   recommendValue?: number;
-  onSlippageWarning: (bool: boolean) => void;
 }
 export const Slippage = memo((props: SlippageProps) => {
   const { t } = useTranslation();
 
   const { value, displaySlippage, onChange, recommendValue } = props;
-  const [isCustom, setIsCustom] = useToggle(false);
+  const [isCustom, setIsCustom] = useToggle(!SLIPPAGE.includes(value));
 
   const [slippageOpen, setSlippageOpen] = useState(false);
-
-  const [inputValue, setInputValue] = useState(value);
-  // const delayInputValue =
 
   const [isLow, isHigh] = useMemo(() => {
     return [
@@ -148,75 +141,15 @@ export const Slippage = memo((props: SlippageProps) => {
     return null;
   }, [isHigh, isLow, recommendValue, setRecommendValue]);
 
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      props.onSlippageWarning(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    props.onSlippageWarning(!!tips);
-  }, [tips]);
-
-  const onInputFocus: ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      // e.target?.select?.();
-    },
-    []
-  );
-
-  const timerRef = useRef<NodeJS.Timeout>();
-
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const v = e.target.value;
       if (/^\d*(\.\d*)?$/.test(v)) {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-        const val = Number(v) > 50 ? '50' : v;
-        setInputValue(val);
-        timerRef.current = setTimeout(() => {
-          onChange(val);
-        }, 2000);
+        onChange(Number(v) > 50 ? '50' : v);
       }
     },
-    [setInputValue, onChange]
+    [onChange]
   );
-
-  const onOnInputBlur: ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      const v = e.target.value;
-      if (/^\d*(\.\d*)?$/.test(v)) {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-        const val = Number(v) > 50 ? '50' : v;
-        setInputValue(val);
-        onChange(val);
-      }
-    },
-    [setInputValue, onChange]
-  );
-  useEffect(() => {
-    if (!isCustom) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    }
-  }, [isCustom]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div>
@@ -255,29 +188,27 @@ export const Slippage = memo((props: SlippageProps) => {
                 setIsCustom(false);
                 onChange(e);
               }}
-              active={!isCustom && e === value}
+              className={clsx(!isCustom && e === value && 'active')}
             >
               {e}%
             </SlippageItem>
           ))}
-          <div
+          <SlippageItem
             onClick={(event) => {
               event.stopPropagation();
               setIsCustom(true);
             }}
-            className="flex-1"
+            className={clsx('flex-1', isCustom && 'active')}
           >
             <Input
               className={clsx('input')}
               bordered={false}
-              value={inputValue}
-              onFocus={onInputFocus}
+              value={value}
               onChange={onInputChange}
-              onBlur={onOnInputBlur}
               placeholder="0.1"
               suffix={<div>%</div>}
             />
-          </div>
+          </SlippageItem>
         </div>
 
         {!!tips && <div className={clsx('warning')}>{tips}</div>}

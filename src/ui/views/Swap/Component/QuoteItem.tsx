@@ -52,6 +52,7 @@ const ItemWrapper = styled.div`
       background: transparent;
       border-radius: 6px;
       z-index: 2;
+      pointer-events: none;
     }
   }
 

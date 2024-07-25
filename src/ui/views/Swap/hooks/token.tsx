@@ -355,7 +355,7 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     payAmount,
     feeRate,
-    slippage,
+    // slippage,
   ]);
 
   useEffect(() => {

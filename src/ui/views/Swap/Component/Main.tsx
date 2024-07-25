@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import TokenSelect from '@/ui/component/TokenSelect';
@@ -331,8 +325,6 @@ export const Main = () => {
     [t, switchPreferMEV, showMEVGuardedSwitch, originPreferMEVGuarded, feeRate]
   );
 
-  const [slippageWarning, setSlippageWarning] = useState(false);
-
   return (
     <div
       className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
@@ -348,6 +340,7 @@ export const Main = () => {
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
+          chainRenderClassName={clsx('text-[16px] font-medium')}
         />
 
         <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
@@ -406,7 +399,6 @@ export const Main = () => {
           <div
             className={clsx(
               'text-r-neutral-body flex items-center',
-              // !payTokenIsNativeToken && 'underline cursor-pointer',
               !payToken && 'hidden'
             )}
           >
@@ -459,7 +451,6 @@ export const Main = () => {
                 quoteWarning={activeProvider?.quoteWarning}
                 chain={chain}
                 openQuotesList={openQuotesList}
-                slippageWarning={slippageWarning}
               />
             </>
           )}
@@ -485,7 +476,6 @@ export const Main = () => {
                 ) : (
                   <>
                     <Slippage
-                      onSlippageWarning={setSlippageWarning}
                       displaySlippage={slippage}
                       value={slippageState}
                       onChange={(e) => {

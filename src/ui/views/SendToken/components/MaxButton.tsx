@@ -10,4 +10,7 @@ export const MaxButton = styled.div`
   background-color: var(--r-blue-light1);
   color: var(--r-blue-default);
   border-radius: 2px;
+  &:hover {
+    background-color: var(--r-blue-light2);
+  }
 `;

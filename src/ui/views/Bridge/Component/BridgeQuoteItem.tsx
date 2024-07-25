@@ -118,7 +118,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             : clsx(
                 'h-[88px] p-16 pt-[20px] cursor-pointer',
                 'bg-r-neutral-card1 border-[1px] border-solid border-transparent hover:bg-rabby-blue-light1',
-                ' hover:after:absolute hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default'
+                ' hover:after:absolute hover:after:rounded-md hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default hover:after:pointer-events-none'
               )
         )}
         style={

@@ -866,7 +866,7 @@
       "no-fees-for-wrap": "No Rabby fees for Wrap",
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
-      "loss-tips": "You're losing {{usd}}.Try a smaller amount-it's a small market.",
+      "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
       "rabbyFee": {
         "title": "Rabby fee",
         "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee (0% for wrap) is automatically factored into the quote.",

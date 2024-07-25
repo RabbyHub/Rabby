@@ -8,7 +8,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import styled from 'styled-components';
 import ImgVerified from '@/ui/assets/swap/verified.svg';
 import ImgWarning from '@/ui/assets/swap/warn.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
@@ -18,8 +17,8 @@ import { ReactComponent as IconQuoteSwitchCC } from '@/ui/assets/swap/switch-cc.
 import clsx from 'clsx';
 import React from 'react';
 import { formatAmount, formatUsdValue } from '@/ui/utils';
-import { isSwapWrapToken, QuoteProvider, useSetQuoteVisible } from '../hooks';
-import { CHAINS_ENUM, DEX, DEX_WITH_WRAP } from '@/constant';
+import { isSwapWrapToken, QuoteProvider } from '../hooks';
+import { CHAINS_ENUM, DEX_WITH_WRAP } from '@/constant';
 import { getTokenSymbol } from '@/ui/utils/token';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
@@ -70,7 +69,6 @@ interface ReceiveDetailsProps {
   bestQuoteDex: string;
   chain: CHAINS_ENUM;
   openQuotesList: () => void;
-  slippageWarning?: boolean;
 }
 
 export const ReceiveDetails = (
@@ -89,7 +87,6 @@ export const ReceiveDetails = (
     bestQuoteDex,
     chain,
     openQuotesList,
-    slippageWarning,
     ...other
   } = props;
 
@@ -133,15 +130,14 @@ export const ReceiveDetails = (
         : formatAmount(rateBn.toString(10)),
       sign: cut.eq(0) ? '' : cut.lt(0) ? '-' : '+',
       diff: cut.abs().toFixed(2),
-      showLoss: cut.lte(-10),
+      showLoss: cut.lte(-5),
       lossUsd,
     };
   }, [payAmount, payToken.price, receiveAmount, receiveToken.price, reverse]);
 
   const isBestQuote = useMemo(
-    () =>
-      !slippageWarning && !showLoss && activeProvider?.name === bestQuoteDex,
-    [bestQuoteDex, activeProvider?.name, showLoss, slippageWarning]
+    () => !!bestQuoteDex && activeProvider?.name === bestQuoteDex,
+    [bestQuoteDex, activeProvider?.name]
   );
 
   const payTokenSymbol = useMemo(() => getTokenSymbol(payToken), [payToken]);
@@ -158,11 +154,7 @@ export const ReceiveDetails = (
     return (
       <QuoteReceiveWrapper
         {...other}
-        className={clsx(
-          other.className,
-          isBestQuote && 'bestQuote',
-          'empty-quote'
-        )}
+        className={clsx(other.className, 'empty-quote')}
         onClick={openQuotesList}
       >
         <div className="flex items-center justify-center gap-[8px]">
@@ -175,11 +167,7 @@ export const ReceiveDetails = (
           </div>
         </div>
 
-        <div
-          className={clsx('quote-select', isBestQuote && 'best')}
-          onClick={openQuotesList}
-        >
-          {isBestQuote ? <span>{t('page.swap.best')}</span> : null}
+        <div className={clsx('quote-select')} onClick={openQuotesList}>
           <IconQuoteSwitchCC
             viewBox="0 0 14 14"
             className={clsx('w-14 h-14')}

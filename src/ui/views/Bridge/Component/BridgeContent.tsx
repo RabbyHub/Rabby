@@ -35,6 +35,7 @@ import { ReactComponent as RcArrowDown } from '@/ui/assets/bridge/down.svg';
 import pRetry from 'p-retry';
 import stats from '@/stats';
 import { BestQuoteLoading } from '../../Swap/Component/loading';
+import { MaxButton } from '../../SendToken/components/MaxButton';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
 
@@ -340,15 +341,18 @@ export const BridgeContent = () => {
           </div>
           <div
             className={clsx(
-              'text-r-neutral-title-1',
-              'underline cursor-pointer',
+              'text-r-neutral-body flex items-center',
               !payToken && 'hidden'
             )}
-            onClick={() => {
-              handleBalance();
-            }}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
+            <MaxButton
+              onClick={() => {
+                handleBalance();
+              }}
+            >
+              {t('page.swap.max')}
+            </MaxButton>
           </div>
         </div>
         <StyledInput
@@ -468,7 +472,12 @@ export const BridgeContent = () => {
             gotoBridge();
           }}
           disabled={
-            !payToken || !receiveToken || !payAmount || Number(payAmount) === 0
+            !payToken ||
+            !receiveToken ||
+            !payAmount ||
+            Number(payAmount) === 0 ||
+            inSufficient ||
+            !selectedBridgeQuote
           }
         >
           {btnText}
