@@ -94,7 +94,8 @@ const Actions = ({
       data.revokeNFT ||
       data.revokeNFTCollection ||
       data.revokeToken ||
-      data.permit2BatchRevokeToken
+      data.permit2BatchRevokeToken ||
+      data.revokePermit2
     ) {
       const balanceChange = txDetail.balance_change;
       if (!txDetail.pre_exec.success) return false;
