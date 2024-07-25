@@ -18,6 +18,7 @@ import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
+  findContractMatchedSpender,
   findIndexRevokeList,
   getFirstSpender,
   maybeNFTLikeItem,
@@ -32,6 +33,7 @@ import { ReactComponent as RcIconExternal } from '../icons/icon-share-cc.svg';
 import { ensureSuffix } from '@/utils/string';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { NFTItemBadge, Permit2Badge } from './Badges';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 const BOTTOM_BUTTON_AREA = 76;
 const ModalStyled = styled(Modal)`
@@ -172,27 +174,32 @@ export const RevokeApprovalModal = (props: {
     if (!item) return null;
     if (item?.type === 'contract') {
       return item?.list.map((e, index) => {
+        const isLastOne = index === item.list.length - 1;
         const chainItem = findChainByServerID(e.chain);
 
         const maybeContractForNFT = maybeNFTLikeItem(e);
 
         const itemName = !maybeContractForNFT
-          ? e.symbol
+          ? getTokenSymbol(e)
           : 'inner_id' in e
           ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
           : e.contract_name || 'Unknown';
 
+        const contractSpender = findContractMatchedSpender(e, item);
         /**
          * @description
-         * 1. In general, the items from [host].spenders have same properties about nft/nft-collection/permit2, so we just need to check the first of them
+         * 1. In general, the items from [host].spenders/[host].spender have same properties about nft/nft-collection/amounts, so we just need to check the first of them
          * 2. It must not be non-token type contract
          */
-        const spender = getFirstSpender(e);
+        const spender = contractSpender || getFirstSpender(e);
 
         const spenderValues = spender
           ? getSpenderApprovalAmount(spender)
           : null;
-        const isLastOne = index === item.list.length - 1;
+
+        /**
+         * you should find the contract spender from [host].spenders for `permit2_id`
+         */
 
         return (
           <div
@@ -266,11 +273,14 @@ export const RevokeApprovalModal = (props: {
                 </div>
               ) : (
                 <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
-                  {e.symbol}
+                  {getTokenSymbol(e)}
                 </div>
               )}
-              {spender && (
-                <Permit2Badge className="ml-[9px]" contractSpender={spender} />
+              {contractSpender && (
+                <Permit2Badge
+                  className="ml-[9px]"
+                  contractSpender={contractSpender}
+                />
               )}
 
               <div className="ml-auto flex items-center justify-between flex-shrink-0">
