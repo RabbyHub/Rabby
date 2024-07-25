@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Chain } from 'background/service/openapi';
+import { Chain, RevokeTokenApproveAction } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedActionData, RevokeTokenApproveRequireData } from './utils';
 import { useRabbyDispatch } from '@/ui/store';
@@ -44,49 +44,66 @@ export const BatchRevokePermit2 = ({
   onChange?(tx: Record<string, any>): void;
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
+  const group = React.useMemo(() => {
+    const list: Record<string, RevokeTokenApproveAction['token'][]> = {};
+    actionData.revoke_list.forEach((item) => {
+      if (!list[item.spender]) {
+        list[item.spender] = [];
+      }
+      list[item.spender].push(item.token);
+    });
+    return list;
+  }, [actionData.revoke_list]);
 
   return (
     <Wrapper>
       <Table>
-        <Col>
-          <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeToken')}</Row>
-          <Row>
-            <div className="flex gap-y-12 flex-col">
-              {actionData.revoke_list.map((item) => (
-                <LogoWithText
-                  logo={item.token.logo_url}
-                  text={<Values.TokenSymbol token={item.token} />}
-                  logoRadius="100%"
-                />
-              ))}
-            </div>
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle itemsCenter>
-            {t('page.signTx.revokeTokenApprove.revokeFrom')}
-          </Row>
-          <Row>
-            <ViewMore
-              type="spender"
-              data={{
-                ...requireData,
-                spender: actionData.revoke_list[0].spender,
-                chain,
-                isRevoke: true,
-              }}
-            >
-              <Values.Address
-                id="revoke-permit2-address"
-                hasHover
-                address={actionData.revoke_list[0].spender}
-                chain={chain}
-              />
-            </ViewMore>
-          </Row>
-        </Col>
+        {Object.keys(group).map((spender) => {
+          return (
+            <>
+              <Col>
+                <Row isTitle>
+                  {t('page.signTx.revokeTokenApprove.revokeToken')}
+                </Row>
+                <Row>
+                  <div className="flex gap-y-12 flex-col">
+                    {group[spender].map((token) => (
+                      <LogoWithText
+                        logo={token.logo_url}
+                        text={<Values.TokenSymbol token={token} />}
+                        logoRadius="100%"
+                      />
+                    ))}
+                  </div>
+                </Row>
+              </Col>
+              <Col>
+                <Row isTitle itemsCenter>
+                  {t('page.signTx.revokeTokenApprove.revokeFrom')}
+                </Row>
+                <Row>
+                  <ViewMore
+                    type="spender"
+                    data={{
+                      ...requireData,
+                      spender,
+                      chain,
+                      isRevoke: true,
+                    }}
+                  >
+                    <Values.Address
+                      id="revoke-permit2-address"
+                      hasHover
+                      address={spender}
+                      chain={chain}
+                    />
+                  </ViewMore>
+                </Row>
+              </Col>
+            </>
+          );
+        })}
 
         <SubTable target="revoke-permit2-address">
           <SubCol>
