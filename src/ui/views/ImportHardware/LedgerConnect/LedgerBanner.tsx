@@ -28,7 +28,9 @@ export const LedgerBanner: React.FC<Props> = ({ className }) => {
           alt="ledger"
         />
 
-        <div className={clsx('space-y-10', 'flex flex-col items-center')}>
+        <div
+          className={clsx('space-y-10', 'flex flex-col items-center', '-ml-40')}
+        >
           <span
             className={clsx(
               'text-18 font-semibold',
