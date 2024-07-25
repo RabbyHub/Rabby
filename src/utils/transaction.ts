@@ -56,39 +56,18 @@ export function getKRCategoryByType(type?: string) {
   return KEYRING_CATEGORY_MAP[type as any] || null;
 }
 
+// return maxPriorityPrice or maxGasPrice
 export const calcMaxPriorityFee = (
   gasList: GasLevel[],
   target: GasLevel,
   chainId: number,
   useMaxFee: boolean
 ) => {
-  if (useMaxFee) {
-    return target.price;
-  }
   if (target.priority_price && target.priority_price !== null) {
     return target.priority_price;
   }
-  // only enable auto-priorityFee for ETH currently
-  const min = minBy(
-    gasList.filter((item) => item.level !== 'custom'),
-    'price'
-  );
-  if (min) {
-    if (target.price < min.price) return target.price / 10;
-    const basePriorityFee = target.price / 10;
-    if (min.level === target.level) {
-      return basePriorityFee;
-    } else {
-      const gap = target.price - min.price;
-      const value = new BigNumber(gap)
-        .times(0.8)
-        .plus(basePriorityFee)
-        .toFixed(1);
-      return Number(value);
-    }
-  } else {
-    return target.price;
-  }
+
+  return target.price;
 };
 
 export function makeTransactionId(
