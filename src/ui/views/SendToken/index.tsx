@@ -12,7 +12,6 @@ import { isValidAddress, intToHex, zeroAddress } from 'ethereumjs-util';
 
 import styled from 'styled-components';
 import {
-  CHAINS,
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
@@ -26,7 +25,7 @@ import {
   connectStore,
   useRabbyGetter,
 } from 'ui/store';
-import { Account, ChainGas } from 'background/service/preference';
+import { Account } from 'background/service/preference';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -36,23 +35,12 @@ import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
-import GasReserved from './components/GasReserved';
-import GasSelector from './components/GasSelector';
-import IconWhitelist, {
-  ReactComponent as RcIconWhitelist,
-} from 'ui/assets/dashboard/whitelist.svg';
-import IconContact, {
-  ReactComponent as RcIconContact,
-} from 'ui/assets/send-token/contact.svg';
+import { ReactComponent as RcIconWhitelist } from 'ui/assets/dashboard/whitelist.svg';
+import { ReactComponent as RcIconContact } from 'ui/assets/send-token/contact.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
-import IconSuccess from 'ui/assets/success.svg';
-import IconCheck, {
-  ReactComponent as RcIconCheck,
-} from 'ui/assets/send-token/check.svg';
-import IconTemporaryGrantCheckbox, {
-  ReactComponent as RcIconTemporaryGrantCheckbox,
-} from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import { ReactComponent as RcIconCheck } from 'ui/assets/send-token/check.svg';
+import { ReactComponent as RcIconTemporaryGrantCheckbox } from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -385,7 +373,6 @@ const SendToken = () => {
   }, []);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
-  const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
@@ -1214,10 +1201,6 @@ const SendToken = () => {
     setSendAlianName(alianName || '');
   };
 
-  const handleGasSelectorClose = () => {
-    setGasSelectorVisible(false);
-  };
-
   const handleClickAllowTransferTo = () => {
     if (!whitelistEnabled || temporaryGrant || toAddressInWhitelist) return;
 
@@ -1593,19 +1576,6 @@ const SendToken = () => {
         visible={showListContactModal}
         onCancel={handleCancelContact}
         onOk={handleConfirmContact}
-      />
-
-      <GasSelector
-        visible={gasSelectorVisible}
-        onClose={handleGasSelectorClose}
-        chainId={chainItem?.id || CHAINS.ETH.id}
-        onChange={(val) => {
-          setGasSelectorVisible(false);
-          handleGasChange(val);
-        }}
-        gasList={gasList}
-        gas={selectedGasLevel}
-        token={currentToken}
       />
     </div>
   );
