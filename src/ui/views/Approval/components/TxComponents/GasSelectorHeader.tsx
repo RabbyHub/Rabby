@@ -445,11 +445,6 @@ const GasSelectorHeader = ({
     }, 50);
   };
 
-  const [
-    prevSelectedNotCustomGas,
-    setPrevSelectedNotCustomGas,
-  ] = useState<GasLevel | null>(null);
-
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     const target = gas;
@@ -628,9 +623,6 @@ const GasSelectorHeader = ({
   }, []);
 
   useEffect(() => {
-    if (selectedGas) {
-      setPrevSelectedNotCustomGas(selectedGas);
-    }
     if (!is1559) return;
     if (selectedGas?.level === 'custom') {
       if (Number(customGas) !== maxPriorityFee) {
@@ -672,8 +664,6 @@ const GasSelectorHeader = ({
     setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
       // Compare with selectedGas.price to avoid customMaxPriorityFee is more than maxGasFee
       if (hasCustomPriorityFee.current) {
-        console.log('selectedGas', selectedGas);
-        console.log('prevFee', prevFee);
         priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
       }
       return priorityPrice / 1e9;
@@ -712,9 +702,7 @@ const GasSelectorHeader = ({
   const [isGasHovering, gasHoverProps] = useHover();
 
   const handleClosePopup = () => {
-    if (maxPriorityFee === undefined) {
-      setSelectedGas(prevSelectedNotCustomGas);
-    }
+    setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
 
