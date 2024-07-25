@@ -130,8 +130,8 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         }
         onClick={handleClick}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex gap-6  items-center relative">
+        <div className="flex items-center justify-between relative">
+          <div className="flex gap-6  items-center  overflow-hidden">
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
@@ -151,8 +151,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               <span
                 className={clsx(
                   'text-13 text-r-neutral-foot',
-                  props.onlyShow &&
-                    'max-w-[66px] overflow-hidden overflow-ellipsis whitespace-nowrap'
+                  'overflow-hidden overflow-ellipsis whitespace-nowrap'
                 )}
               >
                 {t('page.bridge.via-bridge', {
@@ -173,7 +172,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             )}
           </div>
 
-          <div className="flex items-center gap-8 flex-1 overflow-hidden justify-end">
+          <div className="flex items-center gap-8 flex-1 justify-end">
             <TokenWithChain
               token={props.payToken}
               width="20px"
@@ -181,7 +180,13 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               hideChainIcon
               hideConer
             />
-            <span className="text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+            <span
+              className={clsx(
+                'text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap',
+                props.onlyShow ? 'max-w-[126px]' : 'max-w-[138px]'
+              )}
+              title={formatTokenAmount(props.to_token_amount)}
+            >
               {formatTokenAmount(props.to_token_amount)}
             </span>
           </div>

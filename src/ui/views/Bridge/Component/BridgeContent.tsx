@@ -37,7 +37,7 @@ import stats from '@/stats';
 import { BestQuoteLoading } from '../../Swap/Component/loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 
-const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-16');
+const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
 const StyledInput = styled(Input)`
   height: 46px;
