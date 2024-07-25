@@ -64,13 +64,13 @@ const Wrapper = styled.section`
 
   .warning {
     padding: 10px;
-    color: #ffb020;
+    color: var(--r-red-default);
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     position: relative;
     border-radius: 4px;
-    background: rgba(255, 176, 32, 0.1);
+    background: var(--r-red-light);
     margin-top: 8px;
   }
 `;
@@ -161,7 +161,7 @@ export const Slippage = memo((props: SlippageProps) => {
       >
         <span>{t('page.swap.slippage-tolerance')}</span>
         <span className="font-medium text-r-neutral-title-1 inline-flex items-center">
-          <span className={clsx(!!tips && 'text-orange')}>
+          <span className={clsx(!!tips && 'text-r-red-default')}>
             {displaySlippage}%{' '}
           </span>
           <img

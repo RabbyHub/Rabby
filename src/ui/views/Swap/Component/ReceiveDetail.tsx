@@ -235,7 +235,7 @@ export const ReceiveDetails = (
             <span
               className={clsx(
                 'font-medium  inline-flex items-center',
-                sign === '-' ? 'text-r-red-default' : 'text-r-green-default'
+                'text-r-red-default'
               )}
             >
               {sign}
@@ -266,7 +266,7 @@ export const ReceiveDetails = (
               </Tooltip>
             </span>
           </div>
-          <div className="mt-[8px] rounded-[4px] bg-r-orange-light p-8 text-12 font-normal text-r-orange-default">
+          <div className="mt-[8px] rounded-[4px] bg-r-red-light p-8 text-12 font-normal text-r-red-default">
             {t('page.swap.loss-tips', {
               usd: lossUsd,
             })}
