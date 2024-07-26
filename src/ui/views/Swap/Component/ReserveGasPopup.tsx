@@ -138,16 +138,18 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
                   onChange={onChecked}
                   background="transparent"
                   unCheckBackground="transparent"
+                  width="20px"
+                  height="20px"
                   checkIcon={
                     checked ? (
                       <RcIconCheckedCC
                         viewBox="0 0 20 20"
-                        className="text-r-blue-default w-20 h-20"
+                        className="text-r-blue-default w-full h-full"
                       />
                     ) : (
                       <RcIconUnCheckedCC
                         viewBox="0 0 20 20"
-                        className="text-r-neutral-body w-20 h-20"
+                        className="text-r-neutral-body w-full h-full"
                       />
                     )
                   }
