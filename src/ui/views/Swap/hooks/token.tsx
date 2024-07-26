@@ -20,6 +20,7 @@ import stats from '@/stats';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
+import { GasLevelType } from '../Component/ReserveGasPopup';
 
 const useTokenInfo = ({
   userAddress,
@@ -227,7 +228,7 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
-  const [gasLevel, setGasLevel] = useState('normal');
+  const [gasLevel, setGasLevel] = useState<GasLevelType>('normal');
   const gasPriceRef = useRef<number>();
 
   const { value: gasList } = useAsync(() => {
@@ -274,7 +275,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const changeGasPrice = useCallback((gasLevel: GasLevel) => {
     gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
-    setGasLevel(gasLevel.level);
+    setGasLevel(gasLevel.level as GasLevelType);
     closeReserveGasOpen();
   }, []);
 
