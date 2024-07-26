@@ -570,6 +570,7 @@ const GasSelectorHeader = ({
   useDebounce(
     () => {
       if (isReady || !isFirstTimeLoad) {
+        if (customGas === undefined) return;
         loadCustomGasData(Number(customGas) * 1e9).then((data) => {
           if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
@@ -702,6 +703,8 @@ const GasSelectorHeader = ({
   const [isGasHovering, gasHoverProps] = useHover();
 
   const handleClosePopup = () => {
+    setCustomGas(undefined);
+    setChangedCustomGas(false);
     setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
