@@ -28,6 +28,7 @@ import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { BestQuoteLoading } from './loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
+import { ReserveGasPopup } from './ReserveGasPopup';
 
 const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
 
@@ -112,6 +113,12 @@ export const Main = () => {
     bestQuoteDex,
     chain,
     switchChain,
+    reserveGasOpen,
+    closeReserveGasOpen,
+    gasLevel,
+    changeGasPrice,
+    gasLimit,
+    gasList,
 
     payToken,
     setPayToken,
@@ -142,8 +149,6 @@ export const Main = () => {
     slippageValidInfo,
     expired,
   } = useTokenPair(userAddress);
-
-  console.log('quoteList', quoteList);
 
   const refresh = useSetRefreshId();
 
@@ -230,6 +235,9 @@ export const Main = () => {
             pay_token_id: payToken.id,
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
+            gasPrice: payTokenIsNativeToken
+              ? gasList?.find((e) => e.level === gasLevel)?.price
+              : undefined,
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
@@ -263,6 +271,9 @@ export const Main = () => {
       }
     }
   }, [
+    payTokenIsNativeToken,
+    gasList,
+    gasLevel,
     preferMEVGuarded,
     inSufficient,
     payToken,
@@ -403,11 +414,7 @@ export const Main = () => {
             )}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
-            {!payTokenIsNativeToken && (
-              <MaxButton onClick={handleBalance}>
-                {t('page.swap.max')}
-              </MaxButton>
-            )}
+            <MaxButton onClick={handleBalance}>{t('page.swap.max')}</MaxButton>
           </div>
         </div>
         <StyledInput
@@ -576,6 +583,16 @@ export const Main = () => {
           {btnText}
         </Button>
       </div>
+      <ReserveGasPopup
+        selectedItem={gasLevel}
+        chain={chain}
+        limit={gasLimit}
+        onGasChange={changeGasPrice}
+        gasList={gasList}
+        visible={reserveGasOpen}
+        onCancel={closeReserveGasOpen}
+        onClose={closeReserveGasOpen}
+      />
       {payToken && receiveToken && chain ? (
         <QuoteList
           list={quoteList}

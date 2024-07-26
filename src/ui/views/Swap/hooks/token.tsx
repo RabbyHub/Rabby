@@ -1,7 +1,7 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { GasLevel, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -83,6 +83,8 @@ export interface FeeProps {
 export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
+
+  const wallet = useWallet();
 
   const {
     initialSelectedChain,
@@ -225,7 +227,62 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
+  const [gasLevel, setGasLevel] = useState('normal');
+  const gasPriceRef = useRef<number>();
+
+  const { value: gasList } = useAsync(() => {
+    gasPriceRef.current = undefined;
+    setGasLevel('normal');
+    return wallet.openapi.gasMarket(CHAINS[chain].serverId);
+  }, [chain]);
+
+  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+
+  const normalGasPrice = useMemo(
+    () => gasList?.find((e) => e.level === 'normal')?.price,
+    [gasList]
+  );
+
+  useEffect(() => {
+    gasPriceRef.current = normalGasPrice;
+  }, [normalGasPrice]);
+
+  const nativeTokenDecimals = useMemo(
+    () => CHAINS?.[chain]?.nativeTokenDecimals,
+    [CHAINS?.[chain]]
+  );
+
+  const gasLimit = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chain]
+  );
+
+  const closeReserveGasOpen = useCallback(() => {
+    setReserveGasOpen(false);
+    if (payToken && gasPriceRef.current !== undefined) {
+      setPayAmount(
+        tokenAmountBn(payToken)
+          .minus(
+            new BigNumber(gasLimit)
+              .times(gasPriceRef.current)
+              .div(10 ** nativeTokenDecimals)
+          )
+          .toString(10)
+      );
+    }
+  }, [payToken, chain, nativeTokenDecimals, gasLimit]);
+
+  const changeGasPrice = useCallback((gasLevel: GasLevel) => {
+    gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
+    setGasLevel(gasLevel.level);
+    closeReserveGasOpen();
+  }, []);
+
   const handleBalance = useCallback(() => {
+    if (payTokenIsNativeToken) {
+      setReserveGasOpen(true);
+      return;
+    }
     if (!payTokenIsNativeToken && payToken) {
       setPayAmount(tokenAmountBn(payToken).toString(10));
     }
@@ -493,6 +550,12 @@ export const useTokenPair = (userAddress: string) => {
 
   return {
     bestQuoteDex,
+    gasLevel,
+    reserveGasOpen,
+    closeReserveGasOpen,
+    changeGasPrice,
+    gasLimit,
+    gasList,
 
     chain,
     switchChain,

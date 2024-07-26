@@ -2251,6 +2251,13 @@
       "title": "Notice",
       "desc": "The following services will be provided directly by third party Ecosystem Partner. Rabby Wallet does not assume responsibility for the security of these services.",
       "notRemind": "Don't remind me again"
+    },
+    "ReserveGasPopup": {
+      "title": "Reserve Gas",
+      "instant": "Instant",
+      "fast": "Fast",
+      "normal": "Normal",
+      "doNotReserve": "Don't reserve Gas"
     }
   },
   "global": {
