@@ -55,6 +55,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
   }, [onRevoke, t]);
 
   const revokeTxCount = revokeSummary.statics.txCount;
+  const spenderCount = revokeSummary.statics.spenderCount;
 
   return (
     <>
@@ -73,7 +74,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
         onClick={handleRevoke}
       >
         {t('page.approvals.component.RevokeButton.btnText', {
-          count: revokeTxCount,
+          count: spenderCount,
         })}
       </Button>
     </>

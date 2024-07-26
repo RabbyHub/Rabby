@@ -56,6 +56,7 @@ import {
   encodeRevokeItemIndex,
   getFinalRiskInfo,
   openScanLinkFromChainItem,
+  queryContractMatchedSpender,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -100,10 +101,16 @@ function getColumnsForContract({
       title: null,
       key: 'selection',
       className: 'J_selection',
-      render: (_, row) => {
-        const contractList = row.list;
+      render: (_, contractApproval) => {
+        const contractList = contractApproval.list;
         const selectedContracts = contractList.filter((contract) => {
-          return findIndexRevokeList(selectedRows, row, contract) > -1;
+          return (
+            findIndexRevokeList(selectedRows, {
+              item: contractApproval,
+              spenderHost: contract,
+              itemIsContractApproval: true,
+            }) > -1
+          );
         });
 
         const isIndeterminate =
@@ -121,13 +128,23 @@ function getColumnsForContract({
               const revokeItems = nextSelectAll
                 ? (contractList
                     .map((contract) => {
-                      return toRevokeItem(row, contract);
+                      const {
+                        ofContractPermit2Spender,
+                      } = queryContractMatchedSpender(
+                        contract,
+                        contractApproval
+                      );
+                      return toRevokeItem(
+                        contractApproval,
+                        contract,
+                        ofContractPermit2Spender
+                      );
                     })
                     .filter(Boolean) as ApprovalSpenderItemToBeRevoked[])
                 : [];
 
               onChangeSelectedContractSpenders({
-                approvalItem: row,
+                approvalItem: contractApproval,
                 selectedRevokeItems: revokeItems,
               });
             }}
@@ -537,8 +554,13 @@ function getColumnsForContract({
       render: (_, row) => {
         const contractList = (row.list as any) as ContractApprovalItem[];
         const selectedContracts = contractList.filter((contract) => {
-          // @ts-expect-error narrow type failure
-          return findIndexRevokeList(selectedRows, row, contract) > -1;
+          return (
+            findIndexRevokeList(selectedRows, {
+              item: row,
+              spenderHost: contract,
+              itemIsContractApproval: true,
+            }) > -1
+          );
         });
 
         return (
@@ -572,27 +594,27 @@ function getColumnsForAsset({
   t,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
-  selectedRows: any[];
+  selectedRows: ApprovalSpenderItemToBeRevoked[];
   // t: ReturnType<typeof useTranslation>['t']
   t: any;
 }) {
   const isSelected = (record: AssetApprovalSpender) => {
     return (
-      findIndexRevokeList(
-        selectedRows,
-        record.$assetContract!,
-        record.$assetToken!
-      ) > -1
+      findIndexRevokeList(selectedRows, {
+        item: record.$assetContract!,
+        spenderHost: record.$assetToken!,
+        assetApprovalSpender: record,
+      }) > -1
     );
   };
   const columnsForAsset: ColumnType<AssetApprovalSpender>[] = [
     {
       title: null,
       key: 'selection',
-      render: (_, row) => {
+      render: (_, spender) => {
         return (
           <div className="block h-[100%] w-[100%] flex items-center justify-center">
-            {isSelected(row) ? (
+            {isSelected(spender) ? (
               <ThemeIcon
                 className="J_checked w-[20px] h-[20px]"
                 src={RcIconCheckboxChecked}
@@ -1095,11 +1117,11 @@ const ApprovalManagePage = () => {
   const [
     selectedContract,
     setSelectedContract,
-  ] = React.useState<ApprovalItem>();
+  ] = React.useState<ContractApprovalItem>();
   const selectedContractKey = useMemo(() => {
     return selectedContract ? encodeRevokeItemIndex(selectedContract) : '';
   }, [selectedContract]);
-  const handleClickContractRow: HandleClickTableRow<ApprovalItem> = React.useCallback(
+  const handleClickContractRow: HandleClickTableRow<ContractApprovalItem> = React.useCallback(
     (ctx) => {
       setSelectedContract(ctx.record);
       setVisibleRevokeModal(true);

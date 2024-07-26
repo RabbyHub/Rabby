@@ -14,16 +14,21 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
-import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
+import {
+  ApprovalItem,
+  ContractApprovalItem,
+  getSpenderApprovalAmount,
+} from '@/utils/approval';
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
-  findContractMatchedSpender,
+  queryContractMatchedSpender,
   findIndexRevokeList,
   getFirstSpender,
   maybeNFTLikeItem,
   openScanLinkFromChainItem,
   toRevokeItem,
+  isAssetApprovedSpender,
 } from '../utils';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
@@ -135,12 +140,12 @@ export const RevokeApprovalModal = (props: {
 
   const [selectedList, setSelectedList] = useState<number[]>([]);
 
-  const handleRevoke = async () => {
+  const handleConfirm = async () => {
     if (item?.list) {
       const revokeList = selectedList
-        .map((e) => {
-          const token = item.list[e];
-          return toRevokeItem(item, token);
+        .map((idx) => {
+          const spenderHost = item.list[idx];
+          return toRevokeItem(item, spenderHost, true);
         })
         .filter(Boolean) as ApprovalSpenderItemToBeRevoked[];
 
@@ -185,13 +190,16 @@ export const RevokeApprovalModal = (props: {
           ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
           : e.contract_name || 'Unknown';
 
-        const contractSpender = findContractMatchedSpender(e, item);
+        const { ofContractPermit2Spender } = queryContractMatchedSpender(
+          e,
+          item
+        );
         /**
          * @description
          * 1. In general, the items from [host].spenders/[host].spender have same properties about nft/nft-collection/amounts, so we just need to check the first of them
          * 2. It must not be non-token type contract
          */
-        const spender = contractSpender || getFirstSpender(e);
+        const spender = ofContractPermit2Spender || getFirstSpender(e);
 
         const spenderValues = spender
           ? getSpenderApprovalAmount(spender)
@@ -276,10 +284,10 @@ export const RevokeApprovalModal = (props: {
                   {getTokenSymbol(e)}
                 </div>
               )}
-              {contractSpender && (
+              {ofContractPermit2Spender && (
                 <Permit2Badge
                   className="ml-[9px]"
-                  contractSpender={contractSpender}
+                  contractSpender={ofContractPermit2Spender}
                 />
               )}
 
@@ -427,7 +435,13 @@ export const RevokeApprovalModal = (props: {
       const indexes: number[] = [];
 
       item.list.forEach((token, index) => {
-        if (findIndexRevokeList(revokeList, item, token) > -1) {
+        if (
+          findIndexRevokeList(revokeList, {
+            item: (item as any) as ContractApprovalItem,
+            spenderHost: token,
+            itemIsContractApproval: true,
+          }) > -1
+        ) {
           indexes.push(index);
         }
       });
@@ -495,7 +509,7 @@ export const RevokeApprovalModal = (props: {
           className="min-w-[172px] w-full h-[44px]"
           type="primary"
           size="large"
-          onClick={handleRevoke}
+          onClick={handleConfirm}
         >
           {t('page.approvals.RevokeApprovalModal.confirm', {
             selectedCount:

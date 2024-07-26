@@ -554,17 +554,18 @@ export function useSelectSpendersToRevoke(
   const handleClickAssetRow: HandleClickTableRow<AssetApprovalSpender> = React.useCallback(
     (ctx) => {
       const record = ctx.record;
-      const index = findIndexRevokeList(
-        assetRevokeList,
-        record.$assetContract!,
-        record.$assetToken!
-      );
+      const index = findIndexRevokeList(assetRevokeList, {
+        item: record.$assetContract!,
+        spenderHost: record.$assetToken!,
+        assetApprovalSpender: record,
+      });
       if (index > -1) {
         setAssetRevokeList((prev) => prev.filter((item, i) => i !== index));
       } else {
         const revokeItem = toRevokeItem(
           record.$assetContract!,
-          record.$assetToken!
+          record.$assetToken!,
+          record
         );
         if (revokeItem) {
           setAssetRevokeList((prev) => [...prev, revokeItem]);

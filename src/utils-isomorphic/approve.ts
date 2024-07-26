@@ -10,16 +10,16 @@ export type ApprovalSpenderItemToBeRevoked = {
   permit2Id?: string;
 } & (
   | {
-      // hostType: ApprovalItem['type'] & 'nft',
       contractId: NFTInfoHost['contract_id'];
       abi: 'ERC721' | 'ERC1155' | '';
       isApprovedForAll: boolean;
+      tokenId?: '';
       nftTokenId: string | null | undefined;
     }
   | {
-      // hostType: ApprovalItem['type'] & ('contract' | 'token')
+      contractId?: undefined;
       id: TokenApproval['id'] | Spender['id'];
-      tokenId: string | null | undefined;
+      tokenId?: string | null | undefined;
     }
 );
 
@@ -36,6 +36,7 @@ export type RevokeSummary = {
   };
   statics: {
     txCount: number;
+    spenderCount: number;
   };
 };
 
@@ -57,6 +58,7 @@ export function decodePermit2GroupKey(key: string) {
 export function summarizeRevoke(revokeList: ApprovalSpenderItemToBeRevoked[]) {
   const { statics, permit2Revokes, generalRevokes } = revokeList.reduce(
     (accu, cur) => {
+      accu.statics.spenderCount += 1;
       if ('permit2Id' in cur && cur.permit2Id) {
         const permit2Id = cur.permit2Id;
         const permit2Key = encodePermit2GroupKey(cur.chainServerId, permit2Id);
@@ -87,6 +89,7 @@ export function summarizeRevoke(revokeList: ApprovalSpenderItemToBeRevoked[]) {
       permit2Revokes: {},
       statics: {
         txCount: 0,
+        spenderCount: 0,
       },
     }
   );
