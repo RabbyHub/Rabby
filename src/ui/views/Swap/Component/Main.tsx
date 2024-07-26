@@ -414,7 +414,11 @@ export const Main = () => {
             )}
           >
             {t('global.Balance')}: {formatAmount(payToken?.amount || 0)}
-            <MaxButton onClick={handleBalance}>{t('page.swap.max')}</MaxButton>
+            {new BigNumber(payToken?.raw_amount_hex_str || 0, 16).gt(0) && (
+              <MaxButton onClick={handleBalance}>
+                {t('page.swap.max')}
+              </MaxButton>
+            )}
           </div>
         </div>
         <StyledInput

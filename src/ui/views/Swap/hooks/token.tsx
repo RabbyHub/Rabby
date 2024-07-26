@@ -260,23 +260,23 @@ export const useTokenPair = (userAddress: string) => {
   const closeReserveGasOpen = useCallback(() => {
     setReserveGasOpen(false);
     if (payToken && gasPriceRef.current !== undefined) {
-      setPayAmount(
-        tokenAmountBn(payToken)
-          .minus(
-            new BigNumber(gasLimit)
-              .times(gasPriceRef.current)
-              .div(10 ** nativeTokenDecimals)
-          )
-          .toString(10)
+      const val = tokenAmountBn(payToken).minus(
+        new BigNumber(gasLimit)
+          .times(gasPriceRef.current)
+          .div(10 ** nativeTokenDecimals)
       );
+      setPayAmount(val.lt(0) ? '0' : val.toString(10));
     }
   }, [payToken, chain, nativeTokenDecimals, gasLimit]);
 
-  const changeGasPrice = useCallback((gasLevel: GasLevel) => {
-    gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
-    setGasLevel(gasLevel.level);
-    closeReserveGasOpen();
-  }, []);
+  const changeGasPrice = useCallback(
+    (gasLevel: GasLevel) => {
+      gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
+      setGasLevel(gasLevel.level);
+      closeReserveGasOpen();
+    },
+    [closeReserveGasOpen]
+  );
 
   const handleBalance = useCallback(() => {
     if (payTokenIsNativeToken) {
