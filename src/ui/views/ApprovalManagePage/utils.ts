@@ -118,6 +118,9 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === token.contract_id &&
           revoke.spender === token.spender.id &&
+          (!revoke.permit2Id ||
+            revoke.permit2Id ===
+              findContractMatchedSpender(token, item)?.permit2_id) &&
           revoke.tokenId === token.inner_id &&
           revoke.chainServerId === token.chain
         ) {
@@ -129,6 +132,9 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === token.contract_id &&
           revoke.spender === token.spender.id &&
+          (!revoke.permit2Id ||
+            revoke.permit2Id ===
+              findContractMatchedSpender(token, item)?.permit2_id) &&
           revoke.chainServerId === token.chain
         ) {
           return true;
@@ -138,6 +144,9 @@ export const findIndexRevokeList = <
       return list.findIndex((revoke) => {
         if (
           revoke.spender === item.id &&
+          (!revoke.permit2Id ||
+            revoke.permit2Id ===
+              findContractMatchedSpender(token, item)?.permit2_id) &&
           revoke.id === token.id &&
           revoke.chainServerId === item.chain
         ) {
@@ -149,7 +158,6 @@ export const findIndexRevokeList = <
     return list.findIndex((revoke) => {
       if (
         revoke.spender === (token as Spender).id &&
-        revoke.permit2Id === getFirstSpender(token)?.permit2_id &&
         revoke.id === item.id &&
         revoke.chainServerId === item.chain
       ) {
