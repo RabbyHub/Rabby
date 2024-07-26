@@ -229,7 +229,7 @@ export const ReceiveDetails = (
         ) : null}
       </QuoteReceiveWrapper>
       {showLoss && (
-        <div className="px-12  leading-4 mt-16 text-13 text-r-neutral-body">
+        <div className="px-12  leading-4 mt-14 text-13 text-r-neutral-body">
           <div className="flex justify-between">
             <span>{t('page.swap.price-impact')}</span>
             <span

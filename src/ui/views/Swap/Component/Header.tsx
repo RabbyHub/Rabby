@@ -35,7 +35,7 @@ export const Header = () => {
   return (
     <>
       <PageHeader
-        className="mx-[20px] pt-[20px] mb-[16px]"
+        className="mx-[20px] pt-[20px] mb-[14px]"
         forceShowBack
         rightSlot={
           <div className="flex items-center gap-20 absolute bottom-0 right-0">

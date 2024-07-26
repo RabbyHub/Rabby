@@ -30,7 +30,7 @@ import { BestQuoteLoading } from './loading';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 import { ReserveGasPopup } from './ReserveGasPopup';
 
-const tipsClassName = clsx('text-r-neutral-body text-12 mb-4 pt-10');
+const tipsClassName = clsx('text-r-neutral-body text-12 mb-8 pt-14');
 
 const StyledInput = styled(Input)`
   height: 46px;
@@ -342,7 +342,7 @@ export const Main = () => {
     >
       <div
         className={clsx(
-          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-16 mx-20'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 pt-0 pb-14 mx-20'
         )}
       >
         <div className={clsx(tipsClassName)}>{t('page.swap.chain')}</div>
@@ -472,8 +472,8 @@ export const Main = () => {
           !!activeProvider?.quote?.toTokenAmount &&
           payToken &&
           receiveToken && (
-            <div className="section text-13 leading-4 text-r-neutral-body mt-16 px-12">
-              <div className="subText flex flex-col gap-16">
+            <div className="section text-13 leading-4 text-r-neutral-body mt-14 px-12">
+              <div className="subText flex flex-col gap-14">
                 {isWrapToken ? (
                   <>
                     <div className="flex justify-between items-center">

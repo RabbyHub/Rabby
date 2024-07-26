@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const QuoteReceiveWrapper = styled.div`
   position: relative;
-  margin-top: 24px;
+  margin-top: 26px;
   border: 0.5px solid var(--r-blue-default, #7084ff);
   border-radius: 4px;
   cursor: pointer;
