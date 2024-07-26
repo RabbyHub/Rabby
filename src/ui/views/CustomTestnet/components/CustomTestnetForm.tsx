@@ -28,7 +28,8 @@ const Wraper = styled.div`
     font-size: 15px;
     font-weight: 500;
 
-    &:focus {
+    &:focus,
+    &:hover {
       border-color: var(--r-blue-default, #7084ff);
     }
   }

@@ -31,12 +31,13 @@
     .ant-input-affix-wrapper-lg {
       padding: 9.25px;
       border-radius: 6px;
-      // border: 1px solid @color-border;
-      // background-color: @color-bg;
+      border: 1px solid var(--r-neutral-line, #d3d8e0);
+      background: transparent !important;
       transition: border-color 0.3s;
       .ant-input {
-        // border-radius: 0;
-        // background-color: transparent;
+        &::placeholder {
+          color: var(--r-neutral-foot, #6a7587) !important;
+        }
       }
       &:hover,
       &.active {
