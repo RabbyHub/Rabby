@@ -30,7 +30,7 @@ else
 fi
 
 cd $project_dir;
-cp $TARGET_FILE $project_dir/tmp/RabbyDebug-latest.zip
+# cp $TARGET_FILE $project_dir/tmp/RabbyDebug-latest.zip
 
 # upload to storage
 if [ -z $NO_UPLOAD ]; then
@@ -41,6 +41,7 @@ if [ -z $NO_UPLOAD ]; then
     else
         QUIET_PARASM=""
     fi
+    echo "[pack] start upload...";
     aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 

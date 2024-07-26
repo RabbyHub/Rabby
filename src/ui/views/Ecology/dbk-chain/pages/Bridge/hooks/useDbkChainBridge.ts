@@ -200,42 +200,46 @@ export const useDbkChainBridge = ({
 
   const fetchGasPrice = useMemoizedFn(async (serverId: string) => {
     const marketGas = await wallet.openapi.gasMarket(serverId);
-    const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-      ?.price;
-    if (selectedGasPice) {
-      return Number(selectedGasPice / 1e9);
-    }
+    const selectedGasPice = marketGas.find((item) => item.level === 'normal');
+    return selectedGasPice;
   });
 
-  const { data: l1GasPrice } = useRequest(() =>
+  const { data: l1GasLevel } = useRequest(() =>
     fetchGasPrice(ethChain.serverId)
   );
 
-  const { data: l2GasPrice } = useRequest(() =>
+  const { data: l2GasLevel } = useRequest(() =>
     fetchGasPrice(dbkChain.serverId)
   );
 
   const { data: l1DepositGas } = useRequest(
     async () => {
-      const gas = await clientL1.estimateDepositTransactionGas({
-        account: account!.address as any,
-        request: {
-          gas: 21_000n,
-          mint: parseEther(payAmount || '0'),
-          to: (account!.address as unknown) as `0x${string}`,
-        },
-        targetChain: dbk,
+      if (!l1GasLevel?.price || action !== 'deposit') {
+        return;
+      }
+      const gas = await clientL1.estimateContractGas({
+        abi: l1StandardBridgeABI,
+        address: DBK_CHAIN_BRIDGE_CONTRACT,
+        functionName: 'depositETH',
+        args: [200_000, '0x'],
+        account: account!.address as `0x${string}`,
+        value: parseEther(payAmount),
+        maxFeePerGas: BigInt(l1GasLevel.price),
+        maxPriorityFeePerGas: BigInt(l1GasLevel.price),
       });
       return gas;
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
   const { data: l2WithdrawGas } = useRequest(
     async () => {
+      if (action !== 'withdraw') {
+        return;
+      }
       const gas = await clientL2.estimateInitiateWithdrawalGas({
         account: account!.address as any,
         request: {
@@ -248,53 +252,53 @@ export const useDbkChainBridge = ({
     },
     {
       debounceWait: 500,
-      refreshDeps: [payAmount],
+      refreshDeps: [payAmount, action],
     }
   );
 
   const depositGasFee = useMemo(() => {
-    if (!l1GasPrice || !l1DepositGas || !payToken?.price) {
+    if (!l1GasLevel?.price || !l1DepositGas || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
+    return new BigNumber(l1GasLevel?.price)
       .multipliedBy(l1DepositGas.toString())
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1DepositGas, l1GasPrice, payToken?.price]);
+  }, [l1DepositGas, l1GasLevel?.price, payToken?.price]);
 
   const withdrawGasFee1 = useMemo(() => {
-    if (!l2GasPrice || !l2WithdrawGas || !payToken?.price) {
+    if (!l2GasLevel?.price || !l2WithdrawGas || !payToken?.price) {
       return;
     }
-    return new BigNumber(l2GasPrice)
+    return new BigNumber(l2GasLevel?.price)
       .multipliedBy(l2WithdrawGas.toString())
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l2GasPrice, l2WithdrawGas, payToken?.price]);
+  }, [l2GasLevel?.price, l2WithdrawGas, payToken?.price]);
 
   const withdrawProveGasFee = useMemo(() => {
-    if (!l1GasPrice || !payToken?.price) {
+    if (!l1GasLevel?.price || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
+    return new BigNumber(l1GasLevel.price)
       .multipliedBy(206529)
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1GasPrice, payToken?.price]);
+  }, [l1GasLevel?.price, payToken?.price]);
 
   const withdrawFinalizeGasFee = useMemo(() => {
-    if (!l1GasPrice || !payToken?.price) {
+    if (!l1GasLevel?.price || !payToken?.price) {
       return;
     }
-    return new BigNumber(l1GasPrice)
-      .multipliedBy(455939)
+    return new BigNumber(l1GasLevel?.price)
+      .multipliedBy(270_000)
       .multipliedBy(payToken.price)
-      .dividedBy(1e9)
+      .dividedBy(1e18)
       .toNumber();
-  }, [l1GasPrice, payToken?.price]);
+  }, [l1GasLevel?.price, payToken?.price]);
 
   useEffect(() => {
     if (action === 'deposit') {

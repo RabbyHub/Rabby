@@ -106,15 +106,8 @@ export default ({
 
   const { value: approvalState } = useAsync(async () => {
     if (account?.address) {
-      const apiLevel = await wallet.getAPIConfig([], 'ApiLevel', false);
-      if (apiLevel < 1) {
-        const data = await wallet.openapi.approvalStatus(account.address, {
-          restfulPrefix: 'v2',
-        });
-        return data;
-      } else {
-        return [];
-      }
+      const data = await wallet.openapi.approvalStatus(account.address);
+      return data;
     }
     return;
   }, [account?.address]);
