@@ -9,7 +9,7 @@ import PQueue from 'p-queue';
 const pQueue = new PQueue({ concurrency: 1000 });
 
 abstract class Message extends EventEmitter {
-  // avaiable id list
+  // available id list
   // max concurrent request limit
   private _requestIdPool = [...Array(1000).keys()];
   protected _EVENT_PRE = 'ETH_WALLET_';

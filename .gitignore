@@ -6,3 +6,4 @@ dist-*
 yarn-error
 
 tmp/*.zip
+tmp/inv-batch.json

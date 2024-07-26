@@ -24,4 +24,6 @@ export const WaitingSignMessageComponent = {
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'CommonWaiting',
   [KEYRING_CLASS.Coinbase]: 'CoinbaseWaiting',
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'ImKeyHardwareWaiting',
+  [KEYRING_CLASS.MNEMONIC]: 'PrivatekeyWaiting',
+  [KEYRING_CLASS.PRIVATE_KEY]: 'PrivatekeyWaiting',
 };

@@ -26,7 +26,7 @@ const CreateKey = ({
         </Col>
         <Col>
           <Row isTitle>{t('page.signText.createKey.description')}</Row>
-          <Row>{data.desc}</Row>
+          <Row wrap>{data.desc}</Row>
         </Col>
       </Table>
     </Wrapper>

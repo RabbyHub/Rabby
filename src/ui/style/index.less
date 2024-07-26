@@ -10,7 +10,8 @@
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
+    sans-serif;
 }
 
 [lang='zh-CN'],
@@ -66,7 +67,7 @@ button:focus {
     border: 1px solid #fff;
     border-radius: 100%;
   }
-  
+
   &.res {
     padding: 0;
 
@@ -105,7 +106,7 @@ button:focus {
 
 @media (min-width: 401px) {
   .rabby-stray-page {
-    background-color: var(--r-neutral-bg-2, #F2F4F7);
+    background-color: var(--r-neutral-bg-2, #f2f4f7);
     height: 100%;
 
     .footer {
@@ -320,7 +321,7 @@ button:focus {
 
 @media (min-width: 401px) {
   html.page-notification {
-    background: #f9f9f9;
+    background: var(--r-neutral-bg-3, #f7fafc);
     overflow: hidden;
     body {
       max-width: 400px;
@@ -379,15 +380,24 @@ button:focus {
   }
 
   &.rabby-input-pure-bg {
-    .ant-input, .ant-input-affix-wrapper {
+    .ant-input,
+    .ant-input-affix-wrapper {
       background-color: var(--r-neutral-card-1, #fff) !important;
     }
   }
 
   .ant-form-item-has-error .ant-input {
-    &, &:hover {
+    &,
+    &:hover {
       background-color: var(--r-neutral-card-1, #fff) !important;
       border-color: var(--r-red-default);
     }
   }
+}
+.text-gradient {
+  background: linear-gradient(132.94deg, #2ABB7F 5.01%, #FE6949 95.5%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }

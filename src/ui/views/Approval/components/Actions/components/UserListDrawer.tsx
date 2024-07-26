@@ -6,62 +6,35 @@ import { Popup, Checkbox } from 'ui/component';
 import { Chain } from 'background/service/openapi';
 
 const Footer = styled.div`
-  background: #f5f6fa;
-  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
   .item {
     display: flex;
     cursor: pointer;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 16px;
     font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    color: #13141a;
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--r-neutral-title1, #192945);
     position: relative;
     border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #fff);
     .rabby-checkbox__wrapper {
       .rabby-checkbox {
-        border: 1px solid var(--r-neutral-line);
-        background-color: var(--r-neutral-foot) !important;
       }
       &.checked {
         .rabby-checkbox {
-          background-color: var(--r-blue-default, #7084ff) !important;
-          border: none;
         }
       }
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 18px;
-      width: 328px;
-      height: 1px;
-      background-color: #e5e9ef;
     }
     &:hover {
       background: var(--r-blue-light-1, #eef1ff);
       border: 1px solid var(--r-blue-default, #7084ff);
-      border-radius: 6px;
-    }
-    &:nth-last-child(1) {
-      &::after {
-        display: none;
-      }
-    }
-  }
-`;
-
-const GlobalStyle = createGlobalStyle`
-  .user-list-drawer {
-    .ant-drawer-title {
-      text-align: left;
-      font-weight: 700;
-      font-size: 15px;
-      line-height: 18px;
-      color: #13141A;
     }
   }
 `;
@@ -88,7 +61,6 @@ const UserListDrawer = ({
   const { t } = useTranslation();
   return (
     <div>
-      <GlobalStyle />
       <Footer>
         <div
           className="item"
@@ -97,6 +69,8 @@ const UserListDrawer = ({
           <div>{t('page.signTx.noMark')}</div>
           <div>
             <Checkbox
+              width="20px"
+              height="20px"
               checked={!onWhitelist && !onBlacklist}
               onChange={() =>
                 onChange({ onBlacklist: false, onWhitelist: false })
@@ -111,6 +85,8 @@ const UserListDrawer = ({
           <div className="text-green">{t('page.signTx.trusted')}</div>
           <div>
             <Checkbox
+              width="20px"
+              height="20px"
               checked={onWhitelist}
               onChange={() =>
                 onChange({ onBlacklist: false, onWhitelist: true })
@@ -125,6 +101,8 @@ const UserListDrawer = ({
           <div className="text-red">{t('page.signTx.blocked')}</div>
           <div>
             <Checkbox
+              width="20px"
+              height="20px"
               checked={onBlacklist}
               onChange={() =>
                 onChange({ onBlacklist: true, onWhitelist: false })
@@ -157,6 +135,10 @@ export default ({
   }): void;
 }) => {
   const { destroy } = Popup.info({
+    bodyStyle: {
+      padding: '16px 20px 0',
+    },
+    isNew: true,
     content: (
       <UserListDrawer
         address={address}
@@ -168,7 +150,7 @@ export default ({
         }}
       />
     ),
-    height: 240,
+    height: 260,
     closable: true,
     title: i18n.t('page.signTx.myMarkWithContract', {
       chainName: chain?.name,

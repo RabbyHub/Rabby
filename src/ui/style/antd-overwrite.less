@@ -205,7 +205,7 @@
     justify-content: space-between;
     width: 100%;
     .ant-btn {
-      width: 144px;
+      min-width: 144px;
       font-size: 15px;
       font-weight: 500;
       height: 44px;
@@ -273,6 +273,19 @@
 ---------------------*/
 .ant-switch {
   background: #b4bdcc;
+
+  &.ant-switch-small {
+    height: 14px;
+    line-height: 14px;
+    .ant-switch-handle {
+      top: 1px;
+      left: 1px;
+    }
+
+    &.ant-switch-checked .ant-switch-handle {
+      left: calc(100% - 12px - 1px);
+    }
+  }
 }
 
 .ant-switch-disabled {
@@ -352,7 +365,7 @@ textarea {
     display: none;
   }
   &.rectangle {
-    max-width: 330px;
+    max-width: 340px;
     .ant-tooltip-inner {
       border-radius: 2px;
     }
@@ -405,6 +418,11 @@ textarea {
   .ant-drawer-close:focus,
   .ant-drawer-close:hover {
     color: var(--r-neutral-body);
+  }
+  &.disable-body-scroll {
+    .ant-drawer-wrapper-body, .ant-drawer-body {
+      overflow: hidden;
+    }
   }
 }
 .ant-drawer-bottom.ant-drawer-open .ant-drawer-content-wrapper {

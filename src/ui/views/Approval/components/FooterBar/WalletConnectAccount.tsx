@@ -104,7 +104,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       //   );
       case 'DISCONNECTED':
         return (
-          <div className="text-red-forbidden">
+          <div>
             {t('page.signFooterBar.walletConnect.notConnectToMobile', {
               brand: displayBrandName,
             })}

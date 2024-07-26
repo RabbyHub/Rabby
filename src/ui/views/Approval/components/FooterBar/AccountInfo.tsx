@@ -68,13 +68,16 @@ export const AccountInfo: React.FC<Props> = ({
     <div
       className={clsx(
         'bg-r-neutral-card-3 rounded-[8px]',
-        'py-[12px] px-[12px] mb-[12px]',
-        'space-y-10'
+        'py-[12px] px-[16px] mb-[12px]',
+        'space-y-6'
       )}
     >
       <div className={clsx('flex items-center justify-between', 'h-18')}>
         <div className="space-x-6 flex items-center">
-          <Tooltip title={nickname}>
+          <Tooltip
+            overlayClassName="rectangle w-[max-content]"
+            title={nickname}
+          >
             <div
               className={clsx(
                 'text-r-neutral-body text-[15px]',
@@ -88,12 +91,12 @@ export const AccountInfo: React.FC<Props> = ({
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-r-neutral-foot mt-[2px]')}
+            className={clsx('text-13 text-r-neutral-foot')}
           />
         </div>
         {isTestnet ? null : (
           <div
-            className="text-13 font-medium text-r-neutral-foot mt-[4px]"
+            className="text-13 font-normal text-r-neutral-foot"
             title={displayBalance}
           >
             ${displayBalance}
@@ -176,6 +179,7 @@ export const AccountInfo: React.FC<Props> = ({
               KEYRING_CLASS.PRIVATE_KEY
             ]
           }
+          grayIcon
           tip={t('page.signFooterBar.addressTip.privateKey')}
         />
       )}
@@ -186,6 +190,7 @@ export const AccountInfo: React.FC<Props> = ({
               KEYRING_CLASS.MNEMONIC
             ]
           }
+          grayIcon
           tip={
             needPassphrase
               ? t('page.signFooterBar.addressTip.seedPhraseWithPassphrase')

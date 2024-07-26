@@ -43,7 +43,7 @@
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "Sadece gerekli olduğunda değiştirin",
       "gasPriceMedian": "Son 100 on-chain işlemin medyanı: ",
-      "myNativeTokenBalance": "Benim {{symbol}} bakiyem: {{amount}} {{symbol}}",
+      "myNativeTokenBalance": "Benim Gas bakiyem: ",
       "gasLimitEmptyAlert": "Lütfen gas limitini girin",
       "gasLimitMinValueAlert": "Gas limiti 21000'den fazla olmalı",
       "balanceChange": {

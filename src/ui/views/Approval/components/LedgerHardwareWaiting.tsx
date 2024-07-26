@@ -28,6 +28,7 @@ import {
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -40,7 +41,7 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const { setTitle, setVisible, setHeight, closePopup } = useCommonPopupView();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
   >('SENDING');
@@ -85,6 +86,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
+    emitSignComponentAmounted();
   };
 
   // const handleClickResult = () => {
@@ -197,6 +199,8 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
@@ -213,6 +217,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [sessionStatus]);
 
   React.useEffect(() => {
+    setHeight(360);
     setTitle(
       <div className="flex justify-center items-center">
         <img src={LedgerSVG} className="w-20 mr-8" />
@@ -280,7 +285,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, [connectStatus, errorMessage]);
 
   const currentDescription = React.useMemo(() => {
-    if (description.includes('0x5515') || description.includes('0x6b0c')) {
+    if (
+      description.includes('0x5515') ||
+      description.includes('0x6b0c') ||
+      description.includes('0x650f')
+    ) {
       return t('page.signFooterBar.ledger.unlockAlert');
     } else if (
       description.includes('0x6e00') ||

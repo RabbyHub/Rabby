@@ -1,13 +1,13 @@
 import { Checkbox, Modal, Popup } from '@/ui/component';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSwapSettings } from '../hooks';
 import { CEX, CHAINS_ENUM, DEX } from '@/constant';
-import clsx from 'clsx';
 import { Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useRabbySelector } from '@/ui/store';
 
-const list = [...Object.values(DEX), ...Object.values(CEX)] as {
-  id: keyof typeof DEX | keyof typeof CEX;
+const list = [...Object.values(DEX)] as {
+  id: keyof typeof DEX;
   logo: string;
   name: string;
   chains: CHAINS_ENUM[];
@@ -30,7 +30,22 @@ export const TradingSettings = ({
 
   const [open, setOpen] = useState(false);
 
+  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+
   const [id, setId] = useState<Parameters<typeof setSwapTrade>[0][0]>();
+
+  const height = useMemo(() => {
+    const min = 333;
+    const max = 518;
+    const h = 100 + supportedDEXList.length * 60;
+    if (h < min) {
+      return min;
+    }
+    if (h > max) {
+      return max;
+    }
+    return h;
+  }, [supportedDEXList.length]);
 
   const onConfirm = () => {
     if (id) {
@@ -43,7 +58,7 @@ export const TradingSettings = ({
     <Popup
       visible={visible}
       title={t('page.swap.enable-exchanges')}
-      height={544}
+      height={height}
       onClose={onClose}
       closable
       bodyStyle={{
@@ -62,6 +77,9 @@ export const TradingSettings = ({
 
         <div className="flex flex-col gap-8">
           {list.map((item) => {
+            if (!supportedDEXList.includes(item.id)) {
+              return null;
+            }
             return (
               <div
                 className="flex items-center h-[52px] bg-r-neutral-card-2 rounded-[6px] px-12 py-14"
@@ -74,14 +92,6 @@ export const TradingSettings = ({
                   />
                   <span className="text-15 text-r-neutral-title-1 font-medium">
                     {item.name}
-                  </span>
-                  <span
-                    className={clsx(
-                      'text-12 text-r-neutral-foot rounded-[2px] px-[4px] py-[1px]',
-                      'border-[0.5px] border-solid border--r-neutral-line'
-                    )}
-                  >
-                    {item?.chains ? t('page.swap.dex') : t('page.swap.cex')}
                   </span>
                 </div>
                 <div className="w-[66px] flex justify-end">
@@ -157,7 +167,7 @@ function EnableTrading({ onConfirm }: { onConfirm: () => void }) {
           type="primary"
           block
           disabled={!checked}
-          className="h-[40px] w-[188px] text-13 font-medium mx-auto"
+          className="h-[40px] text-13 font-medium mx-auto"
           onClick={onConfirm}
         >
           {t('page.swap.confirm')}

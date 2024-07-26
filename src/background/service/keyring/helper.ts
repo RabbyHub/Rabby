@@ -1,5 +1,6 @@
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
+import * as Sentry from '@sentry/browser';
 
 export const throwError = (error, method = EVENTS.COMMON_HARDWARE.REJECTED) => {
   eventBus.emit(EVENTS.broadcastToUI, {
@@ -32,6 +33,7 @@ export class SignHelper {
           const result = await fn();
           resolve(result);
         } catch (e) {
+          Sentry.captureException(e);
           throwError(e?.message ?? e, this.errorEventName);
         }
       };

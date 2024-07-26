@@ -1,0 +1,18 @@
+diff --git a/node_modules/dom-align/dist-web/index.js b/node_modules/dom-align/dist-web/index.js
+index dad0c76..86d9d0f 100644
+--- a/node_modules/dom-align/dist-web/index.js
++++ b/node_modules/dom-align/dist-web/index.js
+@@ -1137,8 +1137,13 @@ function doAlign(el, tgtRegion, align, isTgtRegionVisible) {
+   var newOverflowCfg = {};
+   var fail = 0;
+   var alwaysByViewport = !!(overflow && overflow.alwaysByViewport); // 当前节点可以被放置的显示区域
++  const viewportOffset = align.viewportOffset || [0, 0, 0, 0];
+ 
+   var visibleRect = getVisibleRectForElement(source, alwaysByViewport); // 当前节点所占的区域, left/top/width/height
++  visibleRect.top += viewportOffset[0];
++  visibleRect.right += viewportOffset[1];
++  visibleRect.bottom += viewportOffset[2];
++  visibleRect.left += viewportOffset[3];
+ 
+   var elRegion = getRegion(source); // 将 offset 转换成数值，支持百分比
+ 

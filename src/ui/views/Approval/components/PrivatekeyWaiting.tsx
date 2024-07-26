@@ -23,6 +23,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
+import { emitSignComponentAmounted } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -68,7 +69,11 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     await wallet.resendSign();
     message.success(t('page.signFooterBar.ledger.resent'));
+    emitSignComponentAmounted();
   };
+  const isSignText = /personalSign|SignTypedData/.test(
+    params?.extra?.signTextMethod
+  );
 
   const handleCancel = () => {
     rejectApproval('user cancel');
@@ -181,6 +186,8 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setErrorMessage(data.errorMsg);
       }
     });
+
+    emitSignComponentAmounted();
   };
 
   React.useEffect(() => {
@@ -195,7 +202,12 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
           </span>
         </div>
       );
-      setHeight(208);
+      // don't show popup when sign text
+      if (isSignText) {
+        setHeight(0);
+      } else {
+        setHeight(208);
+      }
       init();
     })();
   }, []);
@@ -227,6 +239,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         setDescription(errorMessage);
         break;
       case WALLETCONNECT_STATUS_MAP.SUBMITTED:
+        // immediate close popup when sign text
+        if (isSignText) {
+          setIsClickDone(true);
+        }
         setStatusProp('RESOLVED');
         setContent(t('page.signFooterBar.qrcode.sigCompleted'));
         setDescription('');
@@ -236,6 +252,10 @@ export const PrivatekeyWaiting = ({ params }: { params: ApprovalParams }) => {
         break;
     }
   }, [connectStatus, errorMessage]);
+
+  if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
+    return null;
+  }
 
   return (
     <ApprovalPopupContainer

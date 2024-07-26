@@ -4,7 +4,7 @@ import {
 } from '@/background/service/customTestnet';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRequest } from 'ahooks';
-import { Button, Form } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,8 @@ import { useWallet } from 'ui/utils';
 import { AddFromChainList } from './AddFromChainList';
 import { CustomTestnetForm } from './CustomTestnetForm';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ConfirmModifyRpcModal } from './ConfirmModifyRpcModal';
+import { useHistory } from 'react-router-dom';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -23,7 +25,7 @@ const Wrapper = styled.div`
 `;
 
 const Footer = styled.div`
-  height: 76px;
+  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
   background: var(--r-neutral-bg1, #fff);
   padding: 18px 20px;
@@ -66,7 +68,9 @@ export const EditCustomTestnetModal = ({
 }) => {
   const wallet = useWallet();
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
+  const [isShowModifyRpcModal, setIsShowModifyRpcModal] = useState(false);
   const [form] = Form.useForm();
+  const [formValues, setFormValues] = useState<Partial<TestnetChainBase>>({});
 
   const { loading, runAsync: runAddTestnet } = useRequest(
     (
@@ -97,6 +101,10 @@ export const EditCustomTestnetModal = ({
           errors: [res.error.message],
         },
       ]);
+      if (!isEdit && res.error.status === 'alreadySupported') {
+        setIsShowModifyRpcModal(true);
+        setFormValues(form.getFieldsValue());
+      }
     } else {
       onConfirm?.(res);
     }
@@ -115,6 +123,7 @@ export const EditCustomTestnetModal = ({
       form.resetFields();
     }
   }, [visible]);
+  const history = useHistory();
 
   return (
     <Popup
@@ -166,7 +175,8 @@ export const EditCustomTestnetModal = ({
             form={form}
             isEdit={isEdit}
             onFieldsChange={() => {
-              onChange?.(form.getFieldsValue());
+              const values = form.getFieldsValue();
+              onChange?.(values);
             }}
           />
         </div>
@@ -204,6 +214,25 @@ export const EditCustomTestnetModal = ({
             category: 'Custom Network',
             action: 'Choose ChainList Network',
             label: `${source}_${String(item.id)}`,
+          });
+        }}
+      />
+      <ConfirmModifyRpcModal
+        visible={isShowModifyRpcModal}
+        chainId={formValues.id}
+        rpcUrl={formValues.rpcUrl}
+        onCancel={() => {
+          setIsShowModifyRpcModal(false);
+        }}
+        onConfirm={() => {
+          setIsShowModifyRpcModal(false);
+          wallet.clearPageStateCache();
+          history.replace({
+            pathname: '/custom-rpc',
+            state: {
+              chainId: formValues.id,
+              rpcUrl: formValues.rpcUrl,
+            },
           });
         }}
       />

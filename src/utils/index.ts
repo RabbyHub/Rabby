@@ -1,6 +1,7 @@
 import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import browser from 'webextension-polyfill';
+import { findChain } from './chain';
 
 declare global {
   const langLocales: Record<string, Record<'message', string>>;
@@ -14,12 +15,13 @@ const format = (str, ...args) => {
 
 export { t, format };
 
-const chainsDict = keyBy(CHAINS, 'serverId');
 export const getChain = (chainId?: string) => {
   if (!chainId) {
     return null;
   }
-  return chainsDict[chainId];
+  return findChain({
+    serverId: chainId,
+  });
 };
 
 export const getOriginFromUrl = (url: string) => {
@@ -68,4 +70,12 @@ export const getTxScanLink = (scankLink: string, hash: string) => {
   return scankLink.endsWith('/')
     ? `${scankLink}tx/${hash}`
     : `${scankLink}/tx/${hash}`;
+};
+
+export const safeJSONParse = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    return null;
+  }
 };

@@ -117,10 +117,11 @@ const ScanCopyQRCode: React.FC<Props> = ({
       {showURL && (
         <div className="url-container mx-auto w-[336px] mt-0 mb-0">
           <Input.TextArea
-            className="h-[200px] w-[336px] p-16 block"
+            className="h-[200px] w-[336px] p-16 block bg-r-neutral-bg-1 rounded-[8px]"
             spellCheck={false}
             value={qrcodeURL}
             disabled={true}
+            prefixCls="url-container-textarea"
           />
           <ThemeIcon
             src={RcIconRefresh}

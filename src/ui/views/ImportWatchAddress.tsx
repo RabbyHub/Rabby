@@ -18,7 +18,9 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
+import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
+import { safeJSONParse } from '@/utils';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -39,6 +41,7 @@ const ImportWatchAddress = () => {
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
   const [isValidAddr, setIsValidAddr] = useState(false);
+  const { show, contextHolder } = useRepeatImportConfirm();
   const ModalComponent = isWide ? Modal : Popup;
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -58,15 +61,23 @@ const ImportWatchAddress = () => {
       });
     },
     onError(err) {
-      setDisableKeydown(false);
-      form.setFields([
-        {
-          name: 'address',
-          errors: [
-            err?.message || t('page.newAddress.addContacts.notAValidAddress'),
-          ],
-        },
-      ]);
+      if (err.message?.includes?.('DuplicateAccountError')) {
+        const address = safeJSONParse(err.message)?.address;
+        show({
+          address,
+          type: KEYRING_CLASS.WATCH,
+        });
+      } else {
+        setDisableKeydown(false);
+        form.setFields([
+          {
+            name: 'address',
+            errors: [
+              err?.message || t('page.newAddress.addContacts.notAValidAddress'),
+            ],
+          },
+        ]);
+      }
     },
   });
   const handleConfirmENS = (result: string) => {
@@ -210,6 +221,7 @@ const ImportWatchAddress = () => {
       NextButtonContent={t('global.confirm')}
       nextDisabled={!isValidAddr}
     >
+      {contextHolder}
       <header className="create-new-header create-password-header h-[264px] res dark:bg-r-blue-disable">
         <div className="rabby-container">
           <img

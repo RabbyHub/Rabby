@@ -39,7 +39,7 @@ import {
   ApproveNFTRequireData,
   fetchNFTApproveRequiredData,
 } from '../Actions/utils';
-import { ALIAS_ADDRESS } from 'consts';
+import { ALIAS_ADDRESS, KEYRING_TYPE } from 'consts';
 import { Chain } from 'background/service/openapi';
 import {
   findChain,
@@ -47,6 +47,8 @@ import {
   isTestnetChainId,
 } from '@/utils/chain';
 import { ReceiverData } from '../Actions/components/ViewMorePopup/ReceiverPopup';
+import { parseNumber } from '@metamask/eth-sig-util';
+import { padStart } from 'lodash';
 
 interface PermitActionData extends PermitAction {
   expire_at: number | undefined;
@@ -613,7 +615,17 @@ const fetchReceiverRequireData = async ({
     name: null,
     onTransferWhitelist: false,
     whitelistEnable: false,
+    receiverIsSpoofing: false,
+    hasReceiverPrivateKeyInWallet: false,
+    hasReceiverMnemonicInWallet: false,
   };
+  const hasPrivateKeyInWallet = await wallet.hasPrivateKeyInWallet(to);
+  if (hasPrivateKeyInWallet) {
+    result.hasReceiverPrivateKeyInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.SimpleKeyring;
+    result.hasReceiverMnemonicInWallet =
+      hasPrivateKeyInWallet === KEYRING_TYPE.HdKeyring;
+  }
   queue.add(async () => {
     const { has_transfer } = await apiProvider.hasTransfer(chainId, from, to);
     result.hasTransfer = has_transfer;
@@ -659,6 +671,13 @@ const fetchReceiverRequireData = async ({
   queue.add(async () => {
     const usedChainList = await apiProvider.addrUsedChainList(to);
     result.usedChains = usedChainList;
+  });
+  queue.add(async () => {
+    const { is_spoofing } = await apiProvider.checkSpoofing({
+      from,
+      to,
+    });
+    result.receiverIsSpoofing = is_spoofing;
   });
   const whitelist = await wallet.getWhitelist();
   const whitelistEnable = await wallet.isWhitelistEnabled();
@@ -1110,11 +1129,19 @@ export const formatSecurityEngineCtx = async ({
         onTransferWhitelist: data.whitelistEnable
           ? data.onTransferWhitelist
           : false,
+        receiverIsSpoofing: data.receiverIsSpoofing,
+        hasReceiverMnemonicInWallet: data.hasReceiverMnemonicInWallet,
+        hasReceiverPrivateKeyInWallet: data.hasReceiverPrivateKeyInWallet,
       },
     };
   }
   if (actionData?.assetOrder) {
-    const { takers, receiver } = actionData.assetOrder;
+    const {
+      takers,
+      receiver,
+      receiveNFTList,
+      receiveTokenList,
+    } = actionData.assetOrder;
     const data = requireData as AssetOrderRequireData;
     return {
       assetOrder: {
@@ -1123,6 +1150,7 @@ export const formatSecurityEngineCtx = async ({
         receiver: receiver || '',
         chainId: chain?.serverId,
         id: data.id,
+        hasReceiveAssets: receiveNFTList.length + receiveTokenList.length > 0,
       },
     };
   }
@@ -1172,10 +1200,21 @@ export function normalizeValue(type: string, value: unknown): any {
   }
 
   if (type === 'address') {
+    let address = value as string;
     if (typeof value === 'string' && !/^(0x|0X)/.test(value)) {
-      return EthersBigNumber.from(value).toHexString();
+      address = EthersBigNumber.from(value).toHexString();
     } else if (isStrictHexString(value)) {
-      return add0x(value);
+      address = add0x(value);
+    }
+    try {
+      const parseAddress = padStart(
+        parseNumber(address).toString('hex'),
+        40,
+        '0'
+      );
+      return `0x${parseAddress}`;
+    } catch (e) {
+      return address;
     }
   }
 

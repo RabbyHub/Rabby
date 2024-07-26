@@ -222,10 +222,9 @@ const CustomTestnetList = ({
         const chain = findChain({ id: item.id });
 
         return chain ? (
-          <div className="chain-list-item relative">
+          <div className="chain-list-item relative" key={item.id + 'tooltip'}>
             <TooltipWithMagnetArrow
               className="rectangle w-[max-content]"
-              key={item.id + 'tooltip'}
               trigger={['click']}
               align={{
                 offset: [0, 30],

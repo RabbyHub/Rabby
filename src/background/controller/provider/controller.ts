@@ -30,6 +30,7 @@ import {
   swapService,
   transactionBroadcastWatchService,
   notificationService,
+  bridgeService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -54,9 +55,11 @@ import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
 import { StatsData } from '../../service/notification';
-import { customTestnetService } from '@/background/service/customTestnet';
+import {
+  CustomTestnetTokenBase,
+  customTestnetService,
+} from '@/background/service/customTestnet';
 import { sendTransaction } from 'viem/actions';
-import { SIGN_TIMEOUT } from '@/constant/timeout';
 // import { customTestnetService } from '@/background/service/customTestnet';
 
 const reportSignText = (params: {
@@ -100,6 +103,7 @@ interface ApprovalRes extends Tx {
   lowGasDeadline?: number;
   reqId?: string;
   isGasLess?: boolean;
+  logId?: string;
 }
 
 interface Web3WalletPermission {
@@ -361,6 +365,7 @@ class ProviderController extends BaseController {
     const lowGasDeadline = approvalRes.lowGasDeadline;
     const preReqId = approvalRes.reqId;
     const isGasLess = approvalRes.isGasLess || false;
+    const logId = approvalRes.logId || '';
 
     let signedTransactionSuccess = false;
     delete txParams.isSend;
@@ -380,6 +385,7 @@ class ProviderController extends BaseController {
     delete approvalRes.reqId;
     delete txParams.isCoboSafe;
     delete approvalRes.isGasLess;
+    delete approvalRes.logId;
 
     let is1559 = is1559Tx(approvalRes);
     if (
@@ -443,9 +449,6 @@ class ProviderController extends BaseController {
 
     const chainItem = findChainByEnum(chain);
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const statsData: StatsData = {
       signed: false,
       signedSuccess: false,
@@ -504,6 +507,7 @@ class ProviderController extends BaseController {
 
         if (hash) {
           swapService.postSwap(chain, hash, other);
+          bridgeService.postBridge(chain, hash, other);
         }
 
         statsData.submit = true;
@@ -693,6 +697,7 @@ class ProviderController extends BaseController {
               req_id: preReqId || '',
               origin,
               is_gasless: isGasLess,
+              log_id: logId,
             });
             hash = res.req.tx_id || undefined;
             reqId = res.req.id || undefined;
@@ -789,9 +794,6 @@ class ProviderController extends BaseController {
   personalSign = async ({ data, approvalRes, session }) => {
     if (!data.params) return;
 
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
-
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
       const [string, from] = data.params;
@@ -833,9 +835,6 @@ class ProviderController extends BaseController {
         _data = JSON.parse(data);
       }
     }
-
-    // wait ui
-    await new Promise((r) => setTimeout(r, SIGN_TIMEOUT));
 
     return keyringService.signTypedMessage(
       keyring,
@@ -1043,7 +1042,7 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({
@@ -1123,13 +1122,16 @@ class ProviderController extends BaseController {
     if (typeof chainId === 'number') {
       chainId = intToHex(chainId).toLowerCase();
     } else {
-      chainId = chainId.toLowerCase();
+      chainId = `0x${new BigNumber(chainId).toString(16).toLowerCase()}`;
     }
 
     const chain = findChain({ hex: chainId });
 
     if (!chain) {
-      throw new Error('This chain is not supported by Rabby yet.');
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
+      });
     }
 
     permissionService.updateConnectSite(
@@ -1163,13 +1165,25 @@ class ProviderController extends BaseController {
   walletWatchAsset = ({
     approvalRes,
   }: {
-    approvalRes: { id: string; chain: string };
+    approvalRes: { id: string; chain: string } & CustomTestnetTokenBase;
   }) => {
-    const { id, chain } = approvalRes;
-    preferenceService.addCustomizedToken({
-      address: id,
-      chain,
+    const { id, chain, chainId, symbol, decimals } = approvalRes;
+    const chainInfo = findChain({
+      serverId: chain,
     });
+    if (chainInfo?.isTestnet) {
+      customTestnetService.addToken({
+        chainId,
+        symbol,
+        decimals,
+        id,
+      });
+    } else {
+      preferenceService.addCustomizedToken({
+        address: id,
+        chain,
+      });
+    }
   };
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {

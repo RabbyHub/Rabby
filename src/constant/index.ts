@@ -199,6 +199,7 @@ import LogoCoinbase from 'ui/assets/swap/coinbase.png';
 import LogoOkx from 'ui/assets/swap/okx.png';
 import LogoTokenDefault from 'ui/assets/token-default.svg';
 import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
+import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 
 export { default as LANGS } from '../../_raw/locales/index.json';
 
@@ -451,7 +452,7 @@ export const INTERNAL_REQUEST_ORIGIN = location.origin;
 export const INTERNAL_REQUEST_SESSION = {
   name: 'Rabby',
   origin: INTERNAL_REQUEST_ORIGIN,
-  icon: './images/rabby-site-logo.png',
+  icon: RabbyChainLogo,
 };
 
 export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
@@ -490,6 +491,8 @@ export const EVENTS = {
   },
   LOCK_WALLET: 'LOCK_WALLET',
   RELOAD_TX: 'RELOAD_TX',
+  SIGN_BEGIN: 'SIGN_BEGIN',
+  SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
   // FORCE_EXPIRE_ADDRESS_BALANCE: 'FORCE_EXPIRE_ADDRESS_BALANCE',
 };
 
@@ -1210,8 +1213,8 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
 export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 
 export const ALIAS_ADDRESS = {
-  [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
-  [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
+  [GAS_TOP_UP_ADDRESS]: 'Rabby Gas Top Up',
+  [GAS_TOP_UP_PAY_ADDRESS]: 'Rabby Gas Top Up',
   [FREE_GAS_ADDRESS]: 'Free Gas',
 };
 
@@ -1233,6 +1236,10 @@ export const L2_ENUMS = [
   CHAINS_ENUM.ZORA,
   CHAINS_ENUM.OPBNB,
   CHAINS_ENUM.BLAST,
+  CHAINS_ENUM.MODE,
+  'DBK',
+  'MINT',
+  'CYBER',
 ];
 
 // opstack L2 chains
@@ -1242,9 +1249,15 @@ export const OP_STACK_ENUMS = [
   CHAINS_ENUM.ZORA,
   CHAINS_ENUM.OPBNB,
   CHAINS_ENUM.BLAST,
+  CHAINS_ENUM.MODE,
+  'DBK',
+  'MINT',
+  'CYBER',
 ];
 
 export const ARB_LIKE_L2_CHAINS = [CHAINS_ENUM.ARBITRUM, CHAINS_ENUM.AURORA];
+
+export const CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS = [...L2_ENUMS];
 
 export const CAN_ESTIMATE_L1_FEE_CHAINS = [
   ...OP_STACK_ENUMS,
@@ -1398,12 +1411,6 @@ export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const DEX = {
-  [DEX_ENUM.ONEINCH]: {
-    id: DEX_ENUM.ONEINCH,
-    logo: Logo1inch,
-    name: '1inch',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
-  },
   [DEX_ENUM.ZEROXAPI]: {
     id: DEX_ENUM.ZEROXAPI,
     logo: Logo0X,
@@ -1415,6 +1422,25 @@ export const DEX = {
     logo: LogoParaswap,
     name: 'ParaSwap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
+  },
+  [DEX_ENUM.ONEINCH]: {
+    id: DEX_ENUM.ONEINCH,
+    logo: Logo1inch,
+    name: '1inch',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
+  },
+
+  [DEX_ENUM.OPENOCEAN]: {
+    id: DEX_ENUM.OPENOCEAN,
+    logo: LogoOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
+  },
+  [DEX_ENUM.KYBERSWAP]: {
+    id: DEX_ENUM.KYBERSWAP,
+    logo: LogoKyberSwap,
+    name: 'KyberSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
   },
 };
 
@@ -1428,21 +1454,21 @@ export const DEX_WITH_WRAP = {
 };
 
 export const CEX = {
-  binance: {
-    id: 'binance',
-    name: 'Binance',
-    logo: LogoBinance,
-  },
-  coinbase: {
-    id: 'coinbase',
-    name: 'Coinbase',
-    logo: LogoCoinbase,
-  },
-  okex: {
-    id: 'okex',
-    name: 'OKX',
-    logo: LogoOkx,
-  },
+  // binance: {
+  //   id: 'binance',
+  //   name: 'Binance',
+  //   logo: LogoBinance,
+  // },
+  // coinbase: {
+  //   id: 'coinbase',
+  //   name: 'Coinbase',
+  //   logo: LogoCoinbase,
+  // },
+  // okex: {
+  //   id: 'okex',
+  //   name: 'OKX',
+  //   logo: LogoOkx,
+  // },
 };
 
 export const SWAP_SUPPORT_CHAINS = Array.from(
@@ -1492,3 +1518,10 @@ export const ThemeModes = [
 ];
 
 export const imKeyUSBVendorId = 0x096e;
+
+export const DBK_CHAIN_ID = 20240603;
+
+export const DBK_CHAIN_BRIDGE_CONTRACT =
+  '0x28f1b9F457CB51E0af56dff1d11CD6CEdFfD1977';
+export const DBK_NFT_CONTRACT_ADDRESS =
+  '0x633b7472E1641D59334886a7692107D6332B1ff0';

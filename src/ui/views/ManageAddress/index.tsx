@@ -269,7 +269,10 @@ const ManageAddress = () => {
             {TypedWalletObj?.[activeIndex] ? (
               <div className="flex items-center justify-between mt-20 ">
                 <div className="text-[17px] text-r-neutral-title-1 font-medium">
-                  {TypedWalletObj?.[activeIndex]?.name}
+                  {TypedWalletObj?.[activeIndex]?.type ===
+                  KEYRING_TYPE.WatchAddressKeyring
+                    ? 'Contact Address'
+                    : TypedWalletObj?.[activeIndex]?.name}
                 </div>
                 <div className="flex items-center gap-16">
                   {isSeedPhrase && (

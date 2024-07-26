@@ -87,13 +87,18 @@
   }
   .ant-input {
     border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    background: var(--r-neutral-card-2, #f5f6fa);
+    background: transparent;
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
     color: var(--r-neutral-title-1, #192945);
+
+    &::placeholder {
+      color: var(--r-neutral-foot);
+      font-weight: 400;
+    }
   }
   .ant-form-item {
     margin: 0;
@@ -341,12 +346,12 @@
   }
 
   .footer {
-    padding: 16px 0 20px;
+    padding: 20px 0;
     margin-left: -20px;
     margin-right: -20px;
     width: 100vw;
 
-    background-color: var(--r-neutral-card-1, #FFF);
+    background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
     border-top: 0.5px solid var(--r-neutral-line, #D3D8E0);
   }
 
@@ -446,7 +451,7 @@
           margin: 4px auto 0;
           font-weight: 500;
           .ant-input {
-            background: transparent;
+            background: transparent !important;
             transition: none;
           }
         }
