@@ -1,6 +1,6 @@
 import { Checkbox, Popup } from '@/ui/component';
 import { formatTokenAmount } from '@/ui/utils';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { Button } from 'antd';
 import BigNumber from 'bignumber.js';
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
 import { PopupProps } from '@/ui/component/Popup';
+import { findChain } from '@/utils/chain';
 
 export type GasLevelType = keyof typeof SORT_SCORE;
 interface ReserveGasContentProps {
@@ -51,10 +52,10 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
 
   const { decimals, symbol } = React.useMemo(
     () => ({
-      decimals: CHAINS[chain].nativeTokenDecimals,
-      symbol: CHAINS[chain].nativeTokenSymbol,
+      decimals: findChain({ enum: chain })?.nativeTokenDecimals || 1e18,
+      symbol: findChain({ enum: chain })?.nativeTokenSymbol || '',
     }),
-    [CHAINS[chain]]
+    [chain]
   );
 
   const sortedList = React.useMemo(
