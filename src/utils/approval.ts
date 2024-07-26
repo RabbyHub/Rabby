@@ -95,8 +95,10 @@ export type NftApprovalItem = {
 };
 
 export type ComputedRiskAboutValues = {
+  /** @deprecated */
   risk_exposure_usd_value: number;
-  is_exposure_usd_value_unknown: boolean;
+  // is_exposure_usd_value_unknown: boolean;
+  risk_spend_usd_value: number;
   approve_user_count: number;
   revoke_user_count: number;
   last_approve_at: number;
@@ -119,8 +121,8 @@ export type ComputedRiskEvaluation = {
   extra: {
     serverRiskLevel: ApprovalRiskLevel;
 
-    clientExposureLevel: ApprovalRiskLevel;
-    clientExposureScore: RiskLevelScore;
+    clientSpendLevel: ApprovalRiskLevel;
+    clientSpendScore: RiskLevelScore;
 
     clientApprovalLevel: ApprovalRiskLevel;
     clientApprovalScore: RiskLevelScore;
@@ -153,9 +155,10 @@ export function makeComputedRiskAboutValues(
   if (contractFor === 'nft' || contractFor === 'nft-contract') {
     return {
       risk_exposure_usd_value: coerceFloat(spender?.exposure_nft_usd_value, 0),
-      is_exposure_usd_value_unknown:
-        spender?.exposure_nft_usd_value === null ||
-        typeof spender?.exposure_nft_usd_value !== 'number',
+      // is_exposure_usd_value_unknown:
+      //   spender?.exposure_nft_usd_value === null ||
+      //   typeof spender?.exposure_nft_usd_value !== 'number',
+      risk_spend_usd_value: coerceFloat(spender?.spend_usd_value, 0),
       approve_user_count: coerceInteger(spender?.approve_user_count, 0),
       revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
       last_approve_at: coerceInteger(spender?.last_approve_at, 0),
@@ -164,9 +167,10 @@ export function makeComputedRiskAboutValues(
 
   return {
     risk_exposure_usd_value: coerceFloat(spender?.exposure_usd_value, 0),
-    is_exposure_usd_value_unknown:
-      spender?.exposure_usd_value === null ||
-      typeof spender?.exposure_usd_value !== 'number',
+    // is_exposure_usd_value_unknown:
+    //   spender?.exposure_usd_value === null ||
+    //   typeof spender?.exposure_usd_value !== 'number',
+    risk_spend_usd_value: coerceFloat(spender?.spend_usd_value, 0),
     approve_user_count: coerceInteger(spender?.approve_user_count, 0),
     revoke_user_count: coerceInteger(spender?.revoke_user_count, 0),
     last_approve_at: coerceInteger(spender?.last_approve_at, 0),
@@ -183,11 +187,12 @@ export function getContractRiskEvaluation(
     0
   ) as RiskLevelScore;
 
-  const exposureValue = coerceFloat(riskValues.risk_exposure_usd_value);
-  const clientExposureLevel: ApprovalRiskLevel =
-    exposureValue < 1e4 ? 'danger' : exposureValue < 1e5 ? 'warning' : 'safe';
-  const clientExposureScore = coerceInteger(
-    RiskNumMap[clientExposureLevel],
+  // const exposureValue = coerceFloat(riskValues.risk_exposure_usd_value);
+  const spendValue = coerceFloat(riskValues.risk_spend_usd_value);
+  const clientSpendLevel: ApprovalRiskLevel =
+    spendValue < 1e4 ? 'danger' : spendValue < 1e5 ? 'warning' : 'safe';
+  const clientSpendScore = coerceInteger(
+    RiskNumMap[clientSpendLevel],
     0
   ) as RiskLevelScore;
 
@@ -212,7 +217,7 @@ export function getContractRiskEvaluation(
     0
   ) as RiskLevelScore;
 
-  const allClientScores = [clientExposureScore, clientApprovalScore];
+  const allClientScores = [clientSpendScore, clientApprovalScore];
 
   const clientMaxRiskScore = Math.max(...allClientScores) as RiskLevelScore;
 
@@ -229,8 +234,8 @@ export function getContractRiskEvaluation(
     extra: {
       serverRiskLevel,
 
-      clientExposureLevel,
-      clientExposureScore,
+      clientSpendLevel,
+      clientSpendScore,
 
       clientApprovalLevel,
       clientApprovalScore,

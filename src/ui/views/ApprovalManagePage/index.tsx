@@ -239,7 +239,7 @@ function getColumnsForContract({
           </div>
         );
       },
-      width: 420,
+      width: 380,
     },
     // Contract Trust value
     {
@@ -292,8 +292,8 @@ function getColumnsForContract({
           return checkResult.keepRiskFirstReturnValue;
 
         return (
-          a.$riskAboutValues.risk_exposure_usd_value -
-          b.$riskAboutValues.risk_exposure_usd_value
+          b.$riskAboutValues.risk_spend_usd_value -
+          a.$riskAboutValues.risk_spend_usd_value
         );
       },
       sortOrder:
@@ -302,11 +302,11 @@ function getColumnsForContract({
         if (row.type !== 'contract') return null;
 
         const isDanger =
-          row.$contractRiskEvaluation.extra.clientExposureScore >=
+          row.$contractRiskEvaluation.extra.clientSpendScore >=
           RiskNumMap.danger;
         const isWarning =
           !isDanger &&
-          row.$contractRiskEvaluation.extra.clientExposureScore >=
+          row.$contractRiskEvaluation.extra.clientSpendScore >=
             RiskNumMap.warning;
 
         const isRisk = isDanger || isWarning;
@@ -355,14 +355,12 @@ function getColumnsForContract({
                 'is-danger': isDanger,
               })}
             >
-              {formatUsdValue(
-                row.$riskAboutValues.risk_exposure_usd_value || 0
-              )}
+              {formatUsdValue(row.$riskAboutValues.risk_spend_usd_value || 0)}
             </span>
           </Tooltip>
         );
       },
-      width: 180,
+      width: 220,
     },
     // 24h Revoke Trends
     {
