@@ -22,7 +22,8 @@ export const TokenAmountItem: React.FC<Props> = ({
   onEdit,
   balance,
 }) => {
-  const isExceed = isNil(balance) ? false : new BigNumber(amount).gt(balance);
+  const hideTooltip = isNil(balance);
+  const isExceed = hideTooltip ? false : new BigNumber(amount).gt(balance);
   const { t } = useTranslation();
 
   return (
@@ -30,14 +31,14 @@ export const TokenAmountItem: React.FC<Props> = ({
       inApproval
       overlayClassName="rectangle w-[max-content]"
       title={
-        isNil(balance) ? (
+        hideTooltip ? (
           false
         ) : (
           <div>
-            <div className="gap-x-4 flex whitespace-nowrap">
-              <div>{t('page.signTx.tokenApprove.amount')}</div>
-              {/* <Values.TokenAmount value={amount} /> */}
-              <span>{amount}</span>
+            <div className="break-all">
+              {`${t('page.signTx.tokenApprove.amount')} ${new BigNumber(
+                amount
+              ).toFixed()}`}
             </div>
             {isExceed && (
               <div className="flex items-center gap-x-4">
@@ -70,7 +71,7 @@ export const TokenAmountItem: React.FC<Props> = ({
                   isExceed && 'text-red-light'
                 )}
               >
-                <Values.TokenAmount value={amount} />
+                <Values.TokenAmount hasTitle={hideTooltip} value={amount} />
               </div>
               {onEdit ? (
                 <span className="text-blue-light text-14 font-medium ml-4 hover:underline">
