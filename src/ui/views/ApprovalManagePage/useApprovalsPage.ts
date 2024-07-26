@@ -177,7 +177,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       try {
         const data = await openapiClient.userNFTAuthorizedList(
           userAddress,
-          e.id,
+          e.id
         );
         if (data.total) {
           data.contracts.forEach((contract) => {
@@ -239,7 +239,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
               markParentForAssetItemSpender(
                 spender,
                 nextApprovalsData.nftMap[
-                `${chainName}:${contract.contract_id}`
+                  `${chainName}:${contract.contract_id}`
                 ],
                 nextApprovalsData.contractMap[`${chainName}:${contractId}`],
                 contract
@@ -329,9 +329,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
                   'token',
                   spender
                 );
-                nextApprovalsData.contractMap[
-                  `${chainName}:${contractId}`
-                ] = {
+                nextApprovalsData.contractMap[`${chainName}:${contractId}`] = {
                   list: [],
                   chain: token.chain,
                   risk_level: spender.risk_level,
@@ -576,8 +574,8 @@ export function useSelectSpendersToRevoke(
     filterType === 'contract'
       ? contractRevokeList
       : filterType === 'assets'
-        ? assetRevokeList
-        : [];
+      ? assetRevokeList
+      : [];
 
   const clearRevoke = React.useCallback(() => {
     setContractRevokeMap({});
