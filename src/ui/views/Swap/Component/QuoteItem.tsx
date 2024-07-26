@@ -237,12 +237,12 @@ export const DexQuoteItem = (
     }
 
     if (!quote?.toTokenAmount) {
-      bestQuotePercent = (
+      receiveOrErrorContent = (
         <div className="text-r-neutral-foot text-[13px] font-normal">
           {t('page.swap.unable-to-fetch-the-price')}
         </div>
       );
-      receiveOrErrorContent = null;
+      bestQuotePercent = null;
       disable = true;
     }
 
