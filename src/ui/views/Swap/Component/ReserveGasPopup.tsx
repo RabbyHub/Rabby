@@ -72,7 +72,8 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
         new BigNumber(limit)
           .times(price)
           .div(10 ** decimals)
-          .toString()
+          .toString(),
+        6
       ),
     [limit, decimals]
   );
