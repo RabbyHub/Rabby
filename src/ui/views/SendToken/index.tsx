@@ -82,7 +82,7 @@ import { copyAddress } from '@/ui/utils/clipboard';
 import { MaxButton } from './components/MaxButton';
 import {
   GasLevelType,
-  ReserveGasPopup,
+  SendReserveGasPopup,
 } from '../Swap/Component/ReserveGasPopup';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
@@ -393,6 +393,7 @@ const SendToken = () => {
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
+
   const [estimateGas, setEstimateGas] = useState(0);
   const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
@@ -474,8 +475,6 @@ const SendToken = () => {
   }, [wallet, chainItem]);
 
   const [{ value: gasList }, loadGasList] = useAsyncFn(() => {
-    // gasPriceRef.current = undefined;
-    // setGasLevel('normal');
     return fetchGasList();
   }, [fetchGasList]);
 
@@ -1020,6 +1019,22 @@ const SendToken = () => {
       wallet,
     ]
   );
+  const handleGasLevelChanged = useCallback(
+    async (gl?: GasLevel | null) => {
+      handleReserveGasClose();
+      const gasLevel = gl
+        ? gl
+        : await loadGasList().then(
+            (res) =>
+              res.find((item) => item.level === 'normal') ||
+              findInstanceLevel(res)
+          );
+
+      setSelectedGasLevel(gasLevel);
+      handleMaxInfoChanged({ gasLevel });
+    },
+    [handleReserveGasClose, handleMaxInfoChanged, loadGasList]
+  );
 
   const handleClickMaxButton = useCallback(async () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: true }));
@@ -1034,6 +1049,12 @@ const SendToken = () => {
   const handleChainChanged = useCallback(
     async (val: CHAINS_ENUM) => {
       setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
+      const gasList = await loadGasList();
+      setSelectedGasLevel(
+        gasList.find(
+          (gasLevel) => (gasLevel.level as GasLevelType) === 'normal'
+        ) || findInstanceLevel(gasList)
+      );
 
       const account = (await wallet.syncGetCurrentAccount())!;
       const chain = findChain({
@@ -1089,7 +1110,14 @@ const SendToken = () => {
         }
       );
     },
-    [form, handleFormValuesChange, loadCurrentToken, setShowGasReserved, wallet]
+    [
+      form,
+      handleFormValuesChange,
+      loadCurrentToken,
+      setShowGasReserved,
+      loadGasList,
+      wallet,
+    ]
   );
 
   const handleCopyContactAddress = () => {
@@ -1589,20 +1617,16 @@ const SendToken = () => {
         onOk={handleConfirmContact}
       />
 
-      <ReserveGasPopup
+      <SendReserveGasPopup
         selectedItem={selectedGasLevel?.level as GasLevelType}
         chain={chain}
         limit={MINIMUM_GAS_LIMIT}
         onGasChange={(gasLevel) => {
-          handleReserveGasClose();
-          setSelectedGasLevel(gasLevel);
-          handleMaxInfoChanged({ gasLevel });
-          // handleGasChange({ gasLevel, updateTokenAmount: true });
+          handleGasLevelChanged(gasLevel);
         }}
         gasList={gasList}
         visible={reserveGasOpen}
-        onCancel={handleReserveGasClose}
-        onClose={handleReserveGasClose}
+        onClose={(gasLevel) => handleGasLevelChanged(gasLevel)}
       />
     </div>
   );

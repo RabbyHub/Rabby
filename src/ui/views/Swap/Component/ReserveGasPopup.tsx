@@ -5,7 +5,7 @@ import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import { Button } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
@@ -28,7 +28,13 @@ const SORT_SCORE = {
   custom: 4,
 };
 
-const ReserveGasContent = (props: ReserveGasContentProps) => {
+type ReserveGasType = {
+  getSelectedGasLevel: () => GasLevel | null;
+};
+const ReserveGasContent = React.forwardRef<
+  ReserveGasType,
+  ReserveGasContentProps
+>((props, ref) => {
   const {
     gasList,
     chain,
@@ -39,6 +45,10 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
 
   const [currentSelectedItem, setCurrentSelectedItem] = useState(selectedItem);
   const [gasLevel, setGasLevel] = useState<GasLevel>();
+
+  React.useImperativeHandle(ref, () => ({
+    getSelectedGasLevel: () => gasLevel ?? null,
+  }));
 
   const { t } = useTranslation();
   const nameMapping = React.useMemo(
@@ -184,7 +194,7 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
       </div>
     </div>
   );
-};
+});
 
 export const ReserveGasPopup = (props: ReserveGasContentProps & PopupProps) => {
   const {
@@ -207,6 +217,56 @@ export const ReserveGasPopup = (props: ReserveGasContentProps & PopupProps) => {
     >
       {gasList && (
         <ReserveGasContent
+          gasList={gasList}
+          chain={chain}
+          limit={limit}
+          selectedItem={selectedItem}
+          onGasChange={onGasChange}
+        />
+      )}
+    </Popup>
+  );
+};
+
+export const SendReserveGasPopup = (
+  props: ReserveGasContentProps &
+    (Omit<PopupProps, 'onClose' | 'onCancel'> & {
+      onClose?: (gasLevel?: GasLevel | null) => void;
+      onCancel?: (gasLevel?: GasLevel | null) => void;
+    })
+) => {
+  const {
+    gasList,
+    chain,
+    onGasChange,
+    limit,
+    selectedItem,
+    onClose,
+    onCancel,
+    ...otherPopupProps
+  } = props;
+  const { t } = useTranslation();
+
+  const reverseGasContentRef = React.useRef<ReserveGasType>(null);
+
+  const handleClose = useCallback(() => {
+    const gasLevel = reverseGasContentRef.current?.getSelectedGasLevel();
+    onClose?.(gasLevel);
+  }, [onClose]);
+
+  return (
+    <Popup
+      title={t('component.ReserveGasPopup.title')}
+      height={454}
+      isSupportDarkMode
+      isNew
+      maskClosable
+      {...otherPopupProps}
+      onClose={handleClose}
+    >
+      {gasList && (
+        <ReserveGasContent
+          ref={reverseGasContentRef}
           gasList={gasList}
           chain={chain}
           limit={limit}
