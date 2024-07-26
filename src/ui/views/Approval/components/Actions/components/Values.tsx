@@ -36,9 +36,15 @@ const TokenAmountWrapper = styled.div`
   white-space: nowrap;
   overflow: hidden;
 `;
-const TokenAmount = ({ value }: { value: string | number }) => {
+const TokenAmount = ({
+  value,
+  hasTitle = true,
+}: {
+  value: string | number;
+  hasTitle?: boolean;
+}) => {
   return (
-    <TokenAmountWrapper title={String(value)}>
+    <TokenAmountWrapper title={hasTitle ? String(value) : ''}>
       {formatAmount(value)}
     </TokenAmountWrapper>
   );

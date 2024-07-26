@@ -81,6 +81,7 @@ const Permit2 = ({
                 <TokenAmountItem
                   amount={token.amount}
                   logoUrl={token.logo_url}
+                  balance={tokenBalanceMap[token.id]}
                 />
               </Row>
             </Col>
