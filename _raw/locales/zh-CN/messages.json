@@ -1405,7 +1405,9 @@
         "flagByRabby": "被 Rabby 标记为风险",
         "myBalance": "我的余额",
         "title": "代币授权",
-        "trustValueLessThan": "≤ {{value}}"
+        "trustValueLessThan": "≤ {{value}}",
+        "amount": "授权金额：",
+        "exceed": "超过您当前的余额"
       },
       "transacted": "之前交易过",
       "trustValue": "信任值",
