@@ -259,11 +259,18 @@ function getColumnsForContract({
                     exposed to this contract. A low trust value indicates either
                     risk or inactivity for 180 days. */}
                     {t(
-                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValue'
+                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValueL1'
+                    )}
+                  </p>
+                  <p className="mt-[12px]">
+                    {/* Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days. */}
+                    {t(
+                      'page.approvals.tableConfig.byContracts.columnTip.contractTrustValueL2'
                     )}
                   </p>
                 </div>
               }
+              // placement='topRight'
               // visible
             >
               <ThemeIcon
