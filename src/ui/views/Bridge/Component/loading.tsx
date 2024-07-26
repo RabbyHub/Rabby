@@ -7,7 +7,7 @@ export const QuoteLoading = () => {
     <div
       className={clsx(
         'h-[80px] flex flex-col justify-center gap-10 px-16 rounded-[6px]',
-        'border-solid border-[0.5px] border-rabby-neutral-line'
+        'border-solid border-[1px] border-rabby-neutral-line'
       )}
     >
       <div className="flex justify-between items-center">

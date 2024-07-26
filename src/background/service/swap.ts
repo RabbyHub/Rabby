@@ -11,14 +11,33 @@ import * as Sentry from '@sentry/browser';
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
 export type SwapServiceStore = {
-  gasPriceCache: GasCache;
-  selectedDex: DEX_ENUM | null;
   selectedChain: CHAINS_ENUM | null;
   selectedFromToken?: TokenItem;
   selectedToToken?: TokenItem;
+
+  /**
+   * @deprecated
+   */
+  gasPriceCache: GasCache;
+  /**
+   * @deprecated
+   */
   unlimitedAllowance: boolean;
+  /**
+   * @deprecated
+   */
+  selectedDex: DEX_ENUM | null;
+  /**
+   * @deprecated
+   */
   viewList: Record<ViewKey, boolean>;
+  /**
+   * @deprecated
+   */
   tradeList: Record<ViewKey, boolean>;
+  /**
+   * @deprecated
+   */
   sortIncludeGasFee?: boolean;
   preferMEVGuarded: boolean;
 };

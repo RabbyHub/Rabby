@@ -9,6 +9,7 @@ import { useAsync, useDebounce } from 'react-use';
 import {
   useQuoteVisible,
   useRefreshId,
+  useSetQuoteVisible,
   useSetRefreshId,
   useSettingVisible,
 } from './context';
@@ -63,6 +64,7 @@ export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldTwoStepApprove?: boolean;
   loading?: boolean;
   tx?: BridgeQuote['tx'];
+  manualClick?: boolean;
 }
 
 export const useTokenPair = (userAddress: string) => {
@@ -186,10 +188,10 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount]);
+    setSelectedBridgeQuote(undefined);
+  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
 
   const visible = useQuoteVisible();
-  const settingVisible = useSettingVisible();
 
   useEffect(() => {
     if (!visible) {
@@ -199,17 +201,6 @@ export const useTokenPair = (userAddress: string) => {
 
   const setRefreshId = useSetRefreshId();
 
-  useDebounce(
-    () => {
-      if (!settingVisible) {
-        setQuotesList([]);
-        setRefreshId((e) => e + 1);
-      }
-    },
-    300,
-    [settingVisible]
-  );
-
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
   );
@@ -218,13 +209,13 @@ export const useTokenPair = (userAddress: string) => {
   const wallet = useWallet();
   const { loading: quoteLoading, error: quotesError } = useAsync(async () => {
     if (
-      visible &&
+      !inSufficient &&
       userAddress &&
       payToken?.id &&
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      payAmount &&
+      Number(payAmount) > 0 &&
       aggregatorsList.length > 0
     ) {
       fetchIdRef.current += 1;
@@ -239,6 +230,8 @@ export const useTokenPair = (userAddress: string) => {
         }
         return e?.map((e) => ({ ...e, loading: true }));
       });
+
+      setSelectedBridgeQuote(undefined);
 
       const originData = await wallet.openapi
         .getBridgeQuoteList({
@@ -349,80 +342,6 @@ export const useTokenPair = (userAddress: string) => {
             }
           })
         );
-        // await Promise.allSettled(
-        //   data.map((e) =>
-        //     wallet.openapi
-        //       .getBridgeQuote({
-        //         aggregator_id: e.aggregator.id,
-        //         bridge_id: e.bridge_id,
-        //         from_token_id: payToken.id,
-        //         user_addr: userAddress,
-        //         from_chain_id: payToken.chain,
-        //         from_token_raw_amount: new BigNumber(payAmount)
-        //           .times(10 ** payToken.decimals)
-        //           .toFixed(0, 1)
-        //           .toString(),
-        //         to_chain_id: receiveToken.chain,
-        //         to_token_id: receiveToken.id,
-        //       })
-        //       .then(async (data) => {
-        //         if (currentFetchId !== fetchIdRef.current) {
-        //           return;
-        //         }
-        //         let tokenApproved = false;
-        //         let allowance = '0';
-        //         const fromChain = findChain({ serverId: payToken?.chain });
-        //         if (payToken?.id === fromChain?.nativeTokenAddress) {
-        //           tokenApproved = true;
-        //         } else {
-        //           allowance = await wallet.getERC20Allowance(
-        //             payToken.chain,
-        //             payToken.id,
-        //             data.tx.to
-        //           );
-        //           tokenApproved = new BigNumber(allowance).gte(
-        //             new BigNumber(payAmount).times(10 ** payToken.decimals)
-        //           );
-        //         }
-        //         let shouldTwoStepApprove = false;
-        //         if (
-        //           fromChain?.enum === CHAINS_ENUM.ETH &&
-        //           isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
-        //           Number(allowance) !== 0 &&
-        //           !tokenApproved
-        //         ) {
-        //           shouldTwoStepApprove = true;
-        //         }
-
-        //         if (isEmpty) {
-        //           result.push({
-        //             ...data,
-        //             shouldTwoStepApprove,
-        //             shouldApproveToken: !tokenApproved,
-        //           });
-        //         } else {
-        //           if (currentFetchId === fetchIdRef.current) {
-        //             setQuotesList((e) => {
-        //               const filteredArr = e.filter(
-        //                 (item) =>
-        //                   item.aggregator.id !== data.aggregator.id ||
-        //                   item.bridge.id !== data.bridge.id
-        //               );
-        //               return [
-        //                 ...filteredArr,
-        //                 {
-        //                   ...data,
-        //                   loading: false,
-        //                   shouldTwoStepApprove,
-        //                   shouldApproveToken: !tokenApproved,
-        //                 },
-        //               ];
-        //             });
-        //           }
-        //         }
-        //       })
-        //   )
-        // );
 
         if (isEmpty && currentFetchId === fetchIdRef.current) {
           setQuotesList(result);
@@ -430,7 +349,7 @@ export const useTokenPair = (userAddress: string) => {
       }
     }
   }, [
-    visible,
+    inSufficient,
     aggregatorsList,
     refreshId,
     userAddress,
@@ -439,6 +358,52 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     payAmount,
   ]);
+
+  const [bestQuoteId, setBestQuoteId] = useState<
+    | {
+        bridgeId: string;
+        aggregatorId: string;
+      }
+    | undefined
+  >(undefined);
+
+  const openQuote = useSetQuoteVisible();
+
+  const openQuotesList = useCallback(() => {
+    setQuotesList([]);
+    setRefreshId((e) => e + 1);
+    openQuote(true);
+  }, []);
+
+  useEffect(() => {
+    if (!quoteLoading && receiveToken && quoteList.every((e) => !e.loading)) {
+      const sortedList = quoteList?.sort((b, a) => {
+        return new BigNumber(a.to_token_amount)
+          .times(receiveToken.price || 1)
+          .minus(a.gas_fee.usd_value)
+          .minus(
+            new BigNumber(b.to_token_amount)
+              .times(receiveToken.price || 1)
+              .minus(b.gas_fee.usd_value)
+          )
+          .toNumber();
+      });
+      if (
+        sortedList[0] &&
+        sortedList[0]?.bridge_id &&
+        sortedList[0]?.aggregator?.id
+      ) {
+        setBestQuoteId({
+          bridgeId: sortedList[0]?.bridge_id,
+          aggregatorId: sortedList[0]?.aggregator?.id,
+        });
+
+        setSelectedBridgeQuote((preItem) =>
+          preItem?.manualClick ? preItem : sortedList[0]
+        );
+      }
+    }
+  }, [quoteList, quoteLoading, receiveToken]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
@@ -468,6 +433,9 @@ export const useTokenPair = (userAddress: string) => {
     quoteList,
     selectedBridgeQuote,
     setSelectedBridgeQuote,
+    openQuotesList,
+
+    bestQuoteId,
 
     expired,
   };

@@ -1,31 +1,26 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { GasLevel, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAsync, useDebounce } from 'react-use';
-import {
-  QuoteProvider,
-  TCexQuoteData,
-  TDexQuoteData,
-  useQuoteMethods,
-} from './quote';
+import { QuoteProvider, TDexQuoteData, useQuoteMethods } from './quote';
 import {
   useQuoteVisible,
   useRefreshId,
+  useSetQuoteVisible,
   useSetRefreshId,
-  useSettingVisible,
 } from './context';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
-import { useSwapSettings } from './settings';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
+import { GasLevelType } from '../Component/ReserveGasPopup';
 
 const useTokenInfo = ({
   userAddress,
@@ -82,13 +77,15 @@ export const useSlippage = () => {
 };
 
 export interface FeeProps {
-  fee: '0.25' | '0.1' | '0';
+  fee: '0.25' | '0';
   symbol?: string;
 }
 
 export const useTokenPair = (userAddress: string) => {
   const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
+
+  const wallet = useWallet();
 
   const {
     initialSelectedChain,
@@ -105,11 +102,14 @@ export const useTokenPair = (userAddress: string) => {
   });
 
   const [chain, setChain] = useState(oChain);
-  const handleChain = (c: CHAINS_ENUM) => {
-    setChain(c);
-    dispatch.swap.setSelectedChain(c);
-    // resetSwapTokens(c);
-  };
+
+  const handleChain = useCallback(
+    (c: CHAINS_ENUM) => {
+      setChain(c);
+      dispatch.swap.setSelectedChain(c);
+    },
+    [dispatch?.swap?.setSelectedChain]
+  );
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -122,6 +122,8 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     defaultToken: defaultSelectedToToken,
   });
+
+  const [bestQuoteDex, setBestQuoteDex] = useState<string>('');
 
   const setActiveProvider: React.Dispatch<
     React.SetStateAction<QuoteProvider | undefined>
@@ -226,7 +228,62 @@ export const useTokenPair = (userAddress: string) => {
     []
   );
 
+  const [gasLevel, setGasLevel] = useState<GasLevelType>('normal');
+  const gasPriceRef = useRef<number>();
+
+  const { value: gasList } = useAsync(() => {
+    gasPriceRef.current = undefined;
+    setGasLevel('normal');
+    return wallet.openapi.gasMarket(CHAINS[chain].serverId);
+  }, [chain]);
+
+  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+
+  const normalGasPrice = useMemo(
+    () => gasList?.find((e) => e.level === 'normal')?.price,
+    [gasList]
+  );
+
+  useEffect(() => {
+    gasPriceRef.current = normalGasPrice;
+  }, [normalGasPrice]);
+
+  const nativeTokenDecimals = useMemo(
+    () => CHAINS?.[chain]?.nativeTokenDecimals,
+    [CHAINS?.[chain]]
+  );
+
+  const gasLimit = useMemo(
+    () => (chain === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chain]
+  );
+
+  const closeReserveGasOpen = useCallback(() => {
+    setReserveGasOpen(false);
+    if (payToken && gasPriceRef.current !== undefined) {
+      const val = tokenAmountBn(payToken).minus(
+        new BigNumber(gasLimit)
+          .times(gasPriceRef.current)
+          .div(10 ** nativeTokenDecimals)
+      );
+      setPayAmount(val.lt(0) ? '0' : val.toString(10));
+    }
+  }, [payToken, chain, nativeTokenDecimals, gasLimit]);
+
+  const changeGasPrice = useCallback(
+    (gasLevel: GasLevel) => {
+      gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
+      setGasLevel(gasLevel.level as GasLevelType);
+      closeReserveGasOpen();
+    },
+    [closeReserveGasOpen]
+  );
+
   const handleBalance = useCallback(() => {
+    if (payTokenIsNativeToken) {
+      setReserveGasOpen(true);
+      return;
+    }
     if (!payTokenIsNativeToken && payToken) {
       setPayAmount(tokenAmountBn(payToken).toString(10));
     }
@@ -282,16 +339,16 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [isWrapToken, isStableCoin]);
 
-  const [quoteList, setQuotesList] = useState<
-    (TCexQuoteData | TDexQuoteData)[]
-  >([]);
+  const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
+  const visible = useQuoteVisible();
 
   useEffect(() => {
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount]);
+    setActiveProvider(undefined);
+  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
 
   const setQuote = useCallback(
-    (id: number) => (quote: TCexQuoteData | TDexQuoteData) => {
+    (id: number) => (quote: TDexQuoteData) => {
       if (id === fetchIdRef.current) {
         setQuotesList((e) => {
           const index = e.findIndex((q) => q.name === quote.name);
@@ -302,7 +359,7 @@ export const useTokenPair = (userAddress: string) => {
           //   return activeQuote;
           // });
 
-          const v = { ...quote, loading: false };
+          const v: TDexQuoteData = { ...quote, loading: false };
           if (index === -1) {
             return [...e, v];
           }
@@ -313,28 +370,6 @@ export const useTokenPair = (userAddress: string) => {
     },
     []
   );
-  const visible = useQuoteVisible();
-  const settingVisible = useSettingVisible();
-
-  useEffect(() => {
-    if (!visible) {
-      setQuotesList([]);
-    }
-  }, [visible]);
-
-  const setRefreshId = useSetRefreshId();
-  const { swapTradeList, swapViewList } = useSwapSettings();
-
-  useDebounce(
-    () => {
-      if (!settingVisible) {
-        setQuotesList([]);
-        setRefreshId((e) => e + 1);
-      }
-    },
-    300,
-    [swapTradeList, swapViewList, settingVisible]
-  );
 
   const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
@@ -342,17 +377,19 @@ export const useTokenPair = (userAddress: string) => {
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
     if (
-      visible &&
       userAddress &&
       payToken?.id &&
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      payAmount &&
-      feeRate
+      Number(payAmount) > 0 &&
+      feeRate &&
+      !inSufficient
     ) {
-      // setActiveProvider((e) => (e ? { ...e, halfBetterRate: '' } : e));
-      setQuotesList((e) => e.map((q) => ({ ...q, loading: true })));
+      setQuotesList((e) =>
+        e.map((q) => ({ ...q, loading: true, isBest: false }))
+      );
+      setActiveProvider(undefined);
       return getAllQuotes({
         userAddress,
         payToken,
@@ -362,12 +399,11 @@ export const useTokenPair = (userAddress: string) => {
         payAmount: payAmount,
         fee: feeRate,
         setQuote: setQuote(currentFetchId),
-      }).finally(() => {
-        // enableSwapBySlippageChanged(currentFetchId);
-      });
+      }).finally(() => {});
     }
   }, [
-    // setActiveProvider,
+    setActiveProvider,
+    inSufficient,
     setQuotesList,
     setQuote,
     refreshId,
@@ -377,9 +413,79 @@ export const useTokenPair = (userAddress: string) => {
     chain,
     payAmount,
     feeRate,
-    slippage,
-    visible,
+    // slippage,
   ]);
+
+  useEffect(() => {
+    if (
+      !quoteLoading &&
+      receiveToken &&
+      quoteList.every((q, idx) => !q.loading)
+    ) {
+      const sortIncludeGasFee = true;
+      const sortedList = [
+        ...(quoteList?.sort((a, b) => {
+          const getNumber = (quote: typeof a) => {
+            const price = receiveToken.price ? receiveToken.price : 1;
+            if (inSufficient) {
+              return new BigNumber(quote.data?.toTokenAmount || 0)
+                .div(
+                  10 ** (quote.data?.toTokenDecimals || receiveToken.decimals)
+                )
+                .times(price);
+            }
+            if (!quote.preExecResult || !quote.preExecResult.isSdkPass) {
+              return new BigNumber(Number.MIN_SAFE_INTEGER);
+            }
+
+            if (sortIncludeGasFee) {
+              return new BigNumber(
+                quote?.preExecResult.swapPreExecTx.balance_change
+                  .receive_token_list?.[0]?.amount || 0
+              )
+                .times(price)
+                .minus(quote?.preExecResult?.gasUsdValue || 0);
+            }
+
+            return new BigNumber(
+              quote?.preExecResult.swapPreExecTx.balance_change
+                .receive_token_list?.[0]?.amount || 0
+            ).times(price);
+          };
+          return getNumber(b).minus(getNumber(a)).toNumber();
+        }) || []),
+      ];
+
+      if (sortedList?.[0]) {
+        const bestQuote = sortedList[0];
+        const { preExecResult } = bestQuote;
+
+        setBestQuoteDex(bestQuote.name);
+
+        setActiveProvider((preItem) =>
+          !bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass
+            ? undefined
+            : preItem?.manualClick
+            ? preItem
+            : {
+                name: bestQuote.name,
+                quote: bestQuote.data,
+                preExecResult: bestQuote.preExecResult,
+                gasPrice: preExecResult?.gasPrice,
+                shouldApproveToken: !!preExecResult?.shouldApproveToken,
+                shouldTwoStepApprove: !!preExecResult?.shouldTwoStepApprove,
+                error: !preExecResult,
+                halfBetterRate: '',
+                quoteWarning: undefined,
+                actualReceiveAmount:
+                  preExecResult?.swapPreExecTx.balance_change
+                    .receive_token_list[0]?.amount || '',
+                gasUsd: preExecResult?.gasUsd,
+              }
+        );
+      }
+    }
+  }, [quoteList, quoteLoading, receiveToken, inSufficient, visible]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);
@@ -399,8 +505,19 @@ export const useTokenPair = (userAddress: string) => {
       });
     }
   }, [slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
+  const openQuote = useSetQuoteVisible();
+  const setRefreshId = useSetRefreshId();
+
+  const openQuotesList = useCallback(() => {
+    setQuotesList([]);
+    setRefreshId((e) => e + 1);
+    openQuote(true);
+  }, [setSlippageChanged]);
 
   useEffect(() => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+    }
     setExpired(false);
     setActiveProvider(undefined);
     setSlippageChanged(false);
@@ -433,6 +550,14 @@ export const useTokenPair = (userAddress: string) => {
   }, [rbiSource]);
 
   return {
+    bestQuoteDex,
+    gasLevel,
+    reserveGasOpen,
+    closeReserveGasOpen,
+    changeGasPrice,
+    gasLimit,
+    gasList,
+
     chain,
     switchChain,
 
@@ -458,6 +583,7 @@ export const useTokenPair = (userAddress: string) => {
     feeRate,
 
     //quote
+    openQuotesList,
     quoteLoading,
     quoteList,
     currentProvider,

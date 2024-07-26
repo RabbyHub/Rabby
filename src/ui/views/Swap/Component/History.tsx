@@ -124,7 +124,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     return (
       <div
         className={clsx(
-          'bg-r-neutral-card-2 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
+          'bg-r-neutral-card-1 rounded-[6px] p-12 relative text-12 text-r-neutral-body'
         )}
         ref={ref}
       >
@@ -294,6 +294,7 @@ export const SwapTxHistory = ({
       }}
       destroyOnClose
       isSupportDarkMode
+      isNew
     >
       <HistoryList />
     </Popup>
