@@ -597,6 +597,10 @@ export interface PushMultiSigRequireData {
   id: string;
 }
 
+export type BatchRevokePermit2RequireData = Record<
+  string,
+  Omit<ApproveTokenRequireData, 'token'>
+>;
 export interface AssetOrderRequireData extends ContractRequireData {
   sender: string;
 }
@@ -608,12 +612,13 @@ export type ActionRequireData =
   | ApproveNFTRequireData
   | RevokeNFTRequireData
   | ContractCallRequireData
-  | Record<string, never>
+  | Record<string, any>
   | ContractCallRequireData
   | CancelTxRequireData
   | WrapTokenRequireData
   | PushMultiSigRequireData
   | AssetOrderRequireData
+  | BatchRevokePermit2RequireData
   | null;
 
 export const waitQueueFinished = (q: PQueue) => {
@@ -694,7 +699,7 @@ const fetchTokenApproveRequireData = async ({
   chainId,
 }: {
   spender: string;
-  token: TokenItem;
+  token?: TokenItem;
   address: string;
   chainId: string;
   apiProvider:
@@ -712,7 +717,7 @@ const fetchTokenApproveRequireData = async ({
     protocol: null,
     isDanger: false,
     token: {
-      ...token,
+      ...token!,
       amount: 0,
       raw_amount_hex_str: '0x0',
     },
@@ -728,10 +733,12 @@ const fetchTokenApproveRequireData = async ({
     );
     result.riskExposure = usd_value;
   });
-  queue.add(async () => {
-    const t = await apiProvider.getToken(address, chainId, token.id);
-    result.token = t;
-  });
+  if (token) {
+    queue.add(async () => {
+      const t = await apiProvider.getToken(address, chainId, token.id);
+      result.token = t;
+    });
+  }
   queue.add(async () => {
     const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
@@ -1257,17 +1264,24 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.permit2BatchRevokeToken) {
-    const {
-      token,
-      spender,
-    } = actionData.permit2BatchRevokeToken.revoke_list[0];
-    return await fetchTokenApproveRequireData({
-      apiProvider,
-      chainId,
-      address,
-      token,
-      spender,
-    });
+    const spenders = actionData.permit2BatchRevokeToken.revoke_list.map(
+      (item) => item.spender
+    );
+    // filter out the same spender
+    const uniqueSpenders = Array.from(new Set(spenders));
+
+    const result: BatchRevokePermit2RequireData = {};
+    await Promise.all(
+      uniqueSpenders.map(async (spender) => {
+        result[spender] = await fetchTokenApproveRequireData({
+          apiProvider,
+          chainId,
+          address,
+          spender,
+        });
+      })
+    );
+    return result;
   }
   return null;
 };

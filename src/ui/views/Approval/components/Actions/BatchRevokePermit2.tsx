@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain, RevokeTokenApproveAction } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { ParsedActionData, RevokeTokenApproveRequireData } from './utils';
-import { useRabbyDispatch } from '@/ui/store';
+import { ParsedActionData, BatchRevokePermit2RequireData } from './utils';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
@@ -37,7 +36,7 @@ export const BatchRevokePermit2 = ({
   chain,
 }: {
   data: ParsedActionData['permit2BatchRevokeToken'];
-  requireData: RevokeTokenApproveRequireData;
+  requireData: BatchRevokePermit2RequireData;
   chain: Chain;
   raw?: Record<string, string | number>;
   engineResults: Result[];
@@ -86,7 +85,7 @@ export const BatchRevokePermit2 = ({
                   <ViewMore
                     type="spender"
                     data={{
-                      ...requireData,
+                      ...requireData[spender],
                       spender,
                       chain,
                       isRevoke: true,
@@ -101,18 +100,19 @@ export const BatchRevokePermit2 = ({
                   </ViewMore>
                 </Row>
               </Col>
+              <SubTable target="revoke-permit2-address">
+                <SubCol>
+                  <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+                  <SubRow>
+                    <ProtocolListItem
+                      protocol={requireData[spender].protocol}
+                    />
+                  </SubRow>
+                </SubCol>
+              </SubTable>
             </>
           );
         })}
-
-        <SubTable target="revoke-permit2-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-        </SubTable>
       </Table>
     </Wrapper>
   );

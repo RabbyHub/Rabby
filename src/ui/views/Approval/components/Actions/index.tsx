@@ -38,6 +38,7 @@ import {
   WrapTokenRequireData,
   getActionTypeText,
   AssetOrderRequireData,
+  BatchRevokePermit2RequireData,
 } from './utils';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
@@ -379,7 +380,7 @@ const Actions = ({
             {data.permit2BatchRevokeToken && (
               <BatchRevokePermit2
                 data={data.permit2BatchRevokeToken}
-                requireData={requireData as RevokeTokenApproveRequireData}
+                requireData={requireData as BatchRevokePermit2RequireData}
                 chain={chain}
                 engineResults={engineResults}
               />
