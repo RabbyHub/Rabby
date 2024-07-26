@@ -270,11 +270,14 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [payToken, chain, nativeTokenDecimals, gasLimit]);
 
-  const changeGasPrice = useCallback((gasLevel: GasLevel) => {
-    gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
-    setGasLevel(gasLevel.level as GasLevelType);
-    closeReserveGasOpen();
-  }, []);
+  const changeGasPrice = useCallback(
+    (gasLevel: GasLevel) => {
+      gasPriceRef.current = gasLevel.level === 'custom' ? 0 : gasLevel.price;
+      setGasLevel(gasLevel.level as GasLevelType);
+      closeReserveGasOpen();
+    },
+    [closeReserveGasOpen]
+  );
 
   const handleBalance = useCallback(() => {
     if (payTokenIsNativeToken) {
