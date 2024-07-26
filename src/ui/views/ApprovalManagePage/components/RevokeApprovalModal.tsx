@@ -22,7 +22,6 @@ import {
 import styled from 'styled-components';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
-  queryContractMatchedSpender,
   findIndexRevokeList,
   getFirstSpender,
   maybeNFTLikeItem,
@@ -178,31 +177,33 @@ export const RevokeApprovalModal = (props: {
   const displayList = useMemo(() => {
     if (!item) return null;
     if (item?.type === 'contract') {
-      return item?.list.map((e, index) => {
+      return item?.list.map((spenderHost, index) => {
         const isLastOne = index === item.list.length - 1;
-        const chainItem = findChainByServerID(e.chain);
+        const chainItem = findChainByServerID(spenderHost.chain);
 
-        const maybeContractForNFT = maybeNFTLikeItem(e);
+        const maybeContractForNFT = maybeNFTLikeItem(spenderHost);
 
         const itemName = !maybeContractForNFT
-          ? getTokenSymbol(e)
-          : 'inner_id' in e
-          ? ensureSuffix(e.contract_name || 'Unknown', ` #${e.inner_id}`)
-          : e.contract_name || 'Unknown';
-
-        const { ofContractPermit2Spender } = queryContractMatchedSpender(
-          e,
-          item
-        );
+          ? getTokenSymbol(spenderHost)
+          : 'inner_id' in spenderHost
+          ? ensureSuffix(
+              spenderHost.contract_name || 'Unknown',
+              ` #${spenderHost.inner_id}`
+            )
+          : spenderHost.contract_name || 'Unknown';
         /**
          * @description
          * 1. In general, the items from [host].spenders/[host].spender have same properties about nft/nft-collection/amounts, so we just need to check the first of them
          * 2. It must not be non-token type contract
          */
-        const spender = ofContractPermit2Spender || getFirstSpender(e);
+        const firstSpender = getFirstSpender(spenderHost);
+        const associatedSpender =
+          '$indexderSpender' in spenderHost
+            ? spenderHost.$indexderSpender || firstSpender
+            : firstSpender;
 
-        const spenderValues = spender
-          ? getSpenderApprovalAmount(spender)
+        const spenderValues = associatedSpender
+          ? getSpenderApprovalAmount(associatedSpender)
           : null;
 
         /**
@@ -234,27 +235,27 @@ export const RevokeApprovalModal = (props: {
                   'border-b-rabby-neutral-line border-b-[0.5px] border-b-solid'
               )}
             >
-              {'logo_url' in e ? (
+              {'logo_url' in spenderHost ? (
                 <TokenWithChain
                   width="24px"
                   height="24px"
                   hideChainIcon
-                  token={(e as unknown) as TokenItem}
+                  token={(spenderHost as unknown) as TokenItem}
                 />
               ) : (
                 <NFTAvatar
                   className="w-[24px] h-[24px]"
-                  type={(e as NFTApproval)?.content_type || 'image'}
+                  type={(spenderHost as NFTApproval)?.content_type || 'image'}
                   content={
-                    (e as NFTApproval)?.content ||
-                    (e as any)?.collection?.logo_url
+                    (spenderHost as NFTApproval)?.content ||
+                    (spenderHost as any)?.collection?.logo_url
                   }
                   thumbnail
-                  // chain={(e as NFTApproval)?.chain}
+                  // chain={(spenderHost as NFTApproval)?.chain}
                   unknown={IconUnknownNFT}
                 />
               )}
-              {'spender' in e ? (
+              {'spender' in spenderHost ? (
                 <div className="flex flex-col ml-[8px]">
                   <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] inline-flex items-center justify-start">
                     <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
@@ -267,7 +268,7 @@ export const RevokeApprovalModal = (props: {
                           evt.stopPropagation();
                           openScanLinkFromChainItem(
                             chainItem?.scanLink,
-                            e.spender.id
+                            spenderHost.spender.id
                           );
                         }}
                         src={RcIconExternal}
@@ -277,17 +278,20 @@ export const RevokeApprovalModal = (props: {
                       />
                     )}
                   </div>
-                  <NFTItemBadge className="mt-2" contractListItem={e} />
+                  <NFTItemBadge
+                    className="mt-2"
+                    contractListItem={spenderHost}
+                  />
                 </div>
               ) : (
                 <div className="ml-[8px] text-13 text-r-neutral-title1 font-medium leading-[15px]">
-                  {getTokenSymbol(e)}
+                  {getTokenSymbol(spenderHost)}
                 </div>
               )}
-              {ofContractPermit2Spender && (
+              {associatedSpender?.permit2_id && (
                 <Permit2Badge
                   className="ml-[9px]"
-                  contractSpender={ofContractPermit2Spender}
+                  contractSpender={associatedSpender}
                 />
               )}
 
@@ -302,7 +306,8 @@ export const RevokeApprovalModal = (props: {
                         minWidthLimit: spenderValues.isCollectionHasNFTs,
                       }
                     : {
-                        amountValue: 'amount' in e ? e.amount : '',
+                        amountValue:
+                          'amount' in spenderHost ? spenderHost.amount : '',
                         balanceNumText: '',
                         balanceUnitText: '',
                       })}

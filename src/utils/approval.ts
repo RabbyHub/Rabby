@@ -28,13 +28,18 @@ export type AssetApprovalSpender =
   | TokenApprovalItem['list'][number]
   | NftApprovalItem['list'][number];
 
+export type TokenApprovalIndexedBySpender = TokenApproval & {
+  readonly $indexderSpender?: SpenderInTokenApproval;
+  readonly $self?: TokenApproval;
+};
+
 type ContractFor = 'nft' | 'nft-contract' | 'token';
 type GetContractTypeByContractFor<T extends ContractFor> = T extends 'nft'
   ? NFTApproval
   : T extends 'nft-contract'
   ? NFTApprovalContract
   : T extends 'token'
-  ? TokenApproval
+  ? TokenApprovalIndexedBySpender
   : unknown;
 
 export type ContractApprovalItem<T extends ContractFor = ContractFor> = {
@@ -283,6 +288,36 @@ export function compareContractApprovalItemByRiskLevel(
   // }
 
   return 0;
+}
+
+export function markContractTokenSpender(
+  orig: TokenApproval,
+  spender: Spender
+): TokenApprovalIndexedBySpender {
+  const tokenApproval = { ...orig };
+  // eslint-disable-next-line no-prototype-builtins
+  if (!tokenApproval.hasOwnProperty('$indexderSpender')) {
+    Object.defineProperty(tokenApproval, '$indexderSpender', {
+      enumerable: false,
+      configurable: appIsProd,
+      get() {
+        return spender;
+      },
+    });
+  }
+
+  // eslint-disable-next-line no-prototype-builtins
+  if (!tokenApproval.hasOwnProperty('$self')) {
+    Object.defineProperty(tokenApproval, '$self', {
+      enumerable: false,
+      configurable: appIsProd,
+      get() {
+        return orig;
+      },
+    });
+  }
+
+  return tokenApproval as TokenApprovalIndexedBySpender;
 }
 
 export function markParentForAssetItemSpender(

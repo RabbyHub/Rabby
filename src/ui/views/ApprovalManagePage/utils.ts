@@ -86,14 +86,14 @@ export function getFirstSpender(spenderHost: ApprovalItem['list'][number]) {
   return undefined;
 }
 
-type SpendersHost = ApprovalItem['list'][number] | ContractApprovalItem;
+type SpendersHost = ApprovalItem['list'][number];
 /**
  * @description spenderHost should from `contract.list[number]`
  * @param spenderHost
  * @param contract
  * @returns
  */
-export function queryContractMatchedSpender(
+function queryContractMatchedSpender(
   spenderHost: SpendersHost,
   contract: ContractApprovalItem
 ) {
@@ -231,20 +231,14 @@ export const toRevokeItem = <T extends ApprovalItem>(
   assetApprovalSpenderOrIsContractItem?: AssetApprovalSpender | true
 ): ApprovalSpenderItemToBeRevoked | undefined => {
   if (item.type === 'contract') {
-    const {
-      ofContractPermit2Spender,
-      matchedSpenders,
-    } = queryContractMatchedSpender(spenderHost, item);
     const assetApprovalSpender =
       assetApprovalSpenderOrIsContractItem === true
-        ? queryContractMatchedSpender(spenderHost, item)
-            .ofContractPermit2Spender
+        ? '$indexderSpender' in spenderHost
+          ? spenderHost.$indexderSpender
+          : null
         : assetApprovalSpenderOrIsContractItem ?? null;
 
-    const permit2Id =
-      assetApprovalSpender === ofContractPermit2Spender
-        ? ofContractPermit2Spender?.permit2_id
-        : undefined;
+    const permit2Id = assetApprovalSpender?.permit2_id;
 
     if ('inner_id' in spenderHost) {
       const abi = spenderHost?.is_erc721

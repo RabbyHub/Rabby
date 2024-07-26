@@ -3543,24 +3543,6 @@ export class WalletController extends BaseController {
     const revokeSummary = summarizeRevoke(list);
 
     const revokeList: (() => Promise<void>)[] = [
-      ...revokeSummary.generalRevokes.map((e) => async () => {
-        try {
-          if ('nftTokenId' in e) {
-            await this.revokeNFTApprove(e);
-          } else {
-            await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
-              ga: {
-                category: 'Security',
-                source: 'tokenApproval',
-              },
-            });
-          }
-        } catch (error) {
-          queue.clear();
-          if (!appIsProd) console.error(error);
-          console.error('revoke error', e);
-        }
-      }),
       ...Object.entries(revokeSummary.permit2Revokes).map(
         ([permit2Key, item]) => async () => {
           try {
@@ -3585,6 +3567,24 @@ export class WalletController extends BaseController {
           }
         }
       ),
+      ...revokeSummary.generalRevokes.map((e) => async () => {
+        try {
+          if ('nftTokenId' in e) {
+            await this.revokeNFTApprove(e);
+          } else {
+            await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
+              },
+            });
+          }
+        } catch (error) {
+          queue.clear();
+          if (!appIsProd) console.error(error);
+          console.error('revoke error', e);
+        }
+      }),
     ];
 
     try {

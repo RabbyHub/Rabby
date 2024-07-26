@@ -22,6 +22,7 @@ import {
   TokenApprovalItem,
   getContractRiskEvaluation,
   makeComputedRiskAboutValues,
+  markContractTokenSpender,
   markParentForAssetItemSpender,
 } from '@/utils/approval';
 
@@ -320,7 +321,8 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
         if (data.length) {
           data.forEach((token) => {
             token.spenders.forEach((spender) => {
-              const chainName = token.chain;
+              const shapedToken = markContractTokenSpender(token, spender);
+              const chainName = shapedToken.chain;
               const contractId = spender.id;
               if (
                 !nextApprovalsData.contractMap[`${chainName}:${contractId}`]
@@ -348,24 +350,24 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
               }
               nextApprovalsData.contractMap[
                 `${chainName}:${contractId}`
-              ].list.push(token);
+              ].list.push(shapedToken);
 
-              const tokenId = token.id;
+              const tokenId = shapedToken.id;
 
               if (!nextApprovalsData.tokenMap[`${chainName}:${tokenId}`]) {
                 nextApprovalsData.tokenMap[`${chainName}:${tokenId}`] = {
                   list: [],
                   chain: e.id,
                   risk_level: 'safe',
-                  id: token.id,
-                  name: getTokenSymbol(token),
+                  id: shapedToken.id,
+                  name: getTokenSymbol(shapedToken),
                   logo_url: token.logo_url || IconUnknownToken,
                   type: 'token',
                   $riskAboutValues: makeComputedRiskAboutValues(
                     'token',
                     spender
                   ),
-                  balance: token.balance,
+                  balance: shapedToken.balance,
                 };
               }
               nextApprovalsData.tokenMap[`${chainName}:${tokenId}`].list.push(
@@ -373,7 +375,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
                   spender,
                   nextApprovalsData.tokenMap[`${chainName}:${tokenId}`],
                   nextApprovalsData.contractMap[`${chainName}:${contractId}`],
-                  token
+                  shapedToken
                 )
               );
             });

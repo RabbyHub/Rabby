@@ -56,7 +56,6 @@ import {
   encodeRevokeItemIndex,
   getFinalRiskInfo,
   openScanLinkFromChainItem,
-  queryContractMatchedSpender,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -128,17 +127,7 @@ function getColumnsForContract({
               const revokeItems = nextSelectAll
                 ? (contractList
                     .map((contract) => {
-                      const {
-                        ofContractPermit2Spender,
-                      } = queryContractMatchedSpender(
-                        contract,
-                        contractApproval
-                      );
-                      return toRevokeItem(
-                        contractApproval,
-                        contract,
-                        ofContractPermit2Spender
-                      );
+                      return toRevokeItem(contractApproval, contract, true);
                     })
                     .filter(Boolean) as ApprovalSpenderItemToBeRevoked[])
                 : [];
@@ -552,12 +541,12 @@ function getColumnsForContract({
       sortOrder:
         sortedInfo.columnKey === 'myApprovedAssets' ? sortedInfo.order : null,
       render: (_, row) => {
-        const contractList = (row.list as any) as ContractApprovalItem[];
-        const selectedContracts = contractList.filter((contract) => {
+        const spenderHostList = row.list;
+        const selectedContracts = spenderHostList.filter((spenderHost) => {
           return (
             findIndexRevokeList(selectedRows, {
               item: row,
-              spenderHost: contract,
+              spenderHost,
               itemIsContractApproval: true,
             }) > -1
           );
@@ -566,7 +555,7 @@ function getColumnsForContract({
         return (
           <div className="flex items-center justify-end w-[100%]">
             <span className="block">
-              {contractList.length}
+              {spenderHostList.length}
               {!selectedContracts.length ? null : (
                 <span className="J_selected_count_text ml-[2px]">
                   ({selectedContracts.length})
