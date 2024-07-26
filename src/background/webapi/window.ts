@@ -83,7 +83,11 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   }
   // shim firefox
   if (win.left !== left && currentWindow.state !== 'fullscreen') {
-    await browser.windows.update(win.id!, { left, top });
+    try {
+      await browser.windows.update(win.id!, { left, top });
+    } catch (e) {
+      // nothing to do, just avoid error prevent id response
+    }
   }
 
   return win.id;
