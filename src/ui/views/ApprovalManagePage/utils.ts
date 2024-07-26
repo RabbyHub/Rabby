@@ -115,12 +115,6 @@ function queryContractMatchedSpender(
   return result;
 }
 
-export function isAssetApprovedSpender(
-  spender: SpenderInTokenApproval | SpenderInNFTApproval
-): spender is AssetApprovalSpender {
-  return spender.$assetContract?.type === 'contract';
-}
-
 export const findIndexRevokeList = <
   T extends SpendersHost = ApprovalItem['list'][number]
 >(
@@ -247,7 +241,6 @@ export const toRevokeItem = <T extends ApprovalItem>(
         ? 'ERC1155'
         : '';
       return {
-        // hostType: 'contract',
         chainServerId: spenderHost?.chain,
         contractId: spenderHost?.contract_id,
         permit2Id,
@@ -300,7 +293,6 @@ export const toRevokeItem = <T extends ApprovalItem>(
       ? 'ERC1155'
       : '';
     return {
-      // hostType: item.type,
       chainServerId: item?.chain,
       contractId: nftInfo?.contract_id || '',
       spender: (spenderHost as Spender).id,

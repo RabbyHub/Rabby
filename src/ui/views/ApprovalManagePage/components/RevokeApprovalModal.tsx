@@ -27,7 +27,6 @@ import {
   maybeNFTLikeItem,
   openScanLinkFromChainItem,
   toRevokeItem,
-  isAssetApprovedSpender,
 } from '../utils';
 import { findChainByServerID } from '@/utils/chain';
 import { Chain } from '@debank/common';
@@ -196,11 +195,10 @@ export const RevokeApprovalModal = (props: {
          * 1. In general, the items from [host].spenders/[host].spender have same properties about nft/nft-collection/amounts, so we just need to check the first of them
          * 2. It must not be non-token type contract
          */
-        const firstSpender = getFirstSpender(spenderHost);
         const associatedSpender =
           '$indexderSpender' in spenderHost
-            ? spenderHost.$indexderSpender || firstSpender
-            : firstSpender;
+            ? spenderHost.$indexderSpender
+            : null;
 
         const spenderValues = associatedSpender
           ? getSpenderApprovalAmount(associatedSpender)
