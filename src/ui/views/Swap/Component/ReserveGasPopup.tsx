@@ -11,11 +11,12 @@ import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.s
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
 import { PopupProps } from '@/ui/component/Popup';
 
+export type GasLevelType = keyof typeof SORT_SCORE;
 interface ReserveGasContentProps {
   chain: CHAINS_ENUM;
   gasList?: GasLevel[];
   limit: number;
-  selectedItem?: string;
+  selectedItem?: GasLevelType | string;
   onGasChange: (gasLevel: GasLevel) => void;
 }
 

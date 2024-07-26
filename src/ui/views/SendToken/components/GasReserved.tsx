@@ -29,7 +29,7 @@ const TokenAmount = styled.span`
 interface GasReservedProps {
   amount: string;
   token: TokenItem;
-  onClickAmount(): void;
+  onClickAmount?(): void;
 }
 
 const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
