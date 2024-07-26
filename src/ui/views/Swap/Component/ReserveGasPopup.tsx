@@ -82,15 +82,13 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
     <div>
       <div className={clsx('flex flex-col gap-12')}>
         {sortedList?.map((item) => {
+          const checked = currentSelectedItem === item.level;
           const onChecked = () => {
             setGasLevel(item);
             setCurrentSelectedItem(item.level as any);
           };
 
-          if (
-            currentSelectedItem === item.level &&
-            gasLevel?.level !== currentSelectedItem
-          ) {
+          if (checked && gasLevel?.level !== currentSelectedItem) {
             setGasLevel(item);
           }
 
@@ -102,7 +100,8 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
               className={clsx(
                 'flex justify-between',
                 'py-[22px] px-16 rounded-[8px] cursor-pointer',
-                'bg-r-neutral-card-1 border border-solid border-transparent hover:border-rabby-blue-default'
+                'bg-r-neutral-card-1 border border-solid  hover:border-rabby-blue-default',
+                checked ? 'border-rabby-blue-default' : 'border-transparent'
               )}
               onClick={onChecked}
             >
@@ -135,12 +134,12 @@ const ReserveGasContent = (props: ReserveGasContentProps) => {
                   </span>
                 )}
                 <Checkbox
-                  checked={currentSelectedItem === item.level}
+                  checked={checked}
                   onChange={onChecked}
                   background="transparent"
                   unCheckBackground="transparent"
                   checkIcon={
-                    currentSelectedItem === item.level ? (
+                    checked ? (
                       <RcIconCheckedCC
                         viewBox="0 0 20 20"
                         className="text-r-blue-default w-20 h-20"
