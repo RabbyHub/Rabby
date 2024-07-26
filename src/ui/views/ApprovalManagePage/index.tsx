@@ -292,8 +292,8 @@ function getColumnsForContract({
           return checkResult.keepRiskFirstReturnValue;
 
         return (
-          b.$riskAboutValues.risk_spend_usd_value -
-          a.$riskAboutValues.risk_spend_usd_value
+          a.$riskAboutValues.risk_spend_usd_value -
+          b.$riskAboutValues.risk_spend_usd_value
         );
       },
       sortOrder:
