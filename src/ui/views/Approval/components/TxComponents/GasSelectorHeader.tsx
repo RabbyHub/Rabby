@@ -445,11 +445,6 @@ const GasSelectorHeader = ({
     }, 50);
   };
 
-  const [
-    prevSelectedNotCustomGas,
-    setPrevSelectedNotCustomGas,
-  ] = useState<GasLevel | null>(null);
-
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     const target = gas;
@@ -469,6 +464,7 @@ const GasSelectorHeader = ({
       setSelectedGas({
         ...target,
         level: 'custom',
+        price: Number(customGas) * 1e9,
       });
     } else {
       setSelectedGas({
@@ -574,6 +570,7 @@ const GasSelectorHeader = ({
   useDebounce(
     () => {
       if (isReady || !isFirstTimeLoad) {
+        if (customGas === undefined) return;
         loadCustomGasData(Number(customGas) * 1e9).then((data) => {
           if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
@@ -582,7 +579,7 @@ const GasSelectorHeader = ({
             price: Number(customGas) * 1e9,
             front_tx_count: 0,
             estimated_seconds: data?.estimated_seconds ?? 0,
-            priority_price: null,
+            priority_price: gas?.priority_price ?? null,
             base_fee: data?.base_fee ?? 0,
           }));
           setLoadingGasEstimated(false);
@@ -627,9 +624,6 @@ const GasSelectorHeader = ({
   }, []);
 
   useEffect(() => {
-    if (selectedGas) {
-      setPrevSelectedNotCustomGas(selectedGas);
-    }
     if (!is1559) return;
     if (selectedGas?.level === 'custom') {
       if (Number(customGas) !== maxPriorityFee) {
@@ -651,26 +645,30 @@ const GasSelectorHeader = ({
   const isLoadingGas = loadingGasEstimated || isNilCustomGas;
 
   useEffect(() => {
-    if (hasCustomPriorityFee.current) return; // use custom priorityFee if user changed custom field
-    if (isReady && selectedGas && chainId === 1) {
-      if (isSelectCustom && isNilCustomGas) {
-        setMaxPriorityFee(undefined);
-        return;
-      }
-      if (selectedGas.priority_price && selectedGas.priority_price !== null) {
-        setMaxPriorityFee(selectedGas.priority_price / 1e9);
-      } else {
-        const priorityFee = calcMaxPriorityFee(
-          gasList,
-          selectedGas,
-          chainId,
-          isSpeedUp || isCancel
-        );
-        setMaxPriorityFee(priorityFee / 1e9);
-      }
-    } else if (selectedGas) {
-      setMaxPriorityFee(selectedGas.price / 1e9);
+    if (!isReady || !selectedGas) {
+      return;
     }
+
+    // reset maxPriorityFee when user select custom gas and not input
+    if (isSelectCustom && isNilCustomGas && !hasCustomPriorityFee.current) {
+      setMaxPriorityFee(undefined);
+      return;
+    }
+
+    let priorityPrice = calcMaxPriorityFee(
+      gasList,
+      selectedGas,
+      chainId,
+      isSpeedUp || isCancel
+    );
+
+    setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
+      // Compare with selectedGas.price to avoid customMaxPriorityFee is more than maxGasFee
+      if (hasCustomPriorityFee.current) {
+        priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
+      }
+      return priorityPrice / 1e9;
+    });
   }, [gasList, selectedGas, isReady, chainId, isSelectCustom, isNilCustomGas]);
 
   useEffect(() => {
@@ -705,9 +703,9 @@ const GasSelectorHeader = ({
   const [isGasHovering, gasHoverProps] = useHover();
 
   const handleClosePopup = () => {
-    if (maxPriorityFee === undefined) {
-      setSelectedGas(prevSelectedNotCustomGas);
-    }
+    setCustomGas(undefined);
+    setChangedCustomGas(false);
+    setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
 
@@ -891,7 +889,7 @@ const GasSelectorHeader = ({
                           defaultValue={hiddenCustomGas ? '' : customGas}
                           onChange={handleCustomGasChange}
                           onClick={(e) => handlePanelSelection(e, item)}
-                          onPressEnter={customGasConfirm}
+                          // onPressEnter={customGasConfirm}
                           ref={customerInputRef}
                           autoFocus={selectedGas?.level === item.level}
                           min={0}

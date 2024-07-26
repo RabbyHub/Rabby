@@ -242,11 +242,12 @@ const TokenApprove = ({
           <Row isTitle className="flex-none items-center">
             {t('page.signTx.tokenApprove.approveToken')}
           </Row>
-          <Row className="overflow-hidden pl-10">
+          <Row className="pl-10">
             <TokenAmountItem
-              amount={actionData.token.amount}
+              amount={approveAmount}
               logoUrl={actionData.token.logo_url}
               onEdit={() => setEditApproveModalVisible(true)}
+              balance={tokenBalance}
             />
           </Row>
         </Col>

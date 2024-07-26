@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.92.81",
+  "version": "0.92.83",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/*",
@@ -182,9 +182,6 @@
     "eslint-webpack-plugin": "2.5.4",
     "file-loader": "6.2.0",
     "fs-extra": "10.0.0",
-    "gulp": "5.0.0",
-    "gulp-sort": "2.0.0",
-    "gulp-zip": "6.0.0",
     "html-webpack-plugin": "5.3.1",
     "i18next": "23.4.1",
     "jest": "29.7.0",
@@ -217,7 +214,8 @@
     "webpack-bundle-analyzer": "4.4.0",
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.7.4",
-    "webpack-merge": "5.7.3"
+    "webpack-merge": "5.7.3",
+    "zip-dir": "2.0.0"
   },
   "resolutions": {
     "@debank/common": "^0.3.0",

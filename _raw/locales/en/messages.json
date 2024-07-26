@@ -128,7 +128,9 @@
         "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Approve amount",
         "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+        "amount": "Approve Amount:",
+        "exceed": "Exceeds your current balance"
       },
       "revokeTokenApprove": {
         "title": "Revoke Token Approval",
@@ -807,7 +809,6 @@
       "insufficient-balance": "Insufficient balance",
       "hidden-no-quote-rates_one": "{{count}} rate unavailable",
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
-
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "Prefer MEV Guarded",
@@ -912,7 +913,6 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
-
       "settingModal": {
         "title": "Enable Bridge Aggregators to trade",
         "confirm": "Confirm",
@@ -931,7 +931,6 @@
         "noData": "No Supported Token Pair"
       }
     },
-
     "manageAddress": {
       "no-address": "No address",
       "no-match": "No match",

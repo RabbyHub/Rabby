@@ -16,7 +16,13 @@ const ManuallySetGasLimitAlert = styled.li`
   color: var(--r-neutral-body);
 `;
 
-const Div = styled.div``;
+const Div = styled.div`
+  .ant-input.popup-input {
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff) !important;
+    }
+  }
+`;
 
 export interface GasSelectorResponse {
   gasLimit: number;

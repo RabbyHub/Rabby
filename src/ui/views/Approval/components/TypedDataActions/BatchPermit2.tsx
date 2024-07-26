@@ -77,7 +77,7 @@ const Permit2 = ({
               <Row isTitle className="flex-none items-center">
                 {index === 0 ? t('page.signTx.tokenApprove.approveToken') : ''}
               </Row>
-              <Row className="overflow-hidden pl-6">
+              <Row className="pl-6">
                 <TokenAmountItem
                   amount={token.amount}
                   logoUrl={token.logo_url}
