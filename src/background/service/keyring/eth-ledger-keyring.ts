@@ -419,9 +419,10 @@ class LedgerBridgeKeyring {
         try {
           res = await this.app!.signEIP712Message(hdPath, data);
         } catch (e) {
-          const shouldFallbackOnHashedMethod = ('statusText' in e && e.statusText === 'INS_NOT_SUPPORTED');
+          const shouldFallbackOnHashedMethod =
+            'statusText' in e && e.statusText === 'INS_NOT_SUPPORTED';
           if (!shouldFallbackOnHashedMethod) throw e;
-          
+
           const {
             domain,
             types,
