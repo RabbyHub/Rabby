@@ -108,15 +108,6 @@ export const KeystoneConnect = () => {
     });
   };
 
-  const handleScanQRCodeError = async () => {
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: form.getFieldsValue(),
-    });
-    openInternalPageInTab('request-permission?type=camera');
-  };
-
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -213,7 +204,6 @@ export const KeystoneConnect = () => {
                   width={288}
                   height={288}
                   onSuccess={handleScanQRCodeSuccess}
-                  onError={handleScanQRCodeError}
                   className="bg-r-neutral-line"
                 />
               )}

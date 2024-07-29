@@ -120,7 +120,7 @@ const ImportPrivateKey = () => {
         formProps={{
           onValuesChange: (states) => {
             wallet.setPageStateCache({
-              path: history.location.pathname,
+              path: '/import/key',
               params: {},
               states,
             });
