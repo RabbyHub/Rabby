@@ -141,12 +141,8 @@ export const findIndexRevokeList = <
         : null;
     const itemIsContractApproval =
       'itemIsContractApproval' in input ? input.itemIsContractApproval : false;
-    if (itemIsContractApproval) {
-      const { ofContractPermit2Spender } = queryContractMatchedSpender(
-        spenderHost,
-        item
-      );
-      assetApprovalSpender = ofContractPermit2Spender ?? null;
+    if (itemIsContractApproval && '$indexderSpender' in spenderHost) {
+      assetApprovalSpender = spenderHost.$indexderSpender ?? null;
     }
     const permit2IdToMatch = assetApprovalSpender?.permit2_id;
 
