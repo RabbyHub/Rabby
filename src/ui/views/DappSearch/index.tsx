@@ -35,6 +35,7 @@ const SearchWrapper = styled.div`
     height: 24px;
     line-height: 24px !important;
     font-size: 17px;
+    border-radius: 0 !important;
   }
 
   .ant-input-affix-wrapper {
