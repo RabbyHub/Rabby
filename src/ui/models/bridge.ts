@@ -104,26 +104,6 @@ export const bridge = createModel<RootModel>()({
       });
     },
 
-    async setUnlimitedAllowance(unlimitedAllowance: boolean, store) {
-      await store.app.wallet.setBridgeUnlimitedAllowance(unlimitedAllowance);
-
-      this.setField({
-        unlimitedAllowance,
-      });
-    },
-
-    async getSwapSortIncludeGasFee(_: void, store) {
-      const sortIncludeGasFee = await store.app.wallet.getBridgeSortIncludeGasFee();
-      this.setField({
-        sortIncludeGasFee,
-      });
-    },
-
-    async setSwapSortIncludeGasFee(bool: boolean, store) {
-      await store.app.wallet.setBridgeSortIncludeGasFee(bool);
-      this.getSwapSortIncludeGasFee();
-    },
-
     async fetchAggregatorsList(_: void, store) {
       const aggregatorsList = await store.app.wallet.openapi.getBridgeAggregatorList();
       if (aggregatorsList.length) {
@@ -145,13 +125,6 @@ export const bridge = createModel<RootModel>()({
           supportedChains: chains.map((item) => mappings[item]),
         });
       }
-    },
-
-    async setBridgeSettingFirstOpen(bool: boolean, store) {
-      await store.app.wallet.setBridgeSettingFirstOpen(bool);
-      this.setField({
-        firstOpen: bool,
-      });
     },
   }),
 });

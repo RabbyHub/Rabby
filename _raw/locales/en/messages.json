@@ -842,7 +842,7 @@
       "rates-from-cex": "Rates from CEX",
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
-      "the-following-swap-rates-are-found": "Found following swap rates",
+      "the-following-swap-rates-are-found": "Found following rates",
       "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
@@ -868,7 +868,24 @@
       "gas-fee": "GasFee: {{gasUsed}}",
       "estimate": "Estimate:",
       "actual": "Actual:",
-      "max": "MAX"
+      "max": "MAX",
+      "two-step-approve": "Sign 2 transactions to change allowance",
+      "two-step-approve-details": "Token USDT requires 2 transactions to change allowance.First you would need to reset allowance to zero, and only then set new allowance value.",
+      "process-with-two-step-approve": "Proceed with two step approve",
+      "fetch-best-quote": "Fetching the Best quote",
+      "usd-after-fees": "≈ {{usd}} after fees",
+      "no-fees-for-wrap": "No Rabby fees for Wrap",
+      "No-available-quote": "No available quote",
+      "price-impact": "Price Impact",
+      "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
+      "rabbyFee": {
+        "title": "Rabby fee",
+        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee (0% for wrap) is automatically factored into the quote.",
+        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee is automatically factored into the quote.",
+        "wallet": "Wallet",
+        "rate": "Fee rate",
+        "button": "Got it"
+      }
     },
     "bridge": {
       "title": "Bridge",
@@ -898,7 +915,7 @@
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
-      "estimated-value": "≈ {{value}}",
+      "estimated-value": "≈ {{value}} after fees",
       "best": "Best",
       "bridge-cost": "Bridge cost",
       "rabby-fee": "Rabby fee",
@@ -2243,6 +2260,13 @@
       "title": "Notice",
       "desc": "The following services will be provided directly by third party Ecosystem Partner. Rabby Wallet does not assume responsibility for the security of these services.",
       "notRemind": "Don't remind me again"
+    },
+    "ReserveGasPopup": {
+      "title": "Reserve Gas",
+      "instant": "Instant",
+      "fast": "Fast",
+      "normal": "Normal",
+      "doNotReserve": "Don't reserve Gas"
     }
   },
   "global": {
