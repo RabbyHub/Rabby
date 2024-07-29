@@ -1,7 +1,7 @@
 import { NFTApproval, TokenItem } from '@/background/service/openapi';
 import { TokenWithChain } from '@/ui/component';
 import { Alert, Button, Modal, Tooltip } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { ApprovalContractItem } from './ApprovalContractItem';
@@ -152,7 +152,8 @@ export const RevokeApprovalModal = (props: {
     }
   };
 
-  const handleSelectAll = () => {
+  const isSelectedAll = selectedList.length === item?.list?.length;
+  const handleSelectAll = useCallback(() => {
     if (item?.list) {
       setSelectedList((e) =>
         e.length === item.list.length
@@ -162,7 +163,7 @@ export const RevokeApprovalModal = (props: {
               .map((_, i) => i)
       );
     }
-  };
+  }, [item]);
 
   const subTitle = useMemo(() => {
     if (item?.type === 'contract') {
@@ -482,11 +483,16 @@ export const RevokeApprovalModal = (props: {
         <section className="mb-[6px] flex justify-between items-center flex-shrink-0">
           <span className="text-12 text-r-neutral-title1">{subTitle}</span>
           <div
-            className="w-[67px] h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]"
+            className={clsx(
+              isSelectedAll ? 'w-[80px]' : 'w-[67px]',
+              'h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]'
+            )}
             onClick={handleSelectAll}
           >
-            {/* Select All */}
-            {t('page.approvals.RevokeApprovalModal.selectAll')}
+            {/* Select All, Unselect All */}
+            {!isSelectedAll
+              ? t('page.approvals.RevokeApprovalModal.selectAll')
+              : t('page.approvals.RevokeApprovalModal.unSelectAll')}
           </div>
         </section>
 
