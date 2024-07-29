@@ -3540,6 +3540,8 @@ export class WalletController extends BaseController {
       timeout: undefined,
     });
 
+    const abortRevoke = new AbortController();
+
     const revokeSummary = summarizeRevoke(list);
 
     const revokeList: (() => Promise<void>)[] = [
@@ -3561,7 +3563,7 @@ export class WalletController extends BaseController {
               tokenSpenders: item.tokenSpenders,
             });
           } catch (error) {
-            queue.clear();
+            abortRevoke.abort();
             if (!appIsProd) console.error(error);
             console.error('batch revoke permit2 error', item);
           }
@@ -3580,15 +3582,25 @@ export class WalletController extends BaseController {
             });
           }
         } catch (error) {
-          queue.clear();
+          abortRevoke.abort();
           if (!appIsProd) console.error(error);
           console.error('revoke error', e);
         }
       }),
     ];
 
+    const waitAbort = new Promise<void>((resolve) => {
+      const onAbort = () => {
+        queue.clear();
+        resolve();
+
+        abortRevoke.signal.removeEventListener('abort', onAbort);
+      };
+      abortRevoke.signal.addEventListener('abort', onAbort);
+    });
+
     try {
-      await queue.addAll(revokeList);
+      await Promise.race([queue.addAll(revokeList), waitAbort]);
     } catch (error) {
       console.log('revoke error', error);
     }

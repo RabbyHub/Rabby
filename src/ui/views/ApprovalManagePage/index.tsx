@@ -1124,8 +1124,8 @@ const ApprovalManagePage = () => {
   } = useSelectSpendersToRevoke(filterType);
 
   const wallet = useWallet();
-  const handleRevoke = React.useCallback(() => {
-    wallet
+  const handleRevoke = React.useCallback(async () => {
+    return wallet
       .revoke({ list: revokeSummary.currentRevokeList })
       .then(() => {
         setVisibleRevokeModal(false);
