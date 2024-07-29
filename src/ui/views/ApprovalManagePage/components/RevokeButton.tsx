@@ -25,6 +25,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
       closable: true,
       closeIcon: modalCloseIcon20,
       className: 'am-revoke-info-modal modal-support-darkmode',
+      centered: true,
       title: (
         <h2 className="text-r-neutral-title1 text-[20px] font-[600] break-words">
           <Trans
