@@ -737,8 +737,7 @@
             "myApprovalTime": "My Approval Time"
           },
           "columnTip": {
-            "contractTrustValueL1": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
-            "contractTrustValueL2": "Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
+            "contractTrustValue": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
             "contractTrustValueWarning": "The contract trust value < $100,000",
             "contractTrustValueDanger": "The contract trust value < $10,000"
           }
