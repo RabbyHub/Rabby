@@ -26,6 +26,8 @@ const ChainWrapper = styled.div`
   gap: 8px;
   border: 1px solid transparent;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
   &:hover {
     background: rgba(134, 151, 255, 0.2);
   }
