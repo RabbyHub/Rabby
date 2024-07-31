@@ -47,7 +47,7 @@ import {
 import { CurrentConnection } from '../CurrentConnection';
 import { Settings } from '../index';
 import './style.less';
-import { CHAINS_ENUM, ThemeIconType } from '@/constant';
+import { CHAINS_ENUM, ThemeIconType, KEYRING_TYPE } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 import { GasPriceBar } from '../GasPriceBar';
@@ -55,6 +55,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { EcologyPopup } from '../EcologyPopup';
+import { appIsDev } from '@/utils/env';
 
 export default ({
   gnosisPendingCount,
@@ -105,7 +106,10 @@ export default ({
   const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
 
   const { value: approvalState } = useAsync(async () => {
-    if (account?.address) {
+    if (
+      account?.address &&
+      (account.type !== KEYRING_TYPE.WatchAddressKeyring || appIsDev)
+    ) {
       const data = await wallet.openapi.approvalStatus(account.address);
       return data;
     }
