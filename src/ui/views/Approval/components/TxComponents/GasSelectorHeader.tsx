@@ -727,7 +727,7 @@ const GasSelectorHeader = ({
       <HeaderStyled>
         <GasStyled {...gasHoverProps}>
           <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
-          <div className="gas-selector-card-content overflow-hidden">
+          <div className="gas-selector-card-content">
             {disabled ? (
               <div className="font-semibold">
                 {t('page.signTx.noGasRequired')}
@@ -742,7 +742,7 @@ const GasSelectorHeader = ({
               <div className="gas-selector-card-content-item">
                 <div
                   className={clsx(
-                    'gas-selector-card-amount translate-y-1 flex items-center overflow-hidden',
+                    'gas-selector-card-amount translate-y-1 flex items-center',
                     {
                       'text-r-red-default':
                         !processedRules.includes('1118') &&
@@ -753,7 +753,10 @@ const GasSelectorHeader = ({
                     }
                   )}
                 >
-                  <span className="truncate" title={gasCostUsdStr}>
+                  <span
+                    className="truncate max-w-[110px]"
+                    title={gasCostUsdStr}
+                  >
                     {gasCostUsdStr}
                   </span>
                   {L2_ENUMS.includes(chain.enum) &&

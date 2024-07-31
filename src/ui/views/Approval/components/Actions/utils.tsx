@@ -1438,6 +1438,7 @@ export const formatSecurityEngineCtx = ({
     return {
       revokeApprove: {
         gasUsed,
+        chainId,
       },
     };
   }
