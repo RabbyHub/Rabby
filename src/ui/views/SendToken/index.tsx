@@ -327,7 +327,7 @@ const SendToken = () => {
       };
     }) => {
       await wallet.setPageStateCache({
-        path: history.location.pathname,
+        path: '/send-token',
         search: history.location.search,
         params: {},
         states: {
