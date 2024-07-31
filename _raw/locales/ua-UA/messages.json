@@ -1194,6 +1194,7 @@
         "manageAirgap": "Керувати AirGap",
         "manageCoolwallet": "Керування CoolWallet",
         "manageBitbox02": "Керування BitBox02",
+        "manageNgraveZero": "Керування NGRAVE ZERO",
         "done": "Виконано",
         "addressesIn": "Адреси в {{0}}",
         "addressesInRabby": "Адреси в Rabby{{0}}",

@@ -1225,6 +1225,7 @@
         "manageAirgap": "AirGap verwalten",
         "manageCoolwallet": "CoolWallet verwalten",
         "manageBitbox02": "BitBox02 verwalten",
+        "manageNgraveZero": "NGRAVE ZERO verwalten",
         "done": "Fertig",
         "addressesIn": "Adressen in {{0}}",
         "addressesInRabby": "Adressen in Rabby{{0}}",
