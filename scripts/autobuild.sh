@@ -45,7 +45,7 @@ if [ -z $NO_UPLOAD ]; then
     aws s3 cp $QUIET_PARASM $project_dir/tmp/ s3://$RABBY_BUILD_BUCKET/rabby/autobuild/RabbyDebug-$CURRENT_TIME --recursive --exclude="*" --include "*.zip" --acl public-read
     echo "[pack] uploaded. DOWNLOAD_URL is $DOWNLOAD_URL";
 
-    if [ "$notify_lark" === "true" ]; then
+    if [ ! -z $notify_lark ]; then
         echo "[pack] update latest link...";
         node ./scripts/notify-lark.js "$DOWNLOAD_URL"
     else
