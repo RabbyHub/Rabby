@@ -38,6 +38,7 @@ import {
   WrapTokenRequireData,
   getActionTypeText,
   AssetOrderRequireData,
+  BatchRevokePermit2RequireData,
 } from './utils';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
@@ -54,6 +55,7 @@ import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
+import { BatchRevokePermit2 } from './BatchRevokePermit2';
 
 const Actions = ({
   data,
@@ -92,7 +94,9 @@ const Actions = ({
       data.pushMultiSig ||
       data.revokeNFT ||
       data.revokeNFTCollection ||
-      data.revokeToken
+      data.revokeToken ||
+      data.permit2BatchRevokeToken ||
+      data.revokePermit2
     ) {
       const balanceChange = txDetail.balance_change;
       if (!txDetail.pre_exec.success) return false;
@@ -369,6 +373,14 @@ const Actions = ({
               <CommonAction
                 data={data.common}
                 requireData={requireData as ContractCallRequireData}
+                chain={chain}
+                engineResults={engineResults}
+              />
+            )}
+            {data.permit2BatchRevokeToken && (
+              <BatchRevokePermit2
+                data={data.permit2BatchRevokeToken}
+                requireData={requireData as BatchRevokePermit2RequireData}
                 chain={chain}
                 engineResults={engineResults}
               />

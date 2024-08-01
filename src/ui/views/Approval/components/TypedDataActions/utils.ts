@@ -1174,7 +1174,12 @@ export const formatSecurityEngineCtx = async ({
   return {};
 };
 
-export function normalizeTypeData(data) {
+export function normalizeTypeData(data: {
+  primaryType: string;
+  types: Record<string, any>;
+  domain: Record<string, any>;
+  message: Record<string, any>;
+}) {
   try {
     const { types, primaryType, domain, message } = data;
     const domainTypes = types.EIP712Domain;
