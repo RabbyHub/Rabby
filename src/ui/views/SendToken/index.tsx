@@ -65,7 +65,10 @@ import { Chain } from '@debank/common';
 import IconAlertInfo from './alert-info.svg';
 import { formatTxInputDataOnERC20 } from '@/ui/utils/transaction';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
+import {
+  checkIfTokenBalanceEnough,
+  customTestnetTokenToTokenItem,
+} from '@/ui/utils/token';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { MaxButton } from './components/MaxButton';
 import {
@@ -1320,6 +1323,23 @@ const SendToken = () => {
     selectedGasLevel,
   ]);
 
+  useEffect(() => {
+    if (currentToken && gasList) {
+      const result = checkIfTokenBalanceEnough(currentToken, {
+        gasList,
+        gasLimit: MINIMUM_GAS_LIMIT,
+      });
+
+      if (result.isNormalEnough && result.normalLevel) {
+        setSelectedGasLevel(result.normalLevel);
+      } else if (result.isSlowEnough && result.slowLevel) {
+        setSelectedGasLevel(result.slowLevel);
+      } else if (result.customLevel) {
+        setSelectedGasLevel(result.customLevel);
+      }
+    }
+  }, [currentToken, gasList]);
+
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -1614,7 +1634,7 @@ const SendToken = () => {
       <SendReserveGasPopup
         selectedItem={selectedGasLevel?.level as GasLevelType}
         chain={chain}
-        limit={MINIMUM_GAS_LIMIT}
+        limit={Math.max(estimateGas, MINIMUM_GAS_LIMIT)}
         onGasChange={(gasLevel) => {
           handleGasLevelChanged(gasLevel);
         }}
