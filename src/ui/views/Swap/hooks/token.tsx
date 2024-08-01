@@ -437,20 +437,18 @@ export const useTokenPair = (userAddress: string) => {
             if (!quote.preExecResult || !quote.preExecResult.isSdkPass) {
               return new BigNumber(Number.MIN_SAFE_INTEGER);
             }
+            const balanceChangeReceiveTokenAmount =
+              quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
+                (token) => isSameAddress(token.id, receiveToken.id)
+              )?.amount || 0;
 
             if (sortIncludeGasFee) {
-              return new BigNumber(
-                quote?.preExecResult.swapPreExecTx.balance_change
-                  .receive_token_list?.[0]?.amount || 0
-              )
+              return new BigNumber(balanceChangeReceiveTokenAmount)
                 .times(price)
                 .minus(quote?.preExecResult?.gasUsdValue || 0);
             }
 
-            return new BigNumber(
-              quote?.preExecResult.swapPreExecTx.balance_change
-                .receive_token_list?.[0]?.amount || 0
-            ).times(price);
+            return new BigNumber(balanceChangeReceiveTokenAmount).times(price);
           };
           return getNumber(b).minus(getNumber(a)).toNumber();
         }) || []),
@@ -478,8 +476,9 @@ export const useTokenPair = (userAddress: string) => {
                 halfBetterRate: '',
                 quoteWarning: undefined,
                 actualReceiveAmount:
-                  preExecResult?.swapPreExecTx.balance_change
-                    .receive_token_list[0]?.amount || '',
+                  preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
+                    (token) => isSameAddress(token.id, receiveToken.id)
+                  )?.amount || '',
                 gasUsd: preExecResult?.gasUsd,
               }
         );

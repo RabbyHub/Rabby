@@ -535,34 +535,6 @@ interface getPreExecResultParams
   quote: QuoteResult;
 }
 
-export const halfBetterRate = (
-  full: ExplainTxResponse,
-  half: ExplainTxResponse
-) => {
-  if (
-    full.balance_change.success &&
-    half.balance_change.success &&
-    half.balance_change.receive_token_list[0]?.amount &&
-    full.balance_change.receive_token_list[0]?.amount
-  ) {
-    const halfReceive = new BigNumber(
-      half.balance_change.receive_token_list[0].amount
-    );
-
-    const fullREceive = new BigNumber(
-      full.balance_change.receive_token_list[0]?.amount
-    );
-    const diff = new BigNumber(halfReceive).times(2).minus(fullREceive);
-
-    return diff.gt(0)
-      ? new BigNumber(diff.div(fullREceive).toPrecision(1))
-          .times(100)
-          .toString(10)
-      : null;
-  }
-  return null;
-};
-
 export type QuotePreExecResultInfo = {
   shouldApproveToken: boolean;
   shouldTwoStepApprove: boolean;

@@ -12,6 +12,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
+import { isSameAddress } from '@/ui/utils';
 
 interface QuotesProps
   extends Omit<
@@ -43,7 +44,7 @@ export const Quotes = ({
     () => [
       ...(list?.sort((a, b) => {
         const getNumber = (quote: typeof a) => {
-          const price = other.receiveToken.price ? other.receiveToken.price : 1;
+          const price = other.receiveToken.price ? other.receiveToken.price : 0;
           if (inSufficient) {
             return new BigNumber(quote.data?.toTokenAmount || 0)
               .div(
@@ -55,35 +56,31 @@ export const Quotes = ({
           if (!quote.preExecResult) {
             return new BigNumber(Number.MIN_SAFE_INTEGER);
           }
-
+          const receiveTokenAmount =
+            quote?.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
+              (item) => isSameAddress(item.id, other.receiveToken.id)
+            )?.amount || 0;
           if (sortIncludeGasFee) {
-            return new BigNumber(
-              quote?.preExecResult.swapPreExecTx.balance_change
-                .receive_token_list?.[0]?.amount || 0
-            )
+            return new BigNumber(receiveTokenAmount)
               .times(price)
               .minus(quote?.preExecResult?.gasUsdValue || 0);
           }
 
-          return new BigNumber(
-            quote?.preExecResult.swapPreExecTx.balance_change
-              .receive_token_list?.[0]?.amount || 0
-          ).times(price);
+          return new BigNumber(receiveTokenAmount).times(price);
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),
     ],
-    [
-      inSufficient,
-      list,
-      other.receiveToken.decimals,
-      other?.receiveToken?.price,
-      sortIncludeGasFee,
-    ]
+    [inSufficient, list, other.receiveToken, sortIncludeGasFee]
   );
 
   const [bestQuoteAmount, bestQuoteGasUsd] = useMemo(() => {
     const bestQuote = sortedList?.[0];
+    const receiveTokenAmount = bestQuote?.preExecResult
+      ? bestQuote.preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
+          (item) => isSameAddress(item.id, other.receiveToken.id)
+        )?.amount || 0
+      : 0;
 
     return [
       inSufficient
@@ -95,11 +92,10 @@ export const Quotes = ({
                   1)
             )
             .toString(10)
-        : bestQuote?.preExecResult?.swapPreExecTx.balance_change
-            .receive_token_list[0]?.amount,
+        : receiveTokenAmount,
       bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || '0' : '0',
     ];
-  }, [inSufficient, other?.receiveToken?.decimals, sortedList]);
+  }, [inSufficient, other?.receiveToken, sortedList]);
 
   const fetchedList = useMemo(() => list?.map((e) => e.name) || [], [list]);
   const [hiddenError, setHiddenError] = useState(true);
@@ -120,8 +116,9 @@ export const Quotes = ({
             name={dex?.name}
             isBestQuote
             bestQuoteAmount={`${
-              dex?.preExecResult?.swapPreExecTx.balance_change
-                .receive_token_list[0]?.amount || '0'
+              dex?.preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
+                (token) => isSameAddress(token.id, other.receiveToken.id)
+              )?.amount || '0'
             }`}
             bestQuoteGasUsd={bestQuoteGasUsd}
             isLoading={dex.loading}
