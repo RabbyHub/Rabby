@@ -128,7 +128,9 @@ export const Main = () => {
 
     handleAmountChange,
     handleBalance,
-    payAmount,
+    inputAmount,
+    debouncePayAmount,
+
     payTokenIsNativeToken,
     isWrapToken,
     inSufficient,
@@ -186,6 +188,17 @@ export const Main = () => {
   const setVisible = useSetQuoteVisible();
   const { t } = useTranslation();
 
+  const payAmountLoading = useMemo(() => inputAmount !== debouncePayAmount, [
+    inputAmount,
+    debouncePayAmount,
+  ]);
+
+  const quoteOrAmountLoading = quoteLoading || payAmountLoading;
+
+  const amountAvailable = useMemo(() => Number(debouncePayAmount) > 0, [
+    debouncePayAmount,
+  ]);
+
   const btnText = useMemo(() => {
     if (slippageChanged) {
       return t('page.swap.slippage-adjusted-refresh-quote');
@@ -201,7 +214,7 @@ export const Main = () => {
         name: isWrapToken ? 'Wrap Contract' : DexDisplayName,
       });
     }
-    if (quoteLoading) {
+    if (quoteOrAmountLoading) {
       return t('page.swap.title');
     }
 
@@ -213,7 +226,7 @@ export const Main = () => {
     payToken,
     isWrapToken,
     DexDisplayName,
-    quoteLoading,
+    quoteOrAmountLoading,
   ]);
 
   const wallet = useWallet();
@@ -241,7 +254,7 @@ export const Main = () => {
             postSwapParams: {
               quote: {
                 pay_token_id: payToken.id,
-                pay_token_amount: Number(payAmount),
+                pay_token_amount: Number(debouncePayAmount),
                 receive_token_id: receiveToken!.id,
                 receive_token_amount: new BigNumber(
                   activeProvider?.quote.toTokenAmount
@@ -351,10 +364,10 @@ export const Main = () => {
           onChange={switchChain}
           disabledTips={getDisabledTips}
           supportChains={SWAP_SUPPORT_CHAINS}
-          chainRenderClassName={clsx('text-[16px] font-medium')}
+          chainRenderClassName={clsx('text-[16px] font-medium rounded-[4px]')}
         />
 
-        <div className={clsx(tipsClassName, 'flex items-center mb-12')}>
+        <div className={clsx(tipsClassName, 'flex items-center')}>
           <span className="block w-[150px]">{t('page.swap.swap-from')}</span>
           <span className="block w-[150px] ml-auto">{t('page.swap.to')}</span>
         </div>
@@ -424,14 +437,14 @@ export const Main = () => {
         <StyledInput
           spellCheck={false}
           placeholder="0"
-          value={payAmount}
+          value={inputAmount}
           onChange={handleAmountChange}
           ref={inputRef as any}
           suffix={
             <span className="text-r-neutral-foot text-12">
-              {payAmount
+              {inputAmount
                 ? `≈ ${formatUsdValue(
-                    new BigNumber(payAmount)
+                    new BigNumber(inputAmount)
                       .times(payToken?.price || 0)
                       .toString(10)
                   )}`
@@ -440,13 +453,16 @@ export const Main = () => {
           }
         />
 
-        {quoteLoading && !inSufficient && !activeProvider?.manualClick && (
-          <BestQuoteLoading />
-        )}
-
-        {Number(payAmount) > 0 &&
+        {quoteOrAmountLoading &&
+          amountAvailable &&
           !inSufficient &&
-          (!quoteLoading || (activeProvider && !!activeProvider.manualClick)) &&
+          !activeProvider?.manualClick && <BestQuoteLoading />}
+
+        {Number(debouncePayAmount) > 0 &&
+          !inSufficient &&
+          amountAvailable &&
+          (!quoteOrAmountLoading ||
+            (activeProvider && !!activeProvider.manualClick)) &&
           payToken &&
           receiveToken && (
             <>
@@ -455,7 +471,7 @@ export const Main = () => {
                 activeProvider={activeProvider}
                 isWrapToken={isWrapToken}
                 className="section"
-                payAmount={payAmount}
+                payAmount={debouncePayAmount}
                 receiveRawAmount={activeProvider?.actualReceiveAmount || 0}
                 payToken={payToken}
                 receiveToken={receiveToken}
@@ -466,8 +482,8 @@ export const Main = () => {
             </>
           )}
 
-        {Number(payAmount) > 0 &&
-          (!quoteLoading || !!activeProvider?.manualClick) &&
+        {Number(debouncePayAmount) > 0 &&
+          (!quoteOrAmountLoading || !!activeProvider?.manualClick) &&
           !!activeProvider &&
           !!activeProvider?.quote?.toTokenAmount &&
           payToken &&
@@ -579,8 +595,9 @@ export const Main = () => {
           disabled={
             !payToken ||
             !receiveToken ||
-            !payAmount ||
-            Number(payAmount) === 0 ||
+            !amountAvailable ||
+            inSufficient ||
+            payAmountLoading ||
             !activeProvider
           }
         >
@@ -596,6 +613,7 @@ export const Main = () => {
         visible={reserveGasOpen}
         onCancel={closeReserveGasOpen}
         onClose={closeReserveGasOpen}
+        rawHexBalance={payToken?.raw_amount_hex_str}
       />
       {payToken && receiveToken && chain ? (
         <QuoteList
@@ -609,7 +627,7 @@ export const Main = () => {
           chain={chain}
           slippage={slippage}
           payToken={payToken}
-          payAmount={payAmount}
+          payAmount={debouncePayAmount}
           receiveToken={receiveToken}
           fee={feeRate}
           inSufficient={inSufficient}

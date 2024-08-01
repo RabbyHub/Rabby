@@ -95,7 +95,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
     <>
       {revokeTxCount > 1 ? (
         <div className="mt-[16px] h-[16px] mb-[16px] text-13 leading-[15px] text-r-neutral-body">
-          {revokeTxCount} transaction(s) to be signed sequentially
+          {revokeTxCount} transactions to be signed sequentially
         </div>
       ) : (
         <div className="mt-[16px] h-[16px] mb-[16px]"> </div>

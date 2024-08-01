@@ -90,9 +90,9 @@ const TokenPairDrawer = (
                       'px-20 min-h-[56px] cursor-pointer',
                       'flex items-center justify-between',
                       'border border-solid border-transparent rounded-md',
-                      'hover:border-rabby-blue-default',
-                      !tokenPair.from_token_amount &&
-                        'opacity-40 cursor-not-allowed'
+                      !tokenPair.from_token_amount
+                        ? 'opacity-40 cursor-not-allowed'
+                        : 'hover:border-rabby-blue-default hover:bg-rabby-blue-light1'
                     )}
                   >
                     <div className="flex items-center text-[15px] font-medium text-r-neutral-title1">
@@ -147,6 +147,7 @@ const RenderWrapper = styled.div`
   background: var(--r-neutral-card-2, #f2f4f7);
   border-radius: 6px;
   padding: 0 12px;
+  padding-right: 10px;
   width: 100%;
   display: flex;
   align-items: center;

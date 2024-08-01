@@ -21,6 +21,7 @@ import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { GasLevelType } from '../Component/ReserveGasPopup';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const useTokenInfo = ({
   userAddress,
@@ -186,7 +187,8 @@ export const useTokenPair = (userAddress: string) => {
     dispatch.swap.setSelectedToToken(receiveToken);
   }, [receiveToken]);
 
-  const [payAmount, setPayAmount] = useState('');
+  const [inputAmount, setPayAmount] = useState('');
+  const debouncePayAmount = useDebounceValue(inputAmount, 300);
 
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0');
 
@@ -244,12 +246,8 @@ export const useTokenPair = (userAddress: string) => {
     [gasList]
   );
 
-  useEffect(() => {
-    gasPriceRef.current = normalGasPrice;
-  }, [normalGasPrice]);
-
   const nativeTokenDecimals = useMemo(
-    () => CHAINS?.[chain]?.nativeTokenDecimals,
+    () => findChain({ enum: chain })?.nativeTokenDecimals || 1e18,
     [CHAINS?.[chain]]
   );
 
@@ -257,6 +255,31 @@ export const useTokenPair = (userAddress: string) => {
     () => (chain === CHAINS_ENUM.ETH ? 1000000 : 2000000),
     [chain]
   );
+
+  useEffect(() => {
+    if (payTokenIsNativeToken && gasList) {
+      const checkGasIsEnough = (price: number) => {
+        return new BigNumber(payToken?.raw_amount_hex_str || 0, 16).gte(
+          new BigNumber(gasLimit).times(price)
+        );
+      };
+      const normalPrice =
+        gasList?.find((e) => e.level === 'normal')?.price || 0;
+      const slowPrice = gasList?.find((e) => e.level === 'slow')?.price || 0;
+      const isNormalEnough = checkGasIsEnough(normalPrice);
+      const isSlowEnough = checkGasIsEnough(slowPrice);
+      if (isNormalEnough) {
+        setGasLevel('normal');
+        gasPriceRef.current = normalGasPrice;
+      } else if (isSlowEnough) {
+        setGasLevel('slow');
+        gasPriceRef.current = slowPrice;
+      } else {
+        setGasLevel('custom');
+        gasPriceRef.current = 0;
+      }
+    }
+  }, [payTokenIsNativeToken, gasList, gasLimit, payToken?.raw_amount_hex_str]);
 
   const closeReserveGasOpen = useCallback(() => {
     setReserveGasOpen(false);
@@ -322,9 +345,9 @@ export const useTokenPair = (userAddress: string) => {
   const inSufficient = useMemo(
     () =>
       payToken
-        ? tokenAmountBn(payToken).lt(payAmount)
-        : new BigNumber(0).lt(payAmount),
-    [payToken, payAmount]
+        ? tokenAmountBn(payToken).lt(debouncePayAmount)
+        : new BigNumber(0).lt(debouncePayAmount),
+    [payToken, debouncePayAmount]
   );
 
   useEffect(() => {
@@ -345,7 +368,7 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     setQuotesList([]);
     setActiveProvider(undefined);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
 
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
@@ -382,7 +405,7 @@ export const useTokenPair = (userAddress: string) => {
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      Number(payAmount) > 0 &&
+      Number(debouncePayAmount) > 0 &&
       feeRate &&
       !inSufficient
     ) {
@@ -396,7 +419,7 @@ export const useTokenPair = (userAddress: string) => {
         receiveToken,
         slippage: slippage || '0.1',
         chain,
-        payAmount: payAmount,
+        payAmount: debouncePayAmount,
         fee: feeRate,
         setQuote: setQuote(currentFetchId),
       }).finally(() => {});
@@ -411,7 +434,7 @@ export const useTokenPair = (userAddress: string) => {
     payToken?.id,
     receiveToken?.id,
     chain,
-    payAmount,
+    debouncePayAmount,
     feeRate,
     // slippage,
   ]);
@@ -520,7 +543,7 @@ export const useTokenPair = (userAddress: string) => {
     setExpired(false);
     setActiveProvider(undefined);
     setSlippageChanged(false);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
 
   useEffect(() => {
     if (searchObj.chain && searchObj.payTokenId) {
@@ -569,7 +592,8 @@ export const useTokenPair = (userAddress: string) => {
 
     handleAmountChange,
     handleBalance,
-    payAmount,
+    inputAmount,
+    debouncePayAmount,
 
     isWrapToken,
     wrapTokenSymbol,

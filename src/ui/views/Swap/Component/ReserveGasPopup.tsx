@@ -19,6 +19,7 @@ interface ReserveGasContentProps {
   limit: number;
   selectedItem?: GasLevelType | string;
   onGasChange: (gasLevel: GasLevel) => void;
+  rawHexBalance?: string | number;
 }
 
 const SORT_SCORE = {
@@ -41,6 +42,7 @@ const ReserveGasContent = React.forwardRef<
     limit = 1000000,
     selectedItem = 'normal',
     onGasChange,
+    rawHexBalance,
   } = props;
 
   const [currentSelectedItem, setCurrentSelectedItem] = useState(selectedItem);
@@ -90,12 +92,30 @@ const ReserveGasContent = React.forwardRef<
     [limit, decimals]
   );
 
+  const checkIsInsufficient = useCallback(
+    (price: number) => {
+      if (rawHexBalance === undefined || rawHexBalance === null) {
+        return false;
+      }
+      return new BigNumber(rawHexBalance || 0, 16).lt(
+        new BigNumber(limit).times(price)
+      );
+    },
+    [rawHexBalance, limit]
+  );
+
   return (
     <div>
       <div className={clsx('flex flex-col gap-12')}>
         {sortedList?.map((item) => {
           const checked = currentSelectedItem === item.level;
+
+          const gasIsSufficient = checkIsInsufficient(item.price);
+
           const onChecked = () => {
+            if (gasIsSufficient) {
+              return;
+            }
             setGasLevel(item);
             setCurrentSelectedItem(item.level as any);
           };
@@ -111,9 +131,12 @@ const ReserveGasContent = React.forwardRef<
               key={item.level}
               className={clsx(
                 'flex justify-between',
-                'py-[22px] px-16 rounded-[8px] cursor-pointer',
-                'bg-r-neutral-card-1 border border-solid  hover:border-rabby-blue-default',
-                checked ? 'border-rabby-blue-default' : 'border-transparent'
+                'py-[22px] px-16 rounded-[8px] ',
+                'bg-r-neutral-card-1 border border-solid  ',
+                checked ? 'border-rabby-blue-default' : 'border-transparent',
+                gasIsSufficient
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:border-rabby-blue-default cursor-pointer'
               )}
               onClick={onChecked}
             >
@@ -203,6 +226,7 @@ export const ReserveGasPopup = (props: ReserveGasContentProps & PopupProps) => {
     onGasChange,
     limit,
     selectedItem,
+    rawHexBalance,
     ...otherPopupProps
   } = props;
   const { t } = useTranslation();
@@ -222,6 +246,7 @@ export const ReserveGasPopup = (props: ReserveGasContentProps & PopupProps) => {
           limit={limit}
           selectedItem={selectedItem}
           onGasChange={onGasChange}
+          rawHexBalance={rawHexBalance}
         />
       )}
     </Popup>
@@ -241,6 +266,7 @@ export const SendReserveGasPopup = (
     onGasChange,
     limit,
     selectedItem,
+    rawHexBalance,
     onClose,
     onCancel,
     ...otherPopupProps
@@ -272,6 +298,7 @@ export const SendReserveGasPopup = (
           limit={limit}
           selectedItem={selectedItem}
           onGasChange={onGasChange}
+          rawHexBalance={rawHexBalance}
         />
       )}
     </Popup>

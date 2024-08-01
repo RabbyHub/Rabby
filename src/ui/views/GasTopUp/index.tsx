@@ -317,12 +317,15 @@ export const GasTopUp = () => {
       <div className="absolute top-0 left-0 right-0 h-[217px] bg-r-blue-default dark:bg-r-blue-disable">
         <RcBubleInBg className="absolute right-[25px] top-[35px] z-[0]" />
       </div>
-      <div className="p-20 pt-0 h-full relative bg-transparent">
+      <div className="p-20 pt-0 h-full relative bg-transparent ">
         <PageHeader
-          onBack={handleClickBack}
-          forceShowBack
-          invertBack
+          // onBack={handleClickBack}
+          // forceShowBack
+          canBack={false}
           keepBackLightVersion
+          closeCn="brightness-[10]"
+          closeable
+          onClose={handleClickBack}
         >
           <span className="text-white">{t('page.gasTopUp.title')}</span>
         </PageHeader>

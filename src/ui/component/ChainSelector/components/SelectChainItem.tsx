@@ -86,7 +86,7 @@ export const SelectChainItem = forwardRef(
         <div
           className={clsx(
             'select-chain-item',
-            disabled && 'opacity-50 select-chain-item-disabled',
+            disabled && 'opacity-50 select-chain-item-disabled cursor-default',
             className
           )}
           ref={ref}
