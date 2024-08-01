@@ -94,7 +94,7 @@ const ReserveGasContent = React.forwardRef<
 
   const checkIsInsufficient = useCallback(
     (price: number) => {
-      if (rawHexBalance !== undefined && rawHexBalance !== null) {
+      if (rawHexBalance === undefined || rawHexBalance === null) {
         return false;
       }
       return new BigNumber(rawHexBalance || 0, 16).lt(
