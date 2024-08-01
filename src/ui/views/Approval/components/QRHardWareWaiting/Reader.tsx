@@ -42,24 +42,10 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
     }
   };
 
-  const handleError = async () => {
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: form.getFieldsValue(),
-    });
-    openInternalPageInTab('request-permission?type=camera');
-  };
-
   return (
     <div>
       <div className="p-[10px] border border-gray-divider rounded-[8px] m-auto w-[222px] h-[222px]">
-        <QRCodeReader
-          width={200}
-          height={200}
-          onSuccess={handleSuccess}
-          onError={handleError}
-        />
+        <QRCodeReader width={200} height={200} onSuccess={handleSuccess} />
       </div>
       {progress > 0 ? (
         <div className="mt-[24px] m-auto w-[130px]">

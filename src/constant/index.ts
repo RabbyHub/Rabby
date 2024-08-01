@@ -180,6 +180,9 @@ import IconImKey, {
 import IconUtila, {
   ReactComponent as RCIconUtila,
 } from 'ui/assets/walletlogo/utila.svg';
+import IconNgrave, {
+  ReactComponent as RCIconNgrave,
+} from 'ui/assets/walletlogo/ngrave.svg';
 import {
   ensureChainHashValid,
   ensureChainListValid,
@@ -530,6 +533,7 @@ export enum WALLET_BRAND_TYPES {
   MPCVault = 'MPCVault',
   Coinbase = 'Coinbase',
   IMKEY = 'IMKEY',
+  NGRAVEZERO = 'NGRAVE ZERO',
   Utila = 'Utila',
 }
 
@@ -920,6 +924,18 @@ export const WALLET_BRAND_CONTENT: {
     rcSvg: RCIconUtila,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.NGRAVEZERO]: {
+    id: 31,
+    name: 'NGRAVE ZERO',
+    brand: WALLET_BRAND_TYPES.NGRAVEZERO,
+    icon: IconNgrave,
+    lightIcon: IconNgrave,
+    image: IconNgrave,
+    rcSvg: RCIconNgrave,
+    maybeSvg: IconNgrave,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
 };
 

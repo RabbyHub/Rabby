@@ -147,7 +147,7 @@ const ImportWatchAddress = () => {
   };
   const handleScanQRCodeError = async () => {
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/import/watch-address',
       params: {},
       states: form.getFieldsValue(),
     });

@@ -202,11 +202,6 @@ const ImportMnemonics = () => {
           onValuesChange={(states) => {
             setErrMsgs([]);
             setSlip39ErrorIndex(-1);
-            wallet.setPageStateCache({
-              path: history.location.pathname,
-              params: {},
-              states,
-            });
           }}
         >
           <h1
