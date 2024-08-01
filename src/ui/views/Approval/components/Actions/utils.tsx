@@ -151,6 +151,10 @@ export interface ParsedActionData {
     receiver?: string;
     from: string;
   };
+  permit2BatchRevokeToken?: {
+    permit2_id: string;
+    revoke_list: RevokeTokenApproveAction[];
+  };
 }
 
 export const getProtocol = (
@@ -445,6 +449,13 @@ export const parseAction = (
       },
     };
   }
+
+  if (data?.type === 'permit2_batch_revoke_token') {
+    return {
+      permit2BatchRevokeToken: data.data as any,
+    };
+  }
+
   return {
     contractCall: {},
   };
@@ -586,6 +597,10 @@ export interface PushMultiSigRequireData {
   id: string;
 }
 
+export type BatchRevokePermit2RequireData = Record<
+  string,
+  Omit<ApproveTokenRequireData, 'token'>
+>;
 export interface AssetOrderRequireData extends ContractRequireData {
   sender: string;
 }
@@ -597,12 +612,13 @@ export type ActionRequireData =
   | ApproveNFTRequireData
   | RevokeNFTRequireData
   | ContractCallRequireData
-  | Record<string, never>
+  | Record<string, any>
   | ContractCallRequireData
   | CancelTxRequireData
   | WrapTokenRequireData
   | PushMultiSigRequireData
   | AssetOrderRequireData
+  | BatchRevokePermit2RequireData
   | null;
 
 export const waitQueueFinished = (q: PQueue) => {
@@ -665,7 +681,7 @@ export const fetchNFTApproveRequiredData = async ({
     result.hasInteraction = hasInteraction.has_interaction;
   });
   queue.add(async () => {
-    const { usd_value } = await apiProvider.getTokenNFTExposure(
+    const { usd_value } = await apiProvider.getTokenNFTTrustValue(
       chainId,
       spender
     );
@@ -683,7 +699,7 @@ const fetchTokenApproveRequireData = async ({
   chainId,
 }: {
   spender: string;
-  token: TokenItem;
+  token?: TokenItem;
   address: string;
   chainId: string;
   apiProvider:
@@ -701,7 +717,7 @@ const fetchTokenApproveRequireData = async ({
     protocol: null,
     isDanger: false,
     token: {
-      ...token,
+      ...token!,
       amount: 0,
       raw_amount_hex_str: '0x0',
     },
@@ -711,16 +727,18 @@ const fetchTokenApproveRequireData = async ({
     result.rank = credit.rank_at;
   });
   queue.add(async () => {
-    const { usd_value } = await apiProvider.tokenApproveExposure(
+    const { usd_value } = await apiProvider.tokenApproveTrustValue(
       spender,
       chainId
     );
     result.riskExposure = usd_value;
   });
-  queue.add(async () => {
-    const t = await apiProvider.getToken(address, chainId, token.id);
-    result.token = t;
-  });
+  if (token) {
+    queue.add(async () => {
+      const t = await apiProvider.getToken(address, chainId, token.id);
+      result.token = t;
+    });
+  }
   queue.add(async () => {
     const { desc } = await apiProvider.addrDesc(spender);
     if (desc.contract && desc.contract[chainId]) {
@@ -1245,6 +1263,26 @@ export const fetchActionRequiredData = async ({
     await waitQueueFinished(queue);
     return result;
   }
+  if (actionData.permit2BatchRevokeToken) {
+    const spenders = actionData.permit2BatchRevokeToken.revoke_list.map(
+      (item) => item.spender
+    );
+    // filter out the same spender
+    const uniqueSpenders = Array.from(new Set(spenders));
+
+    const result: BatchRevokePermit2RequireData = {};
+    await Promise.all(
+      uniqueSpenders.map(async (spender) => {
+        result[spender] = await fetchTokenApproveRequireData({
+          apiProvider,
+          chainId,
+          address,
+          spender,
+        });
+      })
+    );
+    return result;
+  }
   return null;
 };
 
@@ -1622,6 +1660,9 @@ export const getActionTypeText = (data: ParsedActionData) => {
   if (data?.common) {
     return data.common.title;
   }
+  if (data.permit2BatchRevokeToken) {
+    return t('page.signTx.batchRevokePermit2.title');
+  }
   return t('page.signTx.unknownAction');
 };
 
@@ -1648,6 +1689,7 @@ export const getActionTypeTextByType = (type: string) => {
     push_multisig: t('page.signTx.submitMultisig.title'),
     contract_call: t('page.signTx.contractCall.title'),
     swap_order: t('page.signTx.assetOrder.title'),
+    permit2_batch_revoke_token: t('page.signTx.batchRevokePermit2.title'),
   };
 
   return dict[type] || t('page.signTx.unknownAction');

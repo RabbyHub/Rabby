@@ -56,6 +56,7 @@ export const HomeTokenList = ({
     blockedTokens?.length ||
     customizeTokens?.length
   );
+  const hasLowValueList = !!lowValueList?.length;
 
   return (
     <div>
@@ -64,7 +65,7 @@ export const HomeTokenList = ({
           list={isSearch ? list : currentList}
           EmptyComponent={<div></div>}
         />
-        {!isSearch && hasList && (
+        {!isSearch && hasList && hasLowValueList && (
           <TokenLowValueItem list={lowValueList} className="h-[40px]" />
         )}
       </div>

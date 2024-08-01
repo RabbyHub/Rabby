@@ -4681,10 +4681,10 @@
     events "^3.3.0"
     web3-utils "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.6.tgz#d7aa6430ad2cfd5e838ed5b4d809cee23e3afd03"
-  integrity sha512-mhhx0/yfGLXs2014oo0epEYowyb2QLx964iB2UdqELnDZ0M/NlimqK60+X4sf4FecO3hGHidnFtxgQrMb/f/mg==
+"@rabby-wallet/gnosis-sdk@1.3.8":
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.3.8.tgz#44767a08244f3ddef579b307d04abc7b1ab020fb"
+  integrity sha512-kcSvMrckWi40lOvWXQ0K+fy3TIbPpST8+MeGZno53JllHmtSkwtL33yx7Lt6JY0l/W76AfUDOzE+nZpOY8F8aA==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
@@ -4693,7 +4693,7 @@
     "@ethersproject/solidity" "^5.5.0"
     "@gnosis.pm/safe-core-sdk" "^1.0.0"
     "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
-    "@safe-global/safe-deployments" "^1.25.0"
+    "@safe-global/safe-deployments" "^1.37.2"
     axios "^0.24.0"
     bignumber.js "^9.0.2"
     ethereumjs-util "^7.1.3"
@@ -4738,10 +4738,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill "0.7.0"
 
-"@rabby-wallet/rabby-api@0.7.23":
-  version "0.7.23"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.23.tgz#001488fef4de498cf3e713954f549a1667fdfd37"
-  integrity sha512-fxjJy+2HUMaK394HpjkStj2MxcR/edQbQyun1OFxuGp4cBzA4rq4sF1sUNUUl5E/c+4YmKt5n7w6uP/tnmVkfw==
+"@rabby-wallet/rabby-api@0.7.24":
+  version "0.7.24"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-api/-/rabby-api-0.7.24.tgz#da6a16ecf164b1eefad8b3b7ed7f38b6ce204cab"
+  integrity sha512-AWm0P+z1S1QGThjmrDJMdjXICEGNIxUM+cbgms2jQ9u/V4sTgtUBv6SPumG2FNwJNnlMLwoJvl2s77zqxgGPcw==
   dependencies:
     "@rabby-wallet/rabby-sign" "^0.3.3"
     axios "^0.27.2"
@@ -4866,12 +4866,12 @@
   dependencies:
     reselect "^4.0.0"
 
-"@safe-global/safe-deployments@^1.25.0":
-  version "1.25.0"
-  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.25.0.tgz#882f0703cd4dd86cc19238319d77459ded09ec88"
-  integrity sha512-j7Ml1MVZw73XMTLbyIjo+Gvohwg5HYi8WM6b3vo+AkYEO/X4TNY8eJ0T0Awip5PO9MNyZymF3QY065uccQP53A==
+"@safe-global/safe-deployments@^1.37.2":
+  version "1.37.2"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-deployments/-/safe-deployments-1.37.2.tgz#d63947bf631d63f5991f3732fad08b17b7264505"
+  integrity sha512-kWRim5vY9W/yNKUUehUQDhCHz7NWzXjhkpMDvvnrrkEn9U461zwCcmJmPVnPrjnaY4dPpJsGZSzUuU4+uxH+vg==
   dependencies:
-    semver "^7.3.7"
+    semver "^7.6.2"
 
 "@scure/base@^1.1.3":
   version "1.1.3"
@@ -16734,6 +16734,11 @@ semver@^7.3.8, semver@^7.5.3, semver@^7.5.4:
   integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
   dependencies:
     lru-cache "^6.0.0"
+
+semver@^7.6.2:
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
+  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
 
 send@0.18.0:
   version "0.18.0"

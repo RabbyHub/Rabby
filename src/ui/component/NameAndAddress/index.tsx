@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Tooltip } from 'antd';
+
 import { useWallet } from 'ui/utils';
 import clsx from 'clsx';
 import { ALIAS_ADDRESS, CHAINS_ENUM, ThemeIconType } from '@/constant';
@@ -32,6 +34,7 @@ interface NameAndAddressProps {
   copyIconClass?: string;
   copyIconProps?: React.ComponentProps<typeof ThemeIcon>;
   addressSuffix?: React.ReactNode;
+  tooltipAliasName?: boolean;
   /**
    * @description don't know why click event not be stopped when click copy icon,
    * just add this prop to fix it in some case.
@@ -52,6 +55,7 @@ const NameAndAddress = ({
   copyIcon = true,
   copyIconProps,
   addressSuffix = null,
+  tooltipAliasName = false,
   __internalRestrainClickEventOnCopyIcon = false,
 }: NameAndAddressProps) => {
   const wallet = useWallet();
@@ -114,9 +118,14 @@ const NameAndAddress = ({
   return (
     <div className={clsx('name-and-address', className)}>
       {localName && (
-        <div className={clsx('name', nameClass)} title={localName}>
-          {localName}
-        </div>
+        <Tooltip
+          {...(!tooltipAliasName && { visible: false })}
+          overlay={<>{localName}</>}
+        >
+          <div className={clsx('name', nameClass)} title={localName}>
+            {localName}
+          </div>
+        </Tooltip>
       )}
       <div
         className={clsx('address', addressClass, !localName && noNameClass)}

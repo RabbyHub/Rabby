@@ -1,4 +1,4 @@
-import { formatAmount, formatUsdValue } from '@/ui/utils';
+import { formatAmount, formatUsdValue, isSameAddress } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
@@ -176,13 +176,16 @@ export const DexQuoteItem = (
     let disable = false;
     let receivedTokenUsd: React.ReactNode = null;
     let diffUsd: React.ReactNode = null;
-
+    const balanceChangeReceiveTokenAmount = preExecResult
+      ? preExecResult.swapPreExecTx.balance_change.receive_token_list.find(
+          (item) => isSameAddress(item.id, receiveToken.id)
+        )?.amount || '0'
+      : '0';
     const actualReceiveAmount = inSufficient
       ? new BigNumber(quote?.toTokenAmount || 0)
           .div(10 ** (quote?.toTokenDecimals || receiveToken.decimals))
           .toString()
-      : preExecResult?.swapPreExecTx.balance_change.receive_token_list[0]
-          ?.amount;
+      : balanceChangeReceiveTokenAmount;
     if (actualReceiveAmount || dexId === 'WrapToken') {
       const receiveAmount =
         actualReceiveAmount || (dexId === 'WrapToken' ? payAmount : 0);
@@ -273,6 +276,7 @@ export const DexQuoteItem = (
       disable,
       receivedTokenUsd,
       diffUsd,
+      receiveToken,
     ];
   }, [
     quote?.toTokenAmount,
@@ -313,6 +317,10 @@ export const DexQuoteItem = (
       return;
     }
     if (disabled) return;
+    const actualReceiveAmount =
+      preExecResult?.swapPreExecTx.balance_change.receive_token_list.find(
+        (item) => isSameAddress(item.id, receiveToken.id)
+      )?.amount || 0;
     setActiveProvider?.({
       manualClick: true,
       name: dexId,
@@ -323,9 +331,7 @@ export const DexQuoteItem = (
       error: !preExecResult,
       halfBetterRate: halfBetterRateString,
       quoteWarning: undefined,
-      actualReceiveAmount:
-        preExecResult?.swapPreExecTx.balance_change.receive_token_list[0]
-          ?.amount || '',
+      actualReceiveAmount,
       gasUsd: preExecResult?.gasUsd,
       preExecResult: preExecResult,
     });
@@ -339,6 +345,7 @@ export const DexQuoteItem = (
     quote,
     preExecResult,
     gasFeeTooHight,
+    receiveToken,
   ]);
 
   const isWrapToken = useMemo(

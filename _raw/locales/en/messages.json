@@ -128,7 +128,7 @@
         "deployTimeLessThan": "< {{value}} days",
         "amountPopupTitle": "Approve amount",
         "flagByRabby": "Flagged by Rabby",
-        "contractTrustValueTip": "Trust value refers to the total token approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+        "contractTrustValueTip": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
         "amount": "Approve Amount:",
         "exceed": "Exceeds your current balance"
       },
@@ -144,7 +144,7 @@
       "nftApprove": {
         "title": "NFT Approval",
         "approveNFT": "Approve NFT",
-        "nftContractTrustValueTip": "Trust value refers to the top NFT approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days."
+        "nftContractTrustValueTip": "Trust value refers to the top NFT value spent by this contract. A low trust value indicates either risk or inactivity for 180 days."
       },
       "revokeNFTApprove": {
         "title": "Revoke NFT Approval",
@@ -182,7 +182,10 @@
         "receiver": "Receiver Address"
       },
       "revokePermit2": {
-        "title": "Revoke Permit2 Token Approval"
+        "title": "Revoke Permit2 Approval"
+      },
+      "batchRevokePermit2": {
+        "title": "Batch Revoke Permit2 Approval"
       },
       "revokePermit": {
         "title": "Revoke Permit Token Approval"
@@ -710,7 +713,12 @@
         "RevokeButton": {
           "btnText_zero": "Revoke",
           "btnText_one": "Revoke ({{count}})",
-          "btnText_other": "Revoke ({{count}})"
+          "btnText_other": "Revoke ({{count}})",
+          "permit2Batch": {
+            "modalContent": "Approvals from the same Permit2 contract would be packaged together under the same signature.",
+            "modalTitle_one": "A total of <2>{{count}}</2> signature is required",
+            "modalTitle_other": "A total of <2>{{count}}</2> signatures is required"
+          }
         },
         "ViewMore": {
           "text": "View more"
@@ -729,7 +737,7 @@
             "myApprovalTime": "My Approval Time"
           },
           "columnTip": {
-            "contractTrustValue": "Trust value refers to the total asset value approved and exposed to this contract. A low trust value indicates either risk or inactivity for 180 days.",
+            "contractTrustValue": "Trust value refers to the total asset value spent by this contract. A low trust value indicates either risk or inactivity for 180 days.",
             "contractTrustValueWarning": "The contract trust value < $100,000",
             "contractTrustValueDanger": "The contract trust value < $10,000"
           }
@@ -754,8 +762,10 @@
         "subTitleTokenAndNFT": "Approved Token and NFT",
         "subTitleContract": "Approved to the following Contracts",
         "selectAll": "Select All",
+        "unSelectAll": "Unselect All",
         "confirm": "Confirm {{ selectedCount }}",
-        "title": "Approvals"
+        "title": "Approvals",
+        "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
       }
     },
     "gasTopUp": {

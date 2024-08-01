@@ -1373,6 +1373,9 @@ export const GNOSIS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.CELO,
   CHAINS_ENUM.PZE,
   CHAINS_ENUM.ERA,
+  CHAINS_ENUM.SCRL,
+  CHAINS_ENUM.LINEA,
+  'XLAYER' as CHAINS_ENUM,
 ]);
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([

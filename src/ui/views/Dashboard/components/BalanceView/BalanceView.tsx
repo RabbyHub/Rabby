@@ -331,7 +331,7 @@ const BalanceView = ({
     <div onMouseLeave={onMouseLeave} className={clsx('assets flex')}>
       <div className="left relative overflow-x-hidden mx-10">
         <div className={clsx('amount group w-[100%]', 'text-32 mt-6')}>
-          <div className={clsx('amount-number leading-[38px]')}>
+          <div className={clsx('amount-number leading-[38px] max-w-full')}>
             {shouldShowBalanceLoading ? (
               <Skeleton.Input active className="w-[200px] h-[38px] rounded" />
             ) : (

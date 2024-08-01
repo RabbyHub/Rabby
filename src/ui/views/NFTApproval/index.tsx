@@ -97,7 +97,7 @@ const NFTApproval = () => {
             contractId: contract?.contract_id,
             spender: contract?.spender.id,
             abi,
-            tokenId: token?.inner_id,
+            nftTokenId: token?.inner_id,
             isApprovedForAll: true,
           },
           {
@@ -119,7 +119,7 @@ const NFTApproval = () => {
             contractId: token?.contract_id,
             spender: token?.spender?.id,
             abi,
-            tokenId: token?.inner_id,
+            nftTokenId: token?.inner_id,
             isApprovedForAll: false,
           },
           {
