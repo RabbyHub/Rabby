@@ -104,7 +104,10 @@ export const BridgeContent = () => {
 
     handleAmountChange,
     handleBalance,
-    payAmount,
+
+    debouncePayAmount,
+    inputAmount,
+
     inSufficient,
 
     openQuotesList,
@@ -117,6 +120,13 @@ export const BridgeContent = () => {
     setSelectedBridgeQuote,
     expired,
   } = useTokenPair(userAddress);
+
+  const payAmountLoading = useMemo(() => inputAmount !== debouncePayAmount, [
+    inputAmount,
+    debouncePayAmount,
+  ]);
+
+  const quoteOrAmountLoading = quoteLoading || payAmountLoading;
 
   const aggregatorIds = useRabbySelector(
     (s) => s.bridge.aggregatorsList.map((e) => e.id) || []
@@ -179,7 +189,7 @@ export const BridgeContent = () => {
               from_token_id: payToken.id,
               user_addr: userAddress,
               from_chain_id: payToken.chain,
-              from_token_raw_amount: new BigNumber(payAmount)
+              from_token_raw_amount: new BigNumber(debouncePayAmount)
                 .times(10 ** payToken.decimals)
                 .toFixed(0, 1)
                 .toString(),
@@ -202,7 +212,7 @@ export const BridgeContent = () => {
             to: tx.to,
             value: tx.value,
             data: tx.data,
-            payTokenRawAmount: new BigNumber(payAmount)
+            payTokenRawAmount: new BigNumber(debouncePayAmount)
               .times(10 ** payToken.decimals)
               .toFixed(0, 1)
               .toString(),
@@ -216,7 +226,7 @@ export const BridgeContent = () => {
               bridge_id: selectedBridgeQuote.bridge_id,
               from_chain_id: payToken.chain,
               from_token_id: payToken.id,
-              from_token_amount: payAmount,
+              from_token_amount: debouncePayAmount,
               to_chain_id: receiveToken.chain,
               to_token_id: receiveToken.id,
               to_token_amount: selectedBridgeQuote.to_token_amount,
@@ -260,7 +270,7 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.bridge_id,
     selectedBridgeQuote?.to_token_amount,
     wallet,
-    payAmount,
+    debouncePayAmount,
     rbiSource,
   ]);
 
@@ -358,15 +368,15 @@ export const BridgeContent = () => {
         <StyledInput
           spellCheck={false}
           placeholder="0"
-          value={payAmount}
+          value={inputAmount}
           onChange={handleAmountChange}
           ref={inputRef as any}
           className="bg-transparent"
           suffix={
             <span className="text-r-neutral-foot text-12">
-              {payAmount
+              {inputAmount
                 ? `≈ ${formatUsdValue(
-                    new BigNumber(payAmount)
+                    new BigNumber(inputAmount)
                       .times(payToken?.price || 0)
                       .toString(10)
                   )}`
@@ -375,20 +385,20 @@ export const BridgeContent = () => {
           }
         />
 
-        {quoteLoading && !inSufficient && !selectedBridgeQuote?.manualClick && (
-          <BestQuoteLoading />
-        )}
+        {quoteOrAmountLoading &&
+          !inSufficient &&
+          !selectedBridgeQuote?.manualClick && <BestQuoteLoading />}
 
         {payToken &&
           !inSufficient &&
           receiveToken &&
-          Number(payAmount) > 0 &&
-          (!quoteLoading || selectedBridgeQuote?.manualClick) && (
+          Number(debouncePayAmount) > 0 &&
+          (!quoteOrAmountLoading || selectedBridgeQuote?.manualClick) && (
             <BridgeReceiveDetails
               openQuotesList={openQuotesList}
               activeProvider={selectedBridgeQuote}
               className="section"
-              payAmount={payAmount}
+              payAmount={debouncePayAmount}
               payToken={payToken}
               receiveToken={receiveToken}
               bestQuoteId={bestQuoteId}
@@ -474,9 +484,8 @@ export const BridgeContent = () => {
           disabled={
             !payToken ||
             !receiveToken ||
-            !payAmount ||
-            Number(payAmount) === 0 ||
             inSufficient ||
+            payAmountLoading ||
             !selectedBridgeQuote
           }
         >
@@ -494,7 +503,7 @@ export const BridgeContent = () => {
           userAddress={userAddress}
           chain={chain}
           payToken={payToken}
-          payAmount={payAmount}
+          payAmount={debouncePayAmount}
           receiveToken={receiveToken}
           inSufficient={inSufficient}
           setSelectedBridgeQuote={setSelectedBridgeQuote}

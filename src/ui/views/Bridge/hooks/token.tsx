@@ -18,6 +18,7 @@ import { ETH_USDT_CONTRACT } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { BridgeQuote } from '@/background/service/openapi';
 import stats from '@/stats';
+import useDebounceValue from '@/ui/hooks/useDebounceValue';
 
 const useTokenInfo = ({
   userAddress,
@@ -150,7 +151,9 @@ export const useTokenPair = (userAddress: string) => {
     dispatch.bridge.setSelectedToToken(receiveToken);
   }, [receiveToken]);
 
-  const [payAmount, setPayAmount] = useState('');
+  const [inputAmount, setPayAmount] = useState('');
+
+  const debouncePayAmount = useDebounceValue(inputAmount, 300);
 
   const [selectedBridgeQuote, setOriSelectedBridgeQuote] = useState<
     SelectedBridgeQuote | undefined
@@ -179,9 +182,9 @@ export const useTokenPair = (userAddress: string) => {
   const inSufficient = useMemo(
     () =>
       payToken
-        ? tokenAmountBn(payToken).lt(payAmount)
-        : new BigNumber(0).lt(payAmount),
-    [payToken, payAmount]
+        ? tokenAmountBn(payToken).lt(debouncePayAmount)
+        : new BigNumber(0).lt(debouncePayAmount),
+    [payToken, debouncePayAmount]
   );
 
   const [quoteList, setQuotesList] = useState<SelectedBridgeQuote[]>([]);
@@ -189,7 +192,7 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     setQuotesList([]);
     setSelectedBridgeQuote(undefined);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
 
   const visible = useQuoteVisible();
 
@@ -215,7 +218,7 @@ export const useTokenPair = (userAddress: string) => {
       receiveToken?.id &&
       receiveToken &&
       chain &&
-      Number(payAmount) > 0 &&
+      Number(debouncePayAmount) > 0 &&
       aggregatorsList.length > 0
     ) {
       fetchIdRef.current += 1;
@@ -239,7 +242,7 @@ export const useTokenPair = (userAddress: string) => {
           from_token_id: payToken.id,
           user_addr: userAddress,
           from_chain_id: payToken.chain,
-          from_token_raw_amount: new BigNumber(payAmount)
+          from_token_raw_amount: new BigNumber(debouncePayAmount)
             .times(10 ** payToken.decimals)
             .toFixed(0, 1)
             .toString(),
@@ -301,7 +304,7 @@ export const useTokenPair = (userAddress: string) => {
                 quote.approve_contract_id
               );
               tokenApproved = new BigNumber(allowance).gte(
-                new BigNumber(payAmount).times(10 ** payToken.decimals)
+                new BigNumber(debouncePayAmount).times(10 ** payToken.decimals)
               );
             }
             let shouldTwoStepApprove = false;
@@ -356,7 +359,7 @@ export const useTokenPair = (userAddress: string) => {
     payToken?.id,
     receiveToken?.id,
     chain,
-    payAmount,
+    debouncePayAmount,
   ]);
 
   const [bestQuoteId, setBestQuoteId] = useState<
@@ -412,7 +415,7 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     setExpired(false);
     setSelectedBridgeQuote(undefined);
-  }, [payToken?.id, receiveToken?.id, chain, payAmount, inSufficient]);
+  }, [payToken?.id, receiveToken?.id, chain, debouncePayAmount, inSufficient]);
 
   return {
     chain,
@@ -425,7 +428,8 @@ export const useTokenPair = (userAddress: string) => {
 
     handleAmountChange,
     handleBalance,
-    payAmount,
+    debouncePayAmount,
+    inputAmount,
 
     inSufficient,
 
