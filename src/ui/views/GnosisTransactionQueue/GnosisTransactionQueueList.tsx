@@ -41,7 +41,7 @@ import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ReplacePopup } from './components/ReplacePopup';
 import './style.less';
-import { findChainByID } from '@/utils/chain';
+import { findChain, findChainByID } from '@/utils/chain';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useRequest } from 'ahooks';
 import { getProtocol } from '../Approval/components/Actions/utils';
@@ -511,7 +511,10 @@ export const GnosisTransactionQueueList = (props: {
   loading?: boolean;
 }) => {
   const { usefulChain: chain, pendingTxs, loading } = props;
-  const networkId = CHAINS[chain].network;
+  const networkId =
+    findChain({
+      enum: chain,
+    })?.network || '';
   const wallet = useWallet();
   // const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
