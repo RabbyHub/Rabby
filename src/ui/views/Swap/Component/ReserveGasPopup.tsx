@@ -266,6 +266,7 @@ export const SendReserveGasPopup = (
     onGasChange,
     limit,
     selectedItem,
+    rawHexBalance,
     onClose,
     onCancel,
     ...otherPopupProps
@@ -297,6 +298,7 @@ export const SendReserveGasPopup = (
           limit={limit}
           selectedItem={selectedItem}
           onGasChange={onGasChange}
+          rawHexBalance={rawHexBalance}
         />
       )}
     </Popup>

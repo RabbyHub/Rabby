@@ -1620,6 +1620,7 @@ const SendToken = () => {
         }}
         gasList={gasList}
         visible={reserveGasOpen}
+        rawHexBalance={currentToken.raw_amount_hex_str}
         onClose={(gasLevel) => handleGasLevelChanged(gasLevel)}
       />
     </div>
