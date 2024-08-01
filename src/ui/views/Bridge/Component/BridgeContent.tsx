@@ -128,6 +128,10 @@ export const BridgeContent = () => {
 
   const quoteOrAmountLoading = quoteLoading || payAmountLoading;
 
+  const amountAvailable = useMemo(() => Number(debouncePayAmount) > 0, [
+    debouncePayAmount,
+  ]);
+
   const aggregatorIds = useRabbySelector(
     (s) => s.bridge.aggregatorsList.map((e) => e.id) || []
   );
@@ -386,13 +390,14 @@ export const BridgeContent = () => {
         />
 
         {quoteOrAmountLoading &&
+          amountAvailable &&
           !inSufficient &&
           !selectedBridgeQuote?.manualClick && <BestQuoteLoading />}
 
         {payToken &&
           !inSufficient &&
           receiveToken &&
-          Number(debouncePayAmount) > 0 &&
+          amountAvailable &&
           (!quoteOrAmountLoading || selectedBridgeQuote?.manualClick) && (
             <BridgeReceiveDetails
               openQuotesList={openQuotesList}
@@ -484,6 +489,7 @@ export const BridgeContent = () => {
           disabled={
             !payToken ||
             !receiveToken ||
+            !amountAvailable ||
             inSufficient ||
             payAmountLoading ||
             !selectedBridgeQuote

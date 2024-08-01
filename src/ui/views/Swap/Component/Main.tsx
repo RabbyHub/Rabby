@@ -195,6 +195,10 @@ export const Main = () => {
 
   const quoteOrAmountLoading = quoteLoading || payAmountLoading;
 
+  const amountAvailable = useMemo(() => Number(debouncePayAmount) > 0, [
+    debouncePayAmount,
+  ]);
+
   const btnText = useMemo(() => {
     if (slippageChanged) {
       return t('page.swap.slippage-adjusted-refresh-quote');
@@ -450,11 +454,13 @@ export const Main = () => {
         />
 
         {quoteOrAmountLoading &&
+          amountAvailable &&
           !inSufficient &&
           !activeProvider?.manualClick && <BestQuoteLoading />}
 
         {Number(debouncePayAmount) > 0 &&
           !inSufficient &&
+          amountAvailable &&
           (!quoteOrAmountLoading ||
             (activeProvider && !!activeProvider.manualClick)) &&
           payToken &&
@@ -589,7 +595,7 @@ export const Main = () => {
           disabled={
             !payToken ||
             !receiveToken ||
-            !debouncePayAmount ||
+            !amountAvailable ||
             inSufficient ||
             payAmountLoading ||
             !activeProvider
