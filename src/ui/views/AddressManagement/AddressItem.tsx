@@ -230,7 +230,7 @@ const AddressItem = memo(
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
               >
-                <div className="relative mr-[12px]">
+                <div className="relative mr-[12px] flex-none">
                   <img
                     src={addressTypeIcon}
                     className={
@@ -321,7 +321,7 @@ const AddressItem = memo(
                           />
                         </>
                       ) : (
-                        <span className="ml-[12px] text-12 text-r-neutral-body">
+                        <span className="ml-[12px] text-12 text-r-neutral-body truncate flex-1 block">
                           ${splitNumberByStep(balance?.toFixed(2))}
                         </span>
                       )}
@@ -338,7 +338,7 @@ const AddressItem = memo(
                 </div>
               )}
               {isCurrentAccount && (
-                <div className="rabby-address-item-extra flex items-center justify-center">
+                <div className="rabby-address-item-extra flex items-center justify-center flex-1 overflow-hidden">
                   {isUpdatingBalance ? (
                     <>
                       <SkeletonInput
@@ -350,7 +350,7 @@ const AddressItem = memo(
                       />
                     </>
                   ) : (
-                    <span className="text-15 font-medium text-white">
+                    <span className="text-15 font-medium text-white w-full truncate text-right">
                       ${splitNumberByStep(balance?.toFixed(2))}
                     </span>
                   )}

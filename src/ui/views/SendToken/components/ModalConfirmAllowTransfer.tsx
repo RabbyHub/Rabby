@@ -31,7 +31,12 @@ const FormInputItem = styled(Form.Item)`
   &.ant-form-item-has-error {
     margin-bottom: 0;
   }
-  .ant-input {
+  .ant-input.ant-input-lg.popup-input {
+    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+    background: transparent !important;
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587) !important;
+    }
     &:focus {
       border-color: var(--r-blue-default, #7084ff);
     }

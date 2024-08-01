@@ -19,7 +19,7 @@ export const BalanceLabel: React.FC<Props> = ({ balance }) => {
   return (
     <div
       className={clsx(
-        'cursor-pointer transition-opacity'
+        'cursor-pointer transition-opacity truncate'
         // isCache && 'opacity-80'
       )}
       title={splitBalance}
