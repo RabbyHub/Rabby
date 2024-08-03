@@ -9,9 +9,14 @@ interface Props {
   isLoading?: boolean;
   revokeSummary: RevokeSummary;
   onRevoke: () => any | Promise<any>;
+  showButtonTips?: boolean;
 }
 
-export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
+export const RevokeButton: React.FC<Props> = ({
+  revokeSummary,
+  onRevoke,
+  showButtonTips,
+}) => {
   const { t } = useTranslation();
 
   const [isRevokeLoading, setIsRevokeLoading] = React.useState(false);
@@ -93,7 +98,7 @@ export const RevokeButton: React.FC<Props> = ({ revokeSummary, onRevoke }) => {
 
   return (
     <>
-      {revokeTxCount > 1 ? (
+      {revokeTxCount > 1 && showButtonTips ? (
         <div className="mt-[16px] h-[16px] mb-[16px] text-13 leading-[15px] text-r-neutral-body">
           {revokeTxCount} transactions to be signed sequentially
         </div>

@@ -192,90 +192,6 @@ export const TxTypeComponent = ({
   return <></>;
 };
 
-// todo move to background
-const getRecommendGas = async ({
-  gas,
-  wallet,
-  tx,
-  gasUsed,
-}: {
-  gasUsed: number;
-  gas: number;
-  wallet: ReturnType<typeof useWallet>;
-  tx: Tx;
-  chainId: number;
-}) => {
-  if (gas > 0) {
-    return {
-      needRatio: true,
-      gas: new BigNumber(gas),
-      gasUsed,
-    };
-  }
-  const txGas = tx.gasLimit || tx.gas;
-  if (txGas && new BigNumber(txGas).gt(0)) {
-    return {
-      needRatio: true,
-      gas: new BigNumber(txGas),
-      gasUsed: Number(txGas),
-    };
-  }
-  try {
-    const res = await wallet.openapi.historyGasUsed({
-      tx: {
-        ...tx,
-        nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
-        data: tx.data,
-        value: tx.value || '0x0',
-        gas: tx.gas || '', // set gas limit if dapp not set
-      },
-      user_addr: tx.from,
-    });
-    if (res.gas_used > 0) {
-      return {
-        needRatio: true,
-        gas: new BigNumber(res.gas_used),
-        gasUsed: res.gas_used,
-      };
-    }
-  } catch (e) {
-    // NOTHING
-  }
-
-  return {
-    needRatio: false,
-    gas: new BigNumber(1000000),
-    gasUsed: 1000000,
-  };
-};
-
-// todo move to background
-const getRecommendNonce = async ({
-  wallet,
-  tx,
-  chainId,
-}: {
-  wallet: ReturnType<typeof useWallet>;
-  tx: Tx;
-  chainId: number;
-}) => {
-  const chain = findChain({
-    id: chainId,
-  });
-  if (!chain) {
-    throw new Error('chain not found');
-  }
-  const onChainNonce = await wallet.requestETHRpc<any>(
-    {
-      method: 'eth_getTransactionCount',
-      params: [tx.from, 'latest'],
-    },
-    chain.serverId
-  );
-  const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
-  return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
-};
-
 const getNativeTokenBalance = async ({
   wallet,
   address,
@@ -965,9 +881,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     let recommendNonce = '0x0';
     if (!isGnosisAccount && !isCoboArugsAccount) {
       try {
-        recommendNonce = await getRecommendNonce({
-          tx,
-          wallet,
+        recommendNonce = await wallet.getRecommendNonce({
+          from: tx.from,
           chainId,
         });
         setRecommendNonce(recommendNonce);
@@ -1020,13 +935,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         if (res.gas.success) {
           estimateGas = res.gas.gas_limit || res.gas.gas_used;
         }
-        const { gas, needRatio, gasUsed } = await getRecommendGas({
+        const {
+          gas: gasRaw,
+          needRatio,
+          gasUsed,
+        } = await wallet.getRecommendGas({
           gasUsed: res.gas.gas_used,
           gas: estimateGas,
           tx,
-          wallet,
           chainId,
         });
+        const gas = new BigNumber(gasRaw);
         setGasUsed(gasUsed);
         setRecommendGasLimit(`0x${gas.toString(16)}`);
         let block: null | BlockInfo = null;

@@ -64,7 +64,7 @@ import { RISKY_ROW_HEIGHT, ROW_HEIGHT } from './constant';
 import { RevokeButton } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
-import { IS_WINDOWS } from '@/constant';
+import { IS_WINDOWS, KEYRING_CLASS } from '@/constant';
 import { ensureSuffix } from '@/utils/string';
 import ApprovalsNameAndAddr from './components/NameAndAddr';
 import NetSwitchTabs, {
@@ -76,6 +76,8 @@ import { useTitle } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Permit2Badge } from './components/Badges';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useConfirmRevokeModal } from './components/BatchRevoke/useConfirmRevokeModal';
+import { useBatchRevokeModal } from './components/BatchRevoke/useBatchRevokeModal';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -1111,7 +1113,6 @@ const ApprovalManagePage = () => {
     },
     []
   );
-
   const {
     handleClickAssetRow,
     contractRevokeMap,
@@ -1124,17 +1125,47 @@ const ApprovalManagePage = () => {
   } = useSelectSpendersToRevoke(filterType);
 
   const wallet = useWallet();
-  const handleRevoke = React.useCallback(async () => {
-    return wallet
-      .revoke({ list: revokeSummary.currentRevokeList })
-      .then(() => {
-        setVisibleRevokeModal(false);
-        clearRevoke();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [revokeSummary.currentRevokeList]);
+  const handleRevoke = React.useCallback(
+    async ({ isInternal }: { isInternal: boolean }) => {
+      return wallet
+        .revoke({ list: revokeSummary.currentRevokeList, isInternal })
+        .then(() => {
+          setVisibleRevokeModal(false);
+          clearRevoke();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    [revokeSummary.currentRevokeList]
+  );
+
+  const batchRevokeModal = useBatchRevokeModal({
+    revokeList: revokeSummary.currentRevokeList,
+    onStart: () => handleRevoke({ isInternal: true }),
+    onPause: () => {},
+    onClose: () => {},
+    onDone: () => {},
+    onContinue: () => {},
+  });
+  const confirmRevokeModal = useConfirmRevokeModal({
+    revokeListCount: revokeSummary.currentRevokeList.length,
+    onBatchRevoke: () => batchRevokeModal.show(),
+    onRevokeOneByOne: () => handleRevoke({ isInternal: false }),
+  });
+  const enableBatchRevoke = React.useMemo(() => {
+    return (
+      account?.type === KEYRING_CLASS.PRIVATE_KEY ||
+      account?.type === KEYRING_CLASS.MNEMONIC
+    );
+  }, [account]);
+  const onRevoke = React.useCallback(() => {
+    if (revokeSummary.currentRevokeList.length > 1 && enableBatchRevoke) {
+      confirmRevokeModal.show();
+    } else {
+      handleRevoke({ isInternal: false });
+    }
+  }, [handleRevoke, enableBatchRevoke]);
 
   return (
     <div
@@ -1248,7 +1279,8 @@ const ApprovalManagePage = () => {
             <div className="sticky-footer">
               <RevokeButton
                 revokeSummary={revokeSummary}
-                onRevoke={handleRevoke}
+                showButtonTips={!enableBatchRevoke}
+                onRevoke={onRevoke}
               />
             </div>
           </>
