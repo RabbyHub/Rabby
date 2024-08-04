@@ -1,29 +1,33 @@
 import { Modal } from '@/ui/component';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import React from 'react';
-import { RevokeTable } from './RevokeTable';
+import { RevokeTable, RevokeTableProps } from './RevokeTable';
 
-export const useBatchRevokeModal = (props: {
-  revokeList: ApprovalSpenderItemToBeRevoked[];
-  onStart: () => void;
-  onPause: () => void;
-  onClose: () => void;
-  onDone: () => void;
-  onContinue: () => void;
-}) => {
+export const useBatchRevokeModal = (props: RevokeTableProps) => {
+  const [visible, setVisible] = React.useState(false);
+
   const show = React.useCallback(() => {
-    const modal = Modal.info({
-      title: 'Batch Revoke (0/5)',
-      className: 'confirm-revoke-modal',
-      closable: true,
-      centered: true,
-      width: 964,
-      okCancel: false,
-      content: <RevokeTable />,
-    });
-  }, [props]);
+    setVisible(true);
+  }, []);
+
+  const node = React.useMemo(() => {
+    return (
+      <Modal
+        visible={visible}
+        title={`Batch Revoke (0/${props.revokeList.length})`}
+        className="confirm-revoke-modal"
+        closable={true}
+        centered={true}
+        width={964}
+        okCancel={false}
+        onCancel={() => setVisible(false)}
+      >
+        <RevokeTable {...props} />
+      </Modal>
+    );
+  }, [visible]);
 
   return {
     show,
+    node,
   };
 };

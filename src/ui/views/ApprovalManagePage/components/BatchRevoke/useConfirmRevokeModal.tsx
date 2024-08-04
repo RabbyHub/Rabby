@@ -36,7 +36,7 @@ export const useConfirmRevokeModal = (props: {
                 'before:content-none'
               )}
               onClick={() => {
-                props.onRevokeOneByOne();
+                props.onBatchRevoke();
                 modal.destroy();
               }}
             >

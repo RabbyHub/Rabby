@@ -78,6 +78,8 @@ import { Permit2Badge } from './components/Badges';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useConfirmRevokeModal } from './components/BatchRevoke/useConfirmRevokeModal';
 import { useBatchRevokeModal } from './components/BatchRevoke/useBatchRevokeModal';
+import { AssetRow } from './components/AssetRow';
+import { SpenderRow } from './components/SpenderRow';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -619,47 +621,12 @@ function getColumnsForAsset({
     {
       title: () => (
         <span>
-          {/* {'Asset'} */}
           {t('page.approvals.tableConfig.byAssets.columnTitle.asset')}
         </span>
       ),
       key: 'asset',
       dataIndex: 'key',
-      render: (_, row) => {
-        const asset = row.$assetParent;
-        if (!asset) return null;
-
-        const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
-        if (!chainItem?.enum) return null;
-
-        const fullName =
-          asset.type === 'nft' && asset.nftToken
-            ? ensureSuffix(
-                asset.name || 'Unknown',
-                ` #${asset.nftToken.inner_id}`
-              )
-            : asset.name || 'Unknown';
-
-        return (
-          <div className="flex items-center font-[500]">
-            <IconWithChain
-              width="24px"
-              height="24px"
-              hideConer
-              iconUrl={asset?.logo_url || IconUnknown}
-              chainServerId={asset.chain}
-              noRound={false}
-            />
-
-            <Tooltip
-              overlayClassName="J-table__tooltip disable-ant-overwrite"
-              overlay={fullName}
-            >
-              <span className="ml-[8px] asset-name">{fullName}</span>
-            </Tooltip>
-          </div>
-        );
-      },
+      render: (_, row) => <AssetRow asset={row.$assetParent} />,
       width: 200,
     },
     // Type
@@ -796,71 +763,7 @@ function getColumnsForAsset({
       ),
       key: 'approveSpender',
       dataIndex: 'key',
-      render: (_, spender) => {
-        const asset = spender.$assetParent;
-        if (!asset) return null;
-        const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
-        // if (!chainItem) return null;
-
-        // it maybe null
-        const protocol = spender.protocol;
-
-        const protocolName = protocol?.name || 'Unknown';
-
-        return (
-          <div className="flex items-center">
-            <IconWithChain
-              width="18px"
-              height="18px"
-              hideConer
-              hideChainIcon
-              iconUrl={chainItem?.logo || IconUnknown}
-              chainServerId={asset?.chain}
-              noRound={asset.type === 'nft'}
-            />
-            <ApprovalsNameAndAddr
-              className="ml-[6px]"
-              addressClass=""
-              address={spender.id || ''}
-              chainEnum={chainItem?.enum}
-              copyIconClass="text-r-neutral-body"
-              addressSuffix={
-                <>
-                  <Tooltip
-                    overlayClassName="J-table__tooltip disable-ant-overwrite"
-                    overlay={protocolName}
-                  >
-                    <span className="contract-name ml-[4px]">
-                      ({protocolName})
-                    </span>
-                  </Tooltip>
-                  <ThemeIcon
-                    onClick={(evt) => {
-                      evt.stopPropagation();
-                      openScanLinkFromChainItem(
-                        chainItem?.scanLink,
-                        spender.id
-                      );
-                    }}
-                    src={RcIconExternal}
-                    className={clsx(
-                      'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
-                    )}
-                  />
-                </>
-              }
-              tooltipAliasName
-              openExternal={false}
-            />
-            {spender.$assetContract?.type === 'contract' && (
-              <Permit2Badge
-                className="ml-[8px]"
-                contractSpender={spender as SpenderInTokenApproval}
-              />
-            )}
-          </div>
-        );
-      },
+      render: (_, spender) => <SpenderRow spender={spender} />,
       width: 400,
     },
     // My Approval Time
@@ -1142,6 +1045,7 @@ const ApprovalManagePage = () => {
 
   const batchRevokeModal = useBatchRevokeModal({
     revokeList: revokeSummary.currentRevokeList,
+    dataSource: displaySortedAssetsList,
     onStart: () => handleRevoke({ isInternal: true }),
     onPause: () => {},
     onClose: () => {},
@@ -1275,6 +1179,7 @@ const ApprovalManagePage = () => {
                   revokeList={contractRevokeMap[selectedContractKey]}
                 />
               ) : null}
+              {batchRevokeModal.node}
             </main>
             <div className="sticky-footer">
               <RevokeButton
