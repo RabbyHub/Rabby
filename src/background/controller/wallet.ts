@@ -185,15 +185,9 @@ export class WalletController extends BaseController {
     );
   };
 
-  sendRequest = <T = any>(
-    data: ProviderRequest['data'],
-    isInternal = false
-  ) => {
-    if (isInternal) {
-      // providerController.ethSendTransaction({
-      //   data,
-      // });
-      console.log('internal request', data);
+  sendRequest = <T = any>(data: ProviderRequest['data'], isBuild = false) => {
+    if (isBuild) {
+      return Promise.resolve<T>(data as T);
     }
     return provider<T>({
       data,
@@ -716,7 +710,7 @@ export class WalletController extends BaseController {
       swapPreferMEVGuarded?: boolean;
       isBridge?: boolean;
     },
-    isInternal = false
+    isBuild = false
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -764,13 +758,13 @@ export class WalletController extends BaseController {
         ...extra,
       };
     }
-    await this.sendRequest(
+    return await this.sendRequest(
       {
         $ctx,
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isInternal
+      isBuild
     );
   };
 
@@ -1025,7 +1019,7 @@ export class WalletController extends BaseController {
       nftTokenId?: string | null | undefined;
     },
     $ctx?: any,
-    isInternal = false
+    isBuild = false
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1035,7 +1029,7 @@ export class WalletController extends BaseController {
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       if (isApprovedForAll) {
-        await this.sendRequest(
+        return await this.sendRequest(
           {
             $ctx,
             method: 'eth_sendTransaction',
@@ -1068,10 +1062,10 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isInternal
+          isBuild
         );
       } else {
-        await this.sendRequest(
+        return await this.sendRequest(
           {
             $ctx,
             method: 'eth_sendTransaction',
@@ -1105,11 +1099,11 @@ export class WalletController extends BaseController {
               },
             ],
           },
-          isInternal
+          isBuild
         );
       }
     } else if (abi === 'ERC1155') {
-      await this.sendRequest(
+      return await this.sendRequest(
         {
           $ctx,
           method: 'eth_sendTransaction',
@@ -1136,7 +1130,7 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        isInternal
+        isBuild
       );
     } else {
       throw new Error(t('background.error.unknownAbi'));
@@ -3563,13 +3557,7 @@ export class WalletController extends BaseController {
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
 
-  revoke = async ({
-    list,
-    isInternal,
-  }: {
-    list: ApprovalSpenderItemToBeRevoked[];
-    isInternal?: boolean;
-  }) => {
+  revoke = async ({ list }: { list: ApprovalSpenderItemToBeRevoked[] }) => {
     const queue = new PQueue({
       autoStart: true,
       concurrency: 1,
@@ -3593,14 +3581,11 @@ export class WalletController extends BaseController {
               return;
             }
 
-            await this.lockdownPermit2(
-              {
-                id: permit2ContractId,
-                chainServerId: item.chainServerId,
-                tokenSpenders: item.tokenSpenders,
-              },
-              isInternal
-            );
+            await this.lockdownPermit2({
+              id: permit2ContractId,
+              chainServerId: item.chainServerId,
+              tokenSpenders: item.tokenSpenders,
+            });
           } catch (error) {
             abortRevoke.abort();
             if (!appIsProd) console.error(error);
@@ -3611,23 +3596,14 @@ export class WalletController extends BaseController {
       ...revokeSummary.generalRevokes.map((e) => async () => {
         try {
           if ('nftTokenId' in e) {
-            await this.revokeNFTApprove(e, undefined, isInternal);
+            await this.revokeNFTApprove(e);
           } else {
-            await this.approveToken(
-              e.chainServerId,
-              e.id,
-              e.spender,
-              0,
-              {
-                ga: {
-                  category: 'Security',
-                  source: 'tokenApproval',
-                },
+            await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+              ga: {
+                category: 'Security',
+                source: 'tokenApproval',
               },
-              undefined,
-              undefined,
-              isInternal
-            );
+            });
           }
         } catch (error) {
           abortRevoke.abort();

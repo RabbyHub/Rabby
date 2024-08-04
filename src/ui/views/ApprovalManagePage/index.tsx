@@ -1028,34 +1028,27 @@ const ApprovalManagePage = () => {
   } = useSelectSpendersToRevoke(filterType);
 
   const wallet = useWallet();
-  const handleRevoke = React.useCallback(
-    async ({ isInternal }: { isInternal: boolean }) => {
-      return wallet
-        .revoke({ list: revokeSummary.currentRevokeList, isInternal })
-        .then(() => {
-          setVisibleRevokeModal(false);
-          clearRevoke();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    [revokeSummary.currentRevokeList]
-  );
+  const handleRevoke = React.useCallback(async () => {
+    return wallet
+      .revoke({ list: revokeSummary.currentRevokeList })
+      .then(() => {
+        setVisibleRevokeModal(false);
+        clearRevoke();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [revokeSummary.currentRevokeList]);
 
   const batchRevokeModal = useBatchRevokeModal({
     revokeList: revokeSummary.currentRevokeList,
     dataSource: displaySortedAssetsList,
-    onStart: () => handleRevoke({ isInternal: true }),
-    onPause: () => {},
-    onClose: () => {},
     onDone: () => {},
-    onContinue: () => {},
   });
   const confirmRevokeModal = useConfirmRevokeModal({
     revokeListCount: revokeSummary.currentRevokeList.length,
     onBatchRevoke: () => batchRevokeModal.show(),
-    onRevokeOneByOne: () => handleRevoke({ isInternal: false }),
+    onRevokeOneByOne: () => handleRevoke(),
   });
   const enableBatchRevoke = React.useMemo(() => {
     return (
@@ -1067,7 +1060,7 @@ const ApprovalManagePage = () => {
     if (revokeSummary.currentRevokeList.length > 1 && enableBatchRevoke) {
       confirmRevokeModal.show();
     } else {
-      handleRevoke({ isInternal: false });
+      handleRevoke();
     }
   }, [handleRevoke, enableBatchRevoke]);
 

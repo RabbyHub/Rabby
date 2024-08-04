@@ -1,7 +1,10 @@
 import stats from '@/stats';
 import {
+  calcGasLimit,
   convertLegacyTo1559,
   getKRCategoryByType,
+  getNativeTokenBalance,
+  getPendingTxs,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
@@ -190,31 +193,6 @@ export const TxTypeComponent = ({
     );
   }
   return <></>;
-};
-
-const getNativeTokenBalance = async ({
-  wallet,
-  address,
-  chainId,
-}: {
-  wallet: ReturnType<typeof useWallet>;
-  address: string;
-  chainId: number;
-}): Promise<string> => {
-  const chain = findChain({
-    id: chainId,
-  });
-  if (!chain) {
-    throw new Error('chain not found');
-  }
-  const balance = await wallet.requestETHRpc<any>(
-    {
-      method: 'eth_getBalance',
-      params: [address, 'latest'],
-    },
-    chain.serverId
-  );
-  return balance;
 };
 
 const explainGas = async ({
@@ -473,30 +451,6 @@ interface SignTxProps<TData extends any[] = any[]> {
   origin?: string;
 }
 
-interface BlockInfo {
-  baseFeePerGas: string;
-  difficulty: string;
-  extraData: string;
-  gasLimit: string;
-  gasUsed: string;
-  hash: string;
-  logsBloom: string;
-  miner: string;
-  mixHash: string;
-  nonce: string;
-  number: string;
-  parentHash: string;
-  receiptsRoot: string;
-  sha3Uncles: string;
-  size: string;
-  stateRoot: string;
-  timestamp: string;
-  totalDifficulty: string;
-  transactions: string[];
-  transactionsRoot: string;
-  uncles: string[];
-}
-
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const renderStartAt = useRef(0);
@@ -511,7 +465,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [gasPriceMedian, setGasPriceMedian] = useState<null | number>(null);
-  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
   const [gasUsed, setGasUsed] = useState(0);
   const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 2
@@ -895,7 +848,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (updateNonce && !isGnosisAccount && !isCoboArugsAccount) {
       setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
-    const { pendings } = await wallet.getTransactionHistory(address);
     const preExecPromise = wallet.openapi
       .preExecTx({
         tx: {
@@ -908,27 +860,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         origin: origin || '',
         address,
         updateNonce,
-        pending_tx_list: pendings
-          .filter((item) =>
-            new BigNumber(item.nonce).lt(
-              updateNonce ? recommendNonce : tx.nonce
-            )
-          )
-          .reduce((result, item) => {
-            return result.concat(item.txs.map((tx) => tx.rawTx));
-          }, [] as Tx[])
-          .map((item) => ({
-            from: item.from,
-            to: item.to,
-            chainId: item.chainId,
-            data: item.data || '0x',
-            nonce: item.nonce,
-            value: item.value,
-            gasPrice: `0x${new BigNumber(
-              item.gasPrice || item.maxFeePerGas || 0
-            ).toString(16)}`,
-            gas: item.gas || item.gasLimit || '0x0',
-          })),
+        pending_tx_list: await getPendingTxs({
+          recommendNonce,
+          wallet,
+          address,
+        }),
       })
       .then(async (res) => {
         let estimateGas = 0;
@@ -948,50 +884,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         const gas = new BigNumber(gasRaw);
         setGasUsed(gasUsed);
         setRecommendGasLimit(`0x${gas.toString(16)}`);
-        let block: null | BlockInfo = null;
-        try {
-          block = await wallet.requestETHRpc<any>(
-            {
-              method: 'eth_getBlockByNumber',
-              params: ['latest', false],
-            },
-            chain.serverId
-          );
-          setBlockInfo(block);
-        } catch (e) {
-          // NOTHING
-        }
-        if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
-          setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
-        } else if (!gasLimit) {
-          // use server response gas limit
-          let ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
-          let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
-          sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
-            ? new BigNumber(0)
-            : sendNativeTokenAmount;
-          const gasNotEnough = gas
-            .times(ratio)
-            .times(selectedGas?.price || 0)
-            .div(1e18)
-            .plus(sendNativeTokenAmount.div(1e18))
-            .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18));
-          if (gasNotEnough) {
-            ratio = res.gas.gas_ratio;
-          }
-          setRecommendGasLimitRatio(needRatio ? ratio : 1);
-          let recommendGasLimit = needRatio
-            ? gas.times(ratio).toFixed(0)
-            : gas.toFixed(0);
-          if (block && new BigNumber(recommendGasLimit).gt(block.gasLimit)) {
-            recommendGasLimit = new BigNumber(block.gasLimit)
-              .times(0.95)
-              .toFixed(0);
-          }
-          setGasLimit(
-            intToHex(Math.max(Number(recommendGasLimit), Number(tx.gas || 0)))
-          );
-        }
+        const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
+          chain,
+          tx,
+          gas,
+          selectedGas,
+          nativeTokenBalance,
+          explainTx: res,
+          needRatio,
+          wallet,
+        });
+        setGasLimit(gasLimit);
+        setRecommendGasLimitRatio(recommendGasLimitRatio);
         setTxDetail(res);
 
         setPreprocessSuccess(res.pre_exec.success);

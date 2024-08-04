@@ -7,6 +7,7 @@ import {
   transactionHistoryService,
 } from '@/background/service';
 import { t } from 'i18next';
+import { INTERNAL_REQUEST_SESSION } from '@/constant';
 
 export const getRecommendGas = async ({
   gas,
@@ -77,8 +78,11 @@ export const getRecommendNonce = async ({
   }
   const onChainNonce = await providerController.ethRpc(
     {
-      method: 'eth_getTransactionCount',
-      params: [from, 'latest'],
+      data: {
+        method: 'eth_getTransactionCount',
+        params: [from, 'latest'],
+      },
+      session: INTERNAL_REQUEST_SESSION,
     },
     chain.serverId
   );

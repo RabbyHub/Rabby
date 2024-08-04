@@ -5,44 +5,33 @@ import {
   SpenderInNFTApproval,
   AssetApprovalSpender,
 } from '@/utils/approval';
-import { findIndexRevokeList } from '../../utils';
 import { AssetRow } from '../AssetRow';
 import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
 import { Button } from 'antd';
+import { useBatchRevokeTask } from './useBatchRevokeTask';
 
 export interface RevokeTableProps {
   revokeList: ApprovalSpenderItemToBeRevoked[];
   dataSource: (SpenderInTokenApproval | SpenderInNFTApproval)[];
-  onStart: () => void;
-  onPause: () => void;
-  onClose: () => void;
   onDone: () => void;
-  onContinue: () => void;
 }
 
 export const RevokeTable: React.FC<RevokeTableProps> = ({
-  revokeList,
   dataSource,
+  revokeList,
 }) => {
-  const filteredRevokeList = React.useMemo(
-    () =>
-      dataSource.filter((record) => {
-        return (
-          findIndexRevokeList(revokeList, {
-            item: record.$assetContract!,
-            spenderHost: record.$assetToken!,
-            assetApprovalSpender: record,
-          }) > -1
-        );
-      }),
-    [revokeList, dataSource]
-  );
+  const task = useBatchRevokeTask();
+
+  const onStart = () => {
+    console.log('Start Revoke');
+    task.start(revokeList);
+  };
 
   return (
     <div>
       <VirtualTable<AssetApprovalSpender>
-        dataSource={filteredRevokeList}
+        dataSource={dataSource}
         rowKey={(record) => `${record.id}:${record.$assetParent?.id}`}
         markHoverRow={false}
         scroll={{ y: 416, x: 900 }}
@@ -81,7 +70,9 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           },
         ]}
       />
-      <Button>Done</Button>
+      <Button type="primary" onClick={onStart}>
+        Sign and Start Revoke
+      </Button>
     </div>
   );
 };
