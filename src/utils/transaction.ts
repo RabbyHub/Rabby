@@ -1,7 +1,6 @@
-import { isHexString } from 'ethereumjs-util';
+import { intToHex, isHexString } from 'ethereumjs-util';
 import BigNumber from 'bignumber.js';
 import {
-  CHAINS,
   DEFAULT_GAS_LIMIT_RATIO,
   GASPRICE_RANGE,
   KEYRING_CATEGORY_MAP,
@@ -9,9 +8,8 @@ import {
 } from 'consts';
 import { ExplainTxResponse, GasLevel, Tx } from 'background/service/openapi';
 import { findChain } from './chain';
-import { intToHex, WalletControllerType } from '@/ui/utils';
+import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
-import { TransactionGroup } from '@/background/service/transactionHistory';
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({

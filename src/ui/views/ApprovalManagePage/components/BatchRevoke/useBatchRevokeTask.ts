@@ -1,4 +1,4 @@
-import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { INTERNAL_REQUEST_ORIGIN, INTERNAL_REQUEST_SESSION } from '@/constant';
 import { intToHex, useWallet, WalletControllerType } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
@@ -126,10 +126,7 @@ async function buildTx(
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
 
-  console.log('tx', transaction);
-  return transaction;
-  // TODO send
-  // TODO check tx status
+  return { rawTransaction: tx, transaction };
 }
 
 export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
@@ -206,9 +203,31 @@ export const useBatchRevokeTask = () => {
 
           cloneItem.$status!.status = 'pending';
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-          const tx = await buildTx(wallet, revokeItem);
+          // TODO: maybe failed
+          const { transaction, rawTransaction } = await buildTx(
+            wallet,
+            revokeItem
+          );
 
-          console.log(tx);
+          // to send
+          // await wallet.ethSendTransaction({
+          //   data: {
+          //     $ctx: {},
+          //     params: [transaction],
+          //   },
+          //   session: INTERNAL_REQUEST_SESSION,
+          //   approvalRes: {
+          //     ...rawTransaction,
+          //   },
+          //   pushed: false,
+          //   result: undefined,
+          // });
+          // cloneItem.$status!.status = 'success';
+          // setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+
+          // to update status
+
+          console.log(transaction);
         })
       )
     );

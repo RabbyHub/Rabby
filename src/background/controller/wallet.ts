@@ -4229,6 +4229,9 @@ export class WalletController extends BaseController {
 
   getRecommendGas = getRecommendGas;
   getRecommendNonce = getRecommendNonce;
+  ethSendTransaction = (
+    ...args: Parameters<typeof providerController.ethSendTransaction>
+  ) => providerController.ethSendTransaction(...args);
 }
 
 const wallet = new WalletController();

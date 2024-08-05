@@ -1,11 +1,11 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Chain } from '@debank/common';
 import { findChainByServerID } from '@/utils/chain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { ensureSuffix } from '@/utils/string';
 import { AssetApprovalSpender } from '@/utils/approval';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 export const AssetRow: React.FC<{
   asset: AssetApprovalSpender['$assetParent'];
@@ -31,12 +31,12 @@ export const AssetRow: React.FC<{
         noRound={false}
       />
 
-      <Tooltip
+      <TooltipWithMagnetArrow
         overlayClassName="J-table__tooltip disable-ant-overwrite"
         overlay={fullName}
       >
         <span className="ml-[8px] asset-name">{fullName}</span>
-      </Tooltip>
+      </TooltipWithMagnetArrow>
     </div>
   );
 };
