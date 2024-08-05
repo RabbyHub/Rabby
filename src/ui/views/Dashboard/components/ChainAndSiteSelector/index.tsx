@@ -31,8 +31,7 @@ import IconTransactions, {
 import IconAddresses, {
   ReactComponent as RcIconAddresses,
 } from 'ui/assets/dashboard/addresses.svg';
-import { ReactComponent as RcIconClaimableRabbyPoints } from 'ui/assets/dashboard/claimable-points.svg';
-import { ReactComponent as RcIconUnclaimableRabbyPoints } from 'ui/assets/dashboard/unclaimable-points.svg';
+import { ReactComponent as RcIconDeBankHi } from 'ui/assets/dashboard/debank-hi.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 
 import IconMoreSettings, {
@@ -249,14 +248,12 @@ export default ({
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
     } as IPanelItem,
-    feedback: {
-      icon: claimable
-        ? RcIconClaimableRabbyPoints
-        : RcIconUnclaimableRabbyPoints,
-      eventKey: 'Rabby Points',
-      content: t('page.dashboard.home.panel.rabbyPoints'),
+    debankHi: {
+      icon: RcIconDeBankHi,
+      eventKey: 'DeBank Hi',
+      content: t('page.dashboard.home.panel.debankHi'),
       onClick: () => {
-        history.push('/rabby-points');
+        console.log('go to debank hi');
       },
     } as IPanelItem,
     more: {
@@ -301,7 +298,7 @@ export default ({
       'nft',
       // 'queue',
       'transactions',
-      'feedback',
+      'debankHi',
       'security',
       'ecology',
       'more',
@@ -313,7 +310,7 @@ export default ({
       'receive',
       'nft',
       'transactions',
-      'feedback',
+      'debankHi',
       'security',
       'ecology',
       'more',
