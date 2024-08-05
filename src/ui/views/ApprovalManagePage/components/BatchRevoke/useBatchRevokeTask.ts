@@ -1,6 +1,7 @@
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { intToHex, useWallet, WalletControllerType } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
+import { AssetApprovalSpender } from '@/utils/approval';
 import { findChain } from '@/utils/chain';
 import {
   calcGasLimit,
@@ -12,12 +13,14 @@ import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import PQueue from 'p-queue';
 import React from 'react';
+import { findIndexRevokeList } from '../../utils';
 
 async function buildTx(
   wallet: WalletControllerType,
   item: ApprovalSpenderItemToBeRevoked
 ) {
   let tx: Tx;
+  // generate tx
   if ('nftTokenId' in item) {
     const data = await wallet.revokeNFTApprove(item, undefined, true);
     tx = data.params[0];
@@ -50,9 +53,11 @@ async function buildTx(
     chainId: chain.id,
   });
 
+  // get gas
   const gasMarket = await wallet.openapi.gasMarket(item.chainServerId);
   const normalGas = gasMarket.find((item) => item.level === 'normal')!;
 
+  // pre exec tx
   const preExecResult = await wallet.openapi.preExecTx({
     tx: {
       ...tx,
@@ -98,6 +103,7 @@ async function buildTx(
     wallet,
   });
 
+  // generate tx with gas
   const transaction: Tx = {
     from: tx.from,
     to: tx.to,
@@ -107,7 +113,6 @@ async function buildTx(
     chainId: tx.chainId,
     gas: gasLimit,
   };
-
   const maxPriorityFee = calcMaxPriorityFee([], normalGas, chain.id, true);
   const maxFeePerGas = intToHex(Math.round(normalGas.price));
 
@@ -122,28 +127,114 @@ async function buildTx(
   }
 
   console.log('tx', transaction);
+  return transaction;
+  // TODO send
+  // TODO check tx status
 }
+
+export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
+  $status?: {
+    status: 'pending' | 'success' | 'fail';
+    txHash?: string;
+  };
+};
+
+const updateAssetApprovalSpender = (
+  list: AssetApprovalSpender[],
+  item: AssetApprovalSpender
+) => {
+  const index = list.findIndex((data) => {
+    if (
+      data.id === item.id &&
+      data.$assetParent?.id === item.$assetParent?.id
+    ) {
+      return true;
+    }
+  });
+
+  if (index >= 0) {
+    list[index] = item;
+  }
+
+  return [...list];
+};
+
+const cloneAssetApprovalSpender = (item: AssetApprovalSpender) => {
+  const cloneItem: AssetApprovalSpenderWithStatus = {
+    ...item,
+    $status: {
+      status: 'pending',
+    },
+  };
+  const cloneProperty = (key: keyof AssetApprovalSpender) => {
+    const descriptor = Object.getOwnPropertyDescriptor(item, key);
+    if (descriptor) {
+      Object.defineProperty(cloneItem, key, descriptor);
+    }
+  };
+
+  cloneProperty('$assetContract');
+  cloneProperty('$assetToken');
+  cloneProperty('$assetParent');
+
+  return cloneItem;
+};
 
 export const useBatchRevokeTask = () => {
   const wallet = useWallet();
-  const queue = React.useMemo(
-    () =>
-      new PQueue({
-        concurrency: 1,
-        autoStart: true,
-      }),
-    []
+  const queueRef = React.useRef(
+    new PQueue({ concurrency: 1, autoStart: true })
   );
+  const [list, setList] = React.useState<AssetApprovalSpenderWithStatus[]>([]);
+  const [revokeList, setRevokeList] = React.useState<
+    ApprovalSpenderItemToBeRevoked[]
+  >([]);
 
-  const start = async (list: ApprovalSpenderItemToBeRevoked[]) => {
+  const start = React.useCallback(async () => {
     await Promise.all(
       list.map(async (item) =>
-        queue.add(async () => {
-          const tx = await buildTx(wallet, item);
+        queueRef.current.add(async () => {
+          const cloneItem = cloneAssetApprovalSpender(item);
+          const revokeItem =
+            revokeList[
+              findIndexRevokeList(revokeList, {
+                item: item.$assetContract!,
+                spenderHost: item.$assetToken!,
+                assetApprovalSpender: item,
+              })
+            ];
+
+          cloneItem.$status!.status = 'pending';
+          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+          const tx = await buildTx(wallet, revokeItem);
+
+          console.log(tx);
         })
       )
     );
-  };
+  }, [list, revokeList]);
 
-  return { start };
+  const init = React.useCallback(
+    (
+      dataSource: AssetApprovalSpender[],
+      revokeList: ApprovalSpenderItemToBeRevoked[]
+    ) => {
+      queueRef.current.clear();
+      setList(dataSource);
+      setRevokeList(revokeList);
+    },
+    []
+  );
+
+  React.useEffect(() => {
+    queueRef.current.on('error', (error) => {
+      console.error('Queue error:', error);
+    });
+
+    return () => {
+      queueRef.current.clear();
+    };
+  }, []);
+
+  return { init, start, list };
 };

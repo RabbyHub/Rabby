@@ -9,11 +9,14 @@ import { AssetRow } from '../AssetRow';
 import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
 import { Button } from 'antd';
-import { useBatchRevokeTask } from './useBatchRevokeTask';
+import {
+  AssetApprovalSpenderWithStatus,
+  useBatchRevokeTask,
+} from './useBatchRevokeTask';
 
 export interface RevokeTableProps {
   revokeList: ApprovalSpenderItemToBeRevoked[];
-  dataSource: (SpenderInTokenApproval | SpenderInNFTApproval)[];
+  dataSource: AssetApprovalSpender[];
   onDone: () => void;
 }
 
@@ -23,16 +26,18 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
 }) => {
   const task = useBatchRevokeTask();
 
-  const onStart = () => {
-    console.log('Start Revoke');
-    task.start(revokeList);
-  };
+  const onStart = React.useCallback(() => {
+    task.start();
+  }, [task.start]);
+
+  React.useEffect(() => {
+    task.init(dataSource, revokeList);
+  }, [dataSource, revokeList]);
 
   return (
     <div>
-      <VirtualTable<AssetApprovalSpender>
-        dataSource={dataSource}
-        rowKey={(record) => `${record.id}:${record.$assetParent?.id}`}
+      <VirtualTable<AssetApprovalSpenderWithStatus>
+        dataSource={task.list}
         markHoverRow={false}
         scroll={{ y: 416, x: 900 }}
         overlayClassName="batch-revoke-table"
@@ -59,10 +64,12 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           {
             title: 'Status',
             width: 100,
+            render: (_, record) => <div>{record.$status?.status}</div>,
           },
           {
             title: 'Hash',
             width: 140,
+            render: (_, record) => <div>{record.$status?.txHash}</div>,
           },
           {
             title: 'Gas Fee',
