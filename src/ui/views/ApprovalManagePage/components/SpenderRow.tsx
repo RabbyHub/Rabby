@@ -1,5 +1,4 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Chain } from '@debank/common';
 import { findChainByServerID } from '@/utils/chain';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -11,10 +10,21 @@ import { openScanLinkFromChainItem } from '../utils';
 import { ReactComponent as RcIconExternal } from '../icons/icon-share-cc.svg';
 import clsx from 'clsx';
 import { Permit2Badge } from './Badges';
+import { Tooltip } from 'antd';
 
 export const SpenderRow: React.FC<{
   spender: AssetApprovalSpender;
-}> = ({ spender }) => {
+  hasPermit2Badge?: boolean;
+  hasCopyIcon?: boolean;
+  hasExternalIcon?: boolean;
+  iconSize?: number;
+}> = ({
+  spender,
+  hasPermit2Badge = true,
+  hasCopyIcon = true,
+  hasExternalIcon = true,
+  iconSize = 18,
+}) => {
   const asset = spender.$assetParent;
   if (!asset) return null;
   const chainItem = findChainByServerID(asset.chain as Chain['serverId']);
@@ -28,8 +38,8 @@ export const SpenderRow: React.FC<{
   return (
     <div className="flex items-center">
       <IconWithChain
-        width="18px"
-        height="18px"
+        width={iconSize + 'px'}
+        height={iconSize + 'px'}
         hideConer
         hideChainIcon
         iconUrl={chainItem?.logo || IconUnknown}
@@ -50,22 +60,25 @@ export const SpenderRow: React.FC<{
             >
               <span className="contract-name ml-[4px]">({protocolName})</span>
             </Tooltip>
-            <ThemeIcon
-              onClick={(evt) => {
-                evt.stopPropagation();
-                openScanLinkFromChainItem(chainItem?.scanLink, spender.id);
-              }}
-              src={RcIconExternal}
-              className={clsx(
-                'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
-              )}
-            />
+            {hasExternalIcon && (
+              <ThemeIcon
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  openScanLinkFromChainItem(chainItem?.scanLink, spender.id);
+                }}
+                src={RcIconExternal}
+                className={clsx(
+                  'ml-6 w-[16px] h-[16px] cursor-pointer text-r-neutral-body'
+                )}
+              />
+            )}
           </>
         }
         tooltipAliasName
         openExternal={false}
+        copyIcon={hasCopyIcon}
       />
-      {spender.$assetContract?.type === 'contract' && (
+      {spender.$assetContract?.type === 'contract' && hasPermit2Badge && (
         <Permit2Badge
           className="ml-[8px]"
           contractSpender={spender as SpenderInTokenApproval}

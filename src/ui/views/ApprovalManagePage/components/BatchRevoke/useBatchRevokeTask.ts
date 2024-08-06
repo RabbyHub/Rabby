@@ -244,7 +244,7 @@ export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
       nativeTokenSymbol: string;
     };
     isGasNotEnough?: boolean;
-    failedReason?: string;
+    failedReason?: ReturnType<typeof checkGasAndNonce>;
   };
 };
 
