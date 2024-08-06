@@ -1,4 +1,8 @@
-import { INTERNAL_REQUEST_ORIGIN, INTERNAL_REQUEST_SESSION } from '@/constant';
+import {
+  EVENTS,
+  INTERNAL_REQUEST_ORIGIN,
+  INTERNAL_REQUEST_SESSION,
+} from '@/constant';
 import { intToHex, useWallet, WalletControllerType } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
@@ -18,6 +22,7 @@ import {
   fetchActionRequiredData,
   parseAction,
 } from '@/ui/views/Approval/components/Actions/utils';
+import eventBus from '@/eventBus';
 
 async function buildTx(
   wallet: WalletControllerType,
@@ -273,7 +278,7 @@ export const useBatchRevokeTask = () => {
           );
 
           // to send
-          await wallet.ethSendTransaction({
+          const hash = await wallet.ethSendTransaction({
             data: {
               $ctx: {},
               params: [transaction],
@@ -287,10 +292,20 @@ export const useBatchRevokeTask = () => {
             pushed: false,
             result: undefined,
           });
-          cloneItem.$status!.status = 'success';
-          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
 
           // to update status
+          await new Promise((resolve) => {
+            const handler = (res) => {
+              if (res.hash === hash) {
+                eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+                resolve(res);
+              }
+            };
+            eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+          });
+
+          cloneItem.$status!.status = 'success';
+          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
 
           console.log(transaction);
         })
