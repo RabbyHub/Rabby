@@ -14,6 +14,10 @@ import BigNumber from 'bignumber.js';
 import PQueue from 'p-queue';
 import React from 'react';
 import { findIndexRevokeList } from '../../utils';
+import {
+  fetchActionRequiredData,
+  parseAction,
+} from '@/ui/views/Approval/components/Actions/utils';
 
 async function buildTx(
   wallet: WalletControllerType,
@@ -56,6 +60,7 @@ async function buildTx(
   // get gas
   const gasMarket = await wallet.openapi.gasMarket(item.chainServerId);
   const normalGas = gasMarket.find((item) => item.level === 'normal')!;
+  const signingTxId = await wallet.addSigningTx(tx);
 
   // pre exec tx
   const preExecResult = await wallet.openapi.preExecTx({
@@ -126,7 +131,65 @@ async function buildTx(
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
 
-  return { rawTransaction: tx, transaction };
+  // fetch action data
+  const actionData = await wallet.openapi.parseTx({
+    chainId: chain.serverId,
+    tx: {
+      ...tx,
+      gas: '0x0',
+      nonce: recommendNonce || '0x1',
+      value: tx.value || '0x0',
+      // todo
+      to: tx.to || '',
+    },
+    origin: origin || '',
+    addr: address,
+  });
+  const parsed = parseAction(
+    actionData.action,
+    preExecResult.balance_change,
+    {
+      ...tx,
+      gas: '0x0',
+      nonce: recommendNonce || '0x1',
+      value: tx.value || '0x0',
+    },
+    preExecResult.pre_exec_version,
+    preExecResult.gas.gas_used
+  );
+  const requiredData = await fetchActionRequiredData({
+    actionData: parsed,
+    contractCall: actionData.contract_call,
+    chainId: chain.serverId,
+    address,
+    wallet,
+    tx: {
+      ...tx,
+      gas: '0x0',
+      nonce: recommendNonce || '0x1',
+      value: tx.value || '0x0',
+    },
+    origin,
+  });
+
+  await wallet.updateSigningTx(signingTxId, {
+    rawTx: {
+      nonce: recommendNonce,
+    },
+    explain: {
+      ...preExecResult,
+    },
+    action: {
+      actionData: parsed,
+      requiredData,
+    },
+  });
+
+  return {
+    transaction,
+    signingTxId,
+    logId: actionData.log_id,
+  };
 }
 
 export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
@@ -204,26 +267,28 @@ export const useBatchRevokeTask = () => {
           cloneItem.$status!.status = 'pending';
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
           // TODO: maybe failed
-          const { transaction, rawTransaction } = await buildTx(
+          const { transaction, signingTxId, logId } = await buildTx(
             wallet,
             revokeItem
           );
 
           // to send
-          // await wallet.ethSendTransaction({
-          //   data: {
-          //     $ctx: {},
-          //     params: [transaction],
-          //   },
-          //   session: INTERNAL_REQUEST_SESSION,
-          //   approvalRes: {
-          //     ...rawTransaction,
-          //   },
-          //   pushed: false,
-          //   result: undefined,
-          // });
-          // cloneItem.$status!.status = 'success';
-          // setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+          await wallet.ethSendTransaction({
+            data: {
+              $ctx: {},
+              params: [transaction],
+            },
+            session: INTERNAL_REQUEST_SESSION,
+            approvalRes: {
+              ...transaction,
+              signingTxId,
+              logId: logId,
+            },
+            pushed: false,
+            result: undefined,
+          });
+          cloneItem.$status!.status = 'success';
+          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
 
           // to update status
 
