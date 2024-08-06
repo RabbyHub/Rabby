@@ -22,7 +22,9 @@ export const ImportCoboArgus = () => {
     chainId: number | string;
   }>();
   const { t } = useTranslation();
-  const [selectedChain, setSelectedChain] = React.useState<CHAINS_ENUM>();
+  const [selectedChain, setSelectedChain] = React.useState<
+    CHAINS_ENUM | string
+  >();
   const [inputAddress, setInputAddress] = React.useState<string>('');
   const [step, setStep] = React.useState<Type>('select-chain');
   const [error, setError] = React.useState<string>('');

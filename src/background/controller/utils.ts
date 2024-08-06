@@ -1,4 +1,3 @@
-import { CHAINS } from '@debank/common';
 import { ethers } from 'ethers';
 import { preferenceService } from '../service';
 import buildinProvider from '../utils/buildinProvider';
