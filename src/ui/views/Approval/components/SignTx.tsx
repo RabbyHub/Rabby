@@ -1,7 +1,9 @@
 import stats from '@/stats';
 import {
   calcGasLimit,
+  checkGasAndNonce,
   convertLegacyTo1559,
+  explainGas,
   getKRCategoryByType,
   getNativeTokenBalance,
   getPendingTxs,
@@ -195,48 +197,6 @@ export const TxTypeComponent = ({
   return <></>;
 };
 
-const explainGas = async ({
-  gasUsed,
-  gasPrice,
-  chainId,
-  nativeTokenPrice,
-  tx,
-  wallet,
-  gasLimit,
-}: {
-  gasUsed: number | string;
-  gasPrice: number | string;
-  chainId: number;
-  nativeTokenPrice: number;
-  tx: Tx;
-  wallet: ReturnType<typeof useWallet>;
-  gasLimit: string | undefined;
-}) => {
-  let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
-  let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
-  const chain = findChain({
-    id: chainId,
-  });
-  if (!chain) throw new Error(`${chainId} is not found in supported chains`);
-  if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
-    const res = await wallet.fetchEstimatedL1Fee(
-      {
-        txParams: tx,
-      },
-      chain.enum
-    );
-    gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
-    maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
-  }
-  const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
-
-  return {
-    gasCostUsd,
-    gasCostAmount: gasCostTokenAmount,
-    maxGasCostAmount,
-  };
-};
-
 const useExplainGas = ({
   gasUsed,
   gasPrice,
@@ -295,102 +255,6 @@ const useExplainGas = ({
       isExplainingGas: isLoading,
     };
   }, [result, isLoading]);
-};
-
-const checkGasAndNonce = ({
-  recommendGasLimitRatio,
-  recommendGasLimit,
-  recommendNonce,
-  tx,
-  gasLimit,
-  nonce,
-  isCancel,
-  gasExplainResponse,
-  isSpeedUp,
-  isGnosisAccount,
-  nativeTokenBalance,
-}: {
-  recommendGasLimitRatio: number;
-  nativeTokenBalance: string;
-  recommendGasLimit: number | string | BigNumber;
-  recommendNonce: number | string | BigNumber;
-  tx: Tx;
-  gasLimit: number | string | BigNumber;
-  nonce: number | string | BigNumber;
-  gasExplainResponse: ReturnType<typeof useExplainGas>;
-  isCancel: boolean;
-  isSpeedUp: boolean;
-  isGnosisAccount: boolean;
-}) => {
-  const errors: {
-    code: number;
-    msg: string;
-    level?: 'warn' | 'danger' | 'forbidden';
-  }[] = [];
-  if (!isGnosisAccount && new BigNumber(gasLimit).lt(MINIMUM_GAS_LIMIT)) {
-    errors.push({
-      code: 3006,
-      msg: i18n.t('page.signTx.gasLimitNotEnough'),
-      level: 'forbidden',
-    });
-  }
-  if (
-    !isGnosisAccount &&
-    new BigNumber(gasLimit).lt(
-      new BigNumber(recommendGasLimit).times(recommendGasLimitRatio)
-    ) &&
-    new BigNumber(gasLimit).gte(21000)
-  ) {
-    if (recommendGasLimitRatio === DEFAULT_GAS_LIMIT_RATIO) {
-      const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
-      if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
-        errors.push({
-          code: 3004,
-          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
-          level: 'warn',
-        });
-      } else if (realRatio.lt(1)) {
-        errors.push({
-          code: 3005,
-          msg: i18n.t('page.signTx.gasLimitLessThanGasUsed'),
-          level: 'danger',
-        });
-      }
-    } else {
-      if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
-        errors.push({
-          code: 3004,
-          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
-          level: 'warn',
-        });
-      }
-    }
-  }
-  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
-  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
-    ? new BigNumber(0)
-    : sendNativeTokenAmount;
-  if (
-    !isGnosisAccount &&
-    gasExplainResponse.maxGasCostAmount
-      .plus(sendNativeTokenAmount.div(1e18))
-      .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
-  ) {
-    errors.push({
-      code: 3001,
-      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
-      level: 'forbidden',
-    });
-  }
-  if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
-    errors.push({
-      code: 3003,
-      msg: i18n.t('page.signTx.nonceLowerThanExpect', [
-        new BigNumber(recommendNonce),
-      ]),
-    });
-  }
-  return errors;
 };
 
 const useCheckGasAndNonce = ({

@@ -1,10 +1,6 @@
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import React from 'react';
-import {
-  SpenderInTokenApproval,
-  SpenderInNFTApproval,
-  AssetApprovalSpender,
-} from '@/utils/approval';
+import { AssetApprovalSpender } from '@/utils/approval';
 import { AssetRow } from '../AssetRow';
 import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
@@ -13,6 +9,9 @@ import {
   AssetApprovalSpenderWithStatus,
   useBatchRevokeTask,
 } from './useBatchRevokeTask';
+import SuccessSVG from '@/ui/assets/approval/success.svg';
+import FailSVG from '@/ui/assets/approval/fail.svg';
+import LoadingSVG from '@/ui/assets/address/loading.svg';
 
 export interface RevokeTableProps {
   revokeList: ApprovalSpenderItemToBeRevoked[];
@@ -64,16 +63,17 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           {
             title: 'Status',
             width: 100,
-            render: (_, record) => <div>{record.$status?.status}</div>,
+            render: (_, record) => <div>{record.$status?.status || '-'}</div>,
           },
           {
             title: 'Hash',
             width: 140,
-            render: (_, record) => <div>{record.$status?.txHash}</div>,
+            render: (_, record) => <div>{record.$status?.txHash || '-'}</div>,
           },
           {
             title: 'Gas Fee',
             width: 200,
+            render: (_, record) => <div>{record.$status?.gas || '-'}</div>,
           },
         ]}
       />

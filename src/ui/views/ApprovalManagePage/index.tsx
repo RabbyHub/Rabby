@@ -1177,7 +1177,7 @@ const ApprovalManagePage = () => {
             <div className="sticky-footer">
               <RevokeButton
                 revokeSummary={revokeSummary}
-                showButtonTips={!enableBatchRevoke}
+                enableBatchRevoke={enableBatchRevoke}
                 onRevoke={onRevoke}
               />
             </div>

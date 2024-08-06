@@ -9,13 +9,13 @@ interface Props {
   isLoading?: boolean;
   revokeSummary: RevokeSummary;
   onRevoke: () => any | Promise<any>;
-  showButtonTips?: boolean;
+  enableBatchRevoke?: boolean;
 }
 
 export const RevokeButton: React.FC<Props> = ({
   revokeSummary,
   onRevoke,
-  showButtonTips,
+  enableBatchRevoke,
 }) => {
   const { t } = useTranslation();
 
@@ -37,7 +37,7 @@ export const RevokeButton: React.FC<Props> = ({
     };
   }, [wallet]);
 
-  const handleOnRevole = useCallback(async () => {
+  const handleOnRevoke = useCallback(async () => {
     if (isRevokeLoading) return;
 
     try {
@@ -55,8 +55,8 @@ export const RevokeButton: React.FC<Props> = ({
       revokeSummary.permit2Revokes
     ).some((x) => x.tokenSpenders.length > 1);
 
-    if (!hasPackedPermit2Sign) {
-      return handleOnRevole();
+    if (!hasPackedPermit2Sign || enableBatchRevoke) {
+      return handleOnRevoke();
     }
 
     Modal.info({
@@ -84,21 +84,21 @@ export const RevokeButton: React.FC<Props> = ({
         </p>
       ),
       onOk: () => {
-        handleOnRevole();
+        handleOnRevoke();
       },
       okText: t('global.confirm'),
       okButtonProps: {
         className: 'w-[100%] h-[44px]',
       },
     });
-  }, [handleOnRevole, t]);
+  }, [handleOnRevoke, enableBatchRevoke, t]);
 
   const revokeTxCount = revokeSummary.statics.txCount;
   const spenderCount = revokeSummary.statics.spenderCount;
 
   return (
     <>
-      {revokeTxCount > 1 && showButtonTips ? (
+      {revokeTxCount > 1 && !enableBatchRevoke ? (
         <div className="mt-[16px] h-[16px] mb-[16px] text-13 leading-[15px] text-r-neutral-body">
           {revokeTxCount} transactions to be signed sequentially
         </div>

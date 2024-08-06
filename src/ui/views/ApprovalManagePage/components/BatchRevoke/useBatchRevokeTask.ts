@@ -10,6 +10,8 @@ import { findChain } from '@/utils/chain';
 import {
   calcGasLimit,
   calcMaxPriorityFee,
+  checkGasAndNonce,
+  explainGas,
   getNativeTokenBalance,
   getPendingTxs,
 } from '@/utils/transaction';
@@ -95,14 +97,14 @@ async function buildTx(
   if (preExecResult.gas.success) {
     estimateGas = preExecResult.gas.gas_limit || preExecResult.gas.gas_used;
   }
-  const { gas: gasRaw, needRatio } = await wallet.getRecommendGas({
+  const { gas: gasRaw, needRatio, gasUsed } = await wallet.getRecommendGas({
     gasUsed: preExecResult.gas.gas_used,
     gas: estimateGas,
     tx,
     chainId: chain.id,
   });
   const gas = new BigNumber(gasRaw);
-  const { gasLimit } = await calcGasLimit({
+  const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
     chain,
     tx,
     gas,
@@ -112,6 +114,34 @@ async function buildTx(
     needRatio,
     wallet,
   });
+
+  // calc gasCost
+  const gasCost = await explainGas({
+    gasUsed,
+    gasPrice: normalGas.price,
+    chainId: chain.id,
+    nativeTokenPrice: preExecResult.native_token.price,
+    wallet,
+    tx,
+    gasLimit,
+  });
+
+  // check gas errors
+  const checkErrors = checkGasAndNonce({
+    recommendGasLimit: `0x${gas.toString(16)}`,
+    recommendNonce,
+    gasLimit: Number(gasLimit),
+    nonce: Number(recommendNonce || tx.nonce),
+    gasExplainResponse: gasCost,
+    isSpeedUp: false,
+    isCancel: false,
+    tx,
+    isGnosisAccount: false,
+    nativeTokenBalance: balance,
+    recommendGasLimitRatio,
+  });
+
+  const isGasNotEnough = checkErrors.some((e) => e.code === 3001);
 
   // generate tx with gas
   const transaction: Tx = {
@@ -194,6 +224,13 @@ async function buildTx(
     transaction,
     signingTxId,
     logId: actionData.log_id,
+    isGasNotEnough,
+    gasCost: {
+      gasCostUsd: gasCost.gasCostUsd,
+      gasCostAmount: gasCost.gasCostAmount,
+      nativeTokenSymbol: preExecResult.native_token.symbol,
+    },
+    failedReason: checkErrors,
   };
 }
 
@@ -201,6 +238,13 @@ export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
   $status?: {
     status: 'pending' | 'success' | 'fail';
     txHash?: string;
+    gasCost?: {
+      gasCostUsd: BigNumber;
+      gasCostAmount: BigNumber;
+      nativeTokenSymbol: string;
+    };
+    isGasNotEnough?: boolean;
+    failedReason?: string;
   };
 };
 
@@ -272,10 +316,14 @@ export const useBatchRevokeTask = () => {
           cloneItem.$status!.status = 'pending';
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
           // TODO: maybe failed
-          const { transaction, signingTxId, logId } = await buildTx(
-            wallet,
-            revokeItem
-          );
+          const {
+            transaction,
+            signingTxId,
+            logId,
+            gasCost,
+            isGasNotEnough,
+            failedReason,
+          } = await buildTx(wallet, revokeItem);
 
           // to send
           const hash = await wallet.ethSendTransaction({
@@ -304,7 +352,13 @@ export const useBatchRevokeTask = () => {
             eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
           });
 
-          cloneItem.$status!.status = 'success';
+          cloneItem.$status = {
+            status: 'success',
+            txHash: hash,
+            gasCost,
+            isGasNotEnough,
+            failedReason,
+          };
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
 
           console.log(transaction);
@@ -335,5 +389,11 @@ export const useBatchRevokeTask = () => {
     };
   }, []);
 
-  return { init, start, list };
+  return {
+    list,
+    init,
+    start,
+    continue: queueRef.current.start,
+    pause: queueRef.current.pause,
+  };
 };

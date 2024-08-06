@@ -1,15 +1,18 @@
 import { intToHex, isHexString } from 'ethereumjs-util';
 import BigNumber from 'bignumber.js';
 import {
+  CAN_ESTIMATE_L1_FEE_CHAINS,
   DEFAULT_GAS_LIMIT_RATIO,
   GASPRICE_RANGE,
   KEYRING_CATEGORY_MAP,
+  MINIMUM_GAS_LIMIT,
   SAFE_GAS_LIMIT_RATIO,
 } from 'consts';
 import { ExplainTxResponse, GasLevel, Tx } from 'background/service/openapi';
 import { findChain } from './chain';
 import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
+import i18n from '@/i18n';
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
@@ -230,4 +233,147 @@ export const getPendingTxs = async ({
       ).toString(16)}`,
       gas: item.gas || item.gasLimit || '0x0',
     }));
+};
+
+export const explainGas = async ({
+  gasUsed,
+  gasPrice,
+  chainId,
+  nativeTokenPrice,
+  tx,
+  wallet,
+  gasLimit,
+}: {
+  gasUsed: number | string;
+  gasPrice: number | string;
+  chainId: number;
+  nativeTokenPrice: number;
+  tx: Tx;
+  wallet: WalletControllerType;
+  gasLimit: string | undefined;
+}) => {
+  let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
+  let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
+  const chain = findChain({
+    id: chainId,
+  });
+  if (!chain) throw new Error(`${chainId} is not found in supported chains`);
+  if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
+    const res = await wallet.fetchEstimatedL1Fee(
+      {
+        txParams: tx,
+      },
+      chain.enum
+    );
+    gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
+    maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
+  }
+  const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
+
+  return {
+    gasCostUsd,
+    gasCostAmount: gasCostTokenAmount,
+    maxGasCostAmount,
+  };
+};
+
+export const checkGasAndNonce = ({
+  recommendGasLimitRatio,
+  recommendGasLimit,
+  recommendNonce,
+  tx,
+  gasLimit,
+  nonce,
+  isCancel,
+  gasExplainResponse,
+  isSpeedUp,
+  isGnosisAccount,
+  nativeTokenBalance,
+}: {
+  recommendGasLimitRatio: number;
+  nativeTokenBalance: string;
+  recommendGasLimit: number | string | BigNumber;
+  recommendNonce: number | string | BigNumber;
+  tx: Tx;
+  gasLimit: number | string | BigNumber;
+  nonce: number | string | BigNumber;
+  gasExplainResponse: {
+    isExplainingGas?: boolean;
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
+    maxGasCostAmount: BigNumber;
+  };
+  isCancel: boolean;
+  isSpeedUp: boolean;
+  isGnosisAccount: boolean;
+}) => {
+  const errors: {
+    code: number;
+    msg: string;
+    level?: 'warn' | 'danger' | 'forbidden';
+  }[] = [];
+  if (!isGnosisAccount && new BigNumber(gasLimit).lt(MINIMUM_GAS_LIMIT)) {
+    errors.push({
+      code: 3006,
+      msg: i18n.t('page.signTx.gasLimitNotEnough'),
+      level: 'forbidden',
+    });
+  }
+  if (
+    !isGnosisAccount &&
+    new BigNumber(gasLimit).lt(
+      new BigNumber(recommendGasLimit).times(recommendGasLimitRatio)
+    ) &&
+    new BigNumber(gasLimit).gte(21000)
+  ) {
+    if (recommendGasLimitRatio === DEFAULT_GAS_LIMIT_RATIO) {
+      const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
+      if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      } else if (realRatio.lt(1)) {
+        errors.push({
+          code: 3005,
+          msg: i18n.t('page.signTx.gasLimitLessThanGasUsed'),
+          level: 'danger',
+        });
+      }
+    } else {
+      if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+        errors.push({
+          code: 3004,
+          msg: i18n.t('page.signTx.gasLimitLessThanExpect'),
+          level: 'warn',
+        });
+      }
+    }
+  }
+  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+    ? new BigNumber(0)
+    : sendNativeTokenAmount;
+  if (
+    !isGnosisAccount &&
+    gasExplainResponse.maxGasCostAmount
+      .plus(sendNativeTokenAmount.div(1e18))
+      .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
+  ) {
+    errors.push({
+      code: 3001,
+      msg: i18n.t('page.signTx.nativeTokenNotEngouthForGas'),
+      level: 'forbidden',
+    });
+  }
+  if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
+    errors.push({
+      code: 3003,
+      msg: i18n.t('page.signTx.nonceLowerThanExpect', [
+        new BigNumber(recommendNonce),
+      ]),
+    });
+  }
+  return errors;
 };
