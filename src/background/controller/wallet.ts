@@ -35,7 +35,6 @@ import providerController from './provider/controller';
 import BaseController from './base';
 import {
   KEYRING_WITH_INDEX,
-  CHAINS,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,

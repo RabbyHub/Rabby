@@ -132,7 +132,9 @@ export function ensureChainHashValid<
   return newObj;
 }
 
-export function ensureChainListValid<T extends CHAINS_ENUM[]>(list: T) {
+export function ensureChainListValid<T extends (CHAINS_ENUM | string)[]>(
+  list: T
+) {
   return list.filter((chainEnum) => findChainByEnum(chainEnum));
 }
 

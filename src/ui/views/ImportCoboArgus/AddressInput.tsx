@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 export interface Props {
   onChange: (value: string) => void;
   value: string;
-  chainEnum: CHAINS_ENUM;
+  chainEnum: CHAINS_ENUM | string;
   error: string;
 }
 
