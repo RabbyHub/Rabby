@@ -14,7 +14,7 @@ export const useConfirmRevokeModal = (props: {
 
   const show = React.useCallback(() => {
     const modal = Modal.info({
-      title: 'Batch Revoke by 1 Signature',
+      title: t('page.approvals.revokeModal.confirmTitle'),
       className: 'confirm-revoke-modal',
       closable: true,
       centered: true,

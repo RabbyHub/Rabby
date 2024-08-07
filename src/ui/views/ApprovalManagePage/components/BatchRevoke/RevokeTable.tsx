@@ -2,7 +2,6 @@ import React from 'react';
 import { AssetRow } from '../AssetRow';
 import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
-import { Button } from 'antd';
 import {
   AssetApprovalSpenderWithStatus,
   useBatchRevokeTask,
@@ -10,17 +9,16 @@ import {
 import { StatusRow } from './StatusRow';
 import { GasRow } from './GasRow';
 import { HashRow } from './HashRow';
-import { useTranslation } from 'react-i18next';
-import { ReactComponent as LoadingSVG } from '@/ui/assets/address/loading.svg';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import { AssetApprovalSpender } from '@/utils/approval';
-import clsx from 'clsx';
 import { RevokeActionButton } from './RevokeActionButton';
+import { RevokeModalHeader } from './RevokeModalHeader';
 
 export interface RevokeTableProps {
   onDone: () => void;
   revokeList: ApprovalSpenderItemToBeRevoked[];
   dataSource: AssetApprovalSpender[];
+  onClose: () => void;
 }
 
 const ROW_HEIGHT = 52;
@@ -31,10 +29,9 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   revokeList,
   dataSource,
   onDone,
+  onClose,
 }) => {
   const task = useBatchRevokeTask();
-
-  const { t } = useTranslation();
 
   const totalApprovals = React.useMemo(() => {
     return revokeList.length;
@@ -50,34 +47,18 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   }, [dataSource, revokeList]);
 
   const scrollHeight = React.useMemo(() => {
-    // max height 416, min height 260
     const height = task.list.length * ROW_HEIGHT;
     return Math.min(TABLE_MAX_HEIGHT, Math.max(TABLE_MIN_HEIGHT, height));
   }, [task.list]);
 
   return (
-    <div>
-      <header className="space-y-12 text-center">
-        <div className="space-x-8 flex justify-center items-center">
-          {task.status === 'active' && (
-            <LoadingSVG className="text-r-blue-default" />
-          )}
-          <span className="text-24 font-medium text-r-neutral-title-1">
-            {t('page.approvals.revokeModal.batchRevoke')} ({revokedApprovals}/
-            {totalApprovals})
-          </span>
-        </div>
-        <div className="text-r-neutral-foot text-15 font-normal">
-          {t('page.approvals.revokeModal.revoked')}{' '}
-          {t('page.approvals.revokeModal.approvalCount', {
-            count: revokedApprovals,
-          })}
-          丨{t('page.approvals.revokeModal.totalRevoked')}{' '}
-          {t('page.approvals.revokeModal.approvalCount', {
-            count: totalApprovals,
-          })}
-        </div>
-      </header>
+    <div className="my-8">
+      <RevokeModalHeader
+        totalApprovals={totalApprovals}
+        revokedApprovals={revokedApprovals}
+        onClose={onClose}
+        task={task}
+      />
 
       <VirtualTable<AssetApprovalSpenderWithStatus>
         dataSource={task.list}

@@ -779,7 +779,11 @@
         "signAndStartRevoke": "Sign and Start Revoke",
         "pause": "Pause",
         "resume": "Continue",
-        "done": "Done"
+        "done": "Done",
+        "confirmTitle": "Batch Revoke by 1 Signature",
+        "cancelTitle": "Cancel Remaining Revokes",
+        "confirm": "Confirm",
+        "cancelBody": "If you close this page, the remaining revokes will not be executed."
       }
     },
     "gasTopUp": {
