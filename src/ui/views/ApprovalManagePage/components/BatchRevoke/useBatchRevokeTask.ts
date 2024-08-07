@@ -248,7 +248,7 @@ async function buildTx(
 }
 
 // fail code
-enum FailedCode {
+export enum FailedCode {
   GasNotEnough = 1,
   GasTooHigh = 2,
   SubmitTxFailed = 3,
@@ -275,6 +275,9 @@ export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
         status: 'fail';
         failedCode: FailedCode;
         failedReason?: string;
+        gasCost?: {
+          gasCostUsd: BigNumber;
+        };
       }
     | {
         status: 'success';
@@ -341,11 +344,10 @@ export const useBatchRevokeTask = () => {
     'idle' | 'active' | 'paused' | 'completed'
   >('idle');
 
-  const start = React.useCallback(async () => {
-    setStatus('active');
-    await Promise.all(
-      list.map(async (item) =>
-        queueRef.current.add(async () => {
+  const addRevokeTask = React.useCallback(
+    async (item: AssetApprovalSpender, priority: number = 0) => {
+      return queueRef.current.add(
+        async () => {
           const cloneItem = cloneAssetApprovalSpender(item);
           const revokeItem =
             revokeList[
@@ -373,6 +375,7 @@ export const useBatchRevokeTask = () => {
               cloneItem.$status = {
                 status: 'fail',
                 failedCode,
+                gasCost: estimateGasCost,
               };
               return;
             }
@@ -446,9 +449,18 @@ export const useBatchRevokeTask = () => {
           } finally {
             setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
           }
-        })
-      )
-    );
+        },
+        { priority }
+      );
+    },
+    [revokeList]
+  );
+
+  const start = React.useCallback(() => {
+    setStatus('active');
+    for (const item of list) {
+      addRevokeTask(item);
+    }
   }, [list, revokeList]);
 
   const init = React.useCallback(
@@ -495,5 +507,8 @@ export const useBatchRevokeTask = () => {
     continue: handleContinue,
     pause,
     status,
+    addRevokeTask,
   };
 };
+
+export type BatchRevokeTaskType = ReturnType<typeof useBatchRevokeTask>;

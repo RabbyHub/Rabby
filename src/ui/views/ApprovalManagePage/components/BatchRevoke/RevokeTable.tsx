@@ -120,7 +120,15 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
             title: 'Status',
             width: 100,
             className: 'status-cell',
-            render: (_, record) => <StatusRow record={record} />,
+            render: (_, record) => (
+              <StatusRow
+                onStillRevoke={async () => {
+                  task.addRevokeTask(record, 1);
+                  task.continue();
+                }}
+                record={record}
+              />
+            ),
           },
           {
             title: 'Hash',

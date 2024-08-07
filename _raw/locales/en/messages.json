@@ -787,7 +787,8 @@
         "gasNotEnough": "Insufficient Gas to submit",
         "gasTooHigh": "Gas fee is high",
         "submitTxFailed": "Fail to Submit",
-        "defaultFailed": "Transaction failed"
+        "defaultFailed": "Transaction failed",
+        "stillRevoke": "Still Revoke"
       }
     },
     "gasTopUp": {

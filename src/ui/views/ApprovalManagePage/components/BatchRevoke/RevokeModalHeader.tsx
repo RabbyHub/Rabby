@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBatchRevokeTask } from './useBatchRevokeTask';
+import { BatchRevokeTaskType } from './useBatchRevokeTask';
 import { ReactComponent as LoadingSVG } from '@/ui/assets/address/loading.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from '@/ui/assets/component/close-cc.svg';
@@ -11,7 +11,7 @@ interface Props {
   totalApprovals: number;
   revokedApprovals: number;
   onClose: (needUpdate: boolean) => void;
-  task: ReturnType<typeof useBatchRevokeTask>;
+  task: BatchRevokeTaskType;
 }
 
 export const RevokeModalHeader: React.FC<Props> = ({

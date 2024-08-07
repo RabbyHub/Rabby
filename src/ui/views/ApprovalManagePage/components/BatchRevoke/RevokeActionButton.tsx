@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBatchRevokeTask } from './useBatchRevokeTask';
+import { BatchRevokeTaskType } from './useBatchRevokeTask';
 
 const buttonBaseClass = clsx(
   'rounded-[6px] h-[48px] w-[252px]',
@@ -11,7 +11,7 @@ const buttonBaseClass = clsx(
 );
 
 export const RevokeActionButton: React.FC<{
-  task: ReturnType<typeof useBatchRevokeTask>;
+  task: BatchRevokeTaskType;
   onDone: () => void;
 }> = ({ task, onDone }) => {
   const { t } = useTranslation();
