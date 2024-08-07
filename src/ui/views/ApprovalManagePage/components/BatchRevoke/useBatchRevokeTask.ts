@@ -32,9 +32,24 @@ async function buildTx(
   wallet: WalletControllerType,
   item: ApprovalSpenderItemToBeRevoked
 ) {
-  let tx: Tx;
   // generate tx
-  if ('nftTokenId' in item) {
+  let tx: Tx;
+  if (item.permit2Id) {
+    const data = await wallet.lockdownPermit2(
+      {
+        id: item.permit2Id,
+        chainServerId: item.chainServerId,
+        tokenSpenders: [
+          {
+            token: item.tokenId!,
+            spender: item.spender,
+          },
+        ],
+      },
+      true
+    );
+    tx = data.params[0];
+  } else if ('nftTokenId' in item) {
     const data = await wallet.revokeNFTApprove(item, undefined, true);
     tx = data.params[0];
   } else {

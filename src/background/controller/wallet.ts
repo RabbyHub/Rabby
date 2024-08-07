@@ -776,7 +776,7 @@ export class WalletController extends BaseController {
       $ctx?: any;
       gasPrice?: number;
     },
-    isInternal = false
+    isBuild = false
   ) => {
     const {
       chainServerId,
@@ -830,13 +830,13 @@ export class WalletController extends BaseController {
       tx.gasPrice = gasPrice;
     }
 
-    await this.sendRequest(
+    return await this.sendRequest(
       {
         $ctx,
         method: 'eth_sendTransaction',
         params: [tx],
       },
-      isInternal
+      isBuild
     );
   };
 
