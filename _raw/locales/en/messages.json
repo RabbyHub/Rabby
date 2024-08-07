@@ -878,13 +878,15 @@
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
       "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
+      "Auto": "Auto",
       "rabbyFee": {
         "title": "Rabby fee",
-        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee (0% for wrap) is automatically factored into the quote.",
-        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee is automatically factored into the quote.",
+        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee (0% for wrapping), which is automatically included in the quote.",
+        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee, which is automatically included in the quote.",
         "wallet": "Wallet",
         "rate": "Fee rate",
-        "button": "Got it"
+        "button": "Got it",
+        "aggregator-fee": "The current quote also includes a 0.125% 1inch fee"
       }
     },
     "bridge": {

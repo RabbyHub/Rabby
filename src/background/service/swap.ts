@@ -14,6 +14,9 @@ export type SwapServiceStore = {
   selectedChain: CHAINS_ENUM | null;
   selectedFromToken?: TokenItem;
   selectedToToken?: TokenItem;
+  autoSlippage: boolean;
+  isCustomSlippage?: boolean;
+  slippage: string;
 
   /**
    * @deprecated
@@ -54,6 +57,8 @@ class SwapService {
     tradeList: {} as SwapServiceStore['tradeList'],
     sortIncludeGasFee: false,
     preferMEVGuarded: false,
+    autoSlippage: true,
+    slippage: '0.1',
   };
 
   init = async () => {
@@ -68,6 +73,8 @@ class SwapService {
         tradeList: {} as SwapServiceStore['tradeList'],
         preferMEVGuarded: false,
         sortIncludeGasFee: true,
+        autoSlippage: true,
+        slippage: '0.1',
       },
     });
     if (storage) {
@@ -238,6 +245,18 @@ class SwapService {
 
   setSwapPreferMEVGuarded = (bool: boolean) => {
     this.store.preferMEVGuarded = bool;
+  };
+
+  setAutoSlippage = (auto: boolean) => {
+    this.store.autoSlippage = auto;
+  };
+
+  setIsCustomSlippage = (isCustomSlippage: boolean) => {
+    this.store.isCustomSlippage = isCustomSlippage;
+  };
+
+  setSlippage = (slippage: string) => {
+    this.store.slippage = slippage;
   };
 }
 

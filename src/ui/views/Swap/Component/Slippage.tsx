@@ -6,7 +6,6 @@ import {
   ChangeEventHandler,
   useState,
 } from 'react';
-import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import React from 'react';
@@ -14,6 +13,7 @@ import { Input } from 'antd';
 import ImgArrowUp from 'ui/assets/swap/arrow-up.svg';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSlippageStore } from '../hooks';
 
 export const SlippageItem = styled.div`
   position: relative;
@@ -38,7 +38,7 @@ export const SlippageItem = styled.div`
   }
 `;
 
-const SLIPPAGE = ['0.1', '0.3', '0.5'];
+const SLIPPAGE = ['0.1', '0.5'];
 
 const Wrapper = styled.section`
   .slippage {
@@ -84,7 +84,13 @@ export const Slippage = memo((props: SlippageProps) => {
   const { t } = useTranslation();
 
   const { value, displaySlippage, onChange, recommendValue } = props;
-  const [isCustom, setIsCustom] = useToggle(!SLIPPAGE.includes(value));
+
+  const {
+    autoSlippage,
+    isCustomSlippage,
+    setAutoSlippage,
+    setIsCustomSlippage,
+  } = useSlippageStore();
 
   const [slippageOpen, setSlippageOpen] = useState(false);
 
@@ -180,15 +186,28 @@ export const Slippage = memo((props: SlippageProps) => {
             slippageOpen ? 'mt-8' : 'h-0 overflow-hidden'
           )}
         >
+          <SlippageItem
+            onClick={(event) => {
+              event.stopPropagation();
+              setAutoSlippage(true);
+              setIsCustomSlippage(false);
+            }}
+            className={clsx(autoSlippage && 'active')}
+          >
+            {t('page.swap.Auto')}
+          </SlippageItem>
           {SLIPPAGE.map((e) => (
             <SlippageItem
               key={e}
               onClick={(event) => {
                 event.stopPropagation();
-                setIsCustom(false);
+                setIsCustomSlippage(false);
+                setAutoSlippage(false);
                 onChange(e);
               }}
-              className={clsx(!isCustom && e === value && 'active')}
+              className={clsx(
+                !autoSlippage && !isCustomSlippage && e === value && 'active'
+              )}
             >
               {e}%
             </SlippageItem>
@@ -196,9 +215,10 @@ export const Slippage = memo((props: SlippageProps) => {
           <SlippageItem
             onClick={(event) => {
               event.stopPropagation();
-              setIsCustom(true);
+              setAutoSlippage(false);
+              setIsCustomSlippage(true);
             }}
-            className={clsx('flex-1', isCustom && 'active')}
+            className={clsx('flex-1', isCustomSlippage && 'active')}
           >
             <Input
               className={clsx('input')}
