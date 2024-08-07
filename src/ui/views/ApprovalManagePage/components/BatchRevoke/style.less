@@ -22,6 +22,11 @@
     font-weight: 400;
     border-bottom: 1px solid var(--r-neutral-line, #E0E5EC);
     padding: 0;
+
+    &:last-child {
+      text-align: right;
+      padding-right: 24px;
+    }
   }
 
   .ant-modal-header,
@@ -65,6 +70,10 @@
     background: transparent;
   }
 
+  .is-last-cell {
+    justify-content: end;
+  }
+
   .am-virtual-table-cell-inner {
     color: var(--r-neutral-title1, #192945);
     font-size: 14px;
@@ -88,6 +97,7 @@
   .batch-revoke-table {
     width: 900px;
     margin: auto;
+    margin-right: -20px;
   }
 
   .ant-modal-title {

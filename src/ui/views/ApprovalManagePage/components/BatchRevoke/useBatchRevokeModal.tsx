@@ -44,6 +44,10 @@ export const useBatchRevokeModal = ({
           {...props}
           dataSource={filteredDataSource}
           revokeList={revokeList}
+          onDone={() => {
+            props.onDone();
+            setVisible(false);
+          }}
           onClose={(needUpdate) => {
             props.onClose(needUpdate);
             setVisible(false);
