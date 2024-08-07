@@ -773,8 +773,13 @@
         "revokeOneByOne": "Revoke One by One",
         "revoked": "Revoked:",
         "totalRevoked": "Total:",
+        "approvalCount_zero": "{{count}} approval",
         "approvalCount_one": "{{count}} approval",
-        "approvalCount_other": "{{count}} approvals"
+        "approvalCount_other": "{{count}} approvals",
+        "signAndStartRevoke": "Sign and Start Revoke",
+        "pause": "Pause",
+        "resume": "Continue",
+        "done": "Done"
       }
     },
     "gasTopUp": {

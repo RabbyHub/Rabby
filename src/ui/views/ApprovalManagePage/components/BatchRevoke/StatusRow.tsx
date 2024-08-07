@@ -11,15 +11,9 @@ interface Props {
 export const StatusRow: React.FC<Props> = ({ record }) => {
   return (
     <div>
-      {record.$status?.status === 'pending' && (
-        <LoadingSVG style={{ width: 16, height: 16 }} />
-      )}
-      {record.$status?.status === 'success' && (
-        <SuccessSVG style={{ width: 16, height: 16 }} />
-      )}
-      {record.$status?.status === 'fail' && (
-        <FailSVG style={{ width: 16, height: 16 }} />
-      )}
+      {record.$status?.status === 'pending' && <LoadingSVG />}
+      {record.$status?.status === 'success' && <SuccessSVG />}
+      {record.$status?.status === 'fail' && <FailSVG />}
       {!record.$status?.status && <span>-</span>}
     </div>
   );
