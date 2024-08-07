@@ -18,7 +18,7 @@ export interface RevokeTableProps {
   onDone: () => void;
   revokeList: ApprovalSpenderItemToBeRevoked[];
   dataSource: AssetApprovalSpender[];
-  onClose: () => void;
+  onClose: (needUpdate: boolean) => void;
 }
 
 const ROW_HEIGHT = 52;
@@ -50,6 +50,14 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
     const height = task.list.length * ROW_HEIGHT;
     return Math.min(TABLE_MAX_HEIGHT, Math.max(TABLE_MIN_HEIGHT, height));
   }, [task.list]);
+
+  React.useEffect(() => {
+    window.addEventListener('blur', task.pause);
+
+    return () => {
+      window.removeEventListener('blur', task.pause);
+    };
+  }, [task.pause]);
 
   return (
     <div className="my-8">

@@ -1043,7 +1043,16 @@ const ApprovalManagePage = () => {
   const batchRevokeModal = useBatchRevokeModal({
     revokeList: revokeSummary.currentRevokeList,
     dataSource: displaySortedAssetsList,
-    onDone: () => {},
+    onDone: () => {
+      loadApprovals();
+      clearRevoke();
+    },
+    onClose: (needUpdate) => {
+      if (needUpdate) {
+        loadApprovals();
+        clearRevoke();
+      }
+    },
   });
   const confirmRevokeModal = useConfirmRevokeModal({
     revokeListCount: revokeSummary.currentRevokeList.length,

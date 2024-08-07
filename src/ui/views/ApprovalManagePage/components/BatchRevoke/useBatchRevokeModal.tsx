@@ -7,7 +7,7 @@ export const useBatchRevokeModal = ({
   revokeList,
   dataSource,
   ...props
-}: Omit<RevokeTableProps, 'onClose'>) => {
+}: RevokeTableProps) => {
   const [visible, setVisible] = React.useState(false);
 
   const show = React.useCallback(() => {
@@ -38,13 +38,16 @@ export const useBatchRevokeModal = ({
         centered={true}
         width={964}
         okCancel={false}
-        onCancel={() => setVisible(false)}
+        destroyOnClose
       >
         <RevokeTable
           {...props}
           dataSource={filteredDataSource}
           revokeList={revokeList}
-          onClose={() => setVisible(false)}
+          onClose={(needUpdate) => {
+            props.onClose(needUpdate);
+            setVisible(false);
+          }}
         />
       </Modal>
     );

@@ -10,7 +10,7 @@ import clsx from 'clsx';
 interface Props {
   totalApprovals: number;
   revokedApprovals: number;
-  onClose: () => void;
+  onClose: (needUpdate: boolean) => void;
   task: ReturnType<typeof useBatchRevokeTask>;
 }
 
@@ -23,7 +23,7 @@ export const RevokeModalHeader: React.FC<Props> = ({
   const { t } = useTranslation();
   const handleClose = React.useCallback(() => {
     if (task.status === 'idle') {
-      return onClose();
+      return onClose(false);
     }
 
     task.pause();
@@ -48,7 +48,7 @@ export const RevokeModalHeader: React.FC<Props> = ({
                 'before:content-none'
               )}
               onClick={() => {
-                onClose();
+                onClose(true);
                 modal.destroy();
               }}
             >
