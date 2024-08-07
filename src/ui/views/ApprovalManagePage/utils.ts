@@ -115,6 +115,14 @@ function queryContractMatchedSpender(
   return result;
 }
 
+function getAbiType<T extends SpendersHost = ApprovalItem['list'][number]>(
+  spenderHost: T
+) {
+  if ('is_erc721' in spenderHost && spenderHost.is_erc721) return 'ERC721';
+  if ('is_erc1155' in spenderHost && spenderHost.is_erc1155) return 'ERC1155';
+
+  return '';
+}
 export const findIndexRevokeList = <
   T extends SpendersHost = ApprovalItem['list'][number]
 >(
@@ -151,10 +159,11 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === spenderHost.contract_id &&
           revoke.spender === spenderHost.spender.id &&
+          revoke.abi === getAbiType(spenderHost) &&
           (permit2IdToMatch
             ? revoke.permit2Id === permit2IdToMatch
             : !revoke.permit2Id) &&
-          revoke.tokenId === spenderHost.inner_id &&
+          revoke.nftTokenId === spenderHost.inner_id &&
           revoke.chainServerId === spenderHost.chain
         ) {
           return true;
@@ -165,6 +174,8 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === spenderHost.contract_id &&
           revoke.spender === spenderHost.spender.id &&
+          revoke.abi === getAbiType(spenderHost) &&
+          revoke.nftContractName === spenderHost.contract_name &&
           (permit2IdToMatch
             ? revoke.permit2Id === permit2IdToMatch
             : !revoke.permit2Id) &&
@@ -231,33 +242,24 @@ export const toRevokeItem = <T extends ApprovalItem>(
     const permit2Id = assetApprovalSpender?.permit2_id;
 
     if ('inner_id' in spenderHost) {
-      const abi = spenderHost?.is_erc721
-        ? 'ERC721'
-        : spenderHost?.is_erc1155
-        ? 'ERC1155'
-        : '';
       return {
         chainServerId: spenderHost?.chain,
         contractId: spenderHost?.contract_id,
         permit2Id,
         spender: spenderHost?.spender?.id,
-        abi,
+        abi: getAbiType(spenderHost),
         nftTokenId: spenderHost?.inner_id,
         isApprovedForAll: false,
       } as const;
     } else if ('contract_name' in spenderHost) {
-      const abi = spenderHost?.is_erc721
-        ? 'ERC721'
-        : spenderHost?.is_erc1155
-        ? 'ERC1155'
-        : '';
       return {
         chainServerId: spenderHost?.chain,
         contractId: spenderHost?.contract_id,
         permit2Id,
         spender: spenderHost?.spender?.id,
         nftTokenId: null,
-        abi,
+        nftContractName: spenderHost?.contract_name,
+        abi: getAbiType(spenderHost),
         isApprovedForAll: true,
       } as const;
     } else {

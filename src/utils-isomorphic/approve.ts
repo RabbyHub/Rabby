@@ -2,7 +2,6 @@ import type { Spender, TokenApproval } from '@/background/service/openapi';
 import type { ApprovalItem, NFTInfoHost } from '../utils/approval';
 import { TokenSpenderPair } from '@/types/permit2';
 import { obj2query, query2obj } from '@/ui/utils/url';
-import { safeJSONParse } from '@/utils';
 
 export type ApprovalSpenderItemToBeRevoked = {
   chainServerId: ApprovalItem['chain'];
@@ -11,10 +10,11 @@ export type ApprovalSpenderItemToBeRevoked = {
 } & (
   | {
       contractId: NFTInfoHost['contract_id'];
-      abi: 'ERC721' | 'ERC1155' | '';
       isApprovedForAll: boolean;
       tokenId?: '';
+      abi: 'ERC721' | 'ERC1155' | '';
       nftTokenId: string | null | undefined;
+      nftContractName?: string | null | undefined;
     }
   | {
       contractId?: undefined;
