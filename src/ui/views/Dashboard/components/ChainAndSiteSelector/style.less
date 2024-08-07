@@ -16,6 +16,20 @@
     &.alert .ant-badge-count {
       background-color: #ec5151;
     }
+    &.hi-checked .ant-badge-count {
+      box-sizing: border-box;
+      font-weight: 500;
+      line-height: 10px;
+      border: 1.5px solid var(--r-neutral-foot);
+      color: var(--r-neutral-foot);
+      background-color: var(--r-neutral-card-2);
+      backdrop-filter: blur(10px); 
+    }
+    &.hi-unchecked .ant-badge-count {
+      box-sizing: border-box;
+      font-weight: 500;
+      line-height: 13px;
+    }
   }
   .title {
     color: @color-comment-1;
@@ -73,6 +87,9 @@
         }
         &:hover {
           background: var(--r-blue-light-2, #eef1ff);
+          .hi-checked .ant-badge-count {
+            background: var(--r-blue-light-2, #eef1ff) !important;
+          }
         }
       }
       .disable-direction {

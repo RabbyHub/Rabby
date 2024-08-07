@@ -40,6 +40,7 @@ import IconMoreSettings, {
 import IconDrawer from 'ui/assets/drawer.png';
 import {
   getCurrentConnectSite,
+  openDeBankHi,
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
@@ -125,6 +126,14 @@ export default ({
     return false;
   }, [account?.address]);
 
+  const { value: debankHiStatus, loading: dbHiLoading } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.getDeBankHiStatus(account.address);
+      return data;
+    }
+    return;
+  }, [account?.address]);
+
   useEffect(() => {
     if (approvalState) {
       setApprovalRiskAlert(
@@ -181,6 +190,7 @@ export default ({
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
     badgeAlert?: boolean;
+    badgeClassName?: string;
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
@@ -253,8 +263,13 @@ export default ({
       eventKey: 'DeBank Hi',
       content: t('page.dashboard.home.panel.debankHi'),
       onClick: () => {
-        console.log('go to debank hi');
+        account?.address && openDeBankHi(account.address);
       },
+      badge: dbHiLoading ? 0 : debankHiStatus?.unread_message_count,
+      badgeAlert: !debankHiStatus?.is_checked,
+      badgeClassName: debankHiStatus?.is_checked
+        ? 'hi-checked'
+        : 'hi-unchecked',
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
@@ -367,7 +382,12 @@ export default ({
                   <Badge
                     count={item.badge}
                     size="small"
-                    className={item.badgeAlert ? 'alert' : ''}
+                    className={clsx(
+                      {
+                        alert: item.badgeAlert && !item.badgeClassName,
+                      },
+                      item.badgeClassName
+                    )}
                   >
                     <ThemeIcon
                       src={item.icon}

@@ -1,6 +1,7 @@
 import browser, { Tabs, Windows } from 'webextension-polyfill';
 import { WalletController, WalletControllerType } from './index';
 import { getOriginFromUrl } from '@/utils';
+import { appIsDebugPkg, appIsProd } from '@/utils/env';
 
 export const getCurrentTab = async (): Promise<Tabs.Tab> => {
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
@@ -48,4 +49,16 @@ export const openInternalPageInTab = (path: string, useWebapi = true) => {
   } else {
     window.open(`./index.html#/${path}`);
   }
+};
+
+const DEBANK_HI_PAGE = {
+  DEBUG: 'https://debank-git-feat-hinoti-debanker.vercel.app/hi-thirdparty',
+  PROD: 'https://debank.com/hi-thirdparty',
+};
+export const openDeBankHi = (address: string) => {
+  window.open(
+    `${
+      appIsProd && !appIsDebugPkg ? DEBANK_HI_PAGE.PROD : DEBANK_HI_PAGE.DEBUG
+    }?addr=${address}&thirdparty=rabby`
+  );
 };
