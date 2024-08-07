@@ -1181,7 +1181,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
   const handleGnosisSign = async () => {
     const account = currentGnosisAdmin;
-    console.log('handle gnosis sign');
     if (!safeInfo || !account) {
       return;
     }
@@ -1220,8 +1219,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (!typedData) {
       throw new Error('Failed to generate typed data');
     }
-
-    console.log('isGnosis', isGnosis, account);
 
     if (WaitingSignMessageComponent[account.type]) {
       setTimeout(() => {
@@ -1264,10 +1261,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           }
         );
         result = adjustV('eth_signTypedData', result);
-        console.log('result', result);
 
         const sigs = await wallet.getGnosisTransactionSignatures();
-        console.log('signs', sigs);
         if (sigs.length > 0) {
           await wallet.gnosisAddConfirmation(account.address, result);
         } else {
