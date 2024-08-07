@@ -1,3 +1,5 @@
+@import "@/ui/style/mixin.less";
+
 .confirm-revoke-modal {
   .ant-modal-content {
     border-radius: 12px;
@@ -18,7 +20,7 @@
     font-style: normal;
     font-weight: 400;
     border-bottom: 1px solid var(--r-neutral-line, #E0E5EC);
-    padding: 12px 0;
+    padding: 0;
   }
 
   .ant-modal-header,
@@ -33,6 +35,7 @@
   }
 
   .name-and-address {
+    overflow: hidden;
     .address {
       color: var(--r-neutral-title1, #192945);
       margin-right: 2px;
@@ -41,6 +44,52 @@
 
     .contract-name {
       color: var(--r-neutral-foot, #6A7587);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-wrap: nowrap;
     }
+  }
+  .ant-table table {
+    height: 40px;
+  }
+
+  .asset-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-wrap: nowrap;
+  }
+
+  .ant-table {
+    background: transparent;
+  }
+
+  .am-virtual-table-cell-inner {
+    color: var(--r-neutral-title1, #192945);
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    padding-right: 16px;
+  }
+
+  .ant-table-container:before,
+  .ant-table-container:after {
+    display: none;
+  }
+  
+  .am-virtual-grid {
+    overflow-y: overlay !important;
+    overflow-x: hidden !important;
+
+    .chromelike-scrollbar(4px);
+  }
+
+  .batch-revoke-table {
+    width: 900px;
+    margin: auto;
+  }
+
+  .ant-modal-title {
+    font-size: 24px;
+    line-height: 30px;
   }
 }

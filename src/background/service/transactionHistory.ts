@@ -584,6 +584,8 @@ class TxHistory {
           addressList: [address],
         },
       });
+
+      return completed.gas_used;
     } catch (e) {
       if (duration !== false && +duration < 1000 * 15) {
         const timeout = Number(duration) + 1000;

@@ -298,8 +298,12 @@ export const useBatchRevokeTask = () => {
   const [revokeList, setRevokeList] = React.useState<
     ApprovalSpenderItemToBeRevoked[]
   >([]);
+  const [status, setStatus] = React.useState<
+    'idle' | 'active' | 'paused' | 'completed'
+  >('idle');
 
   const start = React.useCallback(async () => {
+    setStatus('active');
     await Promise.all(
       list.map(async (item) =>
         queueRef.current.add(async () => {
@@ -342,15 +346,17 @@ export const useBatchRevokeTask = () => {
           });
 
           // to update status
-          await new Promise((resolve) => {
-            const handler = (res) => {
-              if (res.hash === hash) {
-                eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-                resolve(res);
-              }
-            };
-            eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
-          });
+          const { gasUsed } = await new Promise<{ gasUsed: number }>(
+            (resolve) => {
+              const handler = (res) => {
+                if (res?.hash === hash) {
+                  eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+                  resolve(res || {});
+                }
+              };
+              eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+            }
+          );
 
           cloneItem.$status = {
             status: 'success',
@@ -375,13 +381,28 @@ export const useBatchRevokeTask = () => {
       queueRef.current.clear();
       setList(dataSource);
       setRevokeList(revokeList);
+      setStatus('idle');
     },
     []
   );
 
+  const pause = React.useCallback(() => {
+    queueRef.current.pause();
+    setStatus('paused');
+  }, []);
+
+  const handleContinue = React.useCallback(() => {
+    queueRef.current.start();
+    setStatus('active');
+  }, []);
+
   React.useEffect(() => {
     queueRef.current.on('error', (error) => {
       console.error('Queue error:', error);
+    });
+
+    queueRef.current.on('idle', () => {
+      setStatus('completed');
     });
 
     return () => {
@@ -393,7 +414,8 @@ export const useBatchRevokeTask = () => {
     list,
     init,
     start,
-    continue: queueRef.current.start,
-    pause: queueRef.current.pause,
+    continue: handleContinue,
+    pause,
+    status,
   };
 };

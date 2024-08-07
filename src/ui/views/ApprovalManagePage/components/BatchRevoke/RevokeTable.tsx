@@ -1,6 +1,4 @@
-import { ApprovalSpenderItemToBeRevoked } from '@/utils-isomorphic/approve';
 import React from 'react';
-import { AssetApprovalSpender } from '@/utils/approval';
 import { AssetRow } from '../AssetRow';
 import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
@@ -14,31 +12,24 @@ import { GasRow } from './GasRow';
 import { HashRow } from './HashRow';
 
 export interface RevokeTableProps {
-  revokeList: ApprovalSpenderItemToBeRevoked[];
-  dataSource: AssetApprovalSpender[];
   onDone: () => void;
 }
 
-export const RevokeTable: React.FC<RevokeTableProps> = ({
-  dataSource,
-  revokeList,
-}) => {
-  const task = useBatchRevokeTask();
-
+export const RevokeTable: React.FC<
+  RevokeTableProps & {
+    task: ReturnType<typeof useBatchRevokeTask>;
+  }
+> = ({ task }) => {
   const onStart = React.useCallback(() => {
     task.start();
   }, [task.start]);
-
-  React.useEffect(() => {
-    task.init(dataSource, revokeList);
-  }, [dataSource, revokeList]);
 
   return (
     <div>
       <VirtualTable<AssetApprovalSpenderWithStatus>
         dataSource={task.list}
         markHoverRow={false}
-        scroll={{ y: 416, x: 900 }}
+        scroll={{ y: 456 }}
         overlayClassName="batch-revoke-table"
         getRowHeight={() => 52}
         columns={[
@@ -94,6 +85,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           },
         ]}
       />
+
       <Button type="primary" onClick={onStart}>
         Sign and Start Revoke
       </Button>

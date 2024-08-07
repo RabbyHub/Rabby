@@ -770,7 +770,11 @@
       "revokeModal": {
         "confirmRevoke": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with one signature.",
         "batchRevoke": "Batch Revoke",
-        "revokeOneByOne": "Revoke One by One"
+        "revokeOneByOne": "Revoke One by One",
+        "revoked": "Revoked:",
+        "totalRevoked": "Total:",
+        "approvalCount_one": "{{count}} approval",
+        "approvalCount_other": "{{count}} approvals"
       }
     },
     "gasTopUp": {
