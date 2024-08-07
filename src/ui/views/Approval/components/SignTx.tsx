@@ -83,6 +83,7 @@ import GasSelectorHeader, {
 } from './TxComponents/GasSelectorHeader';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -1221,16 +1222,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
 
     if (WaitingSignMessageComponent[account.type]) {
-      setTimeout(() => {
-        wallet
-          .signTypedData(account.type, account.address, typedData as any, {
-            brandName: account.brandName,
-            version: 'V4',
-          })
-          .then(() => {
-            console.log('emit');
-          });
-      }, 200);
+      waitSignComponentAmounted().then(() => {
+        wallet.signTypedData(account.type, account.address, typedData as any, {
+          brandName: account.brandName,
+          version: 'V4',
+        });
+      });
       if (isSend) {
         wallet.clearPageStateCache();
       }
@@ -2183,8 +2180,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               chain={chain}
               gnosisAccount={currentGnosisAdmin}
               onCancel={handleCancel}
-              securityLevel={securityLevel}
-              hasUnProcessSecurityResult={hasUnProcessSecurityResult}
+              // securityLevel={securityLevel}
+              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               onSubmit={handleGnosisSign}
               enableTooltip={
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
