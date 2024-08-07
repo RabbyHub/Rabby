@@ -2051,7 +2051,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             )}
           </>
         )}
-        {!isGnosisAccount && !isCoboArugsAccount && isReady ? (
+        {!isGnosisAccount &&
+        !isCoboArugsAccount &&
+        swapPreferMEVGuarded &&
+        isReady ? (
           <BroadcastMode
             chain={chain.enum}
             value={pushInfo}
