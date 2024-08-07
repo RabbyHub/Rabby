@@ -51,13 +51,19 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
     return Math.min(TABLE_MAX_HEIGHT, Math.max(TABLE_MIN_HEIGHT, height));
   }, [task.list]);
 
+  const handleWindowBlur = React.useCallback(() => {
+    if (task.status === 'active') {
+      task.pause();
+    }
+  }, [task.status, task.pause]);
+
   React.useEffect(() => {
-    window.addEventListener('blur', task.pause);
+    window.addEventListener('blur', handleWindowBlur);
 
     return () => {
-      window.removeEventListener('blur', task.pause);
+      window.removeEventListener('blur', handleWindowBlur);
     };
-  }, [task.pause]);
+  }, [handleWindowBlur]);
 
   return (
     <div className="my-8">
@@ -113,6 +119,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
           {
             title: 'Status',
             width: 100,
+            className: 'status-cell',
             render: (_, record) => <StatusRow record={record} />,
           },
           {
@@ -121,6 +128,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
             render: (_, record) => <HashRow record={record} />,
           },
           {
+            align: 'right',
             title: 'Gas Fee',
             width: 200,
             render: (_, record) => <GasRow record={record} />,

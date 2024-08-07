@@ -783,7 +783,11 @@
         "confirmTitle": "Batch Revoke by 1 Signature",
         "cancelTitle": "Cancel Remaining Revokes",
         "confirm": "Confirm",
-        "cancelBody": "If you close this page, the remaining revokes will not be executed."
+        "cancelBody": "If you close this page, the remaining revokes will not be executed.",
+        "gasNotEnough": "Insufficient Gas to submit",
+        "gasTooHigh": "Gas fee is high",
+        "submitTxFailed": "Fail to Submit",
+        "defaultFailed": "Transaction failed"
       }
     },
     "gasTopUp": {

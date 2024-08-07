@@ -1,4 +1,5 @@
 import {
+  CHAINS_ENUM,
   EVENTS,
   INTERNAL_REQUEST_ORIGIN,
   INTERNAL_REQUEST_SESSION,
@@ -25,6 +26,7 @@ import {
   parseAction,
 } from '@/ui/views/Approval/components/Actions/utils';
 import eventBus from '@/eventBus';
+import i18n from '@/i18n';
 
 async function buildTx(
   wallet: WalletControllerType,
@@ -142,6 +144,17 @@ async function buildTx(
   });
 
   const isGasNotEnough = checkErrors.some((e) => e.code === 3001);
+  let failedCode = 0;
+  if (isGasNotEnough) {
+    failedCode = FailedCode.GasNotEnough;
+  } else if (
+    // eth gas > $20
+    (chain.enum === CHAINS_ENUM.ETH && gasCost.gasCostUsd.isGreaterThan(20)) ||
+    // other chain gas > $5
+    (chain.enum !== CHAINS_ENUM.ETH && gasCost.gasCostUsd.isGreaterThan(5))
+  ) {
+    failedCode = FailedCode.GasTooHigh;
+  }
 
   // generate tx with gas
   const transaction: Tx = {
@@ -174,7 +187,6 @@ async function buildTx(
       gas: '0x0',
       nonce: recommendNonce || '0x1',
       value: tx.value || '0x0',
-      // todo
       to: tx.to || '',
     },
     origin: origin || '',
@@ -224,28 +236,55 @@ async function buildTx(
     transaction,
     signingTxId,
     logId: actionData.log_id,
-    isGasNotEnough,
-    gasCost: {
+    failedCode,
+    estimateGasCost: {
       gasCostUsd: gasCost.gasCostUsd,
       gasCostAmount: gasCost.gasCostAmount,
       nativeTokenSymbol: preExecResult.native_token.symbol,
+      gasPrice: normalGas.price,
+      nativeTokenPrice: preExecResult.native_token.price,
     },
-    failedReason: checkErrors,
   };
 }
 
+// fail code
+enum FailedCode {
+  GasNotEnough = 1,
+  GasTooHigh = 2,
+  SubmitTxFailed = 3,
+  DefaultFailed = 4,
+}
+
+export const FailReason = {
+  [FailedCode.GasNotEnough]: i18n.t('page.approvals.revokeModal.gasNotEnough'),
+  [FailedCode.GasTooHigh]: i18n.t('page.approvals.revokeModal.gasTooHigh'),
+  [FailedCode.SubmitTxFailed]: i18n.t(
+    'page.approvals.revokeModal.submitTxFailed'
+  ),
+  [FailedCode.DefaultFailed]: i18n.t(
+    'page.approvals.revokeModal.defaultFailed'
+  ),
+};
+
 export type AssetApprovalSpenderWithStatus = AssetApprovalSpender & {
-  $status?: {
-    status: 'pending' | 'success' | 'fail';
-    txHash?: string;
-    gasCost?: {
-      gasCostUsd: BigNumber;
-      gasCostAmount: BigNumber;
-      nativeTokenSymbol: string;
-    };
-    isGasNotEnough?: boolean;
-    failedReason?: ReturnType<typeof checkGasAndNonce>;
-  };
+  $status?:
+    | {
+        status: 'pending';
+      }
+    | {
+        status: 'fail';
+        failedCode: FailedCode;
+        failedReason?: string;
+      }
+    | {
+        status: 'success';
+        txHash: string;
+        gasCost: {
+          gasCostUsd: BigNumber;
+          gasCostAmount: BigNumber;
+          nativeTokenSymbol: string;
+        };
+      };
 };
 
 const updateAssetApprovalSpender = (
@@ -319,55 +358,94 @@ export const useBatchRevokeTask = () => {
 
           cloneItem.$status!.status = 'pending';
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-          // TODO: maybe failed
-          const {
-            transaction,
-            signingTxId,
-            logId,
-            gasCost,
-            isGasNotEnough,
-            failedReason,
-          } = await buildTx(wallet, revokeItem);
 
-          // to send
-          const hash = await wallet.ethSendTransaction({
-            data: {
-              $ctx: {},
-              params: [transaction],
-            },
-            session: INTERNAL_REQUEST_SESSION,
-            approvalRes: {
-              ...transaction,
+          try {
+            // build tx
+            const {
+              transaction,
               signingTxId,
-              logId: logId,
-            },
-            pushed: false,
-            result: undefined,
-          });
+              logId,
+              estimateGasCost,
+              failedCode,
+            } = await buildTx(wallet, revokeItem);
 
-          // to update status
-          const { gasUsed } = await new Promise<{ gasUsed: number }>(
-            (resolve) => {
-              const handler = (res) => {
-                if (res?.hash === hash) {
-                  eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
-                  resolve(res || {});
-                }
+            if (failedCode) {
+              cloneItem.$status = {
+                status: 'fail',
+                failedCode,
               };
-              eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+              return;
             }
-          );
 
-          cloneItem.$status = {
-            status: 'success',
-            txHash: hash,
-            gasCost,
-            isGasNotEnough,
-            failedReason,
-          };
-          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+            // submit tx
+            let hash = '';
+            try {
+              hash = await wallet.ethSendTransaction({
+                data: {
+                  $ctx: {},
+                  params: [transaction],
+                },
+                session: INTERNAL_REQUEST_SESSION,
+                approvalRes: {
+                  ...transaction,
+                  signingTxId,
+                  logId: logId,
+                },
+                pushed: false,
+                result: undefined,
+              });
+            } catch (e) {
+              const err = new Error(e.message);
+              err.name = 'SubmitTxFailed';
+              throw err;
+            }
 
-          console.log(transaction);
+            // wait tx completed
+            const { gasUsed } = await new Promise<{ gasUsed: number }>(
+              (resolve) => {
+                const handler = (res) => {
+                  if (res?.hash === hash) {
+                    eventBus.removeEventListener(EVENTS.TX_COMPLETED, handler);
+                    resolve(res || {});
+                  }
+                };
+                eventBus.addEventListener(EVENTS.TX_COMPLETED, handler);
+              }
+            );
+
+            // calc gas cost
+            const gasCostAmount = new BigNumber(gasUsed)
+              .times(estimateGasCost.gasPrice)
+              .div(1e18);
+            const gasCostUsd = new BigNumber(gasCostAmount).times(
+              estimateGasCost.nativeTokenPrice
+            );
+
+            // update status
+            cloneItem.$status = {
+              status: 'success',
+              txHash: hash,
+              gasCost: {
+                ...estimateGasCost,
+                gasCostUsd,
+                gasCostAmount,
+              },
+            };
+          } catch (e) {
+            let failedCode = FailedCode.DefaultFailed;
+            if (e.name === 'SubmitTxFailed') {
+              failedCode = FailedCode.SubmitTxFailed;
+            }
+
+            console.error(e);
+            cloneItem.$status = {
+              status: 'fail',
+              failedCode: failedCode,
+              failedReason: e.message,
+            };
+          } finally {
+            setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+          }
         })
       )
     );
