@@ -748,18 +748,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         const gas = new BigNumber(gasRaw);
         setGasUsed(gasUsed);
         setRecommendGasLimit(`0x${gas.toString(16)}`);
-        const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
-          chain,
-          tx,
-          gas,
-          selectedGas,
-          nativeTokenBalance,
-          explainTx: res,
-          needRatio,
-          wallet,
-        });
-        setGasLimit(gasLimit);
-        setRecommendGasLimitRatio(recommendGasLimitRatio);
+        if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
+          setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
+        } else if (!gasLimit) {
+          const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
+            chain,
+            tx,
+            gas,
+            selectedGas,
+            nativeTokenBalance,
+            explainTx: res,
+            needRatio,
+            wallet,
+          });
+          setGasLimit(gasLimit);
+          setRecommendGasLimitRatio(recommendGasLimitRatio);
+        }
         setTxDetail(res);
 
         setPreprocessSuccess(res.pre_exec.success);
