@@ -1,7 +1,6 @@
 import browser, { Tabs, Windows } from 'webextension-polyfill';
 import { WalletController, WalletControllerType } from './index';
 import { getOriginFromUrl } from '@/utils';
-import { appIsDebugPkg, appIsProd } from '@/utils/env';
 
 export const getCurrentTab = async (): Promise<Tabs.Tab> => {
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });

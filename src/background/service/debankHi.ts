@@ -1,4 +1,3 @@
-import { appIsDebugPkg, appIsProd } from '@/utils/env';
 import { http } from '../utils/http';
 
 interface IResponse {
