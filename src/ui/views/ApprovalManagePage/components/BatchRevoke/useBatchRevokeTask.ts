@@ -28,7 +28,6 @@ import {
 import eventBus from '@/eventBus';
 import i18n from '@/i18n';
 import Browser from 'webextension-polyfill';
-import { appIsProd } from '@/utils/env';
 
 async function buildTx(
   wallet: WalletControllerType,
@@ -162,11 +161,11 @@ async function buildTx(
   });
 
   const isGasNotEnough = checkErrors.some((e) => e.code === 3001);
-  const ETH_GAS_USD_LIMIT = !appIsProd
+  const ETH_GAS_USD_LIMIT = process.env.DEBUG
     ? (await Browser.storage.local.get('DEBUG_ETH_GAS_USD_LIMIT'))
         .DEBUG_ETH_GAS_USD_LIMIT || 20
     : 20;
-  const OTHER_CHAIN_GAS_USD_LIMIT = !appIsProd
+  const OTHER_CHAIN_GAS_USD_LIMIT = process.env.DEBUG
     ? (await Browser.storage.local.get('DEBUG_OTHER_CHAIN_GAS_USD_LIMIT'))
         .DEBUG_OTHER_CHAIN_GAS_USD_LIMIT || 5
     : 5;
@@ -413,7 +412,7 @@ export const useBatchRevokeTask = () => {
               return;
             }
 
-            if (!appIsProd) {
+            if (process.env.DEBUG) {
               const { DEBUG_MOCK_SUBMIT } = await Browser.storage.local.get(
                 'DEBUG_MOCK_SUBMIT'
               );
