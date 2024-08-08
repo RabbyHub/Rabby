@@ -374,10 +374,13 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
 
     if (spender.$assetParent?.nftContract) {
       resTexts.displayAmountText = '1 Collection';
-      const nftCount = spender.$assetParent?.nftContract.amount || 0;
+      const nftCount =
+        (spender.$assetToken && 'amount' in spender.$assetToken
+          ? spender.$assetToken.amount
+          : spender.$assetParent?.nftContract.amount) || 0;
       resTexts.balanceNumText = nftCount ? formatNumber(nftCount, 0) : '';
       resTexts.balanceUnitText = nftCount
-        ? parseInt(nftCount) > 1
+        ? coerceInteger(nftCount) > 1
           ? 'NFTs'
           : 'NFT'
         : '';
