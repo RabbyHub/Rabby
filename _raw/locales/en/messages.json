@@ -885,8 +885,7 @@
         "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee, which is automatically included in the quote.",
         "wallet": "Wallet",
         "rate": "Fee rate",
-        "button": "Got it",
-        "aggregator-fee": "The current quote also includes a 0.125% 1inch fee"
+        "button": "Got it"
       }
     },
     "bridge": {

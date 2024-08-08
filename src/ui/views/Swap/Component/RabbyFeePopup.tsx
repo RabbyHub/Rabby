@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Popup } from '@/ui/component';
 import { ReactComponent as RCIconRabbyWhite } from '@/ui/assets/swap/rabby.svg';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import ImgPhantom from '@/ui/assets/swap/phantom.png';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import clsx from 'clsx';
 import { Button } from 'antd';
+import { DEX } from '@/constant';
 
 const swapFee = [
   {
@@ -48,23 +49,43 @@ export const RabbyFeePopup = ({
   visible,
   onClose,
   type = 'swap',
+  feeDexDesc,
+  dexName,
 }: {
   visible: boolean;
   onClose: () => void;
   type?: keyof typeof fee;
+  dexName?: string;
+  feeDexDesc?: string;
 }) => {
   const { t } = useTranslation();
+
+  const hasSwapDexFee = useMemo(() => {
+    return type === 'swap' && dexName && feeDexDesc && DEX?.[dexName]?.logo;
+  }, [type, dexName, feeDexDesc]);
+
+  const height = useMemo(() => {
+    if (type === 'swap') {
+      if (dexName && feeDexDesc && DEX?.[dexName]?.logo) {
+        return 500;
+      }
+      return 493;
+    }
+    return 428;
+  }, [type, dexName, feeDexDesc]);
   return (
     <Popup
       visible={visible}
       title={null}
-      height={type === 'swap' ? 478 : 428}
+      height={height}
       isSupportDarkMode
       isNew
       onCancel={onClose}
       bodyStyle={{
-        paddingTop: 24,
+        paddingTop: hasSwapDexFee ? 20 : 32,
         paddingBottom: 20,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div className="w-[52px] h-[52px] flex items-center justify-center rounded-full bg-r-blue-default mx-auto">
@@ -84,8 +105,9 @@ export const RabbyFeePopup = ({
       <div
         className={clsx(
           'flex justify-between items-center',
-          'px-16 mt-20 mb-8',
-          'text-12 text-r-neutral-foot'
+          'px-16  mb-6',
+          'text-12 text-r-neutral-foot',
+          type === 'bridge' ? 'mt-20' : hasSwapDexFee ? 'mt-20' : 'mt-[26px]'
         )}
       >
         <span>{t('page.swap.rabbyFee.wallet')}</span>
@@ -97,13 +119,13 @@ export const RabbyFeePopup = ({
             key={item.name}
             className={clsx(
               'flex justify-between items-center',
-              'px-16 py-12',
+              'px-16 h-[44px]',
               'border-b-[1px] border-solid border-rabby-neutral-line',
               idx === list.length - 1 ? 'border-b-0' : ''
             )}
           >
             <div className="flex items-center">
-              <img src={item.logo} className="w-[20px] h-[20px] mr-8" />
+              <img src={item.logo} className="w-[18px] h-[18px] mr-8" />
               <span className="text-13 leading-normal font-medium text-rabby-neutral-title1">
                 {item.name}
               </span>
@@ -114,11 +136,14 @@ export const RabbyFeePopup = ({
           </div>
         ))}
       </div>
+
+      <SwapAggregatorFee dexName={dexName} feeDexDesc={feeDexDesc} />
+
       <Button
         type="primary"
         block
         size="large"
-        className="mt-[20px] h-[48px] text-16 font-medium text-r-neutral-title2"
+        className="mt-[auto] h-[48px] text-16 font-medium text-r-neutral-title2"
         onClick={onClose}
       >
         {t('page.swap.rabbyFee.button')}
@@ -126,3 +151,24 @@ export const RabbyFeePopup = ({
     </Popup>
   );
 };
+
+function SwapAggregatorFee({
+  dexName,
+  feeDexDesc,
+}: {
+  dexName?: string;
+  feeDexDesc?: string;
+}) {
+  if (dexName && feeDexDesc && DEX?.[dexName]?.logo) {
+    return (
+      <div className="flex justify-center items-center mt-16 gap-[3px] text-12 text-r-neutral-foot">
+        <img
+          src={DEX[dexName].logo}
+          className="w-[14px] h-[14px] rounded-full"
+        />
+        <span>{feeDexDesc}</span>
+      </div>
+    );
+  }
+  return null;
+}

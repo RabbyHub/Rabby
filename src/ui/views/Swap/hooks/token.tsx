@@ -386,7 +386,6 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
-      return;
     }
     if (autoSlippage) {
       setSlippage(isStableCoin ? '0.1' : '0.5');

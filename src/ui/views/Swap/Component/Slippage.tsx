@@ -5,6 +5,7 @@ import {
   useCallback,
   ChangeEventHandler,
   useState,
+  useEffect,
 } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
@@ -156,6 +157,12 @@ export const Slippage = memo((props: SlippageProps) => {
     },
     [onChange]
   );
+
+  useEffect(() => {
+    if (tips) {
+      setSlippageOpen(true);
+    }
+  }, [tips]);
 
   return (
     <div>

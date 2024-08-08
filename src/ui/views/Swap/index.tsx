@@ -3,7 +3,7 @@ import { Header } from './Component/Header';
 import { Main } from './Component/Main';
 import {
   QuoteVisibleProvider,
-  RabbyFeeVisibleProvider,
+  RabbyFeeProvider,
   RefreshIdProvider,
 } from './hooks';
 
@@ -11,12 +11,12 @@ const Swap = () => {
   return (
     <RefreshIdProvider>
       <QuoteVisibleProvider>
-        <RabbyFeeVisibleProvider>
+        <RabbyFeeProvider>
           <div className="px-0 overflow-hidden bg-r-neutral-bg-2 h-full relative flex flex-col">
             <Header />
             <Main />
           </div>
-        </RabbyFeeVisibleProvider>
+        </RabbyFeeProvider>
       </QuoteVisibleProvider>
     </RefreshIdProvider>
   );
