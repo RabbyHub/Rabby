@@ -56,6 +56,8 @@ import {
   encodeRevokeItemIndex,
   getFinalRiskInfo,
   openScanLinkFromChainItem,
+  encodeRevokeItem,
+  decodeRevokeItem,
 } from './utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { SorterResult } from 'antd/lib/table/interface';
@@ -90,7 +92,7 @@ function getColumnsForContract({
   t,
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
-  selectedRows: any[];
+  selectedRows: ApprovalSpenderItemToBeRevoked[];
   onChangeSelectedContractSpenders: IHandleChangeSelectedSpenders<ContractApprovalItem>;
   // t: ReturnType<typeof useTranslation>['t']
   t: any;
@@ -101,20 +103,21 @@ function getColumnsForContract({
       key: 'selection',
       className: 'J_selection',
       render: (_, contractApproval) => {
-        const contractList = contractApproval.list;
-        const selectedContracts = contractList.filter((contract) => {
-          return (
-            findIndexRevokeList(selectedRows, {
-              item: contractApproval,
-              spenderHost: contract,
-              itemIsContractApproval: true,
-            }) > -1
-          );
-        });
+        const selectedSpenderHosts = contractApproval.list.filter(
+          (spenderHost) => {
+            return (
+              findIndexRevokeList(selectedRows, {
+                item: contractApproval,
+                spenderHost,
+                itemIsContractApproval: true,
+              }) > -1
+            );
+          }
+        );
 
         const isIndeterminate =
-          selectedContracts.length > 0 &&
-          selectedContracts.length < contractList.length;
+          selectedSpenderHosts.length > 0 &&
+          selectedSpenderHosts.length < contractApproval.list.length;
 
         return (
           <div
@@ -123,14 +126,21 @@ function getColumnsForContract({
               evt.stopPropagation();
 
               const nextSelectAll =
-                isIndeterminate || selectedContracts.length === 0;
-              const revokeItems = nextSelectAll
-                ? (contractList
-                    .map((contract) => {
-                      return toRevokeItem(contractApproval, contract, true);
-                    })
-                    .filter(Boolean) as ApprovalSpenderItemToBeRevoked[])
-                : [];
+                isIndeterminate || selectedSpenderHosts.length === 0;
+              let revokeItems: ApprovalSpenderItemToBeRevoked[] = [];
+              if (nextSelectAll) {
+                const set = new Set<string>();
+                contractApproval.list.forEach((spenderHost) => {
+                  const revokeItem = toRevokeItem(
+                    contractApproval,
+                    spenderHost,
+                    true
+                  );
+                  if (!revokeItem) return;
+                  set.add(encodeRevokeItem(revokeItem));
+                });
+                revokeItems = [...set].map((key) => decodeRevokeItem(key));
+              }
 
               onChangeSelectedContractSpenders({
                 approvalItem: contractApproval,
@@ -143,7 +153,7 @@ function getColumnsForContract({
                 className="J_indeterminate w-[20px] h-[20px]"
                 src={RcIconCheckboxIndeterminate}
               />
-            ) : selectedContracts.length ? (
+            ) : selectedSpenderHosts.length ? (
               <ThemeIcon
                 className="J_checked w-[20px] h-[20px]"
                 src={RcIconCheckboxChecked}
