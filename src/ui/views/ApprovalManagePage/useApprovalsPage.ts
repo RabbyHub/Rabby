@@ -38,6 +38,8 @@ import {
   toRevokeItem,
 } from './utils';
 import { summarizeRevoke } from '@/utils-isomorphic/approve';
+import { Chain, CHAINS_ENUM } from '@debank/common';
+import { findChainByServerID } from '@/utils/chain';
 
 /**
  * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
@@ -102,7 +104,10 @@ const resetTableRenderer = (
   }
 };
 
-export function useApprovalsPage(options?: { isTestnet?: boolean }) {
+export function useApprovalsPage(options?: {
+  isTestnet?: boolean;
+  chain?: CHAINS_ENUM;
+}) {
   const wallet = useWallet();
 
   const dispatch = useRabbyDispatch();
@@ -438,10 +443,25 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       const sortedList = sorted.map((e) =>
         sortBy(e, (a) => a.list.length).reverse()
       );
-      return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
+      const list = [
+        ...dangerList,
+        ...warnList,
+        ...flatten(sortedList.reverse()),
+      ];
+
+      // filter chain
+      if (options?.chain) {
+        return list.filter(
+          (e) =>
+            findChainByServerID(e.chain as Chain['serverId'])?.enum ===
+            options.chain
+        );
+      }
+
+      return list;
     }
     return [];
-  }, [approvalsData.contractMap]);
+  }, [approvalsData.contractMap, options?.chain]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -461,9 +481,17 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       ),
     ] as AssetApprovalItem['list'][number][];
 
+    // filter chain
+    if (options?.chain) {
+      return assetsList.filter(
+        (e) =>
+          findChainByServerID(e.$assetParent?.chain as Chain['serverId'])
+            ?.enum === options.chain
+      );
+    }
     return assetsList;
     // return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
-  }, [approvalsData.tokenMap, approvalsData.nftMap]);
+  }, [approvalsData.tokenMap, approvalsData.nftMap, options?.chain]);
 
   useEffect(() => {
     setTimeout(() => {

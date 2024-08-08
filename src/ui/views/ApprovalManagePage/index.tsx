@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { formatUsdValue, useWallet } from 'ui/utils';
 import './style.less';
 
-import { Chain } from '@debank/common';
+import { Chain, CHAINS_ENUM } from '@debank/common';
 import { findChainByServerID } from '@/utils/chain';
 
 import {
@@ -74,6 +74,7 @@ import { useBatchRevokeModal } from './components/BatchRevoke/useBatchRevokeModa
 import { AssetRow } from './components/AssetRow';
 import { SpenderRow } from './components/SpenderRow';
 import { CheckboxRow } from './components/CheckboxRow';
+import { ChainSelectorButton } from './components/ChainSelectorButton';
 
 const DEFAULT_SORT_ORDER = 'descend';
 function getNextSort(currentSort?: 'ascend' | 'descend' | null) {
@@ -974,6 +975,7 @@ const ApprovalManagePage = () => {
   const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
 
   const { isDarkTheme } = useThemeMode();
+  const [chain, setChain] = React.useState<CHAINS_ENUM>();
 
   const {
     isLoading,
@@ -991,7 +993,7 @@ const ApprovalManagePage = () => {
 
     vGridRefContracts,
     vGridRefAsset,
-  } = useApprovalsPage({ isTestnet: selectedTab === 'testnet' });
+  } = useApprovalsPage({ isTestnet: selectedTab === 'testnet', chain });
 
   useEffect(() => {
     loadApprovals();
@@ -1014,6 +1016,7 @@ const ApprovalManagePage = () => {
     },
     []
   );
+
   const {
     handleClickAssetRow,
     contractRevokeMap,
@@ -1129,16 +1132,24 @@ const ApprovalManagePage = () => {
                   }
                 />
 
-                <SearchInput
-                  value={searchKw}
-                  onChange={(e) => setSearchKw(e.target.value)}
-                  prefix={<img src={IconSearch} />}
-                  className="search-input"
-                  suffix={<span />}
-                  placeholder={t('page.approvals.search.placeholder', {
-                    type: filterType === 'contract' ? 'contract' : 'assets',
-                  })}
-                />
+                <div className="flex items-center gap-x-12">
+                  <SearchInput
+                    value={searchKw}
+                    onChange={(e) => setSearchKw(e.target.value)}
+                    prefix={<img src={IconSearch} />}
+                    className="search-input"
+                    suffix={<span />}
+                    placeholder={t('page.approvals.search.placeholder', {
+                      type: filterType === 'contract' ? 'contract' : 'assets',
+                    })}
+                  />
+
+                  <ChainSelectorButton
+                    large
+                    chain={chain}
+                    setChain={setChain}
+                  />
+                </div>
               </div>
 
               <div className="approvals-manager__table-wrapper">

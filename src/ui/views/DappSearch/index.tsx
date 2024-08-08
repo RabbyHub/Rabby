@@ -1,7 +1,4 @@
-import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.svg';
-import { ReactComponent as RcIconDropdown } from '@/ui/assets/dapp-search/cc-dropdown.svg';
 import { ReactComponent as RcIconSearch } from '@/ui/assets/dapp-search/cc-search.svg';
-import { ChainSelectorLargeModal } from '@/ui/component/ChainSelector/LargeModal';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
@@ -16,8 +13,8 @@ import {
 } from 'ahooks';
 import { Input } from 'antd';
 import clsx from 'clsx';
-import { keyBy, range } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { keyBy } from 'lodash';
+import React, { useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
@@ -25,6 +22,7 @@ import { DappSearchResult } from './components/DappSearchResult';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConnectedSite } from '@/background/service/permission';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
+import { ChainSelectorButton } from '../ApprovalManagePage/components/ChainSelectorButton';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
@@ -95,9 +93,6 @@ export const DappSearchPage = () => {
   const chainInfo = useMemo(() => {
     return findChainByEnum(chain);
   }, [chain]);
-  const [isShowChainSelector, setIsShowChainSelector] = React.useState<boolean>(
-    false
-  );
   const [isFocus, setIsFocus] = React.useState(false);
   const [favoriteSites, setFavoriteSites] = React.useState<ConnectedSite[]>([]);
 
@@ -326,57 +321,7 @@ export const DappSearchPage = () => {
                 )
               }
               rightSlot={
-                <div
-                  onClick={() => {
-                    setIsShowChainSelector(true);
-                  }}
-                >
-                  {chainInfo ? (
-                    <div
-                      className={clsx(
-                        'rounded-[4px] bg-r-neutral-card1',
-                        'border-[0.5px] border-solid border-rabby-neutral-line',
-                        'flex items-center cursor-pointer',
-                        'p-[2px]'
-                      )}
-                    >
-                      <div
-                        className={clsx(
-                          'flex items-center gap-[6px] py-[4px] pl-[9px] pr-[3px] rounded-[2px]',
-                          'hover:bg-r-blue-light1'
-                        )}
-                      >
-                        <img
-                          src={chainInfo?.logo}
-                          className="w-[20px] h-[20px] rounded-full"
-                        />
-                        <span className="text-r-neutral-body text-[14px] leading-[17px] font-medium">
-                          {chainInfo?.name}
-                        </span>
-                      </div>
-                      <span
-                        className="p-[7px] cursor-pointer text-r-neutral-foot rounded-[2px] hover:bg-r-blue-light1"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setChain(undefined);
-                        }}
-                      >
-                        <RcIconClose />
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      className={clsx(
-                        'flex items-center gap-[2px] cursor-pointer',
-                        'text-r-neutral-body font-medium text-[13px] leading-[16px]'
-                      )}
-                    >
-                      {t('page.dappSearch.selectChain')}
-                      <RcIconDropdown />
-                    </div>
-                  )}
-                </div>
+                <ChainSelectorButton chain={chain} setChain={setChain} />
               }
             />
           </main>
@@ -388,19 +333,6 @@ export const DappSearchPage = () => {
           </aside>
         </div>
       </div>
-      <ChainSelectorLargeModal
-        visible={isShowChainSelector}
-        title="Select chain"
-        value={chain}
-        hideTestnetTab
-        onChange={(v) => {
-          setChain(v);
-          setIsShowChainSelector(false);
-        }}
-        onCancel={() => {
-          setIsShowChainSelector(false);
-        }}
-      />
     </div>
   );
 };
