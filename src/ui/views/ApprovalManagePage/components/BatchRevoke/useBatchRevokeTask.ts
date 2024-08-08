@@ -27,10 +27,13 @@ import {
 } from '@/ui/views/Approval/components/Actions/utils';
 import eventBus from '@/eventBus';
 import i18n from '@/i18n';
+import Browser from 'webextension-polyfill';
+import { appIsProd } from '@/utils/env';
 
 async function buildTx(
   wallet: WalletControllerType,
-  item: ApprovalSpenderItemToBeRevoked
+  item: ApprovalSpenderItemToBeRevoked,
+  ignoreGasCheck = false
 ) {
   // generate tx
   let tx: Tx;
@@ -159,14 +162,25 @@ async function buildTx(
   });
 
   const isGasNotEnough = checkErrors.some((e) => e.code === 3001);
+  const ETH_GAS_USD_LIMIT = !appIsProd
+    ? (await Browser.storage.local.get('DEBUG_ETH_GAS_USD_LIMIT'))
+        .DEBUG_ETH_GAS_USD_LIMIT || 20
+    : 20;
+  const OTHER_CHAIN_GAS_USD_LIMIT = !appIsProd
+    ? (await Browser.storage.local.get('DEBUG_OTHER_CHAIN_GAS_USD_LIMIT'))
+        .DEBUG_OTHER_CHAIN_GAS_USD_LIMIT || 5
+    : 5;
   let failedCode = 0;
   if (isGasNotEnough) {
     failedCode = FailedCode.GasNotEnough;
   } else if (
+    !ignoreGasCheck &&
     // eth gas > $20
-    (chain.enum === CHAINS_ENUM.ETH && gasCost.gasCostUsd.isGreaterThan(20)) ||
-    // other chain gas > $5
-    (chain.enum !== CHAINS_ENUM.ETH && gasCost.gasCostUsd.isGreaterThan(5))
+    ((chain.enum === CHAINS_ENUM.ETH &&
+      gasCost.gasCostUsd.isGreaterThan(ETH_GAS_USD_LIMIT)) ||
+      // other chain gas > $5
+      (chain.enum !== CHAINS_ENUM.ETH &&
+        gasCost.gasCostUsd.isGreaterThan(OTHER_CHAIN_GAS_USD_LIMIT)))
   ) {
     failedCode = FailedCode.GasTooHigh;
   }
@@ -360,7 +374,11 @@ export const useBatchRevokeTask = () => {
   >('idle');
 
   const addRevokeTask = React.useCallback(
-    async (item: AssetApprovalSpender, priority: number = 0) => {
+    async (
+      item: AssetApprovalSpender,
+      priority: number = 0,
+      ignoreGasCheck = false
+    ) => {
       return queueRef.current.add(
         async () => {
           const cloneItem = cloneAssetApprovalSpender(item);
@@ -384,7 +402,7 @@ export const useBatchRevokeTask = () => {
               logId,
               estimateGasCost,
               failedCode,
-            } = await buildTx(wallet, revokeItem);
+            } = await buildTx(wallet, revokeItem, ignoreGasCheck);
 
             if (failedCode) {
               cloneItem.$status = {
@@ -393,6 +411,21 @@ export const useBatchRevokeTask = () => {
                 gasCost: estimateGasCost,
               };
               return;
+            }
+
+            if (!appIsProd) {
+              const { DEBUG_MOCK_SUBMIT } = await Browser.storage.local.get(
+                'DEBUG_MOCK_SUBMIT'
+              );
+
+              if (DEBUG_MOCK_SUBMIT) {
+                cloneItem.$status = {
+                  status: 'success',
+                  txHash: 'mock_hash',
+                  gasCost: estimateGasCost,
+                };
+                return;
+              }
             }
 
             // submit tx

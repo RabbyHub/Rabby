@@ -14,9 +14,14 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   record: AssetApprovalSpenderWithStatus;
   onStillRevoke: () => void;
+  isPaused: boolean;
 }
 
-export const StatusRow: React.FC<Props> = ({ onStillRevoke, record }) => {
+export const StatusRow: React.FC<Props> = ({
+  onStillRevoke,
+  record,
+  isPaused,
+}) => {
   const divRef = React.useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [isStillRevoke, setIsStillRevoke] = React.useState(false);
@@ -70,7 +75,9 @@ export const StatusRow: React.FC<Props> = ({ onStillRevoke, record }) => {
           </div>
         </>
       )}
-      {!record.$status?.status && <span>-</span>}
+      {!record.$status?.status && (
+        <span> {isPaused ? t('page.approvals.revokeModal.paused') : '-'} </span>
+      )}
     </div>
   );
 };

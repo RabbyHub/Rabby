@@ -23,9 +23,7 @@
     border-bottom: 1px solid var(--r-neutral-line, #E0E5EC);
     padding: 0;
 
-    &:last-child {
-      padding-right: 24px;
-    }
+   
   }
 
   .ant-modal-header,
@@ -63,22 +61,28 @@
     text-overflow: ellipsis;
     overflow: hidden;
     text-wrap: nowrap;
+    color: var(--r-neutral-title1, #192945);
   }
 
   .ant-table {
     background: transparent;
   }
 
-  .is-last-cell {
-    justify-content: end;
-  }
+
 
   .am-virtual-table-cell-inner {
-    color: var(--r-neutral-title1, #192945);
+    color: var(--r-neutral-foot, #6A7587);
     font-size: 14px;
     font-weight: 500;
     overflow: hidden;
     padding-right: 16px;
+  }
+
+  .is-last-cell {
+    justify-content: end;
+  .am-virtual-table-cell-inner {
+    padding-right: 0;
+  }
   }
 
   .status-cell {
@@ -96,14 +100,13 @@
   .am-virtual-grid {
     overflow-y: overlay !important;
     overflow-x: hidden !important;
-
+    width: 920px!important;
     .chromelike-scrollbar(4px);
   }
 
   .batch-revoke-table {
     width: 900px;
     margin: auto;
-    margin-right: -20px;
   }
 
   .ant-modal-title {

@@ -788,7 +788,8 @@
         "gasTooHigh": "Gas fee is high",
         "submitTxFailed": "Fail to Submit",
         "defaultFailed": "Transaction failed",
-        "stillRevoke": "Still Revoke"
+        "stillRevoke": "Still Revoke",
+        "paused": "Paused"
       }
     },
     "gasTopUp": {

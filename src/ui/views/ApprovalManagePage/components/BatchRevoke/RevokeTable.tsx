@@ -4,6 +4,7 @@ import { VirtualTable } from '../Table';
 import { SpenderRow } from '../SpenderRow';
 import {
   AssetApprovalSpenderWithStatus,
+  BatchRevokeTaskType,
   useBatchRevokeTask,
 } from './useBatchRevokeTask';
 import { StatusRow } from './StatusRow';
@@ -19,6 +20,7 @@ export interface RevokeTableProps {
   revokeList: ApprovalSpenderItemToBeRevoked[];
   dataSource: AssetApprovalSpender[];
   onClose: (needUpdate: boolean) => void;
+  onTaskStatus: (status: BatchRevokeTaskType['status']) => void;
 }
 
 const ROW_HEIGHT = 52;
@@ -30,6 +32,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   dataSource,
   onDone,
   onClose,
+  onTaskStatus,
 }) => {
   const task = useBatchRevokeTask();
 
@@ -64,6 +67,25 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
       window.removeEventListener('blur', handleWindowBlur);
     };
   }, [handleWindowBlur]);
+
+  React.useEffect(() => {
+    onTaskStatus(task.status);
+  }, [task.status]);
+
+  const defaultDocumentTitleRef = React.useRef<string>('');
+  React.useEffect(() => {
+    defaultDocumentTitleRef.current = document.title;
+  }, []);
+
+  React.useEffect(() => {
+    if (task.status === 'paused') {
+      document.title = 'Approvals - Paused';
+    } else if (task.status === 'active') {
+      document.title = `Approvals - Batch Revoke (${revokedApprovals}/${totalApprovals})`;
+    } else {
+      document.title = defaultDocumentTitleRef.current;
+    }
+  }, [task.status, totalApprovals, revokedApprovals]);
 
   return (
     <div className="my-8">
@@ -123,10 +145,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
             render: (_, record) => (
               <StatusRow
                 onStillRevoke={async () => {
-                  task.addRevokeTask(record, 1);
+                  task.addRevokeTask(record, 1, true);
                   task.continue();
                 }}
                 record={record}
+                isPaused={task.status === 'paused'}
               />
             ),
           },

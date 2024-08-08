@@ -29,20 +29,20 @@ export const HashRow: React.FC<Props> = ({ record }) => {
   const txHash = record.$status.txHash;
 
   return (
-    <div>
+    <div
+      className="cursor-pointer"
+      onClick={(evt) => {
+        evt.stopPropagation();
+        openInTab(getTxScanLink(chainItem!.scanLink, txHash), false);
+      }}
+    >
       <ApprovalsNameAndAddr
         address={txHash}
         copyIcon={false}
         addressSuffix={
           <ThemeIcon
-            onClick={(evt) => {
-              evt.stopPropagation();
-              openInTab(getTxScanLink(chainItem!.scanLink, txHash), false);
-            }}
             src={RcIconExternal}
-            className={clsx(
-              'ml-4 w-[16px] h-[16px] cursor-pointer text-r-neutral-foot'
-            )}
+            className={clsx('ml-4 w-[16px] h-[16px] text-r-neutral-foot')}
           />
         }
       />

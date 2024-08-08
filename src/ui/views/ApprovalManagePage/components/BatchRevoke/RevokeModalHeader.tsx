@@ -25,6 +25,9 @@ export const RevokeModalHeader: React.FC<Props> = ({
     if (task.status === 'idle') {
       return onClose(false);
     }
+    if (task.status === 'completed') {
+      return onClose(true);
+    }
 
     task.pause();
     const modal = Modal.info({
@@ -63,7 +66,9 @@ export const RevokeModalHeader: React.FC<Props> = ({
   return (
     <header className=" text-center relative">
       <div className="space-x-8 flex justify-center items-center">
-        {status === 'active' && <LoadingSVG className="text-r-blue-default" />}
+        {task.status === 'active' && (
+          <LoadingSVG className="text-r-blue-default" />
+        )}
         <span className="text-24 font-medium text-r-neutral-title-1">
           {t('page.approvals.revokeModal.batchRevoke')} ({revokedApprovals}/
           {totalApprovals})
