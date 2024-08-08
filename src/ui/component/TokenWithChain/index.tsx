@@ -16,6 +16,7 @@ const TokenWithChain = ({
   noRound = false,
   hideChainIcon = false,
   isShowChainTooltip = false,
+  className,
 }: {
   token: TokenItem;
   width?: string;
@@ -24,6 +25,7 @@ const TokenWithChain = ({
   noRound?: boolean;
   hideChainIcon?: boolean;
   isShowChainTooltip?: boolean;
+  className?: string;
 }) => {
   const chainServerId = token.chain;
   const chain = findChain({
@@ -31,7 +33,7 @@ const TokenWithChain = ({
   });
   return (
     <div
-      className={clsx('token-with-chain', noRound && 'no-round')}
+      className={clsx('token-with-chain', noRound && 'no-round', className)}
       style={{ width, height }}
     >
       <img
