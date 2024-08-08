@@ -145,7 +145,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
             render: (_, record) => (
               <StatusRow
                 onStillRevoke={async () => {
-                  task.addRevokeTask(record, 1, true);
+                  task.addRevokeTask(record, 0, true);
                   task.continue();
                 }}
                 record={record}

@@ -44,7 +44,14 @@ export const StatusRow: React.FC<Props> = ({
       className="flex gap-x-6 flex-nowrap whitespace-nowrap items-center"
     >
       {(record.$status?.status === 'pending' || isStillRevoke) && (
-        <LoadingSVG className="text-blue-light" />
+        <>
+          <LoadingSVG className="text-blue-light" />
+          {isStillRevoke && (
+            <span className="text-r-neutral-foot">
+              {t('page.approvals.revokeModal.waitInQueue')}
+            </span>
+          )}
+        </>
       )}
       {record.$status?.status === 'success' && <SuccessSVG />}
       {record.$status?.status === 'fail' && !isStillRevoke && (
@@ -65,7 +72,7 @@ export const StatusRow: React.FC<Props> = ({
                     {formatGasCostUsd(record.$status.gasCost.gasCostUsd)})
                   </span>
                   <span
-                    className="ml-4 text-r-blue-default cursor-pointer"
+                    className="ml-8 text-r-blue-default cursor-pointer"
                     onClick={handleStillRevoke}
                   >
                     {t('page.approvals.revokeModal.stillRevoke')}

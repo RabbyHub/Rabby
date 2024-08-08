@@ -789,7 +789,8 @@
         "submitTxFailed": "Fail to Submit",
         "defaultFailed": "Transaction failed",
         "stillRevoke": "Still Revoke",
-        "paused": "Paused"
+        "paused": "Paused",
+        "waitInQueue": "Wait in queue"
       }
     },
     "gasTopUp": {

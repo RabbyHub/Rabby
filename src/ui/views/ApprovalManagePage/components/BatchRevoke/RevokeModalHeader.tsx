@@ -66,8 +66,13 @@ export const RevokeModalHeader: React.FC<Props> = ({
   return (
     <header className=" text-center relative">
       <div className="space-x-8 flex justify-center items-center">
-        {task.status === 'active' && (
-          <LoadingSVG className="text-r-blue-default" />
+        {(task.status === 'active' || task.status === 'paused') && (
+          <LoadingSVG
+            className={clsx(
+              'text-r-blue-default',
+              task.status === 'paused' ? 'loading-paused' : ''
+            )}
+          />
         )}
         <span className="text-24 font-medium text-r-neutral-title-1">
           {t('page.approvals.revokeModal.batchRevoke')} ({revokedApprovals}/
