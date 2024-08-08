@@ -51,14 +51,7 @@ export const openInternalPageInTab = (path: string, useWebapi = true) => {
   }
 };
 
-const DEBANK_HI_PAGE = {
-  DEBUG: 'https://debank-git-feat-hinoti-debanker.vercel.app/hi-thirdparty',
-  PROD: 'https://debank.com/hi-thirdparty',
-};
+const DEBANK_HI_PAGE = 'https://debank.com/hi-thirdparty';
 export const openDeBankHi = (address: string) => {
-  window.open(
-    `${
-      appIsProd && !appIsDebugPkg ? DEBANK_HI_PAGE.PROD : DEBANK_HI_PAGE.DEBUG
-    }?addr=${address}&thirdparty=rabby`
-  );
+  window.open(`${DEBANK_HI_PAGE}?addr=${address}&thirdparty=rabby`);
 };

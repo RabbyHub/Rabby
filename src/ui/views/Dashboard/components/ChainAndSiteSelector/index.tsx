@@ -267,9 +267,12 @@ export default ({
       },
       badge: dbHiLoading ? 0 : debankHiStatus?.unread_message_count,
       badgeAlert: !debankHiStatus?.is_checked,
-      badgeClassName: debankHiStatus?.is_checked
-        ? 'hi-checked'
-        : 'hi-unchecked',
+      badgeClassName: clsx(
+        debankHiStatus?.is_checked ? 'hi-checked' : 'hi-unchecked',
+        {
+          round: Number(debankHiStatus?.unread_message_count) < 10,
+        }
+      ),
     } as IPanelItem,
     more: {
       icon: RcIconMoreSettings,
