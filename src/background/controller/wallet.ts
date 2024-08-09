@@ -24,6 +24,7 @@ import {
   RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
+  debankService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -35,7 +36,6 @@ import providerController from './provider/controller';
 import BaseController from './base';
 import {
   KEYRING_WITH_INDEX,
-  CHAINS,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -4232,6 +4232,7 @@ export class WalletController extends BaseController {
   ethSendTransaction = (
     ...args: Parameters<typeof providerController.ethSendTransaction>
   ) => providerController.ethSendTransaction(...args);
+  getDeBankHiStatus = debankService.getDebankHi;
 }
 
 const wallet = new WalletController();

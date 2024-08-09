@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
 import { ReactComponent as RcIconGasTopUp } from 'ui/assets/dashboard/gas-top-up-1.svg';
+import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
 import { ReactComponent as RcIconArrowOrangeRight } from 'ui/assets/dashboard/settings/icon-right-arrow-orange.svg';
 import { ReactComponent as RcIconArrowCCRight } from 'ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -731,6 +732,13 @@ const SettingsInner = ({
               label: 'Manage Address',
             });
             reportSettings('Manage Address');
+          },
+        },
+        {
+          leftIcon: RcIconPoints,
+          content: t('page.dashboard.settings.features.rabbyPoints'),
+          onClick: () => {
+            history.push('/rabby-points');
           },
         },
         {

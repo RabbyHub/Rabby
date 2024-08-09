@@ -232,6 +232,7 @@ const TokenSelector = ({
           placeholder={
             placeholder ?? t('component.TokenSelector.searchInput.placeholder')
           }
+          allowClear
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus

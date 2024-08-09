@@ -1026,7 +1026,8 @@
           "manageAddress": "Manage Address",
           "nft": "NFT",
           "ecology": "Ecosystem",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "debankHi": "DeBank Hi"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1179,7 +1180,8 @@
           "manageAddress": "Manage Address",
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
-          "gasTopUp": "Gas Top Up"
+          "gasTopUp": "Gas Top Up",
+          "rabbyPoints": "Rabby Points"
         },
         "settings": {
           "label": "Settings",

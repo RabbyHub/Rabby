@@ -24,7 +24,7 @@ const GasList = [20, 50, 100];
 
 const EthGasList = [100, 200, 500];
 
-const ETHGasTokenChains = [CHAINS_ENUM.ETH, CHAINS_ENUM.RSK];
+const ETHGasTokenChains = [CHAINS_ENUM.ETH];
 
 export const GasTopUp = () => {
   const wallet = useWallet();
