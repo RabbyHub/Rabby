@@ -64,10 +64,21 @@ const useTokenInfo = ({
 };
 
 export const useSlippage = () => {
-  const slippageState = useRabbySelector((s) => s.swap.slippage || '0.1');
-  const setSlippage = useRabbyDispatch().swap.setSlippage;
+  const previousSlippage = useRabbySelector((s) => s.swap.slippage || '');
+  const [slippageState, setSlippageState] = useState(previousSlippage || '0.1');
+
+  const setSlippageOnStore = useRabbyDispatch().swap.setSlippage;
+
   const slippage = useMemo(() => slippageState || '0.1', [slippageState]);
   const [slippageChanged, setSlippageChanged] = useState(false);
+
+  const setSlippage = useCallback(
+    (slippage: string) => {
+      setSlippageOnStore(slippage);
+      setSlippageState(slippage);
+    },
+    [setSlippageOnStore]
+  );
 
   return {
     slippageChanged,
