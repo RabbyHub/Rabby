@@ -766,6 +766,31 @@
         "confirm": "Confirm {{ selectedCount }}",
         "title": "Approvals",
         "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
+      },
+      "revokeModal": {
+        "confirmRevoke": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with one signature.",
+        "batchRevoke": "Batch Revoke",
+        "revokeOneByOne": "Revoke One by One",
+        "revoked": "Revoked:",
+        "totalRevoked": "Total:",
+        "approvalCount_zero": "{{count}} approval",
+        "approvalCount_one": "{{count}} approval",
+        "approvalCount_other": "{{count}} approvals",
+        "signAndStartRevoke": "Sign and Start Revoke",
+        "pause": "Pause",
+        "resume": "Continue",
+        "done": "Done",
+        "confirmTitle": "Batch Revoke by 1 Signature",
+        "cancelTitle": "Cancel Remaining Revokes",
+        "confirm": "Confirm",
+        "cancelBody": "If you close this page, the remaining revokes will not be executed.",
+        "gasNotEnough": "Insufficient Gas to submit",
+        "gasTooHigh": "Gas fee is high",
+        "submitTxFailed": "Fail to Submit",
+        "defaultFailed": "Transaction failed",
+        "stillRevoke": "Still Revoke",
+        "paused": "Paused",
+        "waitInQueue": "Wait in queue"
       }
     },
     "gasTopUp": {

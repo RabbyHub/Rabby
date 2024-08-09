@@ -1,3 +1,5 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, {
   useState,
   useRef,
@@ -33,11 +35,16 @@ import useDebounceValue from '@/ui/hooks/useDebounceValue';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { HandleClickTableRow } from './components/Table';
 import {
+  dedupeSelectedRows,
   encodeRevokeItemIndex,
   findIndexRevokeList,
+  isSelectedAllAssetApprovals,
+  isSelectedAllContract,
   toRevokeItem,
 } from './utils';
 import { summarizeRevoke } from '@/utils-isomorphic/approve';
+import { Chain, CHAINS_ENUM } from '@debank/common';
+import { findChainByServerID } from '@/utils/chain';
 
 /**
  * @see `@sticky-top-height-*`, `@sticky-footer-height` in ./style.less
@@ -102,7 +109,10 @@ const resetTableRenderer = (
   }
 };
 
-export function useApprovalsPage(options?: { isTestnet?: boolean }) {
+export function useApprovalsPage(options?: {
+  isTestnet?: boolean;
+  chain?: CHAINS_ENUM;
+}) {
   const wallet = useWallet();
 
   const dispatch = useRabbyDispatch();
@@ -111,6 +121,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
 
   useEffect(() => {
     dispatch.account.fetchCurrentAccountAliasNameAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address]);
 
   const [filterType, setFilterType] = useState<keyof typeof FILTER_TYPES>(
@@ -438,10 +449,25 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       const sortedList = sorted.map((e) =>
         sortBy(e, (a) => a.list.length).reverse()
       );
-      return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
+      const list = [
+        ...dangerList,
+        ...warnList,
+        ...flatten(sortedList.reverse()),
+      ];
+
+      // filter chain
+      if (options?.chain) {
+        return list.filter(
+          (e) =>
+            findChainByServerID(e.chain as Chain['serverId'])?.enum ===
+            options.chain
+        );
+      }
+
+      return list;
     }
     return [];
-  }, [approvalsData.contractMap]);
+  }, [approvalsData.contractMap, options?.chain]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -449,7 +475,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
     }, 200);
   }, [sortedContractList]);
 
-  const sortedAssetstList = useMemo(() => {
+  const sortedAssetsList = useMemo(() => {
     const assetsList = [
       ...flatten(
         Object.values(approvalsData.tokenMap || {}).map(
@@ -461,21 +487,29 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
       ),
     ] as AssetApprovalItem['list'][number][];
 
+    // filter chain
+    if (options?.chain) {
+      return assetsList.filter(
+        (e) =>
+          findChainByServerID(e.$assetParent?.chain as Chain['serverId'])
+            ?.enum === options.chain
+      );
+    }
     return assetsList;
     // return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
-  }, [approvalsData.tokenMap, approvalsData.nftMap]);
+  }, [approvalsData.tokenMap, approvalsData.nftMap, options?.chain]);
 
   useEffect(() => {
     setTimeout(() => {
       resetTableRenderer(vGridRefAsset);
     }, 200);
-  }, [sortedAssetstList]);
+  }, [sortedAssetsList]);
 
   const { displaySortedContractList, displaySortedAssetsList } = useMemo(() => {
     if (!debouncedSearchKw || debouncedSearchKw.trim() === '') {
       return {
         displaySortedContractList: sortedContractList,
-        displaySortedAssetsList: sortedAssetstList,
+        displaySortedAssetsList: sortedAssetsList,
       };
     }
 
@@ -486,7 +520,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
           i.toLowerCase().includes(keywords)
         );
       }),
-      displaySortedAssetsList: sortedAssetstList.filter((e) => {
+      displaySortedAssetsList: sortedAssetsList.filter((e) => {
         return [
           e.id,
           e.risk_alert || '',
@@ -496,7 +530,7 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
         ].some((i) => i?.toLowerCase().includes(keywords));
       }),
     };
-  }, [sortedContractList, sortedAssetstList, debouncedSearchKw]);
+  }, [sortedContractList, sortedAssetsList, debouncedSearchKw]);
 
   return {
     isLoading,
@@ -521,12 +555,12 @@ export function useApprovalsPage(options?: { isTestnet?: boolean }) {
     }, [sortedContractList, displaySortedContractList]),
     displaySortedContractList,
     assetEmptyStatus: useMemo(() => {
-      if (!sortedAssetstList.length) return 'none' as const;
+      if (!sortedAssetsList.length) return 'none' as const;
 
       if (!displaySortedAssetsList.length) return 'no-matched' as const;
 
       return false as const;
-    }, [sortedAssetstList, displaySortedAssetsList]),
+    }, [sortedAssetsList, displaySortedAssetsList]),
     displaySortedAssetsList,
   };
 }
@@ -535,9 +569,15 @@ export type IHandleChangeSelectedSpenders<T extends ApprovalItem> = (ctx: {
   approvalItem: T;
   selectedRevokeItems: ApprovalSpenderItemToBeRevoked[];
 }) => any;
-export function useSelectSpendersToRevoke(
-  filterType: keyof typeof FILTER_TYPES
-) {
+export function useSelectSpendersToRevoke({
+  filterType,
+  displaySortedContractList,
+  displaySortedAssetsList,
+}: {
+  filterType: keyof typeof FILTER_TYPES;
+  displaySortedContractList: ContractApprovalItem[];
+  displaySortedAssetsList: AssetApprovalSpender[];
+}) {
   const [assetRevokeList, setAssetRevokeList] = React.useState<
     ApprovalSpenderItemToBeRevoked[]
   >([]);
@@ -565,6 +605,31 @@ export function useSelectSpendersToRevoke(
     [assetRevokeList]
   );
 
+  const assetSelectResult = useMemo(() => {
+    return isSelectedAllAssetApprovals(
+      displaySortedAssetsList,
+      assetRevokeList
+    );
+  }, [displaySortedAssetsList, assetRevokeList]);
+
+  const toggleAllAssetRevoke = React.useCallback(
+    (list: AssetApprovalSpender[]) => {
+      if (assetSelectResult.isSelectedAll) {
+        setAssetRevokeList([]);
+      } else {
+        const revokeList = list.map((record) =>
+          toRevokeItem(record.$assetContract!, record.$assetToken!, record)
+        );
+        setAssetRevokeList(
+          dedupeSelectedRows(
+            revokeList.filter(Boolean) as ApprovalSpenderItemToBeRevoked[]
+          )
+        );
+      }
+    },
+    [assetSelectResult.isSelectedAll]
+  );
+
   const [contractRevokeMap, setContractRevokeMap] = React.useState<
     Record<string, ApprovalSpenderItemToBeRevoked[]>
   >({});
@@ -572,12 +637,17 @@ export function useSelectSpendersToRevoke(
     return Object.values(contractRevokeMap).flat();
   }, [contractRevokeMap]);
 
-  const currentRevokeList =
-    filterType === 'contract'
+  const currentRevokeList = useMemo(() => {
+    return filterType === 'contract'
       ? contractRevokeList
       : filterType === 'assets'
       ? assetRevokeList
       : [];
+  }, [contractRevokeList, assetRevokeList, filterType]);
+
+  const contractSelectResult = useMemo(() => {
+    return isSelectedAllContract(displaySortedContractList, contractRevokeList);
+  }, [displaySortedContractList, contractRevokeList]);
 
   const clearRevoke = React.useCallback(() => {
     setContractRevokeMap({});
@@ -606,6 +676,31 @@ export function useSelectSpendersToRevoke(
     []
   );
 
+  const toggleAllContractRevoke = React.useCallback(
+    (list: ContractApprovalItem[]) => {
+      if (contractSelectResult.isSelectedAll) {
+        setContractRevokeMap({});
+      } else {
+        const nextContractRevokeMap: Record<
+          string,
+          ApprovalSpenderItemToBeRevoked[]
+        > = {};
+        list.forEach((record) => {
+          const key = encodeRevokeItemIndex(record);
+          nextContractRevokeMap[key] = dedupeSelectedRows(
+            record.list
+              .map((contract) => {
+                return toRevokeItem(record, contract, true);
+              })
+              .filter(Boolean) as ApprovalSpenderItemToBeRevoked[]
+          );
+        });
+        setContractRevokeMap(nextContractRevokeMap);
+      }
+    },
+    [contractSelectResult.isSelectedAll]
+  );
+
   const revokeSummary = useMemo(() => {
     const summary = summarizeRevoke(currentRevokeList);
 
@@ -619,10 +714,14 @@ export function useSelectSpendersToRevoke(
     handleClickAssetRow,
     contractRevokeMap,
     contractRevokeList,
+    contractSelectResult,
     assetRevokeList,
+    assetSelectResult,
     revokeSummary,
     clearRevoke,
     patchContractRevokeMap,
     onChangeSelectedContractSpenders,
+    toggleAllAssetRevoke,
+    toggleAllContractRevoke,
   };
 }

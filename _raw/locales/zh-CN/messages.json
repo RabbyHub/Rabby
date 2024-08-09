@@ -872,6 +872,29 @@
             "myApprovalTime": "我的授权时间"
           }
         }
+      },
+      "revokeModal": {
+        "approvalCount_one": "{{count}} 批准",
+        "approvalCount_other": "{{count}} 个批准",
+        "batchRevoke": "批量撤销",
+        "cancelBody": "如果关闭此页面，剩余的撤销将不会执行。",
+        "cancelTitle": "取消剩余撤销",
+        "confirm": "确认",
+        "confirmRevoke": "使用种子短语或私钥地址，您可以通过一个签名批量撤销 {{count}} 个批准。",
+        "confirmTitle": "1签名批量撤销",
+        "defaultFailed": "交易失败",
+        "done": "完毕",
+        "stillRevoke": "仍撤销",
+        "signAndStartRevoke": "签名并开始撤销",
+        "revoked": "撤销：",
+        "revokeOneByOne": "一一撤销",
+        "resume": "继续",
+        "pause": "暂停",
+        "gasNotEnough": "Gas 不足，无法提交",
+        "submitTxFailed": "提交失败",
+        "gasTooHigh": "煤气费高",
+        "totalRevoked": "全部的：",
+        "approvalCount_zero": "{{count}} 批准"
       }
     },
     "connect": {

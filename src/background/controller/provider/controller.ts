@@ -43,6 +43,7 @@ import {
   KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
   EVENTS,
+  INTERNAL_REQUEST_SESSION,
 } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
@@ -341,7 +342,7 @@ class ProviderController extends BaseController {
       $ctx?: any;
       params: any;
     };
-    session: Session;
+    session: typeof INTERNAL_REQUEST_SESSION;
     approvalRes: ApprovalRes;
     pushed: boolean;
     result: any;

@@ -194,6 +194,7 @@ export function VirtualTable<RecordType extends object>({
   showScrollbar = true,
   emptyText = 'No Data',
   sortedInfo,
+  overlayClassName,
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
@@ -210,6 +211,7 @@ export function VirtualTable<RecordType extends object>({
   showScrollbar?: boolean;
   emptyText?: string;
   sortedInfo?: SorterResult<RecordType>;
+  overlayClassName?: string;
 }) {
   const { columns, scroll = { ...DEFAULT_SCROLL } } = props;
   const [tableWidth, setTableWidth] = useState(0);
@@ -405,7 +407,11 @@ export function VirtualTable<RecordType extends object>({
       >
         <Table<RecordType>
           {...props}
-          className={clsx('am-virtual-table', props.className)}
+          className={
+            overlayClassName
+              ? overlayClassName
+              : clsx('am-virtual-table', props.className)
+          }
           columns={mergedColumns}
           pagination={false}
           components={{

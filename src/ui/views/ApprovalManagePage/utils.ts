@@ -22,8 +22,9 @@ import {
   Spender,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Chain } from '@debank/common';
-import { getUiType, isSameAddress, openInTab } from '@/ui/utils';
+import { getUiType, openInTab } from '@/ui/utils';
 import { getAddressScanLink } from '@/utils';
+import { obj2query, query2obj } from '@/ui/utils/url';
 
 export function formatTimeFromNow(time?: Date | number) {
   if (!time) return '';
@@ -87,34 +88,14 @@ export function getFirstSpender(spenderHost: ApprovalItem['list'][number]) {
 }
 
 type SpendersHost = ApprovalItem['list'][number];
-/**
- * @description spenderHost should from `contract.list[number]`
- * @param spenderHost
- * @param contract
- * @returns
- */
-function queryContractMatchedSpender(
-  spenderHost: SpendersHost,
-  contract: ContractApprovalItem
+function getAbiType<T extends SpendersHost = ApprovalItem['list'][number]>(
+  spenderHost: T
 ) {
-  const result = {
-    ofContractPermit2Spender: undefined as Spender | undefined,
-    matchedSpenders: [] as SpenderInTokenApproval[],
-  };
-  if ('spenders' in spenderHost) {
-    spenderHost.spenders.forEach((spender: SpenderInTokenApproval) => {
-      if (spender.$assetContract && spender.$assetContract?.id == contract.id) {
-        result.matchedSpenders.push(spender);
-        if (spender.permit2_id) {
-          result.ofContractPermit2Spender = spender;
-        }
-      }
-    });
-  }
+  if ('is_erc721' in spenderHost && spenderHost.is_erc721) return 'ERC721';
+  if ('is_erc1155' in spenderHost && spenderHost.is_erc1155) return 'ERC1155';
 
-  return result;
+  return '';
 }
-
 export const findIndexRevokeList = <
   T extends SpendersHost = ApprovalItem['list'][number]
 >(
@@ -151,10 +132,11 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === spenderHost.contract_id &&
           revoke.spender === spenderHost.spender.id &&
+          revoke.abi === getAbiType(spenderHost) &&
           (permit2IdToMatch
             ? revoke.permit2Id === permit2IdToMatch
             : !revoke.permit2Id) &&
-          revoke.tokenId === spenderHost.inner_id &&
+          revoke.nftTokenId === spenderHost.inner_id &&
           revoke.chainServerId === spenderHost.chain
         ) {
           return true;
@@ -165,6 +147,8 @@ export const findIndexRevokeList = <
         if (
           revoke.contractId === spenderHost.contract_id &&
           revoke.spender === spenderHost.spender.id &&
+          revoke.abi === getAbiType(spenderHost) &&
+          revoke.nftContractName === spenderHost.contract_name &&
           (permit2IdToMatch
             ? revoke.permit2Id === permit2IdToMatch
             : !revoke.permit2Id) &&
@@ -215,6 +199,56 @@ export const findIndexRevokeList = <
   return -1;
 };
 
+export function isSameRevokeItem(
+  src: ApprovalSpenderItemToBeRevoked,
+  target: ApprovalSpenderItemToBeRevoked
+) {
+  const base =
+    src.approvalType === target.approvalType &&
+    src.contractId === target.contractId &&
+    src.spender === target.spender &&
+    src.permit2Id === target.permit2Id &&
+    src.spender === target.spender;
+
+  if (!base) return false;
+
+  if ('id' in src && 'id' in target) {
+    return src.id === target.id && src.tokenId === target.tokenId;
+  } else if ('nftTokenId' in src && 'nftTokenId' in target) {
+    return (
+      src.contractId === target.contractId &&
+      src.isApprovedForAll === target.isApprovedForAll &&
+      src.tokenId === target.tokenId &&
+      src.abi === target.abi &&
+      src.nftTokenId === target.nftTokenId &&
+      src.nftContractName === target.nftContractName
+    );
+  }
+}
+
+export function encodeRevokeItem(item: ApprovalSpenderItemToBeRevoked) {
+  return `revoke-item://?${obj2query(item as any)}`;
+}
+
+export function decodeRevokeItem(key: string) {
+  const [, query] = key.split('?');
+  const obj = (query2obj(query) as any) as ApprovalSpenderItemToBeRevoked;
+
+  for (const objKey in obj) {
+    if (obj[objKey] === 'null') {
+      obj[objKey] = null;
+    } else if (obj[objKey] === 'undefined') {
+      obj[objKey] = undefined;
+    } else if (obj[objKey] === 'true') {
+      obj[objKey] = true;
+    } else if (obj[objKey] === 'false') {
+      obj[objKey] = false;
+    }
+  }
+
+  return obj;
+}
+
 export const toRevokeItem = <T extends ApprovalItem>(
   item: T,
   spenderHost: T['list'][number],
@@ -231,37 +265,31 @@ export const toRevokeItem = <T extends ApprovalItem>(
     const permit2Id = assetApprovalSpender?.permit2_id;
 
     if ('inner_id' in spenderHost) {
-      const abi = spenderHost?.is_erc721
-        ? 'ERC721'
-        : spenderHost?.is_erc1155
-        ? 'ERC1155'
-        : '';
       return {
+        approvalType: 'contract',
         chainServerId: spenderHost?.chain,
         contractId: spenderHost?.contract_id,
         permit2Id,
         spender: spenderHost?.spender?.id,
-        abi,
+        abi: getAbiType(spenderHost),
         nftTokenId: spenderHost?.inner_id,
         isApprovedForAll: false,
       } as const;
     } else if ('contract_name' in spenderHost) {
-      const abi = spenderHost?.is_erc721
-        ? 'ERC721'
-        : spenderHost?.is_erc1155
-        ? 'ERC1155'
-        : '';
       return {
+        approvalType: 'contract',
         chainServerId: spenderHost?.chain,
         contractId: spenderHost?.contract_id,
         permit2Id,
         spender: spenderHost?.spender?.id,
         nftTokenId: null,
-        abi,
+        nftContractName: spenderHost?.contract_name,
+        abi: getAbiType(spenderHost),
         isApprovedForAll: true,
       } as const;
     } else {
       return {
+        approvalType: 'contract',
         chainServerId: item.chain,
         permit2Id,
         tokenId: spenderHost?.id,
@@ -273,6 +301,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
 
   if (item.type === 'token') {
     return {
+      approvalType: 'token',
       chainServerId: item.chain,
       tokenId: (spenderHost as Spender).id,
       id: item.id,
@@ -289,6 +318,7 @@ export const toRevokeItem = <T extends ApprovalItem>(
       ? 'ERC1155'
       : '';
     return {
+      approvalType: 'nft',
       chainServerId: item?.chain,
       contractId: nftInfo?.contract_id || '',
       spender: (spenderHost as Spender).id,
@@ -347,4 +377,87 @@ export function maybeNFTLikeItem(
     'spender' in contractListItem &&
     (contractListItem.is_erc1155 || contractListItem.is_erc721)
   );
+}
+
+export function dedupeSelectedRows(
+  selectedRows?: ApprovalSpenderItemToBeRevoked[]
+) {
+  const selectedRowsSet = new Set<string>();
+
+  return (selectedRows || []).filter((row) => {
+    const key = encodeRevokeItem(row);
+    if (selectedRowsSet.has(key)) return false;
+
+    selectedRowsSet.add(key);
+    return true;
+  });
+}
+
+export type TableSelectResult = {
+  isSelectedAll: boolean;
+  isIndeterminate: boolean;
+};
+export function isSelectedAllContract(
+  contractApprovals: ContractApprovalItem[],
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) {
+  const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
+  const result: TableSelectResult = {
+    isSelectedAll: true,
+    isIndeterminate: false,
+  };
+
+  const hasSelected = selectedRows.length > 0;
+
+  for (const contractApproval of contractApprovals) {
+    const selectedSpenderHosts = contractApproval.list.filter((spenderHost) => {
+      const revokeItem = toRevokeItem(contractApproval, spenderHost, true);
+      return revokeItem && set.has(encodeRevokeItem(revokeItem));
+    });
+
+    const isIndeterminate =
+      selectedSpenderHosts.length > 0 &&
+      selectedSpenderHosts.length < contractApproval.list.length;
+
+    const noSelectAll = isIndeterminate || selectedSpenderHosts.length === 0;
+
+    if (noSelectAll) {
+      result.isIndeterminate = hasSelected;
+      result.isSelectedAll = false;
+      break;
+    }
+  }
+
+  return result;
+}
+
+export function isSelectedAllAssetApprovals(
+  spenders: AssetApprovalSpender[],
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) {
+  const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
+  const result: TableSelectResult = {
+    isSelectedAll: true,
+    isIndeterminate: false,
+  };
+
+  const hasSelected = set.size > 0;
+
+  for (const spender of spenders) {
+    const revokeItem = toRevokeItem(
+      spender.$assetContract!,
+      spender.$assetToken!,
+      spender
+    );
+
+    if (!revokeItem) break;
+
+    if (!set.has(encodeRevokeItem(revokeItem))) {
+      result.isIndeterminate = hasSelected;
+      result.isSelectedAll = false;
+      break;
+    }
+  }
+
+  return result;
 }
