@@ -60,6 +60,8 @@ const Wrapper = styled.section`
     }
     .ant-input {
       border-radius: 0;
+      font-weight: 500;
+      font-size: 12px;
     }
   }
 
