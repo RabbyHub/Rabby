@@ -179,3 +179,18 @@ export function coerceFloat(input: any, fallbackNum = 0) {
 export function isMeaningfulNumber(input: any): input is number {
   return typeof input === 'number' && !Number.isNaN(input);
 }
+
+export const formatGasCostUsd = (gasCostUsd: BigNumber) => {
+  const bn = gasCostUsd!;
+  let value;
+
+  if (bn.gt(1)) {
+    value = bn.toFixed(2);
+  } else if (bn.gt(0.0001)) {
+    value = bn.toFixed(4);
+  } else {
+    value = '0.0001';
+  }
+
+  return formatTokenAmount(value);
+};

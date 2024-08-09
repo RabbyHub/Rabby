@@ -70,7 +70,7 @@
         "nftOut": "NFT out"
       },
       "enoughSafeSigCollected": "Enough signature collected",
-      "moreSafeSigNeeded": "{{0}} more confirmation needed",
+      "moreSafeSigNeeded": "Need {{0}} more signatures to confirm",
       "safeAdminSigned": "Signed",
       "customRPCErrorModal": {
         "title": "Custom RPC Error",
@@ -766,6 +766,31 @@
         "confirm": "Confirm {{ selectedCount }}",
         "title": "Approvals",
         "tooltipPermit2": "This approval is approved via Permit2 contract:\n{{ permit2Id }}"
+      },
+      "revokeModal": {
+        "confirmRevoke": "Using a seed phrase or private key address, you can batch revoke {{count}} approvals with one signature.",
+        "batchRevoke": "Batch Revoke",
+        "revokeOneByOne": "Revoke One by One",
+        "revoked": "Revoked:",
+        "totalRevoked": "Total:",
+        "approvalCount_zero": "{{count}} approval",
+        "approvalCount_one": "{{count}} approval",
+        "approvalCount_other": "{{count}} approvals",
+        "signAndStartRevoke": "Sign and Start Revoke",
+        "pause": "Pause",
+        "resume": "Continue",
+        "done": "Done",
+        "confirmTitle": "Batch Revoke by 1 Signature",
+        "cancelTitle": "Cancel Remaining Revokes",
+        "confirm": "Confirm",
+        "cancelBody": "If you close this page, the remaining revokes will not be executed.",
+        "gasNotEnough": "Insufficient Gas to submit",
+        "gasTooHigh": "Gas fee is high",
+        "submitTxFailed": "Fail to Submit",
+        "defaultFailed": "Transaction failed",
+        "stillRevoke": "Still Revoke",
+        "paused": "Paused",
+        "waitInQueue": "Wait in queue"
       }
     },
     "gasTopUp": {
@@ -878,10 +903,11 @@
       "No-available-quote": "No available quote",
       "price-impact": "Price Impact",
       "loss-tips": "You're losing {{usd}}. Try a smaller amount in a small market.",
+      "Auto": "Auto",
       "rabbyFee": {
         "title": "Rabby fee",
-        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee (0% for wrap) is automatically factored into the quote.",
-        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and check the reliability of their offer for you. A 0.25% fee is automatically factored into the quote.",
+        "swapDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee (0% for wrapping), which is automatically included in the quote.",
+        "bridgeDesc": "Rabby Wallet will always find the best possible rate from top aggregators and verify the reliability of their offers. Rabby charges a 0.25% fee, which is automatically included in the quote.",
         "wallet": "Wallet",
         "rate": "Fee rate",
         "button": "Got it"
@@ -1001,7 +1027,8 @@
           "manageAddress": "Manage Address",
           "nft": "NFT",
           "ecology": "Ecosystem",
-          "bridge": "Bridge"
+          "bridge": "Bridge",
+          "debankHi": "DeBank Hi"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
@@ -1154,7 +1181,8 @@
           "manageAddress": "Manage Address",
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
-          "gasTopUp": "Gas Top Up"
+          "gasTopUp": "Gas Top Up",
+          "rabbyPoints": "Rabby Points"
         },
         "settings": {
           "label": "Settings",

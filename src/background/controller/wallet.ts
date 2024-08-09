@@ -24,6 +24,7 @@ import {
   RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
+  debankService,
 } from 'background/service';
 import buildinProvider, {
   EthereumProvider,
@@ -35,7 +36,6 @@ import providerController from './provider/controller';
 import BaseController from './base';
 import {
   KEYRING_WITH_INDEX,
-  CHAINS,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -115,6 +115,7 @@ import {
   decodePermit2GroupKey,
 } from '@/utils-isomorphic/approve';
 import { appIsProd } from '@/utils/env';
+import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -184,7 +185,10 @@ export class WalletController extends BaseController {
     );
   };
 
-  sendRequest = <T = any>(data: ProviderRequest['data']) => {
+  sendRequest = <T = any>(data: ProviderRequest['data'], isBuild = false) => {
+    if (isBuild) {
+      return Promise.resolve<T>(data as T);
+    }
     return provider<T>({
       data,
       session: INTERNAL_REQUEST_SESSION,
@@ -705,7 +709,8 @@ export class WalletController extends BaseController {
       isSwap?: boolean;
       swapPreferMEVGuarded?: boolean;
       isBridge?: boolean;
-    }
+    },
+    isBuild = false
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -753,20 +758,26 @@ export class WalletController extends BaseController {
         ...extra,
       };
     }
-    await this.sendRequest({
-      $ctx,
-      method: 'eth_sendTransaction',
-      params: [tx],
-    });
+    return await this.sendRequest(
+      {
+        $ctx,
+        method: 'eth_sendTransaction',
+        params: [tx],
+      },
+      isBuild
+    );
   };
 
-  lockdownPermit2 = async (input: {
-    id: string;
-    chainServerId: string;
-    tokenSpenders: TokenSpenderPair[];
-    $ctx?: any;
-    gasPrice?: number;
-  }) => {
+  lockdownPermit2 = async (
+    input: {
+      id: string;
+      chainServerId: string;
+      tokenSpenders: TokenSpenderPair[];
+      $ctx?: any;
+      gasPrice?: number;
+    },
+    isBuild = false
+  ) => {
     const {
       chainServerId,
       id,
@@ -819,11 +830,14 @@ export class WalletController extends BaseController {
       tx.gasPrice = gasPrice;
     }
 
-    await this.sendRequest({
-      $ctx,
-      method: 'eth_sendTransaction',
-      params: [tx],
-    });
+    return await this.sendRequest(
+      {
+        $ctx,
+        method: 'eth_sendTransaction',
+        params: [tx],
+      },
+      isBuild
+    );
   };
 
   fetchEstimatedL1Fee = async (
@@ -1004,7 +1018,8 @@ export class WalletController extends BaseController {
       isApprovedForAll: boolean;
       nftTokenId?: string | null | undefined;
     },
-    $ctx?: any
+    $ctx?: any,
+    isBuild = false
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1014,100 +1029,109 @@ export class WalletController extends BaseController {
     if (!chainId) throw new Error(t('background.error.invalidChainId'));
     if (abi === 'ERC721') {
       if (isApprovedForAll) {
-        await this.sendRequest({
-          $ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: account.address,
-              to: contractId,
-              chainId: chainId,
-              data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-                {
-                  inputs: [
-                    {
-                      internalType: 'address',
-                      name: 'operator',
-                      type: 'address',
-                    },
-                    {
-                      internalType: 'bool',
-                      name: 'approved',
-                      type: 'bool',
-                    },
-                  ],
-                  name: 'setApprovalForAll',
-                  outputs: [],
-                  stateMutability: 'nonpayable',
-                  type: 'function',
-                },
-                [spender, false] as any
-              ),
-            },
-          ],
-        });
+        return await this.sendRequest(
+          {
+            $ctx,
+            method: 'eth_sendTransaction',
+            params: [
+              {
+                from: account.address,
+                to: contractId,
+                chainId: chainId,
+                data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+                  {
+                    inputs: [
+                      {
+                        internalType: 'address',
+                        name: 'operator',
+                        type: 'address',
+                      },
+                      {
+                        internalType: 'bool',
+                        name: 'approved',
+                        type: 'bool',
+                      },
+                    ],
+                    name: 'setApprovalForAll',
+                    outputs: [],
+                    stateMutability: 'nonpayable',
+                    type: 'function',
+                  },
+                  [spender, false] as any
+                ),
+              },
+            ],
+          },
+          isBuild
+        );
       } else {
-        await this.sendRequest({
+        return await this.sendRequest(
+          {
+            $ctx,
+            method: 'eth_sendTransaction',
+            params: [
+              {
+                from: account.address,
+                to: contractId,
+                chainId: chainId,
+                data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+                  {
+                    constant: false,
+                    inputs: [
+                      { internalType: 'address', name: 'to', type: 'address' },
+                      {
+                        internalType: 'uint256',
+                        name: 'tokenId',
+                        type: 'uint256',
+                      },
+                    ],
+                    name: 'approve',
+                    outputs: [],
+                    payable: false,
+                    stateMutability: 'nonpayable',
+                    type: 'function',
+                  },
+                  [
+                    '0x0000000000000000000000000000000000000000',
+                    nftTokenId,
+                  ] as any
+                ),
+              },
+            ],
+          },
+          isBuild
+        );
+      }
+    } else if (abi === 'ERC1155') {
+      return await this.sendRequest(
+        {
           $ctx,
           method: 'eth_sendTransaction',
           params: [
             {
               from: account.address,
               to: contractId,
-              chainId: chainId,
               data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
                 {
                   constant: false,
                   inputs: [
                     { internalType: 'address', name: 'to', type: 'address' },
-                    {
-                      internalType: 'uint256',
-                      name: 'tokenId',
-                      type: 'uint256',
-                    },
+                    { internalType: 'bool', name: 'approved', type: 'bool' },
                   ],
-                  name: 'approve',
+                  name: 'setApprovalForAll',
                   outputs: [],
                   payable: false,
                   stateMutability: 'nonpayable',
                   type: 'function',
                 },
-                [
-                  '0x0000000000000000000000000000000000000000',
-                  nftTokenId,
-                ] as any
+                [spender, false] as any
               ),
+              chainId,
             },
           ],
-        });
-      }
-    } else if (abi === 'ERC1155') {
-      await this.sendRequest({
-        $ctx,
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: account.address,
-            to: contractId,
-            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-              {
-                constant: false,
-                inputs: [
-                  { internalType: 'address', name: 'to', type: 'address' },
-                  { internalType: 'bool', name: 'approved', type: 'bool' },
-                ],
-                name: 'setApprovalForAll',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-              },
-              [spender, false] as any
-            ),
-            chainId,
-          },
-        ],
-      });
+        },
+        isBuild
+      );
     } else {
       throw new Error(t('background.error.unknownAbi'));
     }
@@ -1452,6 +1476,9 @@ export class WalletController extends BaseController {
   setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
   getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
   setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
+  setAutoSlippage = swapService.setAutoSlippage;
+  setIsCustomSlippage = swapService.setIsCustomSlippage;
+  setSlippage = swapService.setSlippage;
 
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;
@@ -3606,30 +3633,6 @@ export class WalletController extends BaseController {
     }
   };
 
-  getRecommendNonce = async ({
-    from,
-    chainId,
-  }: {
-    from: string;
-    chainId: number;
-  }) => {
-    const chain = findChain({
-      id: chainId,
-    });
-    if (!chain) {
-      throw new Error(t('background.error.invalidChainId'));
-    }
-    const onChainNonce = await this.requestETHRpc(
-      {
-        method: 'eth_getTransactionCount',
-        params: [from, 'latest'],
-      },
-      chain.serverId
-    );
-    const localNonce = (await this.getNonceByChain(from, chainId)) || 0;
-    return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
-  };
-
   getSecurityEngineRules = () => {
     return securityEngineService.getRules();
   };
@@ -4226,6 +4229,13 @@ export class WalletController extends BaseController {
     }
   };
   setIsHideEcologyNoticeDict = preferenceService.setIsHideEcologyNoticeDict;
+
+  getRecommendGas = getRecommendGas;
+  getRecommendNonce = getRecommendNonce;
+  ethSendTransaction = (
+    ...args: Parameters<typeof providerController.ethSendTransaction>
+  ) => providerController.ethSendTransaction(...args);
+  getDeBankHiStatus = debankService.getDebankHi;
 }
 
 const wallet = new WalletController();

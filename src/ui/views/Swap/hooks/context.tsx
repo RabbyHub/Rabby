@@ -7,10 +7,14 @@ const [
 ] = createContextState(false);
 
 export const [
-  RabbyFeeVisibleProvider,
-  useRabbyFeeVisible,
-  useSetRabbyFeeVisible,
-] = createContextState(false);
+  RabbyFeeProvider,
+  useRabbyFee,
+  useSetRabbyFee,
+] = createContextState({ visible: false } as {
+  visible: boolean;
+  feeDexDesc?: string;
+  dexName?: string;
+});
 
 const [RefreshIdProvider, useRefreshId, useSetRefreshId] = createContextState(
   0

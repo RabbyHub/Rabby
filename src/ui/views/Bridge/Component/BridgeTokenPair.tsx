@@ -223,7 +223,12 @@ export const BridgeTokenPair = (props: {
         ) : (
           <div className="pair">
             <div className="token">
-              <TokenWithChain width="24px" height="24px" token={value?.from} />
+              <TokenWithChain
+                width="24px"
+                height="24px"
+                token={value?.from}
+                className="flex items-center"
+              />
               <span
                 className="token-symbol"
                 title={getTokenSymbol(value?.from)}
@@ -234,7 +239,12 @@ export const BridgeTokenPair = (props: {
             <span className="text-r-neutral-foot">→</span>
 
             <div className="token">
-              <TokenWithChain width="24px" height="24px" token={value?.to} />
+              <TokenWithChain
+                width="24px"
+                height="24px"
+                token={value?.to}
+                className="flex items-center"
+              />
               <span className="token-symbol" title={getTokenSymbol(value?.to)}>
                 {getTokenSymbol(value?.to)}
               </span>

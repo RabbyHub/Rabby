@@ -376,3 +376,86 @@ export function maybeNFTLikeItem(
     (contractListItem.is_erc1155 || contractListItem.is_erc721)
   );
 }
+
+export function dedupeSelectedRows(
+  selectedRows?: ApprovalSpenderItemToBeRevoked[]
+) {
+  const selectedRowsSet = new Set<string>();
+
+  return (selectedRows || []).filter((row) => {
+    const key = encodeRevokeItem(row);
+    if (selectedRowsSet.has(key)) return false;
+
+    selectedRowsSet.add(key);
+    return true;
+  });
+}
+
+export type TableSelectResult = {
+  isSelectedAll: boolean;
+  isIndeterminate: boolean;
+};
+export function isSelectedAllContract(
+  contractApprovals: ContractApprovalItem[],
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) {
+  const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
+  const result: TableSelectResult = {
+    isSelectedAll: true,
+    isIndeterminate: false,
+  };
+
+  const hasSelected = selectedRows.length > 0;
+
+  for (const contractApproval of contractApprovals) {
+    const selectedSpenderHosts = contractApproval.list.filter((spenderHost) => {
+      const revokeItem = toRevokeItem(contractApproval, spenderHost, true);
+      return revokeItem && set.has(encodeRevokeItem(revokeItem));
+    });
+
+    const isIndeterminate =
+      selectedSpenderHosts.length > 0 &&
+      selectedSpenderHosts.length < contractApproval.list.length;
+
+    const noSelectAll = isIndeterminate || selectedSpenderHosts.length === 0;
+
+    if (noSelectAll) {
+      result.isIndeterminate = hasSelected;
+      result.isSelectedAll = false;
+      break;
+    }
+  }
+
+  return result;
+}
+
+export function isSelectedAllAssetApprovals(
+  spenders: AssetApprovalSpender[],
+  selectedRows: ApprovalSpenderItemToBeRevoked[]
+) {
+  const set = new Set<string>(selectedRows.map((x) => encodeRevokeItem(x)));
+  const result: TableSelectResult = {
+    isSelectedAll: true,
+    isIndeterminate: false,
+  };
+
+  const hasSelected = set.size > 0;
+
+  for (const spender of spenders) {
+    const revokeItem = toRevokeItem(
+      spender.$assetContract!,
+      spender.$assetToken!,
+      spender
+    );
+
+    if (!revokeItem) break;
+
+    if (!set.has(encodeRevokeItem(revokeItem))) {
+      result.isIndeterminate = hasSelected;
+      result.isSelectedAll = false;
+      break;
+    }
+  }
+
+  return result;
+}

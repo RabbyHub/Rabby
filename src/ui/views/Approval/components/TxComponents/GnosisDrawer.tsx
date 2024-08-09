@@ -11,7 +11,7 @@ interface GnosisDrawerProps {
   // safeInfo: SafeInfo;
   safeInfo: BasicSafeInfo;
   onCancel(): void;
-  onConfirm(account: Account, isNew?: boolean): Promise<void>;
+  onConfirm(account: Account, isNew?: boolean): Promise<void> | void;
 }
 
 interface Signature {
@@ -32,7 +32,9 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
     const ownersInWallet = accounts.filter((account) =>
       owners.find((owner) => isSameAddress(account.address, owner))
     );
-    const groupOwners = groupBy(ownersInWallet, 'address');
+    const groupOwners = groupBy(ownersInWallet, (item) =>
+      item.address.toLowerCase()
+    );
     const result = Object.keys(groupOwners).map((address) => {
       let target = groupOwners[address][0];
       if (groupOwners[address].length === 1) {
@@ -60,6 +62,9 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
         brandName: '',
       })),
     ]);
+    if (result.length === 1) {
+      setCheckedAccount(result[0]);
+    }
   };
 
   const handleSelectAccount = (account: Account) => {
@@ -90,14 +95,14 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
 
   return (
     <div className="gnosis-drawer-container">
-      <div className="title">
+      <div className="text-[18px] leading-[21px] font-medium text-r-neutral-title1 text-center mb-[16px]">
         {safeInfo.threshold - signatures.length > 0
           ? t('page.signTx.moreSafeSigNeeded', [
               safeInfo.threshold - signatures.length,
             ])
           : t('page.signTx.enoughSafeSigCollected')}
       </div>
-      <div className="list">
+      <div className="list space-y-[12px]">
         {ownerAccounts.map((owner) => (
           <AddressItem
             key={owner.address}
@@ -116,8 +121,8 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           />
         ))}
       </div>
-      <div className="footer">
-        <Button type="primary" onClick={onCancel}>
+      <div className="footer mx-[-20px] mb-[-24px] py-[16px] px-[20px] border-t-[1px] border-t-r-neutral-card2 bg-r-neutral-card1">
+        <Button type="primary" onClick={onCancel} className="h-[48px]">
           {t('global.backButton')}
         </Button>
         <Button
@@ -125,6 +130,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           onClick={handleConfirm}
           disabled={!checkedAccount}
           loading={isLoading}
+          className="h-[48px]"
         >
           {t('global.proceedButton')}
         </Button>

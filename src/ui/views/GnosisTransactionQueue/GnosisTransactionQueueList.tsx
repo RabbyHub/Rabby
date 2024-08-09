@@ -3,7 +3,6 @@ import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { Button, Skeleton, Tooltip, message } from 'antd';
 import {
   ApproveAction,
-  ExplainTxResponse,
   ParseTxResponse,
   RevokeTokenApproveAction,
   SendAction,
@@ -11,23 +10,22 @@ import {
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import { get, groupBy } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { groupBy } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { numberToHex, toChecksumAddress } from 'web3-utils';
 
 import { useGnosisSafeInfo } from '@/ui/hooks/useGnosisSafeInfo';
 import { useAccount } from '@/ui/store-hooks';
+import { getTokenSymbol } from '@/ui/utils/token';
+import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import {
-  CHAINS,
-  CHAINS_ENUM,
-  INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CLASS,
-} from 'consts';
+import { useRequest } from 'ahooks';
+import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import { intToHex } from 'ethereumjs-util';
 import { useHistory } from 'react-router-dom';
+import { Virtuoso } from 'react-virtuoso';
 import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
@@ -39,12 +37,9 @@ import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import { isSameAddress, timeago, useWallet } from 'ui/utils';
 import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
 import { splitNumberByStep } from 'ui/utils/number';
+import { getProtocol } from '../Approval/components/Actions/utils';
 import { ReplacePopup } from './components/ReplacePopup';
 import './style.less';
-import { findChain, findChainByID } from '@/utils/chain';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { useRequest } from 'ahooks';
-import { getProtocol } from '../Approval/components/Actions/utils';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -670,38 +665,54 @@ export const GnosisTransactionQueueList = (props: {
     }
   }, [pendingTxs, safeInfo]);
 
+  const list = useMemo(() => {
+    return Object.entries(transactionsGroup);
+  }, [transactionsGroup]);
+
   return (
-    <div className="queue-list">
-      {safeInfo && Object.keys(transactionsGroup).length > 0 ? (
-        Object.keys(transactionsGroup).map((nonce) =>
-          transactionsGroup[nonce].length > 1 ? (
-            <div className="queue-group">
-              <div className="queue-group__header">
-                <img src={IconInformation} className="icon icon-information" />
-                <span>{t('page.safeQueue.sameNonceWarning')}</span>
+    <div className="queue-list h-full">
+      {safeInfo && list.length ? (
+        <Virtuoso
+          style={{
+            height: '100%',
+          }}
+          data={list}
+          itemContent={(_, [nonce, items]) => {
+            return items.length > 1 ? (
+              <div className="pb-[20px]">
+                <div className="queue-group">
+                  <div className="queue-group__header">
+                    <img
+                      src={IconInformation}
+                      className="icon icon-information"
+                    />
+                    <span>{t('page.safeQueue.sameNonceWarning')}</span>
+                  </div>
+                  {items.map((transaction) => (
+                    <GnosisTransactionItem
+                      data={transaction}
+                      networkId={networkId}
+                      safeInfo={safeInfo}
+                      key={transaction.safeTxHash}
+                      onSubmit={handleSubmit}
+                    />
+                  ))}
+                </div>
               </div>
-              {transactionsGroup[nonce].map((transaction) => (
-                <GnosisTransactionItem
-                  data={transaction}
-                  networkId={networkId}
-                  safeInfo={safeInfo}
-                  key={transaction.safeTxHash}
-                  onSubmit={handleSubmit}
-                />
-              ))}
-            </div>
-          ) : (
-            transactionsGroup[nonce].map((transaction) => (
-              <GnosisTransactionItem
-                data={transaction}
-                networkId={networkId}
-                safeInfo={safeInfo}
-                key={transaction.safeTxHash}
-                onSubmit={handleSubmit}
-              />
-            ))
-          )
-        )
+            ) : (
+              items.map((transaction) => (
+                <div key={transaction.safeTxHash} className="pb-[20px]">
+                  <GnosisTransactionItem
+                    data={transaction}
+                    networkId={networkId}
+                    safeInfo={safeInfo}
+                    onSubmit={handleSubmit}
+                  />
+                </div>
+              ))
+            );
+          }}
+        ></Virtuoso>
       ) : (
         <div className="tx-history__empty">
           {isLoading || loading || isSafeInfoLoading ? (

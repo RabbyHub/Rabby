@@ -21,7 +21,7 @@ import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
-import { formatTokenAmount } from '@/ui/utils/number';
+import { formatGasCostUsd, formatTokenAmount } from '@/ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -680,17 +680,8 @@ const GasSelectorHeader = ({
 
   const gasCostUsdStr = useMemo(() => {
     const bn = new BigNumber(modalExplainGas?.gasCostUsd);
-    let value;
 
-    if (bn.gt(1)) {
-      value = bn.toFixed(2);
-    } else if (bn.gt(0.0001)) {
-      value = bn.toFixed(4);
-    } else {
-      value = '0.0001';
-    }
-
-    return `$${formatTokenAmount(value)}`;
+    return `$${formatGasCostUsd(bn)}`;
   }, [modalExplainGas?.gasCostUsd]);
 
   const gasCostAmountStr = useMemo(() => {
