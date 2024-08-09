@@ -5,6 +5,7 @@ import { obj2query, query2obj } from '@/ui/utils/url';
 
 export type ApprovalSpenderItemToBeRevoked = {
   chainServerId: ApprovalItem['chain'];
+  approvalType: ApprovalItem['type'];
   spender: Spender['id'];
   permit2Id?: string;
 } & (
